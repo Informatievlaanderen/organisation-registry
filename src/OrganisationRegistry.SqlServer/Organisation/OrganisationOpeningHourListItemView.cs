@@ -1,167 +1,166 @@
-namespace OrganisationRegistry.SqlServer.Organisation
+namespace OrganisationRegistry.SqlServer.Organisation;
+
+using Infrastructure;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Data.Common;
+using System.Linq;
+using System.Threading.Tasks;
+using OrganisationRegistry.Infrastructure;
+using OrganisationRegistry.Infrastructure.Events;
+using OrganisationRegistry.Organisation.Events;
+
+public class OrganisationOpeningHourListItem
 {
-    using Infrastructure;
-    using Microsoft.EntityFrameworkCore;
-    using Microsoft.EntityFrameworkCore.Metadata.Builders;
-    using Microsoft.Extensions.Logging;
-    using System;
-    using System.Data.Common;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using OrganisationRegistry.Infrastructure;
-    using OrganisationRegistry.Infrastructure.Events;
-    using OrganisationRegistry.Organisation.Events;
+    public Guid OrganisationOpeningHourId { get; set; }
 
-    public class OrganisationOpeningHourListItem
+    public Guid OrganisationId { get; set; }
+
+    public TimeSpan Opens { get; set; }
+
+    public TimeSpan Closes { get; set; }
+
+    public DayOfWeek? DayOfWeek { get; set; }
+
+    public DateTime? ValidFrom { get; set; }
+
+    public DateTime? ValidTo { get; set; }
+
+    public OrganisationOpeningHourListItem() { }
+
+    public OrganisationOpeningHourListItem(
+        Guid organisationOpeningHourId,
+        Guid organisationId,
+        TimeSpan opens,
+        TimeSpan closes,
+        DayOfWeek dayOfWeek,
+        DateTime? validFrom,
+        DateTime? validTo)
     {
-        public Guid OrganisationOpeningHourId { get; set; }
+        OrganisationOpeningHourId = organisationOpeningHourId;
+        OrganisationId = organisationId;
+        Opens = opens;
+        Closes = closes;
+        DayOfWeek = dayOfWeek;
+        ValidFrom = validFrom;
+        ValidTo = validTo;
+    }
+}
 
-        public Guid OrganisationId { get; set; }
+public class OrganisationOpeningHourListConfiguration : EntityMappingConfiguration<OrganisationOpeningHourListItem>
+{
+    public override void Map(EntityTypeBuilder<OrganisationOpeningHourListItem> b)
+    {
+        b.ToTable(nameof(OrganisationOpeningHourListItemView.ProjectionTables.OrganisationOpeningHourList), WellknownSchemas.BackofficeSchema)
+            .HasKey(p => p.OrganisationOpeningHourId)
+            .IsClustered(false);
 
-        public TimeSpan Opens { get; set; }
+        b.Property(p => p.OrganisationId).IsRequired();
 
-        public TimeSpan Closes { get; set; }
+        b.Property(p => p.Opens);
+        b.Property(p => p.Closes);
+        b.Property(p => p.DayOfWeek);
 
-        public DayOfWeek? DayOfWeek { get; set; }
+        b.Property(p => p.ValidFrom);
+        b.Property(p => p.ValidTo);
+    }
+}
 
-        public DateTime? ValidFrom { get; set; }
+public class OrganisationOpeningHourListItemView :
+    Projection<OrganisationOpeningHourListItemView>,
+    IEventHandler<OrganisationOpeningHourAdded>,
+    IEventHandler<OrganisationOpeningHourUpdated>,
+    IEventHandler<OrganisationTerminated>,
+    IEventHandler<OrganisationTerminatedV2>
+{
+    private readonly IEventStore _eventStore;
 
-        public DateTime? ValidTo { get; set; }
-
-        public OrganisationOpeningHourListItem() { }
-
-        public OrganisationOpeningHourListItem(
-            Guid organisationOpeningHourId,
-            Guid organisationId,
-            TimeSpan opens,
-            TimeSpan closes,
-            DayOfWeek dayOfWeek,
-            DateTime? validFrom,
-            DateTime? validTo)
-        {
-            OrganisationOpeningHourId = organisationOpeningHourId;
-            OrganisationId = organisationId;
-            Opens = opens;
-            Closes = closes;
-            DayOfWeek = dayOfWeek;
-            ValidFrom = validFrom;
-            ValidTo = validTo;
-        }
+    public OrganisationOpeningHourListItemView(
+        ILogger<OrganisationOpeningHourListItemView> logger,
+        IEventStore eventStore,
+        IContextFactory contextFactory)
+        : base(logger, contextFactory)
+    {
+        _eventStore = eventStore;
     }
 
-    public class OrganisationOpeningHourListConfiguration : EntityMappingConfiguration<OrganisationOpeningHourListItem>
+    protected override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
+    public override string Schema => WellknownSchemas.BackofficeSchema;
+
+    public enum ProjectionTables
     {
-        public override void Map(EntityTypeBuilder<OrganisationOpeningHourListItem> b)
-        {
-            b.ToTable(nameof(OrganisationOpeningHourListItemView.ProjectionTables.OrganisationOpeningHourList), WellknownSchemas.BackofficeSchema)
-                .HasKey(p => p.OrganisationOpeningHourId)
-                .IsClustered(false);
-
-            b.Property(p => p.OrganisationId).IsRequired();
-
-            b.Property(p => p.Opens);
-            b.Property(p => p.Closes);
-            b.Property(p => p.DayOfWeek);
-
-            b.Property(p => p.ValidFrom);
-            b.Property(p => p.ValidTo);
-        }
+        OrganisationOpeningHourList
     }
 
-    public class OrganisationOpeningHourListItemView :
-        Projection<OrganisationOpeningHourListItemView>,
-        IEventHandler<OrganisationOpeningHourAdded>,
-        IEventHandler<OrganisationOpeningHourUpdated>,
-        IEventHandler<OrganisationTerminated>,
-        IEventHandler<OrganisationTerminatedV2>
+    public override async Task Handle(
+        DbConnection dbConnection,
+        DbTransaction dbTransaction,
+        IEnvelope<RebuildProjection> message)
     {
-        private readonly IEventStore _eventStore;
+        await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+    }
 
-        public OrganisationOpeningHourListItemView(
-            ILogger<OrganisationOpeningHourListItemView> logger,
-            IEventStore eventStore,
-            IContextFactory contextFactory)
-            : base(logger, contextFactory)
+    public async Task Handle(DbConnection dbConnection,
+        DbTransaction dbTransaction,
+        IEnvelope<OrganisationOpeningHourAdded> message)
+    {
+        var openingHourListItem = new OrganisationOpeningHourListItem
         {
-            _eventStore = eventStore;
-        }
+            OrganisationOpeningHourId = message.Body.OrganisationOpeningHourId,
+            OrganisationId = message.Body.OrganisationId,
+            Opens = message.Body.Opens,
+            Closes = message.Body.Closes,
+            DayOfWeek = message.Body.DayOfWeek,
+            ValidFrom = message.Body.ValidFrom,
+            ValidTo = message.Body.ValidTo
+        };
 
-        protected override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
-        public override string Schema => WellknownSchemas.BackofficeSchema;
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+        await context.OrganisationOpeningHourList.AddAsync(openingHourListItem);
+        await context.SaveChangesAsync();
+    }
 
-        public enum ProjectionTables
-        {
-            OrganisationOpeningHourList
-        }
+    public async Task Handle(DbConnection dbConnection,
+        DbTransaction dbTransaction,
+        IEnvelope<OrganisationOpeningHourUpdated> message)
+    {
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+        var label = await context.OrganisationOpeningHourList.SingleAsync(item => item.OrganisationOpeningHourId == message.Body.OrganisationOpeningHourId);
 
-        public override async Task Handle(
-            DbConnection dbConnection,
-            DbTransaction dbTransaction,
-            IEnvelope<RebuildProjection> message)
-        {
-            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
-        }
+        label.OrganisationOpeningHourId = message.Body.OrganisationOpeningHourId;
+        label.OrganisationId = message.Body.OrganisationId;
+        label.Opens = message.Body.Opens;
+        label.Closes = message.Body.Closes;
+        label.DayOfWeek = message.Body.DayOfWeek;
+        label.ValidFrom = message.Body.ValidFrom;
+        label.ValidTo = message.Body.ValidTo;
 
-        public async Task Handle(DbConnection dbConnection,
-            DbTransaction dbTransaction,
-            IEnvelope<OrganisationOpeningHourAdded> message)
-        {
-            var openingHourListItem = new OrganisationOpeningHourListItem
-            {
-                OrganisationOpeningHourId = message.Body.OrganisationOpeningHourId,
-                OrganisationId = message.Body.OrganisationId,
-                Opens = message.Body.Opens,
-                Closes = message.Body.Closes,
-                DayOfWeek = message.Body.DayOfWeek,
-                ValidFrom = message.Body.ValidFrom,
-                ValidTo = message.Body.ValidTo
-            };
+        await context.SaveChangesAsync();
+    }
 
-            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-            await context.OrganisationOpeningHourList.AddAsync(openingHourListItem);
-            await context.SaveChangesAsync();
-        }
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+    {
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+        var openingHours = context.OrganisationOpeningHourList.Where(item =>
+            message.Body.FieldsToTerminate.OpeningHours.Keys.Contains(item.OrganisationOpeningHourId));
 
-        public async Task Handle(DbConnection dbConnection,
-            DbTransaction dbTransaction,
-            IEnvelope<OrganisationOpeningHourUpdated> message)
-        {
-            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-            var label = await context.OrganisationOpeningHourList.SingleAsync(item => item.OrganisationOpeningHourId == message.Body.OrganisationOpeningHourId);
+        foreach (var openingHour in openingHours)
+            openingHour.ValidTo = message.Body.FieldsToTerminate.OpeningHours[openingHour.OrganisationOpeningHourId];
 
-            label.OrganisationOpeningHourId = message.Body.OrganisationOpeningHourId;
-            label.OrganisationId = message.Body.OrganisationId;
-            label.Opens = message.Body.Opens;
-            label.Closes = message.Body.Closes;
-            label.DayOfWeek = message.Body.DayOfWeek;
-            label.ValidFrom = message.Body.ValidFrom;
-            label.ValidTo = message.Body.ValidTo;
+        await context.SaveChangesAsync();
+    }
 
-            await context.SaveChangesAsync();
-        }
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminatedV2> message)
+    {
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+        var openingHours = context.OrganisationOpeningHourList.Where(item =>
+            message.Body.FieldsToTerminate.OpeningHours.Keys.Contains(item.OrganisationOpeningHourId));
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
-        {
-            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-            var openingHours = context.OrganisationOpeningHourList.Where(item =>
-                message.Body.FieldsToTerminate.OpeningHours.Keys.Contains(item.OrganisationOpeningHourId));
+        foreach (var openingHour in openingHours)
+            openingHour.ValidTo = message.Body.FieldsToTerminate.OpeningHours[openingHour.OrganisationOpeningHourId];
 
-            foreach (var openingHour in openingHours)
-                openingHour.ValidTo = message.Body.FieldsToTerminate.OpeningHours[openingHour.OrganisationOpeningHourId];
-
-            await context.SaveChangesAsync();
-        }
-
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminatedV2> message)
-        {
-            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-            var openingHours = context.OrganisationOpeningHourList.Where(item =>
-                message.Body.FieldsToTerminate.OpeningHours.Keys.Contains(item.OrganisationOpeningHourId));
-
-            foreach (var openingHour in openingHours)
-                openingHour.ValidTo = message.Body.FieldsToTerminate.OpeningHours[openingHour.OrganisationOpeningHourId];
-
-            await context.SaveChangesAsync();
-        }
+        await context.SaveChangesAsync();
     }
 }

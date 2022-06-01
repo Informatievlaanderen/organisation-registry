@@ -1,27 +1,26 @@
-namespace OrganisationRegistry.SqlServer.Magda
+namespace OrganisationRegistry.SqlServer.Magda;
+
+using System;
+using Infrastructure;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using OrganisationRegistry.Infrastructure;
+
+public class MagdaCallReference
 {
-    using System;
-    using Infrastructure;
-    using Microsoft.EntityFrameworkCore;
-    using Microsoft.EntityFrameworkCore.Metadata.Builders;
-    using OrganisationRegistry.Infrastructure;
+    public Guid Reference { get; set; }
+    public string? UserClaims { get; set; }
+    public DateTimeOffset CalledAt { get; set; }
+}
 
-    public class MagdaCallReference
+public class MagdaReferencesConfiguration : EntityMappingConfiguration<MagdaCallReference>
+{
+    public override void Map(EntityTypeBuilder<MagdaCallReference> b)
     {
-        public Guid Reference { get; set; }
-        public string? UserClaims { get; set; }
-        public DateTimeOffset CalledAt { get; set; }
-    }
+        b.ToTable("CallReferences", WellknownSchemas.MagdaSchema)
+            .HasKey(p => p.Reference);
 
-    public class MagdaReferencesConfiguration : EntityMappingConfiguration<MagdaCallReference>
-    {
-        public override void Map(EntityTypeBuilder<MagdaCallReference> b)
-        {
-            b.ToTable("CallReferences", WellknownSchemas.MagdaSchema)
-                .HasKey(p => p.Reference);
-
-            b.Property(p => p.UserClaims);
-            b.Property(p => p.CalledAt);
-        }
+        b.Property(p => p.UserClaims);
+        b.Property(p => p.CalledAt);
     }
 }

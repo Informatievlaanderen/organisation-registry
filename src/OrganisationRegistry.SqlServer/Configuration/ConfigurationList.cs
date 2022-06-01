@@ -1,32 +1,31 @@
-﻿namespace OrganisationRegistry.SqlServer.Configuration
+﻿namespace OrganisationRegistry.SqlServer.Configuration;
+
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Infrastructure;
+using OrganisationRegistry.Infrastructure;
+
+public class ConfigurationListItem
 {
-    using Microsoft.EntityFrameworkCore;
-    using Microsoft.EntityFrameworkCore.Metadata.Builders;
-    using Infrastructure;
-    using OrganisationRegistry.Infrastructure;
+    public string Key { get; set; } = null!;
+    public string? Description { get; set; }
+    public string? Value { get; set; }
+}
 
-    public class ConfigurationListItem
+public class ConfigurationListConfiguration : EntityMappingConfiguration<ConfigurationListItem>
+{
+    public override void Map(EntityTypeBuilder<ConfigurationListItem> b)
     {
-        public string Key { get; set; } = null!;
-        public string? Description { get; set; }
-        public string? Value { get; set; }
-    }
+        b.ToTable("Configuration", WellknownSchemas.OrganisationRegistrySchema)
+            .HasKey(p => p.Key)
+            .IsClustered();
 
-    public class ConfigurationListConfiguration : EntityMappingConfiguration<ConfigurationListItem>
-    {
-        public override void Map(EntityTypeBuilder<ConfigurationListItem> b)
-        {
-            b.ToTable("Configuration", WellknownSchemas.OrganisationRegistrySchema)
-                .HasKey(p => p.Key)
-                .IsClustered();
+        b.Property(p => p.Key)
+            .IsRequired()
+            .HasMaxLength(450);
 
-            b.Property(p => p.Key)
-                .IsRequired()
-                .HasMaxLength(450);
+        b.Property(p => p.Description);
 
-            b.Property(p => p.Description);
-
-            b.Property(p => p.Value);
-        }
+        b.Property(p => p.Value);
     }
 }

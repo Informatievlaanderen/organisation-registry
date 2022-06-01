@@ -1,96 +1,95 @@
-﻿namespace OrganisationRegistry.SqlServer.MandateRoleType
+﻿namespace OrganisationRegistry.SqlServer.MandateRoleType;
+
+using System;
+using System.Data.Common;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore;
+using Infrastructure;
+using Microsoft.Extensions.Logging;
+using OrganisationRegistry.Infrastructure;
+using OrganisationRegistry.Infrastructure.Events;
+using OrganisationRegistry.MandateRoleType.Events;
+
+public class MandateRoleTypeListItem
 {
-    using System;
-    using System.Data.Common;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using Microsoft.EntityFrameworkCore.Metadata.Builders;
-    using Microsoft.EntityFrameworkCore;
-    using Infrastructure;
-    using Microsoft.Extensions.Logging;
-    using OrganisationRegistry.Infrastructure;
-    using OrganisationRegistry.Infrastructure.Events;
-    using OrganisationRegistry.MandateRoleType.Events;
+    public Guid Id { get; set; }
 
-    public class MandateRoleTypeListItem
+    public string Name { get; set; } = null!;
+}
+
+public class MandateRoleTypeListConfiguration : EntityMappingConfiguration<MandateRoleTypeListItem>
+{
+    public const int NameLength = 500;
+
+    public override void Map(EntityTypeBuilder<MandateRoleTypeListItem> b)
     {
-        public Guid Id { get; set; }
+        b.ToTable(nameof(MandateRoleTypeListView.ProjectionTables.MandateRoleTypeList), WellknownSchemas.BackofficeSchema)
+            .HasKey(p => p.Id)
+            .IsClustered(false);
 
-        public string Name { get; set; } = null!;
+        b.Property(p => p.Name)
+            .HasMaxLength(NameLength)
+            .IsRequired();
+
+        b.HasIndex(x => x.Name).IsUnique().IsClustered();
+    }
+}
+
+public class MandateRoleTypeListView :
+    Projection<MandateRoleTypeListView>,
+    IEventHandler<MandateRoleTypeCreated>,
+    IEventHandler<MandateRoleTypeUpdated>
+{
+    protected override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
+    public override string Schema => WellknownSchemas.BackofficeSchema;
+
+    public enum ProjectionTables
+    {
+        MandateRoleTypeList
     }
 
-    public class MandateRoleTypeListConfiguration : EntityMappingConfiguration<MandateRoleTypeListItem>
+    private readonly IEventStore _eventStore;
+
+    public MandateRoleTypeListView(
+        ILogger<MandateRoleTypeListView> logger,
+        IEventStore eventStore,
+        IContextFactory contextFactory) : base(logger, contextFactory)
     {
-        public const int NameLength = 500;
+        _eventStore = eventStore;
+    }
 
-        public override void Map(EntityTypeBuilder<MandateRoleTypeListItem> b)
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<MandateRoleTypeCreated> message)
+    {
+        using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
         {
-            b.ToTable(nameof(MandateRoleTypeListView.ProjectionTables.MandateRoleTypeList), WellknownSchemas.BackofficeSchema)
-                .HasKey(p => p.Id)
-                .IsClustered(false);
+            var mandateRoleType = new MandateRoleTypeListItem
+            {
+                Id = message.Body.MandateRoleTypeId,
+                Name = message.Body.Name,
+            };
 
-            b.Property(p => p.Name)
-                .HasMaxLength(NameLength)
-                .IsRequired();
-
-            b.HasIndex(x => x.Name).IsUnique().IsClustered();
+            await context.MandateRoleTypeList.AddAsync(mandateRoleType);
+            await context.SaveChangesAsync();
         }
     }
 
-    public class MandateRoleTypeListView :
-        Projection<MandateRoleTypeListView>,
-        IEventHandler<MandateRoleTypeCreated>,
-        IEventHandler<MandateRoleTypeUpdated>
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<MandateRoleTypeUpdated> message)
     {
-        protected override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
-        public override string Schema => WellknownSchemas.BackofficeSchema;
-
-        public enum ProjectionTables
+        using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
         {
-            MandateRoleTypeList
+            var mandateRoleType = context.MandateRoleTypeList.SingleOrDefault(x => x.Id == message.Body.MandateRoleTypeId);
+            if (mandateRoleType == null)
+                return; // TODO: Error?
+
+            mandateRoleType.Name = message.Body.Name;
+            await context.SaveChangesAsync();
         }
+    }
 
-        private readonly IEventStore _eventStore;
-
-        public MandateRoleTypeListView(
-            ILogger<MandateRoleTypeListView> logger,
-            IEventStore eventStore,
-            IContextFactory contextFactory) : base(logger, contextFactory)
-        {
-            _eventStore = eventStore;
-        }
-
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<MandateRoleTypeCreated> message)
-        {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var mandateRoleType = new MandateRoleTypeListItem
-                {
-                    Id = message.Body.MandateRoleTypeId,
-                    Name = message.Body.Name,
-                };
-
-                await context.MandateRoleTypeList.AddAsync(mandateRoleType);
-                await context.SaveChangesAsync();
-            }
-        }
-
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<MandateRoleTypeUpdated> message)
-        {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var mandateRoleType = context.MandateRoleTypeList.SingleOrDefault(x => x.Id == message.Body.MandateRoleTypeId);
-                if (mandateRoleType == null)
-                    return; // TODO: Error?
-
-                mandateRoleType.Name = message.Body.Name;
-                await context.SaveChangesAsync();
-            }
-        }
-
-        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
-        {
-            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
-        }
+    public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+    {
+        await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
     }
 }

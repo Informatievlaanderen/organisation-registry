@@ -1,172 +1,171 @@
-namespace OrganisationRegistry.SqlServer.Body
+namespace OrganisationRegistry.SqlServer.Body;
+
+using System;
+using System.Data.Common;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Infrastructure;
+using OrganisationRegistry.Infrastructure.Events;
+using OrganisationRegistry.Body.Events;
+using SeatType;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using OrganisationRegistry.Infrastructure;
+
+public class BodySeatListItem
 {
-    using System;
-    using System.Data.Common;
-    using Microsoft.EntityFrameworkCore;
-    using Microsoft.EntityFrameworkCore.Metadata.Builders;
-    using Infrastructure;
-    using OrganisationRegistry.Infrastructure.Events;
-    using OrganisationRegistry.Body.Events;
-    using SeatType;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using Microsoft.Extensions.Logging;
-    using OrganisationRegistry.Infrastructure;
+    public Guid BodySeatId { get; set; }
+    public Guid BodyId { get; set; }
 
-    public class BodySeatListItem
+    public string Name { get; set; } = null!;
+
+    public string BodySeatNumber { get; set; } = null!;
+
+    public bool PaidSeat { get; set; }
+
+    public bool EntitledToVote { get; set; }
+
+    public Guid SeatTypeId { get; set; }
+    public string SeatTypeName { get; set; } = null!;
+
+    public DateTime? ValidFrom { get; set; }
+    public DateTime? ValidTo { get; set; }
+}
+
+public class BodySeatListConfiguration : EntityMappingConfiguration<BodySeatListItem>
+{
+    public const int NameLength = 500;
+    public const int SeatNumberLength = 10;
+
+    public override void Map(EntityTypeBuilder<BodySeatListItem> b)
     {
-        public Guid BodySeatId { get; set; }
-        public Guid BodyId { get; set; }
+        b.ToTable(nameof(BodySeatListView.ProjectionTables.BodySeatList), WellknownSchemas.BackofficeSchema)
+            .HasKey(p => p.BodySeatId)
+            .IsClustered(false);
 
-        public string Name { get; set; } = null!;
+        b.Property(p => p.BodySeatNumber)
+            .HasMaxLength(SeatNumberLength)
+            .IsRequired();
 
-        public string BodySeatNumber { get; set; } = null!;
+        b.Property(p => p.BodyId).IsRequired();
 
-        public bool PaidSeat { get; set; }
+        b.Property(p => p.Name).HasMaxLength(NameLength).IsRequired();
 
-        public bool EntitledToVote { get; set; }
+        b.Property(p => p.PaidSeat);
 
-        public Guid SeatTypeId { get; set; }
-        public string SeatTypeName { get; set; } = null!;
+        b.Property(p => p.EntitledToVote);
 
-        public DateTime? ValidFrom { get; set; }
-        public DateTime? ValidTo { get; set; }
+        b.Property(p => p.SeatTypeId).IsRequired();
+        b.Property(p => p.SeatTypeName)
+            .HasMaxLength(SeatTypeListConfiguration.NameLength)
+            .IsRequired();
+
+        b.Property(p => p.ValidFrom);
+        b.Property(p => p.ValidTo);
+
+        b.HasIndex(x => x.Name).IsClustered();
+        b.HasIndex(x => x.ValidFrom);
+        b.HasIndex(x => x.ValidTo);
+    }
+}
+
+public class BodySeatListView :
+    Projection<BodySeatListView>,
+    IEventHandler<BodySeatAdded>,
+    IEventHandler<BodySeatUpdated>,
+    IEventHandler<BodySeatNumberAssigned>
+{
+    protected override string[] ProjectionTableNames
+        => Enum.GetNames(typeof(ProjectionTables));
+
+    public override string Schema
+        => WellknownSchemas.BackofficeSchema;
+
+    public enum ProjectionTables
+    {
+        BodySeatList
     }
 
-    public class BodySeatListConfiguration : EntityMappingConfiguration<BodySeatListItem>
+    private readonly IEventStore _eventStore;
+
+    public BodySeatListView(
+        ILogger<BodySeatListView> logger,
+        IEventStore eventStore,
+        IContextFactory contextFactory) : base(logger, contextFactory)
     {
-        public const int NameLength = 500;
-        public const int SeatNumberLength = 10;
+        _eventStore = eventStore;
+    }
 
-        public override void Map(EntityTypeBuilder<BodySeatListItem> b)
+    public async Task Handle(
+        DbConnection dbConnection,
+        DbTransaction dbTransaction,
+        IEnvelope<BodySeatAdded> message)
+    {
+        var bodySeatListItem = new BodySeatListItem
         {
-            b.ToTable(nameof(BodySeatListView.ProjectionTables.BodySeatList), WellknownSchemas.BackofficeSchema)
-                .HasKey(p => p.BodySeatId)
-                .IsClustered(false);
+            BodySeatId = message.Body.BodySeatId,
+            BodyId = message.Body.BodyId,
+            Name = message.Body.Name,
+            BodySeatNumber = message.Body.BodySeatNumber,
+            SeatTypeId = message.Body.SeatTypeId,
+            SeatTypeName = message.Body.SeatTypeName,
+            PaidSeat = message.Body.PaidSeat,
+            EntitledToVote = message.Body.EntitledToVote,
+            ValidFrom = message.Body.ValidFrom,
+            ValidTo = message.Body.ValidTo
+        };
 
-            b.Property(p => p.BodySeatNumber)
-                .HasMaxLength(SeatNumberLength)
-                .IsRequired();
-
-            b.Property(p => p.BodyId).IsRequired();
-
-            b.Property(p => p.Name).HasMaxLength(NameLength).IsRequired();
-
-            b.Property(p => p.PaidSeat);
-
-            b.Property(p => p.EntitledToVote);
-
-            b.Property(p => p.SeatTypeId).IsRequired();
-            b.Property(p => p.SeatTypeName)
-                .HasMaxLength(SeatTypeListConfiguration.NameLength)
-                .IsRequired();
-
-            b.Property(p => p.ValidFrom);
-            b.Property(p => p.ValidTo);
-
-            b.HasIndex(x => x.Name).IsClustered();
-            b.HasIndex(x => x.ValidFrom);
-            b.HasIndex(x => x.ValidTo);
+        using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
+        {
+            await context.BodySeatList.AddAsync(bodySeatListItem);
+            await context.SaveChangesAsync();
         }
     }
 
-    public class BodySeatListView :
-        Projection<BodySeatListView>,
-        IEventHandler<BodySeatAdded>,
-        IEventHandler<BodySeatUpdated>,
-        IEventHandler<BodySeatNumberAssigned>
+    public async Task Handle(
+        DbConnection dbConnection,
+        DbTransaction dbTransaction,
+        IEnvelope<BodySeatUpdated> message)
     {
-        protected override string[] ProjectionTableNames
-            => Enum.GetNames(typeof(ProjectionTables));
-
-        public override string Schema
-            => WellknownSchemas.BackofficeSchema;
-
-        public enum ProjectionTables
+        using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
         {
-            BodySeatList
+            var bodySeat = context.BodySeatList.Single(item => item.BodySeatId == message.Body.BodySeatId);
+
+            bodySeat.BodySeatId = message.Body.BodySeatId;
+            bodySeat.BodyId = message.Body.BodyId;
+            bodySeat.Name = message.Body.Name;
+            bodySeat.SeatTypeId = message.Body.SeatTypeId;
+            bodySeat.SeatTypeName = message.Body.SeatTypeName;
+            bodySeat.PaidSeat = message.Body.PaidSeat;
+            bodySeat.EntitledToVote = message.Body.EntitledToVote;
+            bodySeat.ValidFrom = message.Body.ValidFrom;
+            bodySeat.ValidTo = message.Body.ValidTo;
+
+            await context.SaveChangesAsync();
         }
+    }
 
-        private readonly IEventStore _eventStore;
-
-        public BodySeatListView(
-            ILogger<BodySeatListView> logger,
-            IEventStore eventStore,
-            IContextFactory contextFactory) : base(logger, contextFactory)
+    public async Task Handle(
+        DbConnection dbConnection,
+        DbTransaction dbTransaction,
+        IEnvelope<BodySeatNumberAssigned> message)
+    {
+        using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
         {
-            _eventStore = eventStore;
+            var bodySeat = context.BodySeatList.Single(item => item.BodySeatId == message.Body.BodySeatId);
+
+            bodySeat.BodySeatNumber = message.Body.BodySeatNumber;
+
+            await context.SaveChangesAsync();
         }
+    }
 
-        public async Task Handle(
-            DbConnection dbConnection,
-            DbTransaction dbTransaction,
-            IEnvelope<BodySeatAdded> message)
-        {
-            var bodySeatListItem = new BodySeatListItem
-            {
-                BodySeatId = message.Body.BodySeatId,
-                BodyId = message.Body.BodyId,
-                Name = message.Body.Name,
-                BodySeatNumber = message.Body.BodySeatNumber,
-                SeatTypeId = message.Body.SeatTypeId,
-                SeatTypeName = message.Body.SeatTypeName,
-                PaidSeat = message.Body.PaidSeat,
-                EntitledToVote = message.Body.EntitledToVote,
-                ValidFrom = message.Body.ValidFrom,
-                ValidTo = message.Body.ValidTo
-            };
-
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                await context.BodySeatList.AddAsync(bodySeatListItem);
-                await context.SaveChangesAsync();
-            }
-        }
-
-        public async Task Handle(
-            DbConnection dbConnection,
-            DbTransaction dbTransaction,
-            IEnvelope<BodySeatUpdated> message)
-        {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var bodySeat = context.BodySeatList.Single(item => item.BodySeatId == message.Body.BodySeatId);
-
-                bodySeat.BodySeatId = message.Body.BodySeatId;
-                bodySeat.BodyId = message.Body.BodyId;
-                bodySeat.Name = message.Body.Name;
-                bodySeat.SeatTypeId = message.Body.SeatTypeId;
-                bodySeat.SeatTypeName = message.Body.SeatTypeName;
-                bodySeat.PaidSeat = message.Body.PaidSeat;
-                bodySeat.EntitledToVote = message.Body.EntitledToVote;
-                bodySeat.ValidFrom = message.Body.ValidFrom;
-                bodySeat.ValidTo = message.Body.ValidTo;
-
-                await context.SaveChangesAsync();
-            }
-        }
-
-        public async Task Handle(
-            DbConnection dbConnection,
-            DbTransaction dbTransaction,
-            IEnvelope<BodySeatNumberAssigned> message)
-        {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var bodySeat = context.BodySeatList.Single(item => item.BodySeatId == message.Body.BodySeatId);
-
-                bodySeat.BodySeatNumber = message.Body.BodySeatNumber;
-
-                await context.SaveChangesAsync();
-            }
-        }
-
-        public override async Task Handle(
-            DbConnection dbConnection,
-            DbTransaction dbTransaction,
-            IEnvelope<RebuildProjection> message)
-        {
-            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
-        }
+    public override async Task Handle(
+        DbConnection dbConnection,
+        DbTransaction dbTransaction,
+        IEnvelope<RebuildProjection> message)
+    {
+        await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
     }
 }

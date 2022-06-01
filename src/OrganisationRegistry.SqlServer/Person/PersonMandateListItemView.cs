@@ -1,85 +1,84 @@
-﻿namespace OrganisationRegistry.SqlServer.Person
+﻿namespace OrganisationRegistry.SqlServer.Person;
+
+using System;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Infrastructure;
+using Body;
+using FunctionType;
+using Organisation;
+using OrganisationRegistry.Infrastructure;
+
+public class PersonMandateListItem
 {
-    using System;
-    using Microsoft.EntityFrameworkCore;
-    using Microsoft.EntityFrameworkCore.Metadata.Builders;
-    using Infrastructure;
-    using Body;
-    using FunctionType;
-    using Organisation;
-    using OrganisationRegistry.Infrastructure;
+    public Guid PersonMandateId { get; set; } // arbitrary guid as pk
 
-    public class PersonMandateListItem
+    public Guid BodyMandateId { get; set; }
+    public Guid? DelegationAssignmentId { get; set; }
+
+    public Guid BodyId { get; set; } // Het orgaan zelf
+    public string? BodyName { get; set; }
+
+    public Guid? BodyOrganisationId { get; set; } // Organisatie aan wie het orgaan behoort (DayPassed)
+    public string? BodyOrganisationName { get; set; }
+
+    public Guid BodySeatId { get; set; }
+    public string? BodySeatName { get; set; }
+    public string? BodySeatNumber { get; set; }
+
+    public bool PaidSeat { get; set; }
+
+    public Guid? OrganisationId { get; set; } // Organisatie aan wie het mandaat is toegekend
+    public string? OrganisationName { get; set; }
+
+    public Guid? FunctionTypeId { get; set; } // Functietype die nodig is voor het mandaat uit te voeren
+    public string? FunctionTypeName { get; set; }
+
+    public Guid PersonId { get; set; }
+
+    public DateTime? ValidFrom { get; set; }
+    public DateTime? ValidTo { get; set; }
+}
+
+public class PersonMandateListConfiguration : EntityMappingConfiguration<PersonMandateListItem>
+{
+    public const string TableName = "PersonMandateList";
+
+    public override void Map(EntityTypeBuilder<PersonMandateListItem> b)
     {
-        public Guid PersonMandateId { get; set; } // arbitrary guid as pk
+        b.ToTable(TableName, WellknownSchemas.BackofficeSchema)
+            .HasKey(p => p.PersonMandateId)
+            .IsClustered(false);
 
-        public Guid BodyMandateId { get; set; }
-        public Guid? DelegationAssignmentId { get; set; }
+        b.Property(p => p.DelegationAssignmentId).IsRequired(false);
 
-        public Guid BodyId { get; set; } // Het orgaan zelf
-        public string? BodyName { get; set; }
+        b.HasIndex(p => new {p.BodyMandateId, p.DelegationAssignmentId}).IsUnique();
 
-        public Guid? BodyOrganisationId { get; set; } // Organisatie aan wie het orgaan behoort (DayPassed)
-        public string? BodyOrganisationName { get; set; }
+        b.Property(p => p.BodyId).IsRequired();
+        b.Property(p => p.BodyName).HasMaxLength(BodyListConfiguration.NameLength).IsRequired();
 
-        public Guid BodySeatId { get; set; }
-        public string? BodySeatName { get; set; }
-        public string? BodySeatNumber { get; set; }
+        b.Property(p => p.BodyOrganisationId);
+        b.Property(p => p.BodyOrganisationName).HasMaxLength(OrganisationListConfiguration.NameLength);
 
-        public bool PaidSeat { get; set; }
+        b.Property(p => p.BodySeatId).IsRequired();
+        b.Property(p => p.BodySeatName).HasMaxLength(BodySeatListConfiguration.NameLength).IsRequired();
+        b.Property(p => p.BodySeatNumber).HasMaxLength(BodySeatListConfiguration.SeatNumberLength);
 
-        public Guid? OrganisationId { get; set; } // Organisatie aan wie het mandaat is toegekend
-        public string? OrganisationName { get; set; }
+        b.Property(p => p.OrganisationId);
+        b.Property(p => p.OrganisationName).HasMaxLength(OrganisationListConfiguration.NameLength);
 
-        public Guid? FunctionTypeId { get; set; } // Functietype die nodig is voor het mandaat uit te voeren
-        public string? FunctionTypeName { get; set; }
+        b.Property(p => p.FunctionTypeId);
+        b.Property(p => p.FunctionTypeName).HasMaxLength(FunctionTypeListConfiguration.NameLength);
 
-        public Guid PersonId { get; set; }
+        b.Property(p => p.PersonId).IsRequired();
 
-        public DateTime? ValidFrom { get; set; }
-        public DateTime? ValidTo { get; set; }
-    }
+        b.Property(p => p.PaidSeat);
 
-    public class PersonMandateListConfiguration : EntityMappingConfiguration<PersonMandateListItem>
-    {
-        public const string TableName = "PersonMandateList";
+        b.Property(p => p.ValidFrom);
+        b.Property(p => p.ValidTo);
 
-        public override void Map(EntityTypeBuilder<PersonMandateListItem> b)
-        {
-            b.ToTable(TableName, WellknownSchemas.BackofficeSchema)
-                .HasKey(p => p.PersonMandateId)
-                .IsClustered(false);
-
-            b.Property(p => p.DelegationAssignmentId).IsRequired(false);
-
-            b.HasIndex(p => new {p.BodyMandateId, p.DelegationAssignmentId}).IsUnique();
-
-            b.Property(p => p.BodyId).IsRequired();
-            b.Property(p => p.BodyName).HasMaxLength(BodyListConfiguration.NameLength).IsRequired();
-
-            b.Property(p => p.BodyOrganisationId);
-            b.Property(p => p.BodyOrganisationName).HasMaxLength(OrganisationListConfiguration.NameLength);
-
-            b.Property(p => p.BodySeatId).IsRequired();
-            b.Property(p => p.BodySeatName).HasMaxLength(BodySeatListConfiguration.NameLength).IsRequired();
-            b.Property(p => p.BodySeatNumber).HasMaxLength(BodySeatListConfiguration.SeatNumberLength);
-
-            b.Property(p => p.OrganisationId);
-            b.Property(p => p.OrganisationName).HasMaxLength(OrganisationListConfiguration.NameLength);
-
-            b.Property(p => p.FunctionTypeId);
-            b.Property(p => p.FunctionTypeName).HasMaxLength(FunctionTypeListConfiguration.NameLength);
-
-            b.Property(p => p.PersonId).IsRequired();
-
-            b.Property(p => p.PaidSeat);
-
-            b.Property(p => p.ValidFrom);
-            b.Property(p => p.ValidTo);
-
-            b.HasIndex(x => x.BodyName).IsClustered();
-            b.HasIndex(x => x.ValidFrom);
-            b.HasIndex(x => x.ValidTo);
-        }
+        b.HasIndex(x => x.BodyName).IsClustered();
+        b.HasIndex(x => x.ValidFrom);
+        b.HasIndex(x => x.ValidTo);
     }
 }
