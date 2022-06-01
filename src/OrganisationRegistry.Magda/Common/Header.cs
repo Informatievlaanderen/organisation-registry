@@ -1,7 +1,6 @@
-namespace OrganisationRegistry.Magda.Common
-{
-    using System;
+namespace OrganisationRegistry.Magda.Common;
 
-    [Serializable]
-    public class Header { }
-}
+using System;
+
+[Serializable]
+public class Header { }
