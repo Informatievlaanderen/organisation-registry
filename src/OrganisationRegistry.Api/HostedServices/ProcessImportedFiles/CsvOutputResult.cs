@@ -5,9 +5,6 @@ using System.Collections.Generic;
 
 public class CsvOutputResult
 {
-    public IEnumerable<ValidationIssue> Issues { get; }
-    public IEnumerable<OutputRecord> Records { get;  }
-
     private CsvOutputResult(IEnumerable<ValidationIssue> issues)
     {
         Issues = issues;
@@ -20,8 +17,12 @@ public class CsvOutputResult
         Issues = Array.Empty<ValidationIssue>();
     }
 
-    public static CsvOutputResult WithIssues(IEnumerable<ValidationIssue> issues)
-        => new(issues);
+    public IEnumerable<ValidationIssue> Issues { get; }
+    public IEnumerable<OutputRecord> Records { get; }
+
+    public static CsvOutputResult WithIssues(ValidationIssues issues)
+        => new(issues.Items);
+
     public static CsvOutputResult WithRecords(IEnumerable<OutputRecord> records)
         => new(records);
 }

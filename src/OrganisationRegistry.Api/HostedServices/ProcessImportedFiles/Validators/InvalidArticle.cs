@@ -20,5 +20,5 @@ public static class InvalidArticle
     }
 
     public static string FormatMessage(string article)
-        => $"De waarde {article} is ongeldig voor column 'article' (Geldige waarden: 'de', 'het').";
+        => $"De waarde {article} is ongeldig voor kolom 'article' (Geldige waarden: 'de', 'het').";
 }

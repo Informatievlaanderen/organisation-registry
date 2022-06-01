@@ -9,7 +9,7 @@ using Xunit;
 public class WhenParsingTheCsvImportFileContent
 {
     private static List<ParsedRecord> Parse(string csvToParse)
-        => ImportFileParser.Parse(csvToParse).ToList();
+        => ImportFileParser.ParseContent(csvToParse).ToList();
 
     [Fact]
     public void ItParsesRequiredFieldsLowerCaseHeaders()

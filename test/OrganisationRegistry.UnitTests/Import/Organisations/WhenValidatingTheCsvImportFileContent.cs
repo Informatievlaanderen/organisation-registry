@@ -10,7 +10,7 @@ using Xunit;
 public class WhenValidatingTheCsvImportFileContent
 {
     private static List<ValidationIssue> Validate(IEnumerable<ParsedRecord> parsedRecords)
-        => RecordValidator.Validate(parsedRecords).ToList();
+        => RecordValidator.Validate(parsedRecords).Items.ToList();
 
     private static ParsedRecord GetParsedrecord(int rowNumber, string reference, string parent, string name)
         => new(

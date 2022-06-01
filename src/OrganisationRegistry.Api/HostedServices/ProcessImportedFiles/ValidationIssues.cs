@@ -5,8 +5,6 @@ using System.Collections.Immutable;
 
 public class ValidationIssues
 {
-    public ImmutableList<ValidationIssue> Items { get; }
-
     public ValidationIssues()
     {
         Items = ImmutableList<ValidationIssue>.Empty;
@@ -17,9 +15,14 @@ public class ValidationIssues
         Items = items;
     }
 
-    public ValidationIssues Add(ValidationIssue? maybeIssue)
-        => maybeIssue is { } issue ? new(Items.Add(issue)) : this;
+    public ImmutableList<ValidationIssue> Items { get; }
 
-    public ValidationIssues AddRange(IEnumerable<ValidationIssue> issue)
-        => new(Items.AddRange(issue));
+    public ValidationIssues Add(ValidationIssue? maybeIssue)
+        => maybeIssue is { } issue ? new ValidationIssues(Items.Add(issue)) : this;
+
+    public ValidationIssues AddRange(IEnumerable<ValidationIssue> issues)
+        => new(Items.AddRange(issues));
+
+    public ValidationIssues AddRange(ValidationIssues issues)
+        => new(Items.AddRange(issues.Items));
 }

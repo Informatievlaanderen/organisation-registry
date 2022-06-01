@@ -1,6 +1,5 @@
 ﻿namespace OrganisationRegistry.Api.HostedServices;
 
-using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using ProcessImportedFiles;
 using SqlServer;
 using SqlServer.Import.Organisations;
+using SqlServer.Infrastructure;
 
 public class ProcessImportedFilesService : BackgroundService
 {
@@ -31,7 +31,6 @@ public class ProcessImportedFilesService : BackgroundService
         while (!cancellationToken.IsCancellationRequested)
         {
             await ProcessNextFile(_contextFactory, _dateTimeProvider, _logger, cancellationToken);
-            await Task.Delay(15000, cancellationToken); // todo: move to config
         }
     }
 
@@ -43,15 +42,13 @@ public class ProcessImportedFilesService : BackgroundService
     {
         var context = contextFactory.Create();
 
-        var maybeImportFile = await context.ImportOrganisationsStatusList
-            .Where(listItem => listItem.Status == ImportProcessStatus.Processing)
-            .OrderBy(listItem => listItem.UploadedAt)
-            .FirstOrDefaultAsync(cancellationToken);
+        if (await MaybeGetNextImportFile(context, cancellationToken) is not { } importFile)
+        {
+            await Task.Delay(15000, cancellationToken); // todo: move to config
+            return;
+        }
 
-        if (maybeImportFile is not { } importFile)
-            return; // Task.Wait?
-
-        var (validationOk, serializedOutput, csvOutput) = ParseImportFile(importFile);
+        var (validationOk, serializedOutput, csvOutput) = ImportFileParser.Parse(importFile);
         if (validationOk)
         {
             // TODO Process Records
@@ -63,21 +60,11 @@ public class ProcessImportedFilesService : BackgroundService
         await context.SaveChangesAsync(cancellationToken);
     }
 
-    public static (bool validationOk, string serializedOutput, CsvOutputResult? csvOutput) ParseImportFile(
-        ImportOrganisationsStatusListItem importFile)
-    {
-        var parsedRecords = ImportFileParser.Parse(importFile.FileContent).ToList();
-        var validationIssues = RecordValidator.Validate(parsedRecords).ToList();
-        if (validationIssues.Any())
-        {
-            var csvIssueOutput = CsvOutputResult.WithIssues(validationIssues);
-            return (false, OutputSerializer.Serialize(csvIssueOutput), csvIssueOutput);
-        }
-
-        var csvRecordOutput =
-            CsvOutputResult.WithRecords(parsedRecords.Select(r => OutputRecord.From(r.OutputRecord!)));
-        return (true, importFile.FileContent, csvRecordOutput);
-    }
+    private static async Task<ImportOrganisationsStatusListItem?> MaybeGetNextImportFile(OrganisationRegistryContext context, CancellationToken cancellationToken)
+        => await context.ImportOrganisationsStatusList
+            .Where(listItem => listItem.Status == ImportProcessStatus.Processing)
+            .OrderBy(listItem => listItem.UploadedAt)
+            .FirstOrDefaultAsync(cancellationToken);
 
     private static void UpdateImportFile(
         IDateTimeProvider dateTimeProvider,
@@ -92,23 +79,5 @@ public class ProcessImportedFilesService : BackgroundService
         importFile.Status = success ? ImportProcessStatus.Processed : ImportProcessStatus.Failed;
         importFile.LastProcessedAt = dateTimeProvider.UtcNow;
         importFile.OutputFileContent = outputFileContent;
-    }
-
-    private static bool GetSuccess()
-    {
-        var rnd = new Random();
-
-        var value = rnd.NextInt64(0, 10);
-
-        return value != 5;
-    }
-
-    private static async Task DoDelay(CancellationToken cancellationToken)
-    {
-        var rnd = new Random();
-
-        var delay = (int)rnd.NextInt64(1, 60);
-
-        await Task.Delay(delay * 1000, cancellationToken);
     }
 }

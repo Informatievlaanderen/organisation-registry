@@ -6,11 +6,28 @@ using System.IO;
 using System.Linq;
 using CsvHelper;
 using CsvHelper.Configuration;
+using SqlServer.Import.Organisations;
 using Validators;
 
 public static class ImportFileParser
 {
-    public static IEnumerable<ParsedRecord> Parse(string importFileFileContent)
+    public static (bool validationOk, string serializedOutput, CsvOutputResult? csvOutput) Parse(
+        ImportOrganisationsStatusListItem importFile)
+    {
+        var parsedRecords = ParseContent(importFile.FileContent).ToList();
+        var validationIssues = FileValidator.Validate(parsedRecords);
+        if (validationIssues.Items.Any())
+        {
+            var csvIssueOutput = CsvOutputResult.WithIssues(validationIssues);
+            return (false, OutputSerializer.Serialize(csvIssueOutput), csvIssueOutput);
+        }
+
+        var csvRecordOutput =
+            CsvOutputResult.WithRecords(parsedRecords.Select(r => OutputRecord.From(r.OutputRecord!)));
+        return (true, importFile.FileContent, csvRecordOutput);
+    }
+
+    public static IEnumerable<ParsedRecord> ParseContent(string importFileFileContent)
     {
         using var reader = new StringReader(importFileFileContent);
         using var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture) { Delimiter = ";" });
@@ -31,7 +48,7 @@ public static class ImportFileParser
     private static ParsedRecord GetImportRecord(IReaderRow csv, IReadOnlyDictionary<string, int> csvHeaderRecord)
     {
         if (InvalidColumnCount.Validate(csv) is { } invalidColumnCount)
-            return new ParsedRecord(csv.Parser.Row, null, new[] { invalidColumnCount });
+            return new ParsedRecord(csv.Parser.Row, OutputRecord: null, new[] { invalidColumnCount });
 
         var reference = MaybeGetField(csv, csvHeaderRecord, ColumnNames.Reference);
         var name = MaybeGetField(csv, csvHeaderRecord, ColumnNames.Name);
