@@ -1,20 +1,19 @@
-﻿namespace OrganisationRegistry.Configuration.Database
+﻿namespace OrganisationRegistry.Configuration.Database;
+
+using System.Reflection;
+using Microsoft.EntityFrameworkCore;
+
+public class ConfigurationContext : DbContext
 {
-    using System.Reflection;
-    using Microsoft.EntityFrameworkCore;
+    public DbSet<ConfigurationValue> Configuration { get; set; } = null!;
 
-    public class ConfigurationContext : DbContext
+    // This needs to be DbContextOptions<T> for Autofac!
+    public ConfigurationContext(DbContextOptions<ConfigurationContext> options) : base(options)
     {
-        public DbSet<ConfigurationValue> Configuration { get; set; } = null!;
+    }
 
-        // This needs to be DbContextOptions<T> for Autofac!
-        public ConfigurationContext(DbContextOptions<ConfigurationContext> options) : base(options)
-        {
-        }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.AddEntityConfigurationsFromAssembly(GetType().GetTypeInfo().Assembly);
-        }
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.AddEntityConfigurationsFromAssembly(GetType().GetTypeInfo().Assembly);
     }
 }

@@ -1,25 +1,24 @@
-namespace OrganisationRegistry.Configuration.Database.Configuration
+namespace OrganisationRegistry.Configuration.Database.Configuration;
+
+using System;
+using Be.Vlaanderen.Basisregisters.Converters.Timestamp;
+using Newtonsoft.Json;
+using Infrastructure.Configuration;
+
+public class ConfigurationDatabaseConfiguration
 {
-    using System;
-    using Be.Vlaanderen.Basisregisters.Converters.Timestamp;
-    using Newtonsoft.Json;
-    using Infrastructure.Configuration;
+    public static string Section = "Configuration";
 
-    public class ConfigurationDatabaseConfiguration
+    [JsonConverter(typeof(TimestampConverter))]
+    public DateTime Created => DateTime.Now;
+
+    public string ConnectionString { get; set; } = null!;
+
+    public ConfigurationDatabaseConfiguration Obfuscate()
     {
-        public static string Section = "Configuration";
-
-        [JsonConverter(typeof(TimestampConverter))]
-        public DateTime Created => DateTime.Now;
-
-        public string ConnectionString { get; set; } = null!;
-
-        public ConfigurationDatabaseConfiguration Obfuscate()
+        return new ConfigurationDatabaseConfiguration
         {
-            return new ConfigurationDatabaseConfiguration
-            {
-                ConnectionString = Obfuscator.ObfuscateConnectionString(ConnectionString),
-            };
-        }
+            ConnectionString = Obfuscator.ObfuscateConnectionString(ConnectionString),
+        };
     }
 }
