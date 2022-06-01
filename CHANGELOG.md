@@ -1,3 +1,12 @@
+# [1.195.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.194.9...v1.195.0) (2022-06-01)
+
+
+### Features
+
+* or-1039 validate content ([7d9835a](https://github.com/informatievlaanderen/organisation-registry/commit/7d9835a8b5cdf71785e7c95c598979a80d090c00))
+* or-1039 validate field counts + trim values ([a5db5d1](https://github.com/informatievlaanderen/organisation-registry/commit/a5db5d1c9b4bc3f157369f27e0c82dbaed38ee4a))
+* or-1039 validate required fields ([e56f14a](https://github.com/informatievlaanderen/organisation-registry/commit/e56f14a0e206fb342cff62ef6f7d57fdf2556b0d))
+
 ## [1.194.9](https://github.com/informatievlaanderen/organisation-registry/compare/v1.194.8...v1.194.9) (2022-05-31)
 
 ## [1.194.8](https://github.com/informatievlaanderen/organisation-registry/compare/v1.194.7...v1.194.8) (2022-05-30)
