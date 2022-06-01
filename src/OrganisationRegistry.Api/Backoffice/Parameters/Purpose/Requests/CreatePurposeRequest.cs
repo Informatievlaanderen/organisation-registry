@@ -1,41 +1,40 @@
-namespace OrganisationRegistry.Api.Backoffice.Parameters.Purpose.Requests
+namespace OrganisationRegistry.Api.Backoffice.Parameters.Purpose.Requests;
+
+using System;
+using FluentValidation;
+using OrganisationRegistry.Purpose;
+using OrganisationRegistry.Purpose.Commands;
+using SqlServer.Purpose;
+
+public class CreatePurposeRequest
 {
-    using System;
-    using FluentValidation;
-    using OrganisationRegistry.Purpose;
-    using OrganisationRegistry.Purpose.Commands;
-    using SqlServer.Purpose;
+    public Guid Id { get; set; }
 
-    public class CreatePurposeRequest
+    public string Name { get; set; } = null!;
+}
+
+public class CreatePurposeRequestValidator : AbstractValidator<CreatePurposeRequest>
+{
+    public CreatePurposeRequestValidator()
     {
-        public Guid Id { get; set; }
+        RuleFor(x => x.Id)
+            .NotEmpty()
+            .WithMessage("Id is required.");
 
-        public string Name { get; set; } = null!;
+        RuleFor(x => x.Name)
+            .NotEmpty()
+            .WithMessage("Name is required.");
+
+        RuleFor(x => x.Name)
+            .Length(0, PurposeListConfiguration.NameLength)
+            .WithMessage($"Name cannot be longer than {PurposeListConfiguration.NameLength}.");
     }
+}
 
-    public class CreatePurposeRequestValidator : AbstractValidator<CreatePurposeRequest>
-    {
-        public CreatePurposeRequestValidator()
-        {
-            RuleFor(x => x.Id)
-                .NotEmpty()
-                .WithMessage("Id is required.");
-
-            RuleFor(x => x.Name)
-                .NotEmpty()
-                .WithMessage("Name is required.");
-
-            RuleFor(x => x.Name)
-                .Length(0, PurposeListConfiguration.NameLength)
-                .WithMessage($"Name cannot be longer than {PurposeListConfiguration.NameLength}.");
-        }
-    }
-
-    public static class CreatePurposeRequestMapping
-    {
-        public static CreatePurpose Map(CreatePurposeRequest message)
-            => new(
-                new PurposeId(message.Id),
-                new PurposeName(message.Name));
-    }
+public static class CreatePurposeRequestMapping
+{
+    public static CreatePurpose Map(CreatePurposeRequest message)
+        => new(
+            new PurposeId(message.Id),
+            new PurposeName(message.Name));
 }

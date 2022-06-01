@@ -1,45 +1,44 @@
-namespace OrganisationRegistry.Api.Infrastructure.Security
+namespace OrganisationRegistry.Api.Infrastructure.Security;
+
+using System.Security.Claims;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using OrganisationRegistry.Infrastructure.Authorization;
+
+public class ConfigureClaimsPrincipalSelectorMiddleware
 {
-    using System.Security.Claims;
-    using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Http;
-    using OrganisationRegistry.Infrastructure.Authorization;
+    private readonly RequestDelegate _next;
 
-    public class ConfigureClaimsPrincipalSelectorMiddleware
+    public ConfigureClaimsPrincipalSelectorMiddleware(RequestDelegate next)
     {
-        private readonly RequestDelegate _next;
+        _next = next;
+    }
 
-        public ConfigureClaimsPrincipalSelectorMiddleware(RequestDelegate next)
+    public Task Invoke(HttpContext context, IHttpContextAccessor httpContextAccessor)
+    {
+        ClaimsPrincipal.ClaimsPrincipalSelector = () =>
         {
-            _next = next;
-        }
-
-        public Task Invoke(HttpContext context, IHttpContextAccessor httpContextAccessor)
-        {
-            ClaimsPrincipal.ClaimsPrincipalSelector = () =>
+            try
             {
-                try
-                {
-                    var authInfo = httpContextAccessor.HttpContext?.GetAuthenticateInfo();
-                    if (authInfo?.Principal == null)
-                        return null!;
-                    if (!(authInfo.Principal.Identity is ClaimsIdentity user))
-                        return authInfo.Principal;
-
-                    var ip = context.Request.HttpContext.Connection.RemoteIpAddress;
-
-                    if (!user.HasClaim(x => x.Type == AcmIdmConstants.Claims.Ip))
-                        user.AddClaim(new Claim(AcmIdmConstants.Claims.Ip, ip?.ToString() ?? "Unknown", ClaimValueTypes.String));
-
-                    return authInfo.Principal;
-                }
-                catch
-                {
+                var authInfo = httpContextAccessor.HttpContext?.GetAuthenticateInfo();
+                if (authInfo?.Principal == null)
                     return null!;
-                }
-            };
+                if (!(authInfo.Principal.Identity is ClaimsIdentity user))
+                    return authInfo.Principal;
 
-            return _next(context);
-        }
+                var ip = context.Request.HttpContext.Connection.RemoteIpAddress;
+
+                if (!user.HasClaim(x => x.Type == AcmIdmConstants.Claims.Ip))
+                    user.AddClaim(new Claim(AcmIdmConstants.Claims.Ip, ip?.ToString() ?? "Unknown", ClaimValueTypes.String));
+
+                return authInfo.Principal;
+            }
+            catch
+            {
+                return null!;
+            }
+        };
+
+        return _next(context);
     }
 }

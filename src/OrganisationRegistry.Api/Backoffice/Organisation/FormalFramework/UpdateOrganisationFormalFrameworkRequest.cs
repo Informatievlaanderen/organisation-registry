@@ -1,69 +1,68 @@
-﻿namespace OrganisationRegistry.Api.Backoffice.Organisation.FormalFramework
+﻿namespace OrganisationRegistry.Api.Backoffice.Organisation.FormalFramework;
+
+using System;
+using FluentValidation;
+using OrganisationRegistry.FormalFramework;
+using OrganisationRegistry.Organisation;
+
+public class UpdateOrganisationFormalFrameworkInternalRequest
 {
-    using System;
-    using FluentValidation;
-    using OrganisationRegistry.FormalFramework;
-    using OrganisationRegistry.Organisation;
+    public Guid OrganisationId { get; set; }
+    public UpdateOrganisationFormalFrameworkRequest Body { get; }
 
-    public class UpdateOrganisationFormalFrameworkInternalRequest
+    public UpdateOrganisationFormalFrameworkInternalRequest(Guid organisationId, UpdateOrganisationFormalFrameworkRequest message)
     {
-        public Guid OrganisationId { get; set; }
-        public UpdateOrganisationFormalFrameworkRequest Body { get; }
-
-        public UpdateOrganisationFormalFrameworkInternalRequest(Guid organisationId, UpdateOrganisationFormalFrameworkRequest message)
-        {
-            OrganisationId = organisationId;
-            Body = message;
-        }
+        OrganisationId = organisationId;
+        Body = message;
     }
+}
 
-    public class UpdateOrganisationFormalFrameworkRequest
+public class UpdateOrganisationFormalFrameworkRequest
+{
+    public Guid OrganisationFormalFrameworkId { get; set; }
+    public Guid FormalFrameworkId { get; set; }
+    public Guid ParentOrganisationId { get; set; }
+    public DateTime? ValidFrom { get; set; }
+    public DateTime? ValidTo { get; set; }
+}
+
+public class UpdateOrganisationFormalFrameworkInternalRequestValidator : AbstractValidator<UpdateOrganisationFormalFrameworkInternalRequest>
+{
+    public UpdateOrganisationFormalFrameworkInternalRequestValidator()
     {
-        public Guid OrganisationFormalFrameworkId { get; set; }
-        public Guid FormalFrameworkId { get; set; }
-        public Guid ParentOrganisationId { get; set; }
-        public DateTime? ValidFrom { get; set; }
-        public DateTime? ValidTo { get; set; }
+        RuleFor(x => x.OrganisationId)
+            .NotEmpty()
+            .WithMessage("Id is required.");
+
+        RuleFor(x => x.Body.FormalFrameworkId)
+            .NotEmpty()
+            .WithMessage("FormalFramework Organisation Id is required.");
+
+        RuleFor(x => x.Body.ParentOrganisationId)
+            .NotEmpty()
+            .WithMessage("Parent Organisation Id is required.");
+
+        RuleFor(x => x.Body.ValidTo)
+            .GreaterThanOrEqualTo(x => x.Body.ValidFrom)
+            .When(x => x.Body.ValidFrom.HasValue)
+            .WithMessage("Valid To must be greater than or equal to Valid From.");
+
+        RuleFor(x => x.OrganisationId)
+            .NotEmpty()
+            .WithMessage("Organisation Id is required.");
+
+        // TODO: Validate if org id is valid
     }
+}
 
-    public class UpdateOrganisationFormalFrameworkInternalRequestValidator : AbstractValidator<UpdateOrganisationFormalFrameworkInternalRequest>
-    {
-        public UpdateOrganisationFormalFrameworkInternalRequestValidator()
-        {
-            RuleFor(x => x.OrganisationId)
-                .NotEmpty()
-                .WithMessage("Id is required.");
-
-            RuleFor(x => x.Body.FormalFrameworkId)
-                .NotEmpty()
-                .WithMessage("FormalFramework Organisation Id is required.");
-
-            RuleFor(x => x.Body.ParentOrganisationId)
-                .NotEmpty()
-                .WithMessage("Parent Organisation Id is required.");
-
-            RuleFor(x => x.Body.ValidTo)
-                .GreaterThanOrEqualTo(x => x.Body.ValidFrom)
-                .When(x => x.Body.ValidFrom.HasValue)
-                .WithMessage("Valid To must be greater than or equal to Valid From.");
-
-            RuleFor(x => x.OrganisationId)
-                .NotEmpty()
-                .WithMessage("Organisation Id is required.");
-
-            // TODO: Validate if org id is valid
-        }
-    }
-
-    public static class UpdateOrganisationFormalFrameworkRequestMapping
-    {
-        public static UpdateOrganisationFormalFramework Map(UpdateOrganisationFormalFrameworkInternalRequest message)
-            => new(
-                message.Body.OrganisationFormalFrameworkId,
-                new FormalFrameworkId(message.Body.FormalFrameworkId),
-                new OrganisationId(message.OrganisationId),
-                new OrganisationId(message.Body.ParentOrganisationId),
-                new ValidFrom(message.Body.ValidFrom),
-                new ValidTo(message.Body.ValidTo));
-    }
+public static class UpdateOrganisationFormalFrameworkRequestMapping
+{
+    public static UpdateOrganisationFormalFramework Map(UpdateOrganisationFormalFrameworkInternalRequest message)
+        => new(
+            message.Body.OrganisationFormalFrameworkId,
+            new FormalFrameworkId(message.Body.FormalFrameworkId),
+            new OrganisationId(message.OrganisationId),
+            new OrganisationId(message.Body.ParentOrganisationId),
+            new ValidFrom(message.Body.ValidFrom),
+            new ValidTo(message.Body.ValidTo));
 }

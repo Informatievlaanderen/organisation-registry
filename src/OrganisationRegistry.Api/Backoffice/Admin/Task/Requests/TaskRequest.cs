@@ -1,11 +1,10 @@
-namespace OrganisationRegistry.Api.Backoffice.Admin.Task.Requests
+namespace OrganisationRegistry.Api.Backoffice.Admin.Task.Requests;
+
+using System;
+
+public class TaskRequest
 {
-    using System;
+    public TaskType Type { get; set; }
 
-    public class TaskRequest
-    {
-        public TaskType Type { get; set; }
-
-        public string[] Params { get; set; } = Array.Empty<string>();
-    }
+    public string[] Params { get; set; } = Array.Empty<string>();
 }

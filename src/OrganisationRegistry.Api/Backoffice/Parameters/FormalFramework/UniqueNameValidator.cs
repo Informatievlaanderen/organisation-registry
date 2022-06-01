@@ -1,35 +1,34 @@
-namespace OrganisationRegistry.Api.Backoffice.Parameters.FormalFramework
+namespace OrganisationRegistry.Api.Backoffice.Parameters.FormalFramework;
+
+using System;
+using System.Linq;
+using OrganisationRegistry.FormalFramework;
+using SqlServer.Infrastructure;
+
+public class UniqueNameValidator : IUniqueNameWithinTypeValidator<FormalFramework>
 {
-    using System;
-    using System.Linq;
-    using OrganisationRegistry.FormalFramework;
-    using SqlServer.Infrastructure;
+    private readonly OrganisationRegistryContext _context;
 
-    public class UniqueNameValidator : IUniqueNameWithinTypeValidator<FormalFramework>
+    public UniqueNameValidator(OrganisationRegistryContext context)
     {
-        private readonly OrganisationRegistryContext _context;
+        _context = context;
+    }
 
-        public UniqueNameValidator(OrganisationRegistryContext context)
-        {
-            _context = context;
-        }
-
-        public bool IsNameTaken(string name, Guid categoryId)
-        {
-            return
-                _context.FormalFrameworkList
-                    .AsQueryable()
-                    .Where(item => item.FormalFrameworkCategoryId == categoryId)
-                    .Any(item => item.Name == name);
-        }
-
-        public bool IsNameTaken(Guid id, string name, Guid categoryId)
-        {
-            return _context.FormalFrameworkList
+    public bool IsNameTaken(string name, Guid categoryId)
+    {
+        return
+            _context.FormalFrameworkList
                 .AsQueryable()
-                .Where(item => item.Id != id)
                 .Where(item => item.FormalFrameworkCategoryId == categoryId)
                 .Any(item => item.Name == name);
-        }
+    }
+
+    public bool IsNameTaken(Guid id, string name, Guid categoryId)
+    {
+        return _context.FormalFrameworkList
+            .AsQueryable()
+            .Where(item => item.Id != id)
+            .Where(item => item.FormalFrameworkCategoryId == categoryId)
+            .Any(item => item.Name == name);
     }
 }

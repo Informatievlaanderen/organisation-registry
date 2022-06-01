@@ -1,217 +1,216 @@
-namespace OrganisationRegistry.Api.Backoffice.Report.CapacityPersonReport
+namespace OrganisationRegistry.Api.Backoffice.Report.CapacityPersonReport;
+
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Threading.Tasks;
+using Infrastructure;
+using OrganisationRegistry.Api.Infrastructure.Search.Sorting;
+using ElasticSearch.Organisations;
+using OrganisationRegistry.Infrastructure.Configuration;
+using Osc;
+using SortOrder = Infrastructure.Search.Sorting.SortOrder;
+
+public class CapacityPerson
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using Infrastructure;
-    using OrganisationRegistry.Api.Infrastructure.Search.Sorting;
-    using ElasticSearch.Organisations;
-    using OrganisationRegistry.Infrastructure.Configuration;
-    using Osc;
-    using SortOrder = Infrastructure.Search.Sorting.SortOrder;
+    [ExcludeFromCsv]
+    public Guid? ParentOrganisationId { get; set; }
 
-    public class CapacityPerson
+    [DisplayName("Moeder entiteit")]
+    public string? ParentOrganisationName { get; set; }
+
+    [ExcludeFromCsv]
+    public Guid OrganisationId { get; set; }
+
+    [DisplayName("Entiteit")]
+    public string OrganisationName { get; set; }
+
+    [DisplayName("Entiteit ovo-nummer")]
+    public string OvoNumber { get; set; }
+
+    [DisplayName("Korte naam")]
+    public string? OrganisationShortName { get; set; }
+
+    [ExcludeFromCsv]
+    public Guid? PersonId { get; set; }
+
+    [DisplayName("Persoon")]
+    public string PersonName { get; set; }
+
+    [ExcludeFromCsv]
+    public Guid? FunctionTypeId { get; set; }
+
+    [DisplayName("Functie")]
+    public string FunctionTypeName { get; set; }
+
+    [DisplayName("Email")]
+    public string Email { get; set; }
+
+    [DisplayName("Locatie")]
+    public string Location { get; set; }
+
+    [DisplayName("Telefoon")]
+    public string Phone { get; set; }
+
+    [DisplayName("Gsm")]
+    public string CellPhone { get; set; }
+
+    [DisplayName("Beleidsdomein")]
+    public string PolicyDomain { get; set; }
+
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name="document"></param>
+    /// <param name="capacity"></param>
+    /// <param name="params"></param>
+    public CapacityPerson(
+        OrganisationDocument document,
+        OrganisationDocument.OrganisationCapacity capacity,
+        ApiConfigurationSection @params)
     {
-        [ExcludeFromCsv]
-        public Guid? ParentOrganisationId { get; set; }
+        var parent = document
+            .Parents
+            .FirstOrDefault(
+                x => x.Validity.IsInfinite() ||
+                     (!x.Validity.Start.HasValue || x.Validity.Start.Value <= DateTime.Now) &&
+                     (!x.Validity.End.HasValue || x.Validity.End.Value >= DateTime.Now));
 
-        [DisplayName("Moeder entiteit")]
-        public string? ParentOrganisationName { get; set; }
+        ParentOrganisationId = parent?.ParentOrganisationId;
+        ParentOrganisationName = parent?.ParentOrganisationName;
 
-        [ExcludeFromCsv]
-        public Guid OrganisationId { get; set; }
+        OrganisationId = document.Id;
+        OrganisationName = document.Name;
+        OvoNumber = document.OvoNumber;
+        OrganisationShortName = document.ShortName;
 
-        [DisplayName("Entiteit")]
-        public string OrganisationName { get; set; }
+        PersonId = capacity.PersonId;
+        PersonName = capacity.PersonName;
+        FunctionTypeId = capacity.FunctionId;
+        FunctionTypeName = capacity.FunctionName;
 
-        [DisplayName("Entiteit ovo-nummer")]
-        public string OvoNumber { get; set; }
+        Location = document
+            .Locations
+            .FirstOrDefault(x =>
+                x.IsMainLocation && (x.Validity.IsInfinite() ||
+                                     (!x.Validity.Start.HasValue || x.Validity.Start.Value <= DateTime.Now) &&
+                                     (!x.Validity.End.HasValue || x.Validity.End.Value >= DateTime.Now)))?
+            .FormattedAddress ?? string.Empty;
 
-        [DisplayName("Korte naam")]
-        public string? OrganisationShortName { get; set; }
+        Email = capacity.Contacts.FirstOrDefault(x => x.ContactTypeId == @params.EmailContactTypeId)?.Value ?? string.Empty;
+        Phone = capacity.Contacts.FirstOrDefault(x => x.ContactTypeId == @params.PhoneContactTypeId)?.Value ?? string.Empty;
+        CellPhone = capacity.Contacts.FirstOrDefault(x => x.ContactTypeId == @params.CellPhoneContactTypeId)?.Value ?? string.Empty;
 
-        [ExcludeFromCsv]
-        public Guid? PersonId { get; set; }
+        PolicyDomain = document.OrganisationClassifications
+            .FirstOrDefault(x => x.OrganisationClassificationTypeId == @params.PolicyDomainClassificationTypeId)
+            ?.OrganisationClassificationName ?? string.Empty;
+    }
 
-        [DisplayName("Persoon")]
-        public string PersonName { get; set; }
+    /// <summary>
+    /// Scroll through all <see cref="OrganisationDocument"/> with a matching (and active) <see cref="Capacity"/>, and return entire dataset
+    /// </summary>
+    /// <param name="client"></param>
+    /// <param name="capacityId"></param>
+    /// <param name="scrollSize"></param>
+    /// <param name="scrollTimeout"></param>
+    /// <returns></returns>
+    public static async Task<IList<OrganisationDocument>> Search(
+        IOpenSearchClient client,
+        Guid capacityId,
+        int scrollSize,
+        string scrollTimeout)
+    {
+        var results = new List<OrganisationDocument>();
 
-        [ExcludeFromCsv]
-        public Guid? FunctionTypeId { get; set; }
+        var scroll = await client.SearchAsync<OrganisationDocument>(s => s
+            .From(0)
+            .Size(scrollSize)
+            .Query(q => q
+                .Match(match => match
+                    .Field(f => f.Capacities.Single().CapacityId)
+                    .Query(capacityId.ToString())))
+            .Scroll(scrollTimeout));
 
-        [DisplayName("Functie")]
-        public string FunctionTypeName { get; set; }
+        if (scroll.IsValid)
+            results.AddRange(scroll.Documents);
 
-        [DisplayName("Email")]
-        public string Email { get; set; }
-
-        [DisplayName("Locatie")]
-        public string Location { get; set; }
-
-        [DisplayName("Telefoon")]
-        public string Phone { get; set; }
-
-        [DisplayName("Gsm")]
-        public string CellPhone { get; set; }
-
-        [DisplayName("Beleidsdomein")]
-        public string PolicyDomain { get; set; }
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="document"></param>
-        /// <param name="capacity"></param>
-        /// <param name="params"></param>
-        public CapacityPerson(
-            OrganisationDocument document,
-            OrganisationDocument.OrganisationCapacity capacity,
-            ApiConfigurationSection @params)
+        while (scroll.Documents.Any())
         {
-            var parent = document
-                .Parents
-                .FirstOrDefault(
-                    x => x.Validity.IsInfinite() ||
-                         (!x.Validity.Start.HasValue || x.Validity.Start.Value <= DateTime.Now) &&
-                         (!x.Validity.End.HasValue || x.Validity.End.Value >= DateTime.Now));
-
-            ParentOrganisationId = parent?.ParentOrganisationId;
-            ParentOrganisationName = parent?.ParentOrganisationName;
-
-            OrganisationId = document.Id;
-            OrganisationName = document.Name;
-            OvoNumber = document.OvoNumber;
-            OrganisationShortName = document.ShortName;
-
-            PersonId = capacity.PersonId;
-            PersonName = capacity.PersonName;
-            FunctionTypeId = capacity.FunctionId;
-            FunctionTypeName = capacity.FunctionName;
-
-            Location = document
-                .Locations
-                .FirstOrDefault(x =>
-                    x.IsMainLocation && (x.Validity.IsInfinite() ||
-                                         (!x.Validity.Start.HasValue || x.Validity.Start.Value <= DateTime.Now) &&
-                                         (!x.Validity.End.HasValue || x.Validity.End.Value >= DateTime.Now)))?
-                .FormattedAddress ?? string.Empty;
-
-            Email = capacity.Contacts.FirstOrDefault(x => x.ContactTypeId == @params.EmailContactTypeId)?.Value ?? string.Empty;
-            Phone = capacity.Contacts.FirstOrDefault(x => x.ContactTypeId == @params.PhoneContactTypeId)?.Value ?? string.Empty;
-            CellPhone = capacity.Contacts.FirstOrDefault(x => x.ContactTypeId == @params.CellPhoneContactTypeId)?.Value ?? string.Empty;
-
-            PolicyDomain = document.OrganisationClassifications
-                .FirstOrDefault(x => x.OrganisationClassificationTypeId == @params.PolicyDomainClassificationTypeId)
-                ?.OrganisationClassificationName ?? string.Empty;
-        }
-
-        /// <summary>
-        /// Scroll through all <see cref="OrganisationDocument"/> with a matching (and active) <see cref="Capacity"/>, and return entire dataset
-        /// </summary>
-        /// <param name="client"></param>
-        /// <param name="capacityId"></param>
-        /// <param name="scrollSize"></param>
-        /// <param name="scrollTimeout"></param>
-        /// <returns></returns>
-        public static async Task<IList<OrganisationDocument>> Search(
-            IOpenSearchClient client,
-            Guid capacityId,
-            int scrollSize,
-            string scrollTimeout)
-        {
-            var results = new List<OrganisationDocument>();
-
-            var scroll = await client.SearchAsync<OrganisationDocument>(s => s
-                .From(0)
-                .Size(scrollSize)
-                .Query(q => q
-                    .Match(match => match
-                        .Field(f => f.Capacities.Single().CapacityId)
-                        .Query(capacityId.ToString())))
-                .Scroll(scrollTimeout));
+            scroll = await client.ScrollAsync<OrganisationDocument>(scrollTimeout, scroll.ScrollId);
 
             if (scroll.IsValid)
                 results.AddRange(scroll.Documents);
-
-            while (scroll.Documents.Any())
-            {
-                scroll = await client.ScrollAsync<OrganisationDocument>(scrollTimeout, scroll.ScrollId);
-
-                if (scroll.IsValid)
-                    results.AddRange(scroll.Documents);
-            }
-
-            return results;
         }
 
-        /// <summary>
-        /// Map each <see cref="OrganisationDocument"/> to a <see cref="CapacityPerson"/>
-        /// </summary>
-        /// <param name="documents"></param>
-        /// <param name="capacityId"></param>
-        /// <param name="params"></param>
-        /// <returns></returns>
-        public static IEnumerable<CapacityPerson> Map(
-            IEnumerable<OrganisationDocument> documents,
-            Guid capacityId,
-            ApiConfigurationSection @params)
+        return results;
+    }
+
+    /// <summary>
+    /// Map each <see cref="OrganisationDocument"/> to a <see cref="CapacityPerson"/>
+    /// </summary>
+    /// <param name="documents"></param>
+    /// <param name="capacityId"></param>
+    /// <param name="params"></param>
+    /// <returns></returns>
+    public static IEnumerable<CapacityPerson> Map(
+        IEnumerable<OrganisationDocument> documents,
+        Guid capacityId,
+        ApiConfigurationSection @params)
+    {
+        var capacityPersons = new List<CapacityPerson>();
+
+        foreach (var document in documents)
         {
-            var capacityPersons = new List<CapacityPerson>();
+            var capacities = document
+                .Capacities
+                .Where(x =>
+                    x.CapacityId == capacityId &&
+                    (x.Validity.IsInfinite() ||
+                     (!x.Validity.Start.HasValue || x.Validity.Start.Value <= DateTime.Now) &&
+                     (!x.Validity.End.HasValue || x.Validity.End.Value >= DateTime.Now)))
+                .ToList();
 
-            foreach (var document in documents)
+            if (!capacities.Any())
+                continue;
+
+            foreach (var capacity in capacities)
             {
-                var capacities = document
-                    .Capacities
-                    .Where(x =>
-                        x.CapacityId == capacityId &&
-                        (x.Validity.IsInfinite() ||
-                         (!x.Validity.Start.HasValue || x.Validity.Start.Value <= DateTime.Now) &&
-                         (!x.Validity.End.HasValue || x.Validity.End.Value >= DateTime.Now)))
-                    .ToList();
-
-                if (!capacities.Any())
+                if (!capacity.PersonId.HasValue)
                     continue;
 
-                foreach (var capacity in capacities)
-                {
-                    if (!capacity.PersonId.HasValue)
-                        continue;
-
-                    capacityPersons.Add(new CapacityPerson(document, capacity, @params));
-                }
+                capacityPersons.Add(new CapacityPerson(document, capacity, @params));
             }
-
-            return capacityPersons;
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="results"></param>
-        /// <param name="sortingHeader"></param>
-        /// <returns></returns>
-        public static IOrderedEnumerable<CapacityPerson> Sort(
-            IEnumerable<CapacityPerson> results,
-            SortingHeader sortingHeader)
-        {
-            if (!sortingHeader.ShouldSort)
-                return results.OrderBy(x => x.OrganisationName);
+        return capacityPersons;
+    }
 
-            switch (sortingHeader.SortBy.ToLowerInvariant())
-            {
-                case "personname":
-                    return sortingHeader.SortOrder == SortOrder.Ascending
-                        ? results.OrderBy(x => x.PersonName)
-                        : results.OrderByDescending(x => x.PersonName);
-                case "organisationname":
-                    return sortingHeader.SortOrder == SortOrder.Ascending
-                        ? results.OrderBy(x => x.OrganisationName)
-                        : results.OrderByDescending(x => x.OrganisationName);
-                default:
-                    return results.OrderBy(x => x.OrganisationName);
-            }
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name="results"></param>
+    /// <param name="sortingHeader"></param>
+    /// <returns></returns>
+    public static IOrderedEnumerable<CapacityPerson> Sort(
+        IEnumerable<CapacityPerson> results,
+        SortingHeader sortingHeader)
+    {
+        if (!sortingHeader.ShouldSort)
+            return results.OrderBy(x => x.OrganisationName);
+
+        switch (sortingHeader.SortBy.ToLowerInvariant())
+        {
+            case "personname":
+                return sortingHeader.SortOrder == SortOrder.Ascending
+                    ? results.OrderBy(x => x.PersonName)
+                    : results.OrderByDescending(x => x.PersonName);
+            case "organisationname":
+                return sortingHeader.SortOrder == SortOrder.Ascending
+                    ? results.OrderBy(x => x.OrganisationName)
+                    : results.OrderByDescending(x => x.OrganisationName);
+            default:
+                return results.OrderBy(x => x.OrganisationName);
         }
     }
 }

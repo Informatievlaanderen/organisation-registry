@@ -1,21 +1,20 @@
-namespace OrganisationRegistry.Api.Infrastructure
+namespace OrganisationRegistry.Api.Infrastructure;
+
+using System;
+using Newtonsoft.Json;
+
+public class NoConverter : JsonConverter
 {
-    using System;
-    using Newtonsoft.Json;
+    public override bool CanConvert(Type objectType)
+        => false;
 
-    public class NoConverter : JsonConverter
-    {
-        public override bool CanConvert(Type objectType)
-            => false;
+    public override bool CanRead { get { return false; } }
 
-        public override bool CanRead { get { return false; } }
+    public override object ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
+        => throw new NotImplementedException();
 
-        public override object ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
-            => throw new NotImplementedException();
+    public override bool CanWrite { get { return false; } }
 
-        public override bool CanWrite { get { return false; } }
-
-        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
-            => throw new NotImplementedException();
-    }
+    public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
+        => throw new NotImplementedException();
 }

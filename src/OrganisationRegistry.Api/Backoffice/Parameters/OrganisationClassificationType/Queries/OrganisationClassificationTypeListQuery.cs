@@ -1,69 +1,68 @@
-namespace OrganisationRegistry.Api.Backoffice.Parameters.OrganisationClassificationType.Queries
+namespace OrganisationRegistry.Api.Backoffice.Parameters.OrganisationClassificationType.Queries;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
+using Infrastructure.Search;
+using Infrastructure.Search.Filtering;
+using Infrastructure.Search.Sorting;
+using OrganisationRegistry.Infrastructure.Configuration;
+using SqlServer.Infrastructure;
+using SqlServer.OrganisationClassificationType;
+
+public class OrganisationClassificationTypeListQuery: Query<OrganisationClassificationTypeListItem, OrganisationClassificationTypeListItem, OrganisationClassificationTypeListItemResult>
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Linq.Expressions;
-    using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
-    using Infrastructure.Search;
-    using Infrastructure.Search.Filtering;
-    using Infrastructure.Search.Sorting;
-    using OrganisationRegistry.Infrastructure.Configuration;
-    using SqlServer.Infrastructure;
-    using SqlServer.OrganisationClassificationType;
+    private readonly OrganisationRegistryContext _context;
+    private readonly IOrganisationRegistryConfiguration _configuration;
 
-    public class OrganisationClassificationTypeListQuery: Query<OrganisationClassificationTypeListItem, OrganisationClassificationTypeListItem, OrganisationClassificationTypeListItemResult>
+    protected override ISorting Sorting => new OrganisationClassificationTypeListSorting();
+
+    public OrganisationClassificationTypeListQuery(OrganisationRegistryContext context, IOrganisationRegistryConfiguration configuration)
     {
-        private readonly OrganisationRegistryContext _context;
-        private readonly IOrganisationRegistryConfiguration _configuration;
+        _context = context;
+        _configuration = configuration;
+    }
 
-        protected override ISorting Sorting => new OrganisationClassificationTypeListSorting();
-
-        public OrganisationClassificationTypeListQuery(OrganisationRegistryContext context, IOrganisationRegistryConfiguration configuration)
+    protected override
+        Expression<Func<OrganisationClassificationTypeListItem, OrganisationClassificationTypeListItemResult>>
+        Transformation =>
+        x => new OrganisationClassificationTypeListItemResult
         {
-            _context = context;
-            _configuration = configuration;
-        }
+            Id = x.Id,
+            Name = x.Name,
+            UserPermitted = x.Id != _configuration.Kbo.KboV2LegalFormOrganisationClassificationTypeId,
+        };
 
-        protected override
-            Expression<Func<OrganisationClassificationTypeListItem, OrganisationClassificationTypeListItemResult>>
-            Transformation =>
-            x => new OrganisationClassificationTypeListItemResult
-            {
-                Id = x.Id,
-                Name = x.Name,
-                UserPermitted = x.Id != _configuration.Kbo.KboV2LegalFormOrganisationClassificationTypeId,
-            };
+    protected override IQueryable<OrganisationClassificationTypeListItem> Filter(FilteringHeader<OrganisationClassificationTypeListItem> filtering)
+    {
+        var organisationClassificationTypes = _context.OrganisationClassificationTypeList.AsQueryable();
 
-        protected override IQueryable<OrganisationClassificationTypeListItem> Filter(FilteringHeader<OrganisationClassificationTypeListItem> filtering)
-        {
-            var organisationClassificationTypes = _context.OrganisationClassificationTypeList.AsQueryable();
-
-            if (filtering.Filter is not { } filter)
-                return organisationClassificationTypes;
-
-            if (!filter.Name.IsNullOrWhiteSpace())
-                organisationClassificationTypes = organisationClassificationTypes.Where(x => x.Name.Contains(filter.Name));
-
+        if (filtering.Filter is not { } filter)
             return organisationClassificationTypes;
-        }
 
-        private class OrganisationClassificationTypeListSorting : ISorting
-        {
-            public IEnumerable<string> SortableFields { get; } = new[]
-            {
-                nameof(OrganisationClassificationTypeListItem.Name)
-            };
+        if (!filter.Name.IsNullOrWhiteSpace())
+            organisationClassificationTypes = organisationClassificationTypes.Where(x => x.Name.Contains(filter.Name));
 
-            public SortingHeader DefaultSortingHeader { get; } =
-                new SortingHeader(nameof(OrganisationClassificationTypeListItem.Name), SortOrder.Ascending);
-        }
+        return organisationClassificationTypes;
     }
 
-    public class OrganisationClassificationTypeListItemResult
+    private class OrganisationClassificationTypeListSorting : ISorting
     {
-        public Guid Id { get; set; }
-        public string Name { get; set; } = null!;
-        public bool UserPermitted { get; set; }
+        public IEnumerable<string> SortableFields { get; } = new[]
+        {
+            nameof(OrganisationClassificationTypeListItem.Name)
+        };
+
+        public SortingHeader DefaultSortingHeader { get; } =
+            new SortingHeader(nameof(OrganisationClassificationTypeListItem.Name), SortOrder.Ascending);
     }
+}
+
+public class OrganisationClassificationTypeListItemResult
+{
+    public Guid Id { get; set; }
+    public string Name { get; set; } = null!;
+    public bool UserPermitted { get; set; }
 }

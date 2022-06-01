@@ -1,16 +1,15 @@
-namespace OrganisationRegistry.Api.Infrastructure.Search.Pagination
+namespace OrganisationRegistry.Api.Infrastructure.Search.Pagination;
+
+using System.Linq;
+
+public class PagedQueryable<T>
 {
-    using System.Linq;
+    public IQueryable<T> Items { get; private set; }
+    public PaginationInfo PaginationInfo { get; private set; }
 
-    public class PagedQueryable<T>
+    public PagedQueryable(IQueryable<T> items, PaginationInfo paginationInfo)
     {
-        public IQueryable<T> Items { get; private set; }
-        public PaginationInfo PaginationInfo { get; private set; }
-
-        public PagedQueryable(IQueryable<T> items, PaginationInfo paginationInfo)
-        {
-            Items = items;
-            PaginationInfo = paginationInfo;
-        }
+        Items = items;
+        PaginationInfo = paginationInfo;
     }
 }

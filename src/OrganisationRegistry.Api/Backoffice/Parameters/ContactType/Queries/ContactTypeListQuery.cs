@@ -1,47 +1,46 @@
-namespace OrganisationRegistry.Api.Backoffice.Parameters.ContactType.Queries
+namespace OrganisationRegistry.Api.Backoffice.Parameters.ContactType.Queries;
+
+using System.Collections.Generic;
+using System.Linq;
+using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
+using Infrastructure.Search;
+using Infrastructure.Search.Filtering;
+using Infrastructure.Search.Sorting;
+using SqlServer.ContactType;
+using SqlServer.Infrastructure;
+
+public class ContactTypeListQuery: Query<ContactTypeListItem>
 {
-    using System.Collections.Generic;
-    using System.Linq;
-    using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
-    using Infrastructure.Search;
-    using Infrastructure.Search.Filtering;
-    using Infrastructure.Search.Sorting;
-    using SqlServer.ContactType;
-    using SqlServer.Infrastructure;
+    private readonly OrganisationRegistryContext _context;
 
-    public class ContactTypeListQuery: Query<ContactTypeListItem>
+    protected override ISorting Sorting => new ContactTypeListSorting();
+
+    public ContactTypeListQuery(OrganisationRegistryContext context)
     {
-        private readonly OrganisationRegistryContext _context;
+        _context = context;
+    }
 
-        protected override ISorting Sorting => new ContactTypeListSorting();
+    protected override IQueryable<ContactTypeListItem> Filter(FilteringHeader<ContactTypeListItem> filtering)
+    {
+        var contactTypes = _context.ContactTypeList.AsQueryable();
 
-        public ContactTypeListQuery(OrganisationRegistryContext context)
-        {
-            _context = context;
-        }
-
-        protected override IQueryable<ContactTypeListItem> Filter(FilteringHeader<ContactTypeListItem> filtering)
-        {
-            var contactTypes = _context.ContactTypeList.AsQueryable();
-
-            if (filtering.Filter is not { } filter)
-                return contactTypes;
-
-            if (!filter.Name.IsNullOrWhiteSpace())
-                contactTypes = contactTypes.Where(x => x.Name.Contains(filter.Name));
-
+        if (filtering.Filter is not { } filter)
             return contactTypes;
-        }
 
-        private class ContactTypeListSorting : ISorting
+        if (!filter.Name.IsNullOrWhiteSpace())
+            contactTypes = contactTypes.Where(x => x.Name.Contains(filter.Name));
+
+        return contactTypes;
+    }
+
+    private class ContactTypeListSorting : ISorting
+    {
+        public IEnumerable<string> SortableFields { get; } = new[]
         {
-            public IEnumerable<string> SortableFields { get; } = new[]
-            {
-                nameof(ContactTypeListItem.Name)
-            };
+            nameof(ContactTypeListItem.Name)
+        };
 
-            public SortingHeader DefaultSortingHeader { get; } =
-                new SortingHeader(nameof(ContactTypeListItem.Name), SortOrder.Ascending);
-        }
+        public SortingHeader DefaultSortingHeader { get; } =
+            new SortingHeader(nameof(ContactTypeListItem.Name), SortOrder.Ascending);
     }
 }

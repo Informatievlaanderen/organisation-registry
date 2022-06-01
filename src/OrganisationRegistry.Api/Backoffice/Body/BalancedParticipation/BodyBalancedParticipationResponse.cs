@@ -1,23 +1,22 @@
-namespace OrganisationRegistry.Api.Backoffice.Body.BalancedParticipation
+namespace OrganisationRegistry.Api.Backoffice.Body.BalancedParticipation;
+
+using System;
+using OrganisationRegistry.SqlServer.Body;
+
+public class BodyBalancedParticipationResponse
 {
-    using System;
-    using OrganisationRegistry.SqlServer.Body;
+    public Guid Id { get; }
 
-    public class BodyBalancedParticipationResponse
+    public bool? Obligatory { get; }
+    public string? ExtraRemark { get; }
+    public string? ExceptionMeasure { get; }
+
+    public BodyBalancedParticipationResponse(BodyDetail projectionItem)
     {
-        public Guid Id { get; }
+        Id = projectionItem.Id;
 
-        public bool? Obligatory { get; }
-        public string? ExtraRemark { get; }
-        public string? ExceptionMeasure { get; }
-
-        public BodyBalancedParticipationResponse(BodyDetail projectionItem)
-        {
-            Id = projectionItem.Id;
-
-            Obligatory = projectionItem.IsBalancedParticipationObligatory;
-            ExtraRemark = projectionItem.BalancedParticipationExtraRemark;
-            ExceptionMeasure = projectionItem.BalancedParticipationExceptionMeasure;
-        }
+        Obligatory = projectionItem.IsBalancedParticipationObligatory;
+        ExtraRemark = projectionItem.BalancedParticipationExtraRemark;
+        ExceptionMeasure = projectionItem.BalancedParticipationExceptionMeasure;
     }
 }
