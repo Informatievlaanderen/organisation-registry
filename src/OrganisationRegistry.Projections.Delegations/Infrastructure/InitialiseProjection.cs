@@ -1,29 +1,28 @@
-﻿namespace OrganisationRegistry.Projections.Delegations.Infrastructure
+﻿namespace OrganisationRegistry.Projections.Delegations.Infrastructure;
+
+using System;
+using OrganisationRegistry.Infrastructure.Events;
+using OrganisationRegistry.Infrastructure.Messages;
+
+public class InitialiseProjection : IEvent<InitialiseProjection>
 {
-    using System;
-    using OrganisationRegistry.Infrastructure.Events;
-    using OrganisationRegistry.Infrastructure.Messages;
+    protected Guid Id { get; set; }
 
-    public class InitialiseProjection : IEvent<InitialiseProjection>
+    public int Version { get; set; }
+
+    public DateTimeOffset Timestamp { get; set; }
+
+    Guid IMessage.Id
     {
-        protected Guid Id { get; set; }
+        get => Id;
+        set => Id = value;
+    }
 
-        public int Version { get; set; }
+    public string ProjectionName { get; }
 
-        public DateTimeOffset Timestamp { get; set; }
-
-        Guid IMessage.Id
-        {
-            get => Id;
-            set => Id = value;
-        }
-
-        public string ProjectionName { get; }
-
-        public InitialiseProjection(string projectionName)
-        {
-            Id = Guid.NewGuid();
-            ProjectionName = projectionName;
-        }
+    public InitialiseProjection(string projectionName)
+    {
+        Id = Guid.NewGuid();
+        ProjectionName = projectionName;
     }
 }
