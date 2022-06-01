@@ -21,7 +21,7 @@ public class OutputRecord
     public DateOnly? OperationalValidity_Start { get; private init; }
 
     public static OutputRecord From(DeserializedRecord record)
-        => new(record.Reference.Value!,record.Name.Value!)
+        => new(record.Reference.Value!, record.Name.Value!)
         {
             Parent = record.Parent.Value,
             Article = Article.Parse(record.Article.Value),

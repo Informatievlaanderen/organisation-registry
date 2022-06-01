@@ -7,38 +7,25 @@ using Validators;
 
 public static class RecordValidator
 {
-    public static IEnumerable<ValidationIssue> Validate(IEnumerable<ParsedRecord> parsedRecords)
-    {
-        var validationIssues = new ValidationIssues();
-        validationIssues = parsedRecords.Aggregate(validationIssues, (current, parsedRecord) => current.AddRange(ValidateParsedRecord(parsedRecord)));
-        return validationIssues.Items;
-    }
+    public static ValidationIssues Validate(IEnumerable<ParsedRecord> parsedRecords)
+        => parsedRecords
+            .Aggregate(new ValidationIssues(), (aggregated, record) => aggregated.AddRange(ValidateParsedRecord(record)));
 
     private static IEnumerable<ValidationIssue> ValidateParsedRecord(ParsedRecord parsedRecord)
     {
         if (parsedRecord.ValidationIssues.Any())
-        {
             return parsedRecord.ValidationIssues;
-        }
 
         if (parsedRecord.OutputRecord is not { } outputRecord)
-        {
-            //TODO add validation issue to result
-            throw new Exception();
-        }
+            throw new NullReferenceException("parsedRecord.OutputRecord should never be null");
 
         return ValidateRecord(parsedRecord.RowNumber, outputRecord).Items;
     }
 
     private static ValidationIssues ValidateRecord(int rowNumber, DeserializedRecord record)
-    {
-        var validationIssues = new ValidationIssues();
-
-        validationIssues = validationIssues.Add(MissingRequiredFields.Validate(rowNumber, record));
-        validationIssues = validationIssues.Add(InvalidArticle.Validate(rowNumber, record));
-        validationIssues = validationIssues.AddRange(InvalidDateFormat.Validate(rowNumber, record));
-        validationIssues = validationIssues.Add(InvalidReference.Validate(rowNumber, record));
-
-        return validationIssues;
-    }
+        => new ValidationIssues()
+            .Add(MissingRequiredFields.Validate(rowNumber, record))
+            .Add(InvalidArticle.Validate(rowNumber, record))
+            .AddRange(InvalidDateFormat.Validate(rowNumber, record))
+            .Add(InvalidReference.Validate(rowNumber, record));
 }

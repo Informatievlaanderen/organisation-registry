@@ -17,5 +17,5 @@ public static class InvalidReference
     }
 
     public static string FormatMessage(string reference)
-        => $"De waarde {reference} is ongeldig voor column 'reference' (Waarde mag niet beginnen met 'OVO').";
+        => $"De waarde {reference} is ongeldig voor kolom 'reference' (Waarde mag niet beginnen met 'OVO').";
 }

@@ -27,5 +27,5 @@ public static class InvalidDateFormat
     }
 
     public static string FormatMessage(string fieldValue, string columnName)
-        => $"De waarde '{fieldValue}' is ongeldig voor column '{columnName}' (Vereist formaat: 'YYYY-MM-DD').";
+        => $"De waarde '{fieldValue}' is ongeldig voor kolom '{columnName}' (Vereist formaat: 'YYYY-MM-DD').";
 }

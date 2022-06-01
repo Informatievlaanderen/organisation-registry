@@ -17,7 +17,7 @@ public class Field
         => !string.IsNullOrEmpty(Value);
 
     public static Field NoValue(string columnName)
-        => new(columnName,null, false);
+        => new(columnName, value: null, shouldHaveValue: false);
 
     public void Deconstruct(out string? value, out bool shouldHaveValue)
     {
@@ -26,5 +26,8 @@ public class Field
     }
 
     public static Field FromValue(string columnName, string? value)
-        => new(columnName, value, true);
+        => new(columnName, value, shouldHaveValue: true);
+
+    public override string ToString()
+        => Value ?? string.Empty;
 }

@@ -1,7 +1,6 @@
 ﻿namespace OrganisationRegistry.UnitTests.Import.Organisations;
 
 using System;
-using Api.HostedServices;
 using Api.HostedServices.ProcessImportedFiles;
 using FluentAssertions;
 using SqlServer.Import.Organisations;
@@ -21,7 +20,7 @@ public class WhenImportingACsvFile
             UploadedAt = DateTimeOffset.Now
         };
 
-        return ProcessImportedFilesService.ParseImportFile(importOrganisationStatusListItem).serializedOutput;
+        return ImportFileParser.Parse(importOrganisationStatusListItem).serializedOutput;
     }
 
     [Fact]

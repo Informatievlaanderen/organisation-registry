@@ -6,4 +6,3 @@ public record ParsedRecord(
     int RowNumber,
     DeserializedRecord? OutputRecord,
     IEnumerable<ValidationIssue> ValidationIssues);
-
