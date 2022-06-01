@@ -1,119 +1,118 @@
-﻿namespace OrganisationRegistry.Api.Backoffice.Organisation.Capacity
+﻿namespace OrganisationRegistry.Api.Backoffice.Organisation.Capacity;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using Infrastructure.Search;
+using Infrastructure.Search.Filtering;
+using Infrastructure.Search.Sorting;
+using SqlServer.Infrastructure;
+using SqlServer.Organisation;
+
+public class OrganisationCapacityListQueryResult
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Linq.Expressions;
-    using Infrastructure.Search;
-    using Infrastructure.Search.Filtering;
-    using Infrastructure.Search.Sorting;
-    using SqlServer.Infrastructure;
-    using SqlServer.Organisation;
+    public Guid OrganisationCapacityId { get; }
+    public string CapacityName { get; }
+    public string? FunctionName { get; }
+    public Guid? PersonId { get; }
+    public string? PersonName { get; }
+    public DateTime? ValidFrom { get; }
+    public DateTime? ValidTo { get; }
 
-    public class OrganisationCapacityListQueryResult
+    public bool IsActive { get; }
+
+    public bool IsEditable { get; }
+
+    public OrganisationCapacityListQueryResult(
+        Guid organisationCapacityId,
+        Guid capacityId,
+        string capacityName,
+        string? functionName,
+        Guid? personId,
+        string? personName,
+        DateTime? validFrom,
+        DateTime? validTo,
+        Func<Guid, bool> isAuthorizedForCapacity)
     {
-        public Guid OrganisationCapacityId { get; }
-        public string CapacityName { get; }
-        public string? FunctionName { get; }
-        public Guid? PersonId { get; }
-        public string? PersonName { get; }
-        public DateTime? ValidFrom { get; }
-        public DateTime? ValidTo { get; }
+        OrganisationCapacityId = organisationCapacityId;
+        CapacityName = capacityName;
+        FunctionName = functionName;
+        PersonId = personId;
+        PersonName = personName;
+        ValidFrom = validFrom;
+        ValidTo = validTo;
 
-        public bool IsActive { get; }
+        IsActive = new Period(new ValidFrom(validFrom), new ValidTo(validTo)).OverlapsWith(DateTime.Today);
 
-        public bool IsEditable { get; }
+        IsEditable = isAuthorizedForCapacity(capacityId);
+    }
+}
 
-        public OrganisationCapacityListQueryResult(
-            Guid organisationCapacityId,
-            Guid capacityId,
-            string capacityName,
-            string? functionName,
-            Guid? personId,
-            string? personName,
-            DateTime? validFrom,
-            DateTime? validTo,
-            Func<Guid, bool> isAuthorizedForCapacity)
-        {
-            OrganisationCapacityId = organisationCapacityId;
-            CapacityName = capacityName;
-            FunctionName = functionName;
-            PersonId = personId;
-            PersonName = personName;
-            ValidFrom = validFrom;
-            ValidTo = validTo;
+public class OrganisationCapacityListQuery : Query<OrganisationCapacityListItem, OrganisationCapacityListItemFilter, OrganisationCapacityListQueryResult>
+{
+    private readonly OrganisationRegistryContext _context;
+    private readonly Guid _organisationId;
+    private readonly Func<Guid, bool> _isAuthorizedForCapacity;
 
-            IsActive = new Period(new ValidFrom(validFrom), new ValidTo(validTo)).OverlapsWith(DateTime.Today);
+    protected override ISorting Sorting => new OrganisationCapacityListSorting();
 
-            IsEditable = isAuthorizedForCapacity(capacityId);
-        }
+    protected override Expression<Func<OrganisationCapacityListItem, OrganisationCapacityListQueryResult>> Transformation =>
+        x => new OrganisationCapacityListQueryResult(
+            x.OrganisationCapacityId,
+            x.CapacityId,
+            x.CapacityName,
+            x.FunctionName,
+            x.PersonId,
+            x.PersonName,
+            x.ValidFrom,
+            x.ValidTo,
+            _isAuthorizedForCapacity);
+
+    public OrganisationCapacityListQuery(
+        OrganisationRegistryContext context,
+        Guid organisationId,
+        Func<Guid, bool> isAuthorizedForCapacity)
+    {
+        _context = context;
+        _organisationId = organisationId;
+        _isAuthorizedForCapacity = isAuthorizedForCapacity;
     }
 
-    public class OrganisationCapacityListQuery : Query<OrganisationCapacityListItem, OrganisationCapacityListItemFilter, OrganisationCapacityListQueryResult>
+    protected override IQueryable<OrganisationCapacityListItem> Filter(FilteringHeader<OrganisationCapacityListItemFilter> filtering)
     {
-        private readonly OrganisationRegistryContext _context;
-        private readonly Guid _organisationId;
-        private readonly Func<Guid, bool> _isAuthorizedForCapacity;
+        var organisationCapacities = _context.OrganisationCapacityList
+            .AsQueryable()
+            .Where(x => x.OrganisationId == _organisationId).AsQueryable();
 
-        protected override ISorting Sorting => new OrganisationCapacityListSorting();
-
-        protected override Expression<Func<OrganisationCapacityListItem, OrganisationCapacityListQueryResult>> Transformation =>
-            x => new OrganisationCapacityListQueryResult(
-                x.OrganisationCapacityId,
-                x.CapacityId,
-                x.CapacityName,
-                x.FunctionName,
-                x.PersonId,
-                x.PersonName,
-                x.ValidFrom,
-                x.ValidTo,
-                _isAuthorizedForCapacity);
-
-        public OrganisationCapacityListQuery(
-            OrganisationRegistryContext context,
-            Guid organisationId,
-            Func<Guid, bool> isAuthorizedForCapacity)
-        {
-            _context = context;
-            _organisationId = organisationId;
-            _isAuthorizedForCapacity = isAuthorizedForCapacity;
-        }
-
-        protected override IQueryable<OrganisationCapacityListItem> Filter(FilteringHeader<OrganisationCapacityListItemFilter> filtering)
-        {
-            var organisationCapacities = _context.OrganisationCapacityList
-                .AsQueryable()
-                .Where(x => x.OrganisationId == _organisationId).AsQueryable();
-
-            if (filtering.Filter is not { } filter)
-                return organisationCapacities;
-
-            if (filter.ActiveOnly)
-                organisationCapacities = organisationCapacities.Where(x =>
-                    (!x.ValidFrom.HasValue || x.ValidFrom <= DateTime.Today) &&
-                    (!x.ValidTo.HasValue || x.ValidTo >= DateTime.Today));
-
+        if (filtering.Filter is not { } filter)
             return organisationCapacities;
-        }
 
-        private class OrganisationCapacityListSorting : ISorting
-        {
-            public IEnumerable<string> SortableFields { get; } = new[]
-            {
-                nameof(OrganisationCapacityListItem.CapacityName),
-                nameof(OrganisationCapacityListItem.PersonName),
-                nameof(OrganisationCapacityListItem.FunctionName),
-                nameof(OrganisationCapacityListItem.ValidFrom),
-                nameof(OrganisationCapacityListItem.ValidTo)
-            };
+        if (filter.ActiveOnly)
+            organisationCapacities = organisationCapacities.Where(x =>
+                (!x.ValidFrom.HasValue || x.ValidFrom <= DateTime.Today) &&
+                (!x.ValidTo.HasValue || x.ValidTo >= DateTime.Today));
 
-            public SortingHeader DefaultSortingHeader { get; } =
-                new SortingHeader(nameof(OrganisationCapacityListItem.CapacityName), SortOrder.Ascending);
-        }
+        return organisationCapacities;
     }
 
-    public class OrganisationCapacityListItemFilter
+    private class OrganisationCapacityListSorting : ISorting
     {
-        public bool ActiveOnly { get; set; }
+        public IEnumerable<string> SortableFields { get; } = new[]
+        {
+            nameof(OrganisationCapacityListItem.CapacityName),
+            nameof(OrganisationCapacityListItem.PersonName),
+            nameof(OrganisationCapacityListItem.FunctionName),
+            nameof(OrganisationCapacityListItem.ValidFrom),
+            nameof(OrganisationCapacityListItem.ValidTo)
+        };
+
+        public SortingHeader DefaultSortingHeader { get; } =
+            new SortingHeader(nameof(OrganisationCapacityListItem.CapacityName), SortOrder.Ascending);
     }
+}
+
+public class OrganisationCapacityListItemFilter
+{
+    public bool ActiveOnly { get; set; }
 }

@@ -1,113 +1,112 @@
-﻿namespace OrganisationRegistry.Api.Backoffice.Organisation.Regulation
+﻿namespace OrganisationRegistry.Api.Backoffice.Organisation.Regulation;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using Infrastructure.Search;
+using Infrastructure.Search.Filtering;
+using Infrastructure.Search.Sorting;
+using SqlServer.Infrastructure;
+using SqlServer.Organisation;
+
+public class OrganisationRegulationListQueryResult
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Linq.Expressions;
-    using Infrastructure.Search;
-    using Infrastructure.Search.Filtering;
-    using Infrastructure.Search.Sorting;
-    using SqlServer.Infrastructure;
-    using SqlServer.Organisation;
+    public Guid OrganisationRegulationId { get; set; }
+    public string? RegulationThemeName { get; set; }
+    public string? RegulationSubThemeName { get; }
+    public string? Name { get; set; }
+    public DateTime? ValidFrom { get; set; }
 
-    public class OrganisationRegulationListQueryResult
+    public DateTime? ValidTo { get; set; }
+
+    public bool IsActive { get; }
+
+    public bool IsEditable { get; }
+
+    public OrganisationRegulationListQueryResult(
+        Guid organisationRegulationId,
+        string? regulationThemeName,
+        string? regulationSubThemeName,
+        string? name,
+        DateTime? validFrom,
+        DateTime? validTo,
+        Func<bool> isAuthorizedForRegulation)
     {
-        public Guid OrganisationRegulationId { get; set; }
-        public string? RegulationThemeName { get; set; }
-        public string? RegulationSubThemeName { get; }
-        public string? Name { get; set; }
-        public DateTime? ValidFrom { get; set; }
+        OrganisationRegulationId = organisationRegulationId;
+        RegulationThemeName = regulationThemeName;
+        RegulationSubThemeName = regulationSubThemeName;
+        ValidFrom = validFrom;
+        ValidTo = validTo;
+        Name = name;
 
-        public DateTime? ValidTo { get; set; }
+        IsActive = new Period(new ValidFrom(validFrom), new ValidTo(validTo)).OverlapsWith(DateTime.Today);
 
-        public bool IsActive { get; }
+        IsEditable = isAuthorizedForRegulation();
+    }
+}
 
-        public bool IsEditable { get; }
+public class OrganisationRegulationListQuery : Query<OrganisationRegulationListItem, OrganisationRegulationListItemFilter, OrganisationRegulationListQueryResult>
+{
+    private readonly OrganisationRegistryContext _context;
+    private readonly Guid _organisationId;
+    private readonly Func<bool> _isAuthorizedForRegulation;
 
-        public OrganisationRegulationListQueryResult(
-            Guid organisationRegulationId,
-            string? regulationThemeName,
-            string? regulationSubThemeName,
-            string? name,
-            DateTime? validFrom,
-            DateTime? validTo,
-            Func<bool> isAuthorizedForRegulation)
-        {
-            OrganisationRegulationId = organisationRegulationId;
-            RegulationThemeName = regulationThemeName;
-            RegulationSubThemeName = regulationSubThemeName;
-            ValidFrom = validFrom;
-            ValidTo = validTo;
-            Name = name;
+    protected override ISorting Sorting => new OrganisationRegulationListSorting();
 
-            IsActive = new Period(new ValidFrom(validFrom), new ValidTo(validTo)).OverlapsWith(DateTime.Today);
+    protected override Expression<Func<OrganisationRegulationListItem, OrganisationRegulationListQueryResult>> Transformation =>
+        x => new OrganisationRegulationListQueryResult(
+            x.OrganisationRegulationId,
+            x.RegulationThemeName,
+            x.RegulationSubThemeName,
+            x.Name,
+            x.ValidFrom,
+            x.ValidTo,
+            _isAuthorizedForRegulation);
 
-            IsEditable = isAuthorizedForRegulation();
-        }
+    public OrganisationRegulationListQuery(
+        OrganisationRegistryContext context,
+        Guid organisationId,
+        Func<bool> isAuthorizedForRegulation)
+    {
+        _context = context;
+        _organisationId = organisationId;
+        _isAuthorizedForRegulation = isAuthorizedForRegulation;
     }
 
-    public class OrganisationRegulationListQuery : Query<OrganisationRegulationListItem, OrganisationRegulationListItemFilter, OrganisationRegulationListQueryResult>
+    protected override IQueryable<OrganisationRegulationListItem> Filter(FilteringHeader<OrganisationRegulationListItemFilter> filtering)
     {
-        private readonly OrganisationRegistryContext _context;
-        private readonly Guid _organisationId;
-        private readonly Func<bool> _isAuthorizedForRegulation;
+        var organisationRegulations = _context.OrganisationRegulationList
+            .AsQueryable()
+            .Where(x => x.OrganisationId == _organisationId).AsQueryable();
 
-        protected override ISorting Sorting => new OrganisationRegulationListSorting();
-
-        protected override Expression<Func<OrganisationRegulationListItem, OrganisationRegulationListQueryResult>> Transformation =>
-            x => new OrganisationRegulationListQueryResult(
-                x.OrganisationRegulationId,
-                x.RegulationThemeName,
-                x.RegulationSubThemeName,
-                x.Name,
-                x.ValidFrom,
-                x.ValidTo,
-                _isAuthorizedForRegulation);
-
-        public OrganisationRegulationListQuery(
-            OrganisationRegistryContext context,
-            Guid organisationId,
-            Func<bool> isAuthorizedForRegulation)
-        {
-            _context = context;
-            _organisationId = organisationId;
-            _isAuthorizedForRegulation = isAuthorizedForRegulation;
-        }
-
-        protected override IQueryable<OrganisationRegulationListItem> Filter(FilteringHeader<OrganisationRegulationListItemFilter> filtering)
-        {
-            var organisationRegulations = _context.OrganisationRegulationList
-                .AsQueryable()
-                .Where(x => x.OrganisationId == _organisationId).AsQueryable();
-
-            if (filtering.Filter is not { } filter)
-                return organisationRegulations;
-
-            if (filter.ActiveOnly)
-                organisationRegulations = organisationRegulations.Where(x =>
-                    (!x.ValidFrom.HasValue || x.ValidFrom <= DateTime.Today) &&
-                    (!x.ValidTo.HasValue || x.ValidTo >= DateTime.Today));
-
+        if (filtering.Filter is not { } filter)
             return organisationRegulations;
-        }
 
-        private class OrganisationRegulationListSorting : ISorting
-        {
-            public IEnumerable<string> SortableFields { get; } = new[]
-            {
-                nameof(OrganisationRegulationListItem.RegulationThemeName),
-                nameof(OrganisationRegulationListItem.Url),
-                nameof(OrganisationRegulationListItem.ValidFrom),
-                nameof(OrganisationRegulationListItem.ValidTo)
-            };
+        if (filter.ActiveOnly)
+            organisationRegulations = organisationRegulations.Where(x =>
+                (!x.ValidFrom.HasValue || x.ValidFrom <= DateTime.Today) &&
+                (!x.ValidTo.HasValue || x.ValidTo >= DateTime.Today));
 
-            public SortingHeader DefaultSortingHeader { get; } =
-                new SortingHeader(nameof(OrganisationRegulationListItem.RegulationThemeName), SortOrder.Ascending);
-        }
+        return organisationRegulations;
     }
 
-    public class OrganisationRegulationListItemFilter
+    private class OrganisationRegulationListSorting : ISorting
     {
-        public bool ActiveOnly { get; set; }
+        public IEnumerable<string> SortableFields { get; } = new[]
+        {
+            nameof(OrganisationRegulationListItem.RegulationThemeName),
+            nameof(OrganisationRegulationListItem.Url),
+            nameof(OrganisationRegulationListItem.ValidFrom),
+            nameof(OrganisationRegulationListItem.ValidTo)
+        };
+
+        public SortingHeader DefaultSortingHeader { get; } =
+            new SortingHeader(nameof(OrganisationRegulationListItem.RegulationThemeName), SortOrder.Ascending);
     }
+}
+
+public class OrganisationRegulationListItemFilter
+{
+    public bool ActiveOnly { get; set; }
 }

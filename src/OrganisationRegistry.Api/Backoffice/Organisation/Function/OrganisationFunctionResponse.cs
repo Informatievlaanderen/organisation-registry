@@ -1,43 +1,42 @@
-﻿namespace OrganisationRegistry.Api.Backoffice.Organisation.Function
+﻿namespace OrganisationRegistry.Api.Backoffice.Organisation.Function;
+
+using System;
+using System.Collections.Generic;
+using Newtonsoft.Json;
+using OrganisationRegistry.SqlServer.Organisation;
+
+public class OrganisationFunctionResponse
 {
-    using System;
-    using System.Collections.Generic;
-    using Newtonsoft.Json;
-    using OrganisationRegistry.SqlServer.Organisation;
+    public Guid OrganisationFunctionId { get; set; }
+    public Guid OrganisationId { get; set; }
 
-    public class OrganisationFunctionResponse
+    public Guid FunctionId { get; set; }
+    public string FunctionName { get; set; }
+
+    public Guid PersonId { get; set; }
+    public string PersonName { get; set; }
+
+    public Dictionary<Guid, string>? Contacts { get; set; }
+
+    public DateTime? ValidFrom { get; set; }
+    public DateTime? ValidTo { get; set; }
+
+    public OrganisationFunctionResponse(OrganisationFunctionListItem organisationFunction)
     {
-        public Guid OrganisationFunctionId { get; set; }
-        public Guid OrganisationId { get; set; }
+        OrganisationFunctionId = organisationFunction.OrganisationFunctionId;
+        OrganisationId = organisationFunction.OrganisationId;
 
-        public Guid FunctionId { get; set; }
-        public string FunctionName { get; set; }
+        FunctionId = organisationFunction.FunctionId;
+        FunctionName = organisationFunction.FunctionName;
 
-        public Guid PersonId { get; set; }
-        public string PersonName { get; set; }
+        PersonId = organisationFunction.PersonId;
+        PersonName = organisationFunction.PersonName;
 
-        public Dictionary<Guid, string>? Contacts { get; set; }
+        Contacts = string.IsNullOrWhiteSpace(organisationFunction.ContactsJson)
+            ? null
+            : JsonConvert.DeserializeObject<Dictionary<Guid, string>>(organisationFunction.ContactsJson);
 
-        public DateTime? ValidFrom { get; set; }
-        public DateTime? ValidTo { get; set; }
-
-        public OrganisationFunctionResponse(OrganisationFunctionListItem organisationFunction)
-        {
-            OrganisationFunctionId = organisationFunction.OrganisationFunctionId;
-            OrganisationId = organisationFunction.OrganisationId;
-
-            FunctionId = organisationFunction.FunctionId;
-            FunctionName = organisationFunction.FunctionName;
-
-            PersonId = organisationFunction.PersonId;
-            PersonName = organisationFunction.PersonName;
-
-            Contacts = string.IsNullOrWhiteSpace(organisationFunction.ContactsJson)
-                ? null
-                : JsonConvert.DeserializeObject<Dictionary<Guid, string>>(organisationFunction.ContactsJson);
-
-            ValidFrom = organisationFunction.ValidFrom;
-            ValidTo = organisationFunction.ValidTo;
-        }
+        ValidFrom = organisationFunction.ValidFrom;
+        ValidTo = organisationFunction.ValidTo;
     }
 }

@@ -1,43 +1,42 @@
-namespace OrganisationRegistry.Api.Backoffice.Parameters.BodyClassificationType.Requests
+namespace OrganisationRegistry.Api.Backoffice.Parameters.BodyClassificationType.Requests;
+
+using System;
+using FluentValidation;
+using OrganisationRegistry.BodyClassificationType;
+using OrganisationRegistry.BodyClassificationType.Commands;
+using SqlServer.BodyClassificationType;
+
+public class CreateBodyClassificationTypeRequest
 {
-    using System;
-    using FluentValidation;
-    using OrganisationRegistry.BodyClassificationType;
-    using OrganisationRegistry.BodyClassificationType.Commands;
-    using SqlServer.BodyClassificationType;
+    public Guid Id { get; set; }
 
-    public class CreateBodyClassificationTypeRequest
+    public string Name { get; set; } = null!;
+}
+
+public class CreateBodyClassificationTypeRequestValidator : AbstractValidator<CreateBodyClassificationTypeRequest>
+{
+    public CreateBodyClassificationTypeRequestValidator()
     {
-        public Guid Id { get; set; }
+        RuleFor(x => x.Id)
+            .NotEmpty()
+            .WithMessage("Id is required.");
 
-        public string Name { get; set; } = null!;
+        RuleFor(x => x.Name)
+            .NotEmpty()
+            .WithMessage("Name is required.");
+
+        RuleFor(x => x.Name)
+            .Length(0, BodyClassificationTypeListConfiguration.NameLength)
+            .WithMessage($"Name cannot be longer than {BodyClassificationTypeListConfiguration.NameLength}.");
     }
+}
 
-    public class CreateBodyClassificationTypeRequestValidator : AbstractValidator<CreateBodyClassificationTypeRequest>
+public static class CreateBodyClassificationTypeRequestMapping
+{
+    public static CreateBodyClassificationType Map(CreateBodyClassificationTypeRequest message)
     {
-        public CreateBodyClassificationTypeRequestValidator()
-        {
-            RuleFor(x => x.Id)
-                .NotEmpty()
-                .WithMessage("Id is required.");
-
-            RuleFor(x => x.Name)
-                .NotEmpty()
-                .WithMessage("Name is required.");
-
-            RuleFor(x => x.Name)
-                .Length(0, BodyClassificationTypeListConfiguration.NameLength)
-                .WithMessage($"Name cannot be longer than {BodyClassificationTypeListConfiguration.NameLength}.");
-        }
-    }
-
-    public static class CreateBodyClassificationTypeRequestMapping
-    {
-        public static CreateBodyClassificationType Map(CreateBodyClassificationTypeRequest message)
-        {
-            return new CreateBodyClassificationType(
-                new BodyClassificationTypeId(message.Id),
-                message.Name);
-        }
+        return new CreateBodyClassificationType(
+            new BodyClassificationTypeId(message.Id),
+            message.Name);
     }
 }

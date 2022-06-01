@@ -1,23 +1,22 @@
-﻿namespace OrganisationRegistry.Api.Infrastructure.Search
+﻿namespace OrganisationRegistry.Api.Infrastructure.Search;
+
+using Newtonsoft.Json;
+using Osc;
+
+public class ElasticsearchMetaData<T> where T : class
 {
-    using Newtonsoft.Json;
-    using Osc;
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public string? ScrollId { get; }
 
-    public class ElasticsearchMetaData<T> where T : class
+    public long TimeInMs { get; }
+    public long TotalItems { get; }
+
+    public ElasticsearchMetaData(ISearchResponse<T> searchResults)
     {
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public string? ScrollId { get; }
+        if (!string.IsNullOrWhiteSpace(searchResults.ScrollId))
+            ScrollId = searchResults.ScrollId;
 
-        public long TimeInMs { get; }
-        public long TotalItems { get; }
-
-        public ElasticsearchMetaData(ISearchResponse<T> searchResults)
-        {
-            if (!string.IsNullOrWhiteSpace(searchResults.ScrollId))
-                ScrollId = searchResults.ScrollId;
-
-            TimeInMs = searchResults.Took;
-            TotalItems = searchResults.Total;
-        }
+        TimeInMs = searchResults.Took;
+        TotalItems = searchResults.Total;
     }
 }

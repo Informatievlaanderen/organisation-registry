@@ -1,31 +1,30 @@
-namespace OrganisationRegistry.Api.Backoffice.Parameters.OrganisationClassification
+namespace OrganisationRegistry.Api.Backoffice.Parameters.OrganisationClassification;
+
+using System;
+using System.Linq;
+using Autofac.Features.OwnedInstances;
+using OrganisationRegistry.Organisation;
+using SqlServer.Infrastructure;
+
+public class UniqueKboValidator : IUniqueKboValidator
 {
-    using System;
-    using System.Linq;
-    using Autofac.Features.OwnedInstances;
-    using OrganisationRegistry.Organisation;
-    using SqlServer.Infrastructure;
+    private readonly Func<Owned<OrganisationRegistryContext>> _contextFactory;
 
-    public class UniqueKboValidator : IUniqueKboValidator
+    public UniqueKboValidator(Func<Owned<OrganisationRegistryContext>> contextFactory)
     {
-        private readonly Func<Owned<OrganisationRegistryContext>> _contextFactory;
+        _contextFactory = contextFactory;
+    }
 
-        public UniqueKboValidator(Func<Owned<OrganisationRegistryContext>> contextFactory)
+    public bool IsKboNumberTaken(KboNumber kboNumber)
+    {
+        var dotFormat = kboNumber.ToDotFormat();
+        var digitsOnly = kboNumber.ToDigitsOnly();
+
+        using (var context = _contextFactory().Value)
         {
-            _contextFactory = contextFactory;
-        }
-
-        public bool IsKboNumberTaken(KboNumber kboNumber)
-        {
-            var dotFormat = kboNumber.ToDotFormat();
-            var digitsOnly = kboNumber.ToDigitsOnly();
-
-            using (var context = _contextFactory().Value)
-            {
-                return context
-                    .OrganisationDetail
-                    .Any(item => item.KboNumber == dotFormat || item.KboNumber == digitsOnly);
-            }
+            return context
+                .OrganisationDetail
+                .Any(item => item.KboNumber == dotFormat || item.KboNumber == digitsOnly);
         }
     }
 }

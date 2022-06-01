@@ -1,56 +1,55 @@
-﻿namespace OrganisationRegistry.Api.Backoffice.Body.Info
+﻿namespace OrganisationRegistry.Api.Backoffice.Body.Info;
+
+using System;
+using FluentValidation;
+using OrganisationRegistry.Body;
+using OrganisationRegistry.SqlServer.Body;
+
+public class UpdateBodyInfoInternalRequest
 {
-    using System;
-    using FluentValidation;
-    using OrganisationRegistry.Body;
-    using OrganisationRegistry.SqlServer.Body;
+    public Guid BodyId { get; set; }
+    public UpdateBodyInfoRequest Body { get; set; }
 
-    public class UpdateBodyInfoInternalRequest
+    public UpdateBodyInfoInternalRequest(Guid bodyId, UpdateBodyInfoRequest body)
     {
-        public Guid BodyId { get; set; }
-        public UpdateBodyInfoRequest Body { get; set; }
-
-        public UpdateBodyInfoInternalRequest(Guid bodyId, UpdateBodyInfoRequest body)
-        {
-            BodyId = bodyId;
-            Body = body;
-        }
+        BodyId = bodyId;
+        Body = body;
     }
+}
 
-    public class UpdateBodyInfoRequest
+public class UpdateBodyInfoRequest
+{
+    public string Name { get; set; } = null!;
+
+    public string? ShortName { get; set; }
+
+    public string? Description { get; set; }
+}
+
+public class UpdateBodyInfoRequestValidator : AbstractValidator<UpdateBodyInfoInternalRequest>
+{
+    public UpdateBodyInfoRequestValidator()
     {
-        public string Name { get; set; } = null!;
+        RuleFor(x => x.BodyId)
+            .NotEmpty()
+            .WithMessage("Id is required.");
 
-        public string? ShortName { get; set; }
+        RuleFor(x => x.Body.Name)
+            .NotEmpty()
+            .WithMessage("Name is required.");
 
-        public string? Description { get; set; }
+        RuleFor(x => x.Body.Name)
+            .Length(0, BodyListConfiguration.NameLength)
+            .WithMessage($"Name cannot be longer than {BodyListConfiguration.NameLength}.");
     }
+}
 
-    public class UpdateBodyInfoRequestValidator : AbstractValidator<UpdateBodyInfoInternalRequest>
-    {
-        public UpdateBodyInfoRequestValidator()
-        {
-            RuleFor(x => x.BodyId)
-                .NotEmpty()
-                .WithMessage("Id is required.");
-
-            RuleFor(x => x.Body.Name)
-                .NotEmpty()
-                .WithMessage("Name is required.");
-
-            RuleFor(x => x.Body.Name)
-                .Length(0, BodyListConfiguration.NameLength)
-                .WithMessage($"Name cannot be longer than {BodyListConfiguration.NameLength}.");
-        }
-    }
-
-    public static class UpdateBodyInfoRequestMapping
-    {
-        public static UpdateBodyInfo Map(UpdateBodyInfoInternalRequest message)
-            => new(
-                new BodyId(message.BodyId),
-                message.Body.Name,
-                message.Body.ShortName,
-                message.Body.Description);
-    }
+public static class UpdateBodyInfoRequestMapping
+{
+    public static UpdateBodyInfo Map(UpdateBodyInfoInternalRequest message)
+        => new(
+            new BodyId(message.BodyId),
+            message.Body.Name,
+            message.Body.ShortName,
+            message.Body.Description);
 }

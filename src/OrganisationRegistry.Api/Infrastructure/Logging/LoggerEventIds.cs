@@ -1,9 +1,8 @@
-﻿namespace OrganisationRegistry.Api.Infrastructure.Logging
-{
-    using Microsoft.Extensions.Logging;
+﻿namespace OrganisationRegistry.Api.Infrastructure.Logging;
 
-    public static class LoggerEventIds
-    {
-        public static EventId AuthTokenValidationError = 1;
-    }
+using Microsoft.Extensions.Logging;
+
+public static class LoggerEventIds
+{
+    public static EventId AuthTokenValidationError = 1;
 }

@@ -1,49 +1,48 @@
-namespace OrganisationRegistry.Api.Backoffice.Admin.Configuration.Queries
+namespace OrganisationRegistry.Api.Backoffice.Admin.Configuration.Queries;
+
+using System.Collections.Generic;
+using System.Linq;
+using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
+using Infrastructure.Search;
+using Infrastructure.Search.Filtering;
+using Infrastructure.Search.Sorting;
+using OrganisationRegistry.Configuration.Database;
+
+public class ConfigurationListQuery : Query<ConfigurationValue>
 {
-    using System.Collections.Generic;
-    using System.Linq;
-    using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
-    using Infrastructure.Search;
-    using Infrastructure.Search.Filtering;
-    using Infrastructure.Search.Sorting;
-    using OrganisationRegistry.Configuration.Database;
+    private readonly ConfigurationContext _context;
 
-    public class ConfigurationListQuery : Query<ConfigurationValue>
+    protected override ISorting Sorting => new ConfigurationListSorting();
+
+    public ConfigurationListQuery(ConfigurationContext context)
     {
-        private readonly ConfigurationContext _context;
+        _context = context;
+    }
 
-        protected override ISorting Sorting => new ConfigurationListSorting();
+    protected override IQueryable<ConfigurationValue> Filter(FilteringHeader<ConfigurationValue> filtering)
+    {
+        var configuration = _context.Configuration.AsQueryable();
 
-        public ConfigurationListQuery(ConfigurationContext context)
-        {
-            _context = context;
-        }
-
-        protected override IQueryable<ConfigurationValue> Filter(FilteringHeader<ConfigurationValue> filtering)
-        {
-            var configuration = _context.Configuration.AsQueryable();
-
-            if (filtering.Filter is not { } filter)
-                return configuration;
-
-            if (!filter.Key.IsNullOrWhiteSpace())
-                configuration = configuration.Where(x =>
-                    x.Key.Contains(filter.Key) ||
-                    x.Description.Contains(filter.Key) ||
-                    x.Value.Contains(filter.Key));
-
+        if (filtering.Filter is not { } filter)
             return configuration;
-        }
 
-        private class ConfigurationListSorting : ISorting
+        if (!filter.Key.IsNullOrWhiteSpace())
+            configuration = configuration.Where(x =>
+                x.Key.Contains(filter.Key) ||
+                x.Description.Contains(filter.Key) ||
+                x.Value.Contains(filter.Key));
+
+        return configuration;
+    }
+
+    private class ConfigurationListSorting : ISorting
+    {
+        public IEnumerable<string> SortableFields { get; } = new[]
         {
-            public IEnumerable<string> SortableFields { get; } = new[]
-            {
-                nameof(ConfigurationValue.Key)
-            };
+            nameof(ConfigurationValue.Key)
+        };
 
-            public SortingHeader DefaultSortingHeader { get; }
-                = new(nameof(ConfigurationValue.Key), SortOrder.Ascending);
-        }
+        public SortingHeader DefaultSortingHeader { get; }
+            = new(nameof(ConfigurationValue.Key), SortOrder.Ascending);
     }
 }

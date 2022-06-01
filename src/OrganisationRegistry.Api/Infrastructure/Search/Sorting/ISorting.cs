@@ -1,11 +1,10 @@
-﻿namespace OrganisationRegistry.Api.Infrastructure.Search.Sorting
+﻿namespace OrganisationRegistry.Api.Infrastructure.Search.Sorting;
+
+using System.Collections.Generic;
+
+public interface ISorting
 {
-    using System.Collections.Generic;
+    IEnumerable<string> SortableFields { get; }
 
-    public interface ISorting
-    {
-        IEnumerable<string> SortableFields { get; }
-
-        SortingHeader DefaultSortingHeader { get; }
-    }
+    SortingHeader DefaultSortingHeader { get; }
 }

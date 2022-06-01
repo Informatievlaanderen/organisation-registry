@@ -1,97 +1,96 @@
-namespace OrganisationRegistry.Api.Backoffice.Body.BodyClassification
+namespace OrganisationRegistry.Api.Backoffice.Body.BodyClassification;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using OrganisationRegistry.Api.Infrastructure.Search;
+using OrganisationRegistry.Api.Infrastructure.Search.Filtering;
+using OrganisationRegistry.Api.Infrastructure.Search.Sorting;
+using OrganisationRegistry.SqlServer.Body;
+using OrganisationRegistry.SqlServer.Infrastructure;
+
+public class BodyBodyClassificationListQueryResult
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Linq.Expressions;
-    using OrganisationRegistry.Api.Infrastructure.Search;
-    using OrganisationRegistry.Api.Infrastructure.Search.Filtering;
-    using OrganisationRegistry.Api.Infrastructure.Search.Sorting;
-    using OrganisationRegistry.SqlServer.Body;
-    using OrganisationRegistry.SqlServer.Infrastructure;
+    public Guid BodyBodyClassificationId { get; }
+    public string BodyClassificationTypeName { get; }
+    public string BodyClassificationName { get; }
+    public DateTime? ValidFrom { get; }
+    public DateTime? ValidTo { get; }
 
-    public class BodyBodyClassificationListQueryResult
+    public bool IsActive { get; }
+
+    public BodyBodyClassificationListQueryResult(
+        Guid bodyBodyClassificationId,
+        string bodyClassificationTypeName,
+        string bodyClassificationName,
+        DateTime? validFrom,
+        DateTime? validTo)
     {
-        public Guid BodyBodyClassificationId { get; }
-        public string BodyClassificationTypeName { get; }
-        public string BodyClassificationName { get; }
-        public DateTime? ValidFrom { get; }
-        public DateTime? ValidTo { get; }
+        BodyBodyClassificationId = bodyBodyClassificationId;
+        BodyClassificationTypeName = bodyClassificationTypeName;
+        BodyClassificationName = bodyClassificationName;
+        ValidFrom = validFrom;
+        ValidTo = validTo;
 
-        public bool IsActive { get; }
+        IsActive = new Period(new ValidFrom(validFrom), new ValidTo(validTo)).OverlapsWith(DateTime.Today);
+    }
+}
 
-        public BodyBodyClassificationListQueryResult(
-            Guid bodyBodyClassificationId,
-            string bodyClassificationTypeName,
-            string bodyClassificationName,
-            DateTime? validFrom,
-            DateTime? validTo)
-        {
-            BodyBodyClassificationId = bodyBodyClassificationId;
-            BodyClassificationTypeName = bodyClassificationTypeName;
-            BodyClassificationName = bodyClassificationName;
-            ValidFrom = validFrom;
-            ValidTo = validTo;
+public class BodyBodyClassificationListQuery : Query<BodyBodyClassificationListItem, BodyBodyClassificationListItemFilter, BodyBodyClassificationListQueryResult>
+{
+    private readonly OrganisationRegistryContext _context;
+    private readonly Guid _bodyId;
 
-            IsActive = new Period(new ValidFrom(validFrom), new ValidTo(validTo)).OverlapsWith(DateTime.Today);
-        }
+    protected override ISorting Sorting => new BodyBodyClassificationListSorting();
+
+    protected override Expression<Func<BodyBodyClassificationListItem, BodyBodyClassificationListQueryResult>> Transformation =>
+        x => new BodyBodyClassificationListQueryResult(
+            x.BodyBodyClassificationId,
+            x.BodyClassificationTypeName,
+            x.BodyClassificationName,
+            x.ValidFrom,
+            x.ValidTo);
+
+    public BodyBodyClassificationListQuery(OrganisationRegistryContext context, Guid bodyId)
+    {
+        _context = context;
+        _bodyId = bodyId;
     }
 
-    public class BodyBodyClassificationListQuery : Query<BodyBodyClassificationListItem, BodyBodyClassificationListItemFilter, BodyBodyClassificationListQueryResult>
+    protected override IQueryable<BodyBodyClassificationListItem> Filter(FilteringHeader<BodyBodyClassificationListItemFilter> filtering)
     {
-        private readonly OrganisationRegistryContext _context;
-        private readonly Guid _bodyId;
+        var bodyBodyClassifications = _context.BodyBodyClassificationList
+            .AsQueryable()
+            .Where(x => x.BodyId == _bodyId).AsQueryable();
 
-        protected override ISorting Sorting => new BodyBodyClassificationListSorting();
-
-        protected override Expression<Func<BodyBodyClassificationListItem, BodyBodyClassificationListQueryResult>> Transformation =>
-            x => new BodyBodyClassificationListQueryResult(
-                x.BodyBodyClassificationId,
-                x.BodyClassificationTypeName,
-                x.BodyClassificationName,
-                x.ValidFrom,
-                x.ValidTo);
-
-        public BodyBodyClassificationListQuery(OrganisationRegistryContext context, Guid bodyId)
-        {
-            _context = context;
-            _bodyId = bodyId;
-        }
-
-        protected override IQueryable<BodyBodyClassificationListItem> Filter(FilteringHeader<BodyBodyClassificationListItemFilter> filtering)
-        {
-            var bodyBodyClassifications = _context.BodyBodyClassificationList
-                .AsQueryable()
-                .Where(x => x.BodyId == _bodyId).AsQueryable();
-
-            if (filtering.Filter is not { } filter)
-                return bodyBodyClassifications;
-
-            if (filter.ActiveOnly)
-                bodyBodyClassifications = bodyBodyClassifications.Where(x =>
-                    (!x.ValidFrom.HasValue || x.ValidFrom <= DateTime.Today) &&
-                    (!x.ValidTo.HasValue || x.ValidTo >= DateTime.Today));
-
+        if (filtering.Filter is not { } filter)
             return bodyBodyClassifications;
-        }
 
-        private class BodyBodyClassificationListSorting : ISorting
-        {
-            public IEnumerable<string> SortableFields { get; } = new[]
-            {
-                nameof(BodyBodyClassificationListItem.BodyClassificationTypeName),
-                nameof(BodyBodyClassificationListItem.BodyClassificationName),
-                nameof(BodyBodyClassificationListItem.ValidFrom),
-                nameof(BodyBodyClassificationListItem.ValidTo)
-            };
+        if (filter.ActiveOnly)
+            bodyBodyClassifications = bodyBodyClassifications.Where(x =>
+                (!x.ValidFrom.HasValue || x.ValidFrom <= DateTime.Today) &&
+                (!x.ValidTo.HasValue || x.ValidTo >= DateTime.Today));
 
-            public SortingHeader DefaultSortingHeader { get; } =
-                new SortingHeader(nameof(BodyBodyClassificationListItem.BodyClassificationTypeName), SortOrder.Ascending);
-        }
+        return bodyBodyClassifications;
     }
 
-    public class BodyBodyClassificationListItemFilter
+    private class BodyBodyClassificationListSorting : ISorting
     {
-        public bool ActiveOnly { get; set; }
+        public IEnumerable<string> SortableFields { get; } = new[]
+        {
+            nameof(BodyBodyClassificationListItem.BodyClassificationTypeName),
+            nameof(BodyBodyClassificationListItem.BodyClassificationName),
+            nameof(BodyBodyClassificationListItem.ValidFrom),
+            nameof(BodyBodyClassificationListItem.ValidTo)
+        };
+
+        public SortingHeader DefaultSortingHeader { get; } =
+            new SortingHeader(nameof(BodyBodyClassificationListItem.BodyClassificationTypeName), SortOrder.Ascending);
     }
+}
+
+public class BodyBodyClassificationListItemFilter
+{
+    public bool ActiveOnly { get; set; }
 }

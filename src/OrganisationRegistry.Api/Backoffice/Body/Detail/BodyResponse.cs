@@ -1,47 +1,46 @@
-﻿namespace OrganisationRegistry.Api.Backoffice.Body.Detail
+﻿namespace OrganisationRegistry.Api.Backoffice.Body.Detail;
+
+using System;
+using OrganisationRegistry.SqlServer.Body;
+
+public class BodyResponse
 {
-    using System;
-    using OrganisationRegistry.SqlServer.Body;
+    public Guid Id { get; }
 
-    public class BodyResponse
+    public string BodyNumber { get; }
+    public string Name { get; }
+    public string? ShortName { get; }
+
+    public string? Organisation { get; }
+    public Guid? OrganisationId { get; }
+
+    public string? Description { get; }
+
+    public DateTime? FormalValidFrom { get; }
+    public DateTime? FormalValidTo { get; }
+
+    public bool LifecycleValid { get; }
+    public bool HasAllSeatsAssigned { get; }
+    public bool IsMepCompliant { get; }
+
+    public BodyResponse(
+        BodyDetail projectionItem,
+        bool hasAllSeatsAssigned,
+        bool isMepCompliant)
     {
-        public Guid Id { get; }
+        Id = projectionItem.Id;
 
-        public string BodyNumber { get; }
-        public string Name { get; }
-        public string? ShortName { get; }
+        BodyNumber = projectionItem.BodyNumber;
+        Name = projectionItem.Name;
+        ShortName = projectionItem.ShortName;
+        Organisation = projectionItem.Organisation;
+        OrganisationId = projectionItem.OrganisationId;
+        Description = projectionItem.Description;
+        FormalValidFrom = projectionItem.FormalValidFrom;
+        FormalValidTo = projectionItem.FormalValidTo;
+        LifecycleValid = projectionItem.IsLifecycleValid;
 
-        public string? Organisation { get; }
-        public Guid? OrganisationId { get; }
-
-        public string? Description { get; }
-
-        public DateTime? FormalValidFrom { get; }
-        public DateTime? FormalValidTo { get; }
-
-        public bool LifecycleValid { get; }
-        public bool HasAllSeatsAssigned { get; }
-        public bool IsMepCompliant { get; }
-
-        public BodyResponse(
-            BodyDetail projectionItem,
-            bool hasAllSeatsAssigned,
-            bool isMepCompliant)
-        {
-            Id = projectionItem.Id;
-
-            BodyNumber = projectionItem.BodyNumber;
-            Name = projectionItem.Name;
-            ShortName = projectionItem.ShortName;
-            Organisation = projectionItem.Organisation;
-            OrganisationId = projectionItem.OrganisationId;
-            Description = projectionItem.Description;
-            FormalValidFrom = projectionItem.FormalValidFrom;
-            FormalValidTo = projectionItem.FormalValidTo;
-            LifecycleValid = projectionItem.IsLifecycleValid;
-
-            HasAllSeatsAssigned = hasAllSeatsAssigned;
-            IsMepCompliant = isMepCompliant;
-        }
+        HasAllSeatsAssigned = hasAllSeatsAssigned;
+        IsMepCompliant = isMepCompliant;
     }
 }

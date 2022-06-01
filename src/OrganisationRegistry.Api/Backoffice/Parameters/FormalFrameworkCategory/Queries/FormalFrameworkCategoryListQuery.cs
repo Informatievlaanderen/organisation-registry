@@ -1,47 +1,46 @@
-namespace OrganisationRegistry.Api.Backoffice.Parameters.FormalFrameworkCategory.Queries
+namespace OrganisationRegistry.Api.Backoffice.Parameters.FormalFrameworkCategory.Queries;
+
+using System.Collections.Generic;
+using System.Linq;
+using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
+using Infrastructure.Search;
+using Infrastructure.Search.Filtering;
+using Infrastructure.Search.Sorting;
+using SqlServer.FormalFrameworkCategory;
+using SqlServer.Infrastructure;
+
+public class FormalFrameworkCategoryListQuery: Query<FormalFrameworkCategoryListItem>
 {
-    using System.Collections.Generic;
-    using System.Linq;
-    using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
-    using Infrastructure.Search;
-    using Infrastructure.Search.Filtering;
-    using Infrastructure.Search.Sorting;
-    using SqlServer.FormalFrameworkCategory;
-    using SqlServer.Infrastructure;
+    private readonly OrganisationRegistryContext _context;
 
-    public class FormalFrameworkCategoryListQuery: Query<FormalFrameworkCategoryListItem>
+    protected override ISorting Sorting => new FormalFrameworkCategoryListSorting();
+
+    public FormalFrameworkCategoryListQuery(OrganisationRegistryContext context)
     {
-        private readonly OrganisationRegistryContext _context;
+        _context = context;
+    }
 
-        protected override ISorting Sorting => new FormalFrameworkCategoryListSorting();
+    protected override IQueryable<FormalFrameworkCategoryListItem> Filter(FilteringHeader<FormalFrameworkCategoryListItem> filtering)
+    {
+        var formalFrameworkCategories = _context.FormalFrameworkCategoryList.AsQueryable();
 
-        public FormalFrameworkCategoryListQuery(OrganisationRegistryContext context)
-        {
-            _context = context;
-        }
-
-        protected override IQueryable<FormalFrameworkCategoryListItem> Filter(FilteringHeader<FormalFrameworkCategoryListItem> filtering)
-        {
-            var formalFrameworkCategories = _context.FormalFrameworkCategoryList.AsQueryable();
-
-            if (filtering.Filter is not { } filter)
-                return formalFrameworkCategories;
-
-            if (!filter.Name.IsNullOrWhiteSpace())
-                formalFrameworkCategories = formalFrameworkCategories.Where(x => x.Name.Contains(filter.Name));
-
+        if (filtering.Filter is not { } filter)
             return formalFrameworkCategories;
-        }
 
-        private class FormalFrameworkCategoryListSorting : ISorting
+        if (!filter.Name.IsNullOrWhiteSpace())
+            formalFrameworkCategories = formalFrameworkCategories.Where(x => x.Name.Contains(filter.Name));
+
+        return formalFrameworkCategories;
+    }
+
+    private class FormalFrameworkCategoryListSorting : ISorting
+    {
+        public IEnumerable<string> SortableFields { get; } = new[]
         {
-            public IEnumerable<string> SortableFields { get; } = new[]
-            {
-                nameof(FormalFrameworkCategoryListItem.Name)
-            };
+            nameof(FormalFrameworkCategoryListItem.Name)
+        };
 
-            public SortingHeader DefaultSortingHeader { get; } =
-                new SortingHeader(nameof(FormalFrameworkCategoryListItem.Name), SortOrder.Ascending);
-        }
+        public SortingHeader DefaultSortingHeader { get; } =
+            new SortingHeader(nameof(FormalFrameworkCategoryListItem.Name), SortOrder.Ascending);
     }
 }

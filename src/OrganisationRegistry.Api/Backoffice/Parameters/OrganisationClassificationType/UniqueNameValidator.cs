@@ -1,30 +1,29 @@
-﻿namespace OrganisationRegistry.Api.Backoffice.Parameters.OrganisationClassificationType
+﻿namespace OrganisationRegistry.Api.Backoffice.Parameters.OrganisationClassificationType;
+
+using System;
+using System.Linq;
+using OrganisationRegistry.OrganisationClassificationType;
+using SqlServer.Infrastructure;
+
+public class UniqueNameValidator : IUniqueNameValidator<OrganisationClassificationType>
 {
-    using System;
-    using System.Linq;
-    using OrganisationRegistry.OrganisationClassificationType;
-    using SqlServer.Infrastructure;
+    private readonly OrganisationRegistryContext _context;
 
-    public class UniqueNameValidator : IUniqueNameValidator<OrganisationClassificationType>
+    public UniqueNameValidator(OrganisationRegistryContext context)
     {
-        private readonly OrganisationRegistryContext _context;
+        _context = context;
+    }
 
-        public UniqueNameValidator(OrganisationRegistryContext context)
-        {
-            _context = context;
-        }
+    public bool IsNameTaken(string name)
+    {
+        return _context.OrganisationClassificationTypeList.Any(item => item.Name == name);
+    }
 
-        public bool IsNameTaken(string name)
-        {
-            return _context.OrganisationClassificationTypeList.Any(item => item.Name == name);
-        }
-
-        public bool IsNameTaken(Guid id, string name)
-        {
-            return _context.OrganisationClassificationTypeList
-                .AsQueryable()
-                .Where(item => item.Id != id)
-                .Any(item => item.Name == name);
-        }
+    public bool IsNameTaken(Guid id, string name)
+    {
+        return _context.OrganisationClassificationTypeList
+            .AsQueryable()
+            .Where(item => item.Id != id)
+            .Any(item => item.Name == name);
     }
 }

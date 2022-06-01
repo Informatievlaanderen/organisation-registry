@@ -1,57 +1,56 @@
-namespace OrganisationRegistry.Api.Backoffice.Parameters.SeatType.Requests
+namespace OrganisationRegistry.Api.Backoffice.Parameters.SeatType.Requests;
+
+using System;
+using FluentValidation;
+using OrganisationRegistry.SeatType;
+using OrganisationRegistry.SeatType.Commands;
+using SqlServer.SeatType;
+
+public class UpdateSeatTypeInternalRequest
 {
-    using System;
-    using FluentValidation;
-    using OrganisationRegistry.SeatType;
-    using OrganisationRegistry.SeatType.Commands;
-    using SqlServer.SeatType;
+    public Guid SeatTypeId { get; set; }
+    public UpdateSeatTypeRequest Body { get; set; }
 
-    public class UpdateSeatTypeInternalRequest
+    public UpdateSeatTypeInternalRequest(Guid seatTypeId, UpdateSeatTypeRequest body)
     {
-        public Guid SeatTypeId { get; set; }
-        public UpdateSeatTypeRequest Body { get; set; }
-
-        public UpdateSeatTypeInternalRequest(Guid seatTypeId, UpdateSeatTypeRequest body)
-        {
-            SeatTypeId = seatTypeId;
-            Body = body;
-        }
+        SeatTypeId = seatTypeId;
+        Body = body;
     }
+}
 
-    public class UpdateSeatTypeRequest
+public class UpdateSeatTypeRequest
+{
+    public string Name { get; set; } = null!;
+
+    public int? Order { get; set; }
+
+    public bool IsEffective { get; set; }
+}
+
+public class UpdateSeatTypeRequestValidator : AbstractValidator<UpdateSeatTypeInternalRequest>
+{
+    public UpdateSeatTypeRequestValidator()
     {
-        public string Name { get; set; } = null!;
+        RuleFor(x => x.SeatTypeId)
+            .NotEmpty()
+            .WithMessage("Id is required.");
 
-        public int? Order { get; set; }
+        RuleFor(x => x.Body.Name)
+            .NotEmpty()
+            .WithMessage("Name is required.");
 
-        public bool IsEffective { get; set; }
+        RuleFor(x => x.Body.Name)
+            .Length(0, SeatTypeListConfiguration.NameLength)
+            .WithMessage($"Name cannot be longer than {SeatTypeListConfiguration.NameLength}.");
     }
+}
 
-    public class UpdateSeatTypeRequestValidator : AbstractValidator<UpdateSeatTypeInternalRequest>
-    {
-        public UpdateSeatTypeRequestValidator()
-        {
-            RuleFor(x => x.SeatTypeId)
-                .NotEmpty()
-                .WithMessage("Id is required.");
-
-            RuleFor(x => x.Body.Name)
-                .NotEmpty()
-                .WithMessage("Name is required.");
-
-            RuleFor(x => x.Body.Name)
-                .Length(0, SeatTypeListConfiguration.NameLength)
-                .WithMessage($"Name cannot be longer than {SeatTypeListConfiguration.NameLength}.");
-        }
-    }
-
-    public static class UpdateSeatTypeRequestMapping
-    {
-        public static UpdateSeatType Map(UpdateSeatTypeInternalRequest message)
-            => new(
-                new SeatTypeId(message.SeatTypeId),
-                new SeatTypeName(message.Body.Name),
-                message.Body.Order,
-                message.Body.IsEffective);
-    }
+public static class UpdateSeatTypeRequestMapping
+{
+    public static UpdateSeatType Map(UpdateSeatTypeInternalRequest message)
+        => new(
+            new SeatTypeId(message.SeatTypeId),
+            new SeatTypeName(message.Body.Name),
+            message.Body.Order,
+            message.Body.IsEffective);
 }
