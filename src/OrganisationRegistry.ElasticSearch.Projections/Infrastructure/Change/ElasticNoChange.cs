@@ -1,6 +1,5 @@
-namespace OrganisationRegistry.ElasticSearch.Projections.Infrastructure.Change
+namespace OrganisationRegistry.ElasticSearch.Projections.Infrastructure.Change;
+
+public class ElasticNoChange : IElasticChange
 {
-    public class ElasticNoChange : IElasticChange
-    {
-    }
 }

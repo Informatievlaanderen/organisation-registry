@@ -1,44 +1,43 @@
-﻿namespace OrganisationRegistry.ElasticSearch.Projections.Metrics.SerilogReporter
+﻿namespace OrganisationRegistry.ElasticSearch.Projections.Metrics.SerilogReporter;
+
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+using App.Metrics;
+using App.Metrics.Formatters;
+using App.Metrics.Serialization;
+
+/// <summary>
+/// A metrics output formatter for Serilog.
+/// </summary>
+public class SerilogMetricsOutputFormatter : IMetricsOutputFormatter
 {
-    using System.IO;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using App.Metrics;
-    using App.Metrics.Formatters;
-    using App.Metrics.Serialization;
+    private readonly SerilogMetricsReporterOptions _options;
+    private readonly MetricSnapshotSerializer _serializer = new();
 
     /// <summary>
-    /// A metrics output formatter for Serilog.
+    /// Initializes a new instance of the <see cref="SerilogMetricsOutputFormatter"/> class.
     /// </summary>
-    public class SerilogMetricsOutputFormatter : IMetricsOutputFormatter
+    /// <param name="options">The Serilog metrics reporter options.</param>
+    public SerilogMetricsOutputFormatter(SerilogMetricsReporterOptions options)
     {
-        private readonly SerilogMetricsReporterOptions _options;
-        private readonly MetricSnapshotSerializer _serializer = new();
+        _options = options;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SerilogMetricsOutputFormatter"/> class.
-        /// </summary>
-        /// <param name="options">The Serilog metrics reporter options.</param>
-        public SerilogMetricsOutputFormatter(SerilogMetricsReporterOptions options)
+    /// <inheritdoc />
+    public MetricsMediaTypeValue MediaType => new("text", "vnd.appmetrics.metrics.serilog", "v1", "json");
+
+    /// <inheritdoc />
+    public MetricFields MetricFields { get; set; } = null!;
+
+    /// <inheritdoc />
+    public Task WriteAsync(Stream output, MetricsDataValueSource metricsData, CancellationToken cancellationToken = default(CancellationToken))
+    {
+        using (var metricSnapshotWriter = new SerilogMetricSnapshotWriter(_options))
         {
-            _options = options;
+            _serializer.Serialize(metricSnapshotWriter, metricsData, MetricFields);
         }
 
-        /// <inheritdoc />
-        public MetricsMediaTypeValue MediaType => new("text", "vnd.appmetrics.metrics.serilog", "v1", "json");
-
-        /// <inheritdoc />
-        public MetricFields MetricFields { get; set; } = null!;
-
-        /// <inheritdoc />
-        public Task WriteAsync(Stream output, MetricsDataValueSource metricsData, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            using (var metricSnapshotWriter = new SerilogMetricSnapshotWriter(_options))
-            {
-                _serializer.Serialize(metricSnapshotWriter, metricsData, MetricFields);
-            }
-
-            return Task.CompletedTask;
-        }
+        return Task.CompletedTask;
     }
 }
