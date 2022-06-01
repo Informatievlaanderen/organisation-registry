@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Newtonsoft.Json.Linq;
+using Tests.Shared;
 using Xunit;
 
 [Collection(ApiTestsCollection.Name)]

@@ -1,4 +1,4 @@
-﻿namespace OrganisationRegistry.Api.IntegrationTests;
+﻿namespace OrganisationRegistry.Tests.Shared;
 
 using System;
 using System.IO;
