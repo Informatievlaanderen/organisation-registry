@@ -1,6 +1,5 @@
-﻿namespace OrganisationRegistry.VlaanderenBeNotifier
+﻿namespace OrganisationRegistry.VlaanderenBeNotifier;
+
+public class OrganisationRegistryVlaanderenBeNotifierAssemblyTokenClass
 {
-    public class OrganisationRegistryVlaanderenBeNotifierAssemblyTokenClass
-    {
-    }
 }
