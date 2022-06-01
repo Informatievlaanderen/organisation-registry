@@ -1,0 +1,10 @@
+﻿lijnnummer;fout
+2;Rij ontbreekt waarde voor volgende kolommen: 'reference'.
+3;Rij heeft incorrect aantal kolommen.
+4;Rij ontbreekt waarde voor volgende kolommen: 'name'.
+7;Rij ontbreekt waarde voor volgende kolommen: 'reference', 'name'.
+8;De waarde 'fout artikel' is ongeldig voor column 'article' (Geldige waarden: 'de', 'het').
+9;De waarde '2022-31-12' is ongeldig voor column 'validity_start' (Vereist formaat: 'YYYY-MM-DD').
+10;De waarde '2022-31-12' is ongeldig voor column 'validity_start' (Vereist formaat: 'YYYY-MM-DD').
+10;De waarde 'ongeldig' is ongeldig voor column 'operationalvalidity_start' (Vereist formaat: 'YYYY-MM-DD').
+11;De waarde 'ovo00016' is ongeldig voor column 'reference' (Waarde mag niet beginnen met 'OVO').

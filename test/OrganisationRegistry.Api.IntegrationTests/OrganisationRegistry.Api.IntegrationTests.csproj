@@ -4,6 +4,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\OrganisationRegistry.Api\OrganisationRegistry.Api.csproj" />
     <ProjectReference Include="..\OrganisationRegistry.Import.Piavo\OrganisationRegistry.Import.Piavo.csproj" />
+    <ProjectReference Include="..\OrganisationRegistry.Tests.Shared\OrganisationRegistry.Tests.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>
