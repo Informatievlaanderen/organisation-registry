@@ -1,14 +1,13 @@
-namespace OrganisationRegistry.Tests.Shared.Stubs
+namespace OrganisationRegistry.Tests.Shared.Stubs;
+
+using Infrastructure.Configuration;
+
+public class CachingConfigurationStub : ICachingConfiguration
 {
-    using Infrastructure.Configuration;
-
-    public class CachingConfigurationStub : ICachingConfiguration
+    public CachingConfigurationStub()
     {
-        public CachingConfigurationStub()
-        {
-            UserCacheSlidingExpirationInMinutes = 1;
-        }
-
-        public int UserCacheSlidingExpirationInMinutes { get; }
+        UserCacheSlidingExpirationInMinutes = 1;
     }
+
+    public int UserCacheSlidingExpirationInMinutes { get; }
 }

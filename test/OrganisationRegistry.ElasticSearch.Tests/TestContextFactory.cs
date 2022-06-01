@@ -1,27 +1,26 @@
-namespace OrganisationRegistry.ElasticSearch.Tests
+namespace OrganisationRegistry.ElasticSearch.Tests;
+
+using System.Data.Common;
+using Microsoft.EntityFrameworkCore;
+using SqlServer;
+using SqlServer.Infrastructure;
+
+public class TestContextFactory : IContextFactory
 {
-    using System.Data.Common;
-    using Microsoft.EntityFrameworkCore;
-    using SqlServer;
-    using SqlServer.Infrastructure;
+    private readonly DbContextOptions<OrganisationRegistryContext> _contextOptions;
 
-    public class TestContextFactory : IContextFactory
+    public TestContextFactory(DbContextOptions<OrganisationRegistryContext> contextOptions)
     {
-        private readonly DbContextOptions<OrganisationRegistryContext> _contextOptions;
+        _contextOptions = contextOptions;
+    }
 
-        public TestContextFactory(DbContextOptions<OrganisationRegistryContext> contextOptions)
-        {
-            _contextOptions = contextOptions;
-        }
+    public OrganisationRegistryContext CreateTransactional(DbConnection connection, DbTransaction transaction)
+    {
+        return new OrganisationRegistryContext(_contextOptions);
+    }
 
-        public OrganisationRegistryContext CreateTransactional(DbConnection connection, DbTransaction transaction)
-        {
-            return new OrganisationRegistryContext(_contextOptions);
-        }
-
-        public OrganisationRegistryContext Create()
-        {
-            return new OrganisationRegistryContext(_contextOptions);
-        }
+    public OrganisationRegistryContext Create()
+    {
+        return new OrganisationRegistryContext(_contextOptions);
     }
 }

@@ -1,20 +1,19 @@
-namespace OrganisationRegistry.UnitTests.Organisation.Kbo
+namespace OrganisationRegistry.UnitTests.Organisation.Kbo;
+
+using System;
+using OrganisationRegistry.Organisation;
+
+public class KboLocationRetrieverStub : IKboLocationRetriever
 {
-    using System;
-    using OrganisationRegistry.Organisation;
+    private readonly Func<IMagdaAddress, Guid?> _returnValue;
 
-    public class KboLocationRetrieverStub : IKboLocationRetriever
+    public KboLocationRetrieverStub(Func<IMagdaAddress, Guid?> returnValue)
     {
-        private readonly Func<IMagdaAddress, Guid?> _returnValue;
+        _returnValue = returnValue;
+    }
 
-        public KboLocationRetrieverStub(Func<IMagdaAddress, Guid?> returnValue)
-        {
-            _returnValue = returnValue;
-        }
-
-        public Guid? RetrieveLocation(IMagdaAddress address)
-        {
-            return _returnValue(address);
-        }
+    public Guid? RetrieveLocation(IMagdaAddress address)
+    {
+        return _returnValue(address);
     }
 }

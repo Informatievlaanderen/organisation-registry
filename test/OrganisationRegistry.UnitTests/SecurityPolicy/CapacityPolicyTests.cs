@@ -1,117 +1,116 @@
-namespace OrganisationRegistry.UnitTests.SecurityPolicy
+namespace OrganisationRegistry.UnitTests.SecurityPolicy;
+
+using System;
+using AutoFixture;
+using FluentAssertions;
+using Handling.Authorization;
+using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Organisation.Exceptions;
+using Tests.Shared;
+using Tests.Shared.Stubs;
+using Xunit;
+
+public class CapacityPolicyTests
 {
-    using System;
-    using AutoFixture;
-    using FluentAssertions;
-    using Handling.Authorization;
-    using OrganisationRegistry.Infrastructure.Authorization;
-    using OrganisationRegistry.Organisation.Exceptions;
-    using Tests.Shared;
-    using Tests.Shared.Stubs;
-    using Xunit;
+    private readonly Fixture _fixture;
+    private readonly Guid _regelgevingDbCapacityId;
+    private readonly OrganisationRegistryConfigurationStub _configuration;
 
-    public class CapacityPolicyTests
+    public CapacityPolicyTests()
     {
-        private readonly Fixture _fixture;
-        private readonly Guid _regelgevingDbCapacityId;
-        private readonly OrganisationRegistryConfigurationStub _configuration;
+        _fixture = new Fixture();
 
-        public CapacityPolicyTests()
+        _regelgevingDbCapacityId = _fixture.Create<Guid>();
+        _configuration = new OrganisationRegistryConfigurationStub
         {
-            _fixture = new Fixture();
-
-            _regelgevingDbCapacityId = _fixture.Create<Guid>();
-            _configuration = new OrganisationRegistryConfigurationStub
+            Authorization = new AuthorizationConfigurationStub
             {
-                Authorization = new AuthorizationConfigurationStub
-                {
-                    CapacityIdsOwnedByRegelgevingDbBeheerder = new[] { _regelgevingDbCapacityId },
-                }
-            };
-        }
+                CapacityIdsOwnedByRegelgevingDbBeheerder = new[] { _regelgevingDbCapacityId },
+            }
+        };
+    }
 
-        public CapacityPolicy CreatePolicy(string ovoNumber, Guid capacityId)
-            => new(ovoNumber, _configuration, capacityId);
+    public CapacityPolicy CreatePolicy(string ovoNumber, Guid capacityId)
+        => new(ovoNumber, _configuration, capacityId);
 
-        [Theory]
-        [InlineData(Role.RegelgevingBeheerder)]
-        [InlineData(Role.AlgemeenBeheerder)]
-        public void RegelgevingDbBeheerderAndAdminIsAuthorized(Role role)
-        {
-            var user = new UserBuilder()
-                .AddRoles(role)
-                .Build();
+    [Theory]
+    [InlineData(Role.RegelgevingBeheerder)]
+    [InlineData(Role.AlgemeenBeheerder)]
+    public void RegelgevingDbBeheerderAndAdminIsAuthorized(Role role)
+    {
+        var user = new UserBuilder()
+            .AddRoles(role)
+            .Build();
 
-            var authorizationResult =
-                CreatePolicy(_fixture.Create<string>(), _regelgevingDbCapacityId)
-                    .Check(user);
+        var authorizationResult =
+            CreatePolicy(_fixture.Create<string>(), _regelgevingDbCapacityId)
+                .Check(user);
 
-            authorizationResult.Should().Be(AuthorizationResult.Success());
-        }
+        authorizationResult.Should().Be(AuthorizationResult.Success());
+    }
 
-        [Theory]
-        [InlineData(Role.DecentraalBeheerder)]
-        [InlineData(Role.VlimpersBeheerder)]
-        [InlineData(Role.Orafin)]
-        [InlineData(Role.OrgaanBeheerder)]
-        public void NonRegelgevingDbBeheerderIsNotAuthorized(Role role)
-        {
-            var user = new UserBuilder()
-                .AddRoles(role)
-                .Build();
+    [Theory]
+    [InlineData(Role.DecentraalBeheerder)]
+    [InlineData(Role.VlimpersBeheerder)]
+    [InlineData(Role.Orafin)]
+    [InlineData(Role.OrgaanBeheerder)]
+    public void NonRegelgevingDbBeheerderIsNotAuthorized(Role role)
+    {
+        var user = new UserBuilder()
+            .AddRoles(role)
+            .Build();
 
-            var authorizationResult =
-                CreatePolicy(_fixture.Create<string>(), _regelgevingDbCapacityId)
-                    .Check(user);
+        var authorizationResult =
+            CreatePolicy(_fixture.Create<string>(), _regelgevingDbCapacityId)
+                .Check(user);
 
-            authorizationResult.ShouldFailWith<InsufficientRights>();
-        }
+        authorizationResult.ShouldFailWith<InsufficientRights>();
+    }
 
-        [Fact]
-        public void BeheerderIsAuthorizedForOtherCapacitiesForTheirOrganisation()
-        {
-            var ovoNumber = _fixture.Create<string>();
-            var user = new UserBuilder()
-                .AddRoles(Role.DecentraalBeheerder)
-                .AddOrganisations(ovoNumber)
-                .Build();
+    [Fact]
+    public void BeheerderIsAuthorizedForOtherCapacitiesForTheirOrganisation()
+    {
+        var ovoNumber = _fixture.Create<string>();
+        var user = new UserBuilder()
+            .AddRoles(Role.DecentraalBeheerder)
+            .AddOrganisations(ovoNumber)
+            .Build();
 
-            var authorizationResult =
-                CreatePolicy(ovoNumber, _fixture.Create<Guid>())
-                    .Check(user);
+        var authorizationResult =
+            CreatePolicy(ovoNumber, _fixture.Create<Guid>())
+                .Check(user);
 
-            authorizationResult.Should().Be(AuthorizationResult.Success());
-        }
+        authorizationResult.Should().Be(AuthorizationResult.Success());
+    }
 
-        [Fact]
-        public void BeheerderIsNotAuthorizedForRegelgevingDbOwnedCapacitiesForTheirOrganisation()
-        {
-            var ovoNumber = _fixture.Create<string>();
-            var user = new UserBuilder()
-                .AddRoles(Role.DecentraalBeheerder)
-                .AddOrganisations(ovoNumber)
-                .Build();
+    [Fact]
+    public void BeheerderIsNotAuthorizedForRegelgevingDbOwnedCapacitiesForTheirOrganisation()
+    {
+        var ovoNumber = _fixture.Create<string>();
+        var user = new UserBuilder()
+            .AddRoles(Role.DecentraalBeheerder)
+            .AddOrganisations(ovoNumber)
+            .Build();
 
-            var authorizationResult =
-                CreatePolicy(ovoNumber, _regelgevingDbCapacityId)
-                    .Check(user);
+        var authorizationResult =
+            CreatePolicy(ovoNumber, _regelgevingDbCapacityId)
+                .Check(user);
 
-            authorizationResult.ShouldFailWith<InsufficientRights>();
-        }
+        authorizationResult.ShouldFailWith<InsufficientRights>();
+    }
 
-        [Fact]
-        public void BeheerderIsNotAuthorizedForOtherCapacitiesForOtherOrganisations()
-        {
-            var user = new UserBuilder()
-                .AddRoles(Role.DecentraalBeheerder)
-                .AddOrganisations(_fixture.Create<string>())
-                .Build();
+    [Fact]
+    public void BeheerderIsNotAuthorizedForOtherCapacitiesForOtherOrganisations()
+    {
+        var user = new UserBuilder()
+            .AddRoles(Role.DecentraalBeheerder)
+            .AddOrganisations(_fixture.Create<string>())
+            .Build();
 
-            var authorizationResult =
-                CreatePolicy(_fixture.Create<string>(), _fixture.Create<Guid>())
-                    .Check(user);
+        var authorizationResult =
+            CreatePolicy(_fixture.Create<string>(), _fixture.Create<Guid>())
+                .Check(user);
 
-            authorizationResult.ShouldFailWith<InsufficientRights>();
-        }
+        authorizationResult.ShouldFailWith<InsufficientRights>();
     }
 }
