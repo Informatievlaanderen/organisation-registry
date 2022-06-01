@@ -1,19 +1,18 @@
-namespace OrganisationRegistry.Infrastructure.Configuration
+namespace OrganisationRegistry.Infrastructure.Configuration;
+
+using System;
+using Be.Vlaanderen.Basisregisters.Converters.Timestamp;
+using Newtonsoft.Json;
+
+public class OrganisationTerminationConfigurationSection
 {
-    using System;
-    using Be.Vlaanderen.Basisregisters.Converters.Timestamp;
-    using Newtonsoft.Json;
+    public static string Name = "OrganisationTermination";
 
-    public class OrganisationTerminationConfigurationSection
-    {
-        public static string Name = "OrganisationTermination";
+    [JsonConverter(typeof(TimestampConverter))]
+    public DateTime Created
+        => DateTime.Now;
 
-        [JsonConverter(typeof(TimestampConverter))]
-        public DateTime Created
-            => DateTime.Now;
-
-        public string OrganisationCapacityIdsToTerminateEndOfNextYear { get; set; } = null!;
-        public string OrganisationClassificationTypeIdsToTerminateEndOfNextYear { get; set; } = null!;
-        public string FormalFrameworkIdsToTerminateEndOfNextYear { get; set; } = null!;
-    }
+    public string OrganisationCapacityIdsToTerminateEndOfNextYear { get; set; } = null!;
+    public string OrganisationClassificationTypeIdsToTerminateEndOfNextYear { get; set; } = null!;
+    public string FormalFrameworkIdsToTerminateEndOfNextYear { get; set; } = null!;
 }

@@ -1,17 +1,16 @@
-namespace OrganisationRegistry.Infrastructure.Authorization
+namespace OrganisationRegistry.Infrastructure.Authorization;
+
+public enum Role
 {
-    public enum Role
-    {
-        AlgemeenBeheerder,
-        VlimpersBeheerder,
-        DecentraalBeheerder,
-        OrgaanBeheerder,
-        /// <summary>
-        /// Regelgeving en deugdelijk bestuur beheerder
-        /// </summary>
-        RegelgevingBeheerder,
-        Orafin,
-        Developer,
-        AutomatedTask
-    }
+    AlgemeenBeheerder,
+    VlimpersBeheerder,
+    DecentraalBeheerder,
+    OrgaanBeheerder,
+    /// <summary>
+    /// Regelgeving en deugdelijk bestuur beheerder
+    /// </summary>
+    RegelgevingBeheerder,
+    Orafin,
+    Developer,
+    AutomatedTask
 }

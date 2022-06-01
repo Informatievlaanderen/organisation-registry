@@ -1,44 +1,43 @@
-namespace OrganisationRegistry.Infrastructure.Configuration
+namespace OrganisationRegistry.Infrastructure.Configuration;
+
+using System;
+
+public class OrganisationRegistryConfiguration : IOrganisationRegistryConfiguration
 {
-    using System;
+    private readonly ApiConfigurationSection _configuration;
 
-    public class OrganisationRegistryConfiguration : IOrganisationRegistryConfiguration
+    public OrganisationRegistryConfiguration(
+        ApiConfigurationSection configuration,
+        OrganisationTerminationConfigurationSection? terminationConfiguration,
+        AuthorizationConfigurationSection? authorizationConfiguration,
+        CachingConfigurationSection? cachingConfiguration,
+        HostedServicesConfigurationSection? hostedServicesConfiguration)
     {
-        private readonly ApiConfigurationSection _configuration;
+        _configuration = configuration;
 
-        public OrganisationRegistryConfiguration(
-            ApiConfigurationSection configuration,
-            OrganisationTerminationConfigurationSection? terminationConfiguration,
-            AuthorizationConfigurationSection? authorizationConfiguration,
-            CachingConfigurationSection? cachingConfiguration,
-            HostedServicesConfigurationSection? hostedServicesConfiguration)
-        {
-            _configuration = configuration;
-
-            Kbo = new KboConfiguration(configuration, terminationConfiguration);
-            Authorization = new AuthorizationConfiguration(authorizationConfiguration);
-            Caching = new CachingConfiguration(cachingConfiguration);
-            HostedServices = new HostedServicesConfiguration(hostedServicesConfiguration);
-        }
-
-        public Guid OrafinKeyTypeId
-            => _configuration.Orafin_KeyTypeId;
-
-        public Guid VlimpersKeyTypeId
-            => _configuration.Vlimpers_KeyTypeId;
-
-        public Guid FormalNameLabelTypeId
-            => _configuration.FormalNameLabelTypeId;
-
-        public Guid FormalShortNameLabelTypeId
-            => _configuration.FormalShortNameLabelTypeId;
-
-        public string OrafinOvoCode
-            => _configuration.Orafin_OvoCode;
-
-        public IKboConfiguration Kbo { get; }
-        public IAuthorizationConfiguration Authorization { get; }
-        public ICachingConfiguration Caching { get; }
-        public IHostedServicesConfiguration HostedServices { get; }
+        Kbo = new KboConfiguration(configuration, terminationConfiguration);
+        Authorization = new AuthorizationConfiguration(authorizationConfiguration);
+        Caching = new CachingConfiguration(cachingConfiguration);
+        HostedServices = new HostedServicesConfiguration(hostedServicesConfiguration);
     }
+
+    public Guid OrafinKeyTypeId
+        => _configuration.Orafin_KeyTypeId;
+
+    public Guid VlimpersKeyTypeId
+        => _configuration.Vlimpers_KeyTypeId;
+
+    public Guid FormalNameLabelTypeId
+        => _configuration.FormalNameLabelTypeId;
+
+    public Guid FormalShortNameLabelTypeId
+        => _configuration.FormalShortNameLabelTypeId;
+
+    public string OrafinOvoCode
+        => _configuration.Orafin_OvoCode;
+
+    public IKboConfiguration Kbo { get; }
+    public IAuthorizationConfiguration Authorization { get; }
+    public ICachingConfiguration Caching { get; }
+    public IHostedServicesConfiguration HostedServices { get; }
 }

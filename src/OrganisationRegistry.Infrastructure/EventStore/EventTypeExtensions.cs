@@ -1,24 +1,23 @@
-namespace OrganisationRegistry.Infrastructure.EventStore
+namespace OrganisationRegistry.Infrastructure.EventStore;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+public static class EventTypeExtensions
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
+    public static List<string> GetEventTypeNames(this IEnumerable<Type> eventTypes)
+        => eventTypes
+            .Select(et => et.FullName ?? string.Empty)
+            .ToList();
 
-    public static class EventTypeExtensions
+    public static Type ToEventType(this string name)
     {
-        public static List<string> GetEventTypeNames(this IEnumerable<Type> eventTypes)
-            => eventTypes
-                .Select(et => et.FullName ?? string.Empty)
-                .ToList();
+        var typeName = $"{name}, OrganisationRegistry";
+        var maybeType = Type.GetType(typeName);
+        if (maybeType is { } type)
+            return type;
 
-        public static Type ToEventType(this string name)
-        {
-            var typeName = $"{name}, OrganisationRegistry";
-            var maybeType = Type.GetType(typeName);
-            if (maybeType is { } type)
-                return type;
-
-            throw new CannotCreateType(typeName);
-        }
+        throw new CannotCreateType(typeName);
     }
 }

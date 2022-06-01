@@ -1,16 +1,15 @@
-namespace OrganisationRegistry.Infrastructure.Configuration
+namespace OrganisationRegistry.Infrastructure.Configuration;
+
+using System;
+using Be.Vlaanderen.Basisregisters.Converters.Timestamp;
+using Newtonsoft.Json;
+
+public class CachingConfigurationSection
 {
-    using System;
-    using Be.Vlaanderen.Basisregisters.Converters.Timestamp;
-    using Newtonsoft.Json;
+    public static string Name = "Caching";
 
-    public class CachingConfigurationSection
-    {
-        public static string Name = "Caching";
+    [JsonConverter(typeof(TimestampConverter))]
+    public DateTime Created => DateTime.Now;
 
-        [JsonConverter(typeof(TimestampConverter))]
-        public DateTime Created => DateTime.Now;
-
-        public int? UserCacheSlidingExpirationInMinutes { get; set; }
-    }
+    public int? UserCacheSlidingExpirationInMinutes { get; set; }
 }
