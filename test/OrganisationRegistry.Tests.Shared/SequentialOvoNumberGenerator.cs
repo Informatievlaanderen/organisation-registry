@@ -1,16 +1,15 @@
-namespace OrganisationRegistry.Tests.Shared
+namespace OrganisationRegistry.Tests.Shared;
+
+using Organisation;
+
+public class SequentialOvoNumberGenerator : IOvoNumberGenerator
 {
-    using Organisation;
+    private static int _current;
+    private static readonly object Locker = new object();
 
-    public class SequentialOvoNumberGenerator : IOvoNumberGenerator
+    public string GenerateNumber()
     {
-        private static int _current;
-        private static readonly object Locker = new object();
-
-        public string GenerateNumber()
-        {
-            lock (Locker)
-                return $"OVO{++_current:D6}";
-        }
+        lock (Locker)
+            return $"OVO{++_current:D6}";
     }
 }

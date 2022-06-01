@@ -1,26 +1,25 @@
-namespace OrganisationRegistry.SqlServer.IntegrationTests.TestBases
+namespace OrganisationRegistry.SqlServer.IntegrationTests.TestBases;
+
+using System.Data.Common;
+using Infrastructure;
+using Microsoft.EntityFrameworkCore;
+
+public class TestContextFactory : IContextFactory
 {
-    using System.Data.Common;
-    using Infrastructure;
-    using Microsoft.EntityFrameworkCore;
+    private readonly DbContextOptions<OrganisationRegistryContext> _contextOptions;
 
-    public class TestContextFactory : IContextFactory
+    public TestContextFactory(DbContextOptions<OrganisationRegistryContext> contextOptions)
     {
-        private readonly DbContextOptions<OrganisationRegistryContext> _contextOptions;
+        _contextOptions = contextOptions;
+    }
 
-        public TestContextFactory(DbContextOptions<OrganisationRegistryContext> contextOptions)
-        {
-            _contextOptions = contextOptions;
-        }
+    public OrganisationRegistryContext CreateTransactional(DbConnection connection, DbTransaction transaction)
+    {
+        return new OrganisationRegistryContext(_contextOptions);
+    }
 
-        public OrganisationRegistryContext CreateTransactional(DbConnection connection, DbTransaction transaction)
-        {
-            return new OrganisationRegistryContext(_contextOptions);
-        }
-
-        public OrganisationRegistryContext Create()
-        {
-            return new OrganisationRegistryContext(_contextOptions);
-        }
+    public OrganisationRegistryContext Create()
+    {
+        return new OrganisationRegistryContext(_contextOptions);
     }
 }

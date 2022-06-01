@@ -1,60 +1,59 @@
-namespace OrganisationRegistry.Tests.Shared.TestDataBuilders
+namespace OrganisationRegistry.Tests.Shared.TestDataBuilders;
+
+using System;
+using Organisation.Events;
+
+public class OrganisationFormalFrameworkAddedBuilder
 {
-    using System;
-    using Organisation.Events;
+    public Guid OrganisationFormalFrameworkId { get; private set; }
+    public Guid OrganisationId { get; }
+    public Guid FormalFrameworkId { get; }
+    public string FormalFrameworkName { get; }
+    public Guid ParentOrganisationId { get; }
+    public string ParentOrganisationName { get; }
+    public DateTime? ValidFrom { get; private set; }
+    public DateTime? ValidTo { get; private set; }
 
-    public class OrganisationFormalFrameworkAddedBuilder
+    public OrganisationFormalFrameworkAddedBuilder(
+        Guid organisationId,
+        Guid formalFrameworkId,
+        Guid parentOrganisationId)
     {
-        public Guid OrganisationFormalFrameworkId { get; private set; }
-        public Guid OrganisationId { get; }
-        public Guid FormalFrameworkId { get; }
-        public string FormalFrameworkName { get; }
-        public Guid ParentOrganisationId { get; }
-        public string ParentOrganisationName { get; }
-        public DateTime? ValidFrom { get; private set; }
-        public DateTime? ValidTo { get; private set; }
+        OrganisationFormalFrameworkId = Guid.NewGuid();
+        OrganisationId = organisationId;
+        FormalFrameworkId = formalFrameworkId;
+        FormalFrameworkName = parentOrganisationId.ToString();
+        ParentOrganisationId = parentOrganisationId;
+        ParentOrganisationName = parentOrganisationId.ToString();
+        ValidFrom = null;
+        ValidTo = null;
+    }
 
-        public OrganisationFormalFrameworkAddedBuilder(
-            Guid organisationId,
-            Guid formalFrameworkId,
-            Guid parentOrganisationId)
-        {
-            OrganisationFormalFrameworkId = Guid.NewGuid();
-            OrganisationId = organisationId;
-            FormalFrameworkId = formalFrameworkId;
-            FormalFrameworkName = parentOrganisationId.ToString();
-            ParentOrganisationId = parentOrganisationId;
-            ParentOrganisationName = parentOrganisationId.ToString();
-            ValidFrom = null;
-            ValidTo = null;
-        }
+    public OrganisationFormalFrameworkAddedBuilder WithValidity(DateTime? from, DateTime? to)
+    {
+        ValidFrom = from;
+        ValidTo = to;
+        return this;
+    }
 
-        public OrganisationFormalFrameworkAddedBuilder WithValidity(DateTime? from, DateTime? to)
-        {
-            ValidFrom = from;
-            ValidTo = to;
-            return this;
-        }
+    public OrganisationFormalFrameworkAdded Build()
+        => new(
+            OrganisationId,
+            OrganisationFormalFrameworkId,
+            FormalFrameworkId,
+            FormalFrameworkName,
+            ParentOrganisationId,
+            ParentOrganisationName,
+            ValidFrom,
+            ValidTo);
 
-        public OrganisationFormalFrameworkAdded Build()
-            => new(
-                OrganisationId,
-                OrganisationFormalFrameworkId,
-                FormalFrameworkId,
-                FormalFrameworkName,
-                ParentOrganisationId,
-                ParentOrganisationName,
-                ValidFrom,
-                ValidTo);
+    public static implicit operator OrganisationFormalFrameworkAdded(
+        OrganisationFormalFrameworkAddedBuilder builder)
+        => builder.Build();
 
-        public static implicit operator OrganisationFormalFrameworkAdded(
-            OrganisationFormalFrameworkAddedBuilder builder)
-            => builder.Build();
-
-        public OrganisationFormalFrameworkAddedBuilder WithId(Guid organisationFormalFrameworkId)
-        {
-            OrganisationFormalFrameworkId = organisationFormalFrameworkId;
-            return this;
-        }
+    public OrganisationFormalFrameworkAddedBuilder WithId(Guid organisationFormalFrameworkId)
+    {
+        OrganisationFormalFrameworkId = organisationFormalFrameworkId;
+        return this;
     }
 }

@@ -1,16 +1,15 @@
-namespace OrganisationRegistry.Tests.Shared
+namespace OrganisationRegistry.Tests.Shared;
+
+using Body;
+
+public class SequentialBodyNumberGenerator : IBodyNumberGenerator
 {
-    using Body;
+    private static int _current;
+    private static readonly object Locker = new object();
 
-    public class SequentialBodyNumberGenerator : IBodyNumberGenerator
+    public string GenerateNumber()
     {
-        private static int _current;
-        private static readonly object Locker = new object();
-
-        public string GenerateNumber()
-        {
-            lock (Locker)
-                return $"ORG{++_current:D6}";
-        }
+        lock (Locker)
+            return $"ORG{++_current:D6}";
     }
 }

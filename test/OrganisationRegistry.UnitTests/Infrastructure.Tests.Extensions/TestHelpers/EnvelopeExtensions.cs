@@ -1,10 +1,9 @@
-namespace OrganisationRegistry.UnitTests.Infrastructure.Tests.Extensions.TestHelpers
-{
-    using OrganisationRegistry.Infrastructure.Events;
+namespace OrganisationRegistry.UnitTests.Infrastructure.Tests.Extensions.TestHelpers;
 
-    public static class EnvelopeExtensions
-    {
-        public static T UnwrapBody<T>(this IEnvelope source) where T : IEvent<T>
-            => ((IEnvelope<T>) source).Body;
-    }
+using OrganisationRegistry.Infrastructure.Events;
+
+public static class EnvelopeExtensions
+{
+    public static T UnwrapBody<T>(this IEnvelope source) where T : IEvent<T>
+        => ((IEnvelope<T>) source).Body;
 }
