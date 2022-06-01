@@ -1,60 +1,60 @@
-namespace OrganisationRegistry.ElasticSearch.Projections
+namespace OrganisationRegistry.ElasticSearch.Projections;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Client;
+using Microsoft.Extensions.Logging;
+using Osc;
+
+public static class ElasticWriter
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using Client;
-    using Microsoft.Extensions.Logging;
-    using Osc;
+    private static readonly TimeSpan ScrollTimeout = TimeSpan.FromMinutes(5);
 
-    public static class ElasticWriter
+    public static async Task UpdateByScroll<T>(
+        Elastic elastic,
+        ILogger logger,
+        Func<QueryContainerDescriptor<T>, QueryContainer> query,
+        Func<T, Task> updateAction) where T : class
     {
-        private static readonly TimeSpan ScrollTimeout = TimeSpan.FromMinutes(5);
+        await elastic.WriteClient.Indices.RefreshAsync(Indices.Index<T>());
 
-        public static async Task UpdateByScroll<T>(
-            Elastic elastic,
-            ILogger logger,
-            Func<QueryContainerDescriptor<T>, QueryContainer> query,
-            Func<T, Task> updateAction) where T : class
+        var searchResponse = await elastic.TryGetAsync(async () => (await elastic.WriteClient.SearchAsync<T>(
+            search => search
+                .From(0)
+                .Size(Elastic.MaxResultWindow)
+                .Query(query)
+                .Scroll(new Time(ScrollTimeout)))).ThrowOnFailure());
+
+        var documents = new List<T>();
+
+        while (searchResponse.Documents.Any())
         {
-            await elastic.WriteClient.Indices.RefreshAsync(Indices.Index<T>());
-
-            var searchResponse = await elastic.TryGetAsync(async () => (await elastic.WriteClient.SearchAsync<T>(
-                search => search
-                    .From(0)
-                    .Size(Elastic.MaxResultWindow)
-                    .Query(query)
-                    .Scroll(new Time(ScrollTimeout)))).ThrowOnFailure());
-
-            var documents = new List<T>();
-
-            while (searchResponse.Documents.Any())
+            foreach (var document in searchResponse.Documents.ToList())
             {
-                foreach (var document in searchResponse.Documents.ToList())
-                {
-                    await updateAction(document);
-                }
-
-                documents.AddRange(searchResponse.Documents);
-
-                var response = searchResponse;
-                searchResponse = await elastic.TryGetAsync(async () => (await
-                    elastic.WriteClient.ScrollAsync<T>(new Time(ScrollTimeout),
-                        response.ScrollId)).ThrowOnFailure());
-
+                await updateAction(document);
             }
 
-            await elastic.TryAsync(async () => (await
-                    elastic.WriteClient.ClearScrollAsync(new ClearScrollRequest(searchResponse.ScrollId)))
-                .ThrowOnFailure());
+            documents.AddRange(searchResponse.Documents);
 
-            if (!documents.Any())
-                return;
+            var response = searchResponse;
+            searchResponse = await elastic.TryGetAsync(async () => (await
+                elastic.WriteClient.ScrollAsync<T>(new Time(ScrollTimeout),
+                    response.ScrollId)).ThrowOnFailure());
 
-            await elastic.TryAsync(async () =>
-            {
-                elastic.WriteClient.BulkAll(documents, b => b
+        }
+
+        await elastic.TryAsync(async () => (await
+                elastic.WriteClient.ClearScrollAsync(new ClearScrollRequest(searchResponse.ScrollId)))
+            .ThrowOnFailure());
+
+        if (!documents.Any())
+            return;
+
+        await elastic.TryAsync(async () =>
+        {
+            elastic.WriteClient.BulkAll(documents, b => b
                     .BackOffTime("30s")
                     .BackOffRetries(5)
                     .RefreshOnCompleted(false)
@@ -66,8 +66,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                     logger.LogInformation("Writing page {PageNumber}", next.Page);
                 });
 
-                await Task.CompletedTask;
-            });
-        }
+            await Task.CompletedTask;
+        });
     }
 }
