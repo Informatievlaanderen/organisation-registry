@@ -1,12 +1,11 @@
-﻿namespace OrganisationRegistry.Infrastructure.Commands
-{
-    using Messages;
+﻿namespace OrganisationRegistry.Infrastructure.Commands;
 
-    public interface ICommand : IMessage
-    {
-        /// <summary>
-        /// The Expected Version which the Aggregate will become.
-        /// </summary>
-        int ExpectedVersion { get; set; }
-    }
+using Messages;
+
+public interface ICommand : IMessage
+{
+    /// <summary>
+    /// The Expected Version which the Aggregate will become.
+    /// </summary>
+    int ExpectedVersion { get; set; }
 }

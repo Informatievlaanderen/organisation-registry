@@ -1,54 +1,53 @@
-namespace OrganisationRegistry.Infrastructure.Authorization.Cache
+namespace OrganisationRegistry.Infrastructure.Authorization.Cache;
+
+using System;
+using System.Runtime.Caching;
+using System.Threading.Tasks;
+using Configuration;
+
+public class OrganisationSecurityCache: ICache<OrganisationSecurityInformation>
 {
-    using System;
-    using System.Runtime.Caching;
-    using System.Threading.Tasks;
-    using Configuration;
+    private readonly IOrganisationRegistryConfiguration _configuration;
+    private MemoryCache _cache;
 
-    public class OrganisationSecurityCache: ICache<OrganisationSecurityInformation>
+    public OrganisationSecurityCache(IOrganisationRegistryConfiguration configuration)
     {
-        private readonly IOrganisationRegistryConfiguration _configuration;
-        private MemoryCache _cache;
+        _configuration = configuration;
+        _cache = MemoryCache.Default;
+    }
 
-        public OrganisationSecurityCache(IOrganisationRegistryConfiguration configuration)
+    public async Task<OrganisationSecurityInformation> GetOrAdd(string acmId, Func<Task<OrganisationSecurityInformation>> getOrganisationSecurityInformation)
+    {
+        var maybeCachedSecurityInfo = _cache.Get(acmId);
+        if (maybeCachedSecurityInfo is OrganisationSecurityInformation cachedSecurityInfo)
         {
-            _configuration = configuration;
-            _cache = MemoryCache.Default;
+            return cachedSecurityInfo;
         }
 
-        public async Task<OrganisationSecurityInformation> GetOrAdd(string acmId, Func<Task<OrganisationSecurityInformation>> getOrganisationSecurityInformation)
-        {
-            var maybeCachedSecurityInfo = _cache.Get(acmId);
-            if (maybeCachedSecurityInfo is OrganisationSecurityInformation cachedSecurityInfo)
+        var organisationSecurityInformation = await getOrganisationSecurityInformation();
+        Set(acmId, organisationSecurityInformation);
+        return organisationSecurityInformation;
+    }
+
+    public void Set(string acmId, OrganisationSecurityInformation organisationSecurity)
+    {
+        _cache.Set(
+            new CacheItem(acmId, organisationSecurity),
+            new CacheItemPolicy
             {
-                return cachedSecurityInfo;
-            }
+                SlidingExpiration =
+                    TimeSpan.FromMinutes(_configuration.Caching.UserCacheSlidingExpirationInMinutes),
+            });
+    }
 
-            var organisationSecurityInformation = await getOrganisationSecurityInformation();
-            Set(acmId, organisationSecurityInformation);
-            return organisationSecurityInformation;
-        }
+    public void Expire(string acmId)
+    {
+        _cache.Remove(acmId);
+    }
 
-        public void Set(string acmId, OrganisationSecurityInformation organisationSecurity)
-        {
-            _cache.Set(
-                new CacheItem(acmId, organisationSecurity),
-                new CacheItemPolicy
-                {
-                    SlidingExpiration =
-                        TimeSpan.FromMinutes(_configuration.Caching.UserCacheSlidingExpirationInMinutes),
-                });
-        }
-
-        public void Expire(string acmId)
-        {
-            _cache.Remove(acmId);
-        }
-
-        public void ExpireAll()
-        {
-            _cache.Dispose();
-            _cache = MemoryCache.Default;
-        }
+    public void ExpireAll()
+    {
+        _cache.Dispose();
+        _cache = MemoryCache.Default;
     }
 }

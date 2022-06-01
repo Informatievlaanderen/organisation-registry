@@ -1,18 +1,17 @@
-namespace OrganisationRegistry.Infrastructure.Configuration
+namespace OrganisationRegistry.Infrastructure.Configuration;
+
+using System;
+using Be.Vlaanderen.Basisregisters.Converters.Timestamp;
+using Newtonsoft.Json;
+
+public class HostedServicesConfigurationSection
 {
-    using System;
-    using Be.Vlaanderen.Basisregisters.Converters.Timestamp;
-    using Newtonsoft.Json;
+    public static string Name = "HostedServices";
 
-    public class HostedServicesConfigurationSection
-    {
-        public static string Name = "HostedServices";
+    [JsonConverter(typeof(TimestampConverter))]
+    public DateTime Created => DateTime.Now;
 
-        [JsonConverter(typeof(TimestampConverter))]
-        public DateTime Created => DateTime.Now;
-
-        public HostedServiceConfigurationSection? SyncFromKboService { get; set; }
-        public HostedServiceConfigurationSection? ScheduledCommandsService { get; set; }
-        public HostedServiceConfigurationSection? SyncRemovedItemsService { get; set; }
-    }
+    public HostedServiceConfigurationSection? SyncFromKboService { get; set; }
+    public HostedServiceConfigurationSection? ScheduledCommandsService { get; set; }
+    public HostedServiceConfigurationSection? SyncRemovedItemsService { get; set; }
 }

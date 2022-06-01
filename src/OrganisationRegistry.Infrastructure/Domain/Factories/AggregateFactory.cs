@@ -1,24 +1,23 @@
-﻿namespace OrganisationRegistry.Infrastructure.Domain.Factories
+﻿namespace OrganisationRegistry.Infrastructure.Domain.Factories;
+
+using System;
+using Exception;
+
+internal static class AggregateFactory
 {
-    using System;
-    using Exception;
-
-    internal static class AggregateFactory
+    public static T CreateAggregate<T>()
     {
-        public static T CreateAggregate<T>()
+        try
         {
-            try
-            {
-                var maybeInstance = (T?)Activator.CreateInstance(typeof(T), true);
-                if (maybeInstance is { } instance)
-                    return instance;
+            var maybeInstance = (T?)Activator.CreateInstance(typeof(T), true);
+            if (maybeInstance is { } instance)
+                return instance;
 
-                throw new AggregateInstanceNotConstructed(typeof(T));
-            }
-            catch (MissingMethodException)
-            {
-                throw new MissingParameterLessConstructor(typeof(T));
-            }
+            throw new AggregateInstanceNotConstructed(typeof(T));
+        }
+        catch (MissingMethodException)
+        {
+            throw new MissingParameterLessConstructor(typeof(T));
         }
     }
 }

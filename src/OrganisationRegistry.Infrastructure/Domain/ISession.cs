@@ -1,15 +1,14 @@
-﻿namespace OrganisationRegistry.Infrastructure.Domain
+﻿namespace OrganisationRegistry.Infrastructure.Domain;
+
+using System;
+using System.Threading.Tasks;
+using Authorization;
+
+public interface ISession
 {
-    using System;
-    using System.Threading.Tasks;
-    using Authorization;
+    void Add<T>(T aggregate) where T : AggregateRoot;
 
-    public interface ISession
-    {
-        void Add<T>(T aggregate) where T : AggregateRoot;
+    T Get<T>(Guid id, int? expectedVersion = null) where T : AggregateRoot;
 
-        T Get<T>(Guid id, int? expectedVersion = null) where T : AggregateRoot;
-
-        Task Commit(IUser user);
-    }
+    Task Commit(IUser user);
 }

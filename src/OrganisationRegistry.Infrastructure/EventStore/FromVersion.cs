@@ -1,7 +1,6 @@
-namespace OrganisationRegistry.Infrastructure.EventStore
+namespace OrganisationRegistry.Infrastructure.EventStore;
+
+public static class FromVersion
 {
-    public static class FromVersion
-    {
-        public const int Start = -1;
-    }
+    public const int Start = -1;
 }
