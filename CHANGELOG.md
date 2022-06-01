@@ -1,3 +1,23 @@
+# [1.197.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.196.0...v1.197.0) (2022-06-01)
+
+
+### Features
+
+* or-1071 refactor namespaces api ([ea23f33](https://github.com/informatievlaanderen/organisation-registry/commit/ea23f33c2ef987bcf637c832bdf98628812734aa))
+* or-1071 refactor namespaces configuration.database ([31d9e79](https://github.com/informatievlaanderen/organisation-registry/commit/31d9e7952079dbe6074ce516ca0f1a775bcc211f))
+* or-1071 refactor namespaces elasticsearch ([85d6e55](https://github.com/informatievlaanderen/organisation-registry/commit/85d6e55b588c83eec36641f243cff4a0cdfd92fa))
+* or-1071 refactor namespaces elasticsearch.projections ([9e6d84e](https://github.com/informatievlaanderen/organisation-registry/commit/9e6d84ebd98578df869113626bd869da86a30547))
+* or-1071 refactor namespaces infrastructure ([7937768](https://github.com/informatievlaanderen/organisation-registry/commit/79377682e7cac9d9dc90f921faacc86753540b8c))
+* or-1071 refactor namespaces kbomutations ([b4b7956](https://github.com/informatievlaanderen/organisation-registry/commit/b4b79560f24139bbd0284b5c07e4baf367d489da))
+* or-1071 refactor namespaces magda ([72238db](https://github.com/informatievlaanderen/organisation-registry/commit/72238dbe667032c4f6e95285ecd917c3eda736c1))
+* or-1071 refactor namespaces projections.delegations ([21a34a6](https://github.com/informatievlaanderen/organisation-registry/commit/21a34a6fb9cd817dab4ed280d7a56aca596e1e82))
+* or-1071 refactor namespaces projections.reporting ([2cc36ac](https://github.com/informatievlaanderen/organisation-registry/commit/2cc36acc74958ee665bdb34ba6d3d51feaf90709))
+* or-1071 refactor namespaces rebuilder ([782d246](https://github.com/informatievlaanderen/organisation-registry/commit/782d246d97495b38ea5ff2b6953e9769ef6e44bc))
+* or-1071 refactor namespaces sqlserver ([eb8498e](https://github.com/informatievlaanderen/organisation-registry/commit/eb8498e044acf81465b5a6037aa57c3b5210112b))
+* or-1071 refactor namespaces tests ([4ef3749](https://github.com/informatievlaanderen/organisation-registry/commit/4ef374925fb58ac265c38f83924f36fd9a70f5e2))
+* or-1071 refactor namespaces ui ([f77ac98](https://github.com/informatievlaanderen/organisation-registry/commit/f77ac98ce619f3ed690a2b58d41a19d8609c7cdb))
+* or-1071 refactor namespaces vlaanderenbenotifier ([76e5168](https://github.com/informatievlaanderen/organisation-registry/commit/76e5168d09d43bf07356d68ed3063af5176e98c3))
+
 # [1.196.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.195.0...v1.196.0) (2022-06-01)
 
 
