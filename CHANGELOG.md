@@ -1,3 +1,10 @@
+# [1.196.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.195.0...v1.196.0) (2022-06-01)
+
+
+### Features
+
+* or-1039 validate uniqueness of references ([c3bda15](https://github.com/informatievlaanderen/organisation-registry/commit/c3bda15777730386d83a7f1ad96b06528d55f23f))
+
 # [1.195.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.194.9...v1.195.0) (2022-06-01)
 
 
