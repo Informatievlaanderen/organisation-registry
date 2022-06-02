@@ -1,3 +1,10 @@
+# [1.199.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.198.0...v1.199.0) (2022-06-02)
+
+
+### Features
+
+* or-1076 fix empty body number ([a3f3161](https://github.com/informatievlaanderen/organisation-registry/commit/a3f3161491d78c8ba4a127530135cf46f8453eee))
+
 # [1.198.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.197.0...v1.198.0) (2022-06-02)
 
 
