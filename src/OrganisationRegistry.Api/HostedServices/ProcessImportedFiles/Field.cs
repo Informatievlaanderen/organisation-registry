@@ -14,7 +14,7 @@ public class Field
     public bool ShouldHaveValue { get; }
 
     public bool HasValue
-        => !string.IsNullOrEmpty(Value);
+        => !string.IsNullOrWhiteSpace(Value);
 
     public static Field NoValue(string columnName)
         => new(columnName, value: null, shouldHaveValue: false);
