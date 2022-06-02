@@ -123,8 +123,10 @@ namespace OpenSearch.Net
 
 		private static bool TryGetVersionFromAssemblyPath(Assembly assembly, out string runtimeVersion)
 		{
-			var assemblyPath = assembly.CodeBase.Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
-			var netCoreAppIndex = Array.IndexOf(assemblyPath, "Microsoft.NETCore.App");
+#pragma warning disable SYSLIB0012
+            var assemblyPath = assembly.CodeBase.Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
+#pragma warning restore SYSLIB0012
+            var netCoreAppIndex = Array.IndexOf(assemblyPath, "Microsoft.NETCore.App");
 			if (netCoreAppIndex > 0 && netCoreAppIndex < assemblyPath.Length - 2)
 			{
 				runtimeVersion = assemblyPath[netCoreAppIndex + 1];
@@ -160,7 +162,7 @@ namespace OpenSearch.Net
 				if (releaseVersionIndex > 0)
 				{
 					version = productVersion.Substring(releaseVersionIndex + releaseVersionPrefix.Length);
-					return true;					
+					return true;
 				}
 			}
 

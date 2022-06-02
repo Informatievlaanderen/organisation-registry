@@ -49,7 +49,7 @@ public static class MassUpdatePersonExtension
 
     public static async Task MassUpdatePersonAsync(
         this Elastic client,
-        Expression<Func<PersonDocument, object>> queryFieldSelector,
+        Expression<Func<PersonDocument, object?>> queryFieldSelector,
         object queryFieldValue,
         string listPropertyName,
         string idPropertyName,
@@ -85,5 +85,4 @@ public static class MassUpdatePersonExtension
                             .Add("newChangeTime", changeTime)))))
             .ThrowOnFailure();
     }
-
 }

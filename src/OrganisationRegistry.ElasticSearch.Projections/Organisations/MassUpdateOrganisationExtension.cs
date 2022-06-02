@@ -49,7 +49,7 @@ public static class MassUpdateOrganisationExtension
 
     public static async Task MassUpdateOrganisationAsync(
         this Elastic client,
-        Expression<Func<OrganisationDocument, object>> queryFieldSelector,
+        Expression<Func<OrganisationDocument, object?>> queryFieldSelector,
         object queryFieldValue,
         string listPropertyName,
         string idPropertyName,
