@@ -1,0 +1,19 @@
+﻿lijnnummer;fout
+2;De waarde 'REF1' komt meerdere keren voor in de kolom 'reference'.
+3;Rij ontbreekt waarde voor volgende kolommen: 'reference'.
+4;De waarde 'REF1' komt meerdere keren voor in de kolom 'reference'.
+5;De waarde 'OVOREF4' is ongeldig voor kolom 'reference' (Waarde mag niet beginnen met 'OVO').
+6;Rij ontbreekt waarde voor volgende kolommen: 'parent'.
+7;Parent met Ovo nummer 'IKBESTANI' werd niet gevonden.
+8;Parent met Ovo nummer 'OVO001828' is reeds afgesloten.
+9;Rij ontbreekt waarde voor volgende kolommen: 'name'.
+11;Parent met Ovo nummer 'OVO002949' heeft al een dochter met naam 'afdeling hr'.
+13;De waarde 'datum' is ongeldig voor kolom 'validity_start' (Vereist formaat: 'YYYY-MM-DD').
+14;De waarde '2022-02-30' is ongeldig voor kolom 'validity_start' (Vereist formaat: 'YYYY-MM-DD').
+15;De waarde '01-01-2022' is ongeldig voor kolom 'validity_start' (Vereist formaat: 'YYYY-MM-DD').
+18;De waarde 'een' is ongeldig voor kolom 'article' (Geldige waarden: 'de', 'het').
+20;De waarde 'datum' is ongeldig voor kolom 'operationalvalidity_start' (Vereist formaat: 'YYYY-MM-DD').
+21;De waarde '2022-02-30' is ongeldig voor kolom 'operationalvalidity_start' (Vereist formaat: 'YYYY-MM-DD').
+22;De waarde '01-01-2022' is ongeldig voor kolom 'operationalvalidity_start' (Vereist formaat: 'YYYY-MM-DD').
+23;Rij heeft incorrect aantal kolommen.
+24;Rij heeft incorrect aantal kolommen.

@@ -7,6 +7,6 @@
 9;De waarde '2022-31-12' is ongeldig voor kolom 'validity_start' (Vereist formaat: 'YYYY-MM-DD').
 10;De waarde '2022-31-12' is ongeldig voor kolom 'validity_start' (Vereist formaat: 'YYYY-MM-DD').
 10;De waarde 'ongeldig' is ongeldig voor kolom 'operationalvalidity_start' (Vereist formaat: 'YYYY-MM-DD').
-11;De waarde 'ovo00016' is ongeldig voor kolom 'reference' (Waarde mag niet beginnen met 'OVO').
+11;De waarde 'ovo000016' is ongeldig voor kolom 'reference' (Waarde mag niet beginnen met 'OVO').
 12;De waarde 'duplicateRef' komt meerdere keren voor in de kolom 'reference'.
 13;De waarde 'duplicateRef' komt meerdere keren voor in de kolom 'reference'.

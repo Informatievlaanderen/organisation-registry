@@ -1,13 +1,14 @@
 ﻿namespace OrganisationRegistry.Api.HostedServices.ProcessImportedFiles;
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 public static class FileValidator
 {
-    public static ValidationIssues Validate(IReadOnlyList<ParsedRecord> parsedRecords)
+    public static ValidationIssues Validate(ImportCache importCache, DateOnly today, IReadOnlyList<ParsedRecord> parsedRecords)
         => new ValidationIssues()
-            .AddRange(RecordValidator.Validate(parsedRecords))
+            .AddRange(RecordValidator.Validate(importCache, today, parsedRecords))
             .AddRange(ValidationDuplicateReferences(parsedRecords));
 
     private static ValidationIssues ValidationDuplicateReferences(IEnumerable<ParsedRecord> parsedRecords)

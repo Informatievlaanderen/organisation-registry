@@ -4,13 +4,27 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Api.HostedServices.ProcessImportedFiles;
+using AutoFixture;
 using FluentAssertions;
+using SqlServer.Organisation;
 using Xunit;
 
 public class WhenValidatingTheCsvImportFileContent
 {
     private static List<ValidationIssue> Validate(IEnumerable<ParsedRecord> parsedRecords)
-        => RecordValidator.Validate(parsedRecords).Items.ToList();
+    {
+        var fixture = new Fixture();
+        var today = DateOnly.FromDateTime(fixture.Create<DateTime>());
+
+        var importCache = FakeImportCache.Create(
+            new List<OrganisationListItem>
+            {
+                new() { Name = fixture.Create<string>(), OvoNumber = "OVO000025" },
+                new() { Name = fixture.Create<string>(), OvoNumber = "OVO000026" },
+                new() { Name = fixture.Create<string>(), OvoNumber = "OVO000027" },
+            });
+        return RecordValidator.Validate(importCache, today, parsedRecords).Items.ToList();
+    }
 
     private static ParsedRecord GetParsedrecord(int rowNumber, string reference, string parent, string name)
         => new(
@@ -29,9 +43,9 @@ public class WhenValidatingTheCsvImportFileContent
         // Arrange
         var parsedRecords = new List<ParsedRecord>()
         {
-            GetParsedrecord(2, "", "ovo00025", "name1"),
-            GetParsedrecord(3, "REF2", "ovo00026", ""),
-            GetParsedrecord(4, "", "ovo00027", "")
+            GetParsedrecord(2, "", "ovo000025", "name1"),
+            GetParsedrecord(3, "REF2", "ovo000026", ""),
+            GetParsedrecord(4, "", "ovo000027", "")
         };
 
         // Act
