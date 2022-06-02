@@ -62,7 +62,7 @@ public class RegisterBodyCommandHandler
 
     private string GetBodyNumber(RegisterBody message)
     {
-        if (message.BodyNumber is not { } bodyNumber)
+        if (message.BodyNumber is not { } bodyNumber || string.IsNullOrWhiteSpace(bodyNumber))
             return _bodyNumberGenerator.GenerateNumber();
 
         if (_uniqueBodyNumberValidator.IsBodyNumberTaken(bodyNumber))
