@@ -1,5 +1,6 @@
 ﻿namespace OrganisationRegistry.Api.HostedServices.ProcessImportedFiles;
 
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -11,11 +12,10 @@ using Validators;
 
 public static class ImportFileParser
 {
-    public static (bool validationOk, string serializedOutput, CsvOutputResult? csvOutput) Parse(
-        ImportOrganisationsStatusListItem importFile)
+    public static (bool validationOk, string serializedOutput, CsvOutputResult? csvOutput) Parse(ImportCache importCache, DateOnly today, ImportOrganisationsStatusListItem importFile)
     {
         var parsedRecords = ParseContent(importFile.FileContent).ToList();
-        var validationIssues = FileValidator.Validate(parsedRecords);
+        var validationIssues = FileValidator.Validate(importCache, today, parsedRecords);
         if (validationIssues.Items.Any())
         {
             var csvIssueOutput = CsvOutputResult.WithIssues(validationIssues);

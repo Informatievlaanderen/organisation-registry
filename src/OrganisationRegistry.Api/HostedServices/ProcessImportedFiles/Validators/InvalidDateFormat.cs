@@ -18,14 +18,14 @@ public static class InvalidDateFormat
     {
         if (!field.ShouldHaveValue)
             return null;
-        if (field.Value is not { } fieldValue)
+        if (!field.HasValue)
             return null;
 
-        return DateTime.TryParseExact(fieldValue, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out _)
+        return DateTime.TryParseExact(field.Value, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out _)
             ? null
-            : new ValidationIssue(rowNumber, FormatMessage(fieldValue, field.ColumnName));
+            : new ValidationIssue(rowNumber, FormatMessage(field.Value, field.ColumnName));
     }
 
-    public static string FormatMessage(string fieldValue, string columnName)
+    public static string FormatMessage(string? fieldValue, string columnName)
         => $"De waarde '{fieldValue}' is ongeldig voor kolom '{columnName}' (Vereist formaat: 'YYYY-MM-DD').";
 }

@@ -1,0 +1,13 @@
+﻿reference; parent; name; validity_start; shortname; operationalvalidity_start; article
+;ovo000012;name1;2022-05-31;sn1;2022-05-31;de
+ref2;ovo000013;name1;2022-04-30;sn2;2022-05-01
+ref3;ovo000014;;2022-03-15;sn3;2022-03-31;het
+ref4;ovo000015;name1;2022-02-16;sn4;2022-02-20;de
+ref5;ovo000016;name1;2022-01-16;sn5;2022-02-20;de
+;ovo000017;;2022-01-18;sn6;2022-02-20;de
+ref6;ovo000016;name1;2022-01-16;sn5;2022-02-20;fout artikel
+ref7;ovo000016;name1;2022-31-12;sn5;2022-02-20;de
+ref8;ovo000016;name1;2022-31-12;sn5;ongeldig;de
+ovo000016;ovo000016;name1;2022-12-31;sn5;2022-12-31;de
+duplicateRef;ovo000018;name18;2022-01-18;sn18;2022-02-20;de
+duplicateRef;ovo000019;name19;2022-01-19;sn19;2022-02-20;het

@@ -19,5 +19,9 @@
     <Compile Include="..\..\SolutionInfo.cs" Link="Properties\SolutionInfo.cs" />
   </ItemGroup>
 
+  <PropertyGroup>
+    <NoWarn>8618,8604,8602</NoWarn>
+  </PropertyGroup>
+
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

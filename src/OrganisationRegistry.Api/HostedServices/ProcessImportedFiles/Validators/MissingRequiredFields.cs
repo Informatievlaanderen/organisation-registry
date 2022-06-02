@@ -14,6 +14,7 @@ public static class MissingRequiredFields
     private static IEnumerable<string> DetermineMissingRequiredFields(DeserializedRecord record)
     {
         if (!record.Reference.HasValue) yield return ColumnNames.Reference;
+        if (!record.Parent.HasValue) yield return ColumnNames.Parent;
         if (!record.Name.HasValue) yield return ColumnNames.Name;
     }
 }

@@ -1,5 +1,8 @@
 ﻿namespace OrganisationRegistry.Api.HostedServices;
 
+using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,6 +12,7 @@ using ProcessImportedFiles;
 using SqlServer;
 using SqlServer.Import.Organisations;
 using SqlServer.Infrastructure;
+using SqlServer.Organisation;
 
 public class ProcessImportedFilesService : BackgroundService
 {
@@ -48,7 +52,9 @@ public class ProcessImportedFilesService : BackgroundService
             return;
         }
 
-        var (validationOk, serializedOutput, csvOutput) = ImportFileParser.Parse(importFile);
+        var importCache = ImportCache.Create(context);
+
+        var (validationOk, serializedOutput, csvOutput) = ImportFileParser.Parse(importCache, DateOnly.FromDateTime(dateTimeProvider.Today), importFile);
         if (validationOk)
         {
             // TODO Process Records
@@ -80,4 +86,17 @@ public class ProcessImportedFilesService : BackgroundService
         importFile.LastProcessedAt = dateTimeProvider.UtcNow;
         importFile.OutputFileContent = outputFileContent;
     }
+}
+
+public class ImportCache
+{
+    protected ImportCache(IEnumerable<OrganisationListItem> organisations)
+    {
+        OrganisationsCache = organisations.ToImmutableList();
+    }
+
+    public ImmutableList<OrganisationListItem> OrganisationsCache { get; }
+
+    public static ImportCache Create(OrganisationRegistryContext context)
+        => new(context.OrganisationList.AsNoTracking());
 }
