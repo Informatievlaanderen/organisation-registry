@@ -61,7 +61,7 @@ public class WhenImportingACsvFile
         var importCsv = GetType().Assembly.GetResourceString(inputFileResourceName);
         var outputCsv = GetType().Assembly.GetResourceString(outputFileResourceName);
 
-        var result = Parse(importCsv.ReplaceLineEndings(Environment.NewLine));
+        var result = Parse(importCsv).ReplaceLineEndings(Environment.NewLine);
         result.Should().Be(outputCsv.ReplaceLineEndings(Environment.NewLine));
     }
 }
