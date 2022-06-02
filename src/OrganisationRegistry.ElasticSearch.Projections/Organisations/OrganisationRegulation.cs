@@ -43,7 +43,7 @@ public class OrganisationRegulation :
     public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RegulationSubThemeUpdated> message)
         => await new ElasticMassChange
         (
-            elastic => elastic.TryAsync(() => elastic
+            async elastic => await elastic.TryAsync(() => elastic
                 .MassUpdateOrganisationAsync(
                     x => x.Regulations.Single().RegulationSubThemeId, message.Body.RegulationSubThemeId,
                     "regulations", "regulationSubThemeId",
