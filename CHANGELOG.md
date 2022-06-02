@@ -1,3 +1,17 @@
+# [1.198.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.197.0...v1.198.0) (2022-06-02)
+
+
+### Bug Fixes
+
+* or-1039 datevalidator: check for null or whitespace instead of nullorempty ([af89303](https://github.com/informatievlaanderen/organisation-registry/commit/af893032373c32ed9048bb796fc37eb9e2b57bb1))
+* or-1039 fix testfiles: columnnames ([234357e](https://github.com/informatievlaanderen/organisation-registry/commit/234357e8b7a69e45e714870ba5124ab32733171c))
+* or-1039 fix unittests ([8e6b312](https://github.com/informatievlaanderen/organisation-registry/commit/8e6b312dac6d57089b6bcb5966746cdcee087fb0))
+
+
+### Features
+
+* or-1039 validate parent values ([7347e8f](https://github.com/informatievlaanderen/organisation-registry/commit/7347e8feea7e79e36a4f5813d6709a3e204747c2))
+
 # [1.197.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.196.0...v1.197.0) (2022-06-01)
 
 
