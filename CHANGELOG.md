@@ -1,3 +1,11 @@
+## [1.199.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.199.0...v1.199.1) (2022-06-03)
+
+
+### Bug Fixes
+
+* or-1039 fix cache queries ([9dc29e9](https://github.com/informatievlaanderen/organisation-registry/commit/9dc29e95d18d4a466dd1dc0e4b2cc70b577430bb))
+* or-1039 fix unit test ([0fa6533](https://github.com/informatievlaanderen/organisation-registry/commit/0fa65331e103e6eddb8abbe7a17ef3514fe56727))
+
 # [1.199.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.198.0...v1.199.0) (2022-06-02)
 
 
