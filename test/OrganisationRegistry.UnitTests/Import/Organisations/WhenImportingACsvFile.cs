@@ -46,7 +46,8 @@ public class WhenImportingACsvFile
                 new() { OvoNumber = "OVO000123", ParentOrganisationId = parentId, Name = "afdeling hr" },
             });
 
-        return ImportFileParser.Parse(importCache, today, importOrganisationStatusListItem).serializedOutput;
+        var parseResult = ImportFileParser.Parse(importOrganisationStatusListItem);
+        return ImportFileValidator.Validate(importCache, today, parseResult).serializedOutput;
     }
 
     [Theory]

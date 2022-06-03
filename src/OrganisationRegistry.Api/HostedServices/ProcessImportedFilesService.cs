@@ -52,9 +52,14 @@ public class ProcessImportedFilesService : BackgroundService
             return;
         }
 
-        var importCache = ImportCache.Create(context);
+        var parseResult = ImportFileParser.Parse(importFile);
 
-        var (validationOk, serializedOutput, csvOutput) = ImportFileParser.Parse(importCache, DateOnly.FromDateTime(dateTimeProvider.Today), importFile);
+        var importCache = ImportCache.Create(context, parseResult, dateTimeProvider.Today);
+
+        var (validationOk, serializedOutput, csvOutput) = ImportFileValidator.Validate(
+            importCache,
+            DateOnly.FromDateTime(dateTimeProvider.Today),
+            parseResult);
         if (validationOk)
         {
             // TODO Process Records
@@ -66,7 +71,9 @@ public class ProcessImportedFilesService : BackgroundService
         await context.SaveChangesAsync(cancellationToken);
     }
 
-    private static async Task<ImportOrganisationsStatusListItem?> MaybeGetNextImportFile(OrganisationRegistryContext context, CancellationToken cancellationToken)
+    private static async Task<ImportOrganisationsStatusListItem?> MaybeGetNextImportFile(
+        OrganisationRegistryContext context,
+        CancellationToken cancellationToken)
         => await context.ImportOrganisationsStatusList
             .Where(listItem => listItem.Status == ImportProcessStatus.Processing)
             .OrderBy(listItem => listItem.UploadedAt)
@@ -97,6 +104,25 @@ public class ImportCache
 
     public ImmutableList<OrganisationListItem> OrganisationsCache { get; }
 
-    public static ImportCache Create(OrganisationRegistryContext context)
-        => new(context.OrganisationList.AsNoTracking());
+    public static ImportCache Create(OrganisationRegistryContext context, ParseResult parseResult, DateTime today)
+    {
+        var parentOvoNumbers = parseResult.ParsedRecords
+            .Select(parsedRecord => parsedRecord.OutputRecord)
+            .Select(outputRecord => outputRecord?.Parent.Value)
+            .Where(ovoNumber => !string.IsNullOrWhiteSpace(ovoNumber))
+            .Select(ovoNumber => ovoNumber!.ToLower())
+            .Distinct()
+            .ToList();
+
+        var organisationsInScope = context.OrganisationList
+            .Where(
+                org => parentOvoNumbers.Contains(org.OvoNumber) ||
+                       parentOvoNumbers.Contains(org.ParentOrganisationOvoNumber!))
+            .Where(org => !org.ValidTo.HasValue || org.ValidTo.Value < today);
+
+
+        return new ImportCache(
+            organisationsInScope
+                .AsNoTracking());
+    }
 }
