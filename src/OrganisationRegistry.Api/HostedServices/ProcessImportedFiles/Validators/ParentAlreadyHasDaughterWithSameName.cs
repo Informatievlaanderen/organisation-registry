@@ -13,12 +13,9 @@ public static class ParentAlreadyHasDaughterWithSameName
         if (record.Parent.Value is not { } parent || parent.IsNullOrWhiteSpace())
             return null;
 
-        if (organisationsCache.SingleOrDefault(org => org.OvoNumber.Equals(parent, StringComparison.InvariantCultureIgnoreCase)) is not { } parentOrganisation)
-            return null;
-
         return organisationsCache
             .Where(org => org.Name.Equals(record.Name.Value, StringComparison.InvariantCultureIgnoreCase))
-            .Any(org => org.ParentOrganisationId != null && org.ParentOrganisationId == parentOrganisation.OrganisationId)
+            .Any(org => org.ParentOrganisationOvoNumber != null && org.ParentOrganisationOvoNumber == record.Parent.Value)
             ? new ValidationIssue(rowNumber, FormatMessage(parent, record.Name.Value))
             : null;
     }
