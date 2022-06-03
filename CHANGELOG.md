@@ -1,3 +1,10 @@
+## [1.199.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.199.1...v1.199.2) (2022-06-03)
+
+
+### Bug Fixes
+
+* or-1039 fix parent validation again ([4cad485](https://github.com/informatievlaanderen/organisation-registry/commit/4cad48510b38201e183c8dea2c99ed3f49e0c1e2))
+
 ## [1.199.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.199.0...v1.199.1) (2022-06-03)
 
 
