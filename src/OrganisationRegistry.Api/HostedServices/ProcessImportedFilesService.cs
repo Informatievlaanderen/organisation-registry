@@ -117,9 +117,7 @@ public class ImportCache
         var organisationsInScope = context.OrganisationList
             .Where(
                 org => parentOvoNumbers.Contains(org.OvoNumber) ||
-                       parentOvoNumbers.Contains(org.ParentOrganisationOvoNumber!))
-            .Where(org => !org.ValidTo.HasValue || org.ValidTo.Value < today);
-
+                       parentOvoNumbers.Contains(org.ParentOrganisationOvoNumber!));
 
         return new ImportCache(
             organisationsInScope

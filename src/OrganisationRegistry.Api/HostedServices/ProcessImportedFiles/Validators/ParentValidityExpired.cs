@@ -26,12 +26,15 @@ public static class ParentValidityExpired
     {
         if (record.Parent.Value is not { } parent || parent.IsNullOrWhiteSpace()) yield break;
 
-        if (!organisationsCache.Any(
-                org => org.ValidTo is { } validTo &&
-                       validTo < today.ToDateTime(new TimeOnly()) &&
-                       org.OvoNumber.Equals(
-                           parent,
-                           StringComparison.InvariantCultureIgnoreCase)))
+        var parents = organisationsCache.Where(
+            org => org.OvoNumber.Equals(
+                parent,
+                StringComparison.InvariantCultureIgnoreCase))
+            .ToImmutableList();
+
+        if (!parents.Any()) yield break;
+
+        if (parents.Any(org => org.ValidTo is not { } validTo || validTo > today.ToDateTime(new TimeOnly())))
             yield break;
 
         yield return parent;
