@@ -46,7 +46,7 @@ public class SyncRemovedItemsService : BackgroundService
 
             await RemoveOrganisationItems(_commandSender, _contextFactory);
 
-            await DelaySeconds(_configuration.DelayInSeconds, cancellationToken);
+            await _configuration.Delay(cancellationToken);
         }
     }
 
@@ -82,7 +82,4 @@ public class SyncRemovedItemsService : BackgroundService
             await sendCommand(removeOrganisationItem, WellknownUsers.SyncRemovedItemsService);
         }
     }
-
-    private static Task DelaySeconds(int intervalSeconds, CancellationToken cancellationToken)
-        => Task.Delay(TimeSpan.FromSeconds(intervalSeconds), cancellationToken);
 }

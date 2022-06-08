@@ -19,10 +19,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Import\Organisations\Validators" />
     <Folder Include="MagdaResponses" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="ImportFileProcessor\expected_input.csv" />
+    <EmbeddedResource Include="ImportFileProcessor\expected_output.csv" />
     <EmbeddedResource Include="Import\Organisations\WhenImportingACsvFile_2_hasNoErrors_input.csv" />
     <EmbeddedResource Include="Import\Organisations\WhenImportingACsvFile_2_hasNoErrors_output.csv" />
     <EmbeddedResource Include="Import\Organisations\WhenImportingACsvFile_1_hasErrors_input.csv" />

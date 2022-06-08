@@ -54,6 +54,10 @@ public class OrganisationDetailItem
 
     public bool IsTerminated { get; set; }
     public bool UnderVlimpersManagement { get; set; }
+
+    public Guid? SourceId { get; set; }
+    public string? SourceType { get; set; }
+    public string? SourceOrganisationIdentifier { get; set; }
 }
 
 public class OrganisationDetailConfiguration : EntityMappingConfiguration<OrganisationDetailItem>
@@ -91,6 +95,10 @@ public class OrganisationDetailConfiguration : EntityMappingConfiguration<Organi
         b.HasIndex(x => x.OvoNumber).IsUnique();
         b.HasIndex(x => x.Name).IsClustered();
         b.HasIndex(x => x.ParentOrganisation);
+
+        b.Property(p => p.SourceId);
+        b.Property(p => p.SourceType);
+        b.Property(p => p.SourceOrganisationIdentifier);
     }
 }
 

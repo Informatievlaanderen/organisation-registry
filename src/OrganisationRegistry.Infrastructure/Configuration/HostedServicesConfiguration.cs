@@ -15,8 +15,13 @@ public class HostedServicesConfiguration : IHostedServicesConfiguration
         SyncRemovedItemsService = new HostedServiceConfiguration(
             configuration?.SyncRemovedItemsService?.DelayInSeconds ?? 3600,
             configuration?.SyncRemovedItemsService?.Enabled ?? true);
+
+        ProcessImportedFileService = new HostedServiceConfiguration(
+            configuration?.ProcessImportedFileService?.DelayInSeconds ?? 15,
+            configuration?.ProcessImportedFileService?.Enabled ?? true);
     }
     public HostedServiceConfiguration SyncFromKboService { get; }
     public HostedServiceConfiguration ScheduledCommandsService { get; }
     public HostedServiceConfiguration SyncRemovedItemsService { get; }
+    public HostedServiceConfiguration ProcessImportedFileService { get; }
 }

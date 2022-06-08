@@ -10,9 +10,9 @@ using SqlServer.Organisation;
 using Tests.Shared;
 using Xunit;
 
-public class WhenImportingACsvFile
+public class WhenImportingACorrectCsvFile
 {
-    private static string Parse(string csvToParse)
+    private static ValidationIssues Parse(string csvToParse)
     {
         var fixture = new Fixture();
         var today = DateOnly.FromDateTime(fixture.Create<DateTime>());
@@ -47,22 +47,21 @@ public class WhenImportingACsvFile
             });
 
         var parseResult = ImportFileParser.Parse(importOrganisationStatusListItem);
-        return ImportFileValidator.Validate(importCache, today, parseResult).serializedOutput;
+        return ImportFileValidator.Validate(importCache, today, parseResult);
+
     }
 
+
     [Theory]
-    [InlineData("1_hasErrors_input.csv", "1_hasErrors_output.csv")]
-    [InlineData("2_hasNoErrors_input.csv", "2_hasNoErrors_output.csv")]
-    [InlineData("3_hasErrors_input.csv", "3_hasErrors_output.csv")]
-    public void GivenAnInputFile_ThenItReturnsAnOutputFile(string inputFile, string outputFile)
+    [InlineData("2_hasNoErrors_input.csv")]
+    public void GivenACorrectInputFile_ThenItReturnsASuccessOutputFile(string inputFile)
     {
-        var inputFileResourceName = $"OrganisationRegistry.UnitTests.Import.Organisations.WhenImportingACsvFile_{inputFile}";
-        var outputFileResourceName = $"OrganisationRegistry.UnitTests.Import.Organisations.WhenImportingACsvFile_{outputFile}";
-
+        var inputFileResourceName =
+            $"OrganisationRegistry.UnitTests.Import.Organisations.WhenImportingACsvFile_{inputFile}";
         var importCsv = GetType().Assembly.GetResourceString(inputFileResourceName);
-        var outputCsv = GetType().Assembly.GetResourceString(outputFileResourceName);
 
-        var result = Parse(importCsv).ReplaceLineEndings(Environment.NewLine);
-        result.Should().Be(outputCsv.ReplaceLineEndings(Environment.NewLine));
+        var issues = Parse(importCsv);
+
+        issues.Items.Should().BeEmpty();
     }
 }

@@ -1,21 +1,13 @@
 ﻿namespace OrganisationRegistry.Api.HostedServices.ProcessImportedFiles;
 
 using System;
-using System.Linq;
+using System.Collections.Generic;
 
 public static class ImportFileValidator
 {
-    public static (bool validationOk, string serializedOutput, CsvOutputResult? csvOutput) Validate(ImportCache importCache, DateOnly today, ParseResult parseResult)
-    {
-        var (parsedRecords, importFileContent) = parseResult;
-        var validationIssues = FileValidator.Validate(importCache, today, parsedRecords);
-        if (validationIssues.Items.Any())
-        {
-            var csvIssueOutput = CsvOutputResult.WithIssues(validationIssues);
-            return (false, OutputSerializer.Serialize(csvIssueOutput), csvIssueOutput);
-        }
-
-        var csvRecordOutput = CsvOutputResult.WithRecords(parsedRecords.Select(r => OutputRecord.From(r.OutputRecord!)));
-        return (true, importFileContent, csvRecordOutput);
-    }
+    public static ValidationIssues Validate(
+        ImportCache importCache,
+        DateOnly today,
+        List<ParsedRecord> parsedRecords)
+        => FileValidator.Validate(importCache, today, parsedRecords);
 }
