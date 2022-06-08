@@ -165,8 +165,11 @@ public class OrganisationKeyListView :
             return;
 
         await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+
+#pragma warning disable CA1841
         var keys = context.OrganisationKeyList.Where(
-            item => keysToTerminate.ContainsKey(item.OrganisationKeyId));
+            item => keysToTerminate.Keys.Contains(item.OrganisationKeyId));
+#pragma warning restore CA1841
 
         foreach (var key in keys)
             key.ValidTo = keysToTerminate[key.OrganisationKeyId];
