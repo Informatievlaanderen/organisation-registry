@@ -11,8 +11,8 @@ using Validators;
 
 public static class ImportFileParser
 {
-    public static ParseResult Parse(ImportOrganisationsStatusListItem importFile)
-        => new(ParseContent(importFile.FileContent).ToList(), importFile.FileContent);
+    public static List<ParsedRecord> Parse(ImportOrganisationsStatusListItem importFile)
+        => ParseContent(importFile.FileContent).ToList();
 
     public static IEnumerable<ParsedRecord> ParseContent(string importFileFileContent)
     {

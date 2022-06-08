@@ -1,15 +1,19 @@
 ﻿namespace OrganisationRegistry.Api.HostedServices.ProcessImportedFiles;
 
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Threading.Tasks;
 using CsvHelper;
 using CsvHelper.Configuration;
+using Magda.Helpers;
+using SqlServer.Import.Organisations;
 
 public static class OutputSerializer
 {
     public const string NewLine = "\r\n";
 
-    public static string Serialize(CsvOutputResult outputResult)
+    public static string Serialize(ValidationIssues issues)
     {
         var stringWriter = new StringWriter();
         var csvWriter = new CsvWriter(
@@ -18,7 +22,7 @@ public static class OutputSerializer
 
         csvWriter.WriteHeader(new { lijnnummer = 0, fout = string.Empty }.GetType());
         csvWriter.NextRecord();
-        foreach (var issue in outputResult.Issues)
+        foreach (var issue in issues.Items)
         {
             csvWriter.WriteRecord(new { lijnnummer = issue.RowNumber, fout = issue.Error });
             csvWriter.NextRecord();
@@ -26,5 +30,24 @@ public static class OutputSerializer
 
         csvWriter.Flush();
         return stringWriter.ToString();
+    }
+
+    public static async Task<string> Serialize(
+        ImportOrganisationsStatusListItem importFile,
+        IEnumerable<OutputRecord> records)
+    {
+        var writer = new Utf8StringWriter();
+        var reader = new StringReader(importFile.FileContent);
+
+        var headerLine = await reader.ReadLineAsync();
+        await writer.WriteLineAsync($"{headerLine};ovonumber");
+
+        foreach (var item in records)
+        {
+            var lineInInputFile = await reader.ReadLineAsync();
+            await writer.WriteLineAsync($"{lineInInputFile};{item.OvoNumber}");
+        }
+
+        return writer.ToString();
     }
 }

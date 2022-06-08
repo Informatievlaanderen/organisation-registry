@@ -69,12 +69,11 @@ public class ScheduledCommandsService : BackgroundService
                 }
             }
 
-            await DelaySeconds(_configuration.DelayInSeconds, cancellationToken);
+            await _configuration.Delay(cancellationToken);
         }
     }
 
-    private static Task DelaySeconds(int intervalSeconds, CancellationToken cancellationToken) =>
-        Task.Delay(TimeSpan.FromSeconds(intervalSeconds), cancellationToken);
+
 
     /// <summary>
     /// made public for testing purposes

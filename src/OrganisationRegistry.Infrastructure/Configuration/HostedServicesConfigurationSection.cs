@@ -14,4 +14,5 @@ public class HostedServicesConfigurationSection
     public HostedServiceConfigurationSection? SyncFromKboService { get; set; }
     public HostedServiceConfigurationSection? ScheduledCommandsService { get; set; }
     public HostedServiceConfigurationSection? SyncRemovedItemsService { get; set; }
+    public HostedServiceConfigurationSection? ProcessImportedFileService { get; set; }
 }
