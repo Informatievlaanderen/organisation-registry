@@ -98,7 +98,7 @@ public class
     }
 
     [Fact]
-    public async Task ThrowsOrganisationAlreadyCoupledWithKbo()
+    public async Task ThrowsOrganisationAlreadyTerminated()
     {
         await Given(Events).When(TerminateOrganisationCommand, TestUser.AlgemeenBeheerder)
             .ThenThrows<OrganisationAlreadyTerminated>();
