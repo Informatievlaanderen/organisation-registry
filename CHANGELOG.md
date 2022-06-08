@@ -1,3 +1,10 @@
+## [1.199.3](https://github.com/informatievlaanderen/organisation-registry/compare/v1.199.2...v1.199.3) (2022-06-08)
+
+
+### Bug Fixes
+
+* or-1078 organisatie kan terug worden afgesloten met de stopknop ([f252118](https://github.com/informatievlaanderen/organisation-registry/commit/f2521185211253a6f8f2410aeaf2a70ba0fce50e))
+
 ## [1.199.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.199.1...v1.199.2) (2022-06-03)
 
 
