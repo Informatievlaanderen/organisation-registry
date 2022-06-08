@@ -1,3 +1,10 @@
+## [1.199.4](https://github.com/informatievlaanderen/organisation-registry/compare/v1.199.3...v1.199.4) (2022-06-08)
+
+
+### Bug Fixes
+
+* or-1078 use EF compatible syntax ([3a793eb](https://github.com/informatievlaanderen/organisation-registry/commit/3a793eb478e087ba2f0bf381552548b50fe6f03f))
+
 ## [1.199.3](https://github.com/informatievlaanderen/organisation-registry/compare/v1.199.2...v1.199.3) (2022-06-08)
 
 
