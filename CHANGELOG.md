@@ -1,3 +1,17 @@
+# [1.200.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.199.4...v1.200.0) (2022-06-09)
+
+
+### Bug Fixes
+
+* or-1080 fix unittests ([ef16f28](https://github.com/informatievlaanderen/organisation-registry/commit/ef16f28a166e8209795cdb91c6cec21af032b81f))
+
+
+### Features
+
+* or-1080 add importorganisationCommandHandler with tests ([929357c](https://github.com/informatievlaanderen/organisation-registry/commit/929357c8666de1f37cc78d07eea4fab2187de7de))
+* or-1080 add unit tests for validators ([834b298](https://github.com/informatievlaanderen/organisation-registry/commit/834b2980bbd34df138ef1f68a222b0636373c34b))
+* or-1080 import organisations from csv fixed last issues ([e52a95c](https://github.com/informatievlaanderen/organisation-registry/commit/e52a95c13fa6f208adc28c98c1fca62729d82c6c))
+
 ## [1.199.4](https://github.com/informatievlaanderen/organisation-registry/compare/v1.199.3...v1.199.4) (2022-06-08)
 
 
