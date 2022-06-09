@@ -37,7 +37,7 @@ public class ProcessImportedFilesService : BackgroundService
     {
         while (!cancellationToken.IsCancellationRequested)
         {
-            await ImportFileProcessor.ProcessNextFile(_contextFactory, _dateTimeProvider, _logger, _fileParserAndValidator, _commandSender,_configuration, cancellationToken);
+            await ImportFileProcessor.ProcessNextFile(_contextFactory, _dateTimeProvider, _logger, _fileParserAndValidator, _commandSender, _configuration, cancellationToken);
         }
     }
 }

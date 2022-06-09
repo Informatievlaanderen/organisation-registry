@@ -40,6 +40,7 @@ public class ScheduledCommandsService : BackgroundService
             if (!_configuration.Enabled)
             {
                 _logger.LogInformation("ScheduledCommandsService disabled, skipping execution");
+                await _configuration.Delay(cancellationToken);
                 continue;
             }
 

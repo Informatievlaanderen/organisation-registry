@@ -2,6 +2,7 @@ namespace OrganisationRegistry.Api.HostedServices.ProcessImportedFiles;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -36,39 +37,53 @@ public static class ImportFileProcessor
             return;
         }
 
-        var parseAndValidatorResult =
-            importFileParserAndValidator.ParseAndValidate(importFile, context, dateTimeProvider);
-
-        if (parseAndValidatorResult.ValidationOk)
+        try
         {
-            var user = new User(importFile.UserFirstName, importFile.UserName, importFile.UserId, null, new[] { Role.AlgemeenBeheerder }, new List<string>());
+            var parseAndValidatorResult =
+                importFileParserAndValidator.ParseAndValidate(importFile, context, dateTimeProvider);
 
-            await commandSender.Send(new CreateOrganisationsFromImport(importFile.Id, parseAndValidatorResult.OutputRecords), user);
+            if (parseAndValidatorResult.ValidationOk)
+            {
+                var user = new User(importFile.UserFirstName, importFile.UserName, importFile.UserId, null, new[] { Role.AlgemeenBeheerder }, new List<string>());
 
-            var organisationDetails =
-                await RetrieveOrganisationDetails(context, importFile.Id, parseAndValidatorResult.OutputRecords.Count, cancellationToken);
+                await commandSender.Send(new CreateOrganisationsFromImport(importFile.Id, parseAndValidatorResult.OutputRecords), user);
 
-            var result = ToCsvResult(organisationDetails, parseAndValidatorResult.OutputRecords);
+                var organisationDetails =
+                    await RetrieveOrganisationDetails(context, importFile.Id, parseAndValidatorResult.OutputRecords.Count, cancellationToken);
 
+                var result = ToCsvResult(organisationDetails, parseAndValidatorResult.OutputRecords);
+
+                UpdateImportFile(
+                    dateTimeProvider,
+                    logger,
+                    importFile,
+                    await OutputSerializer.Serialize(importFile, result),
+                    parseAndValidatorResult.ValidationOk);
+            }
+            else
+            {
+                UpdateImportFile(
+                    dateTimeProvider,
+                    logger,
+                    importFile,
+                    OutputSerializer.Serialize(parseAndValidatorResult.ValidationIssues),
+                    parseAndValidatorResult.ValidationOk);
+            }
+        }
+        catch (Exception e)
+        {
             UpdateImportFile(
                 dateTimeProvider,
                 logger,
                 importFile,
-                await OutputSerializer.Serialize(importFile, result),
-                parseAndValidatorResult.ValidationOk);
+                e.Message,
+                false);
+            throw;
         }
-        else
+        finally
         {
-            UpdateImportFile(
-                dateTimeProvider,
-                logger,
-                importFile,
-                OutputSerializer.Serialize(parseAndValidatorResult.ValidationIssues),
-                parseAndValidatorResult.ValidationOk);
+            await context.SaveChangesAsync(cancellationToken);
         }
-
-        // 3) resultaat van verwerking terug saven naar db
-        await context.SaveChangesAsync(cancellationToken);
     }
 
     private static IEnumerable<OutputRecord> ToCsvResult(
@@ -87,6 +102,8 @@ public static class ImportFileProcessor
 
     /// <summary>
     /// Wait for the projection to be populated with the created organisations.
+    /// but timeout if the organisationDetails are not populated within a reasonable amount of time
+    /// (30 min. for now)
     /// </summary>
     /// <returns></returns>
     private static async Task<IEnumerable<OrganisationDetailItem>> RetrieveOrganisationDetails(
@@ -95,16 +112,28 @@ public static class ImportFileProcessor
         int importedNumberOfRecords,
         CancellationToken cancellationToken)
     {
-        var details = new List<OrganisationDetailItem>();
-        while (importedNumberOfRecords != details.Count)
+        var maxDuration = TimeSpan.FromMinutes(30);
+        var stopwatch = Stopwatch.StartNew();
+        try
         {
-            details = await context.OrganisationDetail
-                .Where(od => od.SourceType == OrganisationSource.CsvImport && od.SourceId == importFileId)
-                .ToListAsync(cancellationToken);
-            await Task.Delay(millisecondsDelay: 100, cancellationToken);
-        }
+            var details = new List<OrganisationDetailItem>();
+            while (importedNumberOfRecords != details.Count)
+            {
+                if (stopwatch.Elapsed > maxDuration)
+                    throw new TimeoutException("No OVO numbers where assigned within a reasonable time.");
 
-        return details;
+                details = await context.OrganisationDetail
+                    .Where(od => od.SourceType == OrganisationSource.CsvImport && od.SourceId == importFileId)
+                    .ToListAsync(cancellationToken);
+                await Task.Delay(millisecondsDelay: 100, cancellationToken);
+            }
+
+            return details;
+        }
+        finally
+        {
+            stopwatch.Stop();
+        }
     }
 
     private static async Task<ImportOrganisationsStatusListItem?> MaybeGetNextImportFile(

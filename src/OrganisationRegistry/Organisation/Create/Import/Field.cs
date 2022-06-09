@@ -5,7 +5,7 @@ public class Field
     private Field(string columnName, string? value, bool shouldHaveValue)
     {
         ColumnName = columnName;
-        Value = value;
+        Value = !string.IsNullOrWhiteSpace(value) ? value : null;
         ShouldHaveValue = shouldHaveValue;
     }
 
@@ -14,7 +14,7 @@ public class Field
     public bool ShouldHaveValue { get; }
 
     public bool HasValue
-        => !string.IsNullOrWhiteSpace(Value);
+        => Value != null;
 
     public static Field NoValue(string columnName)
         => new(columnName, value: null, shouldHaveValue: false);
