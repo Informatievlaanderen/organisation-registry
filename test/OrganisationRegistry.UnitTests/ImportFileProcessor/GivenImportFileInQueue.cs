@@ -74,7 +74,8 @@ public class GivenImportFileInQueue : IDisposable
                 FileName = string.Empty,
                 Status = ImportProcessStatus.Processing,
                 UserId = "userId",
-                UserName = "userName"
+                UserName = "userName",
+                UserFirstName = "userFirstName",
             });
 
         var organisationDetailItem = new OrganisationDetailItem
@@ -139,7 +140,8 @@ public class GivenImportFileInQueue : IDisposable
                 FileName = string.Empty,
                 Status = ImportProcessStatus.Processing,
                 UserId = "userId",
-                UserName = "userName"
+                UserName = "userName",
+                UserFirstName = "userFirstName",
             });
 
         await context.SaveChangesAsync();
