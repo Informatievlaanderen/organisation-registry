@@ -39,6 +39,7 @@ public class SyncFromKboService : BackgroundService
             if (!_configuration.Enabled)
             {
                 _logger.LogInformation("SyncFromKboService disabled, skipping execution");
+                await _configuration.Delay(cancellationToken);
                 continue;
             }
 
@@ -48,10 +49,7 @@ public class SyncFromKboService : BackgroundService
             await _kboSync.SyncFromKbo(_sender, context, WellknownUsers.KboSyncService);
             _logger.LogInformation("KBO Synced successfully");
 
-            await DelaySeconds(_configuration.DelayInSeconds, cancellationToken);
+            await _configuration.Delay(cancellationToken);
         }
     }
-
-    private static Task DelaySeconds(int intervalSeconds, CancellationToken cancellationToken)
-        => Task.Delay(TimeSpan.FromSeconds(intervalSeconds), cancellationToken);
 }

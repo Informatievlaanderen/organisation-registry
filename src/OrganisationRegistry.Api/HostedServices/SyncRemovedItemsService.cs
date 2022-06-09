@@ -41,6 +41,7 @@ public class SyncRemovedItemsService : BackgroundService
             if (!_configuration.Enabled)
             {
                 _logger.LogInformation("SyncRemovedItemsService disabled, skipping execution");
+                await _configuration.Delay(cancellationToken);
                 continue;
             }
 
