@@ -114,7 +114,7 @@ public class WhenMakingAnOrganisationLocationAMainLocationWhenThereAlreadyIsOne 
             null,
             new ValidFrom(_validFrom),
             new ValidTo(_validTo),
-            Source.Wegwijs);
+            LocationSource.Wegwijs);
 
     [Fact]
     public async Task PublishesNoEvents()

@@ -97,7 +97,7 @@ public class WhenValidityBecomesInvalidAndIsMainLocationChangesToFalseBugfix :
             null,
             new ValidFrom(new DateTime(1980, 10, 17)),
             new ValidTo(new DateTime(2016, 06, 16)),
-            Source.Wegwijs);
+            LocationSource.Wegwijs);
 
     [Fact]
     public async Task Publishes2Events()

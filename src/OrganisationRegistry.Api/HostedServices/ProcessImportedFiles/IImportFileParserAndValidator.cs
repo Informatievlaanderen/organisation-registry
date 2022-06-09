@@ -1,7 +1,7 @@
-﻿namespace OrganisationRegistry.Api.HostedServices;
+﻿namespace OrganisationRegistry.Api.HostedServices.ProcessImportedFiles;
 
-using SqlServer.Import.Organisations;
-using SqlServer.Infrastructure;
+using OrganisationRegistry.SqlServer.Import.Organisations;
+using OrganisationRegistry.SqlServer.Infrastructure;
 
 public interface IImportFileParserAndValidator
 {

@@ -78,7 +78,7 @@ public class OrganisationBankAccountListViewTests : ListViewTestBase
                 kboOrganisationBankAccountAdded1.IsBic,
                 kboOrganisationBankAccountAdded1.ValidFrom,
                 kboOrganisationBankAccountAdded1.ValidTo,
-                OrganisationRegistry.Organisation.Source.Kbo),
+                OrganisationRegistry.Organisation.LocationSource.Kbo),
             new(
                 kboOrganisationBankAccountAdded2.OrganisationBankAccountId,
                 kboOrganisationBankAccountAdded2.OrganisationId,
@@ -88,7 +88,7 @@ public class OrganisationBankAccountListViewTests : ListViewTestBase
                 kboOrganisationBankAccountAdded2.IsBic,
                 kboOrganisationBankAccountAdded2.ValidFrom,
                 kboOrganisationBankAccountAdded2.ValidTo,
-                OrganisationRegistry.Organisation.Source.Kbo),
+                OrganisationRegistry.Organisation.LocationSource.Kbo),
         });
     }
 
@@ -129,7 +129,7 @@ public class OrganisationBankAccountListViewTests : ListViewTestBase
                 kboOrganisationBankAccountAdded2.IsBic,
                 kboOrganisationBankAccountAdded2.ValidFrom,
                 kboOrganisationBankAccountAdded2.ValidTo,
-                OrganisationRegistry.Organisation.Source.Kbo),
+                OrganisationRegistry.Organisation.LocationSource.Kbo),
         });
     }
 }

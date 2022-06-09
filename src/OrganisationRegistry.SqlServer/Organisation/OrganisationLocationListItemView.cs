@@ -30,7 +30,7 @@ public class OrganisationLocationListItem
     public string? Source { get; set; }
 
     public bool IsKbo
-        => Source == OrganisationRegistry.Organisation.Source.Kbo;
+        => Source == OrganisationRegistry.Organisation.LocationSource.Kbo;
 
     public OrganisationLocationListItem() { }
 
@@ -186,7 +186,7 @@ public class OrganisationLocationListView :
             message.Body.ValidFrom,
             message.Body.ValidTo);
 
-        organisationLocationListItem.Source = OrganisationRegistry.Organisation.Source.Kbo;
+        organisationLocationListItem.Source = OrganisationRegistry.Organisation.LocationSource.Kbo;
 
         await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
         await context.OrganisationLocationList.AddAsync(organisationLocationListItem);

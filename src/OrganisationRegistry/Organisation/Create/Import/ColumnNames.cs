@@ -1,4 +1,4 @@
-﻿namespace OrganisationRegistry.Api.HostedServices.ProcessImportedFiles;
+﻿namespace OrganisationRegistry.Organisation.Import;
 
 public static class ColumnNames
 {

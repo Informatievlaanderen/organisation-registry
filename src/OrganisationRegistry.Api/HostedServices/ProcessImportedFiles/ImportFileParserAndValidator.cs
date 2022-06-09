@@ -1,11 +1,11 @@
-﻿namespace OrganisationRegistry.Api.HostedServices;
+﻿namespace OrganisationRegistry.Api.HostedServices.ProcessImportedFiles;
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ProcessImportedFiles;
-using SqlServer.Import.Organisations;
-using SqlServer.Infrastructure;
+using OrganisationRegistry.Organisation.Import;
+using OrganisationRegistry.SqlServer.Import.Organisations;
+using OrganisationRegistry.SqlServer.Infrastructure;
 
 public class ImportFileParserAndValidator : IImportFileParserAndValidator
 {

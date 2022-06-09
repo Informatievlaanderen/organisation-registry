@@ -13,7 +13,7 @@ public class OrganisationLocation : IOrganisationField, IValidityBuilder<Organis
     public Guid? LocationTypeId { get; }
     public string? LocationTypeName { get; }
     public Period Validity { get; }
-    public Source Source { get; }
+    public LocationSource Source { get; }
 
     public OrganisationLocation(
         Guid organisationLocationId,
@@ -24,7 +24,7 @@ public class OrganisationLocation : IOrganisationField, IValidityBuilder<Organis
         Guid? locationTypeId,
         string? locationTypeName,
         Period validity,
-        Source source)
+        LocationSource source)
     {
         OrganisationLocationId = organisationLocationId;
         OrganisationId = organisationId;

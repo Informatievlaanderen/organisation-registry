@@ -51,7 +51,8 @@ public class ImportOrganisationsController : OrganisationRegistryController
                 Id = id,
                 Status = ImportProcessStatus.Processing,
                 UserId = user.UserId,
-                UserName = $"{user.FirstName} {user.LastName}",
+                UserName = user.LastName,
+                UserFirstName = user.FirstName,
                 FileContent = content,
                 FileName = bulkimportfile.FileName,
                 UploadedAt = DateTimeOffset.Now

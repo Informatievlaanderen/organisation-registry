@@ -103,7 +103,7 @@ public class
             null,
             new ValidFrom(_validFrom),
             new ValidTo(_validTo),
-            Source.Wegwijs);
+            LocationSource.Wegwijs);
 
     [Fact]
     public async Task Publishes2Events()

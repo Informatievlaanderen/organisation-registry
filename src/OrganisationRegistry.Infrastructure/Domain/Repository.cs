@@ -1,6 +1,7 @@
 namespace OrganisationRegistry.Infrastructure.Domain;
 
 using System;
+using System.Collections.Generic;
 using Events;
 using Exception;
 using Factories;
@@ -31,6 +32,25 @@ public class Repository : IRepository
 
         var changes = aggregate.FlushUncommitedChanges();
         await _eventStore.Save<T>(changes, user);
+    }
+
+    public async Task Save<T>(IEnumerable<T> aggregates, IUser user, int? expectedVersion = null) where T : AggregateRoot
+    {
+        var changes = GetAllChangesFromAggregates(aggregates, expectedVersion);
+
+        await _eventStore.Save<T>(changes, user);
+    }
+
+    private IEnumerable<IEvent> GetAllChangesFromAggregates<T>(IEnumerable<T> aggregates, int? expectedVersion) where T : AggregateRoot
+    {
+        foreach (var aggregate in aggregates)
+        {
+            if (expectedVersion != null && _eventStore.Get<T>(aggregate.Id, expectedVersion.Value).Any())
+                throw new ConcurrencyException(aggregate.Id, expectedVersion.Value);
+
+            foreach (var change in aggregate.FlushUncommitedChanges())
+                yield return change;
+        }
     }
 
     public T Get<T>(Guid aggregateId) where T : AggregateRoot

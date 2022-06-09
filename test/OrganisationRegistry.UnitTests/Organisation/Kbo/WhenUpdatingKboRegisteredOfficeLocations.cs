@@ -59,7 +59,7 @@ public class WhenUpdatingKboRegisteredOfficeLocations
     }
 
     private static OrganisationLocation CreateKboRegisteredOffice(Guid organisationLocationId, Organisation organisationRoot, Guid locationId, bool isMainLocation)
-        => new(organisationLocationId, organisationRoot.Id, locationId, "", isMainLocation, null, "", new Period(), Source.Kbo);
+        => new(organisationLocationId, organisationRoot.Id, locationId, "", isMainLocation, null, "", new Period(), LocationSource.Kbo);
 
     private static void VerifyKboLocationIsStillMainLocation(Organisation organisationRoot)
         => organisationRoot.KboState.KboRegisteredOffice?.IsMainLocation.Should().BeTrue();

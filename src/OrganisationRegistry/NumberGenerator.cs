@@ -7,6 +7,7 @@ public abstract class NumberGenerator
     private readonly string _prefix;
     private readonly string _name;
     private readonly Func<string?> _maxNumberFunc;
+    private int? _lastNumber;
 
     protected NumberGenerator(
         string prefix,
@@ -27,6 +28,12 @@ public abstract class NumberGenerator
         if (!int.TryParse(maxNumber.Replace(_prefix, ""), out var number))
             throw new InvalidOperationException($"{_name} moet een integer getal zijn");
 
-        return $"{_prefix}{number + 1:D6}";
+        _lastNumber = number + 1;
+        return $"{_prefix}{_lastNumber:D6}";
     }
+
+    public string GenerateNextNumber()
+        => _lastNumber is { }
+            ? $"{_prefix}{++_lastNumber:D6}"
+            : GenerateNumber();
 }

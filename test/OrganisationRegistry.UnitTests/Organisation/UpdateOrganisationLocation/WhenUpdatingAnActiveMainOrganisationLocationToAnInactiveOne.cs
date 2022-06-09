@@ -105,7 +105,7 @@ public class
             null,
             new ValidFrom(_validFrom.AddYears(1)),
             new ValidTo(_validTo.AddYears(1)),
-            Source.Wegwijs);
+            LocationSource.Wegwijs);
 
     [Fact]
     public async Task Publishes2Events()

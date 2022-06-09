@@ -6,7 +6,6 @@ using Handling;
 using Infrastructure.Commands;
 using Infrastructure.Domain;
 using Microsoft.Extensions.Logging;
-using Purpose;
 
 public class CreateOrganisationsFromImportCommandHandler :
     BaseCommandHandler<CreateOrganisationsFromImportCommandHandler>,
@@ -30,14 +29,14 @@ public class CreateOrganisationsFromImportCommandHandler :
     {
         return Handler.For(envelope.User, Session)
             .RequiresAdmin()
-            .Handle(
+            .HandleWithCombinedTransaction(
                 session =>
                 {
                     foreach (var record in envelope.Command.Records)
                     {
                         var parent = session.Get<Organisation>(record.ParentOrganisationId);
 
-                        var ovoNumber = _ovoNumberGenerator.GenerateNumber();
+                        var ovoNumber = _ovoNumberGenerator.GenerateNextNumber();
                         var validFrom = record.Validity_Start.HasValue
                             ? new ValidFrom(record.Validity_Start.Value.ToDateTime(new TimeOnly()))
                             : new ValidFrom();
@@ -46,7 +45,7 @@ public class CreateOrganisationsFromImportCommandHandler :
                             ? new ValidFrom(record.OperationalValidity_Start.Value.ToDateTime(new TimeOnly()))
                             : new ValidFrom();
 
-                        var organisation = Organisation.Create(
+                        var organisation = Organisation.CreateFromImport(
                             OrganisationId.New(),
                             record.Name,
                             ovoNumber,
@@ -54,11 +53,11 @@ public class CreateOrganisationsFromImportCommandHandler :
                             record.Article ?? Article.None,
                             parent,
                             string.Empty,
-                            Array.Empty<Purpose>(),
-                            false,
                             new Period(validFrom, new ValidTo()),
                             new Period(operationalValidFrom, new ValidTo()),
-                            _dateTimeProvider);
+                            _dateTimeProvider,
+                            new OrganisationSourceId(envelope.Command.ImportFileId),
+                            record.Reference);
 
                         session.Add(organisation);
                     }

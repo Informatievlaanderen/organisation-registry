@@ -42,7 +42,7 @@ public class AddOrganisationLocationCommandHandler:
                         envelope.Command.IsMainLocation,
                         locationType,
                         new Period(new ValidFrom(envelope.Command.ValidFrom), new ValidTo(envelope.Command.ValidTo)),
-                        Source.Wegwijs,
+                        LocationSource.Wegwijs,
                         _dateTimeProvider);
                 });
 

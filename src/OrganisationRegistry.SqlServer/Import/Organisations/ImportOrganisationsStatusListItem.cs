@@ -11,6 +11,7 @@ public class ImportOrganisationsStatusListItem
     public Guid Id { get; set; }
     public string UserId { get; set; } = null!;
     public string UserName { get; set; } = null!;
+    public string UserFirstName { get; set; } = null!;
     public string FileName { get; set; } = null!;
     public string FileContent { get; set; } = null!;
     public string? OutputFileContent { get; set; }
@@ -37,6 +38,7 @@ public class ImportStatusListItemConfiguration : EntityMappingConfiguration<Impo
         b.Property(p => p.Id);
         b.Property(p => p.UserId);
         b.Property(p => p.UserName);
+        b.Property(p => p.UserFirstName);
         b.Property(p => p.FileName);
         b.Property(p => p.FileContent).HasMaxLength(int.MaxValue);
         b.Property(p => p.OutputFileContent).HasMaxLength(int.MaxValue);

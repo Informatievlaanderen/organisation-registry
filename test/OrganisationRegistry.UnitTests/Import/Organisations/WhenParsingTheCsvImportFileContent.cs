@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Api.HostedServices.ProcessImportedFiles;
 using FluentAssertions;
+using OrganisationRegistry.Organisation.Import;
 using Xunit;
 
 public class WhenParsingTheCsvImportFileContent

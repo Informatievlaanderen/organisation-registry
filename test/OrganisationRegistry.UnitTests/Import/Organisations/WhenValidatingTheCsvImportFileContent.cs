@@ -6,6 +6,7 @@ using System.Linq;
 using Api.HostedServices.ProcessImportedFiles;
 using AutoFixture;
 using FluentAssertions;
+using OrganisationRegistry.Organisation.Import;
 using SqlServer.Organisation;
 using Xunit;
 

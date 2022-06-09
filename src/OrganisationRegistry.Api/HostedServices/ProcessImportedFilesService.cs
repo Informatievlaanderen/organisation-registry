@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OrganisationRegistry.Infrastructure.Commands;
 using OrganisationRegistry.Infrastructure.Configuration;
+using ProcessImportedFiles;
 using SqlServer;
 
 public class ProcessImportedFilesService : BackgroundService

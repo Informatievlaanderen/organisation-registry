@@ -2,6 +2,7 @@ namespace OrganisationRegistry.Infrastructure.Domain;
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Authorization;
 using Exception;
@@ -60,6 +61,15 @@ public class Session : ISession
     {
         foreach (var descriptor in _trackedAggregates.Values)
             await _repository.Save(descriptor.Aggregate, user, descriptor.Version);
+
+        Reset();
+    }
+
+    public async Task CommitAllInOneTransaction(IUser user)
+    {
+        var aggregates = _trackedAggregates.Values.Select(descriptor => descriptor.Aggregate);
+
+        await _repository.Save(aggregates, user);
 
         Reset();
     }

@@ -97,7 +97,7 @@ public class WhenUpdatingAnOrganisationLocation :
             null,
             new ValidFrom(_validFrom),
             new ValidTo(_validTo),
-            Source.Wegwijs);
+            LocationSource.Wegwijs);
 
     [Fact]
     public async Task PublishesEvent()

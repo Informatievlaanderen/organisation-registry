@@ -1,4 +1,4 @@
-namespace OrganisationRegistry.Api.HostedServices;
+namespace OrganisationRegistry.Api.HostedServices.ProcessImportedFiles;
 
 using System;
 using System.Collections.Generic;
@@ -8,9 +8,10 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Organisation;
+using Organisation.Import;
+using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Commands;
 using OrganisationRegistry.Infrastructure.Configuration;
-using ProcessImportedFiles;
 using SqlServer;
 using SqlServer.Import.Organisations;
 using SqlServer.Infrastructure;
@@ -18,8 +19,6 @@ using SqlServer.Organisation;
 
 public static class ImportFileProcessor
 {
-    public const string SourceType = "CsvImport";
-
     public static async Task ProcessNextFile(
         IContextFactory contextFactory,
         IDateTimeProvider dateTimeProvider,
@@ -42,7 +41,9 @@ public static class ImportFileProcessor
 
         if (parseAndValidatorResult.ValidationOk)
         {
-            await commandSender.Send(new CreateOrganisationsFromImport(importFile.Id, parseAndValidatorResult.OutputRecords));
+            var user = new User(importFile.UserFirstName, importFile.UserName, importFile.UserId, null, new[] { Role.AlgemeenBeheerder }, new List<string>());
+
+            await commandSender.Send(new CreateOrganisationsFromImport(importFile.Id, parseAndValidatorResult.OutputRecords), user);
 
             var organisationDetails =
                 await RetrieveOrganisationDetails(context, importFile.Id, parseAndValidatorResult.OutputRecords.Count, cancellationToken);
@@ -98,7 +99,7 @@ public static class ImportFileProcessor
         while (importedNumberOfRecords != details.Count)
         {
             details = await context.OrganisationDetail
-                .Where(od => od.SourceType == SourceType && od.SourceId == importFileId)
+                .Where(od => od.SourceType == OrganisationSource.CsvImport && od.SourceId == importFileId)
                 .ToListAsync(cancellationToken);
             await Task.Delay(millisecondsDelay: 100, cancellationToken);
         }
