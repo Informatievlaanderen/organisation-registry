@@ -51,4 +51,15 @@ public class Handler
         handle(_session);
         await _session.Commit(_user);
     }
+
+    public async Task HandleWithCombinedTransaction(Action<ISession> handle)
+    {
+        var result = _policy?.Check(_user);
+
+        if (result?.Exception is { } exception)
+            throw exception;
+
+        handle(_session);
+        await _session.CommitAllInOneTransaction(_user);
+    }
 }

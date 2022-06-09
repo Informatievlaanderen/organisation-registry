@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoFixture;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -11,14 +12,15 @@ using OrganisationRegistry.Infrastructure.Domain;
 using OrganisationRegistry.Infrastructure.Events;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Events;
+using OrganisationRegistry.Organisation.Import;
 using Tests.Shared;
 using Tests.Shared.TestDataBuilders;
 using OrganisationRegistry.UnitTests.Infrastructure.Tests.Extensions.TestHelpers;
 using Xunit;
 using Xunit.Abstractions;
 
-public class
-    CreatesOrganisations : Specification<CreateOrganisationsFromImportCommandHandler, CreateOrganisationsFromImport>
+public class CreatesOrganisations
+    : Specification<CreateOrganisationsFromImportCommandHandler, CreateOrganisationsFromImport>
 {
     private readonly Guid _parentOrganisationId;
     private readonly DateTime _tomorow;
@@ -38,7 +40,7 @@ public class
         };
 
     private static CreateOrganisationsFromImport CreateOrganisationsFromImportCommand(
-        IEnumerable<IOutputRecord> records)
+        IEnumerable<OutputRecord> records)
         => new(Guid.NewGuid(), records);
 
     protected override CreateOrganisationsFromImportCommandHandler BuildHandler(ISession session)
@@ -51,16 +53,16 @@ public class
     [Fact]
     public async Task PublishesOrganisationCreatedEventWithMinimumFields()
     {
-        var outputRecords = new List<IOutputRecord>()
+        var fixture = new Fixture();
+        var reference = fixture.Create<string>();
+
+        var outputRecords = new List<OutputRecord>
         {
-            new OutputRecordStub
-            {
-                ParentOrganisationId = _parentOrganisationId,
-                Name = "name1",
-            }
+            new OutputRecordStub(parentOrganisationId: _parentOrganisationId, name: "name1", reference: reference)
         };
 
-        await Given(Events).When(CreateOrganisationsFromImportCommand(outputRecords), TestUser.AlgemeenBeheerder)
+        var command = CreateOrganisationsFromImportCommand(outputRecords);
+        await Given(Events).When(command, TestUser.AlgemeenBeheerder)
             .Then();
         PublishedEvents[0].Body.Should().BeEquivalentTo(
             new OrganisationCreated(
@@ -75,7 +77,10 @@ public class
                 validFrom: null,
                 validTo: null,
                 operationalValidFrom: null,
-                operationalValidTo: null),
+                operationalValidTo: null,
+                sourceType: OrganisationSource.CsvImport,
+                sourceId: command.ImportFileId,
+                sourceOrganisationIdentifier: reference),
             opt =>
                 opt.Excluding(e => e.OvoNumber)
                     .Excluding(e => e.OrganisationId)
@@ -85,28 +90,30 @@ public class
     [Fact]
     public async Task PublishesOrganisationCreatedEventWithAllField()
     {
+        var fixture = new Fixture();
+        var reference = fixture.Create<string>();
 
-        var outputRecords = new List<IOutputRecord>()
+        var shortName = "sn1";
+        var outputRecords = new List<OutputRecord>()
         {
-            new OutputRecordStub
+            new OutputRecordStub(parentOrganisationId: _parentOrganisationId, name: "name1", reference: reference)
             {
-                ParentOrganisationId = _parentOrganisationId,
-                Name = "name1",
                 Article = Article.De,
-                ShortName = "sn1",
+                ShortName = shortName,
                 Validity_Start = DateOnly.FromDateTime(_tomorow),
                 OperationalValidity_Start = DateOnly.FromDateTime(_tomorow)
             }
         };
 
-        await Given(Events).When(CreateOrganisationsFromImportCommand(outputRecords), TestUser.AlgemeenBeheerder)
+        var command = CreateOrganisationsFromImportCommand(outputRecords);
+        await Given(Events).When(command, TestUser.AlgemeenBeheerder)
             .Then();
         PublishedEvents[0].Body.Should().BeEquivalentTo(
             new OrganisationCreated(
                 Guid.NewGuid(),
                 "name1",
                 "OVO000000",
-                shortName: "sn1",
+                shortName: shortName,
                 Article.De,
                 description: string.Empty,
                 new List<Purpose>(),
@@ -114,7 +121,10 @@ public class
                 validFrom: _tomorow,
                 validTo: null,
                 operationalValidFrom: _tomorow,
-                operationalValidTo: null),
+                operationalValidTo: null,
+                sourceType: OrganisationSource.CsvImport,
+                sourceId: command.ImportFileId,
+                sourceOrganisationIdentifier: reference),
             opt =>
                 opt.Excluding(e => e.OvoNumber)
                     .Excluding(e => e.OrganisationId)
@@ -124,25 +134,24 @@ public class
     [Fact]
     public async Task PublishesMultipleOrganisationCreatedEvents()
     {
+        var fixture = new Fixture();
+        var ref1 = fixture.Create<string>();
+        var ref2 = fixture.Create<string>();
+        var shortName2 = "sn2";
 
-        var outputRecords = new List<IOutputRecord>()
+        var outputRecords = new List<OutputRecord>()
         {
-            new OutputRecordStub
+            new OutputRecordStub(parentOrganisationId: _parentOrganisationId, name: "name1", reference: ref1),
+            new OutputRecordStub(parentOrganisationId: _parentOrganisationId, name: "name2", reference: ref2)
             {
-                ParentOrganisationId = _parentOrganisationId,
-                Name = "name1",
-            },
-            new OutputRecordStub
-            {
-                ParentOrganisationId = _parentOrganisationId,
-                Name = "name2",
                 Article = Article.Het,
-                ShortName = "sn2",
+                ShortName = shortName2,
                 Validity_Start = DateOnly.FromDateTime(_tomorow),
             }
         };
 
-        await Given(Events).When(CreateOrganisationsFromImportCommand(outputRecords), TestUser.AlgemeenBeheerder)
+        var command = CreateOrganisationsFromImportCommand(outputRecords);
+        await Given(Events).When(command, TestUser.AlgemeenBeheerder)
             .Then();
         var publishedOrganisationCreatedEvents = PublishedEvents.Where(e => e.Body is OrganisationCreated).ToArray();
         publishedOrganisationCreatedEvents[0].Body.Should().BeEquivalentTo(
@@ -158,7 +167,10 @@ public class
                 validFrom: null,
                 validTo: null,
                 operationalValidFrom: null,
-                operationalValidTo: null),
+                operationalValidTo: null,
+                sourceType: OrganisationSource.CsvImport,
+                sourceId: command.ImportFileId,
+                sourceOrganisationIdentifier: ref1),
             opt =>
                 opt.Excluding(e => e.OvoNumber)
                     .Excluding(e => e.OrganisationId)
@@ -168,7 +180,7 @@ public class
                 Guid.NewGuid(),
                 "name2",
                 "OVO000000",
-                shortName: "sn2",
+                shortName: shortName2,
                 Article.Het,
                 description: string.Empty,
                 new List<Purpose>(),
@@ -176,7 +188,10 @@ public class
                 validFrom: _tomorow,
                 validTo: null,
                 operationalValidFrom: null,
-                operationalValidTo: null),
+                operationalValidTo: null,
+                sourceType: OrganisationSource.CsvImport,
+                sourceId: command.ImportFileId,
+                sourceOrganisationIdentifier: ref2),
             opt =>
                 opt.Excluding(e => e.OvoNumber)
                     .Excluding(e => e.OrganisationId)

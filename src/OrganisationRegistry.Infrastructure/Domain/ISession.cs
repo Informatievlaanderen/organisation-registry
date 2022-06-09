@@ -11,4 +11,6 @@ public interface ISession
     T Get<T>(Guid id, int? expectedVersion = null) where T : AggregateRoot;
 
     Task Commit(IUser user);
+
+    Task CommitAllInOneTransaction(IUser user);
 }

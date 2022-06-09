@@ -68,6 +68,6 @@ public static class UpdateOrganisationLocationRequestMapping
             message.Body.LocationTypeId.HasValue ? new LocationTypeId(message.Body.LocationTypeId.Value) : null,
             new ValidFrom(message.Body.ValidFrom),
             new ValidTo(message.Body.ValidTo),
-            new Source(message.Body.Source));
+            new LocationSource(message.Body.Source));
     }
 }

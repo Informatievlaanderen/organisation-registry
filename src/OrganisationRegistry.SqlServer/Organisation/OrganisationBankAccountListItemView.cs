@@ -25,7 +25,7 @@ public class OrganisationBankAccountListItem
 
     public string? Source { get; set; }
 
-    public bool IsEditable => Source != OrganisationRegistry.Organisation.Source.Kbo;
+    public bool IsEditable => Source != OrganisationRegistry.Organisation.LocationSource.Kbo;
 
     public OrganisationBankAccountListItem()
     {
@@ -137,7 +137,7 @@ public class OrganisationBankAccountListView :
             message.Body.IsBic,
             message.Body.ValidFrom,
             message.Body.ValidTo,
-            OrganisationRegistry.Organisation.Source.Kbo);
+            OrganisationRegistry.Organisation.LocationSource.Kbo);
 
         await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
         await context.OrganisationBankAccountList.AddAsync(organisationBankAccountListItem);

@@ -3,6 +3,7 @@
 using Api.HostedServices.ProcessImportedFiles;
 using Api.HostedServices.ProcessImportedFiles.Validators;
 using FluentAssertions;
+using OrganisationRegistry.Organisation.Import;
 using Xunit;
 
 public class InvalidArticleTests

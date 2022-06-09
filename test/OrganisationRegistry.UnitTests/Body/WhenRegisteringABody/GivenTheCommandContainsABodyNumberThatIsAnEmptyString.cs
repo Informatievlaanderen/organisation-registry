@@ -97,6 +97,9 @@ public class GivenTheCommandContainsABodyNumberThatIsAnEmptyString
 
         public Task Commit(IUser user)
             => Task.CompletedTask;
+
+        public Task CommitAllInOneTransaction(IUser user)
+            => throw new NotImplementedException();
     }
 
     private class FixedBodyNumberGenerator : IBodyNumberGenerator

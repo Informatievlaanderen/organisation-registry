@@ -111,7 +111,7 @@ public class WhenUpdatingAnOrganisationLocationToAnAlreadyCoupledLocation :
             null,
             new ValidFrom(),
             new ValidTo(),
-            Source.Wegwijs);
+            LocationSource.Wegwijs);
 
     [Fact]
     public async Task PublishesNoEvents()

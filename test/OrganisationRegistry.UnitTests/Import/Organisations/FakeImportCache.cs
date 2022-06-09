@@ -1,7 +1,7 @@
 ﻿namespace OrganisationRegistry.UnitTests.Import.Organisations;
 
 using System.Collections.Generic;
-using Api.HostedServices;
+using Api.HostedServices.ProcessImportedFiles;
 using SqlServer.Organisation;
 
 public class FakeImportCache : ImportCache

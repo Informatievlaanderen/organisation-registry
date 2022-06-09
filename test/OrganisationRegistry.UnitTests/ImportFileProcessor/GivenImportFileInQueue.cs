@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Api.HostedServices;
 using Api.HostedServices.ProcessImportedFiles;
 using Autofac.Features.OwnedInstances;
 using AutoFixture;
@@ -14,6 +13,8 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using OrganisationRegistry.Infrastructure.Commands;
 using OrganisationRegistry.Infrastructure.Configuration;
+using OrganisationRegistry.Organisation;
+using OrganisationRegistry.Organisation.Import;
 using SqlServer;
 using SqlServer.Import.Organisations;
 using SqlServer.Infrastructure;
@@ -81,7 +82,7 @@ public class GivenImportFileInQueue : IDisposable
             Id = fixture.Create<Guid>(),
             Name = outputRecord.Name,
             SourceId = importId,
-            SourceType = ImportFileProcessor.SourceType,
+            SourceType = OrganisationSource.CsvImport,
             SourceOrganisationIdentifier = outputRecord.Reference,
             OvoNumber = "ovo000013"
         };

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
+using Organisation.Import;
 using SqlServer.Organisation;
 
 public static class ParentValidityExpired

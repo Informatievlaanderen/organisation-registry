@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using CsvHelper;
 using CsvHelper.Configuration;
+using Organisation.Import;
 using SqlServer.Import.Organisations;
 using Validators;
 

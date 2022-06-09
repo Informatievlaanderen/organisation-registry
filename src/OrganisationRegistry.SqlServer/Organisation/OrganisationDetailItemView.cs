@@ -163,7 +163,10 @@ public class OrganisationDetailItemView :
             ValidFrom = message.Body.ValidFrom,
             ValidTo = message.Body.ValidTo,
             OperationalValidFrom = message.Body.OperationalValidFrom,
-            OperationalValidTo = message.Body.OperationalValidTo
+            OperationalValidTo = message.Body.OperationalValidTo,
+            SourceId = message.Body.SourceId,
+            SourceType = message.Body.SourceType,
+            SourceOrganisationIdentifier = message.Body.SourceOrganisationIdentifier,
         };
 
         await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);

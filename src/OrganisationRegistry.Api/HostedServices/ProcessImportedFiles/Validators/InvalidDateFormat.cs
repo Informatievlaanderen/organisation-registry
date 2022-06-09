@@ -3,6 +3,7 @@ namespace OrganisationRegistry.Api.HostedServices.ProcessImportedFiles.Validator
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using Organisation.Import;
 
 public static class InvalidDateFormat
 {

@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Organisation.Import;
 using Validators;
 
 public static class RecordValidator

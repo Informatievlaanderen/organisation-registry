@@ -1,8 +1,8 @@
-﻿namespace OrganisationRegistry.Api.HostedServices;
+﻿namespace OrganisationRegistry.Api.HostedServices.ProcessImportedFiles;
 
 using System;
 using System.Collections.Generic;
-using ProcessImportedFiles;
+using OrganisationRegistry.Organisation.Import;
 
 public class ParseAndValidatorResult
 {

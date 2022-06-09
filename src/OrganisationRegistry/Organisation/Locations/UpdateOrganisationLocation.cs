@@ -14,7 +14,7 @@ public class UpdateOrganisationLocation : BaseCommand<OrganisationId>
     public LocationTypeId? LocationTypeId { get; }
     public ValidFrom ValidFrom { get; }
     public ValidTo ValidTo { get; }
-    public Source Source { get; }
+    public LocationSource Source { get; }
 
     public UpdateOrganisationLocation(
         Guid organisationLocationId,
@@ -24,7 +24,7 @@ public class UpdateOrganisationLocation : BaseCommand<OrganisationId>
         LocationTypeId? locationTypeId,
         ValidFrom validFrom,
         ValidTo validTo,
-        Source source)
+        LocationSource source)
     {
         Id = organisationId;
 

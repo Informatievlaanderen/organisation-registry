@@ -18,6 +18,9 @@ public class OrganisationCreated : BaseEvent<OrganisationCreated>
     public DateTime? ValidTo { get; }
     public DateTime? OperationalValidFrom { get; }
     public DateTime? OperationalValidTo { get; }
+    public Guid? SourceId { get; }
+    public string? SourceType { get; }
+    public string? SourceOrganisationIdentifier { get; }
 
     public OrganisationCreated(Guid organisationId,
         string name,
@@ -30,7 +33,10 @@ public class OrganisationCreated : BaseEvent<OrganisationCreated>
         DateTime? validFrom,
         DateTime? validTo,
         DateTime? operationalValidFrom,
-        DateTime? operationalValidTo)
+        DateTime? operationalValidTo,
+        string? sourceType = null,
+        Guid? sourceId = null,
+        string? sourceOrganisationIdentifier = null)
     {
         Id = organisationId;
 
@@ -44,6 +50,9 @@ public class OrganisationCreated : BaseEvent<OrganisationCreated>
         ValidTo = validTo;
         OperationalValidFrom = operationalValidFrom;
         OperationalValidTo = operationalValidTo;
+        SourceId = sourceId;
+        SourceType = sourceType;
+        SourceOrganisationIdentifier = sourceOrganisationIdentifier;
         Article = article;
     }
 }

@@ -1,11 +1,10 @@
-namespace OrganisationRegistry.Api.HostedServices;
+namespace OrganisationRegistry.Api.HostedServices.ProcessImportedFiles;
 
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using ProcessImportedFiles;
 using OrganisationRegistry.SqlServer.Infrastructure;
 using OrganisationRegistry.SqlServer.Organisation;
 
@@ -29,7 +28,7 @@ public class ImportCache
             .ToList();
 
         var organisationsInScope = context.OrganisationList
-            .Where(org => org.FormalFrameworkId != null)
+            .Where(org => org.FormalFrameworkId == null)
             .Where(
                 org => parentOvoNumbers.Contains(org.OvoNumber) ||
                        parentOvoNumbers.Contains(org.ParentOrganisationOvoNumber!));
@@ -40,5 +39,5 @@ public class ImportCache
     }
 
     public OrganisationListItem? GetOrganisationByOvoNumber(string ovoNumber)
-        => OrganisationsCache.SingleOrDefault(org => org.OvoNumber == ovoNumber);
+        => OrganisationsCache.SingleOrDefault(org => string.Equals(org.OvoNumber, ovoNumber, StringComparison.InvariantCultureIgnoreCase));
 }

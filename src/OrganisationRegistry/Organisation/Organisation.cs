@@ -67,7 +67,10 @@ public partial class Organisation : AggregateRoot
         bool showOnVlaamseOverheidSites,
         Period validity,
         Period operationalValidity,
-        IDateTimeProvider dateTimeProvider) : this()
+        IDateTimeProvider dateTimeProvider,
+        OrganisationSource? sourceType = null,
+        OrganisationSourceId? sourceId = null,
+        string? sourceOrganisationIdentifier = null) : this()
     {
         ApplyChange(new OrganisationCreated(
             id,
@@ -83,7 +86,10 @@ public partial class Organisation : AggregateRoot
             validity.Start,
             validity.End,
             operationalValidity.Start,
-            operationalValidity.End));
+            operationalValidity.End,
+            sourceType,
+            sourceId,
+            sourceOrganisationIdentifier));
 
         if (validity.OverlapsWith(dateTimeProvider.Today))
             ApplyChange(new OrganisationBecameActive(Id));
@@ -134,6 +140,34 @@ public partial class Organisation : AggregateRoot
             operationalValidity,
             dateTimeProvider);
     }
+
+    public static Organisation CreateFromImport(OrganisationId id,
+        string name,
+        string ovoNumber,
+        string? shortName,
+        Article article,
+        Organisation? parentOrganisation,
+        string? description,
+        Period validity,
+        Period operationalValidity,
+        IDateTimeProvider dateTimeProvider,
+        OrganisationSourceId importId,
+        string reference)
+        => new(id,
+            name,
+            ovoNumber,
+            shortName,
+            article,
+            parentOrganisation,
+            description,
+            new List<Purpose>(),
+            false,
+            validity,
+            operationalValidity,
+            dateTimeProvider,
+            OrganisationSource.CsvImport,
+            importId,
+            reference);
 
     public static Organisation CreateFromKbo(
         CreateOrganisationFromKbo message,
@@ -1172,7 +1206,7 @@ public partial class Organisation : AggregateRoot
         bool isMainLocation,
         LocationType? locationType,
         Period validity,
-        Source source,
+        LocationSource source,
         IDateTimeProvider dateTimeProvider)
     {
         var organisationLocation =
@@ -1282,7 +1316,7 @@ public partial class Organisation : AggregateRoot
         bool isMainLocation,
         LocationType? locationType,
         Period validity,
-        Source source,
+        LocationSource source,
         IDateTimeProvider dateTimeProvider)
     {
         var organisationLocation =
@@ -1303,7 +1337,7 @@ public partial class Organisation : AggregateRoot
         if (organisationLocation.IsMainLocation && State.OrganisationLocations.OrganisationAlreadyHasAMainLocationInTheSamePeriod(organisationLocation, KboState.KboRegisteredOffice))
             throw new OrganisationAlreadyHasAMainLocationInThisPeriod();
 
-        if (source == Source.Kbo)
+        if (source == LocationSource.Kbo)
         {
             var previousLocation = KboState.KboRegisteredOffice;
 
@@ -2225,7 +2259,7 @@ public partial class Organisation : AggregateRoot
                 @event.LocationTypeId,
                 @event.LocationTypeName,
                 new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo)),
-                Source.Wegwijs));
+                LocationSource.Wegwijs));
 
     private void Apply(KboRegisteredOfficeOrganisationLocationAdded @event)
         => KboState.KboRegisteredOffice = new OrganisationLocation(
@@ -2237,7 +2271,7 @@ public partial class Organisation : AggregateRoot
             @event.LocationTypeId,
             @event.LocationTypeName,
             new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo)),
-            Source.Kbo);
+            LocationSource.Kbo);
 
     private void Apply(KboRegisteredOfficeOrganisationLocationRemoved @event)
         => KboState.KboRegisteredOffice = null;
@@ -2253,7 +2287,7 @@ public partial class Organisation : AggregateRoot
             @event.LocationTypeId,
             @event.LocationTypeName,
             new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo)),
-            Source.Wegwijs);
+            LocationSource.Wegwijs);
 
         var oldOrganisationLocation = State.OrganisationLocations.Single(location => location.OrganisationLocationId == @event.OrganisationLocationId);
         State.OrganisationLocations.Remove(oldOrganisationLocation);

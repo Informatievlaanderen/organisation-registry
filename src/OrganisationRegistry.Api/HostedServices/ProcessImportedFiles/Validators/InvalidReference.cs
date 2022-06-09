@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using Organisation.Import;
 
 public static class InvalidReference
 {

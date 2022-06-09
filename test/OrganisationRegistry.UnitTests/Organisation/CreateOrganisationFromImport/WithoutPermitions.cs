@@ -10,6 +10,7 @@ using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Domain;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Exceptions;
+using OrganisationRegistry.Organisation.Import;
 using Tests.Shared;
 using Xunit;
 using Xunit.Abstractions;
@@ -22,7 +23,7 @@ public class
     }
 
     private static CreateOrganisationsFromImport CreateOrganisationsFromImportCommand
-        => new(Guid.NewGuid(), Array.Empty<IOutputRecord>());
+        => new(Guid.NewGuid(), Array.Empty<OutputRecord>());
 
     protected override CreateOrganisationsFromImportCommandHandler BuildHandler(ISession session)
         => new(

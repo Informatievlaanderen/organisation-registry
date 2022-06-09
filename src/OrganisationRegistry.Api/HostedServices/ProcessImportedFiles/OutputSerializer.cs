@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using CsvHelper;
 using CsvHelper.Configuration;
 using Magda.Helpers;
+using Organisation.Import;
 using SqlServer.Import.Organisations;
 
 public static class OutputSerializer
