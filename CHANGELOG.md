@@ -1,3 +1,10 @@
+# [1.201.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.200.2...v1.201.0) (2022-06-10)
+
+
+### Features
+
+* or-1080 add unit tests ([1bc9b75](https://github.com/informatievlaanderen/organisation-registry/commit/1bc9b758a8021d7b91eb7fb4400d561229c4e19a))
+
 ## [1.200.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.200.1...v1.200.2) (2022-06-10)
 
 
