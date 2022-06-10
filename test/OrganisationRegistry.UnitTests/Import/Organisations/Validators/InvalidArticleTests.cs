@@ -41,7 +41,7 @@ public class InvalidArticleTests
     [InlineData("notValid")]
     [InlineData("thisNeither")]
     [InlineData("NotEvenThisOne")]
-    public void ReturnsOneIssue_WhenAtricleIsNotValid(string article)
+    public void ReturnsIssue_WhenAtricleIsNotValid(string article)
     {
         var record = GetDeserializedRecordWithArticle(article);
 
@@ -50,6 +50,6 @@ public class InvalidArticleTests
         issues.Should().BeEquivalentTo(
             new ValidationIssue(
                 1,
-                $"De waarde '{article}' is ongeldig voor kolom 'article' (Geldige waarden: 'de', 'het')."));
+                InvalidArticle.FormatMessage($"'{article}'")));
     }
 }

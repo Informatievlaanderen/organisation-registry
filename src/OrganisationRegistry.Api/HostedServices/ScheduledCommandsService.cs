@@ -35,15 +35,14 @@ public class ScheduledCommandsService : BackgroundService
 
     protected override async Task Process(CancellationToken cancellationToken)
     {
+        if (!_configuration.Enabled)
+        {
+            _logger.LogInformation($"{nameof(ScheduledCommandsService)} disabled, skipping execution");
+            return;
+        }
+
         while (!cancellationToken.IsCancellationRequested)
         {
-            if (!_configuration.Enabled)
-            {
-                _logger.LogInformation("ScheduledCommandsService disabled, skipping execution");
-                await _configuration.Delay(cancellationToken);
-                continue;
-            }
-
             var today = _dateTimeProvider.Today;
             _logger.LogDebug("Processing scheduled commands");
 
@@ -75,7 +74,6 @@ public class ScheduledCommandsService : BackgroundService
     }
 
 
-
     /// <summary>
     /// made public for testing purposes
     /// </summary>
@@ -94,7 +92,8 @@ public class ScheduledCommandsService : BackgroundService
         commands.AddRange(await context.ActivePeopleAssignedToBodyMandatesList.GetScheduledCommandsToExecute(today));
         commands.AddRange(await context.FuturePeopleAssignedToBodyMandatesList.GetScheduledCommandsToExecute(today));
         commands.AddRange(await context.ActiveOrganisationFormalFrameworkList.GetScheduledCommandsToExecute(today));
-        commands.AddRange(await context.FutureActiveOrganisationFormalFrameworkList.GetScheduledCommandsToExecute(today));
+        commands.AddRange(
+            await context.FutureActiveOrganisationFormalFrameworkList.GetScheduledCommandsToExecute(today));
         commands.AddRange(await context.OrganisationCapacityList.GetScheduledCommandsToExecute(today));
 
         return commands;

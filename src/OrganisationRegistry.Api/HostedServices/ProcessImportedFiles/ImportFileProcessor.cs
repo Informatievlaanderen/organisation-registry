@@ -44,12 +44,20 @@ public static class ImportFileProcessor
 
             if (parseAndValidatorResult.ValidationOk)
             {
-                var user = new User(importFile.UserFirstName, importFile.UserName, importFile.UserId, null, new[] { Role.AlgemeenBeheerder }, new List<string>());
+                var user = new User(
+                    importFile.UserFirstName,
+                    importFile.UserName,
+                    importFile.UserId,
+                    null,
+                    new[] { Role.AlgemeenBeheerder },
+                    new List<string>());
 
-                await commandSender.Send(new CreateOrganisationsFromImport(importFile.Id, parseAndValidatorResult.OutputRecords), user);
+                await commandSender.Send(
+                    new CreateOrganisationsFromImport(importFile.Id, parseAndValidatorResult.OutputRecords),
+                    user);
 
                 var organisationDetails =
-                    await RetrieveOrganisationDetails(context, importFile.Id, parseAndValidatorResult.OutputRecords.Count, cancellationToken);
+                    await RetrieveOrganisationDetails(context, importFile.Id, cancellationToken);
 
                 var result = ToCsvResult(organisationDetails, parseAndValidatorResult.OutputRecords);
 
@@ -109,32 +117,10 @@ public static class ImportFileProcessor
     private static async Task<IEnumerable<OrganisationDetailItem>> RetrieveOrganisationDetails(
         OrganisationRegistryContext context,
         Guid importFileId,
-        int importedNumberOfRecords,
         CancellationToken cancellationToken)
-    {
-        var maxDuration = TimeSpan.FromMinutes(30);
-        var stopwatch = Stopwatch.StartNew();
-        try
-        {
-            var details = new List<OrganisationDetailItem>();
-            while (importedNumberOfRecords != details.Count)
-            {
-                if (stopwatch.Elapsed > maxDuration)
-                    throw new TimeoutException("No OVO numbers where assigned within a reasonable time.");
-
-                details = await context.OrganisationDetail
-                    .Where(od => od.SourceType == OrganisationSource.CsvImport && od.SourceId == importFileId)
-                    .ToListAsync(cancellationToken);
-                await Task.Delay(millisecondsDelay: 100, cancellationToken);
-            }
-
-            return details;
-        }
-        finally
-        {
-            stopwatch.Stop();
-        }
-    }
+        => await context.OrganisationDetail
+            .Where(od => od.SourceType == OrganisationSource.CsvImport && od.SourceId == importFileId)
+            .ToListAsync(cancellationToken);
 
     private static async Task<ImportOrganisationsStatusListItem?> MaybeGetNextImportFile(
         OrganisationRegistryContext context,
