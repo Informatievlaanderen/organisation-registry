@@ -79,41 +79,53 @@ public class InvalidDateFormatTests
     [InlineData("01-02-2036")]
     [InlineData("notADate")]
     [InlineData("2000-31-12")]
-    public void ReturnsOneValidationIssue_WhenValididyStartHasInvalidFormatAndOperationalValidityStartHasNoValue(string invalidValidityStart)
+    public void ReturnsOneValidationIssue_WhenValididyStartHasInvalidFormatAndOperationalValidityStartHasNoValue(
+        string invalidValidityStart)
     {
         var record = GetDeserializedRecordWithValidityStart(invalidValidityStart);
         var issues = InvalidDateFormat.Validate(1, record);
-        issues.Should().HaveCount(1).And.ContainEquivalentOf(new ValidationIssue(1, $"De waarde '{invalidValidityStart}' is ongeldig voor kolom '{ColumnNames.Validity_Start}' (Vereist formaat: 'YYYY-MM-DD')."));
+        issues.Should().HaveCount(1).And.ContainEquivalentOf(
+            new ValidationIssue(
+                1,
+                InvalidDateFormat.FormatMessage($"{invalidValidityStart}", $"{ColumnNames.Validity_Start}")));
     }
 
     [Theory]
     [InlineData("01-02-2035")]
     [InlineData("notADateEither")]
     [InlineData("2000-31-11")]
-    public void ReturnsOneValidationIssue_WhenValididyStartHasNoValueAndOperationalValidityStartHasInvalidFormat(string invalidOperationalValidityStart)
+    public void ReturnsOneValidationIssue_WhenValididyStartHasNoValueAndOperationalValidityStartHasInvalidFormat(
+        string invalidOperationalValidityStart)
     {
         var record = GetDeserializedRecordWithOperationalValidityStart(invalidOperationalValidityStart);
         var issues = InvalidDateFormat.Validate(1, record);
-        issues.Should().HaveCount(1).And.ContainEquivalentOf(new ValidationIssue(1, $"De waarde '{invalidOperationalValidityStart}' is ongeldig voor kolom '{ColumnNames.OperationalValidity_Start}' (Vereist formaat: 'YYYY-MM-DD')."));
+        issues.Should().HaveCount(1).And.ContainEquivalentOf(
+            new ValidationIssue(
+                1,
+                InvalidDateFormat.FormatMessage($"{invalidOperationalValidityStart}", $"{ColumnNames.OperationalValidity_Start}")));
     }
 
     [Theory]
-    [InlineData("01-02-2034","01-02-2033")]
+    [InlineData("01-02-2034", "01-02-2033")]
     [InlineData("alsoNotADate", "noIdeaButNotADate")]
-    [InlineData("2000-31-10","2000-31-09")]
-    public void ReturnsTwoValidationIssue_WhenValididyStartHasHasInvalidFormatAndOperationalValidityStartHasInvalidFormat(string invalidValidityStart,string invalidOperationalValidityStart)
+    [InlineData("2000-31-10", "2000-31-09")]
+    public void
+        ReturnsTwoValidationIssue_WhenValididyStartHasHasInvalidFormatAndOperationalValidityStartHasInvalidFormat(
+            string invalidValidityStart,
+            string invalidOperationalValidityStart)
     {
-        var record = GetDeserializedRecordWithValidityStartAndOperationalValidityStart(invalidValidityStart,invalidOperationalValidityStart);
+        var record = GetDeserializedRecordWithValidityStartAndOperationalValidityStart(
+            invalidValidityStart,
+            invalidOperationalValidityStart);
         var issues = InvalidDateFormat.Validate(1, record);
         issues.Should().HaveCount(2)
             .And.ContainEquivalentOf(
                 new ValidationIssue(
                     1,
-                    $"De waarde '{invalidValidityStart}' is ongeldig voor kolom '{ColumnNames.Validity_Start}' (Vereist formaat: 'YYYY-MM-DD')."))
+                    InvalidDateFormat.FormatMessage($"{invalidValidityStart}", $"{ColumnNames.Validity_Start}")))
             .And.ContainEquivalentOf(
                 new ValidationIssue(
                     1,
-                    $"De waarde '{invalidOperationalValidityStart}' is ongeldig voor kolom '{ColumnNames.OperationalValidity_Start}' (Vereist formaat: 'YYYY-MM-DD')."));
-
+                    InvalidDateFormat.FormatMessage($"{invalidOperationalValidityStart}", $"{ColumnNames.OperationalValidity_Start}")));
     }
 }

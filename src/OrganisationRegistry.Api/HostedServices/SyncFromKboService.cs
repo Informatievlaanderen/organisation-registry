@@ -1,6 +1,5 @@
 ﻿namespace OrganisationRegistry.Api.HostedServices;
 
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Backoffice.Admin.Task;

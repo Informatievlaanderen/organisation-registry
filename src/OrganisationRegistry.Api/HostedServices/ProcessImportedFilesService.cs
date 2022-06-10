@@ -35,9 +35,22 @@ public class ProcessImportedFilesService : BackgroundService
 
     protected override async Task Process(CancellationToken cancellationToken)
     {
+        if (!_configuration.Enabled)
+        {
+            _logger.LogInformation($"{nameof(ProcessImportedFilesService)} disabled, skipping execution");
+            return;
+        }
+
         while (!cancellationToken.IsCancellationRequested)
         {
-            await ImportFileProcessor.ProcessNextFile(_contextFactory, _dateTimeProvider, _logger, _fileParserAndValidator, _commandSender, _configuration, cancellationToken);
+            await ImportFileProcessor.ProcessNextFile(
+                _contextFactory,
+                _dateTimeProvider,
+                _logger,
+                _fileParserAndValidator,
+                _commandSender,
+                _configuration,
+                cancellationToken);
         }
     }
 }

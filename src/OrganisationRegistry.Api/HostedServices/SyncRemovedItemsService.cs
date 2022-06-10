@@ -36,15 +36,14 @@ public class SyncRemovedItemsService : BackgroundService
 
     protected override async Task Process(CancellationToken cancellationToken)
     {
+        if (!_configuration.Enabled)
+        {
+            _logger.LogInformation($"{nameof(SyncRemovedItemsService)} disabled, skipping execution");
+            return;
+        }
+
         while (!cancellationToken.IsCancellationRequested)
         {
-            if (!_configuration.Enabled)
-            {
-                _logger.LogInformation("SyncRemovedItemsService disabled, skipping execution");
-                await _configuration.Delay(cancellationToken);
-                continue;
-            }
-
             await RemoveOrganisationItems(_commandSender, _contextFactory);
 
             await _configuration.Delay(cancellationToken);
@@ -71,7 +70,10 @@ public class SyncRemovedItemsService : BackgroundService
             ));
     }
 
-    private static async Task RemoveOrganisationItems<TItem, TCommand>(Func<TCommand, IUser?, Task> sendCommand, IQueryable<TItem> list, Func<TItem, TCommand> createCommand)
+    private static async Task RemoveOrganisationItems<TItem, TCommand>(
+        Func<TCommand, IUser?, Task> sendCommand,
+        IQueryable<TItem> list,
+        Func<TItem, TCommand> createCommand)
         where TItem : IRemovable
         where TCommand : ICommand
     {

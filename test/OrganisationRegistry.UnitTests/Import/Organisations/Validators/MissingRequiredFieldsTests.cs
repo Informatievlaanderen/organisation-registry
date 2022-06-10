@@ -36,7 +36,7 @@ public class MissingRequiredFieldsTests
         var issue = MissingRequiredFields.Validate(1, record);
 
         issue.Should().BeEquivalentTo(
-            new ValidationIssue(1, $"Rij ontbreekt waarde voor volgende kolommen: '{ColumnNames.Reference}'."));
+            new ValidationIssue(1, MissingRequiredFields.FormatMessage($"'{ColumnNames.Reference}'")));
     }
 
     [Fact]
@@ -52,7 +52,7 @@ public class MissingRequiredFieldsTests
         var issue = MissingRequiredFields.Validate(1, record);
 
         issue.Should().BeEquivalentTo(
-            new ValidationIssue(1, $"Rij ontbreekt waarde voor volgende kolommen: '{ColumnNames.Name}'."));
+            new ValidationIssue(1, MissingRequiredFields.FormatMessage($"'{ColumnNames.Name}'")));
     }
 
     [Fact]
@@ -68,7 +68,7 @@ public class MissingRequiredFieldsTests
         var issue = MissingRequiredFields.Validate(1, record);
 
         issue.Should().BeEquivalentTo(
-            new ValidationIssue(1, $"Rij ontbreekt waarde voor volgende kolommen: '{ColumnNames.Parent}'."));
+            new ValidationIssue(1,  MissingRequiredFields.FormatMessage($"'{ColumnNames.Parent}'")));
     }
 
     [Fact]
@@ -86,7 +86,8 @@ public class MissingRequiredFieldsTests
         issue.Should().BeEquivalentTo(
             new ValidationIssue(
                 1,
-                $"Rij ontbreekt waarde voor volgende kolommen: '{ColumnNames.Reference}', '{ColumnNames.Parent}', '{ColumnNames.Name}'."));
+                MissingRequiredFields.FormatMessage(
+                    $"'{ColumnNames.Reference}', '{ColumnNames.Parent}', '{ColumnNames.Name}'")));
     }
 
     [Fact]
@@ -104,6 +105,6 @@ public class MissingRequiredFieldsTests
         issue.Should().BeEquivalentTo(
             new ValidationIssue(
                 1,
-                $"Rij ontbreekt waarde voor volgende kolommen: '{ColumnNames.Reference}', '{ColumnNames.Parent}'."));
+                MissingRequiredFields.FormatMessage($"'{ColumnNames.Reference}', '{ColumnNames.Parent}'")));
     }
 }

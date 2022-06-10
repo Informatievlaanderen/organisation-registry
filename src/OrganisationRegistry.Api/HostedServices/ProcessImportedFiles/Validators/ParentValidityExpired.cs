@@ -28,9 +28,10 @@ public static class ParentValidityExpired
         if (record.Parent.Value is not { } parent || parent.IsNullOrWhiteSpace()) yield break;
 
         var parents = organisationsCache.Where(
-            org => org.OvoNumber.Equals(
-                parent,
-                StringComparison.InvariantCultureIgnoreCase))
+                org => string.Equals(
+                    org.OvoNumber,
+                    parent,
+                    StringComparison.InvariantCultureIgnoreCase))
             .ToImmutableList();
 
         if (!parents.Any()) yield break;

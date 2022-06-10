@@ -15,7 +15,7 @@ public static class ParentAlreadyHasDaughterWithSameName
             return null;
 
         return organisationsCache
-            .Where(org => org.Name.Equals(record.Name.Value, StringComparison.InvariantCultureIgnoreCase))
+            .Where(org => string.Equals(org.Name,record.Name.Value, StringComparison.InvariantCultureIgnoreCase))
             .Where(org => org.ParentOrganisationOvoNumber != null)
             .Any(org => org.ParentOrganisationOvoNumber == record.Parent.Value)
             ? new ValidationIssue(rowNumber, FormatMessage(parent, record.Name.Value))

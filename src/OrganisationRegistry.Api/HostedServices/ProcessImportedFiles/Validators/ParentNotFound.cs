@@ -10,15 +10,21 @@ using SqlServer.Organisation;
 
 public static class ParentNotFound
 {
-    public static ValidationIssue? Validate(ImmutableList<OrganisationListItem> organisationsCache, int rowNumber, DeserializedRecord record)
+    public static ValidationIssue? Validate(
+        ImmutableList<OrganisationListItem> organisationsCache,
+        int rowNumber,
+        DeserializedRecord record)
         => ValidationIssuesFactory.Create(rowNumber, CheckParent(organisationsCache, record).ToList(), FormatMessage);
 
-    private static IEnumerable<string> CheckParent(ImmutableList<OrganisationListItem> organisationsCache, DeserializedRecord record)
+    private static IEnumerable<string> CheckParent(
+        ImmutableList<OrganisationListItem> organisationsCache,
+        DeserializedRecord record)
     {
         if (record.Parent.Value is not { } parent || parent.IsNullOrWhiteSpace()) yield break;
 
-        if (!organisationsCache.Any(org => org.OvoNumber.Equals(parent, StringComparison.InvariantCultureIgnoreCase)))
-            yield return parent;
+        if (!organisationsCache.Any(
+                org => string.Equals(org.OvoNumber, parent, StringComparison.InvariantCultureIgnoreCase)))
+        yield return parent;
     }
 
     public static string FormatMessage(string parent)

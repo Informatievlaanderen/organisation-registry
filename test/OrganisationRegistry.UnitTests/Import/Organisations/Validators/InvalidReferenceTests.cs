@@ -40,6 +40,6 @@ public class InvalidReferenceTests
         issue.Should().BeEquivalentTo(
             new ValidationIssue(
                 1,
-                $"De waarde '{ovoReference}' is ongeldig voor kolom 'reference' (Waarde mag niet beginnen met 'OVO')."));
+                InvalidReference.FormatMessage($"'{ovoReference}'")));
     }
 }
