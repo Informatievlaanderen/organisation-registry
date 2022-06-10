@@ -1,3 +1,10 @@
+## [1.201.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.201.0...v1.201.1) (2022-06-10)
+
+
+### Bug Fixes
+
+* or-1080 make sure that the service doesnt stop when an error occurs ([01e1d34](https://github.com/informatievlaanderen/organisation-registry/commit/01e1d34e3b3c3a260e6cfe325d88ad1d6c705ca2))
+
 # [1.201.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.200.2...v1.201.0) (2022-06-10)
 
 
