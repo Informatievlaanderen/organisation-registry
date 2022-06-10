@@ -24,7 +24,7 @@ public class GuidConverter : JsonConverter
                 return Guid.Empty;
 
             case JTokenType.String:
-                return maybeValue?.ToString() is { } valueToString ? new Guid(valueToString) : Guid.Empty;
+                return maybeValue?.ToString() is { } valueToString && valueToString.IsNotEmptyOrWhiteSpace() ? new Guid(valueToString) : Guid.Empty;
 
             default:
                 throw new ArgumentException("Invalid token type");
