@@ -96,7 +96,7 @@ jobs:
 
     - name: Install NPM dependencies
       shell: bash
-      run: npm install
+      run: npm install --legacy-peer-deps
 
     - name: Install Python dependencies
       shell: bash
