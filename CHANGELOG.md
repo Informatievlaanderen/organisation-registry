@@ -1,3 +1,10 @@
+## [1.200.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.200.1...v1.200.2) (2022-06-10)
+
+
+### Bug Fixes
+
+* or-1088 amend nullcheck with check on empty or whitespace ([33ef5e8](https://github.com/informatievlaanderen/organisation-registry/commit/33ef5e80ba5d0e50a4f8979fcdc3202f86a19e16))
+
 ## [1.200.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.200.0...v1.200.1) (2022-06-10)
 
 
