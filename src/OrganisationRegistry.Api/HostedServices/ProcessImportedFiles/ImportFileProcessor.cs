@@ -2,7 +2,6 @@ namespace OrganisationRegistry.Api.HostedServices.ProcessImportedFiles;
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -86,7 +85,7 @@ public static class ImportFileProcessor
                 importFile,
                 e.Message,
                 false);
-            throw;
+            logger.LogError(e, "An error occured while Importing files");
         }
         finally
         {

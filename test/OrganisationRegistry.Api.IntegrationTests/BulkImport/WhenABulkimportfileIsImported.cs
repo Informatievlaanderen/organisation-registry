@@ -2,6 +2,7 @@
 
 using System;
 using System.Globalization;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -44,7 +45,7 @@ public class WhenABulkimportfileIsImported
     }
 
     [Fact]
-    public async Task GivenAValidFile_ThenItAppearsInTheStatusList()
+    public async Task GivenAValidFile_ThenItAppearsInTheStatusList_AndAfterAWhileTheFileIsProcessedSuccessfully()
     {
         var client = _fixture.HttpClient;
 
@@ -76,6 +77,46 @@ public class WhenABulkimportfileIsImported
 
         actual.Should().BeEquivalentTo(expected);
 
-        // todo: poll status
+        var pollResult = await PollImportStatus(client);
+        while (!pollResult.completed)
+        {
+            await Task.Delay(100);
+            pollResult = await PollImportStatus(client);
+        }
+
+        return;
+
+        // todo: make sure that the parent organisation(s) exist(s) and uncomment the code below
+
+        // pollResult.success.Should().BeTrue();
+        //
+        // await using var resultFileStream = await client.GetStreamAsync($"import/organisations/{pollResult.id}/content");
+        //
+        // using var streamReader = new StreamReader(resultFileStream);
+        //
+        // var resultFileContent = (await streamReader.ReadToEndAsync()).Replace(" ", "");
+        // var expectedResultFileContent = GetType().Assembly.GetResourceString("OrganisationRegistry.Api.IntegrationTests.BulkImport.Valid_TestImportFileOutput.csv");
+        //
+        // resultFileContent.Should().Be(expectedResultFileContent);
+    }
+
+    private static async Task<(bool completed, bool? success, string? id, string? filename)> PollImportStatus(HttpClient client)
+    {
+        using var pollResult = await client.GetAsync("import/organisations");
+
+        var polledStatusResultContent = await pollResult.Content.ReadAsStringAsync();
+        var polledActual = JToken.Parse(polledStatusResultContent);
+
+        var polledStatus = polledActual["imports"]![0]!["status"];
+
+        var geslaagd = (string?)polledStatus == "Geslaagd";
+        var gefaald = (string?)polledStatus == "Gefaald";
+        var importId = (string?)polledActual["imports"]![0]!["id"];
+        var filename = (string?)polledActual["imports"]![0]!["filename"];
+        return geslaagd
+            ? (completed: true, success: true, id: importId, filename)
+            : gefaald
+                ? (completed: true, success: false, id: importId, filename)
+                : (completed: false, success: null, id: null, filename: null);
     }
 }
