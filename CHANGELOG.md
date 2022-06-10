@@ -1,3 +1,11 @@
+## [1.200.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.200.0...v1.200.1) (2022-06-10)
+
+
+### Bug Fixes
+
+* or-1080 install npm with legacy support ([dbc2199](https://github.com/informatievlaanderen/organisation-registry/commit/dbc2199c46f138213ba26d48d3444b01db7b75c5))
+* or-1080 resolve validation and other issues concerning the import ([436646a](https://github.com/informatievlaanderen/organisation-registry/commit/436646a4f3aa9a1735020649c8dc9c6de02cff74))
+
 # [1.200.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.199.4...v1.200.0) (2022-06-09)
 
 
