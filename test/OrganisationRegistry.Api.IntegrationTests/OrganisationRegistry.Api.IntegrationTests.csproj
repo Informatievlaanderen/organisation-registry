@@ -19,6 +19,7 @@
     <EmbeddedResource Include="BulkImport\Invalid_TestImportFile.csv" />
     <EmbeddedResource Include="BulkImport\Valid_TestImportFile.csv" />
     <EmbeddedResource Include="BulkImport\ExpectedStatusResult.json" />
+    <EmbeddedResource Include="BulkImport\Valid_TestImportFileOutput.csv" />
   </ItemGroup>
 
   <Import Project="..\..\.paket\Paket.Restore.targets" />
