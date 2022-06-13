@@ -1,3 +1,10 @@
+# [1.202.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.201.1...v1.202.0) (2022-06-13)
+
+
+### Features
+
+* or-1085 hide resultlink when not success or failure (Geslaagd of Gefaald) ([d4e8fe3](https://github.com/informatievlaanderen/organisation-registry/commit/d4e8fe351954bb60130a9dd1bab8f5d665c2ccbd))
+
 ## [1.201.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.201.0...v1.201.1) (2022-06-10)
 
 
