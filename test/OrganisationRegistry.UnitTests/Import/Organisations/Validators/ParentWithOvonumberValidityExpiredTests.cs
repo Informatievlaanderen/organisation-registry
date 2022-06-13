@@ -10,14 +10,14 @@ using OrganisationRegistry.Organisation.Import;
 using SqlServer.Organisation;
 using Xunit;
 
-public class ParentValidityExpiredTests
+public class ParentWithOvonumberValidityExpiredTests
 {
     private readonly DateTime _today;
     private readonly IFixture _fixture = new Fixture();
     private readonly DateTime _yesterday;
     private readonly DateTime _tomorrow;
 
-    public ParentValidityExpiredTests()
+    public ParentWithOvonumberValidityExpiredTests()
     {
         _today = _fixture.Create<DateTime>();
         _yesterday = _today.AddDays(-1);
@@ -50,7 +50,7 @@ public class ParentValidityExpiredTests
     {
         var record = new DeserializedRecord { Parent = Field.NoValue(ColumnNames.Parent) };
 
-        var issue = ParentValidityExpired.Validate(
+        var issue = ParentWithOvonumberValidityExpired.Validate(
             OrganisationsCache,
             DateOnly.FromDateTime(_today),
             1,
@@ -59,13 +59,26 @@ public class ParentValidityExpiredTests
         issue.Should().BeNull();
     }
 
-
     [Fact]
     public void ReturnsEmpty_WhenParentDoesNotExistInList()
     {
-        var record = GetDeserializedRecordWithParent("doesNotExist");
+        var record = GetDeserializedRecordWithParent("OvodoesNotExist");
 
-        var issue = ParentValidityExpired.Validate(
+        var issue = ParentWithOvonumberValidityExpired.Validate(
+            OrganisationsCache,
+            DateOnly.FromDateTime(_today),
+            1,
+            record);
+
+        issue.Should().BeNull();
+    }
+
+    [Fact]
+    public void ReturnsEmpty_WhenParentIsNotAnOvonumber()
+    {
+        var record = GetDeserializedRecordWithParent("NotAnOvoNumber");
+
+        var issue = ParentWithOvonumberValidityExpired.Validate(
             OrganisationsCache,
             DateOnly.FromDateTime(_today),
             1,
@@ -79,7 +92,7 @@ public class ParentValidityExpiredTests
     {
         var record = GetDeserializedRecordWithParent("Ovo000001");
 
-        var issue = ParentValidityExpired.Validate(
+        var issue = ParentWithOvonumberValidityExpired.Validate(
             OrganisationsCache,
             DateOnly.FromDateTime(_today),
             1,
@@ -93,12 +106,12 @@ public class ParentValidityExpiredTests
     {
         var record = GetDeserializedRecordWithParent("Ovo000002");
 
-        var issue = ParentValidityExpired.Validate(
+        var issue = ParentWithOvonumberValidityExpired.Validate(
             OrganisationsCache,
             DateOnly.FromDateTime(_today),
             1,
             record);
         issue.Should().BeEquivalentTo(
-            new ValidationIssue(1, ParentValidityExpired.FormatMessage("'Ovo000002'")));
+            new ValidationIssue(1, ParentWithOvonumberValidityExpired.FormatMessage("'Ovo000002'")));
     }
 }

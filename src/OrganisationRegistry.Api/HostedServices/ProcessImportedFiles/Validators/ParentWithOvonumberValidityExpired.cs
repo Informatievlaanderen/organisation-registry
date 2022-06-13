@@ -8,7 +8,7 @@ using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
 using Organisation.Import;
 using SqlServer.Organisation;
 
-public static class ParentValidityExpired
+public static class ParentWithOvonumberValidityExpired
 {
     public static ValidationIssue? Validate(
         ImmutableList<OrganisationListItem> organisationsCache,

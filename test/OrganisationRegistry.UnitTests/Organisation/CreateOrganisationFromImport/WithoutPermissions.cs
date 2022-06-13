@@ -15,10 +15,10 @@ using Tests.Shared;
 using Xunit;
 using Xunit.Abstractions;
 
-public class
-    WithoutPermitions : Specification<CreateOrganisationsFromImportCommandHandler, CreateOrganisationsFromImport>
+public class WithoutPermissions
+    : Specification<CreateOrganisationsFromImportCommandHandler, CreateOrganisationsFromImport>
 {
-    public WithoutPermitions(ITestOutputHelper helper) : base(helper)
+    public WithoutPermissions(ITestOutputHelper helper) : base(helper)
     {
     }
 

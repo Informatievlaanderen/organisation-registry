@@ -4,18 +4,18 @@ using System;
 using System.Globalization;
 using OrganisationRegistry.Organisation;
 
-public class OutputRecord
+public record OutputRecord
 {
-    protected OutputRecord(string reference, Guid parentOrganisationId, string name, int sortOrder)
+    protected OutputRecord(string reference, OrganisationParentIdentifier parentIdentifier, string name, int sortOrder)
     {
         Reference = reference;
-        ParentOrganisationId = parentOrganisationId;
+        ParentIdentifier = parentIdentifier;
         Name = name;
         SortOrder = sortOrder;
     }
 
     public string Reference { get; }
-    public Guid ParentOrganisationId { get; }
+    public OrganisationParentIdentifier ParentIdentifier { get; }
     public string Name { get; }
     public DateOnly? Validity_Start { get; protected init; }
     public string? ShortName { get; protected init; }
@@ -24,21 +24,21 @@ public class OutputRecord
     public string? OvoNumber { get; private init; }
     public int SortOrder { get; }
 
-    public static OutputRecord From(DeserializedRecord record,Guid parentOrganisationId, int sortOrder)
-        => new(record.Reference.Value!, parentOrganisationId, record.Name.Value!, sortOrder)
+    public static OutputRecord From(DeserializedRecord record, OrganisationParentIdentifier parentidentifier, int sortOrder)
+        => new(record.Reference.Value!, parentidentifier, record.Name.Value!, sortOrder)
         {
             Article = Article.Parse(record.Article.Value),
             ShortName = record.ShortName.Value,
             Validity_Start = record.Validity_Start.Value is { } validityStart
                 ? DateOnly.ParseExact(validityStart, "yyyy-MM-dd", CultureInfo.InvariantCulture)
                 : null,
-            OperationalValidity_Start = record.Validity_Start.Value is { } operationalValidityStart
+            OperationalValidity_Start = record.OperationalValidity_Start.Value is { } operationalValidityStart
                 ? DateOnly.ParseExact(operationalValidityStart, "yyyy-MM-dd", CultureInfo.InvariantCulture)
                 : null
         };
 
     public OutputRecord WithOvoNumber(string ovoNumber)
-        => new(Reference, ParentOrganisationId, Name, SortOrder)
+        => new(Reference, ParentIdentifier, Name, SortOrder)
         {
             Article = Article,
             ShortName = ShortName,

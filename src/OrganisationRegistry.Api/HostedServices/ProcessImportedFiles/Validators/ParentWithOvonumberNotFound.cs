@@ -8,7 +8,7 @@ using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
 using Organisation.Import;
 using SqlServer.Organisation;
 
-public static class ParentNotFound
+public static class ParentWithOvonumberNotFound
 {
     public static ValidationIssue? Validate(
         ImmutableList<OrganisationListItem> organisationsCache,
@@ -21,6 +21,8 @@ public static class ParentNotFound
         DeserializedRecord record)
     {
         if (record.Parent.Value is not { } parent || parent.IsNullOrWhiteSpace()) yield break;
+
+        if (!parent.ToLowerInvariant().StartsWith("ovo")) yield break;
 
         if (!organisationsCache.Any(
                 org => string.Equals(org.OvoNumber, parent, StringComparison.InvariantCultureIgnoreCase)))
