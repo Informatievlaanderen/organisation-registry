@@ -51,17 +51,22 @@ public class WhenABulkimportfileIsImported
 
         var importFileStream = GetType().Assembly.GetResource("OrganisationRegistry.Api.IntegrationTests.BulkImport.Valid_TestImportFile.csv");
 
+        // Act: Send the CSV to the API
         using var content = new MultipartFormDataContent("Upload----" + DateTime.Now.ToString(CultureInfo.InvariantCulture));
         content.Add(new StreamContent(importFileStream), "bulkimportfile", "upload.csv");
 
         using var message = await client.PostAsync("import/organisations", content);
 
+        // Assert that the CSV is accepted by the API
         message.StatusCode.Should().Be(HttpStatusCode.Accepted);
+
+        // Act: retrieve the list of imports
         var importResult = await message.Content.ReadAsStringAsync();
         var importResultData = JToken.Parse(importResult);
 
         using var result = await client.GetAsync("import/organisations");
 
+        // Assert that the list of imports consists of the CSV that we just uploaded
         result.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var expectedStatusResult = GetType().Assembly.GetResourceString("OrganisationRegistry.Api.IntegrationTests.BulkImport.ExpectedStatusResult.json");
@@ -77,6 +82,7 @@ public class WhenABulkimportfileIsImported
 
         actual.Should().BeEquivalentTo(expected);
 
+        // Poll for the result of the imported CSV
         var pollResult = await PollImportStatus(client);
         while (!pollResult.completed)
         {
@@ -84,20 +90,18 @@ public class WhenABulkimportfileIsImported
             pollResult = await PollImportStatus(client);
         }
 
-        return;
+        // Assert that the import succeeded
+        pollResult.success.Should().BeTrue();
 
-        // todo: make sure that the parent organisation(s) exist(s) and uncomment the code below
+        await using var resultFileStream = await client.GetStreamAsync($"import/organisations/{pollResult.id}/content");
 
-        // pollResult.success.Should().BeTrue();
-        //
-        // await using var resultFileStream = await client.GetStreamAsync($"import/organisations/{pollResult.id}/content");
-        //
-        // using var streamReader = new StreamReader(resultFileStream);
-        //
-        // var resultFileContent = (await streamReader.ReadToEndAsync()).Replace(" ", "");
-        // var expectedResultFileContent = GetType().Assembly.GetResourceString("OrganisationRegistry.Api.IntegrationTests.BulkImport.Valid_TestImportFileOutput.csv");
-        //
-        // resultFileContent.Should().Be(expectedResultFileContent);
+        // Assert that result equals expected result
+        using var streamReader = new StreamReader(resultFileStream);
+
+        var resultFileContent = (await streamReader.ReadToEndAsync()).Replace(" ", "");
+        var expectedResultFileContent = GetType().Assembly.GetResourceString("OrganisationRegistry.Api.IntegrationTests.BulkImport.Valid_TestImportFileOutput.csv");
+
+        resultFileContent.Should().Be(expectedResultFileContent);
     }
 
     private static async Task<(bool completed, bool? success, string? id, string? filename)> PollImportStatus(HttpClient client)
