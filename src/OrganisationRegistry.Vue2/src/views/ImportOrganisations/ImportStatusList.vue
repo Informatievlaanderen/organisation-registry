@@ -32,7 +32,16 @@
         <tr :key="importStatus.id" v-for="importStatus in importStatuses">
           <td>{{ importStatus.fileName }}</td>
           <td>{{ importStatus.status }}</td>
-          <td><a @click="downloadFile(importStatus)">Resultaat</a></td>
+          <td>
+            <a
+              v-if="
+                importStatus.status === 'Geslaagd' ||
+                importStatus.status === 'Gefaald'
+              "
+              @click="downloadFile(importStatus)"
+              >Resultaat</a
+            >
+          </td>
           <td
             :title="
               moment(importStatus.uploadedAt).format('yyyy-MM-DD hh:mm:ss')
