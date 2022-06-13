@@ -1,3 +1,10 @@
+# [1.203.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.202.0...v1.203.0) (2022-06-13)
+
+
+### Features
+
+* or-1042 finish unittest ([01a4b78](https://github.com/informatievlaanderen/organisation-registry/commit/01a4b7855da953e0a18700bfa9e309a9ed7fd313))
+
 # [1.202.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.201.1...v1.202.0) (2022-06-13)
 
 
