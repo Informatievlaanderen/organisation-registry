@@ -8,7 +8,7 @@ using OrganisationRegistry.Organisation.Import;
 using SqlServer.Organisation;
 using Xunit;
 
-public class ParentNotFoundTests
+public class ParentWithOvonumberNotFoundTests
 {
     private static DeserializedRecord GetDeserializedRecordWithParent(string parent)
         => new()
@@ -34,7 +34,7 @@ public class ParentNotFoundTests
     {
         var record = new DeserializedRecord { Parent = Field.NoValue(ColumnNames.Parent) };
 
-        var issue = ParentNotFound.Validate(OrganisationsCache, 1, record);
+        var issue = ParentWithOvonumberNotFound.Validate(OrganisationsCache, 1, record);
 
         issue.Should().BeNull();
     }
@@ -45,7 +45,7 @@ public class ParentNotFoundTests
     {
         var record = GetDeserializedRecordWithParent("Ovo000001");
 
-        var issue = ParentNotFound.Validate(OrganisationsCache, 1, record);
+        var issue = ParentWithOvonumberNotFound.Validate(OrganisationsCache, 1, record);
 
         issue.Should().BeNull();
     }
@@ -53,11 +53,21 @@ public class ParentNotFoundTests
     [Fact]
     public void ReturnsIssue_WhenParentDoesNotExistInList()
     {
-        var record = GetDeserializedRecordWithParent("notInList");
+        var record = GetDeserializedRecordWithParent("OvonotInList");
 
-        var issue = ParentNotFound.Validate(OrganisationsCache, 1, record);
+        var issue = ParentWithOvonumberNotFound.Validate(OrganisationsCache, 1, record);
 
         issue.Should().BeEquivalentTo(
-            new ValidationIssue(1, ParentNotFound.FormatMessage("'notInList'")));
+            new ValidationIssue(1, ParentWithOvonumberNotFound.FormatMessage("'OvonotInList'")));
+    }
+
+    [Fact]
+    public void Ignores_WhenParentIsNotAnOvonumber()
+    {
+        var record = GetDeserializedRecordWithParent("notAnOvonumber");
+
+        var issue = ParentWithOvonumberNotFound.Validate(OrganisationsCache, 1, record);
+
+        issue.Should().BeNull();
     }
 }

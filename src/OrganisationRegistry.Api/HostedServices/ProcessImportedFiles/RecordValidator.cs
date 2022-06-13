@@ -29,7 +29,7 @@ public static class RecordValidator
             .Add(InvalidArticle.Validate(rowNumber, record))
             .AddRange(InvalidDateFormat.Validate(rowNumber, record))
             .Add(InvalidReference.Validate(rowNumber, record))
-            .Add(ParentNotFound.Validate(importCache.OrganisationsCache, rowNumber, record))
-            .Add(ParentValidityExpired.Validate(importCache.OrganisationsCache, today, rowNumber, record))
-            .Add(ParentAlreadyHasDaughterWithSameName.Validate(importCache.OrganisationsCache, rowNumber, record));
+            .Add(ParentWithOvonumberNotFound.Validate(importCache.OrganisationsCache, rowNumber, record))
+            .Add(ParentWithOvonumberValidityExpired.Validate(importCache.OrganisationsCache, today, rowNumber, record))
+            .Add(ParentWithOvonumberAlreadyHasDaughterWithSameName.Validate(importCache.OrganisationsCache, rowNumber, record));
 }

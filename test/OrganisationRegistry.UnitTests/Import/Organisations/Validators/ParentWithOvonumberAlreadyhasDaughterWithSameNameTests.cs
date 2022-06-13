@@ -8,7 +8,7 @@ using OrganisationRegistry.Organisation.Import;
 using SqlServer.Organisation;
 using Xunit;
 
-public class ParentAlreadyhasDautherWithSameNameTests
+public class ParentWithOvonumberAlreadyhasDaughterWithSameNameTests
 {
     private static DeserializedRecord GetDeserializedRecordWithName(string name)
         => new()
@@ -50,18 +50,27 @@ public class ParentAlreadyhasDautherWithSameNameTests
     {
         var record = GetDeserializedRecordWithName("name");
 
-        var issue = ParentAlreadyHasDaughterWithSameName.Validate(OrganisationsCache, 1, record);
+        var issue = ParentWithOvonumberAlreadyHasDaughterWithSameName.Validate(OrganisationsCache, 1, record);
 
         issue.Should().BeNull();
     }
 
-
     [Fact]
     public void ReturnsEmpty_WhenParentHasNoChildren()
     {
-        var record = GetDeserializedRecordWithParentAndName("notInList", "name");
+        var record = GetDeserializedRecordWithParentAndName("OvonotInList", "name");
 
-        var issue = ParentAlreadyHasDaughterWithSameName.Validate(OrganisationsCache, 1, record);
+        var issue = ParentWithOvonumberAlreadyHasDaughterWithSameName.Validate(OrganisationsCache, 1, record);
+
+        issue.Should().BeNull();
+    }
+
+    [Fact]
+    public void ReturnsEmpty_WhenParentHasNoOvonumber()
+    {
+        var record = GetDeserializedRecordWithParentAndName("NotAnOvonumber", "name");
+
+        var issue = ParentWithOvonumberAlreadyHasDaughterWithSameName.Validate(OrganisationsCache, 1, record);
 
         issue.Should().BeNull();
     }
@@ -71,7 +80,7 @@ public class ParentAlreadyhasDautherWithSameNameTests
     {
         var record = GetDeserializedRecordWithParentAndName("Ovo000001", "notAChildName");
 
-        var issue = ParentAlreadyHasDaughterWithSameName.Validate(OrganisationsCache, 1, record);
+        var issue = ParentWithOvonumberAlreadyHasDaughterWithSameName.Validate(OrganisationsCache, 1, record);
 
         issue.Should().BeNull();
     }
@@ -81,9 +90,11 @@ public class ParentAlreadyhasDautherWithSameNameTests
     {
         var record = GetDeserializedRecordWithParentAndName("Ovo000001", "child1");
 
-        var issue = ParentAlreadyHasDaughterWithSameName.Validate(OrganisationsCache, 1, record);
+        var issue = ParentWithOvonumberAlreadyHasDaughterWithSameName.Validate(OrganisationsCache, 1, record);
 
         issue.Should().BeEquivalentTo(
-            new ValidationIssue(1, ParentAlreadyHasDaughterWithSameName.FormatMessage("Ovo000001", "child1")));
+            new ValidationIssue(1, ParentWithOvonumberAlreadyHasDaughterWithSameName.FormatMessage("Ovo000001", "child1")));
     }
+
+
 }

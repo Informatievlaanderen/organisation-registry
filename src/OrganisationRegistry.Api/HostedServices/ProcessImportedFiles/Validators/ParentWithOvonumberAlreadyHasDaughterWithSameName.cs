@@ -7,7 +7,7 @@ using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
 using Organisation.Import;
 using SqlServer.Organisation;
 
-public static class ParentAlreadyHasDaughterWithSameName
+public static class ParentWithOvonumberAlreadyHasDaughterWithSameName
 {
     public static ValidationIssue? Validate(ImmutableList<OrganisationListItem> organisationsCache, int rowNumber, DeserializedRecord record)
     {

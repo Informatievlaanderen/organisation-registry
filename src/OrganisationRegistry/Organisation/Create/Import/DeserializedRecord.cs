@@ -1,6 +1,6 @@
 ﻿namespace OrganisationRegistry.Organisation.Import;
 
-public class DeserializedRecord
+public record DeserializedRecord
 {
     public Field Reference { get; init; } = Field.NoValue(ColumnNames.Reference);
     public Field Parent { get; init; } = Field.NoValue(ColumnNames.Parent);
