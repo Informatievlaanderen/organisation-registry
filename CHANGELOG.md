@@ -1,3 +1,15 @@
+# [1.204.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.203.0...v1.204.0) (2022-06-14)
+
+
+### Bug Fixes
+
+* or-1042 fix unittests + case sensitivity + some casting issues ([00d12e6](https://github.com/informatievlaanderen/organisation-registry/commit/00d12e6917647f27956ccaafde37999a443fb8a7))
+
+
+### Features
+
+* or-1042 import nested organisations (tree) ([1e838a3](https://github.com/informatievlaanderen/organisation-registry/commit/1e838a3c6dd84f92f8e705f3c4a986e6246d17ef))
+
 # [1.203.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.202.0...v1.203.0) (2022-06-13)
 
 
