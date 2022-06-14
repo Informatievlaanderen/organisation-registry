@@ -246,6 +246,6 @@ public class CreatesOrganisations
         };
         var command = CreateOrganisationsFromImportCommand(outputRecords);
         await Given(Events).When(command, TestUser.AlgemeenBeheerder)
-            .ThenThrows<CircularDependencyDiscoverdBetweenOrganisations>();
+            .ThenThrows<CircularDependencyOrFaultyReferenceDiscoveredBetweenOrganisations>();
     }
 }

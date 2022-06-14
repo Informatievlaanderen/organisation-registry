@@ -103,7 +103,7 @@ public class CreateOrganisationsFromImportCommandHandler :
         }
 
         if (records.Any())
-            throw new CircularDependencyDiscoverdBetweenOrganisations();
+            throw new CircularDependencyOrFaultyReferenceDiscoveredBetweenOrganisations(records.Select(r => (r.SortOrder, r.ParentIdentifier.ToString())).ToImmutableArray());
 
         return result;
     }

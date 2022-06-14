@@ -40,4 +40,7 @@ public struct OrganisationParentIdentifier
         Id,
         Reference
     }
+
+    public override string ToString()
+        => Type == IdentifierType.Reference ? Reference! : Id.ToString()!;
 }

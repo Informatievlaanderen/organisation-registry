@@ -28,16 +28,16 @@ public class ImportFileParserAndValidator : IImportFileParserAndValidator
             : ParseAndValidatorResult.ForIssues(validationIssues);
     }
 
-    private static List<OutputRecord> ToOutputRecords(ImportCache importCache, List<ParsedRecord> parsedRecords)
+    private static List<OutputRecord> ToOutputRecords(ImportCache importCache, IEnumerable<ParsedRecord> parsedRecords)
         => parsedRecords
-            .Select((r, i) => ToOutputRecord(r, importCache, i))
+            .Select(r => ToOutputRecord(r, importCache))
             .ToList();
 
-    private static OutputRecord ToOutputRecord(ParsedRecord record, ImportCache importCache, int index)
+    private static OutputRecord ToOutputRecord(ParsedRecord record, ImportCache importCache)
         => OutputRecord.From(
             record.OutputRecord!,
             GetOrganisationParentidentifier(importCache, record.OutputRecord!.Parent.Value!),
-            index);
+            record.RowNumber);
 
     private static OrganisationParentIdentifier GetOrganisationParentidentifier(
         ImportCache importCache,
