@@ -33,7 +33,7 @@ public struct OrganisationParentIdentifier
         => new(parentReference);
 
     public static implicit operator string(OrganisationParentIdentifier parent)
-        => parent.Reference ?? throw new NullReferenceException("ParentReference was not provided for this parent");
+        => parent.Reference?.ToLowerInvariant() ?? throw new NullReferenceException("ParentReference was not provided for this parent");
 
     public enum IdentifierType
     {

@@ -30,10 +30,9 @@ public class WithoutRecords : Specification<CreateOrganisationsFromImportCommand
             session);
 
     [Fact]
-    public async Task WhenNoRecords_NoEvents()
+    public async Task WhenNoRecords_ThrowsException()
     {
         await Given().When(CreateOrganisationsFromImportCommand, TestUser.AlgemeenBeheerder)
-            .Then();
-        PublishedEvents.Should().BeEmpty();
+            .ThenThrows<AtLeastOneOrganisationMustHaveAnExistingOrganisationAsParent>();
     }
 }
