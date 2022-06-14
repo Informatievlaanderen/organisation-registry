@@ -73,7 +73,7 @@ public class ImportOrganisationsController : OrganisationRegistryController
 
     private static async Task<string> GetFileData(IFormFile bulkimportfile)
     {
-        using var streamReader = new StreamReader(bulkimportfile.OpenReadStream());
+        using var streamReader = new StreamReader(bulkimportfile.OpenReadStream(), Encoding.UTF8);
         return await streamReader.ReadToEndAsync();
     }
 
