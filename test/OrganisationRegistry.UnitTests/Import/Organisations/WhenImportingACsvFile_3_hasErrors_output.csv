@@ -4,7 +4,7 @@
 4;De waarde 'REF1' komt meerdere keren voor in de kolom 'reference'.
 5;De waarde 'OVOREF4' is ongeldig voor kolom 'reference' (Waarde mag niet beginnen met 'OVO').
 6;Rij ontbreekt waarde voor volgende kolommen: 'parent'.
-7;Parent met Ovo nummer 'IKBESTANI' werd niet gevonden.
+7;Parent met Ovo nummer 'OVOIKBESTANI' werd niet gevonden.
 8;Parent met Ovo nummer 'OVO001828' is reeds afgesloten.
 9;Rij ontbreekt waarde voor volgende kolommen: 'name'.
 13;De waarde 'datum' is ongeldig voor kolom 'validity_start' (Vereist formaat: 'YYYY-MM-DD').

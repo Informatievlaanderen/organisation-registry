@@ -34,8 +34,14 @@ public class ImportFileParserAndValidator : IImportFileParserAndValidator
             .ToList();
 
     private static OutputRecord ToOutputRecord(ParsedRecord record, ImportCache importCache, int index)
-    {
-        var parentOrganisation = importCache.GetOrganisationByOvoNumber(record.OutputRecord!.Parent.Value!)!;
-        return OutputRecord.From(record.OutputRecord!, parentOrganisation.OrganisationId, index);
-    }
+        => OutputRecord.From(
+            record.OutputRecord!,
+            GetOrganisationParentidentifier(importCache, record.OutputRecord!.Parent.Value!),
+            index);
+
+    private static OrganisationParentIdentifier GetOrganisationParentidentifier(
+        ImportCache importCache,
+        string parentIdentifierValue)
+        => (OrganisationParentIdentifier?)importCache.GetOrganisationByOvoNumber(parentIdentifierValue)?.OrganisationId
+           ?? (OrganisationParentIdentifier)parentIdentifierValue;
 }

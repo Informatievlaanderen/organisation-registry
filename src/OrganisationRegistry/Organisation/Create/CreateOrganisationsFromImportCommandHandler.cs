@@ -70,7 +70,7 @@ public class CreateOrganisationsFromImportCommandHandler :
                 new OrganisationSourceId(envelope.Command.ImportFileId),
                 record.Reference);
 
-            parentCache.Add(record.Reference, organisation);
+            parentCache.Add(record.Reference.ToLowerInvariant(), organisation);
 
             session.Add(organisation);
         }
@@ -95,7 +95,9 @@ public class CreateOrganisationsFromImportCommandHandler :
                 records = records.Remove(record);
             }
 
-            rootRecords = records.Where(r => rootRecords.Any(res => res.Reference == r.ParentIdentifier)).ToList();
+            rootRecords = records
+                .Where(r => rootRecords.Any(res => string.Equals(res.Reference, r.ParentIdentifier, StringComparison.InvariantCultureIgnoreCase)))
+                .ToList();
             if (!rootRecords.Any())
                 break;
         }
