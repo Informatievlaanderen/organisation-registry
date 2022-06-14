@@ -1,3 +1,11 @@
+# [1.205.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.204.0...v1.205.0) (2022-06-14)
+
+
+### Features
+
+* or-1042 return better fault when parent ref is wrong ([bd4aab5](https://github.com/informatievlaanderen/organisation-registry/commit/bd4aab58fca01e3d03eef1dc811d24fd67dfe674))
+* or-1069 avoid unknow charachters in csv files ([2dd3326](https://github.com/informatievlaanderen/organisation-registry/commit/2dd33265b599be9f8ab309e5ff6d2350ac8e2e7b))
+
 # [1.204.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.203.0...v1.204.0) (2022-06-14)
 
 
