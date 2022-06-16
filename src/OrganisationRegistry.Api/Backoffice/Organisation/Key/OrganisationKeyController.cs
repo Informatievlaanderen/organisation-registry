@@ -82,7 +82,7 @@ public class OrganisationKeyController : OrganisationRegistryController
     [OrganisationRegistryAuthorize]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Post([FromServices] ISecurityService securityService, [FromRoute] Guid organisationId, [FromBody] AddOrganisationKeyRequest message)
+    public async Task<IActionResult> Post([FromRoute] Guid organisationId, [FromBody] AddOrganisationKeyRequest message)
     {
         var internalMessage = new AddOrganisationKeyInternalRequest(organisationId, message);
 
@@ -101,7 +101,7 @@ public class OrganisationKeyController : OrganisationRegistryController
     [OrganisationRegistryAuthorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Put([FromServices] ISecurityService securityService, [FromRoute] Guid organisationId, [FromBody] UpdateOrganisationKeyRequest message)
+    public async Task<IActionResult> Put([FromRoute] Guid organisationId, [FromBody] UpdateOrganisationKeyRequest message)
     {
         var internalMessage = new UpdateOrganisationKeyInternalRequest(organisationId, message);
 

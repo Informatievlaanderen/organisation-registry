@@ -23,7 +23,7 @@ internal class PrivateReflectionDynamicObject : DynamicObject
     // Called when a method is called
     public override bool TryInvokeMember(InvokeMemberBinder binder, object?[]? args, out object? result)
     {
-        result = InvokeMemberOnType(RealObject.GetType(), RealObject, binder.Name, args);
+        result = InvokeMemberOnType(RealObject.GetType(), RealObject, args);
 
         // Wrap the sub object if necessary. This allows nested anonymous objects to work.
         result = WrapObjectIfNeeded(result);
@@ -31,7 +31,7 @@ internal class PrivateReflectionDynamicObject : DynamicObject
         return true;
     }
 
-    private static object? InvokeMemberOnType(Type type, object target, string name, object?[]? args)
+    private static object? InvokeMemberOnType(Type type, object target, object?[]? args)
     {
         args ??= Array.Empty<object>();
 

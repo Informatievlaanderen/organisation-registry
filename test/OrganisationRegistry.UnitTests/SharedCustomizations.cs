@@ -54,7 +54,7 @@ public static class SharedCustomizations
         fixture.Customize<Period>(
             composer =>
                 composer.FromFactory(
-                    generator =>
+                    _ =>
                     {
                         var validFrom = fixture.Create<ValidFrom>();
                         var validTo = fixture.Create<ValidTo>();

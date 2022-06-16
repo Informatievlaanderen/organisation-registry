@@ -47,7 +47,7 @@ public class SqlServerEventStore : IEventStore
         return new SqlConnection(_administrationConnectionString);
     }
 
-    public SqlServerEventStore(IOptions<InfrastructureConfigurationSection> infrastructureOptions, IEventPublisher publisher, ISecurityService securityService, IEventDataReader? eventDataReader = null)
+    public SqlServerEventStore(IOptions<InfrastructureConfigurationSection> infrastructureOptions, IEventPublisher publisher, IEventDataReader? eventDataReader = null)
     {
         var options = infrastructureOptions.Value;
 

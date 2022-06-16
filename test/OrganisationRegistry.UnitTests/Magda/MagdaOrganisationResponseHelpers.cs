@@ -63,7 +63,7 @@ public class MagdaOrganisationResponseHelpers
                     new DbContextOptionsBuilder<OrganisationRegistryContext>()
                         .UseInMemoryDatabase(
                             "org-magda-test",
-                            builder => { })
+                            _ => { })
                         .Options), new Disposable()),
             httpClientFactory: httpClientFactoryMock.Object,
             new NullLogger<GeefOndernemingQuery>());

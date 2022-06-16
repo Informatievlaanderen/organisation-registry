@@ -37,7 +37,7 @@ public class Program
                     },
                     MiddlewareHooks =
                     {
-                        ConfigureAppConfiguration = (hostingContext, config) =>
+                        ConfigureAppConfiguration = (_, config) =>
                         {
                             var sqlConfiguration = config
                                 .Build()

@@ -39,7 +39,7 @@ public class BodyParticipationReportTests
         var dbContextOptions = new DbContextOptionsBuilder<OrganisationRegistryContext>()
             .UseInMemoryDatabase(
                 $"org-report-test-{Guid.NewGuid()}",
-                builder => { }).Options;
+                _ => { }).Options;
 
         _context = new OrganisationRegistryContext(dbContextOptions);
 

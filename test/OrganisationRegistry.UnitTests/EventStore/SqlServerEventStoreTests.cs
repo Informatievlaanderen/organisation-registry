@@ -8,7 +8,6 @@ using FluentAssertions;
 using Microsoft.Extensions.Options;
 using Moq;
 using Newtonsoft.Json;
-using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Bus;
 using OrganisationRegistry.Infrastructure.Configuration;
 using OrganisationRegistry.Infrastructure.EventStore;
@@ -31,7 +30,6 @@ public class SqlServerEventStoreTests
         var sqlServerEventStore = new SqlServerEventStore(
             new OptionsWrapper<InfrastructureConfigurationSection>(new InfrastructureConfigurationSection()),
             new NullPublisher(),
-            new NotImplementedSecurityService(),
             dataReader.Object);
 
         OrganisationInfoUpdatedFromKbo infoUpdatedFromKbo =
