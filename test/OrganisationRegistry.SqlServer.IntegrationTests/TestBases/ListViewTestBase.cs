@@ -46,7 +46,7 @@ public abstract class ListViewTestBase
         ContextOptions = new DbContextOptionsBuilder<OrganisationRegistryContext>()
             .UseInMemoryDatabase(
                 $"org-es-test-{Guid.NewGuid()}",
-                builder => { }).Options;
+                _ => { }).Options;
 
         var services = new ServiceCollection();
 

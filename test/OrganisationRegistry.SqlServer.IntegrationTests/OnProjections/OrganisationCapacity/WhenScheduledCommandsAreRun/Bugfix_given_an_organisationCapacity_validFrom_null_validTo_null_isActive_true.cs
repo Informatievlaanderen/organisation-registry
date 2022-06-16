@@ -17,7 +17,7 @@ public class Bugfix_Given_An_OrganisationCapacity_ValidFrom_Null_ValidTo_Null_Is
         var fixture = new Fixture();
         var organisationCapacity = fixture.Create<OrganisationCapacityListItem>();
 
-        var (service, dateTimeProviderStub) = await ScheduledCommandsScenario.Arrange((testContext, today) =>
+        var (service, dateTimeProviderStub) = await ScheduledCommandsScenario.Arrange((testContext, _) =>
         {
             // should be inactive -> is active (a command)
             organisationCapacity.ValidFrom = null;

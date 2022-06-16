@@ -32,9 +32,7 @@ public class FormalFrameworkBody
     [DisplayName("Entiteit")]
     public string? OrganisationName { get; set; }
 
-    public FormalFrameworkBody(
-        BodyDocument document,
-        ApiConfigurationSection @params)
+    public FormalFrameworkBody(BodyDocument document)
     {
         BodyId = document.Id;
         BodyName = document.Name;
@@ -107,7 +105,7 @@ public class FormalFrameworkBody
             if (!formalFrameworks.Any())
                 continue;
 
-            formalFrameworkBodies.Add(new FormalFrameworkBody(document, @params));
+            formalFrameworkBodies.Add(new FormalFrameworkBody(document));
         }
 
         return formalFrameworkBodies;

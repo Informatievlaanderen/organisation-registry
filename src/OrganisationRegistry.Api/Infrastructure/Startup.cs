@@ -170,7 +170,7 @@ public class Startup
                                 x.OperationFilter<ProblemJsonResponseFilter>();
                             }
                         },
-                        ApiInfo = (provider, description) => new OpenApiInfo
+                        ApiInfo = (_, description) => new OpenApiInfo
                         {
                             Version = description.ApiVersion.ToString(),
                             Title = "Basisregisters Vlaanderen Organisation Registry API",

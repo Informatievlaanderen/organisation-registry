@@ -14,10 +14,7 @@ using Microsoft.Extensions.Logging;
 
 public class VlaanderenBeNotifierModule : Autofac.Module
 {
-    public VlaanderenBeNotifierModule(
-        IConfiguration configuration,
-        IServiceCollection services,
-        ILoggerFactory loggerFactory)
+    public VlaanderenBeNotifierModule(ILoggerFactory loggerFactory)
     {
         var logger = loggerFactory.CreateLogger<VlaanderenBeNotifierModule>();
 
@@ -32,7 +29,7 @@ public class VlaanderenBeNotifierModule : Autofac.Module
         string backofficeProjectionsConnectionString)
     {
         services
-            .AddScoped(s => new TraceDbConnection<VlaanderenBeNotifierContext>(
+            .AddScoped(_ => new TraceDbConnection<VlaanderenBeNotifierContext>(
                 new SqlConnection(backofficeProjectionsConnectionString),
                 configuration["DataDog:ServiceName"]))
             .AddDbContext<VlaanderenBeNotifierContext>((provider, options) => options
@@ -54,7 +51,7 @@ public class VlaanderenBeNotifierModule : Autofac.Module
         services
             .AddDbContext<VlaanderenBeNotifierContext>(options => options
                 .UseLoggerFactory(loggerFactory)
-                .UseInMemoryDatabase(Guid.NewGuid().ToString(), sqlServerOptions => { }));
+                .UseInMemoryDatabase(Guid.NewGuid().ToString(), _ => { }));
 
         logger.LogWarning("Running InMemory for {Context}!", nameof(VlaanderenBeNotifierContext));
     }

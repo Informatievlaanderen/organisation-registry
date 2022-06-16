@@ -26,7 +26,7 @@ public class WhenUpdatingKboRegisteredOfficeLocations
         var locationId = fixture.Create<Guid>();
         var locationType = new LocationType(new LocationTypeId(fixture.Create<Guid>()), new LocationTypeName(fixture.Create<string>()));
 
-        CreateKboLocation(organisationLocationId, organisationRoot, locationId, fixture, locationType, dateTimeProviderStub);
+        CreateKboLocation(organisationLocationId, organisationRoot, locationId, fixture, locationType);
 
         SetKboLocationAsMainLocation(organisationLocationId, organisationRoot, locationId);
 
@@ -35,7 +35,7 @@ public class WhenUpdatingKboRegisteredOfficeLocations
         VerifyKboLocationIsStillMainLocation(organisationRoot);
     }
 
-    private static void CreateKboLocation(Guid organisationLocationId, Organisation organisationRoot, Guid locationId, ISpecimenBuilder fixture, LocationType locationType, IDateTimeProvider dateTimeProviderStub)
+    private static void CreateKboLocation(Guid organisationLocationId, Organisation organisationRoot, Guid locationId, ISpecimenBuilder fixture, LocationType locationType)
     {
         var newKboRegisteredOffice = CreateKboRegisteredOffice(organisationLocationId, organisationRoot, locationId, false);
         var location = new Location(new LocationId(locationId), fixture.Create<string>(), fixture.Create<Address>());

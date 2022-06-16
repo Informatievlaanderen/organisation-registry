@@ -70,8 +70,8 @@ public class InfrastructureModule : Module
         builder.RegisterType<BusRegistrar>()
             .WithParameter(
                 new ResolvedParameter(
-                    (info, context) => info.Name == "requestScopedServiceProvider",
-                    (info, context) => _scopedServiceProvider(context)))
+                    (info, _) => info.Name == "requestScopedServiceProvider",
+                    (_, context) => _scopedServiceProvider(context)))
             .SingleInstance();
 
         builder.RegisterType<ExternalIpFetcher>()

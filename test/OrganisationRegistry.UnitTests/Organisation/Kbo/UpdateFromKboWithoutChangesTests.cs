@@ -208,7 +208,7 @@ public class
             organisationClassificationRetriever: new KboOrganisationClassificationRetrieverStub(
                 "Some Legal Code",
                 _organisationClassificationId),
-            locationRetriever: new KboLocationRetrieverStub(address => _registeredOfficeLocationId));
+            locationRetriever: new KboLocationRetrieverStub(_ => _registeredOfficeLocationId));
 
     [Fact]
     public async Task PublishesOneEvent()

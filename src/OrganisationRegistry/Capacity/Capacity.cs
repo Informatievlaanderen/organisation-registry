@@ -1,4 +1,5 @@
-﻿namespace OrganisationRegistry.Capacity;
+﻿// ReSharper disable UnusedParameter.Local
+namespace OrganisationRegistry.Capacity;
 
 using Events;
 using Infrastructure.Domain;

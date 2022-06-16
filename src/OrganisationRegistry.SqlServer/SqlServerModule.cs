@@ -46,7 +46,7 @@ public class SqlServerModule : Autofac.Module
         string backofficeProjectionsConnectionString)
     {
         services
-            .AddScoped(s => new TraceDbConnection<OrganisationRegistryContext>(
+            .AddScoped(_ => new TraceDbConnection<OrganisationRegistryContext>(
                 new SqlConnection(backofficeProjectionsConnectionString),
                 configuration["DataDog:ServiceName"]))
             .AddDbContext<OrganisationRegistryContext>((provider, options) => options
@@ -68,7 +68,7 @@ public class SqlServerModule : Autofac.Module
         services
             .AddDbContext<OrganisationRegistryContext>(options => options
                 .UseLoggerFactory(loggerFactory)
-                .UseInMemoryDatabase(Guid.NewGuid().ToString(), sqlServerOptions => { }));
+                .UseInMemoryDatabase(Guid.NewGuid().ToString(), _ => { }));
 
         logger.LogWarning("Running InMemory for {Context}!", nameof(OrganisationRegistryContext));
     }

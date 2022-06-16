@@ -82,6 +82,9 @@ public class KboOrganisationCommandHandlers :
 
         var organisation = Session.Get<Organisation>(organisationId);
 
+        if (organisation.KboState.KboNumber == null)
+            throw new OrganisationHasNoKboNumber(organisationId);
+
         var kboOrganisationResult =
             await _kboOrganisationRetriever.RetrieveOrganisation(user, organisation.KboState.KboNumber!);
 
