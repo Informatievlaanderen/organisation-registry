@@ -1,5 +1,7 @@
 ﻿namespace OrganisationRegistry.Organisation.Import;
 
+using System.Collections.Immutable;
+
 public record DeserializedRecord
 {
     public Field Reference { get; init; } = Field.NoValue(ColumnNames.Reference);
@@ -9,4 +11,5 @@ public record DeserializedRecord
     public Field ShortName { get; init; } = Field.NoValue(ColumnNames.ShortName);
     public Field Article { get; init; } = Field.NoValue(ColumnNames.Article);
     public Field OperationalValidity_Start { get; init; } = Field.NoValue(ColumnNames.OperationalValidity_Start);
+    public ImmutableList<Field> Labels { get; init; } = ImmutableList<Field>.Empty;
 }

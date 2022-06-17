@@ -20,7 +20,7 @@ public static class ImportOrganisationCsvHeaderValidator
         "article",
         "operationalvalidity_start");
 
-    public static CsvValidationResult Validate(ILogger logger, string filename, string csvContent)
+    public static CsvValidationResult Validate(ILogger logger, ImmutableList<string> validLabelTypes, string filename, string csvContent)
     {
         var validationIssues = new ValidationIssues();
         try
@@ -41,7 +41,7 @@ public static class ImportOrganisationCsvHeaderValidator
                 .Add(InvalidFilename.Validate(filename))
                 .Add(MissingRequiredColumns.Validate(csvHeaderRecord, RequiredColumnNames))
                 .Add(DuplicateColumns.Validate(csvHeaderRecord))
-                .Add(InvalidColumns.Validate(csvHeaderRecord, RequiredColumnNames.AddRange(OptionalColumnNames)));
+                .Add(InvalidColumns.Validate(csvHeaderRecord, GetValidColumnNames(validLabelTypes)));
 
             while (csv.Read())
             {
@@ -63,4 +63,9 @@ public static class ImportOrganisationCsvHeaderValidator
 
         return validationIssues.ToResult();
     }
+
+    private static ImmutableList<string> GetValidColumnNames(ImmutableList<string> validLabelTypes)
+        => RequiredColumnNames
+            .AddRange(OptionalColumnNames)
+            .AddRange(validLabelTypes.Select(labelType => $"label#{labelType.Trim().ToLowerInvariant()}"));
 }

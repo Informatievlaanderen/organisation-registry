@@ -1,6 +1,7 @@
 ﻿namespace OrganisationRegistry.UnitTests.Import.Organisations;
 
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using Api.HostedServices.ProcessImportedFiles;
 using FluentAssertions;
@@ -71,6 +72,35 @@ public class WhenParsingTheCsvImportFileContent
                 Reference = Field.FromValue(ColumnNames.Reference, "REF2"),
                 Name = Field.FromValue(ColumnNames.Name, "name2"),
                 Parent = Field.FromValue(ColumnNames.Parent, "Ovo00026"),
+            });
+    }
+
+    [Fact]
+    public void ItParsesLabelFields()
+    {
+        // Arrange
+        const string csvToParse = "reference;parent;name;label#some label;label#some other label\n" +
+                                  "REF1; Ovo00025; name1;value whatever; other value\n" +
+                                  "REF2; Ovo00026; name2; ; value";
+        // Act
+        var importedRecords = Parse(csvToParse);
+        // Assert
+        importedRecords.Should().HaveCount(2);
+        importedRecords[0].OutputRecord.Should().BeEquivalentTo(
+            new DeserializedRecord
+            {
+                Reference = Field.FromValue(ColumnNames.Reference, "REF1"),
+                Name = Field.FromValue(ColumnNames.Name, "name1"),
+                Parent = Field.FromValue(ColumnNames.Parent, "Ovo00025"),
+                Labels = ImmutableList.Create(Field.FromValue("label#some label", "value whatever"),Field.FromValue("label#some other label", "other value"))
+            });
+        importedRecords[1].OutputRecord.Should().BeEquivalentTo(
+            new DeserializedRecord
+            {
+                Reference = Field.FromValue(ColumnNames.Reference, "REF2"),
+                Name = Field.FromValue(ColumnNames.Name, "name2"),
+                Parent = Field.FromValue(ColumnNames.Parent, "Ovo00026"),
+                Labels = ImmutableList.Create(Field.FromValue("label#some other label", "value"))
             });
     }
 
