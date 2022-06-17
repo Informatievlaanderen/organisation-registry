@@ -16,7 +16,7 @@ public class ImportFileParserAndValidator : IImportFileParserAndValidator
     {
         var parsedRecords = ImportFileParser.Parse(importFile);
 
-        var importCache = ImportCache.Create(context, parsedRecords, dateTimeProvider.Today);
+        var importCache = ImportCache.Create(context, parsedRecords);
 
         var validationIssues = ImportFileValidator.Validate(
             importCache,
@@ -35,6 +35,7 @@ public class ImportFileParserAndValidator : IImportFileParserAndValidator
 
     private static OutputRecord ToOutputRecord(ParsedRecord record, ImportCache importCache)
         => OutputRecord.From(
+            importCache.LabelTypes,
             record.OutputRecord!,
             GetOrganisationParentidentifier(importCache, record.OutputRecord!.Parent.Value!),
             record.RowNumber);

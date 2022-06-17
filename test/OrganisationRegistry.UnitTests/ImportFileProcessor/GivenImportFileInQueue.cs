@@ -47,6 +47,7 @@ public class GivenImportFileInQueue : IDisposable
 
         var importFileResulterMock = new Mock<IImportFileParserAndValidator>();
         var outputRecord = OutputRecord.From(
+            new Dictionary<string, Guid>(),
             new DeserializedRecord
             {
                 Name = Field.FromValue(ColumnNames.Name, "name1"),

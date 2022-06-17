@@ -10,14 +10,25 @@ using OrganisationRegistry.SqlServer.Organisation;
 
 public class ImportCache
 {
-    protected ImportCache(IEnumerable<OrganisationListItem> organisations)
+    protected ImportCache(
+        IEnumerable<OrganisationListItem> organisations,
+        Dictionary<string, Guid> labelTypes)
     {
+        LabelTypes = labelTypes;
         OrganisationsCache = organisations.ToImmutableList();
     }
 
+    public Dictionary<string, Guid> LabelTypes { get; }
     public ImmutableList<OrganisationListItem> OrganisationsCache { get; }
 
-    public static ImportCache Create(OrganisationRegistryContext context, List<ParsedRecord> parsedRecords, DateTime today)
+    public static ImportCache Create(
+        OrganisationRegistryContext context,
+        IEnumerable<ParsedRecord> parsedRecords)
+        => new(
+            GetOrganisationsInScope(context, parsedRecords).AsNoTracking(),
+            GetLabelTypes(context));
+
+    private static IQueryable<OrganisationListItem> GetOrganisationsInScope(OrganisationRegistryContext context, IEnumerable<ParsedRecord> parsedRecords)
     {
         var parentOvoNumbers = parsedRecords
             .Select(parsedRecord => parsedRecord.OutputRecord)
@@ -27,17 +38,19 @@ public class ImportCache
             .Distinct()
             .ToList();
 
-        var organisationsInScope = context.OrganisationList
+        return context.OrganisationList
             .Where(org => org.FormalFrameworkId == null)
             .Where(
                 org => parentOvoNumbers.Contains(org.OvoNumber) ||
                        parentOvoNumbers.Contains(org.ParentOrganisationOvoNumber!));
-
-        return new ImportCache(
-            organisationsInScope
-                .AsNoTracking());
     }
 
+    private static Dictionary<string, Guid> GetLabelTypes(OrganisationRegistryContext context)
+        => context.LabelTypeList
+            .AsNoTracking()
+            .ToDictionary(type => type.Name, type => type.Id);
+
     public OrganisationListItem? GetOrganisationByOvoNumber(string ovoNumber)
-        => OrganisationsCache.SingleOrDefault(org => string.Equals(org.OvoNumber, ovoNumber, StringComparison.InvariantCultureIgnoreCase));
+        => OrganisationsCache.SingleOrDefault(
+            org => string.Equals(org.OvoNumber, ovoNumber, StringComparison.InvariantCultureIgnoreCase));
 }

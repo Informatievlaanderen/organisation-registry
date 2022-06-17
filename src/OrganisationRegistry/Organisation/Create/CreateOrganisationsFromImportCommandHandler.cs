@@ -9,6 +9,7 @@ using Handling;
 using Import;
 using Infrastructure.Commands;
 using Infrastructure.Domain;
+using LabelType;
 using Microsoft.Extensions.Logging;
 
 public class CreateOrganisationsFromImportCommandHandler :
@@ -45,35 +46,53 @@ public class CreateOrganisationsFromImportCommandHandler :
 
         foreach (var record in sortedRecords)
         {
-            var parent = GetParent(session, parentCache, record.ParentIdentifier);
-
-            var ovoNumber = _ovoNumberGenerator.GenerateNextNumber();
-            var validFrom = record.Validity_Start.HasValue
-                ? new ValidFrom(record.Validity_Start.Value.ToDateTime(new TimeOnly()))
-                : new ValidFrom();
-
-            var operationalValidFrom = record.OperationalValidity_Start.HasValue
-                ? new ValidFrom(record.OperationalValidity_Start.Value.ToDateTime(new TimeOnly()))
-                : new ValidFrom();
-
-            var organisation = Organisation.CreateFromImport(
-                OrganisationId.New(),
-                record.Name,
-                ovoNumber,
-                record.ShortName,
-                record.Article ?? Article.None,
-                parent,
-                default,
-                new Period(validFrom, new ValidTo()),
-                new Period(operationalValidFrom, new ValidTo()),
-                _dateTimeProvider,
-                new OrganisationSourceId(envelope.Command.ImportFileId),
-                record.Reference);
-
-            parentCache.Add(record.Reference.ToLowerInvariant(), organisation);
-
-            session.Add(organisation);
+            CreateOrganisationFromRecord(envelope, session, parentCache, record);
         }
+    }
+
+    private void CreateOrganisationFromRecord(
+        ICommandEnvelope<CreateOrganisationsFromImport> envelope,
+        ISession session,
+        Dictionary<string, Organisation> parentCache,
+        OutputRecord record)
+    {
+        var parent = GetParent(session, parentCache, record.ParentIdentifier);
+
+        var ovoNumber = _ovoNumberGenerator.GenerateNextNumber();
+        var validFrom = record.Validity_Start.HasValue
+            ? new ValidFrom(record.Validity_Start.Value.ToDateTime(new TimeOnly()))
+            : new ValidFrom();
+
+        var operationalValidFrom = record.OperationalValidity_Start.HasValue
+            ? new ValidFrom(record.OperationalValidity_Start.Value.ToDateTime(new TimeOnly()))
+            : new ValidFrom();
+
+        var organisation = Organisation.CreateFromImport(
+            OrganisationId.New(),
+            record.Name,
+            ovoNumber,
+            record.ShortName,
+            record.Article ?? Article.None,
+            parent,
+            default,
+            new Period(validFrom, new ValidTo()),
+            new Period(operationalValidFrom, new ValidTo()),
+            _dateTimeProvider,
+            new OrganisationSourceId(envelope.Command.ImportFileId),
+            record.Reference);
+
+        foreach (var label in record.Labels)
+        {
+            organisation.AddLabel(
+                Guid.NewGuid(),
+                new LabelType(new LabelTypeId(label.LabelTypeId), new LabelTypeName(label.LabelTypeName)),
+                label.Value,
+                Period.Infinity);
+        }
+
+        parentCache.Add(record.Reference.ToLowerInvariant(), organisation);
+
+        session.Add(organisation);
     }
 
     private static IEnumerable<OutputRecord> SortRecords(ImmutableList<OutputRecord> records)

@@ -1,6 +1,7 @@
 ﻿namespace OrganisationRegistry.Organisation.Import;
 
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
@@ -28,20 +29,23 @@ public record OutputRecord
 
     public ImmutableList<Label> Labels { get; private init; } = ImmutableList<Label>.Empty;
 
-    public static OutputRecord From(DeserializedRecord record, OrganisationParentIdentifier parentidentifier, int sortOrder)
+    public static OutputRecord From(Dictionary<string, Guid> labelTypes, DeserializedRecord record, OrganisationParentIdentifier parentidentifier, int sortOrder)
         => new(record.Reference.Value!, parentidentifier, record.Name.Value!, sortOrder)
         {
             Article = Article.Parse(record.Article.Value),
             ShortName = record.ShortName.Value,
             Validity_Start = MaybeGetDate(record.Validity_Start.Value),
             OperationalValidity_Start = MaybeGetDate(record.OperationalValidity_Start.Value),
-            Labels = GetLabels(record)
+            Labels = GetLabels(labelTypes, record),
         };
 
-    private static ImmutableList<Label> GetLabels(DeserializedRecord record)
+    private static ImmutableList<Label> GetLabels(IReadOnlyDictionary<string, Guid> labelTypes, DeserializedRecord record)
         => record.Labels
-            .Select(label => new Label(label.ColumnName.Split('#')[1], label.Value!))
+            .Select(label => CreateLabel(labelTypes, label.ColumnName.Split('#')[1], label.Value!))
             .ToImmutableList();
+
+    private static Label CreateLabel(IReadOnlyDictionary<string, Guid> labelTypes, string labelTypeName, string labelValue)
+        => new(labelTypes[labelTypeName], labelTypeName, labelValue);
 
     private static DateOnly? MaybeGetDate(string? maybeDate)
         => maybeDate is { } date
