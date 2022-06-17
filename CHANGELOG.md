@@ -1,3 +1,10 @@
+# [1.206.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.205.1...v1.206.0) (2022-06-17)
+
+
+### Features
+
+* or-1072 parse labels ([df2b467](https://github.com/informatievlaanderen/organisation-registry/commit/df2b4677cbc2d3775dd91e11d3a7908d305b28ea))
+
 ## [1.205.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.205.0...v1.205.1) (2022-06-17)
 
 # [1.205.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.204.0...v1.205.0) (2022-06-14)
