@@ -1,3 +1,10 @@
+# [1.207.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.206.0...v1.207.0) (2022-06-17)
+
+
+### Features
+
+* or-1072 add labels to organisations ([b5ee639](https://github.com/informatievlaanderen/organisation-registry/commit/b5ee6397e84c84ac604392d833418c3a1a48e2da))
+
 # [1.206.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.205.1...v1.206.0) (2022-06-17)
 
 
