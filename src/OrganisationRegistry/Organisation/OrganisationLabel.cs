@@ -29,23 +29,17 @@ public class OrganisationLabel : IOrganisationField, IValidityBuilder<Organisati
     }
 
     public OrganisationLabel WithValidity(Period period)
-    {
-        return new OrganisationLabel(
+        => new(
             OrganisationLabelId,
             OrganisationId,
             LabelTypeId,
             LabelTypeName,
             Value,
             period);
-    }
 
     public OrganisationLabel WithValidFrom(ValidFrom validFrom)
-    {
-        return WithValidity(new Period(validFrom, Validity.End));
-    }
+        => WithValidity(new Period(validFrom, Validity.End));
 
     public OrganisationLabel WithValidTo(ValidTo validTo)
-    {
-        return WithValidity(new Period(Validity.Start, validTo));
-    }
+        => WithValidity(new Period(Validity.Start, validTo));
 }

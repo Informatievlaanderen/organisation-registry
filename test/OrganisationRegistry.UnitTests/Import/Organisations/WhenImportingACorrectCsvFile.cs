@@ -48,9 +48,7 @@ public class WhenImportingACorrectCsvFile
 
         var parseResult = ImportFileParser.Parse(importOrganisationStatusListItem);
         return ImportFileValidator.Validate(importCache, today, parseResult);
-
     }
-
 
     [Theory]
     [InlineData("2_hasNoErrors_input.csv")]

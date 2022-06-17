@@ -1,5 +1,6 @@
 ﻿namespace OrganisationRegistry.UnitTests.Import.Organisations;
 
+using System.Collections.Immutable;
 using System.Linq;
 using Api.Import.Organisations.Validation;
 using FluentAssertions;
@@ -9,11 +10,14 @@ using Xunit;
 
 public class WhenValidatingTheCsvImportFileHeaders
 {
+    private const string LabelFormeleNaam = "formele naam";
+    private const string LabelKorteNaam = "korte naam";
+
     private static CsvValidationResult Validate(string csvContent)
         => Validate("testfile.csv", csvContent);
 
     private static CsvValidationResult Validate(string csvFilename, string csvContent)
-        => ImportOrganisationCsvHeaderValidator.Validate(Mock.Of<ILogger>(), csvFilename, csvContent);
+        => ImportOrganisationCsvHeaderValidator.Validate(Mock.Of<ILogger>(), ImmutableList.Create<string>(LabelFormeleNaam, LabelKorteNaam), csvFilename, csvContent);
 
     [Fact]
     public void GivenAnEmptyCsvFile_ThenItReturnsInValid()
@@ -64,15 +68,6 @@ public class WhenValidatingTheCsvImportFileHeaders
     [InlineData("Reference; Name; parent")]
     [InlineData("ReFeReNcE; NAmE;   parent")]
     [InlineData("   reference;   name;   parent  ")]
-    public void GivenAValidCsvFileWithOnlyRequiredColumns_ThenItReturnsValid(string csvFile)
-    {
-        var validationResult = Validate(csvFile);
-
-        validationResult.IsValid.Should().BeTrue();
-        validationResult.ValidationIssues.Should().BeEmpty();
-    }
-
-    [Theory]
     [InlineData("reference; parent; name; validity_start")]
     [InlineData("reference; parent; name; shortName")]
     [InlineData("reference; parent; name; article")]
@@ -84,7 +79,9 @@ public class WhenValidatingTheCsvImportFileHeaders
     [InlineData("reference; parent; name; validity_start; shortName")]
     [InlineData("reference; parent; name; shortName; article; operationalValidity_Start")]
     [InlineData("reference; parent; name; article; operationalValidity_Start")]
-    public void GivenAValidCsvFileWithOptionalColumns_ThenItReturnsValid(string csvFile)
+    [InlineData("reference; parent; name; label#"+LabelFormeleNaam+";label#"+LabelKorteNaam)]
+    [InlineData("reference; parent; name; LABEL#"+LabelFormeleNaam+";LABEL#"+LabelKorteNaam)]
+    public void GivenAValidCsvFile_ThenItReturnsValid(string csvFile)
     {
         var validationResult = Validate(csvFile);
 
@@ -95,6 +92,8 @@ public class WhenValidatingTheCsvImportFileHeaders
     [Theory]
     [InlineData("reference; parent; name; blah", "'blah'")]
     [InlineData("reference; parent; name; blah; operationalvalidity_start; allena", "'blah', 'allena'")]
+    [InlineData("reference; parent; name; lable#"+LabelFormeleNaam, "'lable#"+LabelFormeleNaam+"'")]
+    [InlineData("reference; parent; name; label#blah", "'label#blah'")]
     public void GivenACsvFileWithInvalidColumns_ThenItReturnsInvalid(string csvFile, string expectedInvalidColumns)
     {
         var validationResult = Validate(csvFile);

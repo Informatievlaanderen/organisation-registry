@@ -1,6 +1,8 @@
 ﻿namespace OrganisationRegistry.Api.HostedServices.ProcessImportedFiles;
 
+using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -24,16 +26,21 @@ public static class ImportFileParser
         csv.ReadHeader();
 
         var csvHeaderRecord = GetHeaders(csv);
+
+        var labelColumns = csvHeaderRecord
+            .Where(item => item.Key.Trim().StartsWith("label#", StringComparison.InvariantCultureIgnoreCase))
+            .ToDictionary(item => item.Key, item => item.Value);
+
         var importedRecords = new List<ParsedRecord>();
         while (csv.Read())
         {
-            importedRecords.Add(GetImportRecord(csv, csvHeaderRecord));
+            importedRecords.Add(GetImportRecord(csv, csvHeaderRecord, labelColumns));
         }
 
         return importedRecords;
     }
 
-    private static ParsedRecord GetImportRecord(IReaderRow csv, IReadOnlyDictionary<string, int> csvHeaderRecord)
+    private static ParsedRecord GetImportRecord(IReaderRow csv, IReadOnlyDictionary<string, int> csvHeaderRecord, Dictionary<string, int> labelColumns)
     {
         if (InvalidColumnCount.Validate(csv) is { } invalidColumnCount)
             return new ParsedRecord(csv.Parser.Row, OutputRecord: null, new[] { invalidColumnCount });
@@ -44,7 +51,9 @@ public static class ImportFileParser
         var article = MaybeGetField(csv, csvHeaderRecord, ColumnNames.Article);
         var shortName = MaybeGetField(csv, csvHeaderRecord, ColumnNames.ShortName);
         var validity_start = MaybeGetField(csv, csvHeaderRecord, ColumnNames.Validity_Start);
-        var operationalValidity_Start = MaybeGetField(csv, csvHeaderRecord, ColumnNames.OperationalValidity_Start);
+        var operationalValidity_start = MaybeGetField(csv, csvHeaderRecord, ColumnNames.OperationalValidity_Start);
+
+        var labels = GetLabelFields(csv, labelColumns);
 
         return new ParsedRecord(
             csv.Parser.Row,
@@ -55,10 +64,17 @@ public static class ImportFileParser
                 Article = article,
                 ShortName = shortName,
                 Validity_Start = validity_start,
-                OperationalValidity_Start = operationalValidity_Start
+                OperationalValidity_Start = operationalValidity_start,
+                Labels = labels
             },
             new List<ValidationIssue>());
     }
+
+    private static ImmutableList<Field> GetLabelFields(IReaderRow csv, IReadOnlyDictionary<string, int> labelColumns)
+        => labelColumns
+            .Select(column => MaybeGetField(csv, labelColumns, column.Key))
+            .Where(field => field.HasValue)
+            .ToImmutableList();
 
     private static Field MaybeGetField(
         IReaderRow csv,
