@@ -41,7 +41,7 @@ public class ImportOrganisationsController : OrganisationRegistryController
         var content = await GetFileData(bulkimportfile);
         var user = await securityService.GetRequiredUser(User);
 
-        var labelTypes = await LabelTypes.Get(context);
+        var labelTypes = await LabelTypes.GetNames(context);
 
         var validationResult = ImportOrganisationCsvHeaderValidator.Validate(logger, labelTypes, bulkimportfile.FileName, content);
         if (!validationResult.IsValid)

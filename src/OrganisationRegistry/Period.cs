@@ -24,6 +24,9 @@ public class Period
         End = end;
     }
 
+    public static Period Infinity
+        => new();
+
     public bool OverlapsWith(Period? period)
     {
         if (period == null)

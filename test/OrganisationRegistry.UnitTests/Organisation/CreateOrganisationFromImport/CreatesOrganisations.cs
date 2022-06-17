@@ -148,6 +148,55 @@ public class CreatesOrganisations
     }
 
     [Fact]
+    public async Task Publishes2OrganisationLabelAddedEvents()
+    {
+        var label1TypeId = _fixture.Create<Guid>();
+        var label1TypeName = _fixture.Create<string>();
+        var label1Value = _fixture.Create<string>();
+        var label2TypeId = _fixture.Create<Guid>();
+        var label2TypeName = _fixture.Create<string>();
+        var label2Value = _fixture.Create<string>();
+
+        var outputRecords = new List<OutputRecord>()
+        {
+            new OutputRecordBuilder(_fixture.Create<string>(), _parentOrganisationId, _fixture.Create<string>(), 1)
+                .AddLabel(label1TypeId, label1TypeName, label1Value)
+                .AddLabel(label2TypeId, label2TypeName, label2Value),
+        };
+
+        var command = CreateOrganisationsFromImportCommand(outputRecords);
+        await Given(Events).When(command, TestUser.AlgemeenBeheerder)
+            .Then();
+
+        var organisationId = PublishedEvents
+            .Single(x => x.Body is OrganisationCreated)
+            .Body.As<OrganisationCreated>()
+            .OrganisationId;
+
+        var publishedOrganisationLabelAddedEvents = PublishedEvents.Where(e => e.Body is OrganisationLabelAdded).ToArray();
+        publishedOrganisationLabelAddedEvents[0].Body.Should().BeEquivalentTo(
+            new OrganisationLabelAddedBuilder()
+                .WithLabelTypeId(label1TypeId)
+                .WithLabelTypeName(label1TypeName)
+                .WithValue(label1Value)
+                .WithOrganisationId(organisationId)
+                .Build(),
+            opt =>
+                opt.Excluding(e => e.OrganisationLabelId)
+                    .ExcludeEventProperties());
+        publishedOrganisationLabelAddedEvents[1].Body.Should().BeEquivalentTo(
+            new OrganisationLabelAddedBuilder()
+                .WithLabelTypeId(label2TypeId)
+                .WithLabelTypeName(label2TypeName)
+                .WithValue(label2Value)
+                .WithOrganisationId(organisationId)
+                .Build(),
+            opt =>
+                opt.Excluding(e => e.OrganisationLabelId)
+                    .ExcludeEventProperties());
+    }
+
+    [Fact]
     public async Task WithOrderedInput_CreatesATree()
     {
         var ref1 = _fixture.Create<string>();

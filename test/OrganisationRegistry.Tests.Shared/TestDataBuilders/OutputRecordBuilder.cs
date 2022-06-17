@@ -1,5 +1,7 @@
 ﻿namespace OrganisationRegistry.Tests.Shared.TestDataBuilders;
 
+using System;
+using System.Collections.Generic;
 using Organisation.Import;
 
 public class OutputRecordBuilder
@@ -7,6 +9,7 @@ public class OutputRecordBuilder
     private readonly OrganisationParentIdentifier _parentOrganisationid;
     private readonly int _sortOrder;
     private DeserializedRecord _deserializedRecord;
+    private readonly Dictionary<string, Guid> _labelTypes = new();
 
     public OutputRecordBuilder(string reference, OrganisationParentIdentifier parentOrganisationid, string name, int sortOrder)
     {
@@ -43,8 +46,15 @@ public class OutputRecordBuilder
         return this;
     }
 
+    public OutputRecordBuilder AddLabel(Guid labelTypeId, string labelTypeName, string labelValue)
+    {
+        _labelTypes.Add(labelTypeName, labelTypeId);
+        _deserializedRecord = _deserializedRecord with { Labels = _deserializedRecord.Labels.Add(Field.FromValue($"label#{labelTypeName}", labelValue)) };
+        return this;
+    }
+
     public OutputRecord Build()
-        => OutputRecord.From(_deserializedRecord, _parentOrganisationid, _sortOrder);
+        => OutputRecord.From(_labelTypes, _deserializedRecord, _parentOrganisationid, _sortOrder);
 
     public static implicit operator OutputRecord(OutputRecordBuilder builder)
         => builder.Build();
