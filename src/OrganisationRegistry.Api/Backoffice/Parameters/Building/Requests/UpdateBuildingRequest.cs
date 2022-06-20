@@ -45,10 +45,8 @@ public class UpdateBuildingRequestValidator : AbstractValidator<UpdateBuildingIn
 public static class UpdateBuildingRequestMapping
 {
     public static UpdateBuilding Map(UpdateBuildingInternalRequest message)
-    {
-        return new UpdateBuilding(
+        => new(
             new BuildingId(message.BuildingId),
             message.Body.Name,
             message.Body.VimId);
-    }
 }

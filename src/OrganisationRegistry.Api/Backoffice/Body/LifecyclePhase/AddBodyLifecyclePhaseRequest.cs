@@ -51,13 +51,11 @@ public class AddBodyLifecyclePhaseInternalRequestValidator : AbstractValidator<A
 public static class AddBodyLifecyclePhaseRequestMapping
 {
     public static AddBodyLifecyclePhase Map(AddBodyLifecyclePhaseInternalRequest message)
-    {
-        return new AddBodyLifecyclePhase(
+        => new(
             new BodyId(message.BodyId),
             new BodyLifecyclePhaseId(message.Body.BodyLifecyclePhaseId),
             new LifecyclePhaseTypeId(message.Body.LifecyclePhaseTypeId),
             new Period(
                 new ValidFrom(message.Body.ValidFrom),
                 new ValidTo(message.Body.ValidTo)));
-    }
 }

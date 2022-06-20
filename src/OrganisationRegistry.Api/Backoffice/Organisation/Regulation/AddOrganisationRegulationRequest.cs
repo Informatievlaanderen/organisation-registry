@@ -75,8 +75,7 @@ public class AddOrganisationRegulationInternalRequestValidator : AbstractValidat
 public static class AddOrganisationRegulationRequestMapping
 {
     public static AddOrganisationRegulation Map(AddOrganisationRegulationInternalRequest message)
-    {
-        return new AddOrganisationRegulation(
+        => new(
             message.Body.OrganisationRegulationId,
             new OrganisationId(message.OrganisationId),
             new RegulationThemeId(message.Body.RegulationThemeId),
@@ -89,5 +88,4 @@ public static class AddOrganisationRegulationRequestMapping
             message.Body.DescriptionRendered,
             new ValidFrom(message.Body.ValidFrom),
             new ValidTo(message.Body.ValidTo));
-    }
 }

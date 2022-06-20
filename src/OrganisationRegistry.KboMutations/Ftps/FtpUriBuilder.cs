@@ -9,42 +9,36 @@ public class FtpUriBuilder : UriBuilder
 
     public string FileName => Uri.Segments.Last();
 
-    public FtpUriBuilder(string host, int port) 
+    public FtpUriBuilder(string host, int port)
         : this(FtpScheme, host, port) { }
 
-    private FtpUriBuilder(string scheme, string host, int port) 
+    private FtpUriBuilder(string scheme, string host, int port)
         : base(scheme, host, port) { }
 
     public FtpUriBuilder AppendDir(string sourcePath)
-    {
-        return new FtpUriBuilder(
+        => new(
             Scheme,
             Host,
             Port)
         {
-            Path = $"{Path}{sourcePath.Trim('/')}/"
+            Path = $"{Path}{sourcePath.Trim('/')}/",
         };
-    }
 
     public FtpUriBuilder WithPath(string fullPath)
-    {
-        return new FtpUriBuilder(
+        => new(
             Scheme,
             Host,
             Port)
         {
-            Path = fullPath
+            Path = fullPath,
         };
-    }
 
     public FtpUriBuilder AppendFileName(string fileName)
-    {
-        return new FtpUriBuilder(
+        => new(
             Scheme,
             Host,
             Port)
         {
-            Path = $"{Path}{fileName}"
+            Path = $"{Path}{fileName}",
         };
-    }
 }

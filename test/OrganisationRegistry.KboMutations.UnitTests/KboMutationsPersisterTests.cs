@@ -27,14 +27,14 @@ public class KboMutationsPersisterTests : IDisposable
             "test.csv",
             new List<MutationsLine>
             {
-                new MutationsLine
+                new()
                 {
                     DatumModificatie = DateTime.Today,
                     Ondernemingsnummer = "0123456789",
                     MaatschappelijkeNaam = "test",
                     StatusCode = "AC",
                 },
-                new MutationsLine
+                new()
                 {
                     DatumModificatie = DateTime.Today,
                     Ondernemingsnummer = "0123456789",

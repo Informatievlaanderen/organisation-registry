@@ -34,17 +34,13 @@ public class StatusController : OrganisationRegistryController
 
     [HttpGet]
     public async Task<IActionResult> Get()
-    {
-        return await OkAsync("I'm ok!");
-    }
+        => await OkAsync("I'm ok!");
 
     [HttpGet]
     [Route("toggles")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetToggles([FromServices] IOptions<TogglesConfigurationSection> toggles)
-    {
-        return await OkAsync(toggles.Value);
-    }
+        => await OkAsync(toggles.Value);
 
     [HttpGet]
     [Route("features")]
@@ -79,7 +75,7 @@ public class StatusController : OrganisationRegistryController
             Serilog = PrintConfig(configuration.GetSection("Serilog")),
             SqlServer = configuration.GetSection(SqlServerConfiguration.Section).Get<SqlServerConfiguration>().Obfuscate(),
             Toggles = configuration.GetSection(TogglesConfigurationSection.Name).Get<TogglesConfigurationSection>(),
-            Ip = await externalIpFetcher.Fetch()
+            Ip = await externalIpFetcher.Fetch(),
         };
 
         var jsonSerializerSettings = GetJsonSerializerSettings();
@@ -88,7 +84,7 @@ public class StatusController : OrganisationRegistryController
         {
             ContentType = "application/json",
             StatusCode = (int)HttpStatusCode.OK,
-            Content = JsonConvert.SerializeObject(summary, Formatting.Indented, jsonSerializerSettings)
+            Content = JsonConvert.SerializeObject(summary, Formatting.Indented, jsonSerializerSettings),
         };
     }
 

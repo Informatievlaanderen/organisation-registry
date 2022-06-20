@@ -139,11 +139,10 @@ public class OrganisationListQuery : Query<OrganisationListItem, OrganisationLis
         {
             nameof(OrganisationListItem.Name),
             nameof(OrganisationListItem.ParentOrganisation),
-            nameof(OrganisationListItem.OvoNumber)
+            nameof(OrganisationListItem.OvoNumber),
         };
 
-        public SortingHeader DefaultSortingHeader { get; } =
-            new SortingHeader(nameof(OrganisationListItem.Name), SortOrder.Ascending);
+        public SortingHeader DefaultSortingHeader { get; } = new(nameof(OrganisationListItem.Name), SortOrder.Ascending);
     }
 }
 

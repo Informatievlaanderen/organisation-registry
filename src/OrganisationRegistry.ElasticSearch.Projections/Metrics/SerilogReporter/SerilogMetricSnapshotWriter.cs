@@ -17,7 +17,7 @@ public class SerilogMetricSnapshotWriter : IMetricSnapshotWriter, IDisposable
 {
     private readonly LogEventLevel _logEventLevel;
     private readonly MessageTemplates _messageTemplates;
-    private readonly MessageTemplateParser _parser = new MessageTemplateParser();
+    private readonly MessageTemplateParser _parser = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SerilogMetricSnapshotWriter"/> class.
@@ -101,9 +101,7 @@ public class SerilogMetricSnapshotWriter : IMetricSnapshotWriter, IDisposable
     }
 
     private static string FixPropertyName(string propertyName)
-    {
-        return propertyName.Replace(".", "_");
-    }
+        => propertyName.Replace(".", "_");
 
     private static void AddItemProperty(IEnumerable<string> columns, IDictionary<string, string> tags, ICollection<LogEventProperty> properties)
     {
@@ -112,14 +110,10 @@ public class SerilogMetricSnapshotWriter : IMetricSnapshotWriter, IDisposable
     }
 
     private static LogEventProperty BuildContextProperty(string context)
-    {
-        return new LogEventProperty("context", new ScalarValue(context));
-    }
+        => new("context", new ScalarValue(context));
 
     private static LogEventProperty BuildNameProperty(string name)
-    {
-        return new LogEventProperty("name", new ScalarValue(name));
-    }
+        => new("name", new ScalarValue(name));
 
     private static LogEventProperty BuildTagsProperty(IDictionary<string, string> tags)
     {
@@ -131,9 +125,7 @@ public class SerilogMetricSnapshotWriter : IMetricSnapshotWriter, IDisposable
     }
 
     public ValueTask DisposeAsync()
-    {
-        return ValueTask.CompletedTask;
-    }
+        => ValueTask.CompletedTask;
 
     public void Dispose()
     {

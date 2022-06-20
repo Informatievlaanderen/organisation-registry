@@ -34,9 +34,7 @@ public class CreateBodyClassificationTypeRequestValidator : AbstractValidator<Cr
 public static class CreateBodyClassificationTypeRequestMapping
 {
     public static CreateBodyClassificationType Map(CreateBodyClassificationTypeRequest message)
-    {
-        return new CreateBodyClassificationType(
+        => new(
             new BodyClassificationTypeId(message.Id),
             message.Name);
-    }
 }

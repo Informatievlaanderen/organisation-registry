@@ -51,13 +51,11 @@ public class UpdateBodyFormalFrameworkInternalRequestValidator : AbstractValidat
 public static class UpdateBodyFormalFrameworkRequestMapping
 {
     public static UpdateBodyFormalFramework Map(UpdateBodyFormalFrameworkInternalRequest message)
-    {
-        return new UpdateBodyFormalFramework(
+        => new(
             new BodyId(message.BodyId),
             new BodyFormalFrameworkId(message.Body.BodyFormalFrameworkId),
             new FormalFrameworkId(message.Body.FormalFrameworkId),
             new Period(
                 new ValidFrom(message.Body.ValidFrom),
                 new ValidTo(message.Body.ValidTo)));
-    }
 }

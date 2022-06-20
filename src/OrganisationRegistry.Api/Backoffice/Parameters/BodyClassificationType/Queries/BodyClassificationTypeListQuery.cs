@@ -37,10 +37,9 @@ public class BodyClassificationTypeListQuery : Query<BodyClassificationTypeListI
     {
         public IEnumerable<string> SortableFields { get; } = new[]
         {
-            nameof(BodyClassificationTypeListItem.Name)
+            nameof(BodyClassificationTypeListItem.Name),
         };
 
-        public SortingHeader DefaultSortingHeader { get; } =
-            new SortingHeader(nameof(BodyClassificationTypeListItem.Name), SortOrder.Ascending);
+        public SortingHeader DefaultSortingHeader { get; } = new(nameof(BodyClassificationTypeListItem.Name), SortOrder.Ascending);
     }
 }

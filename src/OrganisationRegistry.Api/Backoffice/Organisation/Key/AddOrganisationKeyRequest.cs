@@ -61,13 +61,11 @@ public class AddOrganisationKeyInternalRequestValidator : AbstractValidator<AddO
 public static class AddOrganisationKeyRequestMapping
 {
     public static AddOrganisationKey Map(AddOrganisationKeyInternalRequest message)
-    {
-        return new AddOrganisationKey(
+        => new(
             message.Body.OrganisationKeyId,
             new OrganisationId(message.OrganisationId),
             new KeyTypeId(message.Body.KeyTypeId),
             message.Body.KeyValue,
             new ValidFrom(message.Body.ValidFrom),
             new ValidTo(message.Body.ValidTo));
-    }
 }

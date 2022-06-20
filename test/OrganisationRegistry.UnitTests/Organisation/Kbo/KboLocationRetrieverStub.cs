@@ -13,7 +13,5 @@ public class KboLocationRetrieverStub : IKboLocationRetriever
     }
 
     public Guid? RetrieveLocation(IMagdaAddress address)
-    {
-        return _returnValue(address);
-    }
+        => _returnValue(address);
 }

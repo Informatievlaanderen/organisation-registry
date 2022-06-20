@@ -54,12 +54,10 @@ public class AddOrganisationParentInternalRequestValidator : AbstractValidator<A
 public static class AddOrganisationParentRequestMapping
 {
     public static AddOrganisationParent Map(AddOrganisationParentInternalRequest message)
-    {
-        return new AddOrganisationParent(
+        => new(
             message.Body.OrganisationOrganisationParentId,
             new OrganisationId(message.OrganisationId),
             new OrganisationId(message.Body.ParentOrganisationId),
             new ValidFrom(message.Body.ValidFrom),
             new ValidTo(message.Body.ValidTo));
-    }
 }

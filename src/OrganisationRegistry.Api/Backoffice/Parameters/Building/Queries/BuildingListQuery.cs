@@ -45,11 +45,10 @@ public class BuildingListQuery: Query<BuildingListItem, BuildingListItemFilter>
         public IEnumerable<string> SortableFields { get; } = new[]
         {
             nameof(BuildingListItem.Name),
-            nameof(BuildingListItem.VimId)
+            nameof(BuildingListItem.VimId),
         };
 
-        public SortingHeader DefaultSortingHeader { get; } =
-            new SortingHeader(nameof(BuildingListItem.Name), SortOrder.Ascending);
+        public SortingHeader DefaultSortingHeader { get; } = new(nameof(BuildingListItem.Name), SortOrder.Ascending);
     }
 }
 

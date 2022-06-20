@@ -37,10 +37,9 @@ public class MandateRoleTypeListQuery: Query<MandateRoleTypeListItem>
     {
         public IEnumerable<string> SortableFields { get; } = new[]
         {
-            nameof(MandateRoleTypeListItem.Name)
+            nameof(MandateRoleTypeListItem.Name),
         };
 
-        public SortingHeader DefaultSortingHeader { get; } =
-            new SortingHeader(nameof(MandateRoleTypeListItem.Name), SortOrder.Ascending);
+        public SortingHeader DefaultSortingHeader { get; } = new(nameof(MandateRoleTypeListItem.Name), SortOrder.Ascending);
     }
 }

@@ -420,21 +420,21 @@ public class BBanEntry
         Length = length;
     }
 
-    public static BBanEntry BankCode(int length, string characterType) => new BBanEntry(BBanEntryType.BANK_CODE, getCharacterType(characterType), length);
+    public static BBanEntry BankCode(int length, string characterType) => new(BBanEntryType.BANK_CODE, getCharacterType(characterType), length);
 
-    public static BBanEntry BranchCode(int length, string characterType) => new BBanEntry(BBanEntryType.BRANCH_CODE, getCharacterType(characterType), length);
+    public static BBanEntry BranchCode(int length, string characterType) => new(BBanEntryType.BRANCH_CODE, getCharacterType(characterType), length);
 
-    public static BBanEntry AccountNumberPrefix(int length, string characterType) => new BBanEntry(BBanEntryType.ACCOUNT_NUMBER_PREFIX, getCharacterType(characterType), length);
+    public static BBanEntry AccountNumberPrefix(int length, string characterType) => new(BBanEntryType.ACCOUNT_NUMBER_PREFIX, getCharacterType(characterType), length);
 
-    public static BBanEntry AccountNumber(int length, string characterType) => new BBanEntry(BBanEntryType.ACCOUNT_NUMBER, getCharacterType(characterType), length);
+    public static BBanEntry AccountNumber(int length, string characterType) => new(BBanEntryType.ACCOUNT_NUMBER, getCharacterType(characterType), length);
 
-    public static BBanEntry NationalCheckDigit(int length, string characterType) => new BBanEntry(BBanEntryType.NATIONAL_CHECK_DIGIT, getCharacterType(characterType), length);
+    public static BBanEntry NationalCheckDigit(int length, string characterType) => new(BBanEntryType.NATIONAL_CHECK_DIGIT, getCharacterType(characterType), length);
 
-    public static BBanEntry AccountType(int length, string characterType) => new BBanEntry(BBanEntryType.ACCOUNT_TYPE, getCharacterType(characterType), length);
+    public static BBanEntry AccountType(int length, string characterType) => new(BBanEntryType.ACCOUNT_TYPE, getCharacterType(characterType), length);
 
-    public static BBanEntry OwnerAccountNumber(int length, string characterType) => new BBanEntry(BBanEntryType.OWNER_ACCOUNT_NUMBER, getCharacterType(characterType), length);
+    public static BBanEntry OwnerAccountNumber(int length, string characterType) => new(BBanEntryType.OWNER_ACCOUNT_NUMBER, getCharacterType(characterType), length);
 
-    public static BBanEntry IdentificationNumber(int length, string characterType) => new BBanEntry(BBanEntryType.IDENTIFICATION_NUMBER, getCharacterType(characterType), length);
+    public static BBanEntry IdentificationNumber(int length, string characterType) => new(BBanEntryType.IDENTIFICATION_NUMBER, getCharacterType(characterType), length);
 
     private static BBanEntryCharacterType getCharacterType(string character)
     {

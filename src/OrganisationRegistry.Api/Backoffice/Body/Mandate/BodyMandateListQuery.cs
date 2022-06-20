@@ -127,11 +127,11 @@ public class BodyMandateListQuery : Query<BodyMandateListItem, BodyMandateListIt
             nameof(BodyMandateListItem.ValidFrom),
             nameof(BodyMandateListItem.ValidTo),
             nameof(BodyMandateListItem.BodySeatTypeName),
-            nameof(BodyMandateListItem.BodySeatTypeOrder)
+            nameof(BodyMandateListItem.BodySeatTypeOrder),
         };
 
         public SortingHeader DefaultSortingHeader { get; } =
-            new SortingHeader(nameof(BodyMandateListItem.BodySeatTypeOrder), SortOrder.Ascending);
+            new(nameof(BodyMandateListItem.BodySeatTypeOrder), SortOrder.Ascending);
     }
 }
 

@@ -29,23 +29,17 @@ public class OrganisationContact : IOrganisationField, IValidityBuilder<Organisa
     }
 
     public OrganisationContact WithValidity(Period period)
-    {
-        return new OrganisationContact(
+        => new(
             OrganisationContactId,
             OrganisationId,
             ContactTypeId,
             ContactTypeName,
             Value,
             period);
-    }
 
     public OrganisationContact WithValidFrom(ValidFrom validFrom)
-    {
-        return WithValidity(new Period(validFrom, Validity.End));
-    }
+        => WithValidity(new Period(validFrom, Validity.End));
 
     public OrganisationContact WithValidTo(ValidTo validTo)
-    {
-        return WithValidity(new Period(Validity.Start, validTo));
-    }
+        => WithValidity(new Period(Validity.Start, validTo));
 }

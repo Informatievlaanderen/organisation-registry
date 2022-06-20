@@ -79,11 +79,11 @@ public class BodyOrganisationListQuery : Query<BodyOrganisationListItem, BodyOrg
         {
             nameof(BodyOrganisationListItem.OrganisationName),
             nameof(BodyOrganisationListItem.ValidFrom),
-            nameof(BodyOrganisationListItem.ValidTo)
+            nameof(BodyOrganisationListItem.ValidTo),
         };
 
         public SortingHeader DefaultSortingHeader { get; } =
-            new SortingHeader(nameof(BodyOrganisationListItem.OrganisationName), SortOrder.Ascending);
+            new(nameof(BodyOrganisationListItem.OrganisationName), SortOrder.Ascending);
     }
 }
 

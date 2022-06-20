@@ -37,9 +37,7 @@ public class PaginationRequest : IPaginationRequest
 public class NoPaginationRequest : IPaginationRequest
 {
     public int TotalPages(int totalItemSize)
-    {
-        return 1;
-    }
+        => 1;
 
     public PagedQueryable<T> Paginate<T>(IQueryable<T> source)
     {

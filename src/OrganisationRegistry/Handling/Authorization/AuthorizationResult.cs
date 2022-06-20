@@ -11,12 +11,8 @@ public readonly struct AuthorizationResult
     }
 
     public static AuthorizationResult Fail(DomainException domainException)
-    {
-        return new AuthorizationResult(domainException);
-    }
+        => new(domainException);
 
     public static AuthorizationResult Success()
-    {
-        return new AuthorizationResult(null);
-    }
+        => new(null);
 }

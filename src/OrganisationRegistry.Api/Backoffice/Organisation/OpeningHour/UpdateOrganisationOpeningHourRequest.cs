@@ -60,8 +60,7 @@ public class UpdateOrganisationOpeningHourInternalRequestValidator : AbstractVal
 public static class UpdateOrganisationOpeningHourRequestMapping
 {
     public static UpdateOrganisationOpeningHour Map(UpdateOrganisationOpeningHourInternalRequest message)
-    {
-        return new UpdateOrganisationOpeningHour(
+        => new(
             message.Body.OrganisationOpeningHourId,
             new OrganisationId(message.OrganisationId),
             message.Body.Opens,
@@ -69,5 +68,4 @@ public static class UpdateOrganisationOpeningHourRequestMapping
             message.Body.DayOfWeek,
             new ValidFrom(message.Body.ValidFrom),
             new ValidTo(message.Body.ValidTo));
-    }
 }

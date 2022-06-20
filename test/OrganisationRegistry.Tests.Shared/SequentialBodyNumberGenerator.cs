@@ -5,7 +5,7 @@ using Body;
 public class SequentialBodyNumberGenerator : IBodyNumberGenerator
 {
     private static int _current;
-    private static readonly object Locker = new object();
+    private static readonly object Locker = new();
 
     public string GenerateNumber()
     {

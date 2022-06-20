@@ -4,7 +4,7 @@ using System;
 
 public class RebuildProjection : BaseCommand<ProjectionRebuilderId>
 {
-    private static readonly ProjectionRebuilderId ManMadeGuid = new ProjectionRebuilderId(Guid.Parse("00000000-0000-4000-0000-000000000002"));
+    private static readonly ProjectionRebuilderId ManMadeGuid = new(Guid.Parse("00000000-0000-4000-0000-000000000002"));
 
     public ProjectionRebuilderId ProjectionRebuilderId => Id;
 

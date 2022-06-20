@@ -14,13 +14,11 @@ public static class ParticipationCalculator
     }
 
     public static BodyParticipationCompliance CalculateCompliance(int totalCount, decimal percentage)
-    {
-        return totalCount <= 1
+        => totalCount <= 1
             ? BodyParticipationCompliance.Unknown
             : percentage >= Lower && percentage <= Upper
                 ? BodyParticipationCompliance.Compliant
                 : BodyParticipationCompliance.NonCompliant;
-    }
 
     public static decimal CalculatePercentage(int count, decimal assignedCount)
     {

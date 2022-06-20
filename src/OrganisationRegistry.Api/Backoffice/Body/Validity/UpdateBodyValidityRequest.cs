@@ -41,11 +41,9 @@ public class UpdateBodyValidityRequestValidator : AbstractValidator<UpdateBodyVa
 public static class UpdateBodyValidityRequestMapping
 {
     public static UpdateBodyValidity Map(UpdateBodyValidityInternalRequest message)
-    {
-        return new UpdateBodyValidity(
+        => new(
             new BodyId(message.BodyId),
             new Period(
                 new ValidFrom(message.Body.FormalValidFrom),
                 new ValidTo(message.Body.FormalValidTo)));
-    }
 }

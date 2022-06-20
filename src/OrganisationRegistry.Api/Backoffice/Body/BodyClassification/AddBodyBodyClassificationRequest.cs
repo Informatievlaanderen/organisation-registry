@@ -61,13 +61,11 @@ public class AddBodyBodyClassificationInternalRequestValidator : AbstractValidat
 public static class AddBodyBodyClassificationRequestMapping
 {
     public static AddBodyBodyClassification Map(AddBodyBodyClassificationInternalRequest message)
-    {
-        return new AddBodyBodyClassification(
+        => new(
             message.Body.BodyBodyClassificationId,
             new BodyId(message.BodyId),
             new BodyClassificationTypeId(message.Body.BodyClassificationTypeId),
             new BodyClassificationId(message.Body.BodyClassificationId),
             new ValidFrom(message.Body.ValidFrom),
             new ValidTo(message.Body.ValidTo));
-    }
 }

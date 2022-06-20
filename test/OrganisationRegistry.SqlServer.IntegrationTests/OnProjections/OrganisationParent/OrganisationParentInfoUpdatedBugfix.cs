@@ -13,7 +13,7 @@ using Xunit;
 [Collection(SqlServerTestsCollection.Name)]
 public class OrganisationParentInfoUpdatedBugfix : ListViewTestBase
 {
-    private readonly SequentialOvoNumberGenerator _sequentialOvoNumberGenerator = new SequentialOvoNumberGenerator();
+    private readonly SequentialOvoNumberGenerator _sequentialOvoNumberGenerator = new();
 
     [Fact]
     public async Task UpdateOrganisationInfoThatIsNotTheParent_DoesNotInfluenceTheCurrentParentInTheDetail()

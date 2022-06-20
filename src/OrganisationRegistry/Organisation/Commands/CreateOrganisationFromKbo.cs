@@ -21,10 +21,10 @@ public class CreateOrganisationFromKbo : BaseCommand<OrganisationId>
 
     public ValidTo ValidTo { get; }
 
-    public List<AddOrganisationKey> Keys { get; set; } = new List<AddOrganisationKey>();
-    public List<AddOrganisationBankAccount> BankAccounts { get; set; } = new List<AddOrganisationBankAccount>();
-    public List<AddOrganisationOrganisationClassification> OrganisationClassifications { get; set; } = new List<AddOrganisationOrganisationClassification>();
-    public List<AddOrganisationLocation> OrganisationLocations { get; set; } = new List<AddOrganisationLocation>();
+    public List<AddOrganisationKey> Keys { get; set; } = new();
+    public List<AddOrganisationBankAccount> BankAccounts { get; set; } = new();
+    public List<AddOrganisationOrganisationClassification> OrganisationClassifications { get; set; } = new();
+    public List<AddOrganisationLocation> OrganisationLocations { get; set; } = new();
     public KboNumber KboNumber { get; }
 
     public CreateOrganisationFromKbo(

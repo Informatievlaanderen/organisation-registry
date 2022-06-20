@@ -98,11 +98,11 @@ public class OrganisationRegulationListQuery : Query<OrganisationRegulationListI
             nameof(OrganisationRegulationListItem.RegulationThemeName),
             nameof(OrganisationRegulationListItem.Url),
             nameof(OrganisationRegulationListItem.ValidFrom),
-            nameof(OrganisationRegulationListItem.ValidTo)
+            nameof(OrganisationRegulationListItem.ValidTo),
         };
 
         public SortingHeader DefaultSortingHeader { get; } =
-            new SortingHeader(nameof(OrganisationRegulationListItem.RegulationThemeName), SortOrder.Ascending);
+            new(nameof(OrganisationRegulationListItem.RegulationThemeName), SortOrder.Ascending);
     }
 }
 

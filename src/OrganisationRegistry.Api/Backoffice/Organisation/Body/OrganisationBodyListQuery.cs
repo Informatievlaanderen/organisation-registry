@@ -81,11 +81,10 @@ public class OrganisationBodyListQuery : Query<OrganisationBodyListItem, Organis
         {
             nameof(OrganisationBodyListItem.BodyName),
             nameof(OrganisationBodyListItem.ValidFrom),
-            nameof(OrganisationBodyListItem.ValidTo)
+            nameof(OrganisationBodyListItem.ValidTo),
         };
 
-        public SortingHeader DefaultSortingHeader { get; } =
-            new SortingHeader(nameof(OrganisationBodyListItem.BodyName), SortOrder.Ascending);
+        public SortingHeader DefaultSortingHeader { get; } = new(nameof(OrganisationBodyListItem.BodyName), SortOrder.Ascending);
     }
 }
 

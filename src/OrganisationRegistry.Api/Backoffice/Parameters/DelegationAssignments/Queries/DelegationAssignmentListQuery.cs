@@ -74,7 +74,7 @@ public class DelegationAssignmentListQuery : Query<DelegationAssignmentListItem,
         };
 
         public SortingHeader DefaultSortingHeader { get; } =
-            new SortingHeader(nameof(DelegationAssignmentListItem.PersonName), SortOrder.Ascending);
+            new(nameof(DelegationAssignmentListItem.PersonName), SortOrder.Ascending);
     }
 }
 

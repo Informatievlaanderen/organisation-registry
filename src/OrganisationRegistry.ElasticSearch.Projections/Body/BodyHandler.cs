@@ -84,7 +84,7 @@ public class BodyHandler :
             Name = "Index Refresh Timer",
             MeasurementUnit = Unit.Requests,
             DurationUnit = TimeUnit.Milliseconds,
-            RateUnit = TimeUnit.Milliseconds
+            RateUnit = TimeUnit.Milliseconds,
         };
         _elasticSearchOptions = elasticSearchOptions.Value;
     }
@@ -118,9 +118,7 @@ public class BodyHandler :
     }
 
     private static string FormatPersonName(string firstName, string name)
-    {
-        return $"{firstName} {name}";
-    }
+        => $"{firstName} {name}";
 
     public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
         IEnvelope<InitialiseProjection> message)
@@ -157,7 +155,7 @@ public class BodyHandler :
                 Description = message.Body.Description,
                 FormalValidity = Period.FromDates(
                     message.Body.FormalValidFrom,
-                    message.Body.FormalValidTo)
+                    message.Body.FormalValidTo),
             }).ToAsyncResult();
     }
 

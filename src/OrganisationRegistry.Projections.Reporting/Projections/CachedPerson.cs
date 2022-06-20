@@ -18,16 +18,8 @@ public class CachedPerson
     }
 
     public static CachedPerson FromCache(BodySeatGenderRatioPersonListItem person)
-    {
-        return new CachedPerson(
-            person.PersonId,
-            person.PersonSex);
-    }
+        => new(person.PersonId, person.PersonSex);
 
     public static CachedPerson Empty()
-    {
-        return new CachedPerson(
-            null,
-            null);
-    }
+        => new(null, null);
 }

@@ -70,10 +70,10 @@ public class PersonFunctionListQuery : Query<PersonFunctionListItem, PersonFunct
             nameof(PersonFunctionListItem.OrganisationName),
             nameof(PersonFunctionListItem.FunctionName),
             nameof(PersonFunctionListItem.ValidFrom),
-            nameof(PersonFunctionListItem.ValidTo)
+            nameof(PersonFunctionListItem.ValidTo),
         };
 
         public SortingHeader DefaultSortingHeader { get; } =
-            new SortingHeader(nameof(PersonFunctionListItem.OrganisationName), SortOrder.Ascending);
+            new(nameof(PersonFunctionListItem.OrganisationName), SortOrder.Ascending);
     }
 }

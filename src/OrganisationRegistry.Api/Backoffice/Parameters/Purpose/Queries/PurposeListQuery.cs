@@ -37,10 +37,9 @@ public class PurposeListQuery: Query<PurposeListItem>
     {
         public IEnumerable<string> SortableFields { get; } = new[]
         {
-            nameof(PurposeListItem.Name)
+            nameof(PurposeListItem.Name),
         };
 
-        public SortingHeader DefaultSortingHeader { get; } =
-            new SortingHeader(nameof(PurposeListItem.Name), SortOrder.Ascending);
+        public SortingHeader DefaultSortingHeader { get; } = new(nameof(PurposeListItem.Name), SortOrder.Ascending);
     }
 }

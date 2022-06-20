@@ -54,8 +54,7 @@ public class UpdateOrganisationInfoLimitedByVlimpersRequestValidator : AbstractV
 public static class UpdateOrganisationInfoLimitedToVlimpersRequestMapping
 {
     public static UpdateOrganisationInfoLimitedToVlimpers Map(UpdateOrganisationInfoLimitedToVlimpersInternalRequest message)
-    {
-        return new UpdateOrganisationInfoLimitedToVlimpers(
+        => new(
             new OrganisationId(message.OrganisationId),
             message.Body.Name,
             Article.Parse(message.Body.Article),
@@ -64,5 +63,4 @@ public static class UpdateOrganisationInfoLimitedToVlimpersRequestMapping
             new ValidTo(message.Body.ValidTo),
             new ValidFrom(message.Body.OperationalValidFrom),
             new ValidTo(message.Body.OperationalValidTo));
-    }
 }

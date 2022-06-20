@@ -49,12 +49,10 @@ public class CreateBodyClassificationRequestValidator : AbstractValidator<Create
 public static class CreateBodyClassificationRequestMapping
 {
     public static CreateBodyClassification Map(CreateBodyClassificationRequest message)
-    {
-        return new CreateBodyClassification(
+        => new(
             new BodyClassificationId(message.Id),
             message.Name,
             message.Order,
             message.Active,
             new BodyClassificationTypeId(message.BodyClassificationTypeId));
-    }
 }

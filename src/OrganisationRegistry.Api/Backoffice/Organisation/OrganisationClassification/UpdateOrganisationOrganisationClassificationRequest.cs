@@ -61,13 +61,11 @@ public class UpdateOrganisationOrganisationClassificationInternalRequestValidato
 public static class UpdateOrganisationOrganisationClassificationRequestMapping
 {
     public static UpdateOrganisationOrganisationClassification Map(UpdateOrganisationOrganisationClassificationInternalRequest message)
-    {
-        return new UpdateOrganisationOrganisationClassification(
+        => new(
             message.Body.OrganisationOrganisationClassificationId,
             new OrganisationId(message.OrganisationId),
             new OrganisationClassificationTypeId(message.Body.OrganisationClassificationTypeId),
             new OrganisationClassificationId(message.Body.OrganisationClassificationId),
             new ValidFrom(message.Body.ValidFrom),
             new ValidTo(message.Body.ValidTo));
-    }
 }

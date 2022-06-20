@@ -36,8 +36,7 @@ public class OrganisationFunction : IOrganisationField, IValidityBuilder<Organis
     }
 
     public OrganisationFunction WithValidity(Period period)
-    {
-        return new OrganisationFunction(
+        => new(
             OrganisationFunctionId,
             OrganisationId,
             FunctionId,
@@ -46,15 +45,10 @@ public class OrganisationFunction : IOrganisationField, IValidityBuilder<Organis
             PersonName,
             Contacts,
             period);
-    }
 
     public OrganisationFunction WithValidFrom(ValidFrom validFrom)
-    {
-        return WithValidity(new Period(validFrom, Validity.End));
-    }
+        => WithValidity(new Period(validFrom, Validity.End));
 
     public OrganisationFunction WithValidTo(ValidTo validTo)
-    {
-        return WithValidity(new Period(Validity.Start, validTo));
-    }
+        => WithValidity(new Period(Validity.Start, validTo));
 }

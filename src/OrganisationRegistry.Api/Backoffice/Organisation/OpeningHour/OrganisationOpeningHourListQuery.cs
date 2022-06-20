@@ -96,11 +96,11 @@ public class OrganisationOpeningHourListQuery : Query<OrganisationOpeningHourLis
             nameof(OrganisationOpeningHourListItem.Closes),
             nameof(OrganisationOpeningHourListItem.DayOfWeek),
             nameof(OrganisationOpeningHourListItem.ValidFrom),
-            nameof(OrganisationOpeningHourListItem.ValidTo)
+            nameof(OrganisationOpeningHourListItem.ValidTo),
         };
 
         public SortingHeader DefaultSortingHeader { get; } =
-            new SortingHeader(nameof(OrganisationOpeningHourListItem.Opens), SortOrder.Ascending);
+            new(nameof(OrganisationOpeningHourListItem.Opens), SortOrder.Ascending);
     }
 }
 

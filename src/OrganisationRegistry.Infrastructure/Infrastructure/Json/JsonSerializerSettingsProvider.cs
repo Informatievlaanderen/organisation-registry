@@ -19,8 +19,7 @@ public static class JsonSerializerSettingsProvider
     /// </summary>
     /// <returns>Default <see cref="JsonSerializerSettings"/>.</returns>
     public static JsonSerializerSettings CreateSerializerSettings()
-    {
-        return new JsonSerializerSettings
+        => new()
         {
             ContractResolver = new OrganisationRegistryContractResolver
             {
@@ -37,5 +36,4 @@ public static class JsonSerializerSettingsProvider
             // Setting this to None prevents Json.NET from loading malicious, unsafe, or security-sensitive types
             TypeNameHandling = TypeNameHandling.None,
         };
-    }
 }

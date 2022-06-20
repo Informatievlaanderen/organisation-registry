@@ -224,9 +224,7 @@ public class MemoryCaches : IMemoryCaches
     }
 
     private static ReadOnlyDictionary<Guid, T> ToReadOnlyDictionary<T>(IDictionary<Guid, T> dictionary)
-    {
-        return new ReadOnlyDictionary<Guid, T>(dictionary);
-    }
+        => new(dictionary);
 }
 
 public interface IMemoryCachesMaintainer :

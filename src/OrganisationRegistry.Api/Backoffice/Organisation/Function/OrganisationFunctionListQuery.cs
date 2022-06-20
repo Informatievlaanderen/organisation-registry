@@ -86,11 +86,11 @@ public class OrganisationFunctionListQuery : Query<OrganisationFunctionListItem,
             nameof(OrganisationFunctionListItem.FunctionName),
             nameof(OrganisationFunctionListItem.PersonName),
             nameof(OrganisationFunctionListItem.ValidFrom),
-            nameof(OrganisationFunctionListItem.ValidTo)
+            nameof(OrganisationFunctionListItem.ValidTo),
         };
 
         public SortingHeader DefaultSortingHeader { get; } =
-            new SortingHeader(nameof(OrganisationFunctionListItem.PersonName), SortOrder.Ascending);
+            new(nameof(OrganisationFunctionListItem.PersonName), SortOrder.Ascending);
     }
 }
 

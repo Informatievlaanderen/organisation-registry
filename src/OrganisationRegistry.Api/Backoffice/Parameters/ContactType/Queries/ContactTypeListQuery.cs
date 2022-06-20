@@ -37,10 +37,9 @@ public class ContactTypeListQuery: Query<ContactTypeListItem>
     {
         public IEnumerable<string> SortableFields { get; } = new[]
         {
-            nameof(ContactTypeListItem.Name)
+            nameof(ContactTypeListItem.Name),
         };
 
-        public SortingHeader DefaultSortingHeader { get; } =
-            new SortingHeader(nameof(ContactTypeListItem.Name), SortOrder.Ascending);
+        public SortingHeader DefaultSortingHeader { get; } = new(nameof(ContactTypeListItem.Name), SortOrder.Ascending);
     }
 }

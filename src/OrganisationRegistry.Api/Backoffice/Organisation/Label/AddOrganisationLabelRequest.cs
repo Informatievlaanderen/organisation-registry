@@ -61,13 +61,11 @@ public class AddOrganisationLabelInternalRequestValidator : AbstractValidator<Ad
 public static class AddOrganisationLabelRequestMapping
 {
     public static AddOrganisationLabel Map(AddOrganisationLabelInternalRequest message)
-    {
-        return new AddOrganisationLabel(
+        => new(
             message.Body.OrganisationLabelId,
             new OrganisationId(message.OrganisationId),
             new LabelTypeId(message.Body.LabelTypeId),
             message.Body.LabelValue,
             new ValidFrom(message.Body.ValidFrom),
             new ValidTo(message.Body.ValidTo));
-    }
 }

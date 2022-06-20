@@ -8,7 +8,5 @@ public class NullPublisher : IEventPublisher
 {
     public Task Publish<T>(DbConnection? dbConnection, DbTransaction? dbTransaction, IEnvelope<T> envelope)
         where T : IEvent<T>
-    {
-        return Task.CompletedTask;
-    }
+        => Task.CompletedTask;
 }

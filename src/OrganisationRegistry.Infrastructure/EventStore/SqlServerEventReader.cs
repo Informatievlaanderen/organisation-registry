@@ -46,7 +46,7 @@ ORDER BY Version ASC",
                 new
                 {
                     Id = aggregateId,
-                    Version = fromVersion
+                    Version = fromVersion,
                 }).ToList();
         }
 
@@ -67,7 +67,7 @@ AND NOT {"[Name]".IsIgnoredEvent()}
 WHERE [Timestamp] > @DateTime",
                 new
                 {
-                    DateTime = dateTimeOffset ?? DateTimeOffset.MinValue
+                    DateTime = dateTimeOffset ?? DateTimeOffset.MinValue,
                 });
         }
     }
@@ -86,7 +86,7 @@ AND NOT {"[Name]".IsIgnoredEvent()}
 ORDER BY [Number] ASC",
                 new
                 {
-                    EventTypes = eventTypes.GetEventTypeNames()
+                    EventTypes = eventTypes.GetEventTypeNames(),
                 }).ToList();
         }
     }
@@ -109,7 +109,7 @@ ORDER BY Version ASC",
                 new
                 {
                     Id = aggregateId,
-                    Number = untilEventNumber
+                    Number = untilEventNumber,
                 }).ToList();
         }
 
@@ -149,8 +149,7 @@ ORDER BY Version ASC",
     }
 
     private static List<EventData> SelectEvents(int eventNumber, IDbConnection db)
-    {
-        return db.Query<EventData>(
+        => db.Query<EventData>(
             @$"SELECT [Id], [Number], [Version], [Name], [Timestamp], [Data], [Ip], [LastName], [FirstName], [UserId]
 FROM [OrganisationRegistry].[Events]
 WHERE [Number] > @Number
@@ -158,13 +157,11 @@ AND NOT {"[Name]".IsIgnoredEvent()}
 ORDER BY [Number] ASC",
             new
             {
-                Number = eventNumber
+                Number = eventNumber,
             }).ToList();
-    }
 
     private static List<EventData> SelectMaxEvents(int eventNumber, int maxEvents, IDbConnection db)
-    {
-        return db.Query<EventData>(
+        => db.Query<EventData>(
             @$"SELECT TOP(@MaxEvents) [Id], [Number], [Version], [Name], [Timestamp], [Data], [Ip], [LastName], [FirstName], [UserId]
 FROM [OrganisationRegistry].[Events]
 WHERE [Number] > @Number
@@ -173,13 +170,11 @@ ORDER BY [Number] ASC",
             new
             {
                 MaxEvents = maxEvents,
-                Number = eventNumber
+                Number = eventNumber,
             }).ToList();
-    }
 
     private static List<EventData> SelectMaxEvents(int eventNumber, int maxEvents, IDbConnection db, IEnumerable<Type> eventTypesToInclude)
-    {
-        return db.Query<EventData>(
+        => db.Query<EventData>(
             @$"SELECT TOP(@MaxEvents) [Id], [Number], [Version], [Name], [Timestamp], [Data], [Ip], [LastName], [FirstName], [UserId]
 FROM [OrganisationRegistry].[Events]
 WHERE [Number] > @Number
@@ -190,9 +185,8 @@ ORDER BY [Number] ASC",
             {
                 MaxEvents = maxEvents,
                 Number = eventNumber,
-                EventTypesToInclude = eventTypesToInclude.GetEventTypeNames()
+                EventTypesToInclude = eventTypesToInclude.GetEventTypeNames(),
             }).ToList();
-    }
 }
 
 public static class SqlExtensions

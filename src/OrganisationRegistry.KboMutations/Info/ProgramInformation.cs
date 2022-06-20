@@ -29,10 +29,7 @@
      }
 
      private static string ObfuscateToken(string text)
-     {
-         return
-             text.Substring(0, 5) +
-             new string('*', text.Length - 8) +
-             text.Substring(text.Length - 3);
-     }
+         => text.Substring(0, 5) +
+            new string('*', text.Length - 8) +
+            text.Substring(text.Length - 3);
  }

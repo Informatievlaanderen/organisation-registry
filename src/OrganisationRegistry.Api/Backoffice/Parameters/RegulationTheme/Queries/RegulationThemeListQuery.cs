@@ -37,10 +37,9 @@ public class RegulationThemeListQuery: Query<RegulationThemeListItem>
     {
         public IEnumerable<string> SortableFields { get; } = new[]
         {
-            nameof(RegulationThemeListItem.Name)
+            nameof(RegulationThemeListItem.Name),
         };
 
-        public SortingHeader DefaultSortingHeader { get; } =
-            new SortingHeader(nameof(RegulationThemeListItem.Name), SortOrder.Ascending);
+        public SortingHeader DefaultSortingHeader { get; } = new(nameof(RegulationThemeListItem.Name), SortOrder.Ascending);
     }
 }

@@ -9,7 +9,5 @@ public static class EntityFrameworkExtensions
     public static IConfigurationBuilder AddEntityFramework(
         this IConfigurationBuilder builder,
         Action<DbContextOptionsBuilder> options)
-    {
-        return builder.Add(new EntityFrameworkConfigurationSource(options));
-    }
+        => builder.Add(new EntityFrameworkConfigurationSource(options));
 }

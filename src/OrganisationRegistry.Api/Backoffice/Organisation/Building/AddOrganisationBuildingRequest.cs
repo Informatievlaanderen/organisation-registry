@@ -52,13 +52,11 @@ public class AddOrganisationBuildingInternalRequestValidator : AbstractValidator
 public static class AddOrganisationBuildingRequestMapping
 {
     public static AddOrganisationBuilding Map(AddOrganisationBuildingInternalRequest message)
-    {
-        return new AddOrganisationBuilding(
+        => new(
             message.Body.OrganisationBuildingId,
             new OrganisationId(message.OrganisationId),
             new BuildingId(message.Body.BuildingId),
             message.Body.IsMainBuilding,
             new ValidFrom(message.Body.ValidFrom),
             new ValidTo(message.Body.ValidTo));
-    }
 }

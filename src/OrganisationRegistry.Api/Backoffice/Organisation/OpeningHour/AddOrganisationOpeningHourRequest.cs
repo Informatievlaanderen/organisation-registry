@@ -60,8 +60,7 @@ public class AddOrganisationOpeningHourInternalRequestValidator : AbstractValida
 public static class AddOrganisationOpeningHourRequestMapping
 {
     public static AddOrganisationOpeningHour Map(AddOrganisationOpeningHourInternalRequest message)
-    {
-        return new AddOrganisationOpeningHour(
+        => new(
             message.Body.OrganisationOpeningHourId,
             new OrganisationId(message.OrganisationId),
             message.Body.Opens,
@@ -69,5 +68,4 @@ public static class AddOrganisationOpeningHourRequestMapping
             message.Body.DayOfWeek,
             new ValidFrom(message.Body.ValidFrom),
             new ValidTo(message.Body.ValidTo));
-    }
 }

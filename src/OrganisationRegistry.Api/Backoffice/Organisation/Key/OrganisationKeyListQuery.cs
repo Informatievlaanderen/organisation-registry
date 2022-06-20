@@ -88,11 +88,10 @@ public class OrganisationKeyListQuery : Query<OrganisationKeyListItem, Organisat
             nameof(OrganisationKeyListItem.KeyTypeName),
             nameof(OrganisationKeyListItem.KeyValue),
             nameof(OrganisationKeyListItem.ValidFrom),
-            nameof(OrganisationKeyListItem.ValidTo)
+            nameof(OrganisationKeyListItem.ValidTo),
         };
 
-        public SortingHeader DefaultSortingHeader { get; } =
-            new SortingHeader(nameof(OrganisationKeyListItem.KeyTypeName), SortOrder.Ascending);
+        public SortingHeader DefaultSortingHeader { get; } = new(nameof(OrganisationKeyListItem.KeyTypeName), SortOrder.Ascending);
     }
 }
 

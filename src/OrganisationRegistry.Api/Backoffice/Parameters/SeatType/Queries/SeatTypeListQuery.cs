@@ -39,10 +39,9 @@ public class SeatTypeListQuery: Query<SeatTypeListItem>
         {
             nameof(SeatTypeListItem.Name),
             nameof(SeatTypeListItem.Order),
-            nameof(SeatTypeListItem.IsEffective)
+            nameof(SeatTypeListItem.IsEffective),
         };
 
-        public SortingHeader DefaultSortingHeader { get; } =
-            new SortingHeader(nameof(SeatTypeListItem.Name), SortOrder.Ascending);
+        public SortingHeader DefaultSortingHeader { get; } = new(nameof(SeatTypeListItem.Name), SortOrder.Ascending);
     }
 }

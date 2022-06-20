@@ -15,16 +15,12 @@ public class CachedOrganisationBody
     }
 
     public static CachedOrganisationBody FromCache(OrganisationPerBody organisationPerBody)
-    {
-        return new CachedOrganisationBody(
+        => new(
             organisationPerBody.OrganisationId,
             organisationPerBody.OrganisationName);
-    }
 
     public static CachedOrganisationBody Empty()
-    {
-        return new CachedOrganisationBody(
+        => new(
             null,
             string.Empty);
-    }
 }

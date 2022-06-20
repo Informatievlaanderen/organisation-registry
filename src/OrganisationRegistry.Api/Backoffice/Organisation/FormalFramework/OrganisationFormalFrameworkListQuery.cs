@@ -111,11 +111,11 @@ public class OrganisationFormalFrameworkListQuery : Query<OrganisationFormalFram
             nameof(OrganisationFormalFrameworkListItem.ParentOrganisationName),
             nameof(OrganisationFormalFrameworkListItem.FormalFrameworkName),
             nameof(OrganisationFormalFrameworkListItem.ValidFrom),
-            nameof(OrganisationFormalFrameworkListItem.ValidTo)
+            nameof(OrganisationFormalFrameworkListItem.ValidTo),
         };
 
         public SortingHeader DefaultSortingHeader { get; } =
-            new SortingHeader(nameof(OrganisationFormalFrameworkListItem.ParentOrganisationName), SortOrder.Ascending);
+            new(nameof(OrganisationFormalFrameworkListItem.ParentOrganisationName), SortOrder.Ascending);
     }
 }
 

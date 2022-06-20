@@ -60,13 +60,11 @@ public class AddOrganisationRelationInternalRequestValidator : AbstractValidator
 public static class AddOrganisationRelationRequestMapping
 {
     public static AddOrganisationRelation Map(AddOrganisationRelationInternalRequest message)
-    {
-        return new AddOrganisationRelation(
+        => new(
             message.Body.OrganisationRelationId,
             new OrganisationRelationTypeId(message.Body.RelationId),
             new OrganisationId(message.OrganisationId),
             new OrganisationId(message.Body.RelatedOrganisationId),
             new ValidFrom(message.Body.ValidFrom),
             new ValidTo(message.Body.ValidTo));
-    }
 }

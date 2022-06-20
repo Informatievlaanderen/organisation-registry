@@ -15,10 +15,8 @@ public class ConfigurationDatabaseConfiguration
     public string ConnectionString { get; set; } = null!;
 
     public ConfigurationDatabaseConfiguration Obfuscate()
-    {
-        return new ConfigurationDatabaseConfiguration
+        => new()
         {
             ConnectionString = Obfuscator.ObfuscateConnectionString(ConnectionString),
         };
-    }
 }

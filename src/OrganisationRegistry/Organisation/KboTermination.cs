@@ -16,22 +16,14 @@ public readonly struct KboTermination
     }
 
     public static KboTermination FromMagda(IMagdaTermination termination)
-    {
-        return new KboTermination(termination.Date, termination.Code, termination.Reason);
-    }
+        => new(termination.Date, termination.Code, termination.Reason);
 
     public bool Equals(KboTermination other)
-    {
-        return Date.Equals(other.Date) && Code == other.Code && Reason == other.Reason;
-    }
+        => Date.Equals(other.Date) && Code == other.Code && Reason == other.Reason;
 
     public override bool Equals(object? obj)
-    {
-        return obj is KboTermination other && Equals(other);
-    }
+        => obj is KboTermination other && Equals(other);
 
     public override int GetHashCode()
-    {
-        return HashCode.Combine(Date, Code, Reason);
-    }
+        => HashCode.Combine(Date, Code, Reason);
 }

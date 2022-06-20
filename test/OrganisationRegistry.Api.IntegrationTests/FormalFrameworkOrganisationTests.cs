@@ -71,12 +71,12 @@ public class FormalFrameworkOrganisationTests
         {
             Parents = new List<OrganisationDocument.OrganisationParent>
             {
-                new OrganisationDocument.OrganisationParent(
+                new(
                     organisationOrganisationParentId: Guid.NewGuid(),
                     parentOrganisationId: Guid.NewGuid(),
                     parentOrganisationName: "Some other organisations parent parent",
                     validity: Period.FromDates(null, aDayInThePast)),
-                new OrganisationDocument.OrganisationParent(
+                new(
                     organisationOrganisationParentId: Guid.NewGuid(),
                     parentOrganisationId: parentOrganisationId,
                     parentOrganisationName: "The Actual ParentOrganisationName",

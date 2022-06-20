@@ -82,11 +82,11 @@ public class OrganisationBuildingListQuery : Query<OrganisationBuildingListItem,
             nameof(OrganisationBuildingListItem.BuildingName),
             nameof(OrganisationBuildingListItem.IsMainBuilding),
             nameof(OrganisationBuildingListItem.ValidFrom),
-            nameof(OrganisationBuildingListItem.ValidTo)
+            nameof(OrganisationBuildingListItem.ValidTo),
         };
 
         public SortingHeader DefaultSortingHeader { get; } =
-            new SortingHeader(nameof(OrganisationBuildingListItem.BuildingName), SortOrder.Ascending);
+            new(nameof(OrganisationBuildingListItem.BuildingName), SortOrder.Ascending);
     }
 }
 

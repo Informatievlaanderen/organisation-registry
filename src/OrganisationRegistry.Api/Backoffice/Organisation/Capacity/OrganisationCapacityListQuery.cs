@@ -104,11 +104,11 @@ public class OrganisationCapacityListQuery : Query<OrganisationCapacityListItem,
             nameof(OrganisationCapacityListItem.PersonName),
             nameof(OrganisationCapacityListItem.FunctionName),
             nameof(OrganisationCapacityListItem.ValidFrom),
-            nameof(OrganisationCapacityListItem.ValidTo)
+            nameof(OrganisationCapacityListItem.ValidTo),
         };
 
         public SortingHeader DefaultSortingHeader { get; } =
-            new SortingHeader(nameof(OrganisationCapacityListItem.CapacityName), SortOrder.Ascending);
+            new(nameof(OrganisationCapacityListItem.CapacityName), SortOrder.Ascending);
     }
 }
 

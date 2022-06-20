@@ -37,10 +37,9 @@ public class FormalFrameworkCategoryListQuery: Query<FormalFrameworkCategoryList
     {
         public IEnumerable<string> SortableFields { get; } = new[]
         {
-            nameof(FormalFrameworkCategoryListItem.Name)
+            nameof(FormalFrameworkCategoryListItem.Name),
         };
 
-        public SortingHeader DefaultSortingHeader { get; } =
-            new SortingHeader(nameof(FormalFrameworkCategoryListItem.Name), SortOrder.Ascending);
+        public SortingHeader DefaultSortingHeader { get; } = new(nameof(FormalFrameworkCategoryListItem.Name), SortOrder.Ascending);
     }
 }

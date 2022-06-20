@@ -65,7 +65,7 @@ public class BodyMandateListConfiguration : EntityMappingConfiguration<BodyManda
     {
         OrganisationListConfiguration.NameLength,
         FunctionTypeListConfiguration.NameLength,
-        PersonListConfiguration.FullNameLength
+        PersonListConfiguration.FullNameLength,
     }.Max();
 
     public override void Map(EntityTypeBuilder<BodyMandateListItem> b)
@@ -169,7 +169,7 @@ public class BodyMandateListView :
     public enum ProjectionTables
     {
         BodyMandateList,
-        BodySeatCacheForBodyMandateList
+        BodySeatCacheForBodyMandateList,
     }
 
     private readonly IEventStore _eventStore;
@@ -214,7 +214,7 @@ public class BodyMandateListView :
             ContactsJson = JsonConvert.SerializeObject(message.Body.Contacts),
 
             ValidFrom = message.Body.ValidFrom,
-            ValidTo = message.Body.ValidTo
+            ValidTo = message.Body.ValidTo,
         };
 
         await context.BodyMandateList.AddAsync(bodyMandateListItem);
@@ -252,7 +252,7 @@ public class BodyMandateListView :
             DelegatedName = message.Body.FunctionTypeName,
 
             ValidFrom = message.Body.ValidFrom,
-            ValidTo = message.Body.ValidTo
+            ValidTo = message.Body.ValidTo,
         };
 
         await context.BodyMandateList.AddAsync(bodyMandateListItem);
@@ -289,7 +289,7 @@ public class BodyMandateListView :
             DelegatedName = null,
 
             ValidFrom = message.Body.ValidFrom,
-            ValidTo = message.Body.ValidTo
+            ValidTo = message.Body.ValidTo,
         };
         await context.BodyMandateList.AddAsync(bodyMandateListItem);
         await context.SaveChangesAsync();
@@ -547,7 +547,7 @@ public class BodyMandateListView :
         {
             BodySeatId = message.Body.BodySeatId,
             SeatTypeId = message.Body.SeatTypeId,
-            SeatTypeName = message.Body.SeatTypeName
+            SeatTypeName = message.Body.SeatTypeName,
         };
 
         await context.BodySeatCacheForBodyMandateList.AddAsync(bodySeat);
@@ -632,7 +632,5 @@ public class BodyMandateListView :
     }
 
     private static string FormatPersonName(string firstName, string name)
-    {
-        return $"{firstName} {name}";
-    }
+        => $"{firstName} {name}";
 }

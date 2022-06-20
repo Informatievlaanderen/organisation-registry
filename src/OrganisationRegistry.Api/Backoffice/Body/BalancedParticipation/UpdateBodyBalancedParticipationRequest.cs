@@ -39,11 +39,9 @@ public class UpdateBodyBalancedParticipationRequestValidator : AbstractValidator
 public static class UpdateBodyBalancedParticipationRequestMapping
 {
     public static UpdateBodyBalancedParticipation Map(UpdateBodyBalancedParticipationInternalRequest message)
-    {
-        return new UpdateBodyBalancedParticipation(
+        => new(
             new BodyId(message.BodyId),
             message.Body.Obligatory,
             message.Body.ExtraRemark,
             message.Body.ExceptionMeasure);
-    }
 }

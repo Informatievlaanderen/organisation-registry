@@ -59,8 +59,7 @@ public class UpdateOrganisationLocationInternalRequestValidator : AbstractValida
 public static class UpdateOrganisationLocationRequestMapping
 {
     public static UpdateOrganisationLocation Map(UpdateOrganisationLocationInternalRequest message)
-    {
-        return new UpdateOrganisationLocation(
+        => new(
             message.Body.OrganisationLocationId,
             new OrganisationId(message.OrganisationId),
             new LocationId(message.Body.LocationId),
@@ -69,5 +68,4 @@ public static class UpdateOrganisationLocationRequestMapping
             new ValidFrom(message.Body.ValidFrom),
             new ValidTo(message.Body.ValidTo),
             new LocationSource(message.Body.Source));
-    }
 }

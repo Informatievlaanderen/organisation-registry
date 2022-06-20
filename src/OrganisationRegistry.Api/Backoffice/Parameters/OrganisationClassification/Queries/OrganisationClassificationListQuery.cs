@@ -88,7 +88,7 @@ public class OrganisationClassificationListQuery: Query<OrganisationClassificati
         };
 
         public SortingHeader DefaultSortingHeader { get; } =
-            new SortingHeader(nameof(OrganisationClassificationListItem.Name), SortOrder.Ascending);
+            new(nameof(OrganisationClassificationListItem.Name), SortOrder.Ascending);
     }
 }
 

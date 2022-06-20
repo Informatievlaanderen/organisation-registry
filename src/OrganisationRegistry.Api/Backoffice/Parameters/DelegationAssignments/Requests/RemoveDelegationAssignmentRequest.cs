@@ -48,11 +48,9 @@ public class RemoveDelegationAssignmentInternalRequestValidator : AbstractValida
 public static class RemoveDelegationAssignmentRequestMapping
 {
     public static RemoveDelegationAssignment Map(RemoveDelegationAssignmentInternalRequest message)
-    {
-        return new RemoveDelegationAssignment(
+        => new(
             new BodyMandateId(message.BodyMandateId),
             new BodyId(message.Body.BodyId),
             new BodySeatId(message.Body.BodySeatId),
             new DelegationAssignmentId(message.Body.DelegationAssignmentId));
-    }
 }

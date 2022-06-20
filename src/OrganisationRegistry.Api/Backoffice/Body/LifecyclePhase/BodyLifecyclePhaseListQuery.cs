@@ -69,10 +69,9 @@ public class BodyLifecyclePhaseListQuery : Query<BodyLifecyclePhaseListItem, Bod
         {
             nameof(BodyLifecyclePhaseListItem.LifecyclePhaseTypeName),
             nameof(BodyLifecyclePhaseListItem.ValidFrom),
-            nameof(BodyLifecyclePhaseListItem.ValidTo)
+            nameof(BodyLifecyclePhaseListItem.ValidTo),
         };
 
-        public SortingHeader DefaultSortingHeader { get; } =
-            new SortingHeader(nameof(BodyLifecyclePhaseListItem.ValidFrom), SortOrder.Ascending);
+        public SortingHeader DefaultSortingHeader { get; } = new(nameof(BodyLifecyclePhaseListItem.ValidFrom), SortOrder.Ascending);
     }
 }

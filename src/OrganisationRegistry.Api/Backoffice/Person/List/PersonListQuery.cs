@@ -79,8 +79,7 @@ public class PersonListQuery : Query<PersonListItem, PersonListItemFilter, Perso
             nameof(PersonListItem.FirstName),
         };
 
-        public SortingHeader DefaultSortingHeader { get; } =
-            new SortingHeader(nameof(PersonListItem.Name), SortOrder.Ascending);
+        public SortingHeader DefaultSortingHeader { get; } = new(nameof(PersonListItem.Name), SortOrder.Ascending);
     }
 }
 
