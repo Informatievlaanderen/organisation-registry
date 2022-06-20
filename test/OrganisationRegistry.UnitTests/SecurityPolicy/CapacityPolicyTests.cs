@@ -26,7 +26,7 @@ public class CapacityPolicyTests
             Authorization = new AuthorizationConfigurationStub
             {
                 CapacityIdsOwnedByRegelgevingDbBeheerder = new[] { _regelgevingDbCapacityId },
-            }
+            },
         };
     }
 

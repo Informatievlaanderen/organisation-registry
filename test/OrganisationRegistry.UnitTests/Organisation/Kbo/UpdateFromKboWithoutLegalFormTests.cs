@@ -47,7 +47,7 @@ public class
                 KboV2LegalFormOrganisationClassificationTypeId = Guid.NewGuid(),
                 KboV2RegisteredOfficeLocationTypeId = Guid.NewGuid(),
                 KboV2FormalNameLabelTypeId = Guid.NewGuid(),
-            }
+            },
         };
         _dateTimeProviderStub = new DateTimeProviderStub(new DateTime(2019, 9, 20));
         _organisationId = new OrganisationId(Guid.NewGuid());
@@ -118,7 +118,7 @@ public class
                 _organisationClassificationId,
                 "Classificatie",
                 new ValidFrom(2020, 12, 11),
-                new ValidTo(2020, 12, 12))
+                new ValidTo(2020, 12, 12)),
         };
 
     private SyncOrganisationWithKbo SyncOrganisationWithKboCommand

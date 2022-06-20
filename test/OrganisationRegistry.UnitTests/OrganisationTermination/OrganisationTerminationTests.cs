@@ -39,7 +39,7 @@ public class OrganisationTerminationTests
         {
             Validity = new Period(
                 new ValidFrom(dateOfTermination.AddDays(1)),
-                new ValidTo(dateOfTermination.AddYears(1)))
+                new ValidTo(dateOfTermination.AddYears(1))),
         };
 
         Assert.Throws<OrganisationCannotBeTerminatedWithFieldsInTheFuture>(
@@ -57,7 +57,7 @@ public class OrganisationTerminationTests
         {
             Validity = new Period(
                 new ValidFrom(dateOfTermination),
-                new ValidTo(dateOfTermination))
+                new ValidTo(dateOfTermination)),
         };
 
         GetFieldsToTerminate(dateOfTermination, organisationState)
@@ -78,7 +78,7 @@ public class OrganisationTerminationTests
         {
             Validity = new Period(
                 new ValidFrom(dateOfTermination.AddDays(-1)),
-                new ValidTo(dateOfTermination.AddDays(-1)))
+                new ValidTo(dateOfTermination.AddDays(-1))),
         };
 
         GetFieldsToTerminate(dateOfTermination, organisationState)
@@ -99,7 +99,7 @@ public class OrganisationTerminationTests
         {
             Validity = new Period(
                 new ValidFrom(dateOfTermination.AddDays(-1)),
-                new ValidTo(dateOfTermination.AddDays(1)))
+                new ValidTo(dateOfTermination.AddDays(1))),
         };
 
         GetFieldsToTerminate(dateOfTermination, organisationState)
@@ -123,8 +123,8 @@ public class OrganisationTerminationTests
                 fixture.Create<OrganisationContact>()
                     .WithValidity(new Period(
                         new ValidFrom(dateOfTermination.AddDays(1)),
-                        new ValidTo()))
-            }
+                        new ValidTo())),
+            },
         };
 
         Assert.Throws<OrganisationCannotBeTerminatedWithFieldsInTheFuture>(
@@ -145,8 +145,8 @@ public class OrganisationTerminationTests
                 fixture.Create<OrganisationRegulation>()
                     .WithValidity(new Period(
                         new ValidFrom(dateOfTermination.AddDays(1)),
-                        new ValidTo()))
-            }
+                        new ValidTo())),
+            },
         };
 
         Assert.Throws<OrganisationCannotBeTerminatedWithFieldsInTheFuture>(
@@ -168,8 +168,8 @@ public class OrganisationTerminationTests
                 fixture.Create<OrganisationFormalFramework>()
                     .WithValidity(new Period(
                         new ValidFrom(dateOfTermination.AddDays(1)),
-                        new ValidTo()))
-            }
+                        new ValidTo())),
+            },
         };
 
         Assert.Throws<OrganisationCannotBeTerminatedWithFieldsInTheFuture>(
@@ -190,8 +190,8 @@ public class OrganisationTerminationTests
                 fixture.Create<OrganisationOrganisationClassification>()
                     .WithValidity(new Period(
                         new ValidFrom(dateOfTermination.AddDays(1)),
-                        new ValidTo()))
-            }
+                        new ValidTo())),
+            },
         };
 
         Assert.Throws<OrganisationCannotBeTerminatedWithFieldsInTheFuture>(
@@ -212,8 +212,8 @@ public class OrganisationTerminationTests
                 fixture.Create<OrganisationCapacity>()
                     .WithValidity(new Period(
                         new ValidFrom(dateOfTermination.AddDays(1)),
-                        new ValidTo()))
-            }
+                        new ValidTo())),
+            },
         };
 
         Assert.Throws<OrganisationCannotBeTerminatedWithFieldsInTheFuture>(
@@ -233,7 +233,7 @@ public class OrganisationTerminationTests
 
         var organisationState = new OrganisationState
         {
-            OrganisationFormalFrameworks = { organisationFormalFramework }
+            OrganisationFormalFrameworks = { organisationFormalFramework },
         };
 
         Assert.Throws<OrganisationCannotBeTerminatedWithFieldsInTheFuture>(
@@ -253,7 +253,7 @@ public class OrganisationTerminationTests
 
         var organisationState = new OrganisationState
         {
-            OrganisationOrganisationClassifications = { organisationClassification }
+            OrganisationOrganisationClassifications = { organisationClassification },
         };
 
         Assert.Throws<OrganisationCannotBeTerminatedWithFieldsInTheFuture>(
@@ -274,7 +274,7 @@ public class OrganisationTerminationTests
 
         var organisationState = new OrganisationState
         {
-            OrganisationCapacities = { organisationCapacity }
+            OrganisationCapacities = { organisationCapacity },
         };
 
         Assert.Throws<OrganisationCannotBeTerminatedWithFieldsInTheFuture>(
@@ -295,7 +295,7 @@ public class OrganisationTerminationTests
 
         var organisationState = new OrganisationState
         {
-            OrganisationOpeningHours = { organisationOpeningHour }
+            OrganisationOpeningHours = { organisationOpeningHour },
         };
 
         Assert.Throws<OrganisationCannotBeTerminatedWithFieldsInTheFuture>(
@@ -317,7 +317,7 @@ public class OrganisationTerminationTests
 
         var organisationState = new OrganisationState
         {
-            OrganisationKeys = { organisationVlimpersKey }
+            OrganisationKeys = { organisationVlimpersKey },
         };
 
         Assert.Throws<OrganisationCannotBeTerminatedWithFieldsInTheFuture>(
@@ -339,7 +339,7 @@ public class OrganisationTerminationTests
 
         var organisationState = new OrganisationState
         {
-            OrganisationKeys = { organisationOtherKey }
+            OrganisationKeys = { organisationOtherKey },
         };
 
         var result = GetFieldsToTerminate(dateOfTermination, organisationState);

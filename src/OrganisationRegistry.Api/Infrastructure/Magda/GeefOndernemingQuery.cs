@@ -50,7 +50,7 @@ public class GeefOndernemingQuery : IGeefOndernemingQuery
             var unsignedEnvelope = MakeEnvelope(
                 new GeefOndernemingBody
                 {
-                    GeefOnderneming = MakeGeefOndernemingRequest(kboNumberDotLess, reference)
+                    GeefOnderneming = MakeGeefOndernemingRequest(kboNumberDotLess, reference),
                 });
 
             var maybeClientCertificate = _configuration.ClientCertificate;
@@ -117,18 +117,18 @@ public class GeefOndernemingQuery : IGeefOndernemingQuery
                     Tijdstip = new TijdstipType
                     {
                         Datum = DateTime.Now.ToString("yyyy-MM-dd"),
-                        Tijd = DateTime.Now.ToString("HH:mm:ss.000")
+                        Tijd = DateTime.Now.ToString("HH:mm:ss.000"),
                     },
                     Afzender = new AfzenderAdresType
                     {
                         Identificatie = _configuration.Sender,
-                        Referte = reference
+                        Referte = reference,
                     },
                     Ontvanger = new OntvangerAdresType
                     {
-                        Identificatie = _configuration.Recipient
-                    }
-                }
+                        Identificatie = _configuration.Recipient,
+                    },
+                },
             },
             Vragen = new VragenType
             {
@@ -146,21 +146,21 @@ public class GeefOndernemingQuery : IGeefOndernemingQuery
                             Vestigingen = new CriteriaVestigingenType
                             {
                                 Aanduiding = VlagEnumType.Item1,
-                                Details = VlagEnumType.Item1
+                                Details = VlagEnumType.Item1,
                             },
                             Bankrekeningen = VlagEnumType.Item1,
                             BankrekeningenSpecified = true,
                             Functies = new CriteriaFunctiesType
                             {
                                 Aanduiding = VlagEnumType.Item1,
-                                Onderneming = VlagEnumType.Item1
+                                Onderneming = VlagEnumType.Item1,
                             },
                             Activiteiten = VlagEnumType.Item1,
                             ActiviteitenSpecified = true,
                             GerelateerdeOndernemingen = new CriteriaGerelateerdeOndernemingenType
                             {
                                 Aanduiding = VlagEnumType.Item1,
-                                Vestigingen = VlagEnumType.Item1
+                                Vestigingen = VlagEnumType.Item1,
                             },
                             Hoedanigheden = new CriteriaHoedanighedenType
                             {
@@ -174,14 +174,14 @@ public class GeefOndernemingQuery : IGeefOndernemingQuery
                             AmbtshalveDoorhalingenSpecified = true,
                             Omschrijvingen = new CriteriaOmschrijvingenType
                             {
-                                Aanduiding = VlagEnumType.Item1
-                            }
+                                Aanduiding = VlagEnumType.Item1,
+                            },
                         },
-                        Taal = "nl"
-                    }
-                }
-            }
-        }
+                        Taal = "nl",
+                    },
+                },
+            },
+        },
     };
 
     private static async Task<string> CreateAndStoreReference(OrganisationRegistryContext context, IUser user)
@@ -194,7 +194,7 @@ public class GeefOndernemingQuery : IGeefOndernemingQuery
                          $"LastName: {user.LastName} | " +
                          $"UserId: {user.UserId} | " +
                          $"Ip: {user.Ip} | " +
-                         $"Roles: {string.Join(',', user.Roles)}"
+                         $"Roles: {string.Join(',', user.Roles)}",
         };
         await context.MagdaCallReferences.AddAsync(magdaCallReference);
         await context.SaveChangesAsync();
@@ -206,7 +206,7 @@ public class GeefOndernemingQuery : IGeefOndernemingQuery
         return new Envelope<T>
         {
             Header = new Header(),
-            Body = body
+            Body = body,
         };
     }
 }

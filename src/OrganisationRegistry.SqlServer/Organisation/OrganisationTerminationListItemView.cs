@@ -60,7 +60,7 @@ public class OrganisationTerminationListItemView :
 
     public enum ProjectionTables
     {
-        OrganisationTerminationList
+        OrganisationTerminationList,
     }
 
     public OrganisationTerminationListItemView(
@@ -166,5 +166,5 @@ public class OrganisationTerminationListItemView :
 public enum TerminationStatus
 {
     None = 0,
-    Proposed = 1
+    Proposed = 1,
 }

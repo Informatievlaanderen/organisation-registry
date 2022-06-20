@@ -89,7 +89,7 @@ public class BodySeatGenderRatioProjection :
             BodySeatGenderRatioOrganisationListConfiguration.TableName,
             BodySeatGenderRatioOrganisationPerBodyListConfiguration.TableName,
             BodySeatGenderRatioPersonListConfiguration.TableName,
-            BodySeatGenderRatioPostsPerTypeListConfiguration.TableName
+            BodySeatGenderRatioPostsPerTypeListConfiguration.TableName,
         };
 
     public override string Schema => WellknownSchemas.ReportingSchema;
@@ -115,7 +115,7 @@ public class BodySeatGenderRatioProjection :
         var body = new BodySeatGenderRatioOrganisationListItem
         {
             OrganisationId = organisationId,
-            OrganisationName = organisationName
+            OrganisationName = organisationName,
         };
 
         context.BodySeatGenderRatioOrganisationList.Add(body);
@@ -276,7 +276,7 @@ public class BodySeatGenderRatioProjection :
         var person = new BodySeatGenderRatioPersonListItem
         {
             PersonId = message.Body.PersonId,
-            PersonSex = message.Body.Sex
+            PersonSex = message.Body.Sex,
         };
 
         context.BodySeatGenderRatioPersonList.Add(person);
@@ -382,7 +382,7 @@ public class BodySeatGenderRatioProjection :
                 ValidFrom = message.Body.ValidFrom,
                 ValidTo = message.Body.ValidTo,
                 RepresentsActivePhase = message.Body.LifecyclePhaseTypeIsRepresentativeFor ==
-                                        LifecyclePhaseTypeIsRepresentativeFor.ActivePhase
+                                        LifecyclePhaseTypeIsRepresentativeFor.ActivePhase,
             };
 
             item.LifecyclePhaseValidities.Add(newLifecycle);
@@ -538,7 +538,7 @@ public class BodySeatGenderRatioProjection :
 
             BodySeatTypeIsEffective = bodySeatType.BodySeatTypeIsEffective,
 
-            Assignments = new List<BodySeatGenderRatioAssignmentItem>()
+            Assignments = new List<BodySeatGenderRatioAssignmentItem>(),
         };
 
         var personFromCache = GetPersonFromCache(context, message.Body.PersonId);
@@ -552,7 +552,7 @@ public class BodySeatGenderRatioProjection :
             AssignmentValidTo = message.Body.ValidTo,
 
             PersonId = message.Body.PersonId,
-            Sex = personFromCache.Sex
+            Sex = personFromCache.Sex,
         };
 
         bodyMandate.Assignments.Add(assignment);
@@ -631,7 +631,7 @@ public class BodySeatGenderRatioProjection :
 
             BodySeatTypeIsEffective = bodySeatType.BodySeatTypeIsEffective,
 
-            Assignments = new List<BodySeatGenderRatioAssignmentItem>()
+            Assignments = new List<BodySeatGenderRatioAssignmentItem>(),
         };
 
         context.BodySeatGenderRatioBodyMandateList.Add(bodyMandate);
@@ -698,7 +698,7 @@ public class BodySeatGenderRatioProjection :
             BodySeatTypeId = bodySeatType.BodySeatTypeId,
             BodySeatTypeIsEffective = bodySeatType.BodySeatTypeIsEffective,
 
-            Assignments = new List<BodySeatGenderRatioAssignmentItem>()
+            Assignments = new List<BodySeatGenderRatioAssignmentItem>(),
         };
 
         context.BodySeatGenderRatioBodyMandateList.Add(bodyMandate);
@@ -761,7 +761,7 @@ public class BodySeatGenderRatioProjection :
             AssignmentValidTo = message.Body.ValidTo,
 
             PersonId = message.Body.PersonId,
-            Sex = personFromCache.Sex
+            Sex = personFromCache.Sex,
         });
 
         await context.SaveChangesAsync();
@@ -842,7 +842,7 @@ public class BodySeatGenderRatioProjection :
                 BodyOrganisationId = message.Body.BodyOrganisationId,
                 OrganisationId = message.Body.OrganisationId,
                 OrganisationName = message.Body.OrganisationName,
-                OrganisationActive = cachedOrganisation.OrganisationActive
+                OrganisationActive = cachedOrganisation.OrganisationActive,
             };
 
             context.BodySeatGenderRatioOrganisationPerBodyList.Add(body);
@@ -914,7 +914,7 @@ public class BodySeatGenderRatioProjection :
                 OrganisationClassificationTypeId = organisationClassificationTypeId,
 
                 ClassificationValidFrom = validFrom,
-                ClassificationValidTo = validTo
+                ClassificationValidTo = validTo,
             });
 
         context.SaveChanges();

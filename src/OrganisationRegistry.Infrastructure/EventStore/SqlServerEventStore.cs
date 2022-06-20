@@ -34,7 +34,7 @@ public class SqlServerEventStore : IEventStore
 
     private static readonly string[] ExcludedEventTypes =
     {
-        "OrganisationRegistry.Infrastructure.Events.RebuildProjection"
+        "OrganisationRegistry.Infrastructure.Events.RebuildProjection",
     };
 
     private DbConnection GetConnection()

@@ -34,7 +34,7 @@ public class OrganisationRegistryTokenBuilder : IOrganisationRegistryTokenBuilde
             SigningCredentials = signingCredentials,
             IssuedAt = DateTime.UtcNow,
             Expires = DateTimeOffset.Now.AddMinutes(_configuration.JwtExpiresInMinutes).UtcDateTime,
-            NotBefore = DateTime.UtcNow
+            NotBefore = DateTime.UtcNow,
         };
 
         var tokenHandler = new JwtSecurityTokenHandler();

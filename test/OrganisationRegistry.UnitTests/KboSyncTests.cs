@@ -81,7 +81,7 @@ public class KboSyncTests
                     SyncStatus = KboSync.SyncStatusSuccess,
                     SyncInfo = string.Empty,
                     SourceOrganisationStatus = kboSyncQueueItem.SourceOrganisationStatus,
-                }
+                },
             }.AsEnumerable());
     }
 
@@ -119,7 +119,7 @@ public class KboSyncTests
                     SyncStatus = KboSync.SyncStatusError,
                     SyncInfo = aggregateNotFoundException.ToString(),
                     SourceOrganisationStatus = kboSyncQueueItem.SourceOrganisationStatus,
-                }
+                },
             });
     }
 
@@ -165,7 +165,7 @@ public class KboSyncTests
                     SyncStatus = KboSync.SyncStatusNotFound,
                     SyncInfo = KboSync.SyncInfoNotFound,
                     SourceOrganisationStatus = kboSyncQueueItem.SourceOrganisationStatus,
-                }
+                },
             });
     }
 

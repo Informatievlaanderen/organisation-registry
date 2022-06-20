@@ -98,7 +98,7 @@ public class BodyDetailView :
 
     public enum ProjectionTables
     {
-        BodyDetail
+        BodyDetail,
     }
 
     private readonly IEventStore _eventStore;

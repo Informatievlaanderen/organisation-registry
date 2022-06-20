@@ -49,7 +49,7 @@ public class KeyTypeListView :
 
     public enum ProjectionTables
     {
-        KeyTypeList
+        KeyTypeList,
     }
 
     private readonly IEventStore _eventStore;

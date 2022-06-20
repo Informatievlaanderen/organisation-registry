@@ -29,7 +29,7 @@ public class FormalFrameworkPolicyTests
             {
                 FormalFrameworkIdsOwnedByRegelgevingDbBeheerder = new[] { _regelgevingDbFormalFrameworkId },
                 FormalFrameworkIdsOwnedByVlimpers = new[] { _vlimpersFormalFrameworkId },
-            }
+            },
         };
     }
 

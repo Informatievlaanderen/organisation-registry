@@ -47,7 +47,7 @@ public class RegulationThemeListView :
 
     public enum ProjectionTables
     {
-        RegulationThemeList
+        RegulationThemeList,
     }
 
     private readonly IEventStore _eventStore;

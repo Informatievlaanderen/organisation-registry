@@ -208,7 +208,7 @@ public class OrganisationListItemView :
             ShortName = message.Body.ShortName,
             OvoNumber = message.Body.OvoNumber,
             ValidFrom = message.Body.ValidFrom,
-            ValidTo = message.Body.ValidTo
+            ValidTo = message.Body.ValidTo,
         };
 
         await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
@@ -225,7 +225,7 @@ public class OrganisationListItemView :
             ShortName = message.Body.ShortName,
             OvoNumber = message.Body.OvoNumber,
             ValidFrom = message.Body.ValidFrom,
-            ValidTo = message.Body.ValidTo
+            ValidTo = message.Body.ValidTo,
         };
 
         await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
@@ -426,9 +426,9 @@ public class OrganisationListItemView :
                     {
                         ValidFrom = message.Body.ValidFrom,
                         ValidTo = message.Body.ValidTo,
-                        OrganisationFormalFrameworkId = message.Body.OrganisationFormalFrameworkId
-                    }
-                }
+                        OrganisationFormalFrameworkId = message.Body.OrganisationFormalFrameworkId,
+                    },
+                },
             };
 
             await context.OrganisationList.AddAsync(organisationListItemForFormalFramework);
@@ -454,7 +454,7 @@ public class OrganisationListItemView :
                 {
                     ValidFrom = message.Body.ValidFrom,
                     ValidTo = message.Body.ValidTo,
-                    OrganisationFormalFrameworkId = message.Body.OrganisationFormalFrameworkId
+                    OrganisationFormalFrameworkId = message.Body.OrganisationFormalFrameworkId,
                 });
         }
 
@@ -490,9 +490,9 @@ public class OrganisationListItemView :
                     {
                         ValidFrom = message.Body.ValidFrom,
                         ValidTo = message.Body.ValidTo,
-                        OrganisationFormalFrameworkId = message.Body.OrganisationFormalFrameworkId
-                    }
-                }
+                        OrganisationFormalFrameworkId = message.Body.OrganisationFormalFrameworkId,
+                    },
+                },
             };
 
             await context.OrganisationList.AddAsync(parentListItemForFormalFramework);
@@ -510,7 +510,7 @@ public class OrganisationListItemView :
                 {
                     ValidFrom = message.Body.ValidFrom,
                     ValidTo = message.Body.ValidTo,
-                    OrganisationFormalFrameworkId = message.Body.OrganisationFormalFrameworkId
+                    OrganisationFormalFrameworkId = message.Body.OrganisationFormalFrameworkId,
                 });
         }
 
@@ -550,7 +550,7 @@ public class OrganisationListItemView :
                 {
                     ValidFrom = message.Body.ValidFrom,
                     ValidTo = message.Body.ValidTo,
-                    OrganisationFormalFrameworkId = message.Body.OrganisationFormalFrameworkId
+                    OrganisationFormalFrameworkId = message.Body.OrganisationFormalFrameworkId,
                 });
         }
 
@@ -582,13 +582,13 @@ public class OrganisationListItemView :
                     {
                         ValidFrom = message.Body.ValidFrom,
                         ValidTo = message.Body.ValidTo,
-                        OrganisationFormalFrameworkId = message.Body.OrganisationFormalFrameworkId
-                    }
+                        OrganisationFormalFrameworkId = message.Body.OrganisationFormalFrameworkId,
+                    },
                 },
                 ParentOrganisationId = null,
                 ParentOrganisation = null,
                 ParentOrganisationOvoNumber = null,
-                ParentOrganisationsRelationshipId = null
+                ParentOrganisationsRelationshipId = null,
             };
 
             await context.OrganisationList.AddAsync(parentListItemForFormalFramework);
@@ -619,7 +619,7 @@ public class OrganisationListItemView :
                     {
                         ValidFrom = message.Body.ValidFrom,
                         ValidTo = message.Body.ValidTo,
-                        OrganisationFormalFrameworkId = message.Body.OrganisationFormalFrameworkId
+                        OrganisationFormalFrameworkId = message.Body.OrganisationFormalFrameworkId,
                     });
             }
         }
@@ -679,7 +679,7 @@ public class OrganisationListItemView :
                         OrganisationClassificationId = organisationClassificationId,
                         OrganisationClassificationTypeId = organisationClassificationTypeId,
                         ValidFrom = validFrom,
-                        ValidTo = validTo
+                        ValidTo = validTo,
                     }));
 
         context.SaveChanges();
@@ -792,7 +792,7 @@ public class OrganisationListItemView :
             OrganisationClassificationId = validity.OrganisationClassificationId,
             OrganisationClassificationTypeId = validity.OrganisationClassificationTypeId,
             ValidFrom = validity.ValidFrom,
-            ValidTo = validity.ValidTo
+            ValidTo = validity.ValidTo,
         };
     }
 

@@ -47,7 +47,7 @@ public class FormalFrameworkCategoryListView :
 
     public enum ProjectionTables
     {
-        FormalFrameworkCategoryList
+        FormalFrameworkCategoryList,
     }
 
     private readonly IEventStore _eventStore;

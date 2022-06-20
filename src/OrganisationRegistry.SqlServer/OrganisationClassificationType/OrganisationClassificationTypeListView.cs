@@ -47,7 +47,7 @@ public class OrganisationClassificationTypeListView :
 
     public enum ProjectionTables
     {
-        OrganisationClassificationTypeList
+        OrganisationClassificationTypeList,
     }
 
     private readonly IEventStore _eventStore;

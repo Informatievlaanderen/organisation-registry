@@ -47,7 +47,7 @@ public class MandateRoleTypeListView :
 
     public enum ProjectionTables
     {
-        MandateRoleTypeList
+        MandateRoleTypeList,
     }
 
     private readonly IEventStore _eventStore;

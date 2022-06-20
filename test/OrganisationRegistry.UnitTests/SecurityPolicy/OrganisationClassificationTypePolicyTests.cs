@@ -26,7 +26,7 @@ public class OrganisationClassificationTypePolicyTests
             Authorization = new AuthorizationConfigurationStub
             {
                 OrganisationClassificationTypeIdsOwnedByRegelgevingDbBeheerder = new[] { _regelgevingDbClassificationTypeId },
-            }
+            },
         };
     }
 

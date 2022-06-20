@@ -36,13 +36,13 @@ public class ParentWithOvonumberValidityExpiredTests
                 new OrganisationListItem
                 {
                     OvoNumber = "Ovo000001",
-                    ValidTo = _tomorrow
+                    ValidTo = _tomorrow,
                 })
             .Add(
                 new OrganisationListItem
                 {
                     OvoNumber = "Ovo000002",
-                    ValidTo = _yesterday
+                    ValidTo = _yesterday,
                 });
 
     [Fact]

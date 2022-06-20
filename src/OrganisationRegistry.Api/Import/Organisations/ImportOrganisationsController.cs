@@ -57,7 +57,7 @@ public class ImportOrganisationsController : OrganisationRegistryController
                 UserFirstName = user.FirstName,
                 FileContent = content,
                 FileName = bulkimportfile.FileName,
-                UploadedAt = DateTimeOffset.Now
+                UploadedAt = DateTimeOffset.Now,
             });
 
         await context.SaveChangesAsync();
@@ -69,7 +69,7 @@ public class ImportOrganisationsController : OrganisationRegistryController
                 {
                     Href = $"import/organisations/{id}",
                     Id = id,
-                }
+                },
             });
     }
 

@@ -35,7 +35,7 @@ public class CoupleOrganisationToKboWithoutAddressAndLegalFormTests
             KboV2LegalFormOrganisationClassificationTypeId = Guid.NewGuid(),
             KboV2RegisteredOfficeLocationTypeId = Guid.NewGuid(),
             KboV2FormalNameLabelTypeId = Guid.NewGuid(),
-        }
+        },
     };
 
     private readonly Guid _organisationId;
@@ -103,7 +103,7 @@ public class CoupleOrganisationToKboWithoutAddressAndLegalFormTests
 
             new LabelTypeCreated(
                 _organisationRegistryConfigurationStub.Kbo.KboV2FormalNameLabelTypeId,
-                "KBO formele naam")
+                "KBO formele naam"),
         };
 
     private CoupleOrganisationToKbo CoupleOrganisationToKboCommand
@@ -134,7 +134,7 @@ public class CoupleOrganisationToKboWithoutAddressAndLegalFormTests
                             Bic = "GKCCBEBB",
                             ValidFrom = new DateTime(2000, 1, 1),
                             ValidTo = new DateTime(2001, 1, 1),
-                        }
+                        },
                     },
                     LegalForm = null,
                     Address = null,

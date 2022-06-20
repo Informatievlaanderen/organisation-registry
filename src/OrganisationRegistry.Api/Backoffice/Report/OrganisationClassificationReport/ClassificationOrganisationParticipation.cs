@@ -170,7 +170,7 @@ public class ClassificationOrganisationParticipation
                         AssignedCount = assignedCount,
                         UnassignedCount = totalCount - assignedCount,
 
-                        TotalCount = totalCount
+                        TotalCount = totalCount,
                     };
                 }));
         }
@@ -179,7 +179,7 @@ public class ClassificationOrganisationParticipation
             key => new
             {
                 key.BodyId,
-                key.BodyName
+                key.BodyName,
             },
             element => new
             {
@@ -188,7 +188,7 @@ public class ClassificationOrganisationParticipation
                 element.UnknownCount,
                 element.AssignedCount,
                 element.UnassignedCount,
-                element.TotalCount
+                element.TotalCount,
             });
 
         return groupedResults.Select(x =>
@@ -210,7 +210,7 @@ public class ClassificationOrganisationParticipation
                 AssignedCount = x.Sum(g => g.AssignedCount),
                 UnassignedCount = x.Sum(g => g.UnassignedCount),
 
-                TotalCount = x.Sum(g => g.TotalCount)
+                TotalCount = x.Sum(g => g.TotalCount),
             };
         });
     }

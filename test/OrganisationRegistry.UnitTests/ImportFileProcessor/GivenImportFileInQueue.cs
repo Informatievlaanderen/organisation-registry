@@ -86,7 +86,7 @@ public class GivenImportFileInQueue : IDisposable
             SourceId = importId,
             SourceType = OrganisationSource.CsvImport,
             SourceOrganisationIdentifier = outputRecord.Reference,
-            OvoNumber = "ovo000013"
+            OvoNumber = "ovo000013",
         };
         context.Add(organisationDetailItem);
 

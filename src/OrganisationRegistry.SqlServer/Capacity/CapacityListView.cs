@@ -49,7 +49,7 @@ public class CapacityListView :
 
     public enum ProjectionTables
     {
-        CapacityList
+        CapacityList,
     }
 
     private readonly IEventStore _eventStore;

@@ -44,7 +44,7 @@ public class DelegationListProjection :
         {
             DelegationListConfiguration.TableName,
             OrganisationPerBodyListConfiguration.TableName,
-            PersonMandateListConfiguration.TableName
+            PersonMandateListConfiguration.TableName,
         };
 
     public override string Schema => WellknownSchemas.BackofficeSchema;
@@ -93,7 +93,7 @@ public class DelegationListProjection :
             IsDelegated = false,
 
             ValidFrom = message.Body.ValidFrom,
-            ValidTo = message.Body.ValidTo
+            ValidTo = message.Body.ValidTo,
         };
 
         context.DelegationList.Add(delegationListItem);
@@ -131,7 +131,7 @@ public class DelegationListProjection :
             IsDelegated = false,
 
             ValidFrom = message.Body.ValidFrom,
-            ValidTo = message.Body.ValidTo
+            ValidTo = message.Body.ValidTo,
         };
 
         context.DelegationList.Add(delegationListItem);

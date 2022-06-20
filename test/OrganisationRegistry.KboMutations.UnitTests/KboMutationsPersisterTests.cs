@@ -42,8 +42,8 @@ public class KboMutationsPersisterTests : IDisposable
                     StatusCode = "ST",
                     StopzettingsCode = "014",
                     StopzettingsDatum = DateTime.Today.AddDays(-1),
-                    StopzettingsReden = "Sluiting van de vereffening"
-                }
+                    StopzettingsReden = "Sluiting van de vereffening",
+                },
             });
 
         context = new OrganisationRegistryContext(dbContextOptions);

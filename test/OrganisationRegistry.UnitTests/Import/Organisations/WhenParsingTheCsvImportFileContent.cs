@@ -30,7 +30,7 @@ public class WhenParsingTheCsvImportFileContent
             {
                 Reference = Field.FromValue(ColumnNames.Reference, "REF1"),
                 Name = Field.FromValue(ColumnNames.Name, "name1"),
-                Parent = Field.FromValue(ColumnNames.Parent, "Ovo00025")
+                Parent = Field.FromValue(ColumnNames.Parent, "Ovo00025"),
             });
         importedRecords[1].OutputRecord.Should().BeEquivalentTo(
             new DeserializedRecord
@@ -92,7 +92,7 @@ public class WhenParsingTheCsvImportFileContent
                 Reference = Field.FromValue(ColumnNames.Reference, "REF1"),
                 Name = Field.FromValue(ColumnNames.Name, "name1"),
                 Parent = Field.FromValue(ColumnNames.Parent, "Ovo00025"),
-                Labels = ImmutableList.Create(Field.FromValue("label#some label", "value whatever"),Field.FromValue("label#some other label", "other value"))
+                Labels = ImmutableList.Create(Field.FromValue("label#some label", "value whatever"),Field.FromValue("label#some other label", "other value")),
             });
         importedRecords[1].OutputRecord.Should().BeEquivalentTo(
             new DeserializedRecord
@@ -100,7 +100,7 @@ public class WhenParsingTheCsvImportFileContent
                 Reference = Field.FromValue(ColumnNames.Reference, "REF2"),
                 Name = Field.FromValue(ColumnNames.Name, "name2"),
                 Parent = Field.FromValue(ColumnNames.Parent, "Ovo00026"),
-                Labels = ImmutableList.Create(Field.FromValue("label#some other label", "value"))
+                Labels = ImmutableList.Create(Field.FromValue("label#some other label", "value")),
             });
     }
 

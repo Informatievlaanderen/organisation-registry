@@ -47,7 +47,7 @@ public class LabelTypeListView :
 
     public enum ProjectionTables
     {
-        LabelTypeList
+        LabelTypeList,
     }
 
     private readonly IEventStore _eventStore;

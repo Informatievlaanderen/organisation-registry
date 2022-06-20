@@ -50,7 +50,7 @@ public class RegistreerInschrijvingCommand : IRegistreerInschrijvingCommand
             var unsignedEnvelope = MakeEnvelope(
                 new RegistreerInschrijvingBody
                 {
-                    RegistreerInschrijving = MakeRegistreerInschrijvingRequest(kboNumber, reference)
+                    RegistreerInschrijving = MakeRegistreerInschrijvingRequest(kboNumber, reference),
                 });
 
             var maybeClientCertificate = _magdaConfiguration.ClientCertificate;
@@ -116,19 +116,19 @@ public class RegistreerInschrijvingCommand : IRegistreerInschrijvingCommand
                     Tijdstip = new TijdstipType
                     {
                         Datum = DateTime.Now.ToString("yyyy-MM-dd"),
-                        Tijd = DateTime.Now.ToString("HH:mm:ss.000")
+                        Tijd = DateTime.Now.ToString("HH:mm:ss.000"),
                     },
                     Afzender = new AfzenderAdresType
                     {
                         Identificatie = _magdaConfiguration.Sender,
                         Referte = reference,
-                        Hoedanigheid = _magdaConfiguration.RepertoriumCapacity
+                        Hoedanigheid = _magdaConfiguration.RepertoriumCapacity,
                     },
                     Ontvanger = new OntvangerAdresType
                     {
-                        Identificatie = _magdaConfiguration.Recipient
-                    }
-                }
+                        Identificatie = _magdaConfiguration.Recipient,
+                    },
+                },
             },
             Vragen = new VragenType
             {
@@ -147,19 +147,19 @@ public class RegistreerInschrijvingCommand : IRegistreerInschrijvingCommand
                                 Subjecten = new []{ new SubjectType
                                 {
                                     Sleutel = socialSecurityId,
-                                    Type = "OND"
-                                }, }
+                                    Type = "OND",
+                                } },
                             },
                             Periode = new PeriodeVerplichtBeginType
                             {
                                 Begin = DateTime.Now.ToString("yyyy-MM-dd"),
-                                Einde = null
-                            }
-                        }
-                    }
-                }
-            }
-        }
+                                Einde = null,
+                            },
+                        },
+                    },
+                },
+            },
+        },
     };
 
     private static async Task<string> CreateAndStoreReference(OrganisationRegistryContext context, IUser user)
@@ -172,7 +172,7 @@ public class RegistreerInschrijvingCommand : IRegistreerInschrijvingCommand
                          $"LastName: {user.LastName} | " +
                          $"UserId: {user.UserId} | " +
                          $"Ip: {user.Ip} | " +
-                         $"Roles: {string.Join(',', user.Roles)}"
+                         $"Roles: {string.Join(',', user.Roles)}",
         };
         await context.MagdaCallReferences.AddAsync(magdaCallReference);
         await context.SaveChangesAsync();
@@ -183,6 +183,6 @@ public class RegistreerInschrijvingCommand : IRegistreerInschrijvingCommand
         => new()
         {
             Header = new Header(),
-            Body = body
+            Body = body,
         };
 }

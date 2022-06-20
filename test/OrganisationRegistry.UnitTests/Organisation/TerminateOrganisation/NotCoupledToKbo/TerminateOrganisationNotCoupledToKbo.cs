@@ -36,7 +36,7 @@ public class
                 KboV2LegalFormOrganisationClassificationTypeId = Guid.NewGuid(),
                 KboV2RegisteredOfficeLocationTypeId = Guid.NewGuid(),
                 KboV2FormalNameLabelTypeId = Guid.NewGuid(),
-            }
+            },
         };
         _organisationId = Guid.NewGuid();
         _dateTimeProviderStub = new DateTimeProviderStub(DateTime.Today);
@@ -79,7 +79,7 @@ public class
                 _fixture.Create<string>(),
                 _dateOfTermination.AddDays(_fixture.Create<int>() * -1),
                 _dateOfTermination.AddDays(_fixture.Create<int>())
-            )
+            ),
         };
 
     private TerminateOrganisation TerminateOrganisationCommand

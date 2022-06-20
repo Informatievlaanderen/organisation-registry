@@ -38,7 +38,7 @@ public class
                 KboV2LegalFormOrganisationClassificationTypeId = Guid.NewGuid(),
                 KboV2RegisteredOfficeLocationTypeId = Guid.NewGuid(),
                 KboV2FormalNameLabelTypeId = Guid.NewGuid(),
-            }
+            },
         };
 
         _organisationId = Guid.NewGuid();
@@ -73,7 +73,7 @@ public class
                 new OrganisationTerminationSummaryBuilder().Build(),
                 false,
                 new OrganisationTerminationKboSummary(),
-                _fixture.Create<DateTime>())
+                _fixture.Create<DateTime>()),
         };
 
     private TerminateOrganisation TerminateOrganisationCommand

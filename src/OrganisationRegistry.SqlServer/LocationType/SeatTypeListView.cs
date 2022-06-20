@@ -47,7 +47,7 @@ public class LocationTypeListView :
 
     public enum ProjectionTables
     {
-        LocationTypeList
+        LocationTypeList,
     }
 
     private readonly IEventStore _eventStore;

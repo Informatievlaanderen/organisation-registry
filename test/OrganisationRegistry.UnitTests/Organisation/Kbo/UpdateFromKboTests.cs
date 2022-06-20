@@ -46,7 +46,7 @@ public class UpdateFromKboTests : Specification<KboOrganisationCommandHandlers, 
                 KboV2LegalFormOrganisationClassificationTypeId = Guid.NewGuid(),
                 KboV2RegisteredOfficeLocationTypeId = Guid.NewGuid(),
                 KboV2FormalNameLabelTypeId = Guid.NewGuid(),
-            }
+            },
         };
         _organisationId = Guid.NewGuid();
         _registeredOfficeLocationToRemoveId = Guid.NewGuid();
@@ -152,7 +152,7 @@ public class UpdateFromKboTests : Specification<KboOrganisationCommandHandlers, 
                 "GKCCBABB",
                 true,
                 new DateTime(2000, 1, 1),
-                new DateTime(2001, 1, 1))
+                new DateTime(2001, 1, 1)),
         };
 
     private SyncOrganisationWithKbo SyncOrganisationWithKboCommand
@@ -190,14 +190,14 @@ public class UpdateFromKboTests : Specification<KboOrganisationCommandHandlers, 
                             AccountNumber = "00300000123",
                             ValidFrom = new DateTime(2000, 1, 1),
                             ValidTo = new DateTime(2001, 1, 1),
-                        }
+                        },
                     },
                     LegalForm =
                         new LegalFormStub
                         {
                             Code = "Another Legal Code",
                             ValidFrom = new DateTime(2020, 12, 11),
-                            ValidTo = new DateTime(2020, 12, 12)
+                            ValidTo = new DateTime(2020, 12, 12),
                         },
                     Address =
                         new AddressStub
@@ -207,8 +207,8 @@ public class UpdateFromKboTests : Specification<KboOrganisationCommandHandlers, 
                             Country = "Belgie",
                             ZipCode = "8999",
                             ValidFrom = null,
-                            ValidTo = null
-                        }
+                            ValidTo = null,
+                        },
                 }),
             organisationClassificationRetriever: new KboOrganisationClassificationRetrieverStub(
                 "Another Legal Code",
