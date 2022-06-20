@@ -65,10 +65,9 @@ public class OrganisationChildListQuery : Query<OrganisationChildListItem, Organ
         public IEnumerable<string> SortableFields { get; } = new[]
         {
             nameof(OrganisationChildListItem.OvoNumber),
-            nameof(OrganisationChildListItem.Name)
+            nameof(OrganisationChildListItem.Name),
         };
 
-        public SortingHeader DefaultSortingHeader { get; } =
-            new SortingHeader(nameof(OrganisationChildListItem.Name), SortOrder.Ascending);
+        public SortingHeader DefaultSortingHeader { get; } = new(nameof(OrganisationChildListItem.Name), SortOrder.Ascending);
     }
 }

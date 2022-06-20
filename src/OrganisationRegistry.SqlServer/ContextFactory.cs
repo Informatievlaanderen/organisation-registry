@@ -21,12 +21,8 @@ public class ContextFactory : IContextFactory
     }
 
     public OrganisationRegistryContext CreateTransactional(DbConnection connection, DbTransaction transaction)
-    {
-        return new OrganisationRegistryTransactionalContext(connection, transaction);
-    }
+        => new OrganisationRegistryTransactionalContext(connection, transaction);
 
     public OrganisationRegistryContext Create()
-    {
-        return _contextFunc().Value;
-    }
+        => _contextFunc().Value;
 }

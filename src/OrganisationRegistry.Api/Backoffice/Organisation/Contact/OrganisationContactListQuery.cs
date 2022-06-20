@@ -82,11 +82,11 @@ public class OrganisationContactListQuery : Query<OrganisationContactListItem, O
             nameof(OrganisationContactListItem.ContactTypeName),
             nameof(OrganisationContactListItem.ContactValue),
             nameof(OrganisationContactListItem.ValidFrom),
-            nameof(OrganisationContactListItem.ValidTo)
+            nameof(OrganisationContactListItem.ValidTo),
         };
 
         public SortingHeader DefaultSortingHeader { get; } =
-            new SortingHeader(nameof(OrganisationContactListItem.ContactTypeName), SortOrder.Ascending);
+            new(nameof(OrganisationContactListItem.ContactTypeName), SortOrder.Ascending);
     }
 }
 

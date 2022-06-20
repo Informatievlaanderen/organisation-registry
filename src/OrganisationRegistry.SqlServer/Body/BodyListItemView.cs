@@ -26,7 +26,7 @@ public class BodyListItem
     public string? Organisation { get; set; }
     public Guid? OrganisationId { get; set; }
 
-    public List<BodyLifecyclePhaseValidity> BodyLifecyclePhaseValidities { get; set; } = new List<BodyLifecyclePhaseValidity>();
+    public List<BodyLifecyclePhaseValidity> BodyLifecyclePhaseValidities { get; set; } = new();
 }
 
 public class BodyLifecyclePhaseValidity
@@ -109,7 +109,7 @@ public class BodyListView :
     public enum ProjectionTables
     {
         BodyList,
-        BodyLifecyclePhaseValidity
+        BodyLifecyclePhaseValidity,
     }
 
     private readonly IEventStore _eventStore;
@@ -128,7 +128,7 @@ public class BodyListView :
             Id = message.Body.BodyId,
             Name = message.Body.Name,
             ShortName = message.Body.ShortName,
-            BodyNumber = message.Body.BodyNumber
+            BodyNumber = message.Body.BodyNumber,
         };
 
         using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
@@ -210,7 +210,7 @@ public class BodyListView :
             BodyLifecyclePhaseId = message.Body.BodyLifecyclePhaseId,
             ValidTo = message.Body.ValidTo,
             ValidFrom = message.Body.ValidFrom,
-            RepresentsActivePhase = message.Body.LifecyclePhaseTypeIsRepresentativeFor == LifecyclePhaseTypeIsRepresentativeFor.ActivePhase
+            RepresentsActivePhase = message.Body.LifecyclePhaseTypeIsRepresentativeFor == LifecyclePhaseTypeIsRepresentativeFor.ActivePhase,
         };
 
         using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))

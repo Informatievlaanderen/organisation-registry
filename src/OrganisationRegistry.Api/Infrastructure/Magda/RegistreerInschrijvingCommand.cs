@@ -102,7 +102,7 @@ public class RegistreerInschrijvingCommand : IRegistreerInschrijvingCommand
         }
     }
 
-    private RegistreerInschrijving MakeRegistreerInschrijvingRequest(string socialSecurityId, string reference) => new RegistreerInschrijving
+    private RegistreerInschrijving MakeRegistreerInschrijvingRequest(string socialSecurityId, string reference) => new()
     {
         Verzoek = new VerzoekType
         {

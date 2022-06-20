@@ -93,11 +93,11 @@ public class OrganisationOrganisationClassificationListQuery : Query<Organisatio
             nameof(OrganisationOrganisationClassificationListItem.OrganisationClassificationTypeName),
             nameof(OrganisationOrganisationClassificationListItem.OrganisationClassificationName),
             nameof(OrganisationOrganisationClassificationListItem.ValidFrom),
-            nameof(OrganisationOrganisationClassificationListItem.ValidTo)
+            nameof(OrganisationOrganisationClassificationListItem.ValidTo),
         };
 
         public SortingHeader DefaultSortingHeader { get; } =
-            new SortingHeader(nameof(OrganisationOrganisationClassificationListItem.OrganisationClassificationTypeName), SortOrder.Ascending);
+            new(nameof(OrganisationOrganisationClassificationListItem.OrganisationClassificationTypeName), SortOrder.Ascending);
     }
 }
 

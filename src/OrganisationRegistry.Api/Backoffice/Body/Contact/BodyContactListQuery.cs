@@ -55,11 +55,10 @@ public class BodyContactListQuery : Query<BodyContactListItem, BodyContactListIt
             nameof(BodyContactListItem.ContactTypeName),
             nameof(BodyContactListItem.ContactValue),
             nameof(BodyContactListItem.ValidFrom),
-            nameof(BodyContactListItem.ValidTo)
+            nameof(BodyContactListItem.ValidTo),
         };
 
-        public SortingHeader DefaultSortingHeader { get; } =
-            new SortingHeader(nameof(BodyContactListItem.ContactTypeName), SortOrder.Ascending);
+        public SortingHeader DefaultSortingHeader { get; } = new(nameof(BodyContactListItem.ContactTypeName), SortOrder.Ascending);
     }
 }
 

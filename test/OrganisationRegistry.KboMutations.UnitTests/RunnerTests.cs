@@ -135,14 +135,12 @@
 
          var mutationsLines1 = new List<MutationsLine>
          {
-             new MutationsLine
-                 {DatumModificatie = DateTime.Now, MaatschappelijkeNaam = "KBC", Ondernemingsnummer = "0918128212"},
+             new() {DatumModificatie = DateTime.Now, MaatschappelijkeNaam = "KBC", Ondernemingsnummer = "0918128212"},
          };
 
          var mutationsLines2 = new List<MutationsLine>
          {
-             new MutationsLine
-                 {DatumModificatie = DateTime.Now, MaatschappelijkeNaam = "KBC", Ondernemingsnummer = "0918128212"},
+             new() {DatumModificatie = DateTime.Now, MaatschappelijkeNaam = "KBC", Ondernemingsnummer = "0918128212"},
          };
 
          kboFtpClientMock

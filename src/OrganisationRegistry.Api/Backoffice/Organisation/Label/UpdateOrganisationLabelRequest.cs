@@ -63,13 +63,11 @@ public class UpdateOrganisationLabelInternalRequestValidator : AbstractValidator
 public static class UpdateOrganisationLabelRequestMapping
 {
     public static UpdateOrganisationLabel Map(UpdateOrganisationLabelInternalRequest message)
-    {
-        return new UpdateOrganisationLabel(
+        => new(
             message.Body.OrganisationLabelId,
             new OrganisationId(message.OrganisationId),
             new LabelTypeId(message.Body.LabelTypeId),
             message.Body.LabelValue,
             new ValidFrom(message.Body.ValidFrom),
             new ValidTo(message.Body.ValidTo));
-    }
 }

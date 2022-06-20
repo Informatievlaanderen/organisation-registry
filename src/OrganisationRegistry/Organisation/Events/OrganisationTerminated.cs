@@ -44,8 +44,7 @@ public class OrganisationTerminated : BaseEvent<OrganisationTerminated>
         OrganisationTerminationSummary organisationTermination,
         bool forceKboTermination,
         OrganisationTerminationKboSummary organisationTerminationKboSummary, DateTime dateOfTermination)
-    {
-        return new OrganisationTerminated(
+        => new(
             id,
             state.Name,
             state.OvoNumber,
@@ -72,7 +71,6 @@ public class OrganisationTerminated : BaseEvent<OrganisationTerminated>
             ),
             forceKboTermination,
             kboState.TerminationInKbo?.Date);
-    }
 }
 
 public class FieldsToTerminate

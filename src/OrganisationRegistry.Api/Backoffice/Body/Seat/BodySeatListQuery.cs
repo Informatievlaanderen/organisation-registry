@@ -101,11 +101,10 @@ public class BodySeatListQuery : Query<BodySeatListItem, BodySeatListItemFilter,
             nameof(BodySeatListItem.PaidSeat),
             nameof(BodySeatListItem.EntitledToVote),
             nameof(BodySeatListItem.ValidFrom),
-            nameof(BodySeatListItem.ValidTo)
+            nameof(BodySeatListItem.ValidTo),
         };
 
-        public SortingHeader DefaultSortingHeader { get; } =
-            new SortingHeader(nameof(BodySeatListItem.Name), SortOrder.Ascending);
+        public SortingHeader DefaultSortingHeader { get; } = new(nameof(BodySeatListItem.Name), SortOrder.Ascending);
     }
 }
 

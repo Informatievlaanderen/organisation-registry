@@ -38,8 +38,7 @@ public class OrganisationRelation : IOrganisationField, IValidityBuilder<Organis
     }
 
     public OrganisationRelation WithValidity(Period period)
-    {
-        return new OrganisationRelation(
+        => new(
             OrganisationRelationId,
             OrganisationId,
             OrganisationName,
@@ -49,15 +48,10 @@ public class OrganisationRelation : IOrganisationField, IValidityBuilder<Organis
             RelatedOrganisationId,
             RelatedOrganisationName,
             period);
-    }
 
     public OrganisationRelation WithValidFrom(ValidFrom validFrom)
-    {
-        return WithValidity(new Period(validFrom, Validity.End));
-    }
+        => WithValidity(new Period(validFrom, Validity.End));
 
     public OrganisationRelation WithValidTo(ValidTo validTo)
-    {
-        return WithValidity(new Period(Validity.Start, validTo));
-    }
+        => WithValidity(new Period(Validity.Start, validTo));
 }

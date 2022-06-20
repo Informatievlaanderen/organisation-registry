@@ -51,18 +51,13 @@ public class OrganisationCapacity : IOrganisationField, IValidityBuilder<Organis
     }
 
     public bool ShouldBecomeActive(DateTime date)
-    {
-        return !IsActive && Validity.OverlapsWith(date);
-    }
+        => !IsActive && Validity.OverlapsWith(date);
 
     public bool ShouldBecomeInactive(DateTime date)
-    {
-        return IsActive && !Validity.OverlapsWith(date);
-    }
+        => IsActive && !Validity.OverlapsWith(date);
 
     public OrganisationCapacity WithValidity(Period period)
-    {
-        return new OrganisationCapacity(
+        => new(
             OrganisationCapacityId,
             OrganisationId,
             CapacityId,
@@ -76,15 +71,10 @@ public class OrganisationCapacity : IOrganisationField, IValidityBuilder<Organis
             Contacts,
             period,
             IsActive);
-    }
 
     public OrganisationCapacity WithValidFrom(ValidFrom validFrom)
-    {
-        return WithValidity(new Period(validFrom, Validity.End));
-    }
+        => WithValidity(new Period(validFrom, Validity.End));
 
     public OrganisationCapacity WithValidTo(ValidTo validTo)
-    {
-        return WithValidity(new Period(Validity.Start, validTo));
-    }
+        => WithValidity(new Period(Validity.Start, validTo));
 }

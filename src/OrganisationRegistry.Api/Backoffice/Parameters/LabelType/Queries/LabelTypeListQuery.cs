@@ -52,11 +52,10 @@ public class LabelTypeListQuery: Query<LabelTypeListItem, LabelTypeListItem, Lab
     {
         public IEnumerable<string> SortableFields { get; } = new[]
         {
-            nameof(LabelTypeListItem.Name)
+            nameof(LabelTypeListItem.Name),
         };
 
-        public SortingHeader DefaultSortingHeader { get; } =
-            new SortingHeader(nameof(LabelTypeListItem.Name), SortOrder.Ascending);
+        public SortingHeader DefaultSortingHeader { get; } = new(nameof(LabelTypeListItem.Name), SortOrder.Ascending);
     }
 }
 

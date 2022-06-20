@@ -83,8 +83,7 @@ public class BodyClassificationListQuery : Query<BodyClassificationListItem, Bod
             nameof(BodyClassificationListItem.BodyClassificationTypeName),
         };
 
-        public SortingHeader DefaultSortingHeader { get; } =
-            new SortingHeader(nameof(BodyClassificationListItem.Name), SortOrder.Ascending);
+        public SortingHeader DefaultSortingHeader { get; } = new(nameof(BodyClassificationListItem.Name), SortOrder.Ascending);
     }
 }
 

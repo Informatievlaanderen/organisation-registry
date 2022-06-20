@@ -79,11 +79,11 @@ public class BodyFormalFrameworkListQuery : Query<BodyFormalFrameworkListItem, B
         {
             nameof(BodyFormalFrameworkListItem.FormalFrameworkName),
             nameof(BodyFormalFrameworkListItem.ValidFrom),
-            nameof(BodyFormalFrameworkListItem.ValidTo)
+            nameof(BodyFormalFrameworkListItem.ValidTo),
         };
 
         public SortingHeader DefaultSortingHeader { get; } =
-            new SortingHeader(nameof(BodyFormalFrameworkListItem.FormalFrameworkName), SortOrder.Ascending);
+            new(nameof(BodyFormalFrameworkListItem.FormalFrameworkName), SortOrder.Ascending);
     }
 }
 

@@ -56,12 +56,10 @@ public class UpdateBodyClassificationRequestValidator : AbstractValidator<Update
 public static class UpdateBodyClassificationRequestMapping
 {
     public static UpdateBodyClassification Map(UpdateBodyClassificationInternalRequest message)
-    {
-        return new UpdateBodyClassification(
+        => new(
             new BodyClassificationId(message.BodyClassificationId),
             message.Body.Name,
             message.Body.Order,
             message.Body.Active,
             new BodyClassificationTypeId(message.Body.BodyClassificationTypeId));
-    }
 }

@@ -65,10 +65,10 @@ public class OrganisationParentListQuery : Query<OrganisationParentListItem, Org
         {
             nameof(OrganisationParentListItem.ParentOrganisationName),
             nameof(OrganisationFunctionListItem.ValidFrom),
-            nameof(OrganisationFunctionListItem.ValidTo)
+            nameof(OrganisationFunctionListItem.ValidTo),
         };
 
         public SortingHeader DefaultSortingHeader { get; } =
-            new SortingHeader(nameof(OrganisationParentListItem.ParentOrganisationName), SortOrder.Ascending);
+            new(nameof(OrganisationParentListItem.ParentOrganisationName), SortOrder.Ascending);
     }
 }

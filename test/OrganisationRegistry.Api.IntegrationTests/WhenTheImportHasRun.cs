@@ -26,93 +26,73 @@ public class WhenTheImportHasRun
 
     [Fact]
     public async Task ThereAreBuildings()
-    {
-        (await Get<BuildingListItem>("buildings"))
+        => (await Get<BuildingListItem>("buildings"))
             .Count()
             .Should()
             .BeGreaterThan(0);
-    }
 
     [Fact]
     public async Task ThereAreCapacities()
-    {
-        (await Get<CapacityListItem>("capacities"))
+        => (await Get<CapacityListItem>("capacities"))
             .Count()
             .Should()
             .BeGreaterThan(0);
-    }
 
     [Fact]
     public async Task ThereAreContactTypes()
-    {
-        (await Get<OrganisationContactListItem>("contacttypes"))
+        => (await Get<OrganisationContactListItem>("contacttypes"))
             .Count()
             .Should()
             .BeGreaterThan(0);
-    }
 
     [Fact]
     public async Task ThereAreKeyTypes()
-    {
-        (await Get<OrganisationKeyListItem>("keytypes"))
+        => (await Get<OrganisationKeyListItem>("keytypes"))
             .Count()
             .Should()
             .BeGreaterThan(0);
-    }
 
     [Fact]
     public async Task ThereAreLabelTypes()
-    {
-        (await Get<OrganisationLabelListItem>("labeltypes"))
+        => (await Get<OrganisationLabelListItem>("labeltypes"))
             .Count()
             .Should()
             .BeGreaterThan(0);
-    }
 
     [Fact]
     public async Task ThereAreOrganisationClassifications()
-    {
-        (await Get<OrganisationClassificationListItem>("organisationclassifications"))
+        => (await Get<OrganisationClassificationListItem>("organisationclassifications"))
             .Count()
             .Should()
             .BeGreaterThan(0);
-    }
 
     [Fact]
     public async Task ThereAreOrganisationClassificationTypes()
-    {
-        (await Get<OrganisationClassificationTypeListItem>("organisationclassificationtypes"))
+        => (await Get<OrganisationClassificationTypeListItem>("organisationclassificationtypes"))
             .Count()
             .Should()
             .BeGreaterThan(0);
-    }
 
     [Fact]
     public async Task ThereAreOrganisations()
-    {
-        (await Get<OrganisationListQueryResult>("organisations"))
+        => (await Get<OrganisationListQueryResult>("organisations"))
             .Count()
             .Should()
             .BeGreaterThan(0);
-    }
 
     [Fact]
     public async Task ThereAreFunctions()
-    {
-        (await Get<FunctionListItem>("functiontypes"))
+        => (await Get<FunctionListItem>("functiontypes"))
             .Count()
             .Should()
             .BeGreaterThan(0);
-    }
 
     [Fact]
     public async Task ThereArePeople()
-    {
-        (await Get<PersonListItem>("people"))
+        => (await Get<PersonListItem>("people"))
             .Count()
             .Should()
             .BeGreaterThan(0);
-    }
 
     [Fact]
     public async Task AtLeastOneOrganisationHasCapacities()

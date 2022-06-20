@@ -63,8 +63,7 @@ public class AddBodySeatInternalRequestValidator : AbstractValidator<AddBodySeat
 public static class AddBodySeatRequestMapping
 {
     public static AddBodySeat Map(AddBodySeatInternalRequest message)
-    {
-        return new AddBodySeat(
+        => new(
             new BodyId(message.BodyId),
             new BodySeatId(message.Body.BodySeatId),
             message.Body.Name,
@@ -74,5 +73,4 @@ public static class AddBodySeatRequestMapping
             new Period(
                 new ValidFrom(message.Body.ValidFrom),
                 new ValidTo(message.Body.ValidTo)));
-    }
 }

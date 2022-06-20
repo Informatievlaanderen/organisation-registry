@@ -54,11 +54,9 @@ public class ProjectionsController : OrganisationRegistryController
     [OrganisationRegistryAuthorize(Roles = Roles.Developer)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
-    {
-        return Ok(await context.ProjectionStates
+        => Ok(await context.ProjectionStates
             .AsQueryable()
             .ToListAsync());
-    }
 
     /// <summary>Get a projection state by its id.</summary>
     [HttpGet("states/{id}")]

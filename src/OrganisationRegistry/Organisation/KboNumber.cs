@@ -34,7 +34,5 @@ public class KboNumber
     }
 
     public override string ToString()
-    {
-        return _value;
-    }
+        => _value;
 }

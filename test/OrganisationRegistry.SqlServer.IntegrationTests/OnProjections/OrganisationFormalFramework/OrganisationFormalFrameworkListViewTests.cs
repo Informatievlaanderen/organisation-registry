@@ -14,7 +14,7 @@ using Xunit;
 public class OrganisationFormalFrameworkListViewTests : ListViewTestBase
 {
     private readonly DateTime _yesterday = DateTime.Today.AddDays(-1);
-    private readonly SequentialOvoNumberGenerator _sequentialOvoNumberGenerator = new SequentialOvoNumberGenerator();
+    private readonly SequentialOvoNumberGenerator _sequentialOvoNumberGenerator = new();
 
     [Fact]
     public async Task WhenAssigningAFormalFramework()

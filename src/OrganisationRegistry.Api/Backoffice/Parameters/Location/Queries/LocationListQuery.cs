@@ -93,8 +93,7 @@ public class LocationListQuery: Query<LocationListItem, LocationListItemFilter, 
             nameof(LocationListItem.HasCrabLocation),
         };
 
-        public SortingHeader DefaultSortingHeader { get; } =
-            new SortingHeader(nameof(LocationListItem.Street), SortOrder.Ascending);
+        public SortingHeader DefaultSortingHeader { get; } = new(nameof(LocationListItem.Street), SortOrder.Ascending);
     }
 }
 

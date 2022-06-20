@@ -30,8 +30,7 @@ public class VlaanderenBeNotifierConfiguration
     public bool LockEnabled { get; set; }
 
     public VlaanderenBeNotifierConfiguration Obfuscate()
-    {
-        return new VlaanderenBeNotifierConfiguration
+        => new()
         {
             SendGridApiUri = SendGridApiUri,
             SendGridBearerToken = new string('*', 12),
@@ -42,7 +41,6 @@ public class VlaanderenBeNotifierConfiguration
             BodyTo = BodyTo,
             BodyUriTemplate = BodyUriTemplate,
             BodyFormalFrameworkUriTemplate = BodyFormalFrameworkUriTemplate,
-            MepFormalFrameworkId = MepFormalFrameworkId
+            MepFormalFrameworkId = MepFormalFrameworkId,
         };
-    }
 }

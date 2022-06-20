@@ -81,8 +81,7 @@ public class FormalFrameworkListQuery : Query<FormalFrameworkListItem, FormalFra
             nameof(FormalFrameworkListItem.FormalFrameworkCategoryName),
         };
 
-        public SortingHeader DefaultSortingHeader { get; } =
-            new SortingHeader(nameof(FormalFrameworkListItem.Name), SortOrder.Ascending);
+        public SortingHeader DefaultSortingHeader { get; } = new(nameof(FormalFrameworkListItem.Name), SortOrder.Ascending);
     }
 }
 

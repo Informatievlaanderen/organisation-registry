@@ -41,8 +41,8 @@ public class OrganisationListItem
     public DateTime? ValidFrom { get; set; }
     public DateTime? ValidTo { get; set; }
 
-    public List<OrganisationFormalFrameworkValidity> FormalFrameworkValidities { get; set; } = new List<OrganisationFormalFrameworkValidity>();
-    public List<OrganisationClassificationValidity> OrganisationClassificationValidities { get; set; } = new List<OrganisationClassificationValidity>();
+    public List<OrganisationFormalFrameworkValidity> FormalFrameworkValidities { get; set; } = new();
+    public List<OrganisationClassificationValidity> OrganisationClassificationValidities { get; set; } = new();
 }
 
 public class OrganisationFormalFrameworkValidity
@@ -422,7 +422,7 @@ public class OrganisationListItemView :
                 FormalFrameworkId = message.Body.FormalFrameworkId,
                 FormalFrameworkValidities = new List<OrganisationFormalFrameworkValidity>
                 {
-                    new OrganisationFormalFrameworkValidity
+                    new()
                     {
                         ValidFrom = message.Body.ValidFrom,
                         ValidTo = message.Body.ValidTo,
@@ -486,7 +486,7 @@ public class OrganisationListItemView :
                 OrganisationClassificationValidities = regularParentListItem.OrganisationClassificationValidities.Select(Copy).ToList(),
                 FormalFrameworkValidities = new List<OrganisationFormalFrameworkValidity>
                 {
-                    new OrganisationFormalFrameworkValidity
+                    new()
                     {
                         ValidFrom = message.Body.ValidFrom,
                         ValidTo = message.Body.ValidTo,
@@ -578,7 +578,7 @@ public class OrganisationListItemView :
                 OrganisationClassificationValidities = regularParentListItem.OrganisationClassificationValidities.Select(Copy).ToList(),
                 FormalFrameworkValidities = new List<OrganisationFormalFrameworkValidity>
                 {
-                    new OrganisationFormalFrameworkValidity
+                    new()
                     {
                         ValidFrom = message.Body.ValidFrom,
                         ValidTo = message.Body.ValidTo,
@@ -785,8 +785,7 @@ public class OrganisationListItemView :
     }
 
     private static OrganisationClassificationValidity Copy(OrganisationClassificationValidity validity)
-    {
-        return new OrganisationClassificationValidity
+        => new()
         {
             OrganisationOrganisationClassificationId = validity.OrganisationOrganisationClassificationId,
             OrganisationClassificationId = validity.OrganisationClassificationId,
@@ -794,7 +793,6 @@ public class OrganisationListItemView :
             ValidFrom = validity.ValidFrom,
             ValidTo = validity.ValidTo,
         };
-    }
 
     public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationClassificationUpdated> message)
     {

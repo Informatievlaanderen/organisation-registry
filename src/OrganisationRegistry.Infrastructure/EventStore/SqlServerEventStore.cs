@@ -38,14 +38,10 @@ public class SqlServerEventStore : IEventStore
     };
 
     private DbConnection GetConnection()
-    {
-        return new SqlConnection(_connectionString);
-    }
+        => new SqlConnection(_connectionString);
 
     private DbConnection GetAdministrationConnection()
-    {
-        return new SqlConnection(_administrationConnectionString);
-    }
+        => new SqlConnection(_administrationConnectionString);
 
     public SqlServerEventStore(IOptions<InfrastructureConfigurationSection> infrastructureOptions, IEventPublisher publisher, IEventDataReader? eventDataReader = null)
     {
@@ -187,9 +183,7 @@ SELECT CAST(SCOPE_IDENTITY() as int)",
     }
 
     public int GetEventEnvelopeCount(DateTimeOffset? dateTimeOffset = null)
-    {
-        return _eventDataReader.GetEventCount(dateTimeOffset);
-    }
+        => _eventDataReader.GetEventCount(dateTimeOffset);
 
     public IEnumerable<IEnvelope> GetEventEnvelopes(params Type[] eventTypes)
     {
@@ -228,9 +222,7 @@ SELECT CAST(SCOPE_IDENTITY() as int)",
 
 
     public int GetLastEvent()
-    {
-        return _eventDataReader.GetLastEvent();
-    }
+        => _eventDataReader.GetLastEvent();
 
     private static IEnumerable<IEnvelope> ParseEventsIntoEnvelopes(IEnumerable<EventData> events, JsonSerializerSettings settings)
     {

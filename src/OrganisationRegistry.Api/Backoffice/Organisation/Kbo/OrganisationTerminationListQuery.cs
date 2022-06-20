@@ -79,7 +79,7 @@ public class OrganisationTerminationListQuery: Query<OrganisationTerminationList
         };
 
         public SortingHeader DefaultSortingHeader { get; } =
-            new SortingHeader(nameof(OrganisationTerminationListItem.Date), SortOrder.Descending);
+            new(nameof(OrganisationTerminationListItem.Date), SortOrder.Descending);
     }
 }
 

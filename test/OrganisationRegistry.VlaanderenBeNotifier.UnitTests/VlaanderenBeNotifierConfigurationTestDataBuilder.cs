@@ -26,8 +26,7 @@ public class VlaanderenBeNotifierConfigurationTestDataBuilder
     }
 
     public VlaanderenBeNotifierConfiguration Build()
-    {
-        return new VlaanderenBeNotifierConfiguration()
+        => new()
         {
             SendGridApiUri = _sendGridApiUri,
             SendGridBearerToken = _sendGridBearerToken,
@@ -36,12 +35,9 @@ public class VlaanderenBeNotifierConfigurationTestDataBuilder
             OrganisationTo = _organisationTo,
             OrganisationUriTemplate = _organisationUriTemplate,
             BodyTo = _bodyTo,
-            BodyUriTemplate = _bodyUriTemplate
+            BodyUriTemplate = _bodyUriTemplate,
         };
-    }
 
     public static implicit operator VlaanderenBeNotifierConfiguration(VlaanderenBeNotifierConfigurationTestDataBuilder dataBuilder)
-    {
-        return dataBuilder.Build();
-    }
+        => dataBuilder.Build();
 }

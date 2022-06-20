@@ -46,10 +46,9 @@ public class CapacityListQuery: Query<CapacityListItem, CapacityListQuery.Capaci
     {
         public IEnumerable<string> SortableFields { get; } = new[]
         {
-            nameof(CapacityListItem.Name)
+            nameof(CapacityListItem.Name),
         };
 
-        public SortingHeader DefaultSortingHeader { get; } =
-            new SortingHeader(nameof(CapacityListItem.Name), SortOrder.Ascending);
+        public SortingHeader DefaultSortingHeader { get; } = new(nameof(CapacityListItem.Name), SortOrder.Ascending);
     }
 }

@@ -15,12 +15,8 @@ public class EditSecurityService : IEditSecurityService
     }
 
     public bool CanAddKey(Guid keyTypeId)
-    {
-        return _configurationSection.Orafin.Equals(keyTypeId);
-    }
+        => _configurationSection.Orafin.Equals(keyTypeId);
 
     public bool CanEditKey(Guid keyTypeId)
-    {
-        return _configurationSection.Orafin.Equals(keyTypeId);
-    }
+        => _configurationSection.Orafin.Equals(keyTypeId);
 }

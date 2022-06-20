@@ -32,8 +32,7 @@ public class OrganisationOrganisationClassification : IOrganisationField, IValid
     }
 
     public OrganisationOrganisationClassification WithValidity(Period period)
-    {
-        return new OrganisationOrganisationClassification(
+        => new(
             OrganisationOrganisationClassificationId,
             OrganisationId,
             OrganisationClassificationTypeId,
@@ -41,15 +40,10 @@ public class OrganisationOrganisationClassification : IOrganisationField, IValid
             OrganisationClassificationId,
             OrganisationClassificationName,
             period);
-    }
 
     public OrganisationOrganisationClassification WithValidFrom(ValidFrom validFrom)
-    {
-        return WithValidity(new Period(validFrom, Validity.End));
-    }
+        => WithValidity(new Period(validFrom, Validity.End));
 
     public OrganisationOrganisationClassification WithValidTo(ValidTo validTo)
-    {
-        return WithValidity(new Period(Validity.Start, validTo));
-    }
+        => WithValidity(new Period(Validity.Start, validTo));
 }

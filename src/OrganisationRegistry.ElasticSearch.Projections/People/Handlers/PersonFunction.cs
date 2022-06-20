@@ -187,8 +187,7 @@ public class PersonFunction :
         string name,
         int messageNumber,
         DateTimeOffset timestamp)
-        => new ElasticMassChange
-        (
+        => new(
             async elastic => await elastic
                 .MassUpdatePersonAsync(
                     x => x.Functions.Single().OrganisationId,

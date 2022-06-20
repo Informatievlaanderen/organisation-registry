@@ -86,11 +86,11 @@ public class OrganisationRelationListQuery : Query<OrganisationRelationListItem,
             nameof(OrganisationRelationListItem.RelationName),
             nameof(OrganisationRelationListItem.RelatedOrganisationName),
             nameof(OrganisationRelationListItem.ValidFrom),
-            nameof(OrganisationRelationListItem.ValidTo)
+            nameof(OrganisationRelationListItem.ValidTo),
         };
 
         public SortingHeader DefaultSortingHeader { get; } =
-            new SortingHeader(nameof(OrganisationRelationListItem.RelatedOrganisationName), SortOrder.Ascending);
+            new(nameof(OrganisationRelationListItem.RelatedOrganisationName), SortOrder.Ascending);
     }
 }
 

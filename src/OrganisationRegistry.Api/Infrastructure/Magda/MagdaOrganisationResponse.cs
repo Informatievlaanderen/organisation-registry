@@ -68,12 +68,10 @@ public class MagdaOrganisationResponse : IMagdaOrganisationResponse
     }
 
     private static bool OverlapsWithToday(RechtsvormExtentieType type, DateTime today)
-    {
-        return new Period(
+        => new Period(
                 new ValidFrom(ParseKboDate(type.DatumBegin)),
                 new ValidTo(ParseKboDate(type.DatumEinde)))
             .OverlapsWith(today);
-    }
 
     public class Name : IMagdaName
     {
@@ -112,17 +110,13 @@ public class MagdaOrganisationResponse : IMagdaOrganisationResponse
         }
 
         private static bool IsDutch(NaamOndernemingType x)
-        {
-            return x.Taalcode == "nl";
-        }
+            => x.Taalcode == "nl";
 
         private static bool IsValid(NaamOndernemingType x)
-        {
-            return (string.IsNullOrEmpty(x.DatumBegin) ||
-                    DateTime.ParseExact(x.DatumBegin, KBODateFormat, null) <= DateTime.UtcNow) &&
-                   (string.IsNullOrEmpty(x.DatumEinde) ||
-                    DateTime.ParseExact(x.DatumEinde, KBODateFormat, null) >= DateTime.UtcNow);
-        }
+            => (string.IsNullOrEmpty(x.DatumBegin) ||
+                DateTime.ParseExact(x.DatumBegin, KBODateFormat, null) <= DateTime.UtcNow) &&
+               (string.IsNullOrEmpty(x.DatumEinde) ||
+                DateTime.ParseExact(x.DatumEinde, KBODateFormat, null) >= DateTime.UtcNow);
     }
 
     public class BankAccount : IMagdaBankAccount
@@ -138,7 +132,7 @@ public class MagdaOrganisationResponse : IMagdaOrganisationResponse
             {
                 bankrekeningType.IBAN,
                 bankrekeningType.Rekeningnummer,
-                bankrekeningType.NietSEPAnummer
+                bankrekeningType.NietSEPAnummer,
             };
 
             AccountNumber = possibleAccountNumbers.First(x => !string.IsNullOrEmpty(x));

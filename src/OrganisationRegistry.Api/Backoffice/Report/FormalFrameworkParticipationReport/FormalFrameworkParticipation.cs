@@ -147,7 +147,7 @@ public class FormalFrameworkParticipation
                     AssignedCount = assignedCount,
                     UnassignedCount = totalCount - assignedCount,
 
-                    TotalCount = totalCount
+                    TotalCount = totalCount,
                 };
             });
 
@@ -155,9 +155,7 @@ public class FormalFrameworkParticipation
     }
 
     private static Tuple<Guid, Guid> CreateCombinedKey(Guid bodyId, Guid bodySeatTypeId)
-    {
-        return new Tuple<Guid, Guid>(bodyId, bodySeatTypeId);
-    }
+        => new(bodyId, bodySeatTypeId);
 
     /// <summary>
     ///

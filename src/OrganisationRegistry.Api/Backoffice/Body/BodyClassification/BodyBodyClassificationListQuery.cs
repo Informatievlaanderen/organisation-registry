@@ -82,11 +82,11 @@ public class BodyBodyClassificationListQuery : Query<BodyBodyClassificationListI
             nameof(BodyBodyClassificationListItem.BodyClassificationTypeName),
             nameof(BodyBodyClassificationListItem.BodyClassificationName),
             nameof(BodyBodyClassificationListItem.ValidFrom),
-            nameof(BodyBodyClassificationListItem.ValidTo)
+            nameof(BodyBodyClassificationListItem.ValidTo),
         };
 
         public SortingHeader DefaultSortingHeader { get; } =
-            new SortingHeader(nameof(BodyBodyClassificationListItem.BodyClassificationTypeName), SortOrder.Ascending);
+            new(nameof(BodyBodyClassificationListItem.BodyClassificationTypeName), SortOrder.Ascending);
     }
 }
 

@@ -94,10 +94,9 @@ public class PersonMandateListQuery : Query<PersonMandateListItem, PersonMandate
             nameof(PersonMandateListItem.BodyOrganisationName),
             nameof(PersonMandateListItem.PaidSeat),
             nameof(PersonMandateListItem.ValidFrom),
-            nameof(PersonMandateListItem.ValidTo)
+            nameof(PersonMandateListItem.ValidTo),
         };
 
-        public SortingHeader DefaultSortingHeader { get; } =
-            new SortingHeader(nameof(PersonMandateListItem.BodyName), SortOrder.Ascending);
+        public SortingHeader DefaultSortingHeader { get; } = new(nameof(PersonMandateListItem.BodyName), SortOrder.Ascending);
     }
 }

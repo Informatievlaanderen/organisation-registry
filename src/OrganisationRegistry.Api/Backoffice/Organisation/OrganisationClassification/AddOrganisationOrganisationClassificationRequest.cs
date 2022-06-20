@@ -61,13 +61,11 @@ public class AddOrganisationOrganisationClassificationInternalRequestValidator :
 public static class AddOrganisationOrganisationClassificationRequestMapping
 {
     public static AddOrganisationOrganisationClassification Map(AddOrganisationOrganisationClassificationInternalRequest message)
-    {
-        return new AddOrganisationOrganisationClassification(
+        => new(
             message.Body.OrganisationOrganisationClassificationId,
             new OrganisationId(message.OrganisationId),
             new OrganisationClassificationTypeId(message.Body.OrganisationClassificationTypeId),
             new OrganisationClassificationId(message.Body.OrganisationClassificationId),
             new ValidFrom(message.Body.ValidFrom),
             new ValidTo(message.Body.ValidTo));
-    }
 }

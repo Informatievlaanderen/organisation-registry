@@ -140,8 +140,7 @@ public class EventListQuery: Query<EventListItem, EventListItemFilter, EventWith
             nameof(EventListItem.LastName),
         };
 
-        public SortingHeader DefaultSortingHeader { get; } =
-            new SortingHeader(nameof(EventListItem.Number), SortOrder.Descending);
+        public SortingHeader DefaultSortingHeader { get; } = new(nameof(EventListItem.Number), SortOrder.Descending);
     }
 }
 

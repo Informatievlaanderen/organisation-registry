@@ -39,7 +39,7 @@ public class EventData
     }
 
     public EventData WithName(string name)
-        => new EventData
+        => new()
         {
             Id = Id,
             Number = Number,
@@ -50,6 +50,6 @@ public class EventData
             Ip = Ip,
             LastName = LastName,
             FirstName = FirstName,
-            UserId = UserId
+            UserId = UserId,
         };
 }

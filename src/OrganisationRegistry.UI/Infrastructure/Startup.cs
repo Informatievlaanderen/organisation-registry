@@ -68,7 +68,7 @@ public class Startup
                 // Fonts
                 "application/font-woff",
                 "font/otf",
-                "application/vnd.ms-fontobject"
+                "application/vnd.ms-fontobject",
             };
         });
     }
@@ -97,7 +97,7 @@ public class Startup
         app.UseMiddleware<ResponseCompressionQualityMiddleware>(new Dictionary<string, double>
         {
             {"br", 1.0},
-            {"gzip", 0.9}
+            {"gzip", 0.9},
         });
         app.UseResponseCompression();
         app.UseDefaultFiles();
@@ -117,10 +117,8 @@ public class Startup
     }
 
     private static bool IsIndexPath(HttpContext context)
-    {
-        return context.Request.Path.HasValue &&
-               context.Request.Path.Value.ToLowerInvariant().Contains("/index.html");
-    }
+        => context.Request.Path.HasValue &&
+           context.Request.Path.Value.ToLowerInvariant().Contains("/index.html");
 
     private static Uri GetUri(HttpRequest request)
     {
@@ -129,7 +127,7 @@ public class Startup
             Scheme = request.Scheme,
             Host = request.Host.Host,
             Path = request.Path,
-            Query = request.QueryString.ToUriComponent()
+            Query = request.QueryString.ToUriComponent(),
         };
 
         if (request.Host.Port.HasValue)
@@ -139,15 +137,11 @@ public class Startup
     }
 
     private static string GetParentUriString(Uri uri)
-    {
-        return uri.AbsoluteUri.Remove(uri.AbsoluteUri.Length - uri.Segments.Last().Length);
-    }
+        => uri.AbsoluteUri.Remove(uri.AbsoluteUri.Length - uri.Segments.Last().Length);
 
     private static bool IsConfigPath(HttpContext context)
-    {
-        return context.Request.Path.HasValue &&
-               string.Equals(context.Request.Path.Value.ToLowerInvariant(), "/config.js", StringComparison.OrdinalIgnoreCase);
-    }
+        => context.Request.Path.HasValue &&
+           string.Equals(context.Request.Path.Value.ToLowerInvariant(), "/config.js", StringComparison.OrdinalIgnoreCase);
 
     private string BuildConfigJavascript(IWebHostEnvironment env)
     {

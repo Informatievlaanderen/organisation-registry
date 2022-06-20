@@ -32,8 +32,7 @@ public class OrganisationBankAccount : IOrganisationField, IValidityBuilder<Orga
     }
 
     public OrganisationBankAccount WithValidity(Period period)
-    {
-        return new OrganisationBankAccount(
+        => new(
             OrganisationBankAccountId,
             OrganisationId,
             BankAccountNumber,
@@ -41,15 +40,10 @@ public class OrganisationBankAccount : IOrganisationField, IValidityBuilder<Orga
             Bic,
             IsBic,
             period);
-    }
 
     public OrganisationBankAccount WithValidFrom(ValidFrom validFrom)
-    {
-        return WithValidity(new Period(validFrom, Validity.End));
-    }
+        => WithValidity(new Period(validFrom, Validity.End));
 
     public OrganisationBankAccount WithValidTo(ValidTo validTo)
-    {
-        return WithValidity(new Period(Validity.Start, validTo));
-    }
+        => WithValidity(new Period(Validity.Start, validTo));
 }

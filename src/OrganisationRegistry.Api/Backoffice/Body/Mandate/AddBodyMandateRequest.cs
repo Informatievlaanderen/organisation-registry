@@ -87,8 +87,7 @@ public static class AddBodyMandateRequestMapping
     }
 
     public static AssignFunctionTypeToBodySeat MapForFunctionType(AddBodyMandateInternalRequest message)
-    {
-        return new AssignFunctionTypeToBodySeat(
+        => new(
             new BodyId(message.BodyId),
             new BodyMandateId(message.Body.BodyMandateId),
             new BodySeatId(message.Body.BodySeatId),
@@ -97,11 +96,9 @@ public static class AddBodyMandateRequestMapping
             new Period(
                 new ValidFrom(message.Body.ValidFrom),
                 new ValidTo(message.Body.ValidTo)));
-    }
 
     public static AssignOrganisationToBodySeat MapForOrganisation(AddBodyMandateInternalRequest message)
-    {
-        return new AssignOrganisationToBodySeat(
+        => new(
             new BodyId(message.BodyId),
             new BodyMandateId(message.Body.BodyMandateId),
             new BodySeatId(message.Body.BodySeatId),
@@ -109,5 +106,4 @@ public static class AddBodyMandateRequestMapping
             new Period(
                 new ValidFrom(message.Body.ValidFrom),
                 new ValidTo(message.Body.ValidTo)));
-    }
 }

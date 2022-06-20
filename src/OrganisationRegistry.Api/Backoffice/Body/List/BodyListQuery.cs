@@ -99,11 +99,10 @@ public class BodyListQuery : Query<BodyListItem, BodyListItemFilter, BodyListQue
         {
             nameof(BodyListItem.BodyNumber),
             nameof(BodyListItem.Name),
-            nameof(BodyListItem.Organisation)
+            nameof(BodyListItem.Organisation),
         };
 
-        public SortingHeader DefaultSortingHeader { get; } =
-            new SortingHeader(nameof(BodyListItem.Name), SortOrder.Ascending);
+        public SortingHeader DefaultSortingHeader { get; } = new(nameof(BodyListItem.Name), SortOrder.Ascending);
     }
 }
 

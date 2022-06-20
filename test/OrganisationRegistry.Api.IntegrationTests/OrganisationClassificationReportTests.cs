@@ -112,7 +112,7 @@ public class OrganisationClassificationReportTests
                     OrganisationName = Guid.NewGuid().ToString(),
                     LifecyclePhaseValidities = new List<BodySeatGenderRatioBodyLifecyclePhaseValidityItem>
                     {
-                        new BodySeatGenderRatioBodyLifecyclePhaseValidityItem
+                        new()
                         {
                             RepresentsActivePhase = true,
                             BodyId = bodyId,
@@ -124,7 +124,7 @@ public class OrganisationClassificationReportTests
                     OrganisationIsActive = true,
                     PostsPerType = new List<BodySeatGenderRatioPostsPerTypeItem>()
                     {
-                        new BodySeatGenderRatioPostsPerTypeItem
+                        new()
                         {
                             BodySeatValidFrom = currentlyActiveDate,
                             BodySeatValidTo = currentlyActiveDate,

@@ -61,13 +61,11 @@ public class AddBodyContactInternalRequestValidator : AbstractValidator<AddBodyC
 public static class AddBodyContactRequestMapping
 {
     public static AddBodyContact Map(AddBodyContactInternalRequest message)
-    {
-        return new AddBodyContact(
+        => new(
             message.Body.BodyContactId,
             new BodyId(message.BodyId),
             new ContactTypeId(message.Body.ContactTypeId),
             message.Body.ContactValue,
             new ValidFrom(message.Body.ValidFrom),
             new ValidTo(message.Body.ValidTo));
-    }
 }

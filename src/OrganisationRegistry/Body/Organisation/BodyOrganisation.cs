@@ -22,9 +22,7 @@ public class BodyOrganisation
     }
 
     protected bool Equals(BodyOrganisation other)
-    {
-        return BodyOrganisationId.Equals(other.BodyOrganisationId);
-    }
+        => BodyOrganisationId.Equals(other.BodyOrganisationId);
 
     public override bool Equals(object? obj)
     {
@@ -35,7 +33,5 @@ public class BodyOrganisation
     }
 
     public override int GetHashCode()
-    {
-        return BodyOrganisationId.GetHashCode();
-    }
+        => BodyOrganisationId.GetHashCode();
 }

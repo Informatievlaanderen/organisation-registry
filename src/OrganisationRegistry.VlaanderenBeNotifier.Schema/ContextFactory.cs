@@ -20,12 +20,8 @@ public class ContextFactory : IContextFactory
     }
 
     public VlaanderenBeNotifierContext CreateTransactional(DbConnection connection, DbTransaction transaction)
-    {
-        return new VlaanderenBeNotifierTransactionalContext(connection, transaction);
-    }
+        => new VlaanderenBeNotifierTransactionalContext(connection, transaction);
 
     public VlaanderenBeNotifierContext Create()
-    {
-        return _contextFunc().Value;
-    }
+        => _contextFunc().Value;
 }

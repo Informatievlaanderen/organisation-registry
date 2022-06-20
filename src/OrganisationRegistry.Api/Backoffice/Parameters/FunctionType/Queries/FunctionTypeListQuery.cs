@@ -37,10 +37,9 @@ public class FunctionTypeListQuery : Query<FunctionTypeListItem>
     {
         public IEnumerable<string> SortableFields { get; } = new[]
         {
-            nameof(FunctionTypeListItem.Name)
+            nameof(FunctionTypeListItem.Name),
         };
 
-        public SortingHeader DefaultSortingHeader { get; } =
-            new SortingHeader(nameof(FunctionTypeListItem.Name), SortOrder.Ascending);
+        public SortingHeader DefaultSortingHeader { get; } = new(nameof(FunctionTypeListItem.Name), SortOrder.Ascending);
     }
 }

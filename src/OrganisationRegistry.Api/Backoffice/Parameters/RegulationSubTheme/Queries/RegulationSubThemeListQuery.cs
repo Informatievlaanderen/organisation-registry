@@ -73,8 +73,7 @@ public class RegulationSubThemeListQuery: Query<RegulationSubThemeListItem, Regu
             nameof(RegulationSubThemeListItem.RegulationThemeName),
         };
 
-        public SortingHeader DefaultSortingHeader { get; } =
-            new SortingHeader(nameof(RegulationSubThemeListItem.Name), SortOrder.Ascending);
+        public SortingHeader DefaultSortingHeader { get; } = new(nameof(RegulationSubThemeListItem.Name), SortOrder.Ascending);
     }
 }
 

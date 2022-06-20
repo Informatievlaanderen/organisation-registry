@@ -55,7 +55,7 @@ public class UpdatePersonRequestValidator : AbstractValidator<UpdatePersonIntern
 public static class UpdatePersonRequestMapping
 {
     public static UpdatePerson Map(UpdatePersonInternalRequest message)
-        => new UpdatePerson(
+        => new(
             new PersonId(message.PersonId),
             new PersonFirstName(message.Body.FirstName),
             new PersonName(message.Body.Name),

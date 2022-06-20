@@ -171,8 +171,7 @@ public class DelegationListQuery : Query<DelegationListItem, DelegationListItemF
             nameof(DelegationListItem.IsDelegated),
         };
 
-        public SortingHeader DefaultSortingHeader { get; } =
-            new SortingHeader(nameof(DelegationListItem.BodyName), SortOrder.Ascending);
+        public SortingHeader DefaultSortingHeader { get; } = new(nameof(DelegationListItem.BodyName), SortOrder.Ascending);
     }
 }
 

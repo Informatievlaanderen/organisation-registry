@@ -103,7 +103,7 @@ public class GeefOndernemingQuery : IGeefOndernemingQuery
         return null;
     }
 
-    private GeefOnderneming MakeGeefOndernemingRequest(string kboNumber, string reference) => new GeefOnderneming
+    private GeefOnderneming MakeGeefOndernemingRequest(string kboNumber, string reference) => new()
     {
         Verzoek = new VerzoekType
         {
@@ -202,11 +202,9 @@ public class GeefOndernemingQuery : IGeefOndernemingQuery
     }
 
     private static Envelope<T> MakeEnvelope<T>(T body)
-    {
-        return new Envelope<T>
+        => new()
         {
             Header = new Header(),
             Body = body,
         };
-    }
 }

@@ -51,11 +51,9 @@ public class CreateFormalFrameworkRequestValidator : AbstractValidator<CreateFor
 public static class CreateFormalFrameworkRequestMapping
 {
     public static CreateFormalFramework Map(CreateFormalFrameworkRequest message)
-    {
-        return new CreateFormalFramework(
+        => new(
             new FormalFrameworkId(message.Id),
             message.Name,
             message.Code,
             new FormalFrameworkCategoryId(message.FormalFrameworkCategoryId));
-    }
 }

@@ -56,13 +56,11 @@ public class UpdateOrganisationBuildingInternalRequestValidator : AbstractValida
 public static class UpdateOrganisationBuildingRequestMapping
 {
     public static UpdateOrganisationBuilding Map(UpdateOrganisationBuildingInternalRequest message)
-    {
-        return new UpdateOrganisationBuilding(
+        => new(
             message.Body.OrganisationBuildingId,
             new OrganisationId(message.OrganisationId),
             new BuildingId(message.Body.BuildingId),
             message.Body.IsMainBuilding,
             new ValidFrom(message.Body.ValidFrom),
             new ValidTo(message.Body.ValidTo));
-    }
 }

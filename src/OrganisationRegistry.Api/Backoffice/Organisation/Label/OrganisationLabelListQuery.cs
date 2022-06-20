@@ -94,11 +94,11 @@ public class OrganisationLabelListQuery : Query<OrganisationLabelListItem, Organ
             nameof(OrganisationLabelListItem.LabelTypeName),
             nameof(OrganisationLabelListItem.LabelValue),
             nameof(OrganisationLabelListItem.ValidFrom),
-            nameof(OrganisationLabelListItem.ValidTo)
+            nameof(OrganisationLabelListItem.ValidTo),
         };
 
         public SortingHeader DefaultSortingHeader { get; } =
-            new SortingHeader(nameof(OrganisationLabelListItem.LabelTypeName), SortOrder.Ascending);
+            new(nameof(OrganisationLabelListItem.LabelTypeName), SortOrder.Ascending);
     }
 }
 

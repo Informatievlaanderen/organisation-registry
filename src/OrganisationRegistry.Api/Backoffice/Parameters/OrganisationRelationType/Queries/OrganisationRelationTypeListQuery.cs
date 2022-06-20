@@ -39,10 +39,10 @@ public class OrganisationRelationTypeListQuery : Query<OrganisationRelationTypeL
     {
         public IEnumerable<string> SortableFields { get; } = new[]
         {
-            nameof(OrganisationRelationTypeListItem.Name)
+            nameof(OrganisationRelationTypeListItem.Name),
         };
 
         public SortingHeader DefaultSortingHeader { get; } =
-            new SortingHeader(nameof(OrganisationRelationTypeListItem.Name), SortOrder.Ascending);
+            new(nameof(OrganisationRelationTypeListItem.Name), SortOrder.Ascending);
     }
 }

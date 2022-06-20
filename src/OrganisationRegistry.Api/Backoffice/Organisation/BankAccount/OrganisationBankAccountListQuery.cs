@@ -97,11 +97,11 @@ public class OrganisationBankAccountListQuery : Query<OrganisationBankAccountLis
             nameof(OrganisationBankAccountListItem.Bic),
             nameof(OrganisationBankAccountListItem.IsBic),
             nameof(OrganisationBankAccountListItem.ValidFrom),
-            nameof(OrganisationBankAccountListItem.ValidTo)
+            nameof(OrganisationBankAccountListItem.ValidTo),
         };
 
         public SortingHeader DefaultSortingHeader { get; } =
-            new SortingHeader(nameof(OrganisationBankAccountListItem.BankAccountNumber), SortOrder.Ascending);
+            new(nameof(OrganisationBankAccountListItem.BankAccountNumber), SortOrder.Ascending);
     }
 }
 

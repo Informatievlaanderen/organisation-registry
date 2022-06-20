@@ -21,9 +21,9 @@ public class FtpsListParserTests
 
         ftpsListItems.Should().ContainInOrder(new List<FtpsListItem>
         {
-            new FtpsListItem("pub_mut-ondernemingVKBO0200_20200613174810000.csv", "/pub_mut-ondernemingVKBO0200_20200613174810000.csv", "/",  "0"),
-            new FtpsListItem("pub_mut-ondernemingVKBO0200_20200616181303000.csv", "/pub_mut-ondernemingVKBO0200_20200616181303000.csv", "/", "10"),
-            new FtpsListItem("test.csv", "/test.csv", "/", "100")
+            new("pub_mut-ondernemingVKBO0200_20200613174810000.csv", "/pub_mut-ondernemingVKBO0200_20200613174810000.csv", "/",  "0"),
+            new("pub_mut-ondernemingVKBO0200_20200616181303000.csv", "/pub_mut-ondernemingVKBO0200_20200616181303000.csv", "/", "10"),
+            new("test.csv", "/test.csv", "/", "100"),
         });
     }
 }

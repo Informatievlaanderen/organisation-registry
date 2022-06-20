@@ -52,14 +52,14 @@ public class BodyParticipationReportTests
             OrganisationIsActive = true,
             LifecyclePhaseValidities = new List<BodySeatGenderRatioBodyLifecyclePhaseValidityItem>
             {
-                new BodySeatGenderRatioBodyLifecyclePhaseValidityItem
+                new()
                 {
                     BodyId = _bodyId,
                     RepresentsActivePhase = true,
                     ValidFrom = null,
-                    ValidTo = null
-                }
-            }
+                    ValidTo = null,
+                },
+            },
         };
         _context.BodySeatGenderRatioBodyList.Add(bodySeatGenderRatioBodyItem);
 
@@ -77,7 +77,7 @@ public class BodyParticipationReportTests
 
         _filtering = new FilteringHeader<BodyParticipationFilter>(new BodyParticipationFilter
         {
-            EntitledToVote = true
+            EntitledToVote = true,
         });
 
         _sorting = new SortingHeader(string.Empty, SortOrder.Ascending);
@@ -101,7 +101,7 @@ public class BodyParticipationReportTests
             BodySeatValidFrom = null,
             BodySeatValidTo = null,
             EntitledToVote = true,
-            BodySeatTypeIsEffective = bodySeatTypeIsEffective
+            BodySeatTypeIsEffective = bodySeatTypeIsEffective,
         };
         bodySeatGenderRatioBodyItem.PostsPerType.Add(bodySeatGenderRatioPostsPerTypeItem);
 
@@ -117,16 +117,16 @@ public class BodyParticipationReportTests
                 BodySeatTypeIsEffective = bodySeatTypeIsEffective,
                 Assignments = new List<BodySeatGenderRatioAssignmentItem>
                 {
-                    new BodySeatGenderRatioAssignmentItem
+                    new()
                     {
                         Id = Guid.NewGuid(),
                         AssignmentValidFrom = null,
                         AssignmentValidTo = null,
                         PersonId = Guid.NewGuid(),
                         DelegationAssignmentId = null,
-                        Sex = sex
-                    }
-                }
+                        Sex = sex,
+                    },
+                },
             });
     }
 
@@ -147,7 +147,7 @@ public class BodyParticipationReportTests
         participations.Should().BeEquivalentTo(
             new List<BodyParticipation>
             {
-                new BodyParticipation
+                new()
                 {
                     BodyId = _bodyId,
                     AssignedCount = 7,
@@ -164,9 +164,9 @@ public class BodyParticipationReportTests
                     UnknownPercentage = 0,
                     TotalCompliance = BodyParticipationCompliance.Compliant,
                     FemaleCompliance = BodyParticipationCompliance.Compliant,
-                    MaleCompliance = BodyParticipationCompliance.Compliant
+                    MaleCompliance = BodyParticipationCompliance.Compliant,
                 },
-                new BodyParticipation
+                new()
                 {
                     AssignedCount = 2,
                     BodyId = _bodyId,
@@ -183,8 +183,8 @@ public class BodyParticipationReportTests
                     UnknownPercentage = 0,
                     TotalCompliance = BodyParticipationCompliance.Compliant,
                     FemaleCompliance = BodyParticipationCompliance.Compliant,
-                    MaleCompliance = BodyParticipationCompliance.Compliant
-                }
+                    MaleCompliance = BodyParticipationCompliance.Compliant,
+                },
             });
     }
 
@@ -211,7 +211,7 @@ public class BodyParticipationReportTests
                 UnassignedCount = 0,
                 UnknownCount = 0,
                 UnknownPercentage = 0,
-                Compliance = BodyParticipationCompliance.Compliant
+                Compliance = BodyParticipationCompliance.Compliant,
             });
     }
 }

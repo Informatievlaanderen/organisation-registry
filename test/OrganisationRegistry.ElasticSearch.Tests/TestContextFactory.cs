@@ -15,12 +15,8 @@ public class TestContextFactory : IContextFactory
     }
 
     public OrganisationRegistryContext CreateTransactional(DbConnection connection, DbTransaction transaction)
-    {
-        return new OrganisationRegistryContext(_contextOptions);
-    }
+        => new(_contextOptions);
 
     public OrganisationRegistryContext Create()
-    {
-        return new OrganisationRegistryContext(_contextOptions);
-    }
+        => new(_contextOptions);
 }

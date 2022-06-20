@@ -39,10 +39,9 @@ public class LifecyclePhaseTypeListQuery: Query<LifecyclePhaseTypeListItem>
         {
             nameof(LifecyclePhaseTypeListItem.Name),
             nameof(LifecyclePhaseTypeListItem.RepresentsActivePhase),
-            nameof(LifecyclePhaseTypeListItem.IsDefaultPhase)
+            nameof(LifecyclePhaseTypeListItem.IsDefaultPhase),
         };
 
-        public SortingHeader DefaultSortingHeader { get; } =
-            new SortingHeader(nameof(LifecyclePhaseTypeListItem.Name), SortOrder.Ascending);
+        public SortingHeader DefaultSortingHeader { get; } = new(nameof(LifecyclePhaseTypeListItem.Name), SortOrder.Ascending);
     }
 }

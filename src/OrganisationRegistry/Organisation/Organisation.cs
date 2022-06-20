@@ -126,8 +126,7 @@ public partial class Organisation : AggregateRoot
         Period validity,
         Period operationalValidity,
         IDateTimeProvider dateTimeProvider)
-    {
-        return new Organisation(id,
+        => new(id,
             name,
             ovoNumber,
             shortName,
@@ -139,7 +138,6 @@ public partial class Organisation : AggregateRoot
             validity,
             operationalValidity,
             dateTimeProvider);
-    }
 
     public static Organisation CreateFromImport(OrganisationId id,
         string name,
@@ -176,8 +174,7 @@ public partial class Organisation : AggregateRoot
         Organisation? parentOrganisation,
         List<Purpose> purposes,
         IDateTimeProvider dateTimeProvider)
-    {
-        return new Organisation(
+        => new(
             message.OrganisationId,
             message.KboNumber,
             kboOrganisation.FormalName.Value,
@@ -191,7 +188,6 @@ public partial class Organisation : AggregateRoot
             new Period(new ValidFrom(kboOrganisation.ValidFrom), new ValidTo(message.ValidTo)),
             new Period(new ValidFrom(message.OperationalValidFrom), new ValidTo(message.OperationalValidTo)),
             dateTimeProvider);
-    }
 
     private Organisation(
         OrganisationId id,
