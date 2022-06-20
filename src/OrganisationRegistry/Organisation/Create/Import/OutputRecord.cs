@@ -29,7 +29,7 @@ public record OutputRecord
 
     public ImmutableList<Label> Labels { get; private init; } = ImmutableList<Label>.Empty;
 
-    public static OutputRecord From(Dictionary<string, Guid> labelTypes, DeserializedRecord record, OrganisationParentIdentifier parentidentifier, int sortOrder)
+    public static OutputRecord From(Dictionary<string, (Guid id, string name)> labelTypes, DeserializedRecord record, OrganisationParentIdentifier parentidentifier, int sortOrder)
         => new(record.Reference.Value!, parentidentifier, record.Name.Value!, sortOrder)
         {
             Article = Article.Parse(record.Article.Value),
@@ -39,13 +39,13 @@ public record OutputRecord
             Labels = GetLabels(labelTypes, record),
         };
 
-    private static ImmutableList<Label> GetLabels(IReadOnlyDictionary<string, Guid> labelTypes, DeserializedRecord record)
+    private static ImmutableList<Label> GetLabels(IReadOnlyDictionary<string, (Guid id, string name)> labelTypes, DeserializedRecord record)
         => record.Labels
             .Select(label => CreateLabel(labelTypes, label.ColumnName.Split('#')[1], label.Value!))
             .ToImmutableList();
 
-    private static Label CreateLabel(IReadOnlyDictionary<string, Guid> labelTypes, string labelTypeName, string labelValue)
-        => new(labelTypes[labelTypeName], labelTypeName, labelValue);
+    private static Label CreateLabel(IReadOnlyDictionary<string, (Guid id, string name)> labelTypes, string labelTypeName, string labelValue)
+        => new(labelTypes[labelTypeName].id, labelTypes[labelTypeName].name, labelValue);
 
     private static DateOnly? MaybeGetDate(string? maybeDate)
         => maybeDate is { } date

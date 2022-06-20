@@ -12,13 +12,13 @@ public class ImportCache
 {
     protected ImportCache(
         IEnumerable<OrganisationListItem> organisations,
-        Dictionary<string, Guid> labelTypes)
+        Dictionary<string, (Guid id, string name)> labelTypes)
     {
         LabelTypes = labelTypes;
         OrganisationsCache = organisations.ToImmutableList();
     }
 
-    public Dictionary<string, Guid> LabelTypes { get; }
+    public Dictionary<string, (Guid id, string name)> LabelTypes { get; }
     public ImmutableList<OrganisationListItem> OrganisationsCache { get; }
 
     public static ImportCache Create(
@@ -45,10 +45,10 @@ public class ImportCache
                        parentOvoNumbers.Contains(org.ParentOrganisationOvoNumber!));
     }
 
-    private static Dictionary<string, Guid> GetLabelTypes(OrganisationRegistryContext context)
+    private static Dictionary<string, (Guid id, string name)> GetLabelTypes(OrganisationRegistryContext context)
         => context.LabelTypeList
             .AsNoTracking()
-            .ToDictionary(type => type.Name, type => type.Id);
+            .ToDictionary(type => type.Name.ToLowerInvariant(), type => (id: type.Id, name: type.Name));
 
     public OrganisationListItem? GetOrganisationByOvoNumber(string ovoNumber)
         => OrganisationsCache.SingleOrDefault(

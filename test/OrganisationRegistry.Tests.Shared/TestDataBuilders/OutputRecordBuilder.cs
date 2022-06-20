@@ -9,7 +9,7 @@ public class OutputRecordBuilder
     private readonly OrganisationParentIdentifier _parentOrganisationid;
     private readonly int _sortOrder;
     private DeserializedRecord _deserializedRecord;
-    private readonly Dictionary<string, Guid> _labelTypes = new();
+    private readonly Dictionary<string, (Guid id, string name)> _labelTypes = new();
 
     public OutputRecordBuilder(string reference, OrganisationParentIdentifier parentOrganisationid, string name, int sortOrder)
     {
@@ -48,7 +48,7 @@ public class OutputRecordBuilder
 
     public OutputRecordBuilder AddLabel(Guid labelTypeId, string labelTypeName, string labelValue)
     {
-        _labelTypes.Add(labelTypeName, labelTypeId);
+        _labelTypes.Add(labelTypeName, (id: labelTypeId, name: labelTypeName));
         _deserializedRecord = _deserializedRecord with { Labels = _deserializedRecord.Labels.Add(Field.FromValue($"label#{labelTypeName}", labelValue)) };
         return this;
     }

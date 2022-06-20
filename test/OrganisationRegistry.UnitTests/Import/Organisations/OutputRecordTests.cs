@@ -24,10 +24,10 @@ public class OutputRecordTests
         var label2Id = fixture.Create<Guid>();
         const string label2 = "label 2";
 
-        var labelTypes = new Dictionary<string, Guid>
+        var labelTypes = new Dictionary<string, (Guid id, string name)>
         {
-            { label1, label1Id },
-            { label2, label2Id },
+            { label1, (id: label1Id, name: label1) },
+            { label2, (id: label2Id, name: label2) },
         };
 
         var random = new Random();
