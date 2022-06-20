@@ -1,3 +1,10 @@
+# [1.208.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.207.0...v1.208.0) (2022-06-20)
+
+
+### Features
+
+* or-1072 resolve small issue with labels ([f1f258f](https://github.com/informatievlaanderen/organisation-registry/commit/f1f258f663f88bd8ac4ae55a6b04babbb5624a18))
+
 # [1.207.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.206.0...v1.207.0) (2022-06-17)
 
 
