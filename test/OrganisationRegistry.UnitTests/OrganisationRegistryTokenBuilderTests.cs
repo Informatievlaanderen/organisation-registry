@@ -29,7 +29,7 @@ public class OrganisationRegistryTokenBuilderTests
                 new[]
                 {
                     new Claim(JwtClaimTypes.Subject, fixture.Create<string>()),
-                    new Claim(AcmIdmConstants.Claims.Role, roleClaim)
+                    new Claim(AcmIdmConstants.Claims.Role, roleClaim),
                 }));
 
         claimsIdentity.Claims
@@ -48,7 +48,7 @@ public class OrganisationRegistryTokenBuilderTests
             "WegwijsBeheerder-vlimpersbeheerder:OVO001833",
             "WegwijsBeheerder-algemeenBeheerder:OVO002949",
             "WegwijsBeheerder-beheerder:OVO002949",
-            "WegwijsBeheerder-orgaanBeheerder:OVO001835"
+            "WegwijsBeheerder-orgaanBeheerder:OVO001835",
         };
 
         var fixture = new Fixture();
@@ -122,7 +122,7 @@ public class OrganisationRegistryTokenBuilderTests
                 },
                 new[]
                 {
-                    Roles.VlimpersBeheerder
+                    Roles.VlimpersBeheerder,
                 },
             };
             yield return new object[]
@@ -133,7 +133,7 @@ public class OrganisationRegistryTokenBuilderTests
                 },
                 new[]
                 {
-                    Roles.OrgaanBeheerder
+                    Roles.OrgaanBeheerder,
                 },
             };
             yield return new object[]
@@ -144,7 +144,7 @@ public class OrganisationRegistryTokenBuilderTests
                 },
                 new[]
                 {
-                    Roles.DecentraalBeheerder
+                    Roles.DecentraalBeheerder,
                 },
             };
             yield return new object[]
@@ -155,7 +155,7 @@ public class OrganisationRegistryTokenBuilderTests
                 },
                 new[]
                 {
-                    Roles.AlgemeenBeheerder
+                    Roles.AlgemeenBeheerder,
                 },
             };
             yield return new object[]
@@ -168,7 +168,7 @@ public class OrganisationRegistryTokenBuilderTests
                 new[]
                 {
                     Roles.VlimpersBeheerder,
-                    Roles.OrgaanBeheerder
+                    Roles.OrgaanBeheerder,
                 },
             };
             yield return new object[]
@@ -216,7 +216,7 @@ public class OrganisationRegistryTokenBuilderTests
                 },
                 new[]
                 {
-                    "ovo002949"
+                    "ovo002949",
                 },
             };
             yield return new object[]
@@ -240,7 +240,7 @@ public class OrganisationRegistryTokenBuilderTests
                 new[]
                 {
                     "ovo001833",
-                    "ovo001830"
+                    "ovo001830",
                 },
             };
         }

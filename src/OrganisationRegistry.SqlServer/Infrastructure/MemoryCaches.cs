@@ -456,7 +456,7 @@ public class MemoryCachesMaintainer : IMemoryCachesMaintainer
         {
             MemoryCacheType.BodySeatNames,
             MemoryCacheType.BodySeatNumbers,
-            MemoryCacheType.IsSeatPaid
+            MemoryCacheType.IsSeatPaid,
         });
 
         await CheckResetCache(
@@ -468,14 +468,14 @@ public class MemoryCachesMaintainer : IMemoryCachesMaintainer
                 typeof(OrganisationInfoUpdated),
                 typeof(OrganisationNameUpdated),
                 typeof(OrganisationValidityUpdated),
-                typeof(OrganisationInfoUpdatedFromKbo)
+                typeof(OrganisationInfoUpdatedFromKbo),
             },
             new[]
             {
                 MemoryCacheType.OvoNumbers,
                 MemoryCacheType.OrganisationNames,
                 MemoryCacheType.OrganisationValidFroms,
-                MemoryCacheType.OrganisationValidTos
+                MemoryCacheType.OrganisationValidTos,
             });
 
         await CheckResetCache(
@@ -484,7 +484,7 @@ public class MemoryCachesMaintainer : IMemoryCachesMaintainer
             {
                 typeof(ParentAssignedToOrganisation),
                 typeof(OrganisationParentUpdated),
-                typeof(ParentClearedFromOrganisation)
+                typeof(ParentClearedFromOrganisation),
             },
             new[] { MemoryCacheType.OrganisationParents });
 

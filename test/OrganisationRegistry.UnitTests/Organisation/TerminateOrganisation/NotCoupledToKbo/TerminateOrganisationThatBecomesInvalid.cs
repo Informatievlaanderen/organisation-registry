@@ -39,7 +39,7 @@ public class TerminateOrganisationThatBecomesInvalid : Specification<TerminateOr
                 KboV2LegalFormOrganisationClassificationTypeId = Guid.NewGuid(),
                 KboV2RegisteredOfficeLocationTypeId = Guid.NewGuid(),
                 KboV2FormalNameLabelTypeId = Guid.NewGuid(),
-            }
+            },
         };
         _organisationId = Guid.NewGuid();
         _dateTimeProviderStub = new DateTimeProviderStub(DateTime.Today);
@@ -108,7 +108,7 @@ public class TerminateOrganisationThatBecomesInvalid : Specification<TerminateOr
                 _organisationId,
                 _formalFrameworkId,
                 _parentOrganisationId,
-                _organisationFormalFrameworkId)
+                _organisationFormalFrameworkId),
         };
 
     private TerminateOrganisation TerminateOrganisationCommand

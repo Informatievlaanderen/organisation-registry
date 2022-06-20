@@ -37,7 +37,7 @@ public class CreateOrganisationFromKboWithoutAddressAndLegalFormTests
             KboV2LegalFormOrganisationClassificationTypeId = Guid.NewGuid(),
             KboV2RegisteredOfficeLocationTypeId = Guid.NewGuid(),
             KboV2FormalNameLabelTypeId = Guid.NewGuid(),
-        }
+        },
     };
 
     private readonly Guid _parentOrganisationId;
@@ -112,7 +112,7 @@ public class CreateOrganisationFromKboWithoutAddressAndLegalFormTests
 
             new LabelTypeCreated(
                 _organisationRegistryConfigurationStub.Kbo.KboV2FormalNameLabelTypeId,
-                "KBO formele naam")
+                "KBO formele naam"),
         };
 
     private CreateOrganisationFromKbo CreateOrganisationFromKboCommand
@@ -155,7 +155,7 @@ public class CreateOrganisationFromKboWithoutAddressAndLegalFormTests
                             Bic = "GKCCBEBB",
                             ValidFrom = new DateTime(2000, 1, 1),
                             ValidTo = new DateTime(2001, 1, 1),
-                        }
+                        },
                     },
                     LegalForm = null,
                     Address = null,

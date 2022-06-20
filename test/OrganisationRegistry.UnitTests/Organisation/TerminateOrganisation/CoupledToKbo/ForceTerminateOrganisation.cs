@@ -35,7 +35,7 @@ public class ForceTerminateOrganisation : Specification<TerminateOrganisationCom
                 KboV2LegalFormOrganisationClassificationTypeId = Guid.NewGuid(),
                 KboV2RegisteredOfficeLocationTypeId = Guid.NewGuid(),
                 KboV2FormalNameLabelTypeId = Guid.NewGuid(),
-            }
+            },
         };
         _organisationId = Guid.NewGuid();
         _dateTimeProviderStub = new DateTimeProviderStub(DateTime.Today);
@@ -81,7 +81,7 @@ public class ForceTerminateOrganisation : Specification<TerminateOrganisationCom
                 _fixture.Create<string>(),
                 _fixture.Create<string>(),
                 null,
-                null)
+                null),
         };
 
     protected TerminateOrganisation TerminateOrganisationCommand

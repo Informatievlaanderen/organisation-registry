@@ -38,8 +38,8 @@ public class CurlFtpsClient : IFtpsClient
                        RedirectStandardOutput = true,
                        RedirectStandardError = true,
                        UseShellExecute = false,
-                       CreateNoWindow = true
-                   }
+                       CreateNoWindow = true,
+                   },
                })
         {
             process.Start();
@@ -73,7 +73,7 @@ public class CurlFtpsClient : IFtpsClient
                        RedirectStandardError = true,
                        UseShellExecute = false,
                        CreateNoWindow = true,
-                   }
+                   },
                })
         {
             process.Start();
@@ -113,7 +113,7 @@ public class CurlFtpsClient : IFtpsClient
                        RedirectStandardError = true,
                        UseShellExecute = false,
                        CreateNoWindow = true,
-                   }
+                   },
                })
         {
             process.Start();

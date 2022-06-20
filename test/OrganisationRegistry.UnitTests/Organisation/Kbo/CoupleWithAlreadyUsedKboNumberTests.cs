@@ -35,7 +35,7 @@ public class CoupleWithAlreadyUsedKboNumberTests
             KboV2LegalFormOrganisationClassificationTypeId = Guid.NewGuid(),
             KboV2RegisteredOfficeLocationTypeId = Guid.NewGuid(),
             KboV2FormalNameLabelTypeId = Guid.NewGuid(),
-        }
+        },
     };
 
     private readonly Guid _organisationId;
@@ -126,7 +126,7 @@ public class CoupleWithAlreadyUsedKboNumberTests
                 "BE0123456789",
                 "organisation X",
                 "OVO001234",
-                _dateTimeProviderStub.Today)
+                _dateTimeProviderStub.Today),
         };
 
     private CoupleOrganisationToKbo CoupleOrganisationToKboCommand
@@ -158,14 +158,14 @@ public class CoupleWithAlreadyUsedKboNumberTests
                             Bic = "GKCCBEBB",
                             ValidFrom = new DateTime(2000, 1, 1),
                             ValidTo = new DateTime(2001, 1, 1),
-                        }
+                        },
                     },
                     LegalForm =
                         new LegalFormStub
                         {
                             Code = "Some Legal Code",
                             ValidFrom = new DateTime(2020, 12, 11),
-                            ValidTo = new DateTime(2020, 12, 12)
+                            ValidTo = new DateTime(2020, 12, 12),
                         },
                     Address =
                         new AddressStub
@@ -175,8 +175,8 @@ public class CoupleWithAlreadyUsedKboNumberTests
                             Country = "Belgie",
                             ZipCode = "9999",
                             ValidFrom = new DateTime(2015, 5, 5),
-                            ValidTo = new DateTime(2016, 6, 6)
-                        }
+                            ValidTo = new DateTime(2016, 6, 6),
+                        },
                 }),
             new KboOrganisationClassificationRetrieverStub("Some Legal Code", _organisationClassificationId),
             new KboLocationRetrieverStub(

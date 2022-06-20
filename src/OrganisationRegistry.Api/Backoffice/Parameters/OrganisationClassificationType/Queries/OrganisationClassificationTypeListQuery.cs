@@ -52,7 +52,7 @@ public class OrganisationClassificationTypeListQuery: Query<OrganisationClassifi
     {
         public IEnumerable<string> SortableFields { get; } = new[]
         {
-            nameof(OrganisationClassificationTypeListItem.Name)
+            nameof(OrganisationClassificationTypeListItem.Name),
         };
 
         public SortingHeader DefaultSortingHeader { get; } =

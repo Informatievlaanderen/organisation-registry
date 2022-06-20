@@ -47,7 +47,7 @@ public class PurposeListView :
 
     public enum ProjectionTables
     {
-        PurposeList
+        PurposeList,
     }
 
     private readonly IEventStore _eventStore;

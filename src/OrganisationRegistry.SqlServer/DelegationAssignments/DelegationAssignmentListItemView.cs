@@ -73,7 +73,7 @@ public class DelegationAssignmentListView :
 
     public enum ProjectionTables
     {
-        DelegationAssignmentList
+        DelegationAssignmentList,
     }
 
     private readonly IEventStore? _eventStore;

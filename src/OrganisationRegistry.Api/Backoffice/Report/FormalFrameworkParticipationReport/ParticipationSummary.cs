@@ -230,7 +230,7 @@ public class ParticipationSummary
                     ResponsibleMinisterClassificationId = responsibleMinister?.BodyClassificationId,
                     ResponsibleMinisterClassificationName = responsibleMinister?.BodyClassificationName ?? string.Empty,
 
-                    TotalCount = totalCount
+                    TotalCount = totalCount,
                 };
             })
             .Where(summary => summary.UnassignedCount == 0);

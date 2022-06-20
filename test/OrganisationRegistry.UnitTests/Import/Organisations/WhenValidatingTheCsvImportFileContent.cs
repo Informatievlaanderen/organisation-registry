@@ -34,7 +34,7 @@ public class WhenValidatingTheCsvImportFileContent
             {
                 Reference = Field.FromValue(ColumnNames.Reference, reference),
                 Name = Field.FromValue(ColumnNames.Name, name),
-                Parent = Field.FromValue(ColumnNames.Parent, parent)
+                Parent = Field.FromValue(ColumnNames.Parent, parent),
             },
             Array.Empty<ValidationIssue>());
 
@@ -46,7 +46,7 @@ public class WhenValidatingTheCsvImportFileContent
         {
             GetParsedrecord(2, "", "ovo000025", "name1"),
             GetParsedrecord(3, "REF2", "ovo000026", ""),
-            GetParsedrecord(4, "", "ovo000027", "")
+            GetParsedrecord(4, "", "ovo000027", ""),
         };
 
         // Act

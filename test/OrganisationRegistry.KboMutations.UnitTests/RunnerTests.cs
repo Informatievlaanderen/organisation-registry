@@ -76,7 +76,7 @@
              .Returns(
                  new List<MutationsFile>
                  {
-                     new("filename.csv", string.Empty, new List<MutationsLine>())
+                     new("filename.csv", string.Empty, new List<MutationsLine>()),
                  });
 
          var runner =
@@ -136,13 +136,13 @@
          var mutationsLines1 = new List<MutationsLine>
          {
              new MutationsLine
-                 {DatumModificatie = DateTime.Now, MaatschappelijkeNaam = "KBC", Ondernemingsnummer = "0918128212"}
+                 {DatumModificatie = DateTime.Now, MaatschappelijkeNaam = "KBC", Ondernemingsnummer = "0918128212"},
          };
 
          var mutationsLines2 = new List<MutationsLine>
          {
              new MutationsLine
-                 {DatumModificatie = DateTime.Now, MaatschappelijkeNaam = "KBC", Ondernemingsnummer = "0918128212"}
+                 {DatumModificatie = DateTime.Now, MaatschappelijkeNaam = "KBC", Ondernemingsnummer = "0918128212"},
          };
 
          kboFtpClientMock

@@ -47,7 +47,7 @@ public class BodyClassificationTypeListView :
 
     public enum ProjectionTables
     {
-        BodyClassificationTypeList
+        BodyClassificationTypeList,
     }
 
     private readonly IEventStore _eventStore;

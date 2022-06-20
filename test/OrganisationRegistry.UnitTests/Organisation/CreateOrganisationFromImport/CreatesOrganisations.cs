@@ -38,7 +38,7 @@ public class CreatesOrganisations
         {
             new OrganisationCreatedBuilder(SequentialOvoNumberGenerator)
                 .WithId(new OrganisationId(_parentOrganisationId))
-                .Build()
+                .Build(),
         };
 
     private static CreateOrganisationsFromImport CreateOrganisationsFromImportCommand(IEnumerable<OutputRecord> records)

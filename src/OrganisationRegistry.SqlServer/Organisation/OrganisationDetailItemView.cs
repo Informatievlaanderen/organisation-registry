@@ -135,7 +135,7 @@ public class OrganisationDetailItemView :
 
     public enum ProjectionTables
     {
-        OrganisationDetail
+        OrganisationDetail,
     }
 
     public OrganisationDetailItemView(
@@ -189,7 +189,7 @@ public class OrganisationDetailItemView :
             PurposeNames = message.Body.Purposes.OrderBy(x => x.Name).ToSeparatedList("|", x => x.Name),
             ShowOnVlaamseOverheidSites = message.Body.ShowOnVlaamseOverheidSites,
             ValidFrom = message.Body.ValidFrom,
-            ValidTo = message.Body.ValidTo
+            ValidTo = message.Body.ValidTo,
         };
 
         organisationListItem.KboNumber = message.Body.KboNumber;

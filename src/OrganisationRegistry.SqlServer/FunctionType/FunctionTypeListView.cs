@@ -46,7 +46,7 @@ public class FunctionTypeListView :
 
     public enum ProjectionTables
     {
-        FunctionList
+        FunctionList,
     }
 
     private readonly IEventStore _eventStore;

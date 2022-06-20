@@ -46,7 +46,7 @@ public class
                 KboV2LegalFormOrganisationClassificationTypeId = Guid.NewGuid(),
                 KboV2RegisteredOfficeLocationTypeId = Guid.NewGuid(),
                 KboV2FormalNameLabelTypeId = Guid.NewGuid(),
-            }
+            },
         };
         _dateTimeProviderStub = new DateTimeProviderStub(new DateTime(2019, 9, 20));
 
@@ -146,7 +146,7 @@ public class
                 "GKCCBEBB",
                 true,
                 new DateTime(2000, 1, 1),
-                new DateTime(2001, 1, 1))
+                new DateTime(2001, 1, 1)),
         };
 
     private SyncOrganisationWithKbo SyncOrganisationWithKboCommand
@@ -185,14 +185,14 @@ public class
                             Bic = "GKCCBEBB",
                             ValidFrom = new DateTime(2000, 1, 1),
                             ValidTo = new DateTime(2001, 1, 1),
-                        }
+                        },
                     },
                     LegalForm =
                         new LegalFormStub
                         {
                             Code = "Some Legal Code",
                             ValidFrom = new DateTime(2020, 12, 11),
-                            ValidTo = new DateTime(2020, 12, 12)
+                            ValidTo = new DateTime(2020, 12, 12),
                         },
                     Address =
                         new AddressStub
@@ -202,8 +202,8 @@ public class
                             Country = "Belgie",
                             ZipCode = "8881",
                             ValidFrom = new DateTime(1999, 12, 31),
-                            ValidTo = null
-                        }
+                            ValidTo = null,
+                        },
                 }),
             organisationClassificationRetriever: new KboOrganisationClassificationRetrieverStub(
                 "Some Legal Code",

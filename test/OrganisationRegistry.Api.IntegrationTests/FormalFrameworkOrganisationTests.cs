@@ -36,8 +36,8 @@ public class FormalFrameworkOrganisationTests
                     "Responsible Minister",
                     organisationClassificationId: Guid.NewGuid(),
                     "The current minister",
-                    validity: Period.FromDates(today, today))
-            }
+                    validity: Period.FromDates(today, today)),
+            },
         };
         var apiConfiguration = new ApiConfigurationSection
         {
@@ -81,7 +81,7 @@ public class FormalFrameworkOrganisationTests
                     parentOrganisationId: parentOrganisationId,
                     parentOrganisationName: "The Actual ParentOrganisationName",
                     validity: Period.FromDates(theNextDayInThePast, today)),
-            }
+            },
         };
         var apiConfiguration = new ApiConfigurationSection
         {

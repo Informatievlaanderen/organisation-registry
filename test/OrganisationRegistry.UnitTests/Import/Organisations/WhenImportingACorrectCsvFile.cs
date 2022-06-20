@@ -24,7 +24,7 @@ public class WhenImportingACorrectCsvFile
             Status = ImportProcessStatus.Processing,
             FileContent = csvToParse,
             FileName = "dummy.csv",
-            UploadedAt = DateTimeOffset.Now
+            UploadedAt = DateTimeOffset.Now,
         };
 
         var parentId = fixture.Create<Guid>();

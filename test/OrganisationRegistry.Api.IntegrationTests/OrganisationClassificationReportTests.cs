@@ -29,7 +29,7 @@ public class OrganisationClassificationReportTests
         var mepFormalFrameworkId = Guid.NewGuid();
         var apiConfiguration = new ApiConfigurationSection
         {
-            Mep_FormalFrameworkId = mepFormalFrameworkId
+            Mep_FormalFrameworkId = mepFormalFrameworkId,
         };
 
         var activeItemOrganisationId = AddItem(context, currentlyActiveDate, organisationClassificationId, mepFormalFrameworkId);
@@ -73,7 +73,7 @@ public class OrganisationClassificationReportTests
                     OrganisationClassificationId = organisationClassificationId,
                     OrganisationId = organisationId,
                     OrganisationClassificationTypeId = Guid.NewGuid(),
-                    OrganisationOrganisationClassificationId = Guid.NewGuid()
+                    OrganisationOrganisationClassificationId = Guid.NewGuid(),
                 });
 
         context
@@ -85,7 +85,7 @@ public class OrganisationClassificationReportTests
                     OrganisationActive = true,
                     OrganisationId = organisationId,
                     OrganisationName = Guid.NewGuid().ToString(),
-                    BodyOrganisationId = Guid.NewGuid()
+                    BodyOrganisationId = Guid.NewGuid(),
                 });
 
         context
@@ -118,8 +118,8 @@ public class OrganisationClassificationReportTests
                             BodyId = bodyId,
                             ValidFrom = currentlyActiveDate,
                             ValidTo = currentlyActiveDate,
-                            LifecyclePhaseId = Guid.NewGuid()
-                        }
+                            LifecyclePhaseId = Guid.NewGuid(),
+                        },
                     },
                     OrganisationIsActive = true,
                     PostsPerType = new List<BodySeatGenderRatioPostsPerTypeItem>()
@@ -127,8 +127,8 @@ public class OrganisationClassificationReportTests
                         new BodySeatGenderRatioPostsPerTypeItem
                         {
                             BodySeatValidFrom = currentlyActiveDate,
-                            BodySeatValidTo = currentlyActiveDate
-                        }
+                            BodySeatValidTo = currentlyActiveDate,
+                        },
                     },
                 });
         return organisationId;

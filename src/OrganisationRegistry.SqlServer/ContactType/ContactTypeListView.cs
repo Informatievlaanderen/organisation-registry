@@ -47,7 +47,7 @@ public class ContactTypeListView :
 
     public enum ProjectionTables
     {
-        ContactTypeList
+        ContactTypeList,
     }
 
     private readonly IEventStore? _eventStore;

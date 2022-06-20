@@ -92,7 +92,7 @@ public class OrganisationHandlerTests
         await _eventProcessor.Handle<OrganisationDocument>(
             new List<IEnvelope>
             {
-                scenario.Create<InitialiseProjection>().ToEnvelope()
+                scenario.Create<InitialiseProjection>().ToEnvelope(),
             }
         );
 
@@ -149,7 +149,7 @@ public class OrganisationHandlerTests
                 organisationCreated.ToEnvelope(),
                 organisationParentCreated.ToEnvelope(),
                 parentCoupled.ToEnvelope(),
-                parentNameUpdated.ToEnvelope()
+                parentNameUpdated.ToEnvelope(),
             }
         );
 
@@ -180,7 +180,7 @@ public class OrganisationHandlerTests
                 initialiseProjection.ToEnvelope(),
                 organisationCreated.ToEnvelope(),
                 kboOrganisationBankAccountAdded.ToEnvelope(),
-                kboOrganisationBankAccountAdded2.ToEnvelope()
+                kboOrganisationBankAccountAdded2.ToEnvelope(),
             }
         );
 
@@ -202,7 +202,7 @@ public class OrganisationHandlerTests
                     kboOrganisationBankAccountAdded2.IsIban,
                     kboOrganisationBankAccountAdded2.Bic,
                     kboOrganisationBankAccountAdded2.IsBic,
-                    Common.Period.FromDates(kboOrganisationBankAccountAdded2.ValidFrom, kboOrganisationBankAccountAdded2.ValidTo))
+                    Common.Period.FromDates(kboOrganisationBankAccountAdded2.ValidFrom, kboOrganisationBankAccountAdded2.ValidTo)),
             });
     }
 
@@ -232,7 +232,7 @@ public class OrganisationHandlerTests
                 organisationCreated.ToEnvelope(),
                 kboOrganisationBankAccountAdded.ToEnvelope(),
                 kboOrganisationBankAccountToRemoveAdded.ToEnvelope(),
-                kboOrganisationBankAccountRemoved.ToEnvelope()
+                kboOrganisationBankAccountRemoved.ToEnvelope(),
             }
         );
 
@@ -247,7 +247,7 @@ public class OrganisationHandlerTests
                     kboOrganisationBankAccountAdded.IsIban,
                     kboOrganisationBankAccountAdded.Bic,
                     kboOrganisationBankAccountAdded.IsBic,
-                    Common.Period.FromDates(kboOrganisationBankAccountAdded.ValidFrom, kboOrganisationBankAccountAdded.ValidTo))
+                    Common.Period.FromDates(kboOrganisationBankAccountAdded.ValidFrom, kboOrganisationBankAccountAdded.ValidTo)),
             });
     }
 
@@ -334,7 +334,7 @@ public class OrganisationHandlerTests
             {
                 initialiseProjection.ToEnvelope(),
                 organisationCreated.ToEnvelope(),
-                organisationRegulationAdded.ToEnvelope()
+                organisationRegulationAdded.ToEnvelope(),
             }
         );
 
@@ -362,7 +362,7 @@ public class OrganisationHandlerTests
                 initialiseProjection.ToEnvelope(),
                 organisationCreated.ToEnvelope(),
                 organisationRegulationAdded.ToEnvelope(),
-                organisationRegulationUpdated.ToEnvelope()
+                organisationRegulationUpdated.ToEnvelope(),
             }
         );
 
@@ -413,7 +413,7 @@ public class OrganisationHandlerTests
                 initialiseProjection.ToEnvelope(),
                 organisationCreated.ToEnvelope(),
                 organisationRegulationAdded.ToEnvelope(),
-                organisationRegulationUpdated.ToEnvelope()
+                organisationRegulationUpdated.ToEnvelope(),
             }
         );
 

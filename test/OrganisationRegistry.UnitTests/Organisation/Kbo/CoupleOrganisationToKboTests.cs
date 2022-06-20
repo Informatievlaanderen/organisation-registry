@@ -35,7 +35,7 @@ public class CoupleOrganisationToKboTests: Specification<KboOrganisationCommandH
             KboV2LegalFormOrganisationClassificationTypeId = Guid.NewGuid(),
             KboV2RegisteredOfficeLocationTypeId = Guid.NewGuid(),
             KboV2FormalNameLabelTypeId = Guid.NewGuid(),
-        }
+        },
     };
 
     private readonly Guid _organisationId;
@@ -95,7 +95,7 @@ public class CoupleOrganisationToKboTests: Specification<KboOrganisationCommandH
 
             new LabelTypeCreated(
                 _organisationRegistryConfigurationStub.Kbo.KboV2FormalNameLabelTypeId,
-                "KBO formele naam")
+                "KBO formele naam"),
         };
 
     private CoupleOrganisationToKbo CoupleOrganisationToKboCommand
@@ -125,14 +125,14 @@ public class CoupleOrganisationToKboTests: Specification<KboOrganisationCommandH
                         Bic = "GKCCBEBB",
                         ValidFrom = new DateTime(2000, 1, 1),
                         ValidTo = new DateTime(2001, 1, 1),
-                    }
+                    },
                 },
                 LegalForm =
                     new LegalFormStub
                     {
                         Code = "Some Legal Code",
                         ValidFrom = new DateTime(2020, 12, 11),
-                        ValidTo = new DateTime(2020, 12, 12)
+                        ValidTo = new DateTime(2020, 12, 12),
                     },
                 Address =
                     new AddressStub
@@ -142,8 +142,8 @@ public class CoupleOrganisationToKboTests: Specification<KboOrganisationCommandH
                         Country = "Belgie",
                         ZipCode = "9999",
                         ValidFrom = new DateTime(2015, 5, 5),
-                        ValidTo = new DateTime(2016, 6, 6)
-                    }
+                        ValidTo = new DateTime(2016, 6, 6),
+                    },
             }),
             new KboOrganisationClassificationRetrieverStub("Some Legal Code", _organisationClassificationId),
             new KboLocationRetrieverStub(address => address.Street == "Waregemsestraat" ? _registeredOfficeLocationId : null));
