@@ -47,9 +47,7 @@ public class ImportOrganisationsController : OrganisationRegistryController
 
         var statusItem = ImportOrganisationsStatusListItem.Create(
             DateTimeOffset.Now,
-            user.UserId,
-            user.LastName,
-            user.FirstName,
+            user,
             bulkimportfile.FileName,
             content,
             ImportFileTypes.Create
