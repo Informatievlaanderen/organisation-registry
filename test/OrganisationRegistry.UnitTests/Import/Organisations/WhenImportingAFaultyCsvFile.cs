@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using Api.HostedServices.ProcessImportedFiles;
+using Api.HostedServices.ProcessImportedFiles.Strategy.CreateOrganisations;
 using AutoFixture;
 using FluentAssertions;
 using SqlServer.Import.Organisations;

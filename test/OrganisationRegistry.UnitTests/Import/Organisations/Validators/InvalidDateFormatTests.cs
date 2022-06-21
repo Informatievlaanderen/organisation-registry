@@ -1,9 +1,9 @@
 ﻿namespace OrganisationRegistry.UnitTests.Import.Organisations.Validators;
 
 using Api.HostedServices.ProcessImportedFiles;
+using Api.HostedServices.ProcessImportedFiles.Strategy.CreateOrganisations;
 using Api.HostedServices.ProcessImportedFiles.Validators;
 using FluentAssertions;
-using OrganisationRegistry.Organisation.Import;
 using Xunit;
 
 public class InvalidDateFormatTests
@@ -38,7 +38,7 @@ public class InvalidDateFormatTests
     public void ReturnsEmpty_WhenValidityStartHasValidFormatAndOperationalValidityStartHasNoValue(string validityStart)
     {
         var record = GetDeserializedRecordWithValidityStart(validityStart);
-        var issues = InvalidDateFormat.Validate(1, record);
+        var issues = InvalidDateFormat.Validate(1, record.Validity_Start, record.OperationalValidity_Start);
         issues.Should().BeEmpty();
     }
 
@@ -50,7 +50,7 @@ public class InvalidDateFormatTests
         string operationalValidityStart)
     {
         var record = GetDeserializedRecordWithOperationalValidityStart(operationalValidityStart);
-        var issues = InvalidDateFormat.Validate(1, record);
+        var issues = InvalidDateFormat.Validate(1, record.Validity_Start, record.OperationalValidity_Start);
         issues.Should().BeEmpty();
     }
 
@@ -63,7 +63,7 @@ public class InvalidDateFormatTests
     {
         var record =
             GetDeserializedRecordWithValidityStartAndOperationalValidityStart(validityStart, operationalValidityStart);
-        var issues = InvalidDateFormat.Validate(1, record);
+        var issues = InvalidDateFormat.Validate(1, record.Validity_Start, record.OperationalValidity_Start);
         issues.Should().BeEmpty();
     }
 
@@ -71,7 +71,7 @@ public class InvalidDateFormatTests
     public void ReturnsEmpty_WhenValidityStartHasNoValueAndOperationalValidityStartHasNoValue()
     {
         var record = new DeserializedRecord();
-        var issues = InvalidDateFormat.Validate(1, record);
+        var issues = InvalidDateFormat.Validate(1, record.Validity_Start, record.OperationalValidity_Start);
         issues.Should().BeEmpty();
     }
 
@@ -83,7 +83,7 @@ public class InvalidDateFormatTests
         string invalidValidityStart)
     {
         var record = GetDeserializedRecordWithValidityStart(invalidValidityStart);
-        var issues = InvalidDateFormat.Validate(1, record);
+        var issues = InvalidDateFormat.Validate(1, record.Validity_Start, record.OperationalValidity_Start);
         issues.Should().HaveCount(1).And.ContainEquivalentOf(
             new ValidationIssue(
                 1,
@@ -98,7 +98,7 @@ public class InvalidDateFormatTests
         string invalidOperationalValidityStart)
     {
         var record = GetDeserializedRecordWithOperationalValidityStart(invalidOperationalValidityStart);
-        var issues = InvalidDateFormat.Validate(1, record);
+        var issues = InvalidDateFormat.Validate(1, record.Validity_Start, record.OperationalValidity_Start);
         issues.Should().HaveCount(1).And.ContainEquivalentOf(
             new ValidationIssue(
                 1,
@@ -117,7 +117,7 @@ public class InvalidDateFormatTests
         var record = GetDeserializedRecordWithValidityStartAndOperationalValidityStart(
             invalidValidityStart,
             invalidOperationalValidityStart);
-        var issues = InvalidDateFormat.Validate(1, record);
+        var issues = InvalidDateFormat.Validate(1, record.Validity_Start, record.OperationalValidity_Start);
         issues.Should().HaveCount(2)
             .And.ContainEquivalentOf(
                 new ValidationIssue(

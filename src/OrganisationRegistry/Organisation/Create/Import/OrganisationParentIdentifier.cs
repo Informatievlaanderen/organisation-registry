@@ -2,7 +2,7 @@
 
 using System;
 
-public struct OrganisationParentIdentifier
+public readonly struct OrganisationParentIdentifier
 {
     private string? Reference { get; }
     private Guid? Id { get; }

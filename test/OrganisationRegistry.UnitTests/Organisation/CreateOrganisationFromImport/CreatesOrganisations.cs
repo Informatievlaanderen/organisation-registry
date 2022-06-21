@@ -41,7 +41,7 @@ public class CreatesOrganisations
                 .Build(),
         };
 
-    private static CreateOrganisationsFromImport CreateOrganisationsFromImportCommand(IEnumerable<OutputRecord> records)
+    private static CreateOrganisationsFromImport CreateOrganisationsFromImportCommand(IEnumerable<CreateOrganisationsFromImportCommandItem> records)
         => new(Guid.NewGuid(), records);
 
     protected override CreateOrganisationsFromImportCommandHandler BuildHandler(ISession session)
@@ -57,7 +57,7 @@ public class CreatesOrganisations
         var outputRecord = new OutputRecordBuilder(_fixture.Create<string>(), _parentOrganisationId, _fixture.Create<string>(), 1)
             .Build();
 
-        var command = CreateOrganisationsFromImportCommand(new List<OutputRecord> { outputRecord });
+        var command = CreateOrganisationsFromImportCommand(new List<CreateOrganisationsFromImportCommandItem> { outputRecord });
 
         await Given(Events).When(command, TestUser.AlgemeenBeheerder)
             .Then();
@@ -82,7 +82,7 @@ public class CreatesOrganisations
             .WithOperationalValidityStart(_tomorow.ToString("yyyy-MM-dd"))
             .Build();
 
-        var command = CreateOrganisationsFromImportCommand(new List<OutputRecord> { outputRecord });
+        var command = CreateOrganisationsFromImportCommand(new List<CreateOrganisationsFromImportCommandItem> { outputRecord });
 
         await Given(Events).When(command, TestUser.AlgemeenBeheerder)
             .Then();
@@ -111,7 +111,7 @@ public class CreatesOrganisations
         var shortName2 = _fixture.Create<string>();
         var article2 = Article.Het;
 
-        var outputRecords = new List<OutputRecord>()
+        var outputRecords = new List<CreateOrganisationsFromImportCommandItem>()
         {
             new OutputRecordBuilder(ref1, _parentOrganisationId, name1, 1),
             new OutputRecordBuilder(ref2, _parentOrganisationId, name2, 2)
@@ -157,7 +157,7 @@ public class CreatesOrganisations
         var label2TypeName = _fixture.Create<string>();
         var label2Value = _fixture.Create<string>();
 
-        var outputRecords = new List<OutputRecord>()
+        var outputRecords = new List<CreateOrganisationsFromImportCommandItem>()
         {
             new OutputRecordBuilder(_fixture.Create<string>(), _parentOrganisationId, _fixture.Create<string>(), 1)
                 .AddLabel(label1TypeId, label1TypeName, label1Value)
@@ -207,7 +207,7 @@ public class CreatesOrganisations
         var name2=_fixture.Create<string>();
         var name3=_fixture.Create<string>();
         var name4=_fixture.Create<string>();
-        var outputRecords = new List<OutputRecord>()
+        var outputRecords = new List<CreateOrganisationsFromImportCommandItem>()
         {
             new OutputRecordBuilder(ref1, _parentOrganisationId, name1, 1),
             new OutputRecordBuilder(ref2, ref1, name2, 2),
@@ -249,7 +249,7 @@ public class CreatesOrganisations
         var name1=_fixture.Create<string>();
         var name2=_fixture.Create<string>();
         var name3=_fixture.Create<string>();
-        var outputRecords = new List<OutputRecord>()
+        var outputRecords = new List<CreateOrganisationsFromImportCommandItem>()
         {
             new OutputRecordBuilder(ref3, ref2, name3, 4),
             new OutputRecordBuilder(ref2, ref1, name2, 3),
@@ -287,7 +287,7 @@ public class CreatesOrganisations
         var name1=_fixture.Create<string>();
         var name2=_fixture.Create<string>();
         var name3=_fixture.Create<string>();
-        var outputRecords = new List<OutputRecord>()
+        var outputRecords = new List<CreateOrganisationsFromImportCommandItem>()
         {
             new OutputRecordBuilder(ref3, ref2, name3, 4),
             new OutputRecordBuilder(ref2, ref3, name2, 3),

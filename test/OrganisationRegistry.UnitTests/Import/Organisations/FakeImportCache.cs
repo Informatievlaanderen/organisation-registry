@@ -2,7 +2,7 @@
 
 using System;
 using System.Collections.Generic;
-using Api.HostedServices.ProcessImportedFiles;
+using Api.HostedServices.ProcessImportedFiles.Strategy.CreateOrganisations;
 using SqlServer.Organisation;
 
 public class FakeImportCache : ImportCache

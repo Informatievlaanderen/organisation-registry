@@ -19,6 +19,21 @@ public class ImportOrganisationsStatusListItem
     public DateTimeOffset UploadedAt { get; set; }
     public DateTimeOffset? LastProcessedAt { get; set; }
     public string? ProcessInfo { get; set; }
+    public string ImportFileType { get; set; } = null!;
+
+    public static ImportOrganisationsStatusListItem Create(DateTimeOffset timestamp, string userId, string userName, string userFirstName, string fileName, string fileContent, string importFileType)
+        => new()
+        {
+            UserId = userId,
+            UserName = userName,
+            UserFirstName = userFirstName,
+            FileName = fileName,
+            FileContent = fileContent,
+            ImportFileType = importFileType,
+            Id = Guid.NewGuid(),
+            Status = ImportProcessStatus.Processing,
+            UploadedAt = timestamp,
+        };
 }
 
 public static class ImportProcessStatus
@@ -46,5 +61,6 @@ public class ImportStatusListItemConfiguration : EntityMappingConfiguration<Impo
         b.Property(p => p.UploadedAt);
         b.Property(p => p.LastProcessedAt);
         b.Property(p => p.ProcessInfo).HasMaxLength(int.MaxValue);
+        b.Property(p => p.ImportFileType);
     }
 }

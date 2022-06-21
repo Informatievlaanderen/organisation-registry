@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Api.HostedServices.ProcessImportedFiles;
+using Api.HostedServices.ProcessImportedFiles.Strategy.CreateOrganisations;
 using FluentAssertions;
-using OrganisationRegistry.Organisation.Import;
 using Xunit;
 
 public class WhenParsingTheCsvImportFileContent

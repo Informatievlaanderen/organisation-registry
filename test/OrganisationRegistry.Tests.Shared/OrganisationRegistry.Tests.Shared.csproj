@@ -2,6 +2,7 @@
   <Import Project="..\..\packages\Be.Vlaanderen.Basisregisters.Build.Pipeline\Content\Be.Vlaanderen.Basisregisters.Build.Pipeline.Settings.Test.props" />
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\OrganisationRegistry.Api\OrganisationRegistry.Api.csproj" />
     <ProjectReference Include="..\..\src\OrganisationRegistry\OrganisationRegistry.csproj" />
   </ItemGroup>
 

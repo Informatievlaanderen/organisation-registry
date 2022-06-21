@@ -41,20 +41,20 @@ public class CreateOrganisationsFromImportCommandHandler :
     private void ImportOrganisations(ICommandEnvelope<CreateOrganisationsFromImport> envelope, ISession session)
     {
         var parentCache = new Dictionary<string, Organisation>();
-
         var sortedRecords = SortRecords(envelope.Command.Records.ToImmutableList());
+        var importFileId = envelope.Command.ImportFileId;
 
         foreach (var record in sortedRecords)
         {
-            CreateOrganisationFromRecord(envelope, session, parentCache, record);
+            CreateOrganisationFromRecord(session, parentCache, importFileId, record);
         }
     }
 
     private void CreateOrganisationFromRecord(
-        ICommandEnvelope<CreateOrganisationsFromImport> envelope,
         ISession session,
         Dictionary<string, Organisation> parentCache,
-        OutputRecord record)
+        Guid importFileId,
+        CreateOrganisationsFromImportCommandItem record)
     {
         var parent = GetParent(session, parentCache, record.ParentIdentifier);
 
@@ -78,7 +78,7 @@ public class CreateOrganisationsFromImportCommandHandler :
             new Period(validFrom, new ValidTo()),
             new Period(operationalValidFrom, new ValidTo()),
             _dateTimeProvider,
-            new OrganisationSourceId(envelope.Command.ImportFileId),
+            new OrganisationSourceId(importFileId),
             record.Reference);
 
         foreach (var label in record.Labels)
@@ -95,7 +95,7 @@ public class CreateOrganisationsFromImportCommandHandler :
         session.Add(organisation);
     }
 
-    private static IEnumerable<OutputRecord> SortRecords(ImmutableList<OutputRecord> records)
+    private static IEnumerable<CreateOrganisationsFromImportCommandItem> SortRecords(ImmutableList<CreateOrganisationsFromImportCommandItem> records)
     {
         if (!records.Any(r => r.ParentIdentifier.Type == OrganisationParentIdentifier.IdentifierType.Id))
             throw new AtLeastOneOrganisationMustHaveAnExistingOrganisationAsParent();
@@ -103,7 +103,7 @@ public class CreateOrganisationsFromImportCommandHandler :
         if (!records.Any(r => r.ParentIdentifier.Type == OrganisationParentIdentifier.IdentifierType.Reference))
             return records;
 
-        var result = new List<OutputRecord>();
+        var result = new List<CreateOrganisationsFromImportCommandItem>();
 
         var rootRecords = records.Where(r => r.ParentIdentifier.Type == OrganisationParentIdentifier.IdentifierType.Id).ToList();
         while (records.Any())

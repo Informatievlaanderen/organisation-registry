@@ -3,10 +3,10 @@
 using System;
 using System.Collections.Immutable;
 using Api.HostedServices.ProcessImportedFiles;
-using Api.HostedServices.ProcessImportedFiles.Validators;
+using Api.HostedServices.ProcessImportedFiles.Strategy.CreateOrganisations;
+using Api.HostedServices.ProcessImportedFiles.Strategy.CreateOrganisations.Validators;
 using AutoFixture;
 using FluentAssertions;
-using OrganisationRegistry.Organisation.Import;
 using SqlServer.Organisation;
 using Xunit;
 

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OrganisationRegistry.Infrastructure.Commands;
 using OrganisationRegistry.Infrastructure.Configuration;
-using ProcessImportedFiles;
+using ProcessImportedFiles.Strategy;
 using SqlServer;
 
 public class ProcessImportedFilesService : BackgroundService
@@ -14,7 +14,6 @@ public class ProcessImportedFilesService : BackgroundService
     private readonly IDateTimeProvider _dateTimeProvider;
     private readonly ILogger<ProcessImportedFilesService> _logger;
     private readonly ICommandSender _commandSender;
-    private readonly IImportFileParserAndValidator _fileParserAndValidator;
     private readonly HostedServiceConfiguration _configuration;
 
     public ProcessImportedFilesService(
@@ -22,14 +21,12 @@ public class ProcessImportedFilesService : BackgroundService
         IDateTimeProvider dateTimeProvider,
         ILogger<ProcessImportedFilesService> logger,
         ICommandSender commandSender,
-        IOrganisationRegistryConfiguration configuration,
-        IImportFileParserAndValidator fileParserAndValidator) : base(logger)
+        IOrganisationRegistryConfiguration configuration) : base(logger)
     {
         _contextFactory = contextFactory;
         _dateTimeProvider = dateTimeProvider;
         _logger = logger;
         _commandSender = commandSender;
-        _fileParserAndValidator = fileParserAndValidator;
         _configuration = configuration.HostedServices.ProcessImportedFileService;
     }
 
@@ -47,7 +44,6 @@ public class ProcessImportedFilesService : BackgroundService
                 _contextFactory,
                 _dateTimeProvider,
                 _logger,
-                _fileParserAndValidator,
                 _commandSender,
                 _configuration,
                 cancellationToken);

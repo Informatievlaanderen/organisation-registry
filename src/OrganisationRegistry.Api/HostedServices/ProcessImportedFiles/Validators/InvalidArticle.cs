@@ -2,23 +2,19 @@ namespace OrganisationRegistry.Api.HostedServices.ProcessImportedFiles.Validator
 
 using System.Collections.Generic;
 using System.Linq;
-using Organisation.Import;
 
 public static class InvalidArticle
 {
-    public static ValidationIssue? Validate(int rowNumber, DeserializedRecord record)
-        => ValidationIssuesFactory.Create(rowNumber, CheckInvalidArticle(record).ToList(), FormatMessage);
+    private static readonly string[] ValidArticles = { "de", "het", "" };
 
-    private static IEnumerable<string> CheckInvalidArticle(DeserializedRecord record)
-    {
-        if (!record.Article.ShouldHaveValue)
-            yield break;
+    public static ValidationIssue? Validate(int rowNumber, params Field[] articleFields)
+        => ValidationIssuesFactory.Create(rowNumber, CheckInvalidArticle(articleFields).ToList(), FormatMessage);
 
-        var article = record.Article.Value ?? "";
-        var validArticles = new[] { "de", "het", "" };
-        if (!validArticles.Contains(article))
-            yield return article;
-    }
+    private static IEnumerable<string> CheckInvalidArticle(Field[] fields)
+        => fields
+            .Where(field => field.ShouldHaveValue)
+            .Select(field => field.Value ?? "")
+            .Where(article => !ValidArticles.Contains(article));
 
     public static string FormatMessage(string article)
         => $"De waarde {article} is ongeldig voor kolom 'article' (Geldige waarden: 'de', 'het').";

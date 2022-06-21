@@ -19,7 +19,7 @@ public class WithoutRecords : Specification<CreateOrganisationsFromImportCommand
     }
 
     private static CreateOrganisationsFromImport CreateOrganisationsFromImportCommand
-        => new(Guid.NewGuid(), Array.Empty<OutputRecord>());
+        => new(Guid.NewGuid(), Array.Empty<CreateOrganisationsFromImportCommandItem>());
 
     protected override CreateOrganisationsFromImportCommandHandler BuildHandler(ISession session)
         => new(

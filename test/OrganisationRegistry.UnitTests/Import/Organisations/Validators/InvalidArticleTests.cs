@@ -1,18 +1,15 @@
 ﻿namespace OrganisationRegistry.UnitTests.Import.Organisations.Validators;
 
 using Api.HostedServices.ProcessImportedFiles;
+using Api.HostedServices.ProcessImportedFiles.Strategy.CreateOrganisations;
 using Api.HostedServices.ProcessImportedFiles.Validators;
 using FluentAssertions;
-using OrganisationRegistry.Organisation.Import;
 using Xunit;
 
 public class InvalidArticleTests
 {
-    private static DeserializedRecord GetDeserializedRecordWithArticle(string article)
-        => new()
-        {
-            Article = Field.FromValue(ColumnNames.Article, article),
-        };
+    private static Field GetArticleField(string article)
+        =>  Field.FromValue(ColumnNames.Article, article);
 
     [Theory]
     [InlineData("de")]
@@ -20,9 +17,7 @@ public class InvalidArticleTests
     [InlineData("")]
     public void ReturnsEmpty_WhenAtricleIsValid(string article)
     {
-        var record = GetDeserializedRecordWithArticle(article);
-
-        var issues = InvalidArticle.Validate(1, record);
+        var issues = InvalidArticle.Validate(1, GetArticleField(article));
 
         issues.Should().BeNull();
     }
@@ -30,9 +25,7 @@ public class InvalidArticleTests
     [Fact]
     public void ReturnsEmpty_WhenAtricleHasNoValue()
     {
-        var record = new DeserializedRecord() { Article = Field.NoValue(ColumnNames.Article) };
-
-        var issues = InvalidArticle.Validate(1, record);
+        var issues = InvalidArticle.Validate(1, Field.NoValue(ColumnNames.Article));
 
         issues.Should().BeNull();
     }
@@ -43,9 +36,7 @@ public class InvalidArticleTests
     [InlineData("NotEvenThisOne")]
     public void ReturnsIssue_WhenAtricleIsNotValid(string article)
     {
-        var record = GetDeserializedRecordWithArticle(article);
-
-        var issues = InvalidArticle.Validate(1, record);
+        var issues = InvalidArticle.Validate(1, GetArticleField(article));
 
         issues.Should().BeEquivalentTo(
             new ValidationIssue(
