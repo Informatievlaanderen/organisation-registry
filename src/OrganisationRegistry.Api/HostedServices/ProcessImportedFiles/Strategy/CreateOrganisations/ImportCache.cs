@@ -23,12 +23,12 @@ public class ImportCache
 
     public static ImportCache Create(
         OrganisationRegistryContext context,
-        IEnumerable<ParsedRecord> parsedRecords)
+        IEnumerable<ParsedRecord<DeserializedRecord>> parsedRecords)
         => new(
             GetOrganisationsInScope(context, parsedRecords).AsNoTracking(),
             GetLabelTypes(context));
 
-    private static IQueryable<OrganisationListItem> GetOrganisationsInScope(OrganisationRegistryContext context, IEnumerable<ParsedRecord> parsedRecords)
+    private static IQueryable<OrganisationListItem> GetOrganisationsInScope(OrganisationRegistryContext context, IEnumerable<ParsedRecord<DeserializedRecord>> parsedRecords)
     {
         var parentOvoNumbers = parsedRecords
             .Select(parsedRecord => parsedRecord.OutputRecord)

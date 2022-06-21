@@ -12,7 +12,7 @@ using Xunit;
 
 public class WhenValidatingTheCsvImportFileContent
 {
-    private static List<ValidationIssue> Validate(IEnumerable<ParsedRecord> parsedRecords)
+    private static List<ValidationIssue> Validate(IEnumerable<ParsedRecord<DeserializedRecord>> parsedRecords)
     {
         var fixture = new Fixture();
         var today = DateOnly.FromDateTime(fixture.Create<DateTime>());
@@ -24,10 +24,10 @@ public class WhenValidatingTheCsvImportFileContent
                 new() { Name = fixture.Create<string>(), OvoNumber = "OVO000026" },
                 new() { Name = fixture.Create<string>(), OvoNumber = "OVO000027" },
             });
-        return RecordValidator.Validate(importCache, today, parsedRecords).Items.ToList();
+        return ImportRecordValidator.Validate(importCache, today, parsedRecords).Items.ToList();
     }
 
-    private static ParsedRecord GetParsedrecord(int rowNumber, string reference, string parent, string name)
+    private static ParsedRecord<DeserializedRecord> GetParsedrecord(int rowNumber, string reference, string parent, string name)
         => new(
             rowNumber,
             new DeserializedRecord
@@ -42,7 +42,7 @@ public class WhenValidatingTheCsvImportFileContent
     public void ItAddsFieldValueRequired()
     {
         // Arrange
-        var parsedRecords = new List<ParsedRecord>()
+        var parsedRecords = new List<ParsedRecord<DeserializedRecord>>()
         {
             GetParsedrecord(2, "", "ovo000025", "name1"),
             GetParsedrecord(3, "REF2", "ovo000026", ""),

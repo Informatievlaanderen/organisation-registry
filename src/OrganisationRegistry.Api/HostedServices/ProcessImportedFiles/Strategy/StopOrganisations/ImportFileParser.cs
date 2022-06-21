@@ -11,10 +11,10 @@ using ProcessImportedFiles.Validators;
 
 public static class ImportFileParser
 {
-    public static List<ParsedRecord> Parse(ImportOrganisationsStatusListItem importFile)
+    public static List<ParsedRecord<DeserializedRecord>> Parse(ImportOrganisationsStatusListItem importFile)
         => ParseContent(importFile.FileContent).ToList();
 
-    public static IEnumerable<ParsedRecord> ParseContent(string importFileFileContent)
+    public static IEnumerable<ParsedRecord<DeserializedRecord>> ParseContent(string importFileFileContent)
     {
         using var reader = new StringReader(importFileFileContent);
         using var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture) { Delimiter = ";" });
@@ -24,7 +24,7 @@ public static class ImportFileParser
 
         var csvHeaderRecord = GetHeaders(csv);
 
-        var importedRecords = new List<ParsedRecord>();
+        var importedRecords = new List<ParsedRecord<DeserializedRecord>>();
         while (csv.Read())
         {
             importedRecords.Add(GetImportRecord(csv, csvHeaderRecord));
@@ -33,16 +33,16 @@ public static class ImportFileParser
         return importedRecords;
     }
 
-    private static ParsedRecord GetImportRecord(IReaderRow csv, IReadOnlyDictionary<string, int> csvHeaderRecord)
+    private static ParsedRecord<DeserializedRecord> GetImportRecord(IReaderRow csv, IReadOnlyDictionary<string, int> csvHeaderRecord)
     {
         if (InvalidColumnCount.Validate(csv) is { } invalidColumnCount)
-            return new ParsedRecord(csv.Parser.Row, OutputRecord: null, new[] { invalidColumnCount });
+            return new ParsedRecord<DeserializedRecord>(csv.Parser.Row, OutputRecord: null, new[] { invalidColumnCount });
 
         var ovoNumber = MaybeGetField(csv, csvHeaderRecord, ColumnNames.OvoNumber);
         var name = MaybeGetField(csv, csvHeaderRecord, ColumnNames.Name);
         var organisation_end = MaybeGetField(csv, csvHeaderRecord, ColumnNames.Organisation_End);
 
-        return new ParsedRecord(
+        return new ParsedRecord<DeserializedRecord>(
             csv.Parser.Row,
             new DeserializedRecord
             {

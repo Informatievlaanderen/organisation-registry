@@ -9,7 +9,7 @@ using Xunit;
 
 public class HasDuplicateReferencesTests
 {
-    private static ParsedRecord CreateParsedRecord(int rowNumber, string reference)
+    private static ParsedRecord<DeserializedRecord> CreateParsedRecord(int rowNumber, string reference)
         => new(
             rowNumber,
             new DeserializedRecord() { Reference = Field.FromValue(ColumnNames.Reference, reference) },

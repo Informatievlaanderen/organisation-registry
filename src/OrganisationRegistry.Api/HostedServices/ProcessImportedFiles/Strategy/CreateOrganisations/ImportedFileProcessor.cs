@@ -14,7 +14,7 @@ using OrganisationRegistry.SqlServer.Import.Organisations;
 using OrganisationRegistry.SqlServer.Infrastructure;
 using OrganisationRegistry.SqlServer.Organisation;
 
-public class ImportedFileProcessor : IImportedFileProcessor
+public class ImportedFileProcessor : ImportedFileProcessor<DeserializedRecord, CreateOrganisationsFromImportCommandItem>
 {
     private readonly OrganisationRegistryContext _context;
     private readonly IDateTimeProvider _dateTimeProvider;
@@ -30,17 +30,13 @@ public class ImportedFileProcessor : IImportedFileProcessor
         _commandSender = commandSender;
     }
 
-    public async Task<ProcessImportedFileResult> Process(ImportOrganisationsStatusListItem importFile, CancellationToken cancellationToken)
-    {
-        var parsedRecords = ImportFileParser.Parse(importFile);
-        var validationResult = ImportFileValidator.Validate(_context, _dateTimeProvider, parsedRecords);
+    protected override List<ParsedRecord<DeserializedRecord>> Parse(ImportOrganisationsStatusListItem importFile)
+        => ImportFileParser.Parse(importFile);
 
-        var processResult = await Process(importFile, validationResult, cancellationToken);
+    protected override ValidationResult<CreateOrganisationsFromImportCommandItem> Validate(List<ParsedRecord<DeserializedRecord>> parsedRecords)
+        => ImportFileValidator.Validate(_context, _dateTimeProvider, parsedRecords);
 
-        return new ProcessImportedFileResult(importFile, processResult, validationResult.ValidationOk);
-    }
-
-    private async Task<string> Process(ImportOrganisationsStatusListItem importFile, ValidationResult validationResult, CancellationToken cancellationToken)
+    protected override async Task<string> Process(ImportOrganisationsStatusListItem importFile, ValidationResult<CreateOrganisationsFromImportCommandItem> validationResult, CancellationToken cancellationToken)
     {
         if (!validationResult.ValidationOk)
             return OutputSerializer.Serialize(validationResult.ValidationIssues);

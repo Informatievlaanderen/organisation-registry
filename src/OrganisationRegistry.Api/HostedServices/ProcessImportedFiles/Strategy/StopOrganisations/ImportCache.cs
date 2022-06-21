@@ -17,10 +17,10 @@ public class ImportCache
 
     public ImmutableList<OrganisationDetailItem> OrganisationsCache { get; }
 
-    public static ImportCache Create(OrganisationRegistryContext context, IEnumerable<ParsedRecord> parsedRecords)
+    public static ImportCache Create(OrganisationRegistryContext context, IEnumerable<ParsedRecord<DeserializedRecord>> parsedRecords)
         => new(GetOrganisationsInScope(context, parsedRecords).AsNoTracking());
 
-    private static IQueryable<OrganisationDetailItem> GetOrganisationsInScope(OrganisationRegistryContext context, IEnumerable<ParsedRecord> parsedRecords)
+    private static IQueryable<OrganisationDetailItem> GetOrganisationsInScope(OrganisationRegistryContext context, IEnumerable<ParsedRecord<DeserializedRecord>> parsedRecords)
     {
         var ovoNumbers = parsedRecords
             .Select(parsedRecord => parsedRecord.OutputRecord)

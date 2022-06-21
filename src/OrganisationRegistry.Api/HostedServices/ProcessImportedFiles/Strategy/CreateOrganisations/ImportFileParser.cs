@@ -13,10 +13,10 @@ using ProcessImportedFiles.Validators;
 
 public static class ImportFileParser
 {
-    public static List<ParsedRecord> Parse(ImportOrganisationsStatusListItem importFile)
+    public static List<ParsedRecord<DeserializedRecord>> Parse(ImportOrganisationsStatusListItem importFile)
         => ParseContent(importFile.FileContent).ToList();
 
-    public static IEnumerable<ParsedRecord> ParseContent(string importFileFileContent)
+    public static IEnumerable<ParsedRecord<DeserializedRecord>> ParseContent(string importFileFileContent)
     {
         using var reader = new StringReader(importFileFileContent);
         using var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture) { Delimiter = ";" });
@@ -30,7 +30,7 @@ public static class ImportFileParser
             .Where(item => item.Key.Trim().StartsWith("label#", StringComparison.InvariantCultureIgnoreCase))
             .ToDictionary(item => item.Key, item => item.Value);
 
-        var importedRecords = new List<ParsedRecord>();
+        var importedRecords = new List<ParsedRecord<DeserializedRecord>>();
         while (csv.Read())
         {
             importedRecords.Add(GetImportRecord(csv, csvHeaderRecord, labelColumns));
@@ -39,10 +39,10 @@ public static class ImportFileParser
         return importedRecords;
     }
 
-    private static ParsedRecord GetImportRecord(IReaderRow csv, IReadOnlyDictionary<string, int> csvHeaderRecord, Dictionary<string, int> labelColumns)
+    private static ParsedRecord<DeserializedRecord> GetImportRecord(IReaderRow csv, IReadOnlyDictionary<string, int> csvHeaderRecord, Dictionary<string, int> labelColumns)
     {
         if (InvalidColumnCount.Validate(csv) is { } invalidColumnCount)
-            return new ParsedRecord(csv.Parser.Row, OutputRecord: null, new[] { invalidColumnCount });
+            return new ParsedRecord<DeserializedRecord>(csv.Parser.Row, OutputRecord: null, new[] { invalidColumnCount });
 
         var reference = MaybeGetField(csv, csvHeaderRecord, ColumnNames.Reference);
         var name = MaybeGetField(csv, csvHeaderRecord, ColumnNames.Name);
@@ -54,7 +54,7 @@ public static class ImportFileParser
 
         var labels = GetLabelFields(csv, labelColumns);
 
-        return new ParsedRecord(
+        return new ParsedRecord<DeserializedRecord>(
             csv.Parser.Row,
             new DeserializedRecord
             {

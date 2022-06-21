@@ -9,10 +9,10 @@ using Validators;
 
 public class ImportFileValidator
 {
-    public static ValidationResult Validate(
+    public static ValidationResult<CreateOrganisationsFromImportCommandItem> Validate(
         OrganisationRegistryContext context,
         IDateTimeProvider dateTimeProvider,
-        List<ParsedRecord> parsedRecords)
+        List<ParsedRecord<DeserializedRecord>> parsedRecords)
     {
         var importCache = ImportCache.Create(context, parsedRecords);
 
@@ -22,21 +22,21 @@ public class ImportFileValidator
             parsedRecords);
 
         return !validationIssues.Items.Any()
-            ? ValidationResult.ForRecords(ToOutputRecords(importCache, parsedRecords))
-            : ValidationResult.ForIssues(validationIssues);
+            ? ValidationResult<CreateOrganisationsFromImportCommandItem>.ForRecords(ToOutputRecords(importCache, parsedRecords))
+            : ValidationResult<CreateOrganisationsFromImportCommandItem>.ForIssues(validationIssues);
     }
 
-    public static ValidationIssues Validate(ImportCache importCache, DateOnly today, IReadOnlyList<ParsedRecord> parsedRecords)
+    public static ValidationIssues Validate(ImportCache importCache, DateOnly today, IReadOnlyList<ParsedRecord<DeserializedRecord>> parsedRecords)
         => new ValidationIssues()
-            .AddRange(RecordValidator.Validate(importCache, today, parsedRecords))
+            .AddRange(ImportRecordValidator.Validate(importCache, today, parsedRecords))
             .AddRange(HasDuplicateReferences.Validate(parsedRecords));
 
-    private static List<CreateOrganisationsFromImportCommandItem> ToOutputRecords(ImportCache importCache, IEnumerable<ParsedRecord> parsedRecords)
+    private static List<CreateOrganisationsFromImportCommandItem> ToOutputRecords(ImportCache importCache, IEnumerable<ParsedRecord<DeserializedRecord>> parsedRecords)
         => parsedRecords
             .Select(r => ToOutputRecord(r, importCache))
             .ToList();
 
-    private static CreateOrganisationsFromImportCommandItem ToOutputRecord(ParsedRecord record, ImportCache importCache)
+    private static CreateOrganisationsFromImportCommandItem ToOutputRecord(ParsedRecord<DeserializedRecord> record, ImportCache importCache)
         => record.OutputRecord!.ToOutputRecord(
             importCache.LabelTypes,
             GetOrganisationParentidentifier(importCache, record.OutputRecord!.Parent.Value!),
