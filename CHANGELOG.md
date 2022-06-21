@@ -1,3 +1,10 @@
+# [1.209.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.208.3...v1.209.0) (2022-06-21)
+
+
+### Features
+
+* or-1092 import stop organisations ([a4602cf](https://github.com/informatievlaanderen/organisation-registry/commit/a4602cfe29df7971d78f94c54d8764b51e4a705b))
+
 ## [1.208.3](https://github.com/informatievlaanderen/organisation-registry/compare/v1.208.2...v1.208.3) (2022-06-21)
 
 ## [1.208.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.208.1...v1.208.2) (2022-06-20)
