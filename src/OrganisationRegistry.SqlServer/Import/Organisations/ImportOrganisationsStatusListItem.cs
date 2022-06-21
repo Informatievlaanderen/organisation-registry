@@ -5,6 +5,7 @@ using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using OrganisationRegistry.Infrastructure;
+using OrganisationRegistry.Infrastructure.Authorization;
 
 public class ImportOrganisationsStatusListItem
 {
@@ -21,12 +22,12 @@ public class ImportOrganisationsStatusListItem
     public string? ProcessInfo { get; set; }
     public string ImportFileType { get; set; } = null!;
 
-    public static ImportOrganisationsStatusListItem Create(DateTimeOffset timestamp, string userId, string userName, string userFirstName, string fileName, string fileContent, string importFileType)
+    public static ImportOrganisationsStatusListItem Create(DateTimeOffset timestamp, IUser user, string fileName, string fileContent, string importFileType)
         => new()
         {
-            UserId = userId,
-            UserName = userName,
-            UserFirstName = userFirstName,
+            UserId = user.UserId,
+            UserName = user.LastName,
+            UserFirstName = user.FirstName,
             FileName = fileName,
             FileContent = fileContent,
             ImportFileType = importFileType,
