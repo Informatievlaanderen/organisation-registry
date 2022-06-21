@@ -63,7 +63,7 @@ public class BodyContactListView :
 
     public enum ProjectionTables
     {
-        BodyContactList
+        BodyContactList,
     }
 
     private readonly IEventStore _eventStore;
@@ -101,7 +101,7 @@ public class BodyContactListView :
             ContactValue = message.Body.Value,
             ContactTypeName = message.Body.ContactTypeName,
             ValidFrom = message.Body.ValidFrom,
-            ValidTo = message.Body.ValidTo
+            ValidTo = message.Body.ValidTo,
         };
 
         using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))

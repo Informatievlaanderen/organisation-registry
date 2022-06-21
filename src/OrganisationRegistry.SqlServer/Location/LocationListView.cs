@@ -83,7 +83,7 @@ public class LocationListView :
 
     public enum ProjectionTables
     {
-        LocationList
+        LocationList,
     }
 
     public LocationListView(
@@ -105,7 +105,7 @@ public class LocationListView :
             ZipCode = message.Body.ZipCode,
             City = message.Body.City,
             Country = message.Body.Country,
-            HasCrabLocation = !string.IsNullOrWhiteSpace(message.Body.CrabLocationId)
+            HasCrabLocation = !string.IsNullOrWhiteSpace(message.Body.CrabLocationId),
         };
 
         using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))

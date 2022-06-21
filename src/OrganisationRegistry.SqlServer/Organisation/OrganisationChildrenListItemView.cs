@@ -81,7 +81,7 @@ public class OrganisationChildListView :
 
     public enum ProjectionTables
     {
-        OrganisationChildList
+        OrganisationChildList,
     }
 
     private readonly IEventStore _eventStore;
@@ -193,7 +193,7 @@ public class OrganisationChildListView :
             ValidFrom = message.Body.ValidFrom,
             ValidTo = message.Body.ValidTo,
             OrganisationValidFrom = _memoryCaches.OrganisationValidFroms[message.Body.OrganisationId],
-            OrganisationValidTo = _memoryCaches.OrganisationValidTos[message.Body.OrganisationId]
+            OrganisationValidTo = _memoryCaches.OrganisationValidTos[message.Body.OrganisationId],
         };
 
         using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))

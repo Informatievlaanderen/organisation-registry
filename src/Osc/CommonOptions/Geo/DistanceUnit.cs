@@ -59,6 +59,6 @@ namespace Osc
 		Centimeters,
 
 		[EnumMember(Value = "mm")]
-		Millimeters
-	}
+		Millimeters,
+    }
 }

@@ -59,8 +59,8 @@ namespace OpenSearch.Net.Diagnostics
 
 			return new Diagnostic<TState, TEndState>(operationName, source, state)
 			{
-				EndState = endState
-			};
+				EndState = endState,
+            };
 			
 		}
 

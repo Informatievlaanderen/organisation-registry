@@ -24,16 +24,16 @@ public class Program
                         HttpPort = 9002,
                         HttpsPort = 9003,
                         HttpsCertificate =
-                            () => new X509Certificate2(Path.Join("..", "..", "organisationregistry-api.pfx"), "organisationregistry")
+                            () => new X509Certificate2(Path.Join("..", "..", "organisationregistry-api.pfx"), "organisationregistry"),
                     },
                     Logging =
                     {
                         WriteTextToConsole = false,
-                        WriteJsonToConsole = false
+                        WriteJsonToConsole = false,
                     },
                     Runtime =
                     {
-                        CommandLineArgs = args
+                        CommandLineArgs = args,
                     },
                     MiddlewareHooks =
                     {
@@ -50,7 +50,7 @@ public class Program
                                         sqlConfiguration.ConnectionString,
                                         y => y.MigrationsHistoryTable("__EFMigrationsHistory", WellknownSchemas.BackofficeSchema)))
                                 .Build();
-                        }
-                    }
+                        },
+                    },
                 });
 }

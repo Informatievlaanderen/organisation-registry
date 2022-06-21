@@ -54,6 +54,6 @@ namespace Osc
 		/// You can further specify boundary_scanner_locale to control which Locale is used to search the text for these boundaries.
 		/// </summary>
 		[EnumMember(Value = "word")]
-		Word
-	}
+		Word,
+    }
 }

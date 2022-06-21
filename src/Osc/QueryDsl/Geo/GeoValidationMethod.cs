@@ -41,6 +41,6 @@ namespace Osc
 		IgnoreMalformed,
 
 		[EnumMember(Value = "strict")]
-		Strict
-	}
+		Strict,
+    }
 }

@@ -152,8 +152,8 @@ namespace Osc
 
 			var coordinates = new List<IEnumerable<IEnumerable<GeoCoordinate>>>
 			{
-				ParseCoordinateLists(tokenizer)
-			};
+				ParseCoordinateLists(tokenizer),
+            };
 
 			while (NextCloserOrComma(tokenizer) == TokenType.Comma)
 				coordinates.Add(ParseCoordinateLists(tokenizer));
@@ -184,8 +184,8 @@ namespace Osc
 
 			var geometries = new List<IGeoShape>
 			{
-				Read(tokenizer, GeoShapeType.GeometryCollection)
-			};
+				Read(tokenizer, GeoShapeType.GeometryCollection),
+            };
 
 			while (NextCloserOrComma(tokenizer) == TokenType.Comma)
 				geometries.Add(Read(tokenizer, null));
@@ -316,8 +316,8 @@ namespace Osc
 	{
 		Whitespace,
 		Alpha,
-		Comment
-	}
+		Comment,
+    }
 
 	/// <summary>
 	/// Well-Known Text token types
@@ -328,8 +328,8 @@ namespace Osc
 		Word,
 		LParen,
 		RParen,
-		Comma
-	}
+		Comma,
+    }
 
 	/// <summary>
 	/// Tokenizes a sequence of characters into Well-Known Text

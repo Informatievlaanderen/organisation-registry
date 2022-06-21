@@ -96,7 +96,7 @@ internal class Program
                 LeasePeriod = TimeSpan.FromMinutes(reportingRunnerOptions.LockLeasePeriodInMinutes),
                 ThrowOnFailedRenew = true,
                 TerminateApplicationOnFailedRenew = true,
-                Enabled = reportingRunnerOptions.LockEnabled
+                Enabled = reportingRunnerOptions.LockEnabled,
             }, logger);
 
         bool acquiredLock = false;

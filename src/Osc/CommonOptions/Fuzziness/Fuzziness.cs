@@ -55,8 +55,8 @@ namespace Osc
 		{
 			_auto = true,
 			_low = low,
-			_high = high
-		};
+			_high = high,
+        };
 
 		bool IFuzziness.Auto => _auto;
 		int? IFuzziness.Low => _low;

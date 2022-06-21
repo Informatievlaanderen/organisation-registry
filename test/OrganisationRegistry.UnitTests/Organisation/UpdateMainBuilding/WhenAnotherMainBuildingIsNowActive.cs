@@ -76,7 +76,7 @@ public class WhenAnotherMainBuildingIsNowActive :
                 "Gebouw B",
                 true,
                 DateTime.Today.AddDays(1),
-                DateTime.Today.AddDays(1))
+                DateTime.Today.AddDays(1)),
         };
 
     private UpdateMainBuilding UpdateMainBuildingCommand

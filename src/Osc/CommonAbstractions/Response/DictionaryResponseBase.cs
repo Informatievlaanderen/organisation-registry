@@ -53,8 +53,8 @@ namespace Osc
 		internal static readonly AutomataDictionary ServerErrorFields = new AutomataDictionary
 		{
 			{ "error", 0 },
-			{ "status", 1 }
-		};
+			{ "status", 1 },
+        };
 	}
 
 	internal class DictionaryResponseFormatter<TResponse, TKey, TValue> : IJsonFormatter<TResponse>

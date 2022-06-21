@@ -70,7 +70,7 @@ public class WhenTryingToUpdateATerminatedVlimpersOrgAsVlimpersUser :
                 ),
                 _fixture.Create<bool>(),
                 _fixture.Create<DateTime?>()
-            )
+            ),
         };
 
     private UpdateOrganisationInfoLimitedToVlimpers UpdateOrganisationInfoLimitedToVlimpersCommand

@@ -60,7 +60,7 @@ public class BodyFormalFrameworkListView :
 
     public enum ProjectionTables
     {
-        BodyFormalFrameworkList
+        BodyFormalFrameworkList,
     }
 
     private readonly IEventStore _eventStore;
@@ -97,7 +97,7 @@ public class BodyFormalFrameworkListView :
             FormalFrameworkId = message.Body.FormalFrameworkId,
             FormalFrameworkName = message.Body.FormalFrameworkName,
             ValidFrom = message.Body.ValidFrom,
-            ValidTo = message.Body.ValidTo
+            ValidTo = message.Body.ValidTo,
         };
 
         using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))

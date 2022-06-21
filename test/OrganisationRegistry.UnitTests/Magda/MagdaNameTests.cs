@@ -14,8 +14,8 @@ public class MagdaNameTests
         {
             new NaamOndernemingType
             {
-                Naam = " Test "
-            }
+                Naam = " Test ",
+            },
         });
 
         name.Value.Should().Be("Test");

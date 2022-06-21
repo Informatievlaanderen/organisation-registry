@@ -12,5 +12,5 @@ public enum Role
     RegelgevingBeheerder,
     Orafin,
     Developer,
-    AutomatedTask
+    AutomatedTask,
 }

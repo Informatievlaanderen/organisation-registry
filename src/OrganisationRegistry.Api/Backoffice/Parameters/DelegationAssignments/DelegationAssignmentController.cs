@@ -168,7 +168,7 @@ public class DelegationAssignmentController : OrganisationRegistryController
         {
             BodyId = bodyId,
             BodySeatId = bodySeatId,
-            DelegationAssignmentId = delegationAssignmentId
+            DelegationAssignmentId = delegationAssignmentId,
         };
 
         var internalMessage = new RemoveDelegationAssignmentInternalRequest(delegationId, message);

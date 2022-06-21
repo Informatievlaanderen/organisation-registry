@@ -69,7 +69,7 @@ public class WhenCurrentParentIsStillActive :
                 _organisationFormalFrameworkId,
                 _formalFrameworkId,
                 _organisationId,
-                _parentOrganisationId).Build()
+                _parentOrganisationId).Build(),
         };
 
     private UpdateOrganisationFormalFrameworkParents UpdateOrganisationFormalFrameworkParentsCommand

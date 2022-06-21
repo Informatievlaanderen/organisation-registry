@@ -69,8 +69,8 @@ namespace Osc
 		/// A range of ip values supporting either IPv4 or IPv6 (or mixed) addresses.
 		/// </summary>
 		[EnumMember(Value = "ip_range")]
-		IpRange
-	}
+		IpRange,
+    }
 
 	internal static class RangeTypeExtensions
 	{

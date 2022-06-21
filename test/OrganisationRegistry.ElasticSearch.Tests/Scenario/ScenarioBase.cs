@@ -69,7 +69,7 @@ public class ScenarioBase<T>
         )
         {
             Version = 0,
-            Timestamp = default
+            Timestamp = default,
         };
 
     public OrganisationTerminatedV2 CreateOrganisationTerminatedV2(
@@ -110,6 +110,6 @@ public class ScenarioBase<T>
         )
         {
             Version = 0,
-            Timestamp = default
+            Timestamp = default,
         };
 }

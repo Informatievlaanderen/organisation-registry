@@ -51,8 +51,8 @@ namespace OpenSearch.Net
 			const int maxBufferSize = 16 * largeBufferMultiple;
 			return new RecyclableMemoryStreamManager(blockSize, largeBufferMultiple, maxBufferSize)
 			{
-				AggressiveBufferReturn = true, MaximumFreeLargePoolBytes = maxBufferSize * 4, MaximumFreeSmallPoolBytes = 100 * blockSize
-			};
+				AggressiveBufferReturn = true, MaximumFreeLargePoolBytes = maxBufferSize * 4, MaximumFreeSmallPoolBytes = 100 * blockSize,
+            };
 
 		}
 

@@ -40,8 +40,8 @@ namespace Osc
 			{ "_source", 1 },
 			{ "_routing", 2 },
 			{ "_index", 3 },
-			{ "_size", 4 }
-		};
+			{ "_size", 4 },
+        };
 
 		public IReadOnlyDictionary<Field, IFieldMapping> Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
 		{

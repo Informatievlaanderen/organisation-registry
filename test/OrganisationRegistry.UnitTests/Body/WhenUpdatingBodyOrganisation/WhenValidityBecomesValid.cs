@@ -64,7 +64,7 @@ public class WhenValidityBecomesValid : Specification<UpdateBodyOrganisationComm
                 _organisationId,
                 "orgName",
                 _yesterday,
-                _yesterday)
+                _yesterday),
         };
 
     private UpdateBodyOrganisation UpdateBodyOrganisationCommand

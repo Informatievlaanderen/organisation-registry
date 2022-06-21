@@ -69,7 +69,7 @@ public class Person : BaseProjection<Person>,
                 ChangeTime = message.Timestamp,
                 Id = message.Body.PersonId,
                 FirstName = message.Body.FirstName,
-                Name = message.Body.Name
+                Name = message.Body.Name,
             }).ToAsyncResult();
 
 

@@ -33,7 +33,7 @@ public class Scheduler
         {
             SingleReader = true,
             SingleWriter = false,
-            AllowSynchronousContinuations = false
+            AllowSynchronousContinuations = false,
         });
         _timer = new Timer(
             _ => _messageChannel.Writer.WriteAsync(new TimerElapsed { Time = _clock.GetCurrentInstant() }, _messagePumpCancellation.Token),
@@ -119,7 +119,7 @@ public class Scheduler
             new ScheduleAction
             {
                 Action = action,
-                Due = _clock.GetCurrentInstant().Plus(Duration.FromTimeSpan(due))
+                Due = _clock.GetCurrentInstant().Plus(Duration.FromTimeSpan(due)),
             });
     }
 

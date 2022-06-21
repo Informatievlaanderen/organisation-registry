@@ -73,7 +73,7 @@ public class
                 _parentId,
                 "Ouder en Gezin",
                 null,
-                null)
+                null),
         };
 
     private AddOrganisationParent AddOrganisationParentCommand

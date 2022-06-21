@@ -143,8 +143,8 @@ namespace Osc
 		{
 			Must = mustClauses.ToListOrNullIfEmpty(),
 			MustNot = mustNotClauses.ToListOrNullIfEmpty(),
-			Filter = filters.ToListOrNullIfEmpty()
-		});
+			Filter = filters.ToListOrNullIfEmpty(),
+        });
 
 		private static bool CanMergeAnd(this IBoolQuery boolQuery) =>
 			boolQuery != null && !boolQuery.Locked && !boolQuery.Should.HasAny();

@@ -69,6 +69,6 @@ namespace Osc
 		Spanish,
 		Swedish,
 		Turkish,
-		Thai
-	}
+		Thai,
+    }
 }

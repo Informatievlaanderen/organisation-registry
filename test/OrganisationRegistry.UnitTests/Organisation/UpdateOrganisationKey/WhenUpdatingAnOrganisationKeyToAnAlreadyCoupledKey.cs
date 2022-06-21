@@ -80,7 +80,7 @@ public class
                     "123123456",
                     null,
                     null)
-                { Version = 3 }
+                { Version = 3 },
         };
 
     private UpdateOrganisationKey UpdateOrganisationKeyCommand

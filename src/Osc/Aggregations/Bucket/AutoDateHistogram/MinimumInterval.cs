@@ -49,6 +49,6 @@ namespace Osc
 		Month,
 
 		[EnumMember(Value = "year")]
-		Year
-	}
+		Year,
+    }
 }

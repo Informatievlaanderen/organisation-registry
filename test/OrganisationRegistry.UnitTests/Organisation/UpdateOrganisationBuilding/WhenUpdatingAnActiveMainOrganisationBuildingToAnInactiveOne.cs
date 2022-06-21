@@ -73,7 +73,7 @@ public class WhenUpdatingAnActiveMainOrganisationBuildingToAnInactiveOne :
                 _validFrom,
                 _validTo),
 #pragma warning disable CS0618
-            new MainBuildingAssignedToOrganisation(_organisationId, _buildingId, _organisationBuildingId)
+            new MainBuildingAssignedToOrganisation(_organisationId, _buildingId, _organisationBuildingId),
 #pragma warning restore CS0618
         };
 

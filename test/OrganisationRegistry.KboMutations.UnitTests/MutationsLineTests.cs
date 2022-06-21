@@ -23,7 +23,7 @@ public class MutationsLineTests
             MaatschappelijkeNaam = maatschappelijkeNaam,
             StopzettingsDatum = fixture.Create<DateTime>(),
             StopzettingsCode = fixture.Create<string>(),
-            StopzettingsReden = fixture.Create<string>()
+            StopzettingsReden = fixture.Create<string>(),
         };
 
         var otherMutationsLine = new MutationsLine
@@ -34,7 +34,7 @@ public class MutationsLineTests
             MaatschappelijkeNaam = maatschappelijkeNaam,
             StopzettingsDatum = fixture.Create<DateTime>(),
             StopzettingsCode = fixture.Create<string>(),
-            StopzettingsReden = fixture.Create<string>()
+            StopzettingsReden = fixture.Create<string>(),
         };
 
         mutationsLine.Should().Be(otherMutationsLine);
@@ -53,7 +53,7 @@ public class MutationsLineTests
             MaatschappelijkeNaam = fixture.Create<string>(),
             StopzettingsDatum = fixture.Create<DateTime>(),
             StopzettingsCode = fixture.Create<string>(),
-            StopzettingsReden = fixture.Create<string>()
+            StopzettingsReden = fixture.Create<string>(),
         };
 
         var otherMutationsLine = new MutationsLine
@@ -64,7 +64,7 @@ public class MutationsLineTests
             MaatschappelijkeNaam = fixture.Create<string>(),
             StopzettingsDatum = fixture.Create<DateTime>(),
             StopzettingsCode = fixture.Create<string>(),
-            StopzettingsReden = fixture.Create<string>()
+            StopzettingsReden = fixture.Create<string>(),
         };
 
         mutationsLine.Should().NotBe(otherMutationsLine);

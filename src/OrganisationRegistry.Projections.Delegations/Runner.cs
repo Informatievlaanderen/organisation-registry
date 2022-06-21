@@ -48,7 +48,7 @@ public class Runner
         {
             typeof(MemoryCachesMaintainer),
             typeof(DelegationListProjection),
-            typeof(PersonMandateListProjection)
+            typeof(PersonMandateListProjection),
         };
     }
 

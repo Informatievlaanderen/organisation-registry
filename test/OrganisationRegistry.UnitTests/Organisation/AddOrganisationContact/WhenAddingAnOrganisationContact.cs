@@ -62,7 +62,7 @@ public class WhenAddingAnOrganisationContact
                 null,
                 null,
                 null),
-            new ContactTypeCreated(_contactTypeId, "Contact type A")
+            new ContactTypeCreated(_contactTypeId, "Contact type A"),
         };
 
     private AddOrganisationContact AddOrganisationContactCommand

@@ -91,7 +91,7 @@ public class GivenTheCommandContainsABodyNumberThatIsAnEmptyString
             {
                 nameof(LifecyclePhaseType) => (_lifecyclePhaseTypes[id] as T)!,
                 nameof(Body) => (AddedAggregate as T)!,
-                _ => null!
+                _ => null!,
             };
         }
 

@@ -47,8 +47,8 @@ namespace Osc
 	internal enum GeoFormat
 	{
 		GeoJson,
-		WellKnownText
-	}
+		WellKnownText,
+    }
 
 	internal static class GeoShapeType
 	{
@@ -273,8 +273,8 @@ namespace Osc
 		private static MultiPolygonGeoShape ParseMultiPolygonGeoShape(ref JsonReader reader, IJsonFormatterResolver formatterResolver) =>
 			new MultiPolygonGeoShape
 			{
-				Coordinates = GetCoordinates<IEnumerable<IEnumerable<IEnumerable<GeoCoordinate>>>>(ref reader, formatterResolver)
-			};
+				Coordinates = GetCoordinates<IEnumerable<IEnumerable<IEnumerable<GeoCoordinate>>>>(ref reader, formatterResolver),
+            };
 
 		private static PolygonGeoShape ParsePolygonGeoShape(ref JsonReader reader, IJsonFormatterResolver formatterResolver) =>
 			new PolygonGeoShape { Coordinates = GetCoordinates<IEnumerable<IEnumerable<GeoCoordinate>>>(ref reader, formatterResolver) };

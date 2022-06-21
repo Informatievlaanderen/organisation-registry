@@ -41,6 +41,6 @@ namespace Osc
 	public enum IcuCollationAlternate
 	{
 		[EnumMember(Value = "shifted")] Shifted,
-		[EnumMember(Value = "non-ignorable")] NonIgnorable
-	}
+		[EnumMember(Value = "non-ignorable")] NonIgnorable,
+    }
 }

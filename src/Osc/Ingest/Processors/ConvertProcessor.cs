@@ -134,6 +134,6 @@ namespace Osc
 		Boolean,
 
 		[EnumMember(Value = "auto")]
-		Auto
-	}
+		Auto,
+    }
 }

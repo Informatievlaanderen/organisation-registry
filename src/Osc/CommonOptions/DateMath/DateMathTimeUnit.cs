@@ -53,8 +53,8 @@ namespace Osc
 		Month,
 
 		[EnumMember(Value = "y")]
-		Year
-	}
+		Year,
+    }
 
 	public static class DateMathTimeUnitExtensions
 	{

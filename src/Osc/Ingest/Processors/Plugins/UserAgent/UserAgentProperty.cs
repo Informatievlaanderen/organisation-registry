@@ -42,6 +42,6 @@ namespace Osc
 		[EnumMember(Value = "OS_MAJOR")] OsMajor,
 		[EnumMember(Value = "OS_MINOR")] OsMinor,
 		[EnumMember(Value = "DEVICE")] Device,
-		[EnumMember(Value = "BUILD")] Build
-	}
+		[EnumMember(Value = "BUILD")] Build,
+    }
 }

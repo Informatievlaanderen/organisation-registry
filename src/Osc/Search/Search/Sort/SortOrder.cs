@@ -38,6 +38,6 @@ namespace Osc
 		Ascending,
 
 		[EnumMember(Value = "desc")]
-		Descending
-	}
+		Descending,
+    }
 }

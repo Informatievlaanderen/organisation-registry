@@ -38,8 +38,8 @@ public class SendGridMailer : IMailer
             BaseAddress = new Uri(configuration.SendGridApiUri),
             DefaultRequestHeaders =
             {
-                Authorization = new AuthenticationHeaderValue("Bearer", configuration.SendGridBearerToken)
-            }
+                Authorization = new AuthenticationHeaderValue("Bearer", configuration.SendGridBearerToken),
+            },
         };
     }
 

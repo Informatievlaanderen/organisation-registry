@@ -141,7 +141,7 @@ public class BodyParticipation
                     AssignedCount = assignedCount,
                     UnassignedCount = totalCount - assignedCount,
 
-                    TotalCount = totalCount
+                    TotalCount = totalCount,
                 };
             });
 

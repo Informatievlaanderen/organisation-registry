@@ -68,7 +68,7 @@ public class
                 "Label A",
                 _value,
                 _validFrom,
-                _validTo)
+                _validTo),
         };
 
     private UpdateOrganisationLabel UpdateOrganisationLabelCommand

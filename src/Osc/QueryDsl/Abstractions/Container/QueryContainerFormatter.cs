@@ -115,8 +115,8 @@ namespace Osc
 				{
 					var queryContainers = new List<QueryContainer>
 					{
-						QueryContainerFormatter.Deserialize(ref reader, formatterResolver)
-					};
+						QueryContainerFormatter.Deserialize(ref reader, formatterResolver),
+                    };
 
 					return queryContainers;
 				}

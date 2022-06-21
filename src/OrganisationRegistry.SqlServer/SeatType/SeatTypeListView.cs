@@ -57,7 +57,7 @@ public class SeatTypeListView :
 
     public enum ProjectionTables
     {
-        SeatTypeList
+        SeatTypeList,
     }
 
     private readonly IEventStore _eventStore;
@@ -79,7 +79,7 @@ public class SeatTypeListView :
                 Id = message.Body.SeatTypeId,
                 Name = message.Body.Name,
                 Order= message.Body.Order,
-                IsEffective =  message.Body.IsEffective ?? true
+                IsEffective =  message.Body.IsEffective ?? true,
             };
 
             await context.SeatTypeList.AddAsync(seatType);

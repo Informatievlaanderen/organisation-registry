@@ -38,6 +38,6 @@ namespace Osc
 		Geohash,
 
 		[EnumMember(Value = "quadtree")]
-		Quadtree
-	}
+		Quadtree,
+    }
 }

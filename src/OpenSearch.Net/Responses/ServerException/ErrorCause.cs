@@ -120,8 +120,8 @@ namespace OpenSearch.Net
 			{ "script_stack", 15 },
 			{ "shard", 16 },
 			{ "stack_trace", 17 },
-			{ "type", 18 }
-		};
+			{ "type", 18 },
+        };
 
 		public static readonly NullableStringIntFormatter ShardFormatter = new NullableStringIntFormatter();
 

@@ -72,7 +72,7 @@ public class WhenAddingAnOrganisationParentWithCircularDependenciesButNotInTheSa
                 .WithName(_parentOrganisationName)
                 .Build(),
             new OrganisationParentAddedBuilder(_organisationAId, _organisationBId)
-                .WithValidity(new DateTime(2016, 1, 1), new DateTime(2016, 12, 31)).Build()
+                .WithValidity(new DateTime(2016, 1, 1), new DateTime(2016, 12, 31)).Build(),
         };
 
     private AddOrganisationParent AddOrganisationParentCommand

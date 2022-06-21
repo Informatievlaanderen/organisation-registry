@@ -48,7 +48,7 @@ public class
                 null,
                 null,
                 null,
-                null)
+                null),
         };
 
     private RemoveOrganisationKey RemoveOrganisationKeyCommand

@@ -42,8 +42,8 @@ namespace Osc
 		public RemoteClusterConfiguration() =>
 			BackingDictionary["cluster"] = new Dictionary<string, object>
 			{
-				{ "remote", _remoteDictionary }
-			};
+				{ "remote", _remoteDictionary },
+            };
 
 		/// <summary>
 		/// Adds seeds for the remote cluster specified by name
@@ -57,8 +57,8 @@ namespace Osc
 		public void Add(string name, params string[] seeds) =>
 			Add(name, new Dictionary<string, object>
 			{
-				{ "seeds", seeds }
-			});
+				{ "seeds", seeds },
+            });
 
 		/// <summary>
 		/// Adds settings for the remote cluster specified by name

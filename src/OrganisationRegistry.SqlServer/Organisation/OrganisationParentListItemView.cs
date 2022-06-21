@@ -61,7 +61,7 @@ public class OrganisationParentListView :
 
     public enum ProjectionTables
     {
-        OrganisationParentList
+        OrganisationParentList,
     }
 
     private readonly IEventStore _eventStore;
@@ -126,7 +126,7 @@ public class OrganisationParentListView :
             ParentOrganisationId = message.Body.ParentOrganisationId,
             ParentOrganisationName = message.Body.ParentOrganisationName,
             ValidFrom = message.Body.ValidFrom,
-            ValidTo = message.Body.ValidTo
+            ValidTo = message.Body.ValidTo,
         };
 
         using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))

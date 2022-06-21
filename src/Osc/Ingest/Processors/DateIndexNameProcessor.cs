@@ -238,6 +238,6 @@ namespace Osc
 		Month,
 
 		[EnumMember(Value = "y")]
-		Year
-	}
+		Year,
+    }
 }

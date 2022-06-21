@@ -65,7 +65,7 @@ public class WhenAddingAVlimpersOrganisationAsParentForANonVlimpersOrganisation
                 null,
                 null,
                 null,
-                null)
+                null),
         };
 
     private AddOrganisationParent AddOrganisationParentCommand

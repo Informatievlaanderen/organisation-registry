@@ -89,7 +89,7 @@ public class WhenUpdatingAnOrganisationParent
             new ParentAssignedToOrganisation(
                 _organisationId,
                 _organisationParentId,
-                _organisationOrganisationParentId)
+                _organisationOrganisationParentId),
         };
 
     private UpdateOrganisationParent UpdateOrganisationParentCommand

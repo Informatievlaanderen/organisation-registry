@@ -286,8 +286,8 @@ namespace Osc
 			{ "saturation", 3 },
 			{ "log", 4 },
 			{ "sigmoid", 5 },
-			{ "linear", 6 }
-		};
+			{ "linear", 6 },
+        };
 
 		public IRankFeatureQuery Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
 		{

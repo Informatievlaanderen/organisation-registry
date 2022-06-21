@@ -102,7 +102,7 @@ public class WhenMakingAnOrganisationLocationAMainLocationWhenThereAlreadyIsOne 
                 null,
                 "Location Type A",
                 _validFrom,
-                _validTo)
+                _validTo),
         };
 
     private UpdateOrganisationLocation UpdateOrganisationLocationCommand

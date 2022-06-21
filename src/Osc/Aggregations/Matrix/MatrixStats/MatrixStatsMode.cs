@@ -66,6 +66,6 @@ namespace Osc
 		/// Use the median of all values.
 		/// </summary>
 		[EnumMember(Value = "median")]
-		Median
-	}
+		Median,
+    }
 }

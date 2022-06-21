@@ -107,7 +107,7 @@ public class OrganisationCapacityListView :
 
     public enum ProjectionTables
     {
-        OrganisationCapacityList
+        OrganisationCapacityList,
     }
 
     private readonly IEventStore _eventStore;
@@ -200,7 +200,7 @@ public class OrganisationCapacityListView :
             LocationName = message.Body.LocationId.HasValue ? message.Body.LocationName : string.Empty,
             ContactsJson = JsonConvert.SerializeObject(message.Body.Contacts),
             ValidFrom = message.Body.ValidFrom,
-            ValidTo = message.Body.ValidTo
+            ValidTo = message.Body.ValidTo,
         };
 
         await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);

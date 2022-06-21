@@ -87,7 +87,7 @@ namespace OrganisationRegistry.Import.Piavo
                     ShortName = organisation.ShortName,
                     Description = organisation.Description,
                     ValidFrom = string.IsNullOrWhiteSpace(organisation.StartDate) ? new DateTime?() : DateTime.ParseExact(organisation.StartDate, "yyyy-MM-dd", CultureInfo.InvariantCulture),
-                    ValidTo = string.IsNullOrWhiteSpace(organisation.EndDate) ? new DateTime?() : DateTime.ParseExact(organisation.EndDate, "yyyy-MM-dd", CultureInfo.InvariantCulture)
+                    ValidTo = string.IsNullOrWhiteSpace(organisation.EndDate) ? new DateTime?() : DateTime.ParseExact(organisation.EndDate, "yyyy-MM-dd", CultureInfo.InvariantCulture),
                 }).CheckBadRequest();
 
                 Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{organisation.Name}] Keys...");
@@ -100,7 +100,7 @@ namespace OrganisationRegistry.Import.Piavo
                         KeyTypeId = key.Key.NewId,
                         KeyValue = key.KeyValue,
                         ValidFrom = string.IsNullOrWhiteSpace(key.StartDate) ? new DateTime?() : DateTime.ParseExact(key.StartDate, "yyyy-MM-dd", CultureInfo.InvariantCulture),
-                        ValidTo = string.IsNullOrWhiteSpace(key.EndDate) ? new DateTime?() : DateTime.ParseExact(key.EndDate, "yyyy-MM-dd", CultureInfo.InvariantCulture)
+                        ValidTo = string.IsNullOrWhiteSpace(key.EndDate) ? new DateTime?() : DateTime.ParseExact(key.EndDate, "yyyy-MM-dd", CultureInfo.InvariantCulture),
                     }).CheckBadRequest();
                 }
 
@@ -114,7 +114,7 @@ namespace OrganisationRegistry.Import.Piavo
                         LabelTypeId = label.Type.NewId,
                         LabelValue = label.Label,
                         ValidFrom = string.IsNullOrWhiteSpace(label.StartDate) ? new DateTime?() : DateTime.ParseExact(label.StartDate, "yyyy-MM-dd", CultureInfo.InvariantCulture),
-                        ValidTo = string.IsNullOrWhiteSpace(label.EndDate) ? new DateTime?() : DateTime.ParseExact(label.EndDate, "yyyy-MM-dd", CultureInfo.InvariantCulture)
+                        ValidTo = string.IsNullOrWhiteSpace(label.EndDate) ? new DateTime?() : DateTime.ParseExact(label.EndDate, "yyyy-MM-dd", CultureInfo.InvariantCulture),
                     }).CheckBadRequest();
                 }
 
@@ -128,7 +128,7 @@ namespace OrganisationRegistry.Import.Piavo
                         OrganisationClassificationTypeId = classification.OrganisationClassification.OrganisationClassificationType.NewId,
                         OrganisationClassificationId = classification.OrganisationClassification.NewId,
                         ValidFrom = string.IsNullOrWhiteSpace(classification.StartDate) ? new DateTime?() : DateTime.ParseExact(classification.StartDate, "yyyy-MM-dd", CultureInfo.InvariantCulture),
-                        ValidTo = string.IsNullOrWhiteSpace(classification.EndDate) ? new DateTime?() : DateTime.ParseExact(classification.EndDate, "yyyy-MM-dd", CultureInfo.InvariantCulture)
+                        ValidTo = string.IsNullOrWhiteSpace(classification.EndDate) ? new DateTime?() : DateTime.ParseExact(classification.EndDate, "yyyy-MM-dd", CultureInfo.InvariantCulture),
                     }).CheckBadRequest();
                 }
 
@@ -140,7 +140,7 @@ namespace OrganisationRegistry.Import.Piavo
                     {
                         OrganisationContactId = contact.NewId,
                         ContactTypeId = contact.ContactType.NewId,
-                        ContactValue = contact.Contact
+                        ContactValue = contact.Contact,
                     }).CheckBadRequest();
                 }
 
@@ -156,7 +156,7 @@ namespace OrganisationRegistry.Import.Piavo
                         PersonId = capacity.Person.NewId,
                         Contacts = contacts,
                         ValidFrom = string.IsNullOrWhiteSpace(capacity.StartDate) ? new DateTime?() : DateTime.ParseExact(capacity.StartDate, "yyyy-MM-dd", CultureInfo.InvariantCulture),
-                        ValidTo = string.IsNullOrWhiteSpace(capacity.EndDate) ? new DateTime?() : DateTime.ParseExact(capacity.EndDate, "yyyy-MM-dd", CultureInfo.InvariantCulture)
+                        ValidTo = string.IsNullOrWhiteSpace(capacity.EndDate) ? new DateTime?() : DateTime.ParseExact(capacity.EndDate, "yyyy-MM-dd", CultureInfo.InvariantCulture),
                     }).CheckBadRequest();
                 }
 
@@ -170,7 +170,7 @@ namespace OrganisationRegistry.Import.Piavo
                         BuildingId = building.Building.NewId,
                         IsMainBuilding = building.IsMainBuilding == "on",
                         ValidFrom = string.IsNullOrWhiteSpace(building.StartDate) ? new DateTime?() : DateTime.ParseExact(building.StartDate, "yyyy-MM-dd", CultureInfo.InvariantCulture),
-                        ValidTo = string.IsNullOrWhiteSpace(building.EndDate) ? new DateTime?() : DateTime.ParseExact(building.EndDate, "yyyy-MM-dd", CultureInfo.InvariantCulture)
+                        ValidTo = string.IsNullOrWhiteSpace(building.EndDate) ? new DateTime?() : DateTime.ParseExact(building.EndDate, "yyyy-MM-dd", CultureInfo.InvariantCulture),
                     }).CheckBadRequest();
                 }
 
@@ -184,7 +184,7 @@ namespace OrganisationRegistry.Import.Piavo
                         LocationId = location.Location.NewId,
                         IsMainLocation = location.IsMainLocation == "1",
                         ValidFrom = string.IsNullOrWhiteSpace(location.StartDate) ? new DateTime?() : DateTime.ParseExact(location.StartDate, "yyyy-MM-dd", CultureInfo.InvariantCulture),
-                        ValidTo = string.IsNullOrWhiteSpace(location.EndDate) ? new DateTime?() : DateTime.ParseExact(location.EndDate, "yyyy-MM-dd", CultureInfo.InvariantCulture)
+                        ValidTo = string.IsNullOrWhiteSpace(location.EndDate) ? new DateTime?() : DateTime.ParseExact(location.EndDate, "yyyy-MM-dd", CultureInfo.InvariantCulture),
                     }).CheckBadRequest();
                 }
 
@@ -198,7 +198,7 @@ namespace OrganisationRegistry.Import.Piavo
                         FunctionId = function.Function.NewId,
                         PersonId = function.Person.NewId,
                         ValidFrom = string.IsNullOrWhiteSpace(function.StartDate) ? new DateTime?() : DateTime.ParseExact(function.StartDate, "yyyy-MM-dd", CultureInfo.InvariantCulture),
-                        ValidTo = string.IsNullOrWhiteSpace(function.EndDate) ? new DateTime?() : DateTime.ParseExact(function.EndDate, "yyyy-MM-dd", CultureInfo.InvariantCulture)
+                        ValidTo = string.IsNullOrWhiteSpace(function.EndDate) ? new DateTime?() : DateTime.ParseExact(function.EndDate, "yyyy-MM-dd", CultureInfo.InvariantCulture),
                     }).CheckBadRequest();
                 }
 
@@ -215,7 +215,7 @@ namespace OrganisationRegistry.Import.Piavo
                         FormalFrameworkId = formalFramework.FormalFramework.NewId,
                         ParentOrganisationId = formalFramework.Organisation.NewId,
                         ValidFrom = string.IsNullOrWhiteSpace(formalFramework.StartDate) ? new DateTime?() : DateTime.ParseExact(formalFramework.StartDate, "yyyy-MM-dd", CultureInfo.InvariantCulture),
-                        ValidTo = string.IsNullOrWhiteSpace(formalFramework.EndDate) ? new DateTime?() : DateTime.ParseExact(formalFramework.EndDate, "yyyy-MM-dd", CultureInfo.InvariantCulture)
+                        ValidTo = string.IsNullOrWhiteSpace(formalFramework.EndDate) ? new DateTime?() : DateTime.ParseExact(formalFramework.EndDate, "yyyy-MM-dd", CultureInfo.InvariantCulture),
                     }).CheckBadRequest();
                 }
             }
@@ -255,7 +255,7 @@ namespace OrganisationRegistry.Import.Piavo
                     OrganisationOrganisationParentId = Guid.NewGuid(),
                     ParentOrganisationId = organisation.ParentOrganisation.NewId,
                     ValidFrom = string.IsNullOrWhiteSpace(organisation.ParentOrganisationStartDate) ? new DateTime?() : DateTime.ParseExact(organisation.ParentOrganisationStartDate, "yyyy-MM-dd", CultureInfo.InvariantCulture),
-                    ValidTo = string.IsNullOrWhiteSpace(organisation.ParentOrganisationEndDate) ? new DateTime?() : DateTime.ParseExact(organisation.ParentOrganisationEndDate, "yyyy-MM-dd", CultureInfo.InvariantCulture)
+                    ValidTo = string.IsNullOrWhiteSpace(organisation.ParentOrganisationEndDate) ? new DateTime?() : DateTime.ParseExact(organisation.ParentOrganisationEndDate, "yyyy-MM-dd", CultureInfo.InvariantCulture),
                 }).CheckBadRequest();
             }
 
@@ -279,7 +279,7 @@ namespace OrganisationRegistry.Import.Piavo
                     Name = organisationClassification.Name,
                     Order = organisationClassification.Order,
                     Active = organisationClassification.Active.ToLowerInvariant().Trim() == "on",
-                    OrganisationClassificationTypeId = organisationClassification.OrganisationClassificationType.NewId
+                    OrganisationClassificationTypeId = organisationClassification.OrganisationClassificationType.NewId,
                 }).CheckBadRequest();
             }
             Console.WriteLine();
@@ -299,7 +299,7 @@ namespace OrganisationRegistry.Import.Piavo
                 client.OrganisationclassificationtypesPost(new CreateOrganisationClassificationTypeRequest
                 {
                     Id = organisationClassificationType.NewId,
-                    Name = organisationClassificationType.Name
+                    Name = organisationClassificationType.Name,
                 }).CheckBadRequest();
             }
             Console.WriteLine();
@@ -319,7 +319,7 @@ namespace OrganisationRegistry.Import.Piavo
                 client.FunctiontypesPost(new CreateFunctionTypeRequest()
                 {
                     Id = function.NewId,
-                    Name = function.Name.UpperCaseFirstLetter()
+                    Name = function.Name.UpperCaseFirstLetter(),
                 }).CheckBadRequest();
             }
             Console.WriteLine();
@@ -350,7 +350,7 @@ namespace OrganisationRegistry.Import.Piavo
                     DateOfBirth =
                         string.IsNullOrWhiteSpace(person.BirthDate)
                             ? new DateTime?()
-                            : DateTime.ParseExact(person.BirthDate, "yyyy-MM-dd", CultureInfo.InvariantCulture)
+                            : DateTime.ParseExact(person.BirthDate, "yyyy-MM-dd", CultureInfo.InvariantCulture),
                 }).CheckBadRequest();
             }
             Console.WriteLine();
@@ -373,7 +373,7 @@ namespace OrganisationRegistry.Import.Piavo
                     Street = $"{location.Street} {location.Number}",
                     ZipCode = location.PostalCode,
                     City = location.City,
-                    Country = location.Country
+                    Country = location.Country,
                 }).CheckBadRequest();
             }
             Console.WriteLine();
@@ -394,7 +394,7 @@ namespace OrganisationRegistry.Import.Piavo
                 {
                     Id = building.NewId,
                     Name = building.Name,
-                    VimId = building.Id
+                    VimId = building.Id,
                 }).CheckBadRequest();
             }
             Console.WriteLine();
@@ -414,7 +414,7 @@ namespace OrganisationRegistry.Import.Piavo
                 client.KeytypesPost(new CreateKeyTypeRequest
                 {
                     Id = key.NewId,
-                    Name = key.Name
+                    Name = key.Name,
                 }).CheckBadRequest();
             }
             Console.WriteLine();
@@ -434,7 +434,7 @@ namespace OrganisationRegistry.Import.Piavo
                 client.LabeltypesPost(new CreateLabelTypeRequest
                 {
                     Id = label.NewId,
-                    Name = label.Name
+                    Name = label.Name,
                 }).CheckBadRequest();
             }
             Console.WriteLine();
@@ -451,7 +451,7 @@ namespace OrganisationRegistry.Import.Piavo
             client.FormalframeworkcategoriesPost(new CreateFormalFrameworkCategoryRequest
             {
                 Id = formalFrameworkCategoryId,
-                Name = "Organisatie"
+                Name = "Organisatie",
             }).CheckBadRequest();
 
             for (var i = 0; i < _formalFramework.Count; i++)
@@ -464,7 +464,7 @@ namespace OrganisationRegistry.Import.Piavo
                     Id = formalFramework.NewId,
                     Code = formalFramework.Code,
                     Name = formalFramework.Name,
-                    FormalFrameworkCategoryId = formalFrameworkCategoryId
+                    FormalFrameworkCategoryId = formalFrameworkCategoryId,
                 }).CheckBadRequest();
             }
             Console.WriteLine();
@@ -484,7 +484,7 @@ namespace OrganisationRegistry.Import.Piavo
                 client.ContacttypesPost(new CreateContactTypeRequest
                 {
                     Id = contactType.NewId,
-                    Name = contactType.Name.UpperCaseFirstLetter()
+                    Name = contactType.Name.UpperCaseFirstLetter(),
                 }).CheckBadRequest();
             }
             Console.WriteLine();
@@ -504,7 +504,7 @@ namespace OrganisationRegistry.Import.Piavo
                 client.CapacitiesPost(new CreateCapacityRequest
                 {
                     Id = capacity.NewId,
-                    Name = capacity.Name.UpperCaseFirstLetter()
+                    Name = capacity.Name.UpperCaseFirstLetter(),
                 }).CheckBadRequest();
             }
             Console.WriteLine();

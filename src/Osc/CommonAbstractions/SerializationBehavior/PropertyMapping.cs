@@ -94,8 +94,8 @@ namespace Osc
 			return new PropertyMapping
 			{
 				Name = propertyName?.Name ?? dataMemberProperty?.Name,
-				Ignore = ignore != null || propertyName != null && propertyName.Ignore
-			};
+				Ignore = ignore != null || propertyName != null && propertyName.Ignore,
+            };
 		}
 	}
 }

@@ -88,14 +88,14 @@ namespace OpenSearch.Net
 			public enum MemoryStreamBufferType
 			{
 				Small,
-				Large
-			}
+				Large,
+            }
 
 			public enum MemoryStreamDiscardReason
 			{
 				TooLarge,
-				EnoughFree
-			}
+				EnoughFree,
+            }
 
 			[Event(1, Level = EventLevel.Verbose)]
 			public void MemoryStreamCreated(Guid guid, string tag, int requestedSize)

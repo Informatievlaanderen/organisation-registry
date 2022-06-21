@@ -41,8 +41,8 @@ namespace Osc
 			{ "source", 1 },
 			{ "id", 2 },
 			{ "lang", 3 },
-			{ "params", 4 }
-		};
+			{ "params", 4 },
+        };
 
 		public IScript Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
 		{

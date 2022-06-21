@@ -126,8 +126,8 @@ namespace OpenSearch.Net
 				IsAlive = IsAlive,
 				Settings = Settings,
 				IngestEnabled = IngestEnabled,
-				HttpEnabled = HttpEnabled
-			};
+				HttpEnabled = HttpEnabled,
+            };
 
 
 		public static bool operator ==(Node left, Node right) =>

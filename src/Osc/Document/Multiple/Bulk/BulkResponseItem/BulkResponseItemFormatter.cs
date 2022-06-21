@@ -39,8 +39,8 @@ namespace Osc
 			{ "delete", 0 },
 			{ "update", 1 },
 			{ "index", 2 },
-			{ "create", 3 }
-		};
+			{ "create", 3 },
+        };
 
 		public BulkResponseItemBase Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
 		{

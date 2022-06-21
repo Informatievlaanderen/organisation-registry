@@ -15,7 +15,7 @@ public class MissingRequiredFieldsTests
         {
             Reference = Field.FromValue(ColumnNames.Reference, "REF"),
             Name = Field.FromValue(ColumnNames.Name, "NAME"),
-            Parent = Field.FromValue(ColumnNames.Parent, "PARENT")
+            Parent = Field.FromValue(ColumnNames.Parent, "PARENT"),
         };
 
         var issue = MissingRequiredFields.Validate(1, record);
@@ -30,7 +30,7 @@ public class MissingRequiredFieldsTests
         {
             Reference = Field.NoValue(ColumnNames.Reference),
             Name = Field.FromValue(ColumnNames.Name, "NAME"),
-            Parent = Field.FromValue(ColumnNames.Parent, "PARENT")
+            Parent = Field.FromValue(ColumnNames.Parent, "PARENT"),
         };
 
         var issue = MissingRequiredFields.Validate(1, record);
@@ -46,7 +46,7 @@ public class MissingRequiredFieldsTests
         {
             Reference = Field.FromValue(ColumnNames.Reference, "REF"),
             Name = Field.NoValue(ColumnNames.Name),
-            Parent = Field.FromValue(ColumnNames.Parent, "PARENT")
+            Parent = Field.FromValue(ColumnNames.Parent, "PARENT"),
         };
 
         var issue = MissingRequiredFields.Validate(1, record);
@@ -62,7 +62,7 @@ public class MissingRequiredFieldsTests
         {
             Reference = Field.FromValue(ColumnNames.Reference, "REF"),
             Name = Field.FromValue(ColumnNames.Name, "NAME"),
-            Parent = Field.NoValue(ColumnNames.Parent)
+            Parent = Field.NoValue(ColumnNames.Parent),
         };
 
         var issue = MissingRequiredFields.Validate(1, record);
@@ -78,7 +78,7 @@ public class MissingRequiredFieldsTests
         {
             Reference = Field.NoValue(ColumnNames.Reference),
             Name = Field.NoValue(ColumnNames.Name),
-            Parent = Field.NoValue(ColumnNames.Parent)
+            Parent = Field.NoValue(ColumnNames.Parent),
         };
 
         var issue = MissingRequiredFields.Validate(1, record);
@@ -97,7 +97,7 @@ public class MissingRequiredFieldsTests
         {
             Reference = Field.NoValue(ColumnNames.Reference),
             Name = Field.FromValue(ColumnNames.Name, "NAME"),
-            Parent = Field.NoValue(ColumnNames.Parent)
+            Parent = Field.NoValue(ColumnNames.Parent),
         };
 
         var issue = MissingRequiredFields.Validate(1, record);

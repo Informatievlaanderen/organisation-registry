@@ -64,7 +64,7 @@ public class WhenUpdatingAnOrganisationParentWithCircularDependencies
                     _organisationAId,
                     _organisationBId)
                 .WithOrganisationOrganisationParentId(_organisationOrganisationParentId)
-                .WithValidity(new DateTime(2017, 1, 1), new DateTime(2017, 12, 31)).Build()
+                .WithValidity(new DateTime(2017, 1, 1), new DateTime(2017, 12, 31)).Build(),
         };
 
     private UpdateOrganisationParent UpdateOrganisationParentCommand

@@ -74,8 +74,8 @@ namespace Osc
 		{
 			{ "_name", 0 },
 			{ "boost", 1 },
-			{ "validation_method", 2 }
-		};
+			{ "validation_method", 2 },
+        };
 
 		public IGeoPolygonQuery Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
 		{

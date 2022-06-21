@@ -74,7 +74,7 @@ public class PersonFunctionListView :
 
     public enum ProjectionTables
     {
-        PersonFunctionList
+        PersonFunctionList,
     }
 
     private readonly IEventStore _eventStore;
@@ -160,7 +160,7 @@ public class PersonFunctionListView :
             PersonId = message.Body.PersonId,
             FunctionName = message.Body.FunctionName,
             ValidFrom = message.Body.ValidFrom,
-            ValidTo = message.Body.ValidTo
+            ValidTo = message.Body.ValidTo,
         };
 
         using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))

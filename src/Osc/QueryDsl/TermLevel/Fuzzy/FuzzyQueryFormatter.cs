@@ -116,21 +116,21 @@ namespace Osc
 											query = new FuzzyDateQuery
 											{
 												Field = field,
-												Value = dateTime
-											};
+												Value = dateTime,
+                                            };
 										else
 											query = new FuzzyQuery
 											{
 												Field = field,
-												Value = valueSegment.Utf8String()
-											};
+												Value = valueSegment.Utf8String(),
+                                            };
 										break;
 									case JsonToken.Number:
 										query = new FuzzyNumericQuery
 										{
 											Field = field,
-											Value = reader.ReadDouble()
-										};
+											Value = reader.ReadDouble(),
+                                        };
 										break;
 								}
 

@@ -53,8 +53,8 @@ namespace Osc
 		Hour,
 
 		[EnumMember(Value = "d")]
-		Day
-	}
+		Day,
+    }
 
 	public static class TimeUnitExtensions
 	{

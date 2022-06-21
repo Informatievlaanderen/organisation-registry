@@ -16,7 +16,7 @@ public class GenderRatioRunner : BaseRunner
     private new static readonly Type[] EventHandlers =
     {
         typeof(MemoryCachesMaintainer),
-        typeof(BodySeatGenderRatioProjection)
+        typeof(BodySeatGenderRatioProjection),
     };
 
     private new static readonly Type[] ReactionHandlers = { };

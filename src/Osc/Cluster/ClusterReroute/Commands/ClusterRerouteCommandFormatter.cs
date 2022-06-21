@@ -40,8 +40,8 @@ namespace Osc
 			{ "allocate_empty_primary", 1 },
 			{ "allocate_stale_primary", 2 },
 			{ "move", 3 },
-			{ "cancel", 4 }
-		};
+			{ "cancel", 4 },
+        };
 
 		public IClusterRerouteCommand Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
 		{

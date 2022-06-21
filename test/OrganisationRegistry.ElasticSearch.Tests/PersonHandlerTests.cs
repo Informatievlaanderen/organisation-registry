@@ -88,7 +88,7 @@ public class PersonHandlerTests
             new List<IEnvelope>
             {
                 scenario.Create<InitialiseProjection>().ToEnvelope(),
-                scenario.Create<PersonCreated>().ToEnvelope()
+                scenario.Create<PersonCreated>().ToEnvelope(),
             }
         );
 
@@ -110,7 +110,7 @@ public class PersonHandlerTests
             new List<IEnvelope>
             {
                 initialiseProjection.ToEnvelope(),
-                personCreated.ToEnvelope()
+                personCreated.ToEnvelope(),
             }
         );
 
@@ -128,7 +128,7 @@ public class PersonHandlerTests
         var contactTypeCacheItem = new ContactTypeCacheItem
         {
             Id = scenario.Create<Guid>(),
-            Name = scenario.Create<string>()
+            Name = scenario.Create<string>(),
         };
         context.ContactTypeCache.Add(contactTypeCacheItem);
 
@@ -136,7 +136,7 @@ public class PersonHandlerTests
         {
             Id = scenario.Create<Guid>(),
             Name = scenario.Create<string>(),
-            OvoNumber = scenario.Create<string>()
+            OvoNumber = scenario.Create<string>(),
         };
         context.OrganisationCache.Add(organisationCacheItem);
         await context.SaveChangesAsync();
@@ -151,7 +151,7 @@ public class PersonHandlerTests
                                 (scenario.Create<DateTime?>() ?? scenario.Create<DateTime>());
         var organisationTerminationCapacities = new Dictionary<Guid, DateTime>
         {
-            { capacityAdded.OrganisationCapacityId, dateOfTermination }
+            { capacityAdded.OrganisationCapacityId, dateOfTermination },
         };
 
         var organisationTerminated = scenario.CreateOrganisationTerminated(
@@ -166,7 +166,7 @@ public class PersonHandlerTests
                 initialisePersonProjection.ToEnvelope(),
                 personCreated.ToEnvelope(),
                 capacityAdded.ToEnvelope(),
-                organisationTerminated.ToEnvelope()
+                organisationTerminated.ToEnvelope(),
             }
         );
 
@@ -187,7 +187,7 @@ public class PersonHandlerTests
         var contactTypeCacheItem = new ContactTypeCacheItem
         {
             Id = scenario.Create<Guid>(),
-            Name = scenario.Create<string>()
+            Name = scenario.Create<string>(),
         };
         context.ContactTypeCache.Add(contactTypeCacheItem);
 
@@ -195,7 +195,7 @@ public class PersonHandlerTests
         {
             Id = scenario.Create<Guid>(),
             Name = scenario.Create<string>(),
-            OvoNumber = scenario.Create<string>()
+            OvoNumber = scenario.Create<string>(),
         };
         context.OrganisationCache.Add(organisationCacheItem);
         await context.SaveChangesAsync();
@@ -210,7 +210,7 @@ public class PersonHandlerTests
                                 (scenario.Create<DateTime?>() ?? scenario.Create<DateTime>());
         var organisationTerminationCapacities = new Dictionary<Guid, DateTime>
         {
-            { capacityAdded.OrganisationCapacityId, dateOfTermination }
+            { capacityAdded.OrganisationCapacityId, dateOfTermination },
         };
 
         var organisationTerminatedV2 = scenario.CreateOrganisationTerminatedV2(
@@ -225,7 +225,7 @@ public class PersonHandlerTests
                 initialisePersonProjection.ToEnvelope(),
                 personCreated.ToEnvelope(),
                 capacityAdded.ToEnvelope(),
-                organisationTerminatedV2.ToEnvelope()
+                organisationTerminatedV2.ToEnvelope(),
             }
         );
 

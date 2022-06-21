@@ -78,6 +78,6 @@ namespace OpenSearch.Net.Utf8Json
 		/// <summary>,</summary>
 		ValueSeparator = 10,
 		/// <summary>:</summary>
-		NameSeparator = 11
-	}
+		NameSeparator = 11,
+    }
 }

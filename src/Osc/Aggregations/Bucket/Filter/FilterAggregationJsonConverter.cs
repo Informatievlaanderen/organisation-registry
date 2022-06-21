@@ -53,8 +53,8 @@ namespace Osc
 			var container = formatter.Deserialize(ref reader, formatterResolver);
 			var agg = new FilterAggregation
 			{
-				Filter = container
-			};
+				Filter = container,
+            };
 
 			return agg;
 		}

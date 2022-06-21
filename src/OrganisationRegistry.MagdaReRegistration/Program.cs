@@ -123,7 +123,7 @@ namespace OrganisationRegistry.MagdaReRegistration
         {
             var client = new HttpClient
             {
-                BaseAddress = new Uri(options.OrganisationRegistryApiUri)
+                BaseAddress = new Uri(options.OrganisationRegistryApiUri),
             };
 
             var response =

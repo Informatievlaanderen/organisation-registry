@@ -60,8 +60,8 @@ namespace OpenSearch.Net
 				OpenSearchNetEnumResolver.Instance, // Specialized Enum handling
 				AttributeFormatterResolver.Instance, // [JsonFormatter]
 				DynamicGenericResolver.Instance, // T[], List<T>, etc...
-				ExceptionFormatterResolver.Instance
-			};
+				ExceptionFormatterResolver.Instance,
+            };
 
 			private readonly IJsonFormatterResolver _finalFormatter;
 			private readonly ConcurrentDictionary<Type, object> _formatters = new ConcurrentDictionary<Type, object>();

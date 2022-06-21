@@ -81,7 +81,7 @@ public class
                 "Sleutel A",
                 _value,
                 _validFrom,
-                _validTo)
+                _validTo),
         };
 
 

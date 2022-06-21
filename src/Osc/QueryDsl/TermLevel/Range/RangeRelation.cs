@@ -36,6 +36,6 @@ namespace Osc
 	{
 		[EnumMember(Value = "within")] Within,
 		[EnumMember(Value = "contains")] Contains,
-		[EnumMember(Value = "intersects")] Intersects
-	}
+		[EnumMember(Value = "intersects")] Intersects,
+    }
 }

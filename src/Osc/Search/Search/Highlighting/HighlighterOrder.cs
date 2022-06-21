@@ -41,6 +41,6 @@ namespace Osc
 		/// Sorts highlighted fragments by score. Only valid for the <see cref="HighlighterType.Unified" /> highlighter
 		/// </summary>
 		[EnumMember(Value = "score")]
-		Score
-	}
+		Score,
+    }
 }

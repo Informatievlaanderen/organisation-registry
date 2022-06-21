@@ -85,7 +85,7 @@ namespace Osc
 		private static QueryContainer CreateShouldContainer(List<QueryContainer> shouldClauses) =>
 			new BoolQuery
 			{
-				Should = shouldClauses.ToListOrNullIfEmpty()
-			};
+				Should = shouldClauses.ToListOrNullIfEmpty(),
+            };
 	}
 }

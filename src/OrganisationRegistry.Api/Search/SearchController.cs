@@ -221,7 +221,7 @@ public class SearchController : OrganisationRegistryController
                     Content = JsonConvert.SerializeObject(
                         organisations,
                         Formatting.Indented,
-                        jsonSerializerSettings)
+                        jsonSerializerSettings),
                 };
             }
 
@@ -246,7 +246,7 @@ public class SearchController : OrganisationRegistryController
                     Content = JsonConvert.SerializeObject(
                         people,
                         Formatting.Indented,
-                        jsonSerializerSettings)
+                        jsonSerializerSettings),
                 };
             }
 
@@ -271,7 +271,7 @@ public class SearchController : OrganisationRegistryController
                     Content = JsonConvert.SerializeObject(
                         bodies,
                         Formatting.Indented,
-                        jsonSerializerSettings)
+                        jsonSerializerSettings),
                 };
             }
 
@@ -393,7 +393,7 @@ public class SearchController : OrganisationRegistryController
                     {
                         defaultField => defaultField.Id,
                         defaultField => defaultField.ChangeId,
-                        defaultField => defaultField.ChangeTime
+                        defaultField => defaultField.ChangeTime,
                     },
                     defaultSort => defaultSort.Name.Suffix("keyword"),
                     query => query
@@ -428,7 +428,7 @@ public class SearchController : OrganisationRegistryController
                     {
                         defaultField => defaultField.Id,
                         defaultField => defaultField.ChangeId,
-                        defaultField => defaultField.ChangeTime
+                        defaultField => defaultField.ChangeTime,
                     },
                     defaultSort => defaultSort.Name.Suffix("keyword"),
                     query => query
@@ -462,7 +462,7 @@ public class SearchController : OrganisationRegistryController
                     {
                         defaultField => defaultField.Id,
                         defaultField => defaultField.ChangeId,
-                        defaultField => defaultField.ChangeTime
+                        defaultField => defaultField.ChangeTime,
                     },
                     defaultSort => defaultSort.Name.Suffix("keyword"),
                     query => query.Raw(q.ToString())));
@@ -561,7 +561,7 @@ public class SearchController : OrganisationRegistryController
             Content = JsonConvert.SerializeObject(
                 searchResults.Hits.Select(x => x.Source),
                 Formatting.Indented,
-                jsonSerializerSettings)
+                jsonSerializerSettings),
         };
     }
 

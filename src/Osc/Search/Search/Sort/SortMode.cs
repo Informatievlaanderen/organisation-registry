@@ -56,6 +56,6 @@ namespace Osc
 
 		/// <summary> Use the median of all values as sort value. Only applicable for number based array fields. </summary>
 		[EnumMember(Value = "median")]
-		Median
-	}
+		Median,
+    }
 }

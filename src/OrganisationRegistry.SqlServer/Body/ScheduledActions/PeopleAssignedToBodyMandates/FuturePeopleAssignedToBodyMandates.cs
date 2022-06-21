@@ -80,7 +80,7 @@ public class FuturePeopleAssignedToBodyMandatesListView :
 
     public enum ProjectionTables
     {
-        FuturePeopleAssignedToBodyMandatesList
+        FuturePeopleAssignedToBodyMandatesList,
     }
 
     public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegation> message)
@@ -138,7 +138,7 @@ public class FuturePeopleAssignedToBodyMandatesListView :
             BodyId = message.Body.BodyId,
             PersonId = message.Body.PersonId,
             PersonFullName = message.Body.PersonFullName,
-            ValidFrom = message.Body.ValidFrom
+            ValidFrom = message.Body.ValidFrom,
         };
 
         context.FuturePeopleAssignedToBodyMandatesList.Add(futureActivePersonListItem);
@@ -164,7 +164,7 @@ public class FuturePeopleAssignedToBodyMandatesListView :
                     BodyId = message.Body.BodyId,
                     PersonId = message.Body.PersonId,
                     PersonFullName = message.Body.PersonFullName,
-                    ValidFrom = message.Body.ValidFrom
+                    ValidFrom = message.Body.ValidFrom,
                 };
 
             context.FuturePeopleAssignedToBodyMandatesList.Add(futureActivePersonListItem);

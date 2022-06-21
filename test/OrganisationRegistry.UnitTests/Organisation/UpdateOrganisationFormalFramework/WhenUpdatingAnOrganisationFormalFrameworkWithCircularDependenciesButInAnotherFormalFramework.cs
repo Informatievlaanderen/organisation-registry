@@ -81,7 +81,7 @@ public class WhenUpdatingAnOrganisationFormalFrameworkWithCircularDependenciesBu
             childOrganisationCreated.Build(), parentOrganisationCreated.Build(), grandParentOrganisationCreated.Build(),
             greatGrandParentOrganisationCreated.Build(), formalFrameworkCategoryCreatedBuilder.Build(),
             formalFrameworkACreated.Build(), formalFrameworkBCreated.Build(), childBecameDaughterOfParent.Build(),
-            parentBecameDaughterOfGrandParent.Build(), grandParentBecameDaughterOfGreatGrandParent.Build()
+            parentBecameDaughterOfGrandParent.Build(), grandParentBecameDaughterOfGreatGrandParent.Build(),
         };
     }
 

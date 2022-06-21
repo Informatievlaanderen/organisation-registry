@@ -90,8 +90,8 @@ namespace Osc
 			{
 				Enabled = true,
 				MinReplicas = minReplicas,
-				MaxReplicas = maxReplicas
-			};
+				MaxReplicas = maxReplicas,
+            };
 		}
 
 		/// <summary>
@@ -107,8 +107,8 @@ namespace Osc
 			{
 				Enabled = true,
 				MinReplicas = minReplicas,
-				MaxReplicas = AllMaxReplicas
-			};
+				MaxReplicas = AllMaxReplicas,
+            };
 		}
 
 		/// <summary>

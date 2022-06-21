@@ -40,6 +40,6 @@ namespace Osc
 		Yellow,
 
 		[EnumMember(Value = "red")]
-		Red
-	}
+		Red,
+    }
 }

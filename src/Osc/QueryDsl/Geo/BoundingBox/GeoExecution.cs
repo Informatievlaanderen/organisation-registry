@@ -38,6 +38,6 @@ namespace Osc
 		Memory,
 
 		[EnumMember(Value = "indexed")]
-		Indexed
-	}
+		Indexed,
+    }
 }

@@ -83,7 +83,7 @@ public class WhenUpdatingAnOrganisationFormalFrameworkWithCircularDependencies :
                     _formalFrameworkId,
                     _greatGrandparentOrganisationId)
                 .WithId(_grandParentBecameDaughterOfGrandParentId)
-                .Build()
+                .Build(),
         };
 
     private UpdateOrganisationFormalFramework UpdateOrganisationFormalFrameworkCommand

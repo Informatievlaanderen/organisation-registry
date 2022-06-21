@@ -47,6 +47,6 @@ namespace Osc
 		/// Escapes HTML highlighting tags
 		/// </summary>
 		[EnumMember(Value = "html")]
-		Html
-	}
+		Html,
+    }
 }

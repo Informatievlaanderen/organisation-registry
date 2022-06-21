@@ -22,6 +22,6 @@ public class InfrastructureConfigurationSection
         {
             EventStoreConnectionString = Obfuscator.ObfuscateConnectionString(EventStoreConnectionString),
             EventStoreAdministrationConnectionString = Obfuscator.ObfuscateConnectionString(EventStoreAdministrationConnectionString),
-            EventStoreCommandTimeout = EventStoreCommandTimeout
+            EventStoreCommandTimeout = EventStoreCommandTimeout,
         };
 }

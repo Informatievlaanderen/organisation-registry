@@ -70,7 +70,7 @@ public class WhenUpdatingAnOrganisationBuildingToAnAlreadyCoupledBuilding : Spec
                 "Gebouw A",
                 false,
                 null,
-                null)
+                null),
         };
 
     private UpdateOrganisationBuilding UpdateOrganisationBuildingCommand

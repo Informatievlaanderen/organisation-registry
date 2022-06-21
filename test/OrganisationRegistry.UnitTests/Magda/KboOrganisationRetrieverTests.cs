@@ -36,11 +36,11 @@ public class KboOrganisationRetrieverTests
                         {
                             Antwoorden = new AntwoordenType
                             {
-                                Antwoord = new AntwoordType()
-                            }
-                        }
-                    }
-                }
+                                Antwoord = new AntwoordType(),
+                            },
+                        },
+                    },
+                },
             });
 
         return new KboOrganisationRetriever(

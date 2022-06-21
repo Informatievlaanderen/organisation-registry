@@ -219,7 +219,7 @@ namespace OpenSearch.Net
 
 		protected virtual HttpMessageHandler CreateHttpClientHandler(RequestData requestData)
 		{
-			var handler = new HttpClientHandler { AutomaticDecompression = requestData.HttpCompression ? GZip | Deflate : None, };
+			var handler = new HttpClientHandler { AutomaticDecompression = requestData.HttpCompression ? GZip | Deflate : None };
 
 			// same limit as desktop clr
 			if (requestData.ConnectionSettings.ConnectionLimit > 0)

@@ -85,8 +85,8 @@ namespace Osc
 			{ "icu_transform", 42 },
 			{ "condition", 43 },
 			{ "multiplexer", 44 },
-			{ "predicate_token_filter", 45 }
-		};
+			{ "predicate_token_filter", 45 },
+        };
 
 		public ITokenFilter Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
 		{

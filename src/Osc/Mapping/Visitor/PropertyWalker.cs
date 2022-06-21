@@ -115,11 +115,11 @@ namespace Osc
 						{
 							"keyword", new KeywordProperty
 							{
-								IgnoreAbove = 256
-							}
-						}
-					}
-				};
+								IgnoreAbove = 256,
+                            }
+						},
+                    },
+                };
 
 			if (type.IsEnum)
 			{

@@ -71,7 +71,7 @@ public class PersonCapacityListQuery : Query<PersonCapacityListItem, PersonCapac
             nameof(PersonCapacityListItem.CapacityName),
             nameof(PersonCapacityListItem.FunctionName),
             nameof(PersonCapacityListItem.ValidFrom),
-            nameof(PersonCapacityListItem.ValidTo)
+            nameof(PersonCapacityListItem.ValidTo),
         };
 
         public SortingHeader DefaultSortingHeader { get; } =

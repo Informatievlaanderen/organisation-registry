@@ -19,7 +19,7 @@ public class BodyRunner : BaseRunner<BodyDocument>
 
     public new static readonly Type[] EventHandlers =
     {
-        typeof(BodyHandler)
+        typeof(BodyHandler),
     };
 
     public BodyRunner(

@@ -87,6 +87,6 @@ namespace Osc
 		/// <summary>
 		/// 3.7cm x 1.9cm
 		/// </summary>
-		Precision12 = 12
-	}
+		Precision12 = 12,
+    }
 }

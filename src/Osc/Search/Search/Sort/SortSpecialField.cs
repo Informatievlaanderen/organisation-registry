@@ -41,6 +41,6 @@ namespace Osc
 		DocumentIndexOrder,
 
 		[EnumMember(Value = "_shard_doc")]
-		ShardDocumentOrder
-	}
+		ShardDocumentOrder,
+    }
 }

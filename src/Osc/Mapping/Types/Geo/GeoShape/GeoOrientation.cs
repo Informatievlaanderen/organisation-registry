@@ -32,8 +32,8 @@ namespace Osc
 	public enum GeoOrientation
 	{
 		ClockWise,
-		CounterClockWise
-	}
+		CounterClockWise,
+    }
 
 	internal class GeoOrientationFormatter : IJsonFormatter<GeoOrientation>
 	{

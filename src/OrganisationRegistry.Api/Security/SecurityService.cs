@@ -31,7 +31,7 @@ public class SecurityService : ISecurityService
         { Roles.RegelgevingBeheerder, Role.RegelgevingBeheerder },
         { Roles.OrgaanBeheerder, Role.OrgaanBeheerder },
         { Roles.Developer, Role.Developer },
-        { Roles.AutomatedTask, Role.AutomatedTask }
+        { Roles.AutomatedTask, Role.AutomatedTask },
     };
 
     public SecurityService(

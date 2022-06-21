@@ -4,5 +4,5 @@
 public enum LifecyclePhaseTypeIsRepresentativeFor
 {
     InactivePhase,
-    ActivePhase
+    ActivePhase,
 }

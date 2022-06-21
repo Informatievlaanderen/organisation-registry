@@ -189,8 +189,8 @@ namespace Osc
 				ScriptedUpsert = ScriptedUpsert,
 				IfPrimaryTerm = IfPrimaryTerm,
 				IfSequenceNumber = IfSequenceNumber,
-				Source = Source
-			};
+				Source = Source,
+            };
 	}
 
 	[DataContract]
@@ -226,8 +226,8 @@ namespace Osc
 				ScriptedUpsert = Self.ScriptedUpsert,
 				IfPrimaryTerm = Self.IfPrimaryTerm,
 				IfSequenceNumber = Self.IfSequenceNumber,
-				Source = Self.Source
-			};
+				Source = Self.Source,
+            };
 
 		protected override Id GetIdForOperation(Inferrer inferrer) =>
 			Self.Id ?? new Id(new[] { Self.IdFrom, Self.Upsert }.FirstOrDefault(o => o != null));

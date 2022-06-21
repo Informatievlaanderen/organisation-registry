@@ -47,6 +47,6 @@ namespace Osc
 		Max,
 
 		[EnumMember(Value = "none")]
-		None
-	}
+		None,
+    }
 }

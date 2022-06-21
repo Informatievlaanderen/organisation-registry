@@ -50,6 +50,6 @@ namespace Osc
 		WithPositionsOffsets,
 
 		[EnumMember(Value = "with_positions_offsets_payloads")]
-		WithPositionsOffsetsPayloads
-	}
+		WithPositionsOffsetsPayloads,
+    }
 }

@@ -58,8 +58,8 @@ namespace OpenSearch.Net
 		private static readonly AutomataDictionary Fields = new AutomataDictionary
 		{
 			{ "headers", 0 },
-			{ "root_cause", 1 }
-		};
+			{ "root_cause", 1 },
+        };
 
 		protected override void Serialize(ref JsonWriter writer, ref int count, Error value, IJsonFormatterResolver formatterResolver)
 		{

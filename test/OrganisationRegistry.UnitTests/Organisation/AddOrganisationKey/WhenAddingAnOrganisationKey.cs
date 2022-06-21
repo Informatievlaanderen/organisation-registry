@@ -72,7 +72,7 @@ public class WhenAddingAnOrganisationKey : Specification<AddOrganisationKeyComma
                 null,
                 null,
                 null),
-            new KeyTypeCreated(_keyId, "Key A")
+            new KeyTypeCreated(_keyId, "Key A"),
         };
 
     private AddOrganisationKey AddOrganisationKeyCommand

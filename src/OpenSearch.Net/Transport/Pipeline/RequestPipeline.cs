@@ -149,8 +149,8 @@ namespace OpenSearch.Net
 		private NodesInfoRequestParameters SniffParameters => new NodesInfoRequestParameters
 		{
 			Timeout = PingTimeout,
-			FlatSettings = true
-		};
+			FlatSettings = true,
+        };
 
 		void IDisposable.Dispose() => Dispose();
 
@@ -274,8 +274,8 @@ namespace OpenSearch.Net
 			{
 				Request = data,
 				Response = callDetails,
-				AuditTrail = AuditTrail
-			};
+				AuditTrail = AuditTrail,
+            };
 
 			return clientException;
 		}
@@ -569,8 +569,8 @@ namespace OpenSearch.Net
 				throw new UnexpectedOpenSearchClientException(clientException, seenExceptions)
 				{
 					Request = requestData,
-					AuditTrail = AuditTrail
-				};
+					AuditTrail = AuditTrail,
+                };
 		}
 
 		private bool PingDisabled(Node node) =>
@@ -589,8 +589,8 @@ namespace OpenSearch.Net
 				BasicAuthenticationCredentials = _settings.BasicAuthenticationCredentials,
 				ApiKeyAuthenticationCredentials = _settings.ApiKeyAuthenticationCredentials,
 				EnableHttpPipelining = RequestConfiguration?.EnableHttpPipelining ?? _settings.HttpPipeliningEnabled,
-				ForceNode = RequestConfiguration?.ForceNode
-			};
+				ForceNode = RequestConfiguration?.ForceNode,
+            };
 
 			IRequestParameters requestParameters = new RootNodeInfoRequestParameters { RequestConfiguration = requestOverrides };
 
@@ -604,8 +604,8 @@ namespace OpenSearch.Net
 				throw new PipelineException(PipelineFailure.BadAuthentication, details.OriginalException)
 				{
 					Response = response,
-					ApiCall = details
-				};
+					ApiCall = details,
+                };
 		}
 
 		private void LazyAuditable(AuditEvent e, Node n)
@@ -616,8 +616,8 @@ namespace OpenSearch.Net
 		private RequestData CreateSniffRequestData(Node node) =>
 			new RequestData(HttpMethod.GET, SniffPath, null, _settings, SniffParameters, _memoryStreamFactory)
 			{
-				Node = node
-			};
+				Node = node,
+            };
 
 		protected virtual void Dispose() { }
 	}

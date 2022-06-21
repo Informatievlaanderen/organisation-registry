@@ -50,6 +50,6 @@ namespace Osc
 		PhrasePrefix,
 
 		[EnumMember(Value = "bool_prefix")]
-		BoolPrefix
-	}
+		BoolPrefix,
+    }
 }

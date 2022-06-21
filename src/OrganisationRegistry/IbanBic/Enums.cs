@@ -33,7 +33,7 @@ public enum BBanEntryType
     NATIONAL_CHECK_DIGIT,
     ACCOUNT_TYPE,
     OWNER_ACCOUNT_NUMBER,
-    IDENTIFICATION_NUMBER
+    IDENTIFICATION_NUMBER,
 }
 
 /// <summary>
@@ -43,7 +43,7 @@ public enum BBanEntryCharacterType
 {
     N = 'n',    // Digits (numbers 0-9)
     A = 'a',    // Upper case letters (A-Z)
-    C = 'c'     // Alphanumeric (a-z, A-Z, 0-9)
+    C = 'c', // Alphanumeric (a-z, A-Z, 0-9)
 }
 
 /// <summary>
@@ -60,7 +60,7 @@ public enum BicFormatViolation
     LOCATION_CODE_ONLY_LETTERS_OR_DIGITS,
     BANK_CODE_ONLY_LETTERS,
     COUNTRY_CODE_ONLY_UPPER_CASE_LETTERS,
-    COUNTRY_CODE_UNSUPPORTED
+    COUNTRY_CODE_UNSUPPORTED,
 }
 
 /// <summary>
@@ -92,5 +92,5 @@ public enum IbanFormatViolation
     ACCOUNT_NUMBER_TOO_LONG,
     ACCOUNT_NUMBER_TOO_SHORT,
     ACCOUNT_NUMBER_PREFIX_TOO_LONG,
-    ACCOUNT_NUMBER_PREFIX_TOO_SHORT
+    ACCOUNT_NUMBER_PREFIX_TOO_SHORT,
 }

@@ -44,6 +44,6 @@ namespace Osc
 		/// supports point types only
 		/// </summary>
 		[EnumMember(Value = "term")]
-		Term
-	}
+		Term,
+    }
 }

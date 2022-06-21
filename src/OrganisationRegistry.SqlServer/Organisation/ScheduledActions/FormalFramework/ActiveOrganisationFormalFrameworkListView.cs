@@ -78,7 +78,7 @@ public class ActiveOrganisationFormalFrameworkListView :
 
     public enum ProjectionTables
     {
-        ActiveOrganisationFormalFrameworkList
+        ActiveOrganisationFormalFrameworkList,
     }
 
     public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFormalFrameworkAdded> message)
@@ -128,7 +128,7 @@ public class ActiveOrganisationFormalFrameworkListView :
             OrganisationId = message.Body.OrganisationId,
             FormalFrameworkId = message.Body.FormalFrameworkId,
             OrganisationFormalFrameworkId = message.Body.OrganisationFormalFrameworkId,
-            ValidTo = validTo
+            ValidTo = validTo,
         };
 
         using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))

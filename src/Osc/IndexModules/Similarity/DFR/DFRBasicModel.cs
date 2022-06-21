@@ -80,6 +80,6 @@ namespace Osc
 		/// Implements the Poisson approximation for the binomial model for DFR.
 		/// </summary>
 		[EnumMember(Value = "p")]
-		P
-	}
+		P,
+    }
 }

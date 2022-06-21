@@ -67,7 +67,7 @@ namespace OpenSearch.Net.Utf8Json.Resolvers
 			BuiltinResolver.Instance, // Builtin
 			EnumResolver.Default,     // Enum(default => string)
 			DynamicGenericResolver.Instance, // T[], List<T>, etc...
-			AttributeFormatterResolver.Instance // [JsonFormatter]
+			AttributeFormatterResolver.Instance, // [JsonFormatter]
 		};
 	}
 

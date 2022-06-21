@@ -92,7 +92,7 @@ public class
                 _validFrom,
                 _validTo),
 #pragma warning disable CS0618
-            new MainLocationAssignedToOrganisation(_organisationId, _locationId, _organisationLocationId)
+            new MainLocationAssignedToOrganisation(_organisationId, _locationId, _organisationLocationId),
 #pragma warning restore CS0618
         };
 

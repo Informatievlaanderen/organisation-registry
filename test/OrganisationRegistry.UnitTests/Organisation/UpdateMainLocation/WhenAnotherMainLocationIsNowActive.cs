@@ -96,7 +96,7 @@ public class WhenAnotherMainLocationIsNowActive :
                 null,
                 null,
                 DateTime.Today.AddDays(1),
-                DateTime.Today.AddDays(1))
+                DateTime.Today.AddDays(1)),
         };
 
     private UpdateMainLocation UpdateMainLocationCommand

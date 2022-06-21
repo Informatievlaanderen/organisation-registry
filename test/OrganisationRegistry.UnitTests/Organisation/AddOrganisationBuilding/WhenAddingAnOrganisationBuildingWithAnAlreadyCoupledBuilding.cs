@@ -68,7 +68,7 @@ public class WhenAddingTheSameBuildingTwice
                 "Gebouw A",
                 _isMainBuilding,
                 _validFrom,
-                _validTo)
+                _validTo),
         };
 
 

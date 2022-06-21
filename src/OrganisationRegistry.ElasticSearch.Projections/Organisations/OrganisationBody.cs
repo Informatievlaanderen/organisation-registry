@@ -94,7 +94,7 @@ public class OrganisationBody :
 
                     return Task.CompletedTask;
                 }
-            }
+            },
         };
 
         if (message.Body.PreviousOrganisationId != message.Body.OrganisationId)

@@ -72,7 +72,7 @@ public class WhenAddingANonVlimpersOrganisationAsParentForAVlimpersOrganisation
                 null,
                 null,
                 null),
-            new OrganisationPlacedUnderVlimpersManagement(_organisationId)
+            new OrganisationPlacedUnderVlimpersManagement(_organisationId),
         };
 
     protected AddOrganisationParent AddOrganisationParentCommand

@@ -68,8 +68,8 @@ namespace Osc
 					search_type = searchType,
 					preference = GetString("preference"),
 					routing = GetString("routing"),
-					ignore_unavailable = GetString("ignore_unavailable")
-				};
+					ignore_unavailable = GetString("ignore_unavailable"),
+                };
 
 				writer.WriteSerialized(header, serializer, settings, SerializationFormatting.None);
 				writer.WriteRaw(Newline);

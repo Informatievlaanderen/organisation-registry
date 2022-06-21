@@ -37,6 +37,6 @@ namespace Osc
 		Arc,
 
 		[EnumMember(Value = "plane")]
-		Plane
-	}
+		Plane,
+    }
 }

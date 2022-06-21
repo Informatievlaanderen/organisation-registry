@@ -40,6 +40,6 @@ namespace Osc
 		GlobalOrdinals,
 
 		[EnumMember(Value = "bytes_hash")]
-		BytesHash
-	}
+		BytesHash,
+    }
 }

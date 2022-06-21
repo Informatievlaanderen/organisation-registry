@@ -88,8 +88,8 @@ namespace Osc
 			{ "boost", 1 },
 			{ "validation_method", 2 },
 			{ "distance", 3 },
-			{ "distance_type", 4 }
-		};
+			{ "distance_type", 4 },
+        };
 
 		public IGeoDistanceQuery Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
 		{

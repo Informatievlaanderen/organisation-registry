@@ -100,6 +100,6 @@ namespace Osc
 		Swedish,
 
 		[EnumMember(Value = "Turkish")]
-		Turkish
-	}
+		Turkish,
+    }
 }

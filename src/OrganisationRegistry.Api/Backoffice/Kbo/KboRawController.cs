@@ -48,7 +48,7 @@ public class KboRawController : OrganisationRegistryController
         return Ok(JsonConvert.SerializeObject(new
         {
             registerInscription,
-            giveOrganisation
+            giveOrganisation,
         }));
     }
 }

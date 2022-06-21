@@ -4,5 +4,5 @@ namespace OrganisationRegistry.LifecyclePhaseType;
 public enum LifecyclePhaseTypeStatus
 {
     NonDefault,
-    Default
+    Default,
 }

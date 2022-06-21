@@ -86,7 +86,7 @@ public class WhenUpdatingAnOrganisationParentToValid
                 _organisationParentId,
                 "Ouder en Gezin",
                 _dateTimeProviderStub.Today.AddYears(-1),
-                _dateTimeProviderStub.Today.AddYears(-1))
+                _dateTimeProviderStub.Today.AddYears(-1)),
         };
 
     private UpdateOrganisationParent UpdateOrganisationParentCommand

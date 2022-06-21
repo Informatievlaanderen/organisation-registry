@@ -101,8 +101,8 @@ namespace Osc
 				Index = source.Index,
 				Id = source.Id,
 				Routing = source.Routing,
-				Source = mapper(source.Source)
-			};
+				Source = mapper(source.Source),
+            };
 	}
 
 	/// <summary>

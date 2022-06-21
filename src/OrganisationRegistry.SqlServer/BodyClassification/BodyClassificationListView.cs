@@ -71,7 +71,7 @@ public class BodyClassificationListView :
 
     public enum ProjectionTables
     {
-        BodyClassificationList
+        BodyClassificationList,
     }
 
     private readonly IEventStore _eventStore;
@@ -95,7 +95,7 @@ public class BodyClassificationListView :
                 Order = message.Body.Order,
                 Active = message.Body.Active,
                 BodyClassificationTypeId = message.Body.BodyClassificationTypeId,
-                BodyClassificationTypeName = message.Body.BodyClassificationTypeName
+                BodyClassificationTypeName = message.Body.BodyClassificationTypeName,
             };
 
             await context.BodyClassificationList.AddAsync(bodyClassification);

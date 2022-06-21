@@ -68,7 +68,7 @@ public class PersonMandateListProjection :
             ValidTo = message.Body.ValidTo,
 
             BodyOrganisationId = organisationForBody.OrganisationId,
-            BodyOrganisationName = organisationForBody.OrganisationName
+            BodyOrganisationName = organisationForBody.OrganisationName,
         };
 
         context.PersonMandateList.Add(personMandateListItem);
@@ -241,7 +241,7 @@ public class PersonMandateListProjection :
             ValidTo = message.Body.ValidTo,
 
             BodyOrganisationId = organisationForBody.OrganisationId,
-            BodyOrganisationName = organisationForBody.OrganisationName
+            BodyOrganisationName = organisationForBody.OrganisationName,
         };
 
         context.PersonMandateList.Add(personMandateListItem);

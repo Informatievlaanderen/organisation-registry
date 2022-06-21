@@ -53,7 +53,7 @@ public class WithOrganisationUnderVlimpersManagement : Specification<ReleaseFrom
                 _formalValidity.End,
                 _validity.Start,
                 _validity.End),
-            new OrganisationPlacedUnderVlimpersManagement(_organisationId)
+            new OrganisationPlacedUnderVlimpersManagement(_organisationId),
         };
 
     private ReleaseFromVlimpersManagement ReleaseFromVlimpersManagementCommand

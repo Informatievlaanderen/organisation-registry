@@ -49,8 +49,8 @@ namespace Osc
 			{ Parser.To, 2 },
 			{ Parser.KeyAsString, 3 },
 			{ Parser.DocCount, 4 },
-			{ Parser.Min, 5 }
-		};
+			{ Parser.Min, 5 },
+        };
 
 		private static readonly byte[] BucketsField = JsonWriter.GetEncodedPropertyNameWithoutQuotation(Parser.Buckets);
 		private static readonly byte[] DocCountErrorUpperBound = JsonWriter.GetEncodedPropertyNameWithoutQuotation(Parser.DocCountErrorUpperBound);
@@ -87,8 +87,8 @@ namespace Osc
 			{ Parser.Fields, 10 },
 			{ Parser.Min, 11 },
 			{ Parser.Top, 12 },
-			{ Parser.Type, 13 }
-		};
+			{ Parser.Type, 13 },
+        };
 
 		private static readonly byte[] SumOtherDocCount = JsonWriter.GetEncodedPropertyNameWithoutQuotation(Parser.SumOtherDocCount);
 
@@ -277,8 +277,8 @@ namespace Osc
 			var boxplot = new BoxplotAggregate
 			{
 				Min = reader.ReadDouble(),
-				Meta = meta
-			};
+				Meta = meta,
+            };
 			reader.ReadNext(); // ,
 			reader.ReadNext(); // "max"
 			reader.ReadNext(); // :
@@ -355,8 +355,8 @@ namespace Osc
 			{
 				Total = total,
 				MaxScore = maxScore,
-				Meta = meta
-			};
+				Meta = meta,
+            };
 		}
 
 		private IAggregate GetGeoCentroidAggregate(ref JsonReader reader, IJsonFormatterResolver formatterResolver, IReadOnlyDictionary<string, object> meta)
@@ -365,8 +365,8 @@ namespace Osc
 			var geoCentroid = new GeoCentroidAggregate
 			{
 				Location = geoLocationFormatter.Deserialize(ref reader, formatterResolver),
-				Meta = meta
-			};
+				Meta = meta,
+            };
 
 			if (reader.GetCurrentJsonToken() == JsonToken.EndObject)
 				return geoCentroid;
@@ -478,8 +478,8 @@ namespace Osc
 					metric.Items.Add(new PercentileItem
 					{
 						Percentile = double.Parse(propertyName, CultureInfo.InvariantCulture),
-						Value = reader.ReadNullableDouble()
-					});
+						Value = reader.ReadNullableDouble(),
+                    });
 				}
 			}
 			else
@@ -496,8 +496,8 @@ namespace Osc
 					metric.Items.Add(new PercentileItem
 					{
 						Percentile = percentile,
-						Value = reader.ReadNullableDouble()
-					});
+						Value = reader.ReadNullableDouble(),
+                    });
 					reader.ReadNext(); // }
 				}
 			}
@@ -535,8 +535,8 @@ namespace Osc
 						BgCount = bgCount,
 						DocCount = docCount,
 						Items = b?.Items ?? EmptyReadOnly<IBucket>.Collection,
-						Meta = meta
-					};
+						Meta = meta,
+                    };
 				}
 
 				subAggregates = GetSubAggregates(ref reader, propertyName.Utf8String(), formatterResolver);
@@ -571,8 +571,8 @@ namespace Osc
 				MinLength = minLength,
 				MaxLength = maxLength,
 				AverageLength = avgLength,
-				Entropy = entropy
-			};
+				Entropy = entropy,
+            };
 
 			if (reader.ReadIsValueSeparator())
 			{
@@ -627,8 +627,8 @@ namespace Osc
 				Max = max,
 				Min = min,
 				Sum = sum,
-				Meta = meta
-			};
+				Meta = meta,
+            };
 
 			if (reader.GetCurrentJsonToken() == JsonToken.EndObject)
 				return statsMetric;
@@ -660,8 +660,8 @@ namespace Osc
 				Max = statsMetric.Max,
 				Min = statsMetric.Min,
 				Sum = statsMetric.Sum,
-				Meta = statsMetric.Meta
-			};
+				Meta = statsMetric.Meta,
+            };
 
 			extendedStatsMetric.SumOfSquares = reader.ReadNullableDouble();
 			reader.ReadNext(); // ,
@@ -808,8 +808,8 @@ namespace Osc
 							{
 								Value = value,
 								ValueAsString = valueAsString,
-								Meta = meta
-							};
+								Meta = meta,
+                            };
 
 						reader.ReadNext(); // ,
 						propertyName = reader.ReadPropertyNameSegmentRaw();
@@ -820,8 +820,8 @@ namespace Osc
 						var keyedValueMetric = new KeyedValueAggregate
 						{
 							Value = value,
-							Meta = meta
-						};
+							Meta = meta,
+                        };
 
 						var formatter = formatterResolver.GetFormatter<List<string>>();
 						keyedValueMetric.Keys = formatter.Deserialize(ref reader, formatterResolver);
@@ -840,8 +840,8 @@ namespace Osc
 				{
 					Value = value,
 					ValueAsString = valueAsString,
-					Meta = meta
-				};
+					Meta = meta,
+                };
 			}
 
 			var scriptedMetric = reader.ReadNextBlockSegment();
@@ -849,8 +849,8 @@ namespace Osc
 			var doc = new LazyDocument(bytes, formatterResolver);
 			return new ScriptedMetricAggregate(doc)
 			{
-				Meta = meta
-			};
+				Meta = meta,
+            };
 		}
 
 		public IBucket GetRangeBucket(ref JsonReader reader, IJsonFormatterResolver formatterResolver, string key, string propertyName)
@@ -1103,8 +1103,8 @@ namespace Osc
 				Key = key,
 				KeyAsString = keyAsString,
 				DocCount = docCount,
-				DocCountErrorUpperBound = docCountErrorUpperBound
-			};
+				DocCountErrorUpperBound = docCountErrorUpperBound,
+            };
 		}
 
 		private IBucket GetCompositeBucket(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
@@ -1151,8 +1151,8 @@ namespace Osc
 				Key = key,
 				DocCount = docCount.GetValueOrDefault(0),
 				BgCount = bgCount,
-				Score = score
-			};
+				Score = score,
+            };
 		}
 
 		private IBucket GetFiltersBucket(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
@@ -1161,16 +1161,16 @@ namespace Osc
 			if (reader.GetCurrentJsonToken() == JsonToken.EndObject)
 				return new FiltersBucketItem(EmptyReadOnly<string, IAggregate>.Dictionary)
 				{
-					DocCount = docCount
-				};
+					DocCount = docCount,
+                };
 
 			reader.ReadNext(); // ,
 			var propertyName = reader.ReadPropertyName();
 			var subAggregates = GetSubAggregates(ref reader, propertyName, formatterResolver);
 			return new FiltersBucketItem(subAggregates)
 			{
-				DocCount = docCount
-			};
+				DocCount = docCount,
+            };
 		}
 
 		[SuppressMessage("ReSharper", "MemberHidesStaticFromOuterClass")]

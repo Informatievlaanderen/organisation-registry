@@ -37,6 +37,6 @@ namespace Osc
 		Skip,
 
 		[EnumMember(Value = "insert_zeros")]
-		InsertZeros
-	}
+		InsertZeros,
+    }
 }

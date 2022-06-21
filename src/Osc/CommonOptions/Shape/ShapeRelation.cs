@@ -40,6 +40,6 @@ namespace Osc
 		Disjoint,
 
 		[EnumMember(Value = "within")]
-		Within
-	}
+		Within,
+    }
 }

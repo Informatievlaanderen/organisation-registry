@@ -77,8 +77,8 @@ namespace OpenSearch.Net.Utf8Json.Formatters
 			{ typeof(double), 11 },
 			{ typeof(DateTime), 12 },
 			{ typeof(string), 13 },
-			{ typeof(byte[]), 14 }
-		};
+			{ typeof(byte[]), 14 },
+        };
 
 		public void Serialize(ref JsonWriter writer, object value, IJsonFormatterResolver formatterResolver)
 		{

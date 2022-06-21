@@ -42,7 +42,7 @@ public class WhenTryingToUpdateAVlimpersOrgAsVlimpersUser :
                 .WithValidity(null, null)
                 .Build(),
             new OrganisationBecameActive(organisationCreatedBuilder.Id),
-            new OrganisationPlacedUnderVlimpersManagement(organisationCreatedBuilder.Id)
+            new OrganisationPlacedUnderVlimpersManagement(organisationCreatedBuilder.Id),
         };
     }
 

@@ -65,7 +65,7 @@ public static class ImportFileParser
                 ShortName = shortName,
                 Validity_Start = validity_start,
                 OperationalValidity_Start = operationalValidity_start,
-                Labels = labels
+                Labels = labels,
             },
             new List<ValidationIssue>());
     }

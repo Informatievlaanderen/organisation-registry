@@ -75,7 +75,7 @@ public class OrganisationLabelListView :
 
     public enum ProjectionTables
     {
-        OrganisationLabelList
+        OrganisationLabelList,
     }
 
     private readonly IEventStore _eventStore;
@@ -110,7 +110,7 @@ public class OrganisationLabelListView :
             LabelValue = message.Body.Value,
             LabelTypeName = message.Body.LabelTypeName,
             ValidFrom = message.Body.ValidFrom,
-            ValidTo = message.Body.ValidTo
+            ValidTo = message.Body.ValidTo,
         };
 
         await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
@@ -128,7 +128,7 @@ public class OrganisationLabelListView :
             LabelValue = message.Body.Value,
             LabelTypeName = message.Body.LabelTypeName,
             ValidFrom = message.Body.ValidFrom,
-            ValidTo = message.Body.ValidTo
+            ValidTo = message.Body.ValidTo,
         };
 
         organisationLabelListItem.Source = OrganisationRegistry.Organisation.LocationSource.Kbo;

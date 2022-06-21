@@ -55,6 +55,6 @@ namespace Osc
 		/// Characters are decomposed by compatibility, then recomposed by canonical equivalence with case folding
 		/// </summary>
 		[EnumMember(Value = "nfkc_cf")]
-		CompatibilityCaseFold
-	}
+		CompatibilityCaseFold,
+    }
 }

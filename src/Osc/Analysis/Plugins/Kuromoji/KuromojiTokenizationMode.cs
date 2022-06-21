@@ -55,6 +55,6 @@ namespace Osc
 		/// Extended mode outputs unigrams for unknown words.
 		/// </summary>
 		[EnumMember(Value = "extended")]
-		Extended
-	}
+		Extended,
+    }
 }

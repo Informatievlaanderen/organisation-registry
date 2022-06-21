@@ -53,7 +53,7 @@ public class WhenRemovingAKeyTypeToAnAlreadyRemovedKeyType
                 _keyTypeId,
                 KeyTypeName
             ),
-            new KeyTypeRemoved(_keyTypeId)
+            new KeyTypeRemoved(_keyTypeId),
         };
 
 

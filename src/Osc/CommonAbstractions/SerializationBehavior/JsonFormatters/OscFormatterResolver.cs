@@ -83,8 +83,8 @@ namespace Osc
 				IsADictionaryFormatterResolver.Instance, // IsADictionaryBase<TKey, TValue>
 				DynamicGenericResolver.Instance, // T[], List<T>, etc...
 				InterfaceGenericDictionaryResolver.Instance,
-				InterfaceGenericReadOnlyDictionaryResolver.Instance
-			};
+				InterfaceGenericReadOnlyDictionaryResolver.Instance,
+            };
 
 			private readonly IJsonFormatterResolver _finalFormatter;
 			private readonly ConcurrentDictionary<Type, object> _formatters = new ConcurrentDictionary<Type, object>();

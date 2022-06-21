@@ -95,7 +95,7 @@ public class WhenAddingAMainOrganisationLocationWhenThereAlreadyIsOne
                 null,
                 "Location Type A",
                 _validFrom,
-                _validTo)
+                _validTo),
         };
 
     private AddOrganisationLocation AddOrganisationLocationCommand

@@ -37,6 +37,6 @@ namespace Osc
 		Solr,
 
 		[EnumMember(Value = "wordnet")]
-		WordNet
-	}
+		WordNet,
+    }
 }

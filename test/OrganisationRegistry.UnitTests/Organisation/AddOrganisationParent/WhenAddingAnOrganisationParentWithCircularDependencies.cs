@@ -59,7 +59,7 @@ public class WhenAddingAnOrganisationParentWithCircularDependencies
             new OrganisationParentAddedBuilder(
                     _organisationAId,
                     _organisationBId)
-                .Build()
+                .Build(),
         };
 
     private AddOrganisationParent AddOrganisationParentCommand

@@ -46,6 +46,6 @@ namespace Osc
 		/// Sort by document frequency first, then similarity score and then the term itself
 		/// </summary>
 		[EnumMember(Value = "frequency")]
-		Frequency
-	}
+		Frequency,
+    }
 }

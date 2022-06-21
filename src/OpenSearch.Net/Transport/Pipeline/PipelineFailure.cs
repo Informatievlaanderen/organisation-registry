@@ -38,6 +38,6 @@ namespace OpenSearch.Net
 		MaxRetriesReached,
 		Unexpected,
 		BadRequest,
-		NoNodesAttempted
-	}
+		NoNodesAttempted,
+    }
 }

@@ -78,7 +78,7 @@ public class WhenAddingAnOrganisationFormalFrameworkWithCircularDependenciesButN
                     _formalFrameworkId,
                     _parentOrganisationId)
                 .WithValidity(_dateTimeProviderStub.Today, _dateTimeProviderStub.Today)
-                .Build()
+                .Build(),
         };
 
     private AddOrganisationFormalFramework AddOrganisationFormalFrameworkCommand

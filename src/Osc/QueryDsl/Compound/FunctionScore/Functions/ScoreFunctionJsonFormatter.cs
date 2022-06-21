@@ -43,8 +43,8 @@ namespace Osc
 			{ "linear", 2 },
 			{ "random_score", 3 },
 			{ "field_value_factor", 4 },
-			{ "script_score", 5 }
-		};
+			{ "script_score", 5 },
+        };
 
 		public IScoreFunction Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
 		{

@@ -37,8 +37,8 @@ namespace Osc
 		private static readonly AutomataDictionary AutomataDictionary = new AutomataDictionary
 		{
 			{ "type", 0 },
-			{ "properties", 1 }
-		};
+			{ "properties", 1 },
+        };
 
 		public IProperty Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
 		{

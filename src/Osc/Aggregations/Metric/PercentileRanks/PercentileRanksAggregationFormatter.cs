@@ -45,8 +45,8 @@ namespace Osc
 			{ "meta", 5 },
 			{ "values", 6 },
 			{ "keyed", 7 },
-			{ "format", 8 }
-		};
+			{ "format", 8 },
+        };
 
 		public IPercentileRanksAggregation Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
 		{

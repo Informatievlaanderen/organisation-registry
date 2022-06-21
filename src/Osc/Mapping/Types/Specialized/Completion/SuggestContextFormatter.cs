@@ -36,8 +36,8 @@ namespace Osc
 		private static readonly AutomataDictionary ContextTypes = new AutomataDictionary
 		{
 			{ "geo", 0 },
-			{ "category", 1 }
-		};
+			{ "category", 1 },
+        };
 
 		public ISuggestContext Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
 		{

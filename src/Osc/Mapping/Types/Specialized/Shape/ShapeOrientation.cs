@@ -32,8 +32,8 @@ namespace Osc
 	public enum ShapeOrientation
 	{
 		ClockWise,
-		CounterClockWise
-	}
+		CounterClockWise,
+    }
 
 	internal class ShapeOrientationFormatter : IJsonFormatter<ShapeOrientation>
 	{

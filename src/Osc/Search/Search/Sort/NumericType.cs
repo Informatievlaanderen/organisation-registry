@@ -47,6 +47,6 @@ namespace Osc
 		Date,
 
 		[EnumMember(Value = "date_nanos")]
-		DateNanos
-	}
+		DateNanos,
+    }
 }

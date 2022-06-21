@@ -80,7 +80,7 @@ public class OrganisationBuildingListView :
 
     public enum ProjectionTables
     {
-        OrganisationBuildingList
+        OrganisationBuildingList,
     }
 
     private readonly IEventStore _eventStore;

@@ -73,7 +73,7 @@ public class OrganisationFormalFrameworkListView :
 
     public enum ProjectionTables
     {
-        OrganisationFormalFrameworkList
+        OrganisationFormalFrameworkList,
     }
 
     private readonly IEventStore _eventStore;
@@ -148,7 +148,7 @@ public class OrganisationFormalFrameworkListView :
             ParentOrganisationId = message.Body.ParentOrganisationId,
             ParentOrganisationName = message.Body.ParentOrganisationName,
             ValidFrom = message.Body.ValidFrom,
-            ValidTo = message.Body.ValidTo
+            ValidTo = message.Body.ValidTo,
         };
 
         await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);

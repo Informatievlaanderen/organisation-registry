@@ -65,7 +65,7 @@ public class SecurityController : OrganisationRegistryController
                 RedirectUri = redirectUri ?? _openIdConnectConfiguration.AuthorizationRedirectUri,
                 Address = tokenEndpointAddress,
                 Code = code,
-                CodeVerifier = verifier
+                CodeVerifier = verifier,
             },
             cancellationToken);
 

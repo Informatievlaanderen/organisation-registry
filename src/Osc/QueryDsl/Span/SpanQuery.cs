@@ -100,8 +100,8 @@ namespace Osc
 			q.SpanNot,
 			q.SpanMultiTerm,
 			q.SpanGap,
-			q.SpanFieldMasking
-		}.All(sq => sq == null || sq.Conditionless);
+			q.SpanFieldMasking,
+        }.All(sq => sq == null || sq.Conditionless);
 	}
 
 	public class SpanQueryDescriptor<T>

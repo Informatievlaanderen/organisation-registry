@@ -338,8 +338,8 @@ namespace OpenSearch.Net.Utf8Json.Resolvers
 			{
 				var ignoreSet = new HashSet<string>(new[]
 				{
-					"TargetSite", "ClassName", "InnerException"
-				}.Select(x => nameMutator(x)));
+					"TargetSite", "ClassName", "InnerException",
+                }.Select(x => nameMutator(x)));
 
 				// special case for exception, modify
 				serializationInfo = new MetaType(type, nameMutator, propertyMapper, false);
@@ -889,8 +889,8 @@ namespace OpenSearch.Net.Utf8Json.Resolvers
 				{
 					MemberInfo = item,
 					LocalField = il.DeclareLocal(item.Type),
-					IsDeserializedField = isSideEffectFreeType ? null : il.DeclareLocal(typeof(bool))
-				})
+					IsDeserializedField = isSideEffectFreeType ? null : il.DeclareLocal(typeof(bool)),
+                })
 				.ToArray();
 
 			var countField = il.DeclareLocal(typeof(int));

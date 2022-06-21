@@ -89,7 +89,7 @@ public class
                 "other orgName",
                 DateTime.MinValue,
                 DateTime.MinValue),
-            new BodyAssignedToOrganisation(_bodyId, "Body", _previousOrganisationId, "orgName", _bodyOrganisationId)
+            new BodyAssignedToOrganisation(_bodyId, "Body", _previousOrganisationId, "orgName", _bodyOrganisationId),
         };
 
     private UpdateBodyOrganisation UpdateBodyOrganisationCommand

@@ -85,7 +85,7 @@ public class WhenUpdatingAnOrganisationLocation :
                 null,
                 "Location Type A",
                 _validFrom,
-                _validTo)
+                _validTo),
         };
 
     private UpdateOrganisationLocation UpdateOrganisationLocationCommand

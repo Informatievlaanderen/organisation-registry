@@ -117,7 +117,7 @@ public class WhenChangingAnInactiveOrganisationParentBackAndForth
                 _organisationParentId,
                 "",
                 null,
-                null)
+                null),
         };
 
     private UpdateOrganisationParent UpdateOrganisationParentCommand

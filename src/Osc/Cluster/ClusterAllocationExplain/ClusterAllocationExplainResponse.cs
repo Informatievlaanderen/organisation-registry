@@ -197,8 +197,8 @@ namespace Osc
 		NoValidShardCopy,
 
 		[EnumMember(Value = "no_attempt")]
-		NoAttempt
-	}
+		NoAttempt,
+    }
 
 	[StringEnum]
 	public enum StoreCopy
@@ -219,8 +219,8 @@ namespace Osc
 		Stale,
 
 		[EnumMember(Value = "UNKNOWN")]
-		Unknown
-	}
+		Unknown,
+    }
 
 	[DataContract]
 	public class AllocationStore
@@ -375,6 +375,6 @@ namespace Osc
 		///  Forced manually to allocate
 		/// </summary>
 		[EnumMember(Value = "MANUAL_ALLOCATION")]
-		ManualAllocation
-	}
+		ManualAllocation,
+    }
 }

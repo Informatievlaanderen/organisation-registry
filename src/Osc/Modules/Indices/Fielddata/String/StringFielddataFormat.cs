@@ -38,6 +38,6 @@ namespace Osc
 		PagedBytes,
 
 		[EnumMember(Value = "disabled")]
-		Disabled
-	}
+		Disabled,
+    }
 }

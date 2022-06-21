@@ -39,14 +39,14 @@ namespace Osc
 			{ "id", 0 },
 			{ "index", 1 },
 			{ "path", 2 },
-			{ "routing", 3 }
-		};
+			{ "routing", 3 },
+        };
 
 		private static readonly AutomataDictionary Fields = new AutomataDictionary
 		{
 			{ "boost", 0 },
-			{ "_name", 1 }
-		};
+			{ "_name", 1 },
+        };
 
 		private static readonly SourceWriteFormatter<object> SourceWriteFormatter =
 			new SourceWriteFormatter<object>();

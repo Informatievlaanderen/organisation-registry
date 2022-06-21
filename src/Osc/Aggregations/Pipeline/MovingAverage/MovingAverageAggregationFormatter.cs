@@ -43,8 +43,8 @@ namespace Osc
 			{ "window", 4 },
 			{ "settings", 5 },
 			{ "model", 6 },
-			{ "buckets_path", 7 }
-		};
+			{ "buckets_path", 7 },
+        };
 
 		private static readonly AutomataDictionary ModelDictionary = new AutomataDictionary
 		{
@@ -52,8 +52,8 @@ namespace Osc
 			{ "simple", 1 },
 			{ "ewma", 2 },
 			{ "holt", 3 },
-			{ "holt_winters", 4 }
-		};
+			{ "holt_winters", 4 },
+        };
 
 		public IMovingAverageAggregation Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
 		{

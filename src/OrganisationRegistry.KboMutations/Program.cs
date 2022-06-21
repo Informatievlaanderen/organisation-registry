@@ -88,7 +88,7 @@ internal class Program
                 LeasePeriod = TimeSpan.FromMinutes(kboMutationsConfiguration.LockLeasePeriodInMinutes),
                 ThrowOnFailedRenew = true,
                 TerminateApplicationOnFailedRenew = true,
-                Enabled = kboMutationsConfiguration.LockEnabled
+                Enabled = kboMutationsConfiguration.LockEnabled,
             }, logger);
 
         var acquiredLock = false;

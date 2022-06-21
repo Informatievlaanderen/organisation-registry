@@ -53,7 +53,7 @@ public class OrganisationRelationTypeListView :
 
     public enum ProjectionTables
     {
-        OrganisationRelationTypeList
+        OrganisationRelationTypeList,
     }
 
     private readonly IEventStore _eventStore;
@@ -74,7 +74,7 @@ public class OrganisationRelationTypeListView :
             {
                 Id = message.Body.OrganisationRelationTypeId,
                 Name = message.Body.Name,
-                InverseName = message.Body.InverseName
+                InverseName = message.Body.InverseName,
             };
 
             await context.OrganisationRelationTypeList.AddAsync(organisationRelationType);

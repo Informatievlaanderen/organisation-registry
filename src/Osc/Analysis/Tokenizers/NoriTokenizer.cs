@@ -46,8 +46,8 @@ namespace Osc
 
 		/// <summary> Decomposes compounds and keeps the original form </summary>
 		[EnumMember(Value = "mixed")]
-		Mixed
-	}
+		Mixed,
+    }
 
 	/// <summary> Tokenizer that ships with the analysis-nori plugin</summary>
 	public interface INoriTokenizer : ITokenizer

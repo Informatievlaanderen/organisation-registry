@@ -38,8 +38,8 @@ namespace Osc
 		private static readonly AutomataDictionary SortFields = new AutomataDictionary
 		{
 			{ "_geo_distance", 0 },
-			{ "_script", 1 }
-		};
+			{ "_script", 1 },
+        };
 
 		public ISort Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
 		{

@@ -44,7 +44,7 @@ public class ApplicationStatusMiddleware
         {
             HttpStatus = ((int)HttpStatusCode.ServiceUnavailable).ToString(),
             Title = "Toepassing is momenteel niet beschikbaar!",
-            Detail = "De toepassing is momenteel offline, probeer het later opnieuw."
+            Detail = "De toepassing is momenteel offline, probeer het later opnieuw.",
         }));
     }
 }

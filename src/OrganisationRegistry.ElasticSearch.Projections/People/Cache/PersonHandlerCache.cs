@@ -16,7 +16,7 @@ public class PersonHandlerCache : IPersonHandlerCache
         => new[]
         {
             ShowOnVlaamseOverheidSitesPerOrganisationListConfiguration.TableName,
-            OrganisationPerBodyListConfiguration.TableName
+            OrganisationPerBodyListConfiguration.TableName,
         };
 
     public virtual async Task ClearCache(OrganisationRegistryContext context)
@@ -82,7 +82,7 @@ public class PersonHandlerCache : IPersonHandlerCache
                     new IsActivePerOrganisationCapacity
                     {
                         OrganisationCapacityId = organisationCapacityId,
-                        IsActive = isActive
+                        IsActive = isActive,
                     });
         else
             isActivePerOrganisationCapacity.IsActive = isActive;
@@ -106,7 +106,7 @@ public class PersonHandlerCache : IPersonHandlerCache
                 new ShowOnVlaamseOverheidSitesPerOrganisation
                 {
                     Id = organisationId,
-                    ShowOnVlaamseOverheidSites = showOnVlaamseOverheidSites
+                    ShowOnVlaamseOverheidSites = showOnVlaamseOverheidSites,
                 });
 
         await context.SaveChangesAsync();

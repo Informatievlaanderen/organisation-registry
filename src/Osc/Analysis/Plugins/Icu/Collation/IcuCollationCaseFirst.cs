@@ -41,6 +41,6 @@ namespace Osc
 	public enum IcuCollationCaseFirst
 	{
 		[EnumMember(Value = "lower")] Lower,
-		[EnumMember(Value = "upper")] Upper
-	}
+		[EnumMember(Value = "upper")] Upper,
+    }
 }

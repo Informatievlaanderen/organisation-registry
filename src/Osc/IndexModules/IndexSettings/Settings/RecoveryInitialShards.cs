@@ -43,6 +43,6 @@ namespace Osc
 		Full,
 
 		[EnumMember(Value = "full-1")]
-		FullMinusOne
-	}
+		FullMinusOne,
+    }
 }

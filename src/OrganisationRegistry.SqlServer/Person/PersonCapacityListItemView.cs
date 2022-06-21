@@ -89,7 +89,7 @@ public class PersonCapacityListView :
 
     public enum ProjectionTables
     {
-        PersonCapacityList
+        PersonCapacityList,
     }
 
     private readonly IEventStore _eventStore;
@@ -185,7 +185,7 @@ public class PersonCapacityListView :
             FunctionId = message.Body.FunctionId,
             FunctionName = message.Body.FunctionId.HasValue ? message.Body.FunctionName : string.Empty,
             ValidFrom = message.Body.ValidFrom,
-            ValidTo = message.Body.ValidTo
+            ValidTo = message.Body.ValidTo,
         };
 
         await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);

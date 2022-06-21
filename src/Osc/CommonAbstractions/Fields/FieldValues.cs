@@ -43,8 +43,8 @@ namespace Osc
 			typeof(int), typeof(double), typeof(decimal),
 			typeof(long), typeof(short), typeof(sbyte),
 			typeof(byte), typeof(ulong), typeof(ushort),
-			typeof(uint), typeof(float)
-		};
+			typeof(uint), typeof(float),
+        };
 
 		private readonly Inferrer _inferrer;
 

@@ -116,8 +116,8 @@ namespace OrganisationRegistry.Import.Piavo
                 ContractResolver = new Microsoft.Rest.Serialization.ReadOnlyJsonContractResolver(),
                 Converters = new  System.Collections.Generic.List<Newtonsoft.Json.JsonConverter>
                     {
-                        new Microsoft.Rest.Serialization.Iso8601TimeSpanConverter()
-                    }
+                        new Microsoft.Rest.Serialization.Iso8601TimeSpanConverter(),
+                    },
             };
             DeserializationSettings = new Newtonsoft.Json.JsonSerializerSettings
             {
@@ -128,8 +128,8 @@ namespace OrganisationRegistry.Import.Piavo
                 ContractResolver = new Microsoft.Rest.Serialization.ReadOnlyJsonContractResolver(),
                 Converters = new System.Collections.Generic.List<Newtonsoft.Json.JsonConverter>
                     {
-                        new Microsoft.Rest.Serialization.Iso8601TimeSpanConverter()
-                    }
+                        new Microsoft.Rest.Serialization.Iso8601TimeSpanConverter(),
+                    },
             };
             CustomInitialize();
         }

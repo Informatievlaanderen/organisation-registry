@@ -33,7 +33,7 @@ public class KboMutationsFetcher : IKboMutationsFetcher
         _csvFileConfiguration = new CsvConfiguration(CultureInfo.InvariantCulture)
         {
             Delimiter = ";",
-            HasHeaderRecord = false
+            HasHeaderRecord = false,
         };
 
         _baseUriBuilder = new FtpUriBuilder(_kboMutationsConfiguration.Host, _kboMutationsConfiguration.Port);

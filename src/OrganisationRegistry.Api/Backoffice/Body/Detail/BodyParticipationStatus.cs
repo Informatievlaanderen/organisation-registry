@@ -35,7 +35,7 @@ public static class BodyParticipationStatus
             bodySeatGenderRatioPostsPerTypeItems
                 .GroupBy(x => new
                 {
-                    x.BodyId
+                    x.BodyId,
                 })
                 .ToList();
 
@@ -73,7 +73,7 @@ public static class BodyParticipationStatus
                     AssignedCount = assignedCount,
                     UnassignedCount = totalCount - assignedCount,
 
-                    TotalCount = totalCount
+                    TotalCount = totalCount,
                 };
             }).First();
 
