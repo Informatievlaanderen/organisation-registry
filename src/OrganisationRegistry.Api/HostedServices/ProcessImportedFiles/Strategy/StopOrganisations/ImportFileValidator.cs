@@ -7,25 +7,25 @@ using OrganisationRegistry.SqlServer.Infrastructure;
 
 public class ImportFileValidator
 {
-    public static ValidationResult Validate(
+    public static ValidationResult<StopOrganisationsFromImportCommandItem> Validate(
         OrganisationRegistryContext context,
-        List<ParsedRecord> parsedRecords)
+        List<ParsedRecord<DeserializedRecord>> parsedRecords)
     {
         var importCache = ImportCache.Create(context, parsedRecords);
 
-        var validationIssues = RecordValidator.Validate(importCache, parsedRecords);
+        var validationIssues = ImportRecordValidator.Validate(importCache, parsedRecords);
 
         return !validationIssues.Items.Any()
-            ? ValidationResult.ForRecords(ToOutputRecords(importCache, parsedRecords))
-            : ValidationResult.ForIssues(validationIssues);
+            ? ValidationResult<StopOrganisationsFromImportCommandItem>.ForRecords(ToOutputRecords(importCache, parsedRecords))
+            : ValidationResult<StopOrganisationsFromImportCommandItem>.ForIssues(validationIssues);
     }
 
-    private static List<StopOrganisationsFromImportCommandItem> ToOutputRecords(ImportCache importCache, IEnumerable<ParsedRecord> parsedRecords)
+    private static List<StopOrganisationsFromImportCommandItem> ToOutputRecords(ImportCache importCache, IEnumerable<ParsedRecord<DeserializedRecord>> parsedRecords)
         => parsedRecords
             .Select(r => ToOutputRecord(r, importCache))
             .ToList();
 
-    private static StopOrganisationsFromImportCommandItem ToOutputRecord(ParsedRecord record, ImportCache importCache)
+    private static StopOrganisationsFromImportCommandItem ToOutputRecord(ParsedRecord<DeserializedRecord> record, ImportCache importCache)
         => record.OutputRecord!.ToOutputRecord(
             importCache.GetOrganisationByOvoNumber(
                 record.OutputRecord!.OvoNumber.Value!

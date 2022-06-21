@@ -10,7 +10,7 @@ using Xunit;
 
 public class WhenParsingTheCsvImportFileContent
 {
-    private static List<ParsedRecord> Parse(string csvToParse)
+    private static List<ParsedRecord<DeserializedRecord>> Parse(string csvToParse)
         => ImportFileParser.ParseContent(csvToParse).ToList();
 
     [Fact]

@@ -6,13 +6,13 @@ using System.Linq;
 using ProcessImportedFiles.Validators;
 using Validators;
 
-public static class RecordValidator
+public static class ImportRecordValidator
 {
-    public static ValidationIssues Validate(ImportCache importCache, DateOnly today, IEnumerable<ParsedRecord> parsedRecords)
+    public static ValidationIssues Validate(ImportCache importCache, DateOnly today, IEnumerable<ParsedRecord<DeserializedRecord>> parsedRecords)
         => parsedRecords
             .Aggregate(new ValidationIssues(), (aggregated, record) => aggregated.AddRange(ValidateParsedRecord(importCache, today, record)));
 
-    private static IEnumerable<ValidationIssue> ValidateParsedRecord(ImportCache importCache, DateOnly today, ParsedRecord parsedRecord)
+    private static IEnumerable<ValidationIssue> ValidateParsedRecord(ImportCache importCache, DateOnly today, ParsedRecord<DeserializedRecord> parsedRecord)
     {
         if (parsedRecord.ValidationIssues.Any())
             return parsedRecord.ValidationIssues;

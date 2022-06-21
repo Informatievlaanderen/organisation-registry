@@ -6,7 +6,7 @@ using CreateOrganisations;
 
 public static class HasDuplicateReferences
 {
-    public static ValidationIssues Validate(IEnumerable<ParsedRecord> parsedRecords)
+    public static ValidationIssues Validate(IEnumerable<ParsedRecord<DeserializedRecord>> parsedRecords)
     {
         var validRecords = parsedRecords
             .Where(x => !x.ValidationIssues.Any())

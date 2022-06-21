@@ -4,12 +4,13 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Organisation;
+using Organisation.Import;
 using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Commands;
 using OrganisationRegistry.SqlServer.Import.Organisations;
 using OrganisationRegistry.SqlServer.Infrastructure;
 
-public class ImportedFileProcessor : IImportedFileProcessor
+public class ImportedFileProcessor : ImportedFileProcessor<DeserializedRecord, StopOrganisationsFromImportCommandItem>
 {
     private readonly OrganisationRegistryContext _context;
     private readonly ICommandSender _commandSender;
@@ -22,17 +23,13 @@ public class ImportedFileProcessor : IImportedFileProcessor
         _commandSender = commandSender;
     }
 
-    public async Task<ProcessImportedFileResult> Process(ImportOrganisationsStatusListItem importFile, CancellationToken cancellationToken)
-    {
-        var parsedRecords = ImportFileParser.Parse(importFile);
-        var validationResult = ImportFileValidator.Validate(_context, parsedRecords);
+    protected override List<ParsedRecord<DeserializedRecord>> Parse(ImportOrganisationsStatusListItem importFile)
+        => ImportFileParser.Parse(importFile);
 
-        var processResult = await Process(importFile, validationResult);
+    protected override ValidationResult<StopOrganisationsFromImportCommandItem> Validate(List<ParsedRecord<DeserializedRecord>> parsedRecords)
+        => ImportFileValidator.Validate(_context, parsedRecords);
 
-        return new ProcessImportedFileResult(importFile, processResult, validationResult.ValidationOk);
-    }
-
-    private async Task<string> Process(ImportOrganisationsStatusListItem importFile, ValidationResult validationResult)
+    protected override async Task<string> Process(ImportOrganisationsStatusListItem importFile, ValidationResult<StopOrganisationsFromImportCommandItem> validationResult, CancellationToken cancellationToken)
     {
         if (!validationResult.ValidationOk)
             return OutputSerializer.Serialize(validationResult.ValidationIssues);

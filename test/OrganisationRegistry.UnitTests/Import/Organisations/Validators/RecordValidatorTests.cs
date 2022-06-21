@@ -13,12 +13,12 @@ public class RecordValidatorTests
     [Fact]
     public void ReturnsIssues_WhenParsedRecordAlreadyHasIssues()
     {
-        var parsedRecord = new ParsedRecord(
+        var parsedRecord = new ParsedRecord<DeserializedRecord>(
             RowNumber: 1,
             OutputRecord: null,
             new[] { new ValidationIssue(RowNumber: 1, InvalidColumnCount.FormatMessage()) });
 
-        var issues = RecordValidator.Validate(
+        var issues = ImportRecordValidator.Validate(
             FakeImportCache.Create(),
             DateOnly.FromDateTime(DateTime.Today),
             new[] { parsedRecord });
@@ -30,12 +30,12 @@ public class RecordValidatorTests
     [Fact]
     public void ThrowsNullReferenceException_WhenParsedRecordHasNoIssuesAndNoRecord()
     {
-        var parsedRecord = new ParsedRecord(
+        var parsedRecord = new ParsedRecord<DeserializedRecord>(
             RowNumber: 1,
             OutputRecord: null,
             Array.Empty<ValidationIssue>());
 
-        var action = () => RecordValidator.Validate(
+        var action = () => ImportRecordValidator.Validate(
             FakeImportCache.Create(),
             DateOnly.FromDateTime(DateTime.Today),
             new[] { parsedRecord });
