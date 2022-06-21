@@ -1,9 +1,9 @@
 ﻿namespace OrganisationRegistry.UnitTests.Import.Organisations.Validators;
 
 using Api.HostedServices.ProcessImportedFiles;
-using Api.HostedServices.ProcessImportedFiles.Validators;
+using Api.HostedServices.ProcessImportedFiles.Strategy.CreateOrganisations;
+using Api.HostedServices.ProcessImportedFiles.Strategy.CreateOrganisations.Validators;
 using FluentAssertions;
-using OrganisationRegistry.Organisation.Import;
 using Xunit;
 
 public class InvalidReferenceTests

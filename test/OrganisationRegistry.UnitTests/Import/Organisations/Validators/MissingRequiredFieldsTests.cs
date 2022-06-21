@@ -1,9 +1,9 @@
 ﻿namespace OrganisationRegistry.UnitTests.Import.Organisations.Validators;
 
 using Api.HostedServices.ProcessImportedFiles;
+using Api.HostedServices.ProcessImportedFiles.Strategy.CreateOrganisations;
 using Api.HostedServices.ProcessImportedFiles.Validators;
 using FluentAssertions;
-using OrganisationRegistry.Organisation.Import;
 using Xunit;
 
 public class MissingRequiredFieldsTests
@@ -18,7 +18,7 @@ public class MissingRequiredFieldsTests
             Parent = Field.FromValue(ColumnNames.Parent, "PARENT"),
         };
 
-        var issue = MissingRequiredFields.Validate(1, record);
+        var issue = MissingRequiredFields.Validate(1, record.Reference, record.Name, record.Parent);
 
         issue.Should().BeNull();
     }
@@ -33,7 +33,7 @@ public class MissingRequiredFieldsTests
             Parent = Field.FromValue(ColumnNames.Parent, "PARENT"),
         };
 
-        var issue = MissingRequiredFields.Validate(1, record);
+        var issue = MissingRequiredFields.Validate(1, record.Reference, record.Name, record.Parent);
 
         issue.Should().BeEquivalentTo(
             new ValidationIssue(1, MissingRequiredFields.FormatMessage($"'{ColumnNames.Reference}'")));
@@ -49,7 +49,7 @@ public class MissingRequiredFieldsTests
             Parent = Field.FromValue(ColumnNames.Parent, "PARENT"),
         };
 
-        var issue = MissingRequiredFields.Validate(1, record);
+        var issue = MissingRequiredFields.Validate(1, record.Reference, record.Name, record.Parent);
 
         issue.Should().BeEquivalentTo(
             new ValidationIssue(1, MissingRequiredFields.FormatMessage($"'{ColumnNames.Name}'")));
@@ -65,7 +65,7 @@ public class MissingRequiredFieldsTests
             Parent = Field.NoValue(ColumnNames.Parent),
         };
 
-        var issue = MissingRequiredFields.Validate(1, record);
+        var issue = MissingRequiredFields.Validate(1, record.Reference, record.Name, record.Parent);
 
         issue.Should().BeEquivalentTo(
             new ValidationIssue(1,  MissingRequiredFields.FormatMessage($"'{ColumnNames.Parent}'")));
@@ -81,7 +81,7 @@ public class MissingRequiredFieldsTests
             Parent = Field.NoValue(ColumnNames.Parent),
         };
 
-        var issue = MissingRequiredFields.Validate(1, record);
+        var issue = MissingRequiredFields.Validate(1, record.Reference, record.Parent, record.Name);
 
         issue.Should().BeEquivalentTo(
             new ValidationIssue(
@@ -100,7 +100,7 @@ public class MissingRequiredFieldsTests
             Parent = Field.NoValue(ColumnNames.Parent),
         };
 
-        var issue = MissingRequiredFields.Validate(1, record);
+        var issue = MissingRequiredFields.Validate(1, record.Reference, record.Name, record.Parent);
 
         issue.Should().BeEquivalentTo(
             new ValidationIssue(

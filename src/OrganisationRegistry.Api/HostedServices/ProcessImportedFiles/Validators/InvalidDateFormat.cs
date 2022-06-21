@@ -3,16 +3,16 @@ namespace OrganisationRegistry.Api.HostedServices.ProcessImportedFiles.Validator
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using Organisation.Import;
 
 public static class InvalidDateFormat
 {
-    public static IEnumerable<ValidationIssue> Validate(int rowNumber, DeserializedRecord record)
+    public static IEnumerable<ValidationIssue> Validate(int rowNumber, params Field[] dateFieldsToValidate)
     {
-        if (ValidateField(rowNumber, record.Validity_Start) is { } validityStartIsInvalid)
-            yield return validityStartIsInvalid;
-        if (ValidateField(rowNumber, record.OperationalValidity_Start) is { } operationalValidityStartIsInvalid)
-            yield return operationalValidityStartIsInvalid;
+        foreach (var field in dateFieldsToValidate)
+        {
+            if (ValidateField(rowNumber, field) is { } fieldIsInvalid)
+                yield return fieldIsInvalid;
+        }
     }
 
     private static ValidationIssue? ValidateField(int rowNumber, Field field)

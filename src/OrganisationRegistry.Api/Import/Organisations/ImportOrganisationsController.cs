@@ -1,7 +1,6 @@
 ﻿namespace OrganisationRegistry.Api.Import.Organisations;
 
 using System;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -37,8 +36,7 @@ public class ImportOrganisationsController : OrganisationRegistryController
         [FromServices] ILogger<ImportOrganisationsController> logger,
         [FromForm] IFormFile bulkimportfile)
     {
-        var id = Guid.NewGuid();
-        var content = await GetFileData(bulkimportfile);
+        var content = await ImportHelper.GetFileData(bulkimportfile);
         var user = await securityService.GetRequiredUser(User);
 
         var labelTypes = await LabelTypes.GetNames(context);
@@ -47,18 +45,17 @@ public class ImportOrganisationsController : OrganisationRegistryController
         if (!validationResult.IsValid)
             return BadRequest(validationResult);
 
-        context.ImportOrganisationsStatusList.Add(
-            new ImportOrganisationsStatusListItem
-            {
-                Id = id,
-                Status = ImportProcessStatus.Processing,
-                UserId = user.UserId,
-                UserName = user.LastName,
-                UserFirstName = user.FirstName,
-                FileContent = content,
-                FileName = bulkimportfile.FileName,
-                UploadedAt = DateTimeOffset.Now,
-            });
+        var statusItem = ImportOrganisationsStatusListItem.Create(
+            DateTimeOffset.Now,
+            user.UserId,
+            user.LastName,
+            user.FirstName,
+            bulkimportfile.FileName,
+            content,
+            ImportFileTypes.Create
+        );
+
+        context.ImportOrganisationsStatusList.Add(statusItem);
 
         await context.SaveChangesAsync();
 
@@ -67,16 +64,10 @@ public class ImportOrganisationsController : OrganisationRegistryController
             {
                 Task = new
                 {
-                    Href = $"import/organisations/{id}",
-                    Id = id,
+                    Href = $"import/organisations/{statusItem.Id}",
+                    Id = statusItem.Id,
                 },
             });
-    }
-
-    private static async Task<string> GetFileData(IFormFile bulkimportfile)
-    {
-        using var streamReader = new StreamReader(bulkimportfile.OpenReadStream(), Encoding.UTF8);
-        return await streamReader.ReadToEndAsync();
     }
 
     [HttpGet]

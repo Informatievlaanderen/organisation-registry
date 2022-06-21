@@ -35,7 +35,7 @@ public static class OutputSerializer
 
     public static async Task<string> Serialize(
         ImportOrganisationsStatusListItem importFile,
-        IEnumerable<OutputRecord> records)
+        IEnumerable<CreateOrganisationsFromImportCommandItem> records)
     {
         var writer = new Utf8StringWriter();
         var reader = new StringReader(importFile.FileContent);
@@ -51,4 +51,7 @@ public static class OutputSerializer
 
         return writer.ToString();
     }
+
+    public static string Serialize(ImportOrganisationsStatusListItem importFile)
+        => importFile.FileContent;
 }

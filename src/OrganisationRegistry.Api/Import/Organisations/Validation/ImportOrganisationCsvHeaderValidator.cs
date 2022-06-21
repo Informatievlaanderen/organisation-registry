@@ -1,12 +1,7 @@
 ﻿namespace OrganisationRegistry.Api.Import.Organisations.Validation;
 
-using System;
 using System.Collections.Immutable;
-using System.Globalization;
-using System.IO;
 using System.Linq;
-using CsvHelper;
-using CsvHelper.Configuration;
 using Microsoft.Extensions.Logging;
 
 public static class ImportOrganisationCsvHeaderValidator
@@ -21,51 +16,26 @@ public static class ImportOrganisationCsvHeaderValidator
         "operationalvalidity_start");
 
     public static CsvValidationResult Validate(ILogger logger, ImmutableList<string> validLabelTypes, string filename, string csvContent)
-    {
-        var validationIssues = new ValidationIssues();
-        try
-        {
-            using var reader = new StringReader(csvContent);
-            using var csv = new CsvReader(
-                reader,
-                new CsvConfiguration(CultureInfo.InvariantCulture) { Delimiter = ";" });
+        => CsvHeaderValidator.Validate(
+            logger,
+            RequiredColumnNames,
+            OptionalColumnNames.AddRange(validLabelTypes.Select(labelType => $"label#{labelType.Trim().ToLowerInvariant()}")),
+            filename,
+            csvContent);
+}
 
-            csv.Read();
-            csv.ReadHeader();
+public static class ImportStopOrganisationCsvHeaderValidator
+{
+    private static readonly ImmutableList<string> RequiredColumnNames =
+        ImmutableList.Create<string>("ovonumber", "name", "organisations_end");
 
-            var csvHeaderRecord = csv.HeaderRecord
-                .Select(columnName => columnName.Trim().ToLower())
-                .ToImmutableList();
+    private static readonly ImmutableList<string> OptionalColumnNames = ImmutableList<string>.Empty;
 
-            validationIssues = validationIssues
-                .Add(InvalidFilename.Validate(filename))
-                .Add(MissingRequiredColumns.Validate(csvHeaderRecord, RequiredColumnNames))
-                .Add(DuplicateColumns.Validate(csvHeaderRecord))
-                .Add(InvalidColumns.Validate(csvHeaderRecord, GetValidColumnNames(validLabelTypes)));
-
-            while (csv.Read())
-            {
-            }
-        }
-        catch (Exception ex)
-        {
-            validationIssues = validationIssues.Add(
-                new ValidationIssue(
-                    $"Het bestand {filename} kon niet verwerkt worden. \n" +
-                    "Gelieve het formaat te controleren. \n" +
-                    "Contacteer de beheerders indien de fout zich opnieuw voordoet."));
-            logger.LogError(
-                ex,
-                "Error occured when validating imported CSV file {File}: {Message}",
-                filename,
-                ex.Message);
-        }
-
-        return validationIssues.ToResult();
-    }
-
-    private static ImmutableList<string> GetValidColumnNames(ImmutableList<string> validLabelTypes)
-        => RequiredColumnNames
-            .AddRange(OptionalColumnNames)
-            .AddRange(validLabelTypes.Select(labelType => $"label#{labelType.Trim().ToLowerInvariant()}"));
+    public static CsvValidationResult Validate(ILogger logger, string filename, string csvContent)
+        => CsvHeaderValidator.Validate(
+            logger,
+            RequiredColumnNames,
+            OptionalColumnNames,
+            filename,
+            csvContent);
 }

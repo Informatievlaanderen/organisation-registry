@@ -4,9 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Api.HostedServices.ProcessImportedFiles;
+using Api.HostedServices.ProcessImportedFiles.Strategy.CreateOrganisations;
 using AutoFixture;
 using FluentAssertions;
-using OrganisationRegistry.Organisation.Import;
 using SqlServer.Organisation;
 using Xunit;
 

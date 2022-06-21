@@ -1280,6 +1280,10 @@ namespace OrganisationRegistry.SqlServer.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ImportFileType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTimeOffset?>("LastProcessedAt")
                         .HasColumnType("datetimeoffset");
 
