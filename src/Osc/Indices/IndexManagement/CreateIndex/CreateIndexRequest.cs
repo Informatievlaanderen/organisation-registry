@@ -40,8 +40,8 @@ namespace Osc
 			"index.creation_date",
 			"index.uuid",
 			"index.version.created",
-			"index.provided_name"
-		};
+			"index.provided_name",
+        };
 
 		public CreateIndexRequest(IndexName index, IIndexState state) : this(index)
 		{

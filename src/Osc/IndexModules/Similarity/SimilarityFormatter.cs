@@ -44,8 +44,8 @@ namespace Osc
 			{ "DFI", 3 },
 			{ "IB", 4 },
 			{ "LMJelinekMercer", 5 },
-			{ "scripted", 6 }
-		};
+			{ "scripted", 6 },
+        };
 
 		private static readonly byte[] Type = JsonWriter.GetEncodedPropertyNameWithoutQuotation("type");
 

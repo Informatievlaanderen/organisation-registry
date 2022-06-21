@@ -102,7 +102,7 @@ public class WhenUpdatingAVlimpersOrganisationAsParentForANonVlimpersOrganisatio
                 _organisationParentId,
                 "",
                 null,
-                null)
+                null),
         };
 
     private UpdateOrganisationParent UpdateOrganisationParentCommand

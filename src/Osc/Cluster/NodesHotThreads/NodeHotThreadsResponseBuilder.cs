@@ -71,8 +71,8 @@ namespace Osc
 					NodeName = node,
 					NodeId = nodeId,
 					Threads = threads,
-					Hosts = hosts
-				};
+					Hosts = hosts,
+                };
 			return new NodesHotThreadsResponse(info.ToList());
 		}
 

@@ -78,7 +78,7 @@ public class WhenUpdatingAnOrganisationKey : Specification<UpdateOrganisationKey
                 "Sleutel A",
                 _value,
                 _validFrom,
-                _validTo)
+                _validTo),
         };
 
     private UpdateOrganisationKey UpdateOrganisationKeyCommand

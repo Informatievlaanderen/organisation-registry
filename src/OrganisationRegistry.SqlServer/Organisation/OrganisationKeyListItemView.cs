@@ -76,7 +76,7 @@ public class OrganisationKeyListView :
 
     public enum ProjectionTables
     {
-        OrganisationKeyList
+        OrganisationKeyList,
     }
 
     private readonly IEventStore _eventStore;
@@ -110,7 +110,7 @@ public class OrganisationKeyListView :
             KeyValue = message.Body.Value,
             KeyTypeName = message.Body.KeyTypeName,
             ValidFrom = message.Body.ValidFrom,
-            ValidTo = message.Body.ValidTo
+            ValidTo = message.Body.ValidTo,
         };
 
         await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);

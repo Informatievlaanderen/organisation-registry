@@ -42,7 +42,7 @@ public class WhenAnActiveOrganisationsValidityChangesToThePast :
                 .WithId(new OrganisationId(_organisationId))
                 .WithValidity(null, null)
                 .Build(),
-            new OrganisationBecameActive(_organisationId), new PurposeCreated(_purposeId, "beleidsveld")
+            new OrganisationBecameActive(_organisationId), new PurposeCreated(_purposeId, "beleidsveld"),
         };
 
     private UpdateOrganisationInfoNotLimitedToVlimpers UpdateOrganisationInfoNotLimitedToVlimpersCommand

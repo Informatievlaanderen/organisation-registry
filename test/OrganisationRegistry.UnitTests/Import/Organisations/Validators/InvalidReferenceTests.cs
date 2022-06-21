@@ -11,7 +11,7 @@ public class InvalidReferenceTests
     private static DeserializedRecord GetDeserializedRecordWithReference(string reference)
         => new()
         {
-            Reference = Field.FromValue(ColumnNames.Reference, reference)
+            Reference = Field.FromValue(ColumnNames.Reference, reference),
         };
 
     [Theory]

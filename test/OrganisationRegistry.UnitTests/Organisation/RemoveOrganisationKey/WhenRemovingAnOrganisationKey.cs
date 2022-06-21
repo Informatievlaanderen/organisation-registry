@@ -67,7 +67,7 @@ public class WhenRemovingAnOrganisationKey : Specification<RemoveOrganisationKey
                 "Sleutel A",
                 _value,
                 _validFrom,
-                _validTo)
+                _validTo),
         };
 
     protected RemoveOrganisationKey RemoveOrganisationKeyCommand

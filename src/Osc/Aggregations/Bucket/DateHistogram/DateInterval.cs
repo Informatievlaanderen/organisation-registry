@@ -55,6 +55,6 @@ namespace Osc
 		Quarter,
 
 		[EnumMember(Value = "year")]
-		Year
-	}
+		Year,
+    }
 }

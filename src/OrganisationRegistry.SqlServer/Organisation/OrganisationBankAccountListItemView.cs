@@ -97,7 +97,7 @@ public class OrganisationBankAccountListView :
 
     public enum ProjectionTables
     {
-        OrganisationBankAccountList
+        OrganisationBankAccountList,
     }
 
     private readonly IEventStore _eventStore;

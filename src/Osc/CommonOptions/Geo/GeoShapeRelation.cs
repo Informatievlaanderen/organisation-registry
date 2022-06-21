@@ -55,6 +55,6 @@ namespace Osc
 		/// CONTAINS relation.
 		/// </summary>
 		[EnumMember(Value = "contains")]
-		Contains
-	}
+		Contains,
+    }
 }

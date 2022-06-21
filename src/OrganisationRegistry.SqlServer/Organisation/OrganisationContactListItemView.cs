@@ -65,7 +65,7 @@ public class OrganisationContactListView :
 
     public enum ProjectionTables
     {
-        OrganisationContactList
+        OrganisationContactList,
     }
 
     private readonly IEventStore _eventStore;
@@ -101,7 +101,7 @@ public class OrganisationContactListView :
             ContactValue = message.Body.Value,
             ContactTypeName = message.Body.ContactTypeName,
             ValidFrom = message.Body.ValidFrom,
-            ValidTo = message.Body.ValidTo
+            ValidTo = message.Body.ValidTo,
         };
 
         await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);

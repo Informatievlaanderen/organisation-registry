@@ -104,7 +104,7 @@ public class OrganisationLocationListQuery : Query<OrganisationLocationListItem,
             nameof(OrganisationLocationListItem.LocationTypeName),
             nameof(OrganisationLocationListItem.IsMainLocation),
             nameof(OrganisationLocationListItem.ValidFrom),
-            nameof(OrganisationLocationListItem.ValidTo)
+            nameof(OrganisationLocationListItem.ValidTo),
         };
 
         public SortingHeader DefaultSortingHeader { get; } =

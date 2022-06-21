@@ -38,8 +38,8 @@ namespace Osc
 		Additive,
 
 		[EnumMember(Value = "mult")]
-		Multiplicative
-	}
+		Multiplicative,
+    }
 
 	[InterfaceDataContract]
 	[ReadAs(typeof(HoltWintersModel))]

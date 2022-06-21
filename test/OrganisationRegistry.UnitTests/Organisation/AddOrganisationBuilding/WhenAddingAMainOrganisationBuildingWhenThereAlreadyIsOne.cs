@@ -71,7 +71,7 @@ public class WhenAddingAMainOrganisationBuildingWhenThereAlreadyIsOne : Specific
                 "Gebouw A",
                 _isMainBuilding,
                 _validFrom,
-                _validTo)
+                _validTo),
         };
 
     private AddOrganisationBuilding AddOrganisationBuildingCommand

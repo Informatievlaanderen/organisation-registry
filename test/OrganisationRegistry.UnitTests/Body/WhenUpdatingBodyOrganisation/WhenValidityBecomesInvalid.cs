@@ -61,7 +61,7 @@ public class WhenValidityBecomesInvalid : Specification<UpdateBodyOrganisationCo
                 "orgName",
                 null,
                 null),
-            new BodyAssignedToOrganisation(_bodyId, "Body", _organisationId, "orgName", _bodyOrganisationId)
+            new BodyAssignedToOrganisation(_bodyId, "Body", _organisationId, "orgName", _bodyOrganisationId),
         };
 
     private UpdateBodyOrganisation UpdateBodyOrganisationCommand

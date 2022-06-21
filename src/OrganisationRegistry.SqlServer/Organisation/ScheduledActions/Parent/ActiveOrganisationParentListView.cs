@@ -81,7 +81,7 @@ public class ActiveOrganisationParentListView :
 
     public enum ProjectionTables
     {
-        ActiveOrganisationParentList
+        ActiveOrganisationParentList,
     }
 
     public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationParentAdded> message)
@@ -135,7 +135,7 @@ public class ActiveOrganisationParentListView :
             OrganisationId = message.Body.OrganisationId,
             ParentOrganisationId = message.Body.ParentOrganisationId,
             OrganisationOrganisationParentId = message.Body.OrganisationOrganisationParentId,
-            ValidTo = validTo
+            ValidTo = validTo,
         };
 
         using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))

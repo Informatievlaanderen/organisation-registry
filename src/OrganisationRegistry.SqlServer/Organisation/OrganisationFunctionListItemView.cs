@@ -77,7 +77,7 @@ public class OrganisationFunctionListView :
 
     public enum ProjectionTables
     {
-        OrganisationFunctionList
+        OrganisationFunctionList,
     }
 
     private readonly IEventStore _eventStore;
@@ -127,7 +127,7 @@ public class OrganisationFunctionListView :
             PersonName = message.Body.PersonFullName,
             ContactsJson = JsonConvert.SerializeObject(message.Body.Contacts),
             ValidFrom = message.Body.ValidFrom,
-            ValidTo = message.Body.ValidTo
+            ValidTo = message.Body.ValidTo,
         };
 
         await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);

@@ -61,7 +61,7 @@ public class RegulationSubThemeListView :
 
     public enum ProjectionTables
     {
-        RegulationSubThemeList
+        RegulationSubThemeList,
     }
 
     private readonly IEventStore _eventStore;
@@ -82,7 +82,7 @@ public class RegulationSubThemeListView :
             Id = message.Body.RegulationSubThemeId,
             Name = message.Body.Name,
             RegulationThemeId = message.Body.RegulationThemeId,
-            RegulationThemeName = message.Body.RegulationThemeName
+            RegulationThemeName = message.Body.RegulationThemeName,
         };
 
         await context.RegulationSubThemeList.AddAsync(regulationSubTheme);

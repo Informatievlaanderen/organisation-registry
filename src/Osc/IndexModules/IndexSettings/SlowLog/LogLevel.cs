@@ -46,6 +46,6 @@ namespace Osc
 		Debug,
 
 		[EnumMember(Value = "trace")]
-		Trace
-	}
+		Trace,
+    }
 }

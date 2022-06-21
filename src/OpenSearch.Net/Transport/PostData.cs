@@ -52,8 +52,8 @@ namespace OpenSearch.Net
 		EnumerableOfString,
 		EnumerableOfObject,
 		StreamHandler,
-		Serializable
-	}
+		Serializable,
+    }
 
 	public abstract class PostData
 	{

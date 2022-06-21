@@ -77,7 +77,7 @@ public class WhenAddingAnOrganisationFormalFrameworkWithDifferingValidity : Spec
                     _formalFrameworkId,
                     _parentOrganisationId)
                 .WithValidity(_dateTimeProviderStub.Today, _dateTimeProviderStub.Today)
-                .Build()
+                .Build(),
         };
 
     private AddOrganisationFormalFramework AddOrganisationFormalFrameworkCommand

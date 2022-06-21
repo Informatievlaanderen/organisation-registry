@@ -48,6 +48,6 @@ namespace Osc
 		/// <para>&lt;em class="hlt10"&gt;</para>
 		/// </remarks>
 		[EnumMember(Value = "styled")]
-		Styled
-	}
+		Styled,
+    }
 }

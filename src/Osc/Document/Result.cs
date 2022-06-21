@@ -48,6 +48,6 @@ namespace Osc
 		NotFound,
 
 		[EnumMember(Value = "noop")]
-		Noop
-	}
+		Noop,
+    }
 }

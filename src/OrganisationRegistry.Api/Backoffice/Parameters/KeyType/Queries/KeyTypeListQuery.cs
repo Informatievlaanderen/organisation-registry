@@ -67,7 +67,7 @@ public class KeyTypeListQuery :
     {
         public IEnumerable<string> SortableFields { get; } = new[]
         {
-            nameof(KeyTypeListItem.Name)
+            nameof(KeyTypeListItem.Name),
         };
 
         public SortingHeader DefaultSortingHeader { get; } = new(nameof(KeyTypeListItem.Name), SortOrder.Ascending);

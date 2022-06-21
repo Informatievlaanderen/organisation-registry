@@ -19,6 +19,6 @@ public class SqlServerConfiguration
         => new()
         {
             ConnectionString = Obfuscator.ObfuscateConnectionString(ConnectionString),
-            MigrationsConnectionString = Obfuscator.ObfuscateConnectionString(MigrationsConnectionString)
+            MigrationsConnectionString = Obfuscator.ObfuscateConnectionString(MigrationsConnectionString),
         };
 }

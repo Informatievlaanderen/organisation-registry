@@ -65,6 +65,6 @@ namespace Osc
 		/// String distance algorithm based on character n-grams.
 		/// </summary>
 		[EnumMember(Value = "ngram")]
-		Ngram
-	}
+		Ngram,
+    }
 }

@@ -37,8 +37,8 @@ namespace Osc
 		private static readonly AutomataDictionary AutomataDictionary = new AutomataDictionary
 		{
 			{ "partition", 0 },
-			{ "num_partitions", 1 }
-		};
+			{ "num_partitions", 1 },
+        };
 
 		public TermsInclude Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
 		{

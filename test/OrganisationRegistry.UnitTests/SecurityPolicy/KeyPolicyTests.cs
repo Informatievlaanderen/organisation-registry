@@ -28,8 +28,8 @@ public class KeyPolicyTests
             Authorization = new AuthorizationConfigurationStub
             {
                 KeyIdsAllowedForVlimpers = new[] { _vlimpersKeyId },
-                KeyIdsAllowedOnlyForOrafin = new[] { _orafinKeyId }
-            }
+                KeyIdsAllowedOnlyForOrafin = new[] { _orafinKeyId },
+            },
         };
     }
 

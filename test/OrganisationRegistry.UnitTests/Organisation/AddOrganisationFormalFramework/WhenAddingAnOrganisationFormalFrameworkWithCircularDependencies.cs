@@ -65,7 +65,7 @@ public class WhenAddingAnOrganisationFormalFrameworkWithCircularDependencies : S
                     _childOrganisationId,
                     _formalFrameworkId,
                     _parentOrganisationId)
-                .Build()
+                .Build(),
         };
 
     private AddOrganisationFormalFramework AddOrganisationFormalFrameworkCommand

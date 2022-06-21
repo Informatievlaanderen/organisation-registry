@@ -55,7 +55,7 @@ public class MailOrganisationEventProcessor :
         {
             Id = message.Body.OrganisationId,
             Name = message.Body.Name,
-            OvoNumber = message.Body.OvoNumber
+            OvoNumber = message.Body.OvoNumber,
         };
 
         await using var ctx = new VlaanderenBeNotifierTransactionalContext(connection, transaction);

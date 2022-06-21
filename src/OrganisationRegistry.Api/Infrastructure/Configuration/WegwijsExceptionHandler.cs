@@ -68,7 +68,7 @@ public static class OrganisationRegistryExceptionHandler
             HttpStatus = context.Response.StatusCode.ToString(),
             Title = "Er heeft zich een fout voorgedaan!",
             Detail = message,
-            Reference = exceptionNumber
+            Reference = exceptionNumber,
         })).ConfigureAwait(false);
     }
 
@@ -84,7 +84,7 @@ public static class OrganisationRegistryExceptionHandler
             HttpStatus = context.Response.StatusCode.ToString(),
             Title = "Er heeft zich een fout voorgedaan!",
             Detail = message,
-            Reference = exceptionNumber
+            Reference = exceptionNumber,
         })).ConfigureAwait(false);
     }
 
@@ -100,7 +100,7 @@ public static class OrganisationRegistryExceptionHandler
             HttpStatus = context.Response.StatusCode.ToString(),
             Title = "Deze actie is niet geldig",
             Detail = message,
-            Reference = exceptionNumber
+            Reference = exceptionNumber,
         })).ConfigureAwait(false);
     }
 
@@ -117,7 +117,7 @@ public static class OrganisationRegistryExceptionHandler
             HttpStatus = context.Response.StatusCode.ToString(),
             Title = "Er heeft zich een fout voorgedaan!",
             Detail = string.Empty,
-            Reference = exceptionNumber
+            Reference = exceptionNumber,
         })).ConfigureAwait(false);
     }
 

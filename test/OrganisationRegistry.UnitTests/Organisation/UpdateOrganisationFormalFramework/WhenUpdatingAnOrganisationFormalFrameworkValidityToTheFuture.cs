@@ -73,7 +73,7 @@ public class WhenUpdatingAnOrganisationFormalFrameworkValidityToTheFuture :
         {
             childOrganisationCreated.Build(), parentOrganisationACreated.Build(), parentOrganisationBCreated.Build(),
             formalFrameworkCategoryCreatedBuilder.Build(), formalFrameworkACreated.Build(),
-            childBecameDaughterOfParent.Build(), formalFrameworkAssignedToOrg.Build()
+            childBecameDaughterOfParent.Build(), formalFrameworkAssignedToOrg.Build(),
         };
     }
 

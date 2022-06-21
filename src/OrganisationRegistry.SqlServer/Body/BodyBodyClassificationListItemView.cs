@@ -69,7 +69,7 @@ public class BodyBodyClassificationListView :
 
     public enum ProjectionTables
     {
-        BodyBodyClassificationList
+        BodyBodyClassificationList,
     }
 
     private readonly IEventStore _eventStore;
@@ -133,7 +133,7 @@ public class BodyBodyClassificationListView :
             BodyClassificationTypeName = message.Body.BodyClassificationTypeName,
             BodyClassificationName = message.Body.BodyClassificationName,
             ValidFrom = message.Body.ValidFrom,
-            ValidTo = message.Body.ValidTo
+            ValidTo = message.Body.ValidTo,
         };
 
         using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))

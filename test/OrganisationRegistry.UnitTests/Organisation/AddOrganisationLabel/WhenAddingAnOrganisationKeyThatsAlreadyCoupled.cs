@@ -70,7 +70,7 @@ public class
                 "Label A",
                 _value,
                 _validFrom,
-                _validTo)
+                _validTo),
         };
 
     private AddOrganisationLabel AddOrganisationLabelCommand

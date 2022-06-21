@@ -81,7 +81,7 @@ public class OrganisationOrganisationClassificationListView :
 
     public enum ProjectionTables
     {
-        OrganisationOrganisationClassificationList
+        OrganisationOrganisationClassificationList,
     }
 
     private readonly IEventStore _eventStore;
@@ -141,7 +141,7 @@ public class OrganisationOrganisationClassificationListView :
             OrganisationClassificationTypeName = message.Body.OrganisationClassificationTypeName,
             OrganisationClassificationName = message.Body.OrganisationClassificationName,
             ValidFrom = message.Body.ValidFrom,
-            ValidTo = message.Body.ValidTo
+            ValidTo = message.Body.ValidTo,
         };
 
         await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
@@ -160,7 +160,7 @@ public class OrganisationOrganisationClassificationListView :
             OrganisationClassificationTypeName = message.Body.OrganisationClassificationTypeName,
             OrganisationClassificationName = message.Body.OrganisationClassificationName,
             ValidFrom = message.Body.ValidFrom,
-            ValidTo = message.Body.ValidTo
+            ValidTo = message.Body.ValidTo,
         };
 
         organisationOrganisationClassificationListItem.Source = OrganisationRegistry.Organisation.LocationSource.Kbo;

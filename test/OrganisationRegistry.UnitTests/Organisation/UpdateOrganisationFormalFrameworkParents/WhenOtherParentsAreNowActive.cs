@@ -100,7 +100,7 @@ public class WhenOtherParentsAreNowActive : Specification<UpdateOrganisationForm
             formalFrameworkCreated.Build(), anotherFormalFrameworkCreated.Build(),
             organisationFormalFrameworkBAdded.Build(), anotherOrganisationFormalFrameworkBAdded.Build(),
             organisationFormalFrameworkAdded.Build(), newOrganisationFormalFrameworkAdded.Build(),
-            formalFrameworkAssignedToOrganisation.Build(), anotherFormalFrameworkAssignedToOrganisation.Build()
+            formalFrameworkAssignedToOrganisation.Build(), anotherFormalFrameworkAssignedToOrganisation.Build(),
         };
     }
 

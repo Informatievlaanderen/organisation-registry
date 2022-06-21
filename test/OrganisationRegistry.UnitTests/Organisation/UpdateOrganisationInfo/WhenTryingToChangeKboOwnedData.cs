@@ -51,7 +51,7 @@ public class
                 _organistationName,
                 "OVO999999",
                 new DateTime()),
-            new OrganisationBecameActive(_organisationId)
+            new OrganisationBecameActive(_organisationId),
         };
 
     private UpdateOrganisationInfo UpdateOrganisationInfoCommand

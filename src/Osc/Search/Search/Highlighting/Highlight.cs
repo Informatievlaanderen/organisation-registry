@@ -239,9 +239,9 @@ namespace Osc
 		{
 			Fields = new Dictionary<Field, IHighlightField>
 			{
-				{ field, new HighlightField() }
-			}
-		};
+				{ field, new HighlightField() },
+            },
+        };
 	}
 
 	public class HighlightDescriptor<T> : DescriptorBase<HighlightDescriptor<T>, IHighlight>, IHighlight

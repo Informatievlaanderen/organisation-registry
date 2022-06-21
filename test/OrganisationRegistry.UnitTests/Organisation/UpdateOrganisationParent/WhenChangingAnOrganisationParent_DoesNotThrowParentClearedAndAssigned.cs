@@ -97,7 +97,7 @@ public class WhenChangingAnOrganisationParent_DoesNotThrowParentClearedAndAssign
                 "Ouder en Gezin",
                 null,
                 null),
-            new ParentAssignedToOrganisation(_organisationAId, _organisationBId, _organisationOrganisationParentId)
+            new ParentAssignedToOrganisation(_organisationAId, _organisationBId, _organisationOrganisationParentId),
         };
 
     private UpdateOrganisationParent UpdateOrganisationParentCommand

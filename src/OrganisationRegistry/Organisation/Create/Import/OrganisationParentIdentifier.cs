@@ -38,7 +38,7 @@ public struct OrganisationParentIdentifier
     public enum IdentifierType
     {
         Id,
-        Reference
+        Reference,
     }
 
     public override string ToString()

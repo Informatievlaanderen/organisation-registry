@@ -94,7 +94,7 @@ public class
             new ParentAssignedToOrganisation(
                 _organisationId,
                 _organisationParentId,
-                _organisationOrganisationParentId1)
+                _organisationOrganisationParentId1),
         };
 
     private AddOrganisationParent AddOrganisationParentCommand

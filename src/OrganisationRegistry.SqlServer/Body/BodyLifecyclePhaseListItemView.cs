@@ -64,7 +64,7 @@ public class BodyLifecyclePhaseListView :
 
     public enum ProjectionTables
     {
-        BodyLifecyclePhaseList
+        BodyLifecyclePhaseList,
     }
 
     private readonly IEventStore _eventStore;
@@ -101,7 +101,7 @@ public class BodyLifecyclePhaseListView :
             LifecyclePhaseTypeId = message.Body.LifecyclePhaseTypeId,
             LifecyclePhaseTypeName = message.Body.LifecyclePhaseTypeName,
             ValidFrom = message.Body.ValidFrom,
-            ValidTo = message.Body.ValidTo
+            ValidTo = message.Body.ValidTo,
         };
 
         using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
@@ -172,7 +172,7 @@ public class BodyLifecyclePhaseListView :
                     Current = current,
                     Previous = previous,
                     EndDate = previous.ValidTo,
-                    StartDate = current.ValidFrom
+                    StartDate = current.ValidFrom,
                 })
                 .Where(x => x.EndDate!.Value.AddDays(1) != x.StartDate)
                 .ToList();

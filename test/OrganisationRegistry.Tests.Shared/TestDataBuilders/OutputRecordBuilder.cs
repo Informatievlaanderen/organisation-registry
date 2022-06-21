@@ -18,7 +18,7 @@ public class OutputRecordBuilder
         _deserializedRecord = new DeserializedRecord
         {
             Reference = Field.FromValue(ColumnNames.Reference, reference),
-            Name = Field.FromValue(ColumnNames.Name, name)
+            Name = Field.FromValue(ColumnNames.Name, name),
         };
     }
 

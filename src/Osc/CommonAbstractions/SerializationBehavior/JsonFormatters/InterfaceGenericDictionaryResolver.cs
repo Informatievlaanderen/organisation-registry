@@ -62,8 +62,8 @@ namespace Osc
 				{
 					typeArguments[0],
 					typeArguments[1],
-					t
-				};
+					t,
+                };
 
 				var genericDictionaryInterface = typeof(IDictionary<,>).MakeGenericType(typeArguments);
 
@@ -135,8 +135,8 @@ namespace Osc
 				{
 					typeArguments[0],
 					typeArguments[1],
-					t
-				};
+					t,
+                };
 
 				Type implementationType;
 				if (t.IsInterface)

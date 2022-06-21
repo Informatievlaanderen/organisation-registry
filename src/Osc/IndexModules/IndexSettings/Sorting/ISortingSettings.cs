@@ -46,8 +46,8 @@ namespace Osc
 		Minimum,
 
 		[EnumMember(Value = "max")]
-		Maximum
-	}
+		Maximum,
+    }
 
 	[StringEnum]
 	public enum IndexSortMissing
@@ -56,8 +56,8 @@ namespace Osc
 		First,
 
 		[EnumMember(Value = "_last")]
-		Last
-	}
+		Last,
+    }
 
 	[StringEnum]
 	public enum IndexSortOrder
@@ -66,8 +66,8 @@ namespace Osc
 		Ascending,
 
 		[EnumMember(Value = "desc")]
-		Descending
-	}
+		Descending,
+    }
 
 	public interface ISortingSettings
 	{

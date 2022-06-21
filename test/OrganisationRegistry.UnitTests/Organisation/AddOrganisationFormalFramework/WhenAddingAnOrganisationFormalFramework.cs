@@ -72,7 +72,7 @@ public class WhenAddingAnOrganisationFormalFramework : Specification<AddOrganisa
                     "Category1")
                 .WithId(new FormalFrameworkId(_formalFramworkId))
                 .WithName(_formalFramworkName)
-                .Build()
+                .Build(),
         };
 
 

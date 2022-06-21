@@ -99,7 +99,7 @@ public class WhenUpdatingAnOrganisationLocationToAnAlreadyCoupledLocation :
                 null,
                 "Location Type A",
                 null,
-                null) { Version = 3 }
+                null) { Version = 3 },
         };
 
     private UpdateOrganisationLocation UpdateOrganisationLocationCommand

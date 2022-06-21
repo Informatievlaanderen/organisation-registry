@@ -126,6 +126,6 @@ namespace Osc
 		/// Produces cells that cover less than a 10cm by 10cm of land and so high-precision
 		/// requests can be very costly in terms of RAM and result sizes.
 		/// </summary>
-		Precision29 = 29
-	}
+		Precision29 = 29,
+    }
 }

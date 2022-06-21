@@ -67,6 +67,6 @@ namespace Osc
 		Beidermorse,
 
 		[EnumMember(Value = "daitch_mokotoff")]
-		DaitchMokotoff
-	}
+		DaitchMokotoff,
+    }
 }

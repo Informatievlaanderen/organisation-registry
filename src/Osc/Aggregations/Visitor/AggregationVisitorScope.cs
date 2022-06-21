@@ -31,6 +31,6 @@ namespace Osc
 	{
 		Unknown,
 		Aggregation,
-		Bucket
-	}
+		Bucket,
+    }
 }

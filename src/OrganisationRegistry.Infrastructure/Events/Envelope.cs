@@ -149,6 +149,6 @@ public static class EnvelopeExtensions
             firstName,
             userId)
         {
-            Number = number
+            Number = number,
         };
 }

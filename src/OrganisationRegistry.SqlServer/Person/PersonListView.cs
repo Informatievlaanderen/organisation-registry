@@ -72,7 +72,7 @@ public class PersonListView :
 
     public enum ProjectionTables
     {
-        PersonList
+        PersonList,
     }
 
     public PersonListView(
@@ -94,7 +94,7 @@ public class PersonListView :
                 Name = message.Body.Name,
                 FullName = $"{message.Body.FirstName} {message.Body.Name}",
                 Sex = message.Body.Sex,
-                DateOfBirth = message.Body.DateOfBirth
+                DateOfBirth = message.Body.DateOfBirth,
             };
 
             await context.PersonList.AddAsync(person);

@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 public enum SortOrder
 {
     Ascending,
-    Descending
+    Descending,
 }
 
 public class SortingHeader

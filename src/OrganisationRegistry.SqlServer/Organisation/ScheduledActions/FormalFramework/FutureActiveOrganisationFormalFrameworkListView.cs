@@ -66,7 +66,7 @@ public class FutureActiveOrganisationFormalFrameworkListView :
 
     public enum ProjectionTables
     {
-        FutureActiveOrganisationFormalFrameworkList
+        FutureActiveOrganisationFormalFrameworkList,
     }
 
     public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFormalFrameworkAdded> message)
@@ -114,7 +114,7 @@ public class FutureActiveOrganisationFormalFrameworkListView :
             OrganisationId = message.Body.OrganisationId,
             FormalFrameworkId = message.Body.FormalFrameworkId,
             OrganisationFormalFrameworkId = message.Body.OrganisationFormalFrameworkId,
-            ValidFrom = message.Body.ValidFrom
+            ValidFrom = message.Body.ValidFrom,
         };
 
         context.FutureActiveOrganisationFormalFrameworkList.Add(futureActiveOrganisationFormalFrameworkListItem);
@@ -137,7 +137,7 @@ public class FutureActiveOrganisationFormalFrameworkListView :
                     OrganisationId = message.Body.OrganisationId,
                     FormalFrameworkId = message.Body.FormalFrameworkId,
                     OrganisationFormalFrameworkId = message.Body.OrganisationFormalFrameworkId,
-                    ValidFrom = message.Body.ValidFrom
+                    ValidFrom = message.Body.ValidFrom,
                 };
 
             context.FutureActiveOrganisationFormalFrameworkList.Add(futureActiveOrganisationFormalFrameworkListItem);

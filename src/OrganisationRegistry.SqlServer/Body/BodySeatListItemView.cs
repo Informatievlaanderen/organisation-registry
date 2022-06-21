@@ -84,7 +84,7 @@ public class BodySeatListView :
 
     public enum ProjectionTables
     {
-        BodySeatList
+        BodySeatList,
     }
 
     private readonly IEventStore _eventStore;
@@ -113,7 +113,7 @@ public class BodySeatListView :
             PaidSeat = message.Body.PaidSeat,
             EntitledToVote = message.Body.EntitledToVote,
             ValidFrom = message.Body.ValidFrom,
-            ValidTo = message.Body.ValidTo
+            ValidTo = message.Body.ValidTo,
         };
 
         using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))

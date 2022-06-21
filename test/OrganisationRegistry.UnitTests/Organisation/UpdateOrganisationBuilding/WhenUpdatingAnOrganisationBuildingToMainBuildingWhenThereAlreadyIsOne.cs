@@ -79,7 +79,7 @@ public class WhenMakingAnOrganisationBuildingAMainBuildingWhenThereAlreadyIsOne 
                 "Gebouw B",
                 false,
                 _validFrom,
-                _validTo)
+                _validTo),
         };
 
     private UpdateOrganisationBuilding UpdateOrganisationBuildingCommand

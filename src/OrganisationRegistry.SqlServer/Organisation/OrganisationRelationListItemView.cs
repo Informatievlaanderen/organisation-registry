@@ -74,7 +74,7 @@ public class OrganisationRelationListView :
 
     public enum ProjectionTables
     {
-        OrganisationRelationList
+        OrganisationRelationList,
     }
 
     private readonly IEventStore _eventStore;
@@ -120,7 +120,7 @@ public class OrganisationRelationListView :
             RelationName = message.Body.RelationName,
             RelationInverseName = message.Body.RelationInverseName,
             ValidFrom = message.Body.ValidFrom,
-            ValidTo = message.Body.ValidTo
+            ValidTo = message.Body.ValidTo,
         };
 
         await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);

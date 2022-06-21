@@ -123,8 +123,8 @@ namespace OpenSearch.Net
 				{ "AssemblyCulture", an.CultureName },
 				{ "ClassName", className },
 				{ "Signature", signature },
-				{ "MemberType", memberType }
-			};
+				{ "MemberType", memberType },
+            };
 
 			o.Add("ExceptionMethod", exceptionMethod);
 		}

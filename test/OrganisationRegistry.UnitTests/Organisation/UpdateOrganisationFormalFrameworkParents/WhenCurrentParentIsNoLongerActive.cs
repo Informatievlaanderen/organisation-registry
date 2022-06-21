@@ -88,7 +88,7 @@ public class WhenCurrentParentIsNoLongerActive : Specification<UpdateOrganisatio
                 _organisationFormalFrameworkBId,
                 _formalFrameworkBId,
                 _organisationId,
-                _parentOrganisationId).Build()
+                _parentOrganisationId).Build(),
         };
 
     private UpdateOrganisationFormalFrameworkParents UpdateOrganisationFormalFrameworkParentsCommand

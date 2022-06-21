@@ -11,7 +11,7 @@ public class InvalidArticleTests
     private static DeserializedRecord GetDeserializedRecordWithArticle(string article)
         => new()
         {
-            Article = Field.FromValue(ColumnNames.Article, article)
+            Article = Field.FromValue(ColumnNames.Article, article),
         };
 
     [Theory]

@@ -55,8 +55,8 @@ public class WhenUpdatingFromVlimpersLabelWhenVlimpers
         {
             Authorization = new AuthorizationConfigurationStub
             {
-                LabelIdsAllowedForVlimpers = new[] { _vlimpersLabelTypeId }
-            }
+                LabelIdsAllowedForVlimpers = new[] { _vlimpersLabelTypeId },
+            },
         };
 
         return new UpdateOrganisationLabelCommandHandler(
@@ -91,7 +91,7 @@ public class WhenUpdatingFromVlimpersLabelWhenVlimpers
                 _vlimpersLabelTypeName,
                 _value,
                 _validFrom,
-                _validTo)
+                _validTo),
         };
 
     private UpdateOrganisationLabel UpdateOrganisationLabelCommand

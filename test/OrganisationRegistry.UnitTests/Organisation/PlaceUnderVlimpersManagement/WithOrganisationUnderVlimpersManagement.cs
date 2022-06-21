@@ -53,7 +53,7 @@ public class
                 _formalValidity.End,
                 _validity.Start,
                 _validity.End),
-            new OrganisationPlacedUnderVlimpersManagement(_organisationId)
+            new OrganisationPlacedUnderVlimpersManagement(_organisationId),
         };
 
     protected PlaceUnderVlimpersManagement PlaceUnderVlimpersManagementCommand

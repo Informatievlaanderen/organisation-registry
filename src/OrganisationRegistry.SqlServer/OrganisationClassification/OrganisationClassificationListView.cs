@@ -75,7 +75,7 @@ public class OrganisationClassificationListView :
 
     public enum ProjectionTables
     {
-        OrganisationClassificationList
+        OrganisationClassificationList,
     }
 
     private readonly IEventStore _eventStore;
@@ -100,7 +100,7 @@ public class OrganisationClassificationListView :
                 ExternalKey = message.Body.ExternalKey,
                 Active = message.Body.Active,
                 OrganisationClassificationTypeId = message.Body.OrganisationClassificationTypeId,
-                OrganisationClassificationTypeName = message.Body.OrganisationClassificationTypeName
+                OrganisationClassificationTypeName = message.Body.OrganisationClassificationTypeName,
             };
 
             await context.OrganisationClassificationList.AddAsync(organisationClassification);

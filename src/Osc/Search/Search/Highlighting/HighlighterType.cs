@@ -64,6 +64,6 @@ namespace Osc
 		/// (fuzzy, prefix, regex) highlighting
 		/// </summary>
 		[EnumMember(Value = "unified")]
-		Unified
-	}
+		Unified,
+    }
 }

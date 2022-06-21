@@ -63,14 +63,14 @@ namespace Osc
 					var sourceSerializer = formatter.GetConnectionSettings().SourceSerializer;
 					return new SourceResponse<TDocument>
 					{
-						Body = await sourceSerializer.DeserializeAsync<TDocument>(stream, ctx).ConfigureAwait(false)
-					};
+						Body = await sourceSerializer.DeserializeAsync<TDocument>(stream, ctx).ConfigureAwait(false),
+                    };
 				}
 
 				return new SourceResponse<TDocument>
 				{
-					Body = await builtInSerializer.DeserializeAsync<TDocument>(stream, ctx).ConfigureAwait(false)
-				};
+					Body = await builtInSerializer.DeserializeAsync<TDocument>(stream, ctx).ConfigureAwait(false),
+                };
 			}
 
 			return new SourceResponse<TDocument>();

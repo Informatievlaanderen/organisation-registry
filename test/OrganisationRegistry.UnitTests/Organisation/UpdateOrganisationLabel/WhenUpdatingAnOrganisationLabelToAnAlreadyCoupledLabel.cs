@@ -73,7 +73,7 @@ public class WhenUpdatingAnOrganisationLabelToAnAlreadyCoupledLabel :
                 "Label B",
                 "123123456",
                 null,
-                null) { Version = 3 }
+                null) { Version = 3 },
         };
 
     private UpdateOrganisationLabel UpdateOrganisationLabelCommand

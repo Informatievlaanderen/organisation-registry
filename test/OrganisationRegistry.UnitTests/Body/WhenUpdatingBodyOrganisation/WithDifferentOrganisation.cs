@@ -70,7 +70,7 @@ public class WhenUpdatingBodyOrganisationWithDifferentOrganisation : Specificati
                 _previousOrganisationId,
                 "orgName",
                 null,
-                null), new BodyAssignedToOrganisation(_bodyId, "Body", _previousOrganisationId, "orgName", _bodyOrganisationId)
+                null), new BodyAssignedToOrganisation(_bodyId, "Body", _previousOrganisationId, "orgName", _bodyOrganisationId),
         };
 
     private UpdateBodyOrganisation UpdateBodyOrganisationCommand

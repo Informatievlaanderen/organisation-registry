@@ -46,6 +46,6 @@ namespace Osc
 		/// Order by using ordinals of the field values instead of the values themselves
 		/// </summary>
 		[EnumMember(Value = "breadth_first")]
-		BreadthFirst
-	}
+		BreadthFirst,
+    }
 }

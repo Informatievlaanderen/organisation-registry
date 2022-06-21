@@ -140,7 +140,7 @@ public class Organisation :
                 Description = message.Body.Description,
                 ShowOnVlaamseOverheidSites = message.Body.ShowOnVlaamseOverheidSites,
                 Purposes = message.Body.Purposes
-                    .Select(x => new OrganisationDocument.Purpose(x.Id, x.Name)).ToList()
+                    .Select(x => new OrganisationDocument.Purpose(x.Id, x.Name)).ToList(),
             }).ToAsyncResult();
 
     public async Task<IElasticChange> Handle(
@@ -164,7 +164,7 @@ public class Organisation :
                 KboNumber = message.Body.KboNumber,
                 ShowOnVlaamseOverheidSites = message.Body.ShowOnVlaamseOverheidSites,
                 Purposes = message.Body.Purposes
-                    .Select(x => new OrganisationDocument.Purpose(x.Id, x.Name)).ToList()
+                    .Select(x => new OrganisationDocument.Purpose(x.Id, x.Name)).ToList(),
             }).ToAsyncResult();
 
     public async Task<IElasticChange> Handle(

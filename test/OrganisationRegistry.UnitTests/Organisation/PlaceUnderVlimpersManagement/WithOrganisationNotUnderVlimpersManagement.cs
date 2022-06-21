@@ -53,7 +53,7 @@ public class
                 _formalValidity.Start,
                 _formalValidity.End,
                 _validity.Start,
-                _validity.End)
+                _validity.End),
         };
 
     private PlaceUnderVlimpersManagement PlaceUnderVlimpersManagementCommand

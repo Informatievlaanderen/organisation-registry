@@ -49,6 +49,6 @@ namespace Osc
 		/// when using phrase like queries). This is the default.
 		/// </summary>
 		[EnumMember(Value = "span")]
-		Span
-	}
+		Span,
+    }
 }

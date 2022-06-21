@@ -83,16 +83,16 @@ namespace Osc
 						(doc, desc) => new SearchHitTuple
 						{
 							Hit = doc,
-							Descriptor = new KeyValuePair<string, ITypedSearchRequest>(desc.Key, desc.Value)
-						});
+							Descriptor = new KeyValuePair<string, ITypedSearchRequest>(desc.Key, desc.Value),
+                        });
 					break;
 				case IMultiSearchTemplateRequest multiSearchTemplate:
 					withMeta = responses.Zip(multiSearchTemplate.Operations,
 						(doc, desc) => new SearchHitTuple
 						{
 							Hit = doc,
-							Descriptor = new KeyValuePair<string, ITypedSearchRequest>(desc.Key, desc.Value)
-						});
+							Descriptor = new KeyValuePair<string, ITypedSearchRequest>(desc.Key, desc.Value),
+                        });
 					break;
 				default:
 					throw new InvalidOperationException($"Request must be an instance of {nameof(IMultiSearchRequest)}"

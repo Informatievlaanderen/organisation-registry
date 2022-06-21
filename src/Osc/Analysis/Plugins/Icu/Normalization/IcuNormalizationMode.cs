@@ -50,6 +50,6 @@ namespace Osc
 		/// Included here for completeness sake because the Java API has it.
 		/// </summary>
 		[EnumMember(Value = "compose")]
-		Compose
-	}
+		Compose,
+    }
 }

@@ -4,5 +4,5 @@ public enum TaskType
 {
     RebuildProjection,
     CompensatingAction,
-    SyncFromKbo
+    SyncFromKbo,
 }

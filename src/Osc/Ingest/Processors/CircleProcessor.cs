@@ -40,8 +40,8 @@ namespace Osc
 		GeoShape,
 
 		[EnumMember(Value = "shape")]
-		Shape
-	}
+		Shape,
+    }
 
 	[InterfaceDataContract]
 	public interface ICircleProcessor : IProcessor

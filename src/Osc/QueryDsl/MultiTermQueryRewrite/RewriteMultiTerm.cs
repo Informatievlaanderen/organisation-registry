@@ -86,8 +86,8 @@ namespace Osc
 		/// The N controls the size of the top scoring terms to use.
 		/// </summary>
 		[EnumMember(Value = "top_terms_blended_freqs_N")]
-		TopTermsBlendedFreqsN
-	}
+		TopTermsBlendedFreqsN,
+    }
 
 	/// <summary>
 	/// Controls how a multi term query such as a wildcard or prefix query, is rewritten.

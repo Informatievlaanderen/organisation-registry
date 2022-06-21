@@ -46,6 +46,6 @@ namespace Osc
 	public enum IcuCollationDecomposition
 	{
 		[EnumMember(Value = "no")] No,
-		[EnumMember(Value = "identical")] Canonical
-	}
+		[EnumMember(Value = "identical")] Canonical,
+    }
 }

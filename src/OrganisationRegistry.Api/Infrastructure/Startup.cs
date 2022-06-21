@@ -153,12 +153,12 @@ public class Startup
                             .GetChildren()
                             .Select(c => c.Value)
                             .ToArray(),
-                        ExposedHeaders = new[] { SearchConstants.SearchMetaDataHeaderName }
+                        ExposedHeaders = new[] { SearchConstants.SearchMetaDataHeaderName },
                     },
                     Localization =
                     {
                         DefaultCulture = new CultureInfo("nl-BE")
-                            { DateTimeFormat = { FirstDayOfWeek = DayOfWeek.Monday } }
+                            { DateTimeFormat = { FirstDayOfWeek = DayOfWeek.Monday } },
                     },
                     Swagger =
                     {
@@ -168,7 +168,7 @@ public class Startup
                             {
                                 x.EnableAnnotations();
                                 x.OperationFilter<ProblemJsonResponseFilter>();
-                            }
+                            },
                         },
                         ApiInfo = (_, description) => new OpenApiInfo
                         {
@@ -179,17 +179,17 @@ public class Startup
                             {
                                 Name = "Digitaal Vlaanderen",
                                 Email = "digitaal.vlaanderen@vlaanderen.be",
-                                Url = new Uri("https://legacy.basisregisters.vlaanderen")
-                            }
+                                Url = new Uri("https://legacy.basisregisters.vlaanderen"),
+                            },
                         },
                         XmlCommentPaths = new[]
                         {
-                            typeof(Startup).GetTypeInfo().Assembly.GetName().Name
-                        }!
+                            typeof(Startup).GetTypeInfo().Assembly.GetName().Name,
+                        }!,
                     },
                     Server =
                     {
-                        VersionHeaderName = "x-wegwijs-version"
+                        VersionHeaderName = "x-wegwijs-version",
                     },
                     MiddlewareHooks =
                     {
@@ -221,8 +221,8 @@ public class Startup
                             health.AddDbContextCheck<OrganisationRegistryContext>(
                                 $"dbcontext-{nameof(OrganisationRegistryContext).ToLowerInvariant()}",
                                 tags: new[] { DatabaseTag, "sql", "sqlserver" });
-                        }
-                    }
+                        },
+                    },
                 });
 
         var containerBuilder = new ContainerBuilder();
@@ -253,18 +253,18 @@ public class Startup
                     Common =
                     {
                         ServiceProvider = serviceProvider,
-                        LoggerFactory = loggerFactory
+                        LoggerFactory = loggerFactory,
                     },
                     Toggles =
                     {
                         Enable = datadogToggle,
-                        Debug = debugDataDogToggle
+                        Debug = debugDataDogToggle,
                     },
                     Tracing =
                     {
                         ServiceName = _configuration["DataDog:ServiceName"],
-                        LogForwardedForEnabled = true
-                    }
+                        LogForwardedForEnabled = true,
+                    },
                 })
             .UseDefaultForApi(
                 new StartupUseOptions
@@ -275,7 +275,7 @@ public class Startup
                         ServiceProvider = serviceProvider,
                         HostingEnvironment = env,
                         ApplicationLifetime = appLifetime,
-                        LoggerFactory = loggerFactory
+                        LoggerFactory = loggerFactory,
                     },
                     Api =
                     {
@@ -284,12 +284,12 @@ public class Startup
                         CSharpClientOptions =
                         {
                             ClassName = "OrganisationRegistry",
-                            Namespace = "Be.Vlaanderen.Basisregisters"
+                            Namespace = "Be.Vlaanderen.Basisregisters",
                         },
                         TypeScriptClientOptions =
                         {
-                            ClassName = "OrganisationRegistry"
-                        }
+                            ClassName = "OrganisationRegistry",
+                        },
                     },
                     MiddlewareHooks =
                     {
@@ -304,8 +304,8 @@ public class Startup
                             .UseOrganisationRegistryEventSourcing()
                             //.UseOrganisationRegistryCookieAuthentication(tokenValidationParameters)
                             //.UseOrganisationRegistryJwtBearerAuthentication(tokenValidationParameters)
-                            .UseAuthentication()
-                    }
+                            .UseAuthentication(),
+                    },
                 });
     }
 

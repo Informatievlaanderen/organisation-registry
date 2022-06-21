@@ -107,6 +107,6 @@ namespace Osc
 		/// normalizes such that each value is exponentiated and relative to the sum of the exponents of the original values.
 		/// </summary>
 		[EnumMember(Value = "softmax")]
-		Softmax
-	}
+		Softmax,
+    }
 }

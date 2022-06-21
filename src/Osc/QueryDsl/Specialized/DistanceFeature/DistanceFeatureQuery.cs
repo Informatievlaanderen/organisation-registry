@@ -151,8 +151,8 @@ namespace Osc
 			{ "origin", 1 },
 			{ "pivot", 2 },
 			{ "boost", 3 },
-			{ "_name", 4 }
-		};
+			{ "_name", 4 },
+        };
 
 		public IDistanceFeatureQuery Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
 		{

@@ -38,6 +38,6 @@ namespace Osc
 		Array,
 
 		[EnumMember(Value = "disabled")]
-		Disabled
-	}
+		Disabled,
+    }
 }

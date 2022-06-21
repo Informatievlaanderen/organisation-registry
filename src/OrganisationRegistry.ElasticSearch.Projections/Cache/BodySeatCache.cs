@@ -34,7 +34,7 @@ public class BodySeatCache :
             Id = message.Body.BodySeatId,
             Name = message.Body.Name,
             Number = message.Body.BodySeatNumber,
-            IsPaid = message.Body.PaidSeat
+            IsPaid = message.Body.PaidSeat,
         };
 
         await using var context = _contextFactory.Create();

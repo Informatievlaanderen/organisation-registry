@@ -123,8 +123,8 @@ namespace Osc
 		private static readonly AutomataDictionary Fields = new AutomataDictionary
 		{
 			{ "type", 0 },
-			{ "settings", 1 }
-		};
+			{ "settings", 1 },
+        };
 
 		private static readonly byte[] DelegateType = JsonWriter.GetEncodedPropertyNameWithoutQuotation("delegate_type");
 

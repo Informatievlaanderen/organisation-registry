@@ -120,15 +120,15 @@ namespace Osc
 		{
 			{ "boost", 0 },
 			{ "_name", 1 },
-			{ "ignore_unmapped", 2 }
-		};
+			{ "ignore_unmapped", 2 },
+        };
 
 		private static readonly AutomataDictionary ShapeFields = new AutomataDictionary
 		{
 			{ "shape", 0 },
 			{ "indexed_shape", 1 },
-			{ "relation", 2 }
-		};
+			{ "relation", 2 },
+        };
 
 		public IShapeQuery Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
 		{
@@ -176,15 +176,15 @@ namespace Osc
 									var shapeFormatter = formatterResolver.GetFormatter<IGeoShape>();
 									query = new ShapeQuery
 									{
-										Shape = shapeFormatter.Deserialize(ref reader, formatterResolver)
-									};
+										Shape = shapeFormatter.Deserialize(ref reader, formatterResolver),
+                                    };
 									break;
 								case 1:
 									var fieldLookupFormatter = formatterResolver.GetFormatter<FieldLookup>();
 									query = new ShapeQuery
 									{
-										IndexedShape = fieldLookupFormatter.Deserialize(ref reader, formatterResolver)
-									};
+										IndexedShape = fieldLookupFormatter.Deserialize(ref reader, formatterResolver),
+                                    };
 									break;
 								case 2:
 									relation = formatterResolver.GetFormatter<ShapeRelation>()

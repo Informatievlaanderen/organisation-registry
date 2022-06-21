@@ -27,6 +27,6 @@ public class ForbiddenResponseExamples : IExamplesProvider<ProblemDetails>
             HttpStatus = StatusCodes.Status400BadRequest,
             Title = "Forbidden",
             Detail = "",
-            ProblemInstanceUri = _problemDetailsHelper.GetInstanceUri(_httpContextAccessor.HttpContext!)
+            ProblemInstanceUri = _problemDetailsHelper.GetInstanceUri(_httpContextAccessor.HttpContext!),
         };
 }

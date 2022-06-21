@@ -81,7 +81,7 @@ public class
                 ),
                 _fixture.Create<bool>(),
                 _fixture.Create<DateTime?>()
-            )
+            ),
         };
 
     private UpdateOrganisationInfo UpdateOrganisationInfoCommand

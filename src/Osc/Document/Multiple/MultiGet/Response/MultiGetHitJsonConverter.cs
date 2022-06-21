@@ -75,8 +75,8 @@ namespace Osc
 				(doc, desc) => new MultiHitTuple
 				{
 					Hit = doc,
-					Descriptor = desc
-				});
+					Descriptor = desc,
+                });
 
 			foreach (var m in withMeta)
 			{

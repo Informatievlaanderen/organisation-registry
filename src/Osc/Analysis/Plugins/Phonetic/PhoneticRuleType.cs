@@ -37,6 +37,6 @@ namespace Osc
 		Approximate,
 
 		[EnumMember(Value = "exact")]
-		Exact
-	}
+		Exact,
+    }
 }

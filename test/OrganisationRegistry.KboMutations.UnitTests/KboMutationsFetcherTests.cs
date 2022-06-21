@@ -25,7 +25,7 @@ public class KboMutationsFetcherTests: IDisposable
         _kboMutationsConfiguration = new KboMutationsConfiguration
         {
             SourcePath = "/source",
-            CachePath = "/cache"
+            CachePath = "/cache",
         };
         _baseUriBuilder = new FtpUriBuilder(_kboMutationsConfiguration.Host, _kboMutationsConfiguration.Port);
     }

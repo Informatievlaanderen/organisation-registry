@@ -73,7 +73,7 @@ public class WhenUpdatingAnOrganisationFormalFramework :
         {
             childOrganisationCreated.Build(), parentOrganisationACreated.Build(), parentOrganisationBCreated.Build(),
             formalFrameworkCategoryCreatedBuilder.Build(), formalFrameworkACreated.Build(),
-            formalFrameworkBCreated.Build(), childBecameDaughterOfParent.Build()
+            formalFrameworkBCreated.Build(), childBecameDaughterOfParent.Build(),
         };
     }
 

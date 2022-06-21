@@ -40,6 +40,6 @@ namespace Osc
 		Ashkenazi,
 
 		[EnumMember(Value = "sephardic")]
-		Sephardic
-	}
+		Sephardic,
+    }
 }

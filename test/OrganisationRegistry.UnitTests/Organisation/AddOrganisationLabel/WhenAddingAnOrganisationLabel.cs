@@ -61,7 +61,7 @@ public class WhenAddingAnOrganisationLabel : Specification<AddOrganisationLabelC
                 null,
                 null,
                 null),
-            new LabelTypeCreated(_labelId, _labelName)
+            new LabelTypeCreated(_labelId, _labelName),
         };
 
     private AddOrganisationLabel AddOrganisationLabelCommand

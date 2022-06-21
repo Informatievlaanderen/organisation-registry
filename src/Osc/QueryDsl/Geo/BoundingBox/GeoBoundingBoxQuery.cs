@@ -90,8 +90,8 @@ namespace Osc
 			{ "_name", 0 },
 			{ "boost", 1 },
 			{ "validation_method", 2 },
-			{ "type", 3 }
-		};
+			{ "type", 3 },
+        };
 
 		public IGeoBoundingBoxQuery Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
 		{

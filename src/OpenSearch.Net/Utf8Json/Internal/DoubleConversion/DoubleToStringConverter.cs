@@ -184,8 +184,8 @@ namespace OpenSearch.Net.Utf8Json.Internal.DoubleConversion
 			EMIT_POSITIVE_EXPONENT_SIGN = 1,
 			EMIT_TRAILING_DECIMAL_POINT = 2,
 			EMIT_TRAILING_ZERO_AFTER_POINT = 4,
-			UNIQUE_ZERO = 8
-		};
+			UNIQUE_ZERO = 8,
+        };
 
 		// C# constants
 		private static readonly byte[] InfinitySymbol = StringEncoding.UTF8.GetBytes(double.PositiveInfinity.ToString(CultureInfo.InvariantCulture));

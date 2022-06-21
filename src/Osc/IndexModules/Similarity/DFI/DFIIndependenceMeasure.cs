@@ -44,6 +44,6 @@ namespace Osc
 		Saturated,
 
 		[EnumMember(Value = "chisquared")]
-		ChiSquared
-	}
+		ChiSquared,
+    }
 }

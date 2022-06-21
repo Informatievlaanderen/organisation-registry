@@ -171,6 +171,6 @@ namespace Osc
 		/// Regular expression matching
 		/// </summary>
 		[EnumMember(Value = "regex")]
-		Regex
-	}
+		Regex,
+    }
 }

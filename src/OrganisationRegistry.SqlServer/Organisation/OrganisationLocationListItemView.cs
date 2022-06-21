@@ -108,7 +108,7 @@ public class OrganisationLocationListView :
 
     public enum ProjectionTables
     {
-        OrganisationLocationList
+        OrganisationLocationList,
     }
 
     public OrganisationLocationListView(

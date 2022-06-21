@@ -38,6 +38,6 @@ namespace Osc
 		And,
 
 		[EnumMember(Value = "or")]
-		Or
-	}
+		Or,
+    }
 }

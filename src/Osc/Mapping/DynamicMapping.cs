@@ -40,8 +40,8 @@ namespace Osc
 		/// If new unmapped fields are passed, the whole document will not be added/updated
 		/// </summary>
 		[EnumMember(Value = "strict")]
-		Strict
-	}
+		Strict,
+    }
 
 	internal class DynamicMappingFormatter : IJsonFormatter<Union<bool,DynamicMapping>>
 	{

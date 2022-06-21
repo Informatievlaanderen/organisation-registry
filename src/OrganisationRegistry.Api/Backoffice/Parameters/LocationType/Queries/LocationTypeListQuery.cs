@@ -30,7 +30,7 @@ public class LocationTypeListQuery: Query<LocationTypeListItem, LocationTypeList
         {
             Id = x.Id,
             Name = x.Name,
-            UserPermitted = x.Id != _configuration.Kbo.KboV2RegisteredOfficeLocationTypeId
+            UserPermitted = x.Id != _configuration.Kbo.KboV2RegisteredOfficeLocationTypeId,
         };
 
     protected override IQueryable<LocationTypeListItem> Filter(FilteringHeader<LocationTypeListItem> filtering)
@@ -50,7 +50,7 @@ public class LocationTypeListQuery: Query<LocationTypeListItem, LocationTypeList
     {
         public IEnumerable<string> SortableFields { get; } = new[]
         {
-            nameof(LocationTypeListItem.Name)
+            nameof(LocationTypeListItem.Name),
         };
 
         public SortingHeader DefaultSortingHeader { get; } = new(nameof(LocationTypeListItem.Name), SortOrder.Ascending);

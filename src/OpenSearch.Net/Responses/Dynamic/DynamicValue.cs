@@ -79,8 +79,8 @@ namespace OpenSearch.Net
 			{
 				DynamicDictionary v => v,
 				IDictionary<string, object> v => DynamicDictionary.Create(v),
-				_ => null
-			};
+				_ => null,
+            };
 			return dynamicDictionary == null ? default : dynamicDictionary.Get<T>(path);
 		}
 

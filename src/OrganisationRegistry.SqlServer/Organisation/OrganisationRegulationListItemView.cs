@@ -79,7 +79,7 @@ public class OrganisationRegulationListView :
 
     public enum ProjectionTables
     {
-        OrganisationRegulationList
+        OrganisationRegulationList,
     }
 
     private readonly IEventStore _eventStore;
@@ -122,7 +122,7 @@ public class OrganisationRegulationListView :
             RegulationSubThemeId = message.Body.RegulationSubThemeId,
             RegulationSubThemeName = message.Body.RegulationSubThemeName,
             ValidFrom = message.Body.ValidFrom,
-            ValidTo = message.Body.ValidTo
+            ValidTo = message.Body.ValidTo,
         };
 
         await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);

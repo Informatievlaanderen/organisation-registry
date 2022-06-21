@@ -9,6 +9,6 @@ public class ValidationErrorsExamples : IExamplesProvider<ValidationErrors>
     public ValidationErrors GetExamples()
         => new()
         {
-            { "Body.ValidTo", new[] { "Valid To must be greater than or equal to Valid From." } }
+            { "Body.ValidTo", new[] { "Valid To must be greater than or equal to Valid From." } },
         };
 }

@@ -38,8 +38,8 @@ namespace Osc
 		private static readonly AutomataDictionary Fields = new AutomataDictionary
 		{
 			{ "lat", 0 },
-			{ "lon", 1 }
-		};
+			{ "lon", 1 },
+        };
 
 		public GeoLocation Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
 		{

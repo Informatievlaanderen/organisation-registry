@@ -37,8 +37,8 @@ namespace Osc
 		private static readonly AutomataDictionary Fields = new AutomataDictionary
 		{
 			{ "includes", 0 },
-			{ "excludes", 1 }
-		};
+			{ "excludes", 1 },
+        };
 
 		public ISourceFilter Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
 		{

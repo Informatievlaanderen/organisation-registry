@@ -44,6 +44,6 @@ namespace Osc
 		Average,
 
 		[EnumMember(Value = "sum")]
-		Sum
-	}
+		Sum,
+    }
 }

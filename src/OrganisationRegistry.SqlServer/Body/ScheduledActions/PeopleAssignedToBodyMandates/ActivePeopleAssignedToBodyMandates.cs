@@ -79,7 +79,7 @@ public class ActivePeopleAssignedToBodyMandatesListView :
 
     public enum ProjectionTables
     {
-        ActivePeopleAssignedToBodyMandatesList
+        ActivePeopleAssignedToBodyMandatesList,
     }
 
     public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegationUpdated> message)
@@ -121,7 +121,7 @@ public class ActivePeopleAssignedToBodyMandatesListView :
             BodyId = message.Body.BodyId,
             PersonId = message.Body.PersonId,
             PersonFullName = message.Body.PersonFullName,
-            ValidTo = validTo
+            ValidTo = validTo,
         };
 
         using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))

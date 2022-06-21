@@ -38,6 +38,6 @@ namespace Osc
 		Request,
 
 		[EnumMember(Value = "async")]
-		Async
-	}
+		Async,
+    }
 }

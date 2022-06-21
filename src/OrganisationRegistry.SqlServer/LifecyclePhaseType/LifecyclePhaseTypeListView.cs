@@ -56,7 +56,7 @@ public class LifecyclePhaseTypeListView :
 
     public enum ProjectionTables
     {
-        LifecyclePhaseTypeList
+        LifecyclePhaseTypeList,
     }
 
     private readonly IEventStore _eventStore;
@@ -78,7 +78,7 @@ public class LifecyclePhaseTypeListView :
                 Id = message.Body.LifecyclePhaseTypeId,
                 Name = message.Body.Name,
                 RepresentsActivePhase = message.Body.LifecyclePhaseTypeIsRepresentativeFor == LifecyclePhaseTypeIsRepresentativeFor.ActivePhase,
-                IsDefaultPhase = message.Body.Status == LifecyclePhaseTypeStatus.Default
+                IsDefaultPhase = message.Body.Status == LifecyclePhaseTypeStatus.Default,
             };
 
             await context.LifecyclePhaseTypeList.AddAsync(lifecyclePhaseType);

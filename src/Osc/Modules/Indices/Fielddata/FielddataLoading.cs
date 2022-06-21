@@ -38,6 +38,6 @@ namespace Osc
 		Eager,
 
 		[EnumMember(Value = "eager_global_ordinals")]
-		EagerGlobalOrdinals
-	}
+		EagerGlobalOrdinals,
+    }
 }

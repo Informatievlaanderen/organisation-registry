@@ -96,6 +96,6 @@ namespace Osc
 		/// Rate uses the number of values in the field.
 		/// </summary>
 		[EnumMember(Value = "value_count")]
-		ValueCount
-	}
+		ValueCount,
+    }
 }

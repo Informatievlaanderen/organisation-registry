@@ -70,7 +70,7 @@ public class WhenUpdatingAnOrganisationBuildingToMainBuilding :
                 "Gebouw A",
                 false,
                 _validFrom,
-                _validTo)
+                _validTo),
         };
 
     private UpdateOrganisationBuilding UpdateOrganisationBuildingCommand

@@ -82,8 +82,8 @@ namespace OpenSearch.Net
 					HoldsData = info.HoldsData,
 					IngestEnabled = info.IngestEnabled,
 					HttpEnabled = info.HttpEnabled,
-					Settings = new ReadOnlyDictionary<string, object>(info.settings)
-				};
+					Settings = new ReadOnlyDictionary<string, object>(info.settings),
+                };
 				yield return node;
 			}
 		}

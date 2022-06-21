@@ -195,8 +195,8 @@ namespace Osc
 			{
 				var snapshotRequest = new SnapshotStatusRequest(_snapshotRequest.RepositoryName, _snapshotRequest.Snapshot)
 				{
-					RequestConfiguration = new RequestConfiguration()
-				};
+					RequestConfiguration = new RequestConfiguration(),
+                };
 			
 				snapshotRequest.RequestConfiguration.SetRequestMetaData(RequestMetaDataFactory.SnapshotHelperRequestMetaData());
 

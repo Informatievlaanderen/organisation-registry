@@ -34,7 +34,7 @@ public class OrganisationsRunner : BaseRunner<OrganisationDocument>
         typeof(OrganisationRelation),
         typeof(OrganisationBankAccount),
         typeof(OrganisationOpeningHoursSpecification),
-        typeof(OrganisationRegulation)
+        typeof(OrganisationRegulation),
     };
 
     public OrganisationsRunner(

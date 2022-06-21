@@ -39,7 +39,7 @@ public class ConfigurationListQuery : Query<ConfigurationValue>
     {
         public IEnumerable<string> SortableFields { get; } = new[]
         {
-            nameof(ConfigurationValue.Key)
+            nameof(ConfigurationValue.Key),
         };
 
         public SortingHeader DefaultSortingHeader { get; }

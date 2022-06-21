@@ -52,7 +52,7 @@ public class OrganisationTreeView :
 
     public enum ProjectionTables
     {
-        OrganisationTreeList
+        OrganisationTreeList,
     }
 
     private readonly IMemoryCaches _memoryCaches;
@@ -168,7 +168,7 @@ public class OrganisationTreeView :
                 context.Add(new OrganisationTreeItem
                 {
                     OvoNumber = change.Id,
-                    OrganisationTree = change.Traverse().ToSeparatedList()
+                    OrganisationTree = change.Traverse().ToSeparatedList(),
                 });
             }
         }

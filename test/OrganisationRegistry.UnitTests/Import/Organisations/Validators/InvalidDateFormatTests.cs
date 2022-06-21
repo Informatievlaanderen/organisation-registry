@@ -12,14 +12,14 @@ public class InvalidDateFormatTests
         => new()
         {
             Validity_Start = Field.NoValue(ColumnNames.Validity_Start),
-            OperationalValidity_Start = Field.FromValue(ColumnNames.OperationalValidity_Start, operationalValidityStart)
+            OperationalValidity_Start = Field.FromValue(ColumnNames.OperationalValidity_Start, operationalValidityStart),
         };
 
     private static DeserializedRecord GetDeserializedRecordWithValidityStart(string validityStart)
         => new()
         {
             Validity_Start = Field.FromValue(ColumnNames.Validity_Start, validityStart),
-            OperationalValidity_Start = Field.NoValue(ColumnNames.OperationalValidity_Start)
+            OperationalValidity_Start = Field.NoValue(ColumnNames.OperationalValidity_Start),
         };
 
     private static DeserializedRecord GetDeserializedRecordWithValidityStartAndOperationalValidityStart(
@@ -28,7 +28,7 @@ public class InvalidDateFormatTests
         => new()
         {
             Validity_Start = Field.FromValue(ColumnNames.Validity_Start, validityStart),
-            OperationalValidity_Start = Field.FromValue(ColumnNames.OperationalValidity_Start, operationalValidityStart)
+            OperationalValidity_Start = Field.FromValue(ColumnNames.OperationalValidity_Start, operationalValidityStart),
         };
 
 

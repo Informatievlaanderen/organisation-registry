@@ -45,7 +45,7 @@ public class EventProcessor : IHostedService
         {
             SingleReader = true,
             SingleWriter = false,
-            AllowSynchronousContinuations = false
+            AllowSynchronousContinuations = false,
         });
 
         _messagePump = Task.Factory.StartNew(

@@ -199,8 +199,8 @@ namespace Osc
 				MaxDegreeOfParallelism = scrollAll.MaxDegreeOfParallelism ?? slices,
 				Search = scrollAll.Search,
 				BackPressure = backPressure,
-				ParentMetaData = RequestMetaDataFactory.ReindexHelperRequestMetaData()
-		};
+				ParentMetaData = RequestMetaDataFactory.ReindexHelperRequestMetaData(),
+            };
 
 			var scrollObservable = _client.ScrollAll<TSource>(scrollAllRequest, _compositeCancelToken);
 			return new GetEnumerator<IScrollAllResponse<TSource>>()

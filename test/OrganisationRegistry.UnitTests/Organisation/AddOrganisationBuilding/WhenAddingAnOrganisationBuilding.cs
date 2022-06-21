@@ -66,7 +66,7 @@ public class WhenAddingAMainOrganisationBuilding
                 null,
                 null,
                 null),
-            new BuildingCreated(_buildingId, "Gebouw A", 1234)
+            new BuildingCreated(_buildingId, "Gebouw A", 1234),
         };
 
     protected AddOrganisationBuilding AddOrganisationBuildingCommand

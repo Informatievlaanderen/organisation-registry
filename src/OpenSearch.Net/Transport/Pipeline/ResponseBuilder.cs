@@ -107,8 +107,8 @@ namespace OpenSearch.Net
 				HttpMethod = requestData.Method,
 				DeprecationWarnings = warnings ?? Enumerable.Empty<string>(),
 				ResponseMimeType = mimeType,
-				ConnectionConfiguration = requestData.ConnectionSettings
-			};
+				ConnectionConfiguration = requestData.ConnectionSettings,
+            };
 			return details;
 		}
 

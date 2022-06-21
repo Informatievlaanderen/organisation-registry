@@ -41,8 +41,8 @@ namespace Osc
 			{ "gt", 2 },
 			{ "gte", 3 },
 			{ "lte", 4 },
-			{ "lt", 5 }
-		};
+			{ "lt", 5 },
+        };
 
 		public IRangeQuery Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
 		{

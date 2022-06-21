@@ -70,7 +70,7 @@ public class
                 "Gebouw A",
                 _isMainBuilding,
                 _validFrom,
-                _validTo)
+                _validTo),
         };
 
     private UpdateOrganisationBuilding UpdateOrganisationBuildingCommand

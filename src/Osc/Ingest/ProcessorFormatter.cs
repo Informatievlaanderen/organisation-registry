@@ -71,8 +71,8 @@ namespace Osc
 			{ "uri_parts", 33 },
 			{ "fingerprint", 34 },
 			{ "community_id", 35 },
-			{ "network_direction", 36 }
-		};
+			{ "network_direction", 36 },
+        };
 
 		public IProcessor Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
 		{

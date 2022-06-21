@@ -38,6 +38,6 @@ namespace Osc
 		All,
 
 		[EnumMember(Value = "none")]
-		None
-	}
+		None,
+    }
 }

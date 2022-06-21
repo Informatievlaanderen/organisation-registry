@@ -34,6 +34,6 @@ namespace OpenSearch.Net
 	public enum SerializationFormatting
 	{
 		None,
-		Indented
-	}
+		Indented,
+    }
 }

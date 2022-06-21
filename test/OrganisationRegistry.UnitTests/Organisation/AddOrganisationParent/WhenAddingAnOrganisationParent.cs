@@ -67,7 +67,7 @@ public class WhenAddingAnOrganisationParent
             new OrganisationCreatedBuilder(_sequentialOvoNumberGenerator)
                 .WithId(new OrganisationId(_parentId))
                 .WithName(_parentOrganisationName)
-                .Build()
+                .Build(),
         };
 
     private AddOrganisationParent AddOrganisationParentCommand

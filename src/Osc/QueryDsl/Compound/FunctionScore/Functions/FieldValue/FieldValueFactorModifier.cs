@@ -62,6 +62,6 @@ namespace Osc
 		SquareRoot,
 
 		[EnumMember(Value = "reciprocal")]
-		Reciprocal
-	}
+		Reciprocal,
+    }
 }

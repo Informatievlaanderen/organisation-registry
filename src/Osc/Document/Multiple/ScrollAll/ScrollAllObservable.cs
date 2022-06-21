@@ -137,8 +137,8 @@ namespace Osc
 				{
 					Slice = slice,
 					SearchResponse = searchResult,
-					Scroll = page
-				});
+					Scroll = page,
+                });
 				page++;
 				var request = new ScrollRequest(searchResult.ScrollId, scroll);
 
@@ -171,8 +171,8 @@ namespace Osc
 				{
 					Id = slice,
 					Max = _scrollAllRequest.Slices,
-					Field = _scrollAllRequest.RoutingField
-				};
+					Field = _scrollAllRequest.RoutingField,
+                };
 				var response = await _client.SearchAsync<T>(_searchRequest, _compositeCancelToken).ConfigureAwait(false);
 				//response gets passed to ScrollToCompletionAsync which does validation already
 				return response;

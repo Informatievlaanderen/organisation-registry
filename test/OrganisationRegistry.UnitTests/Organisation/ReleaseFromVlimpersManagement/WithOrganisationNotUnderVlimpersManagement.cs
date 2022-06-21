@@ -51,7 +51,7 @@ public class WithOrganisationNotUnderVlimpersManagement : Specification<ReleaseF
                 _formalValidity.Start,
                 _formalValidity.End,
                 _validity.Start,
-                _validity.End)
+                _validity.End),
         };
 
     protected ReleaseFromVlimpersManagement ReleaseFromVlimpersManagementCommand

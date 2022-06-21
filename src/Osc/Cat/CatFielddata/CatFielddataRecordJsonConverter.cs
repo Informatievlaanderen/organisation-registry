@@ -42,8 +42,8 @@ namespace Osc
 			{ "host", 2 },
 			{ "ip", 3 },
 			{ "field", 4 },
-			{ "size", 5 }
-		};
+			{ "size", 5 },
+        };
 
 		public CatFielddataRecord Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
 		{

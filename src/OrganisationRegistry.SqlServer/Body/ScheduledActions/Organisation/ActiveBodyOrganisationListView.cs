@@ -78,7 +78,7 @@ public class ActiveBodyOrganisationListView :
 
     public enum ProjectionTables
     {
-        ActiveBodyOrganisationList
+        ActiveBodyOrganisationList,
     }
 
     public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyOrganisationAdded> message)
@@ -129,7 +129,7 @@ public class ActiveBodyOrganisationListView :
             OrganisationId = message.Body.OrganisationId,
             BodyId = message.Body.BodyId,
             BodyOrganisationId = message.Body.BodyOrganisationId,
-            ValidTo = validTo
+            ValidTo = validTo,
         };
 
         using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))

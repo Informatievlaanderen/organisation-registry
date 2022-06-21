@@ -44,6 +44,6 @@ namespace Osc
 		Compressed,
 
 		[EnumMember(Value = "disabled")]
-		Disabled
-	}
+		Disabled,
+    }
 }

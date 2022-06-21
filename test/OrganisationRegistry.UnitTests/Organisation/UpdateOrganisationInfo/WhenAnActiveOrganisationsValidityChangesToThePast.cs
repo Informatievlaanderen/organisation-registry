@@ -45,7 +45,7 @@ public class WhenAnActiveOrganisationsValidityChangesToThePast :
             organisationCreatedBuilder
                 .WithValidity(null, null)
                 .Build(),
-            new OrganisationBecameActive(organisationCreatedBuilder.Id)
+            new OrganisationBecameActive(organisationCreatedBuilder.Id),
         };
     }
 

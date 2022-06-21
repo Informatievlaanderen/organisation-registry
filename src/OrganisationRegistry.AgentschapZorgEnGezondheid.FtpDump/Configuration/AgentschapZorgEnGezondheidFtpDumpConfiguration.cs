@@ -33,7 +33,7 @@ namespace OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump.Configuration
                 Host = Host,
                 User = User,
                 Pass = new string('*', 12),
-                FtpPath = FtpPath
+                FtpPath = FtpPath,
             };
         }
     }

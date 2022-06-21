@@ -173,8 +173,8 @@ namespace Osc
 					BgCount = bucket.BgCount,
 					DocCount = bucket.DocCount,
 					Buckets = GetSignificantTermsBuckets<TKey>(bucket.Items).ToList(),
-					Meta = bucket.Meta
-				};
+					Meta = bucket.Meta,
+                };
 		}
 
 		public SignificantTermsAggregate<string> SignificantTerms(string key) => SignificantTerms<string>(key);
@@ -189,8 +189,8 @@ namespace Osc
 					BgCount = bucket.BgCount,
 					DocCount = bucket.DocCount,
 					Buckets = GetSignificantTermsBuckets<TKey>(bucket.Items).ToList(),
-					Meta = bucket.Meta
-				};
+					Meta = bucket.Meta,
+                };
 		}
 
 		public SignificantTermsAggregate<string> SignificantText(string key) => SignificantText<string>(key);
@@ -205,8 +205,8 @@ namespace Osc
 					DocCountErrorUpperBound = bucket.DocCountErrorUpperBound,
 					SumOtherDocCount = bucket.SumOtherDocCount,
 					Buckets = GetKeyedBuckets<TKey>(bucket.Items).ToList(),
-					Meta = bucket.Meta
-				};
+					Meta = bucket.Meta,
+                };
 		}
 
 		public TermsAggregate<string> Terms(string key) => Terms<string>(key);
@@ -227,8 +227,8 @@ namespace Osc
 				: new MultiBucketAggregate<RareTermsBucket<TKey>>
 				{
 					Buckets = GetRareTermsBuckets<TKey>(bucket.Items).ToList(),
-					Meta = bucket.Meta
-				};
+					Meta = bucket.Meta,
+                };
 		}
 
 		public ValueAggregate Rate(string key) => TryGet<ValueAggregate>(key);
@@ -259,8 +259,8 @@ namespace Osc
 					DocCountErrorUpperBound = bucket.DocCountErrorUpperBound,
 					SumOtherDocCount = bucket.SumOtherDocCount,
 					Buckets = GetMultiTermsBuckets<TKey>(bucket.Items).ToList(),
-					Meta = bucket.Meta
-				};
+					Meta = bucket.Meta,
+                };
 		}
 
 		public AutoDateHistogramAggregate AutoDateHistogram(string key)
@@ -272,8 +272,8 @@ namespace Osc
 			{
 				Buckets = bucket.Items.OfType<DateHistogramBucket>().ToList(),
 				Meta = bucket.Meta,
-				AutoInterval = bucket.AutoInterval
-			};
+				AutoInterval = bucket.AutoInterval,
+            };
 		}
 
 		public CompositeBucketAggregate Composite(string key)
@@ -285,8 +285,8 @@ namespace Osc
 			{
 				Buckets = bucket.Items.OfType<CompositeBucket>().ToList(),
 				Meta = bucket.Meta,
-				AfterKey = bucket.AfterKey
-			};
+				AfterKey = bucket.AfterKey,
+            };
 		}
 
 		public MatrixStatsAggregate MatrixStats(string key) => TryGet<MatrixStatsAggregate>(key);
@@ -309,8 +309,8 @@ namespace Osc
 			return new MultiBucketAggregate<TBucket>
 			{
 				Buckets = bucket.Items.OfType<TBucket>().ToList(),
-				Meta = bucket.Meta
-			};
+				Meta = bucket.Meta,
+            };
 		}
 
 		private MultiBucketAggregate<KeyedBucket<TKey>> GetMultiKeyedBucketAggregate<TKey>(string key)
@@ -321,8 +321,8 @@ namespace Osc
 			return new MultiBucketAggregate<KeyedBucket<TKey>>
 			{
 				Buckets = GetKeyedBuckets<TKey>(bucket.Items).ToList(),
-				Meta = bucket.Meta
-			};
+				Meta = bucket.Meta,
+            };
 		}
 
 		private IEnumerable<KeyedBucket<TKey>> GetKeyedBuckets<TKey>(IEnumerable<IBucket> items)
@@ -335,8 +335,8 @@ namespace Osc
 					Key = GetKeyFromBucketKey<TKey>(bucket.Key),
 					KeyAsString = bucket.KeyAsString,
 					DocCount = bucket.DocCount,
-					DocCountErrorUpperBound = bucket.DocCountErrorUpperBound
-				};
+					DocCountErrorUpperBound = bucket.DocCountErrorUpperBound,
+                };
 		}
 
 		private IEnumerable<SignificantTermsBucket<TKey>> GetSignificantTermsBuckets<TKey>(IEnumerable<IBucket> items)
@@ -349,8 +349,8 @@ namespace Osc
 					Key = GetKeyFromBucketKey<TKey>(bucket.Key),
 					BgCount = bucket.BgCount,
 					DocCount = bucket.DocCount,
-					Score = bucket.Score
-				};
+					Score = bucket.Score,
+                };
 		}
 
 		private IEnumerable<RareTermsBucket<TKey>> GetRareTermsBuckets<TKey>(IEnumerable<IBucket> items)
@@ -361,8 +361,8 @@ namespace Osc
 				yield return new RareTermsBucket<TKey>(bucket.BackingDictionary)
 				{
 					Key = GetKeyFromBucketKey<TKey>(bucket.Key),
-					DocCount = bucket.DocCount.GetValueOrDefault(0)
-				};
+					DocCount = bucket.DocCount.GetValueOrDefault(0),
+                };
 		}
 
 		private static IEnumerable<MultiTermsBucket<TKey>> GetMultiTermsBuckets<TKey>(IEnumerable<IBucket> items)
@@ -375,8 +375,8 @@ namespace Osc
 				{
 					DocCount = bucket.DocCount,
 					DocCountErrorUpperBound = bucket.DocCountErrorUpperBound,
-					KeyAsString = bucket.KeyAsString
-				};
+					KeyAsString = bucket.KeyAsString,
+                };
 
 				if (bucket.Key is List<object> allKeys)
 					aggregates.Key = allKeys.Select(GetKeyFromBucketKey<TKey>).ToList();

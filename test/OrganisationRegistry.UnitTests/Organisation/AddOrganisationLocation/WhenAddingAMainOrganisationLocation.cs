@@ -80,7 +80,7 @@ public class
                 "Albert 1 laan 32",
                 "1000",
                 "Brussel",
-                "Belgie")
+                "Belgie"),
         };
 
     private AddOrganisationLocation AddOrganisationLocationCommand

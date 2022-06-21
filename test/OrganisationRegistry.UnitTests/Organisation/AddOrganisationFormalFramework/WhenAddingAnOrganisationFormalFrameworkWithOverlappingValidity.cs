@@ -76,7 +76,7 @@ public class WhenAddingAnOrganisationFormalFrameworkWithOverlappingValidity : Sp
                     _formalFrameworkId,
                     _parentOrganisationId)
                 .WithValidity(_dateTimeProviderStub.Today, _dateTimeProviderStub.Today)
-                .Build()
+                .Build(),
         };
 
     private AddOrganisationFormalFramework AddOrganisationFormalFrameworkCommand

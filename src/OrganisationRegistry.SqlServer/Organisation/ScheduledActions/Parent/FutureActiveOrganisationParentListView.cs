@@ -66,7 +66,7 @@ public class FutureActiveOrganisationParentListView :
 
     public enum ProjectionTables
     {
-        FutureActiveOrganisationParentList
+        FutureActiveOrganisationParentList,
     }
 
     public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationParentAdded> message)
@@ -114,7 +114,7 @@ public class FutureActiveOrganisationParentListView :
             OrganisationId = message.Body.OrganisationId,
             ParentOrganisationId = message.Body.ParentOrganisationId,
             OrganisationOrganisationParentId = message.Body.OrganisationOrganisationParentId,
-            ValidFrom = message.Body.ValidFrom
+            ValidFrom = message.Body.ValidFrom,
         };
 
         context.FutureActiveOrganisationParentList.Add(futureActiveOrganisationParentListItem);
@@ -137,7 +137,7 @@ public class FutureActiveOrganisationParentListView :
                     OrganisationId = message.Body.OrganisationId,
                     ParentOrganisationId = message.Body.ParentOrganisationId,
                     OrganisationOrganisationParentId = message.Body.OrganisationOrganisationParentId,
-                    ValidFrom = message.Body.ValidFrom
+                    ValidFrom = message.Body.ValidFrom,
                 };
 
             context.FutureActiveOrganisationParentList.Add(futureActiveOrganisationParentListItem);

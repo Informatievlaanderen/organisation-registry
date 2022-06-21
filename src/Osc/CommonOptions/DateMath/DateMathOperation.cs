@@ -38,8 +38,8 @@ namespace Osc
 		Add,
 
 		[EnumMember(Value = "-")]
-		Subtract
-	}
+		Subtract,
+    }
 
 	public static class DateMathOperationExtensions
 	{

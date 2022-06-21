@@ -132,8 +132,8 @@ namespace OpenSearch.Net.Utf8Json.Internal.DoubleConversion
 			100000000000000000000.0,  // 10^20
 			1000000000000000000000.0,
 			// 10^22 = 0x21e19e0c9bab2400000 = 0x878678326eac9 * 2^22
-			10000000000000000000000.0
-		};
+			10000000000000000000000.0,
+        };
 
 		private static readonly int KExactPowersOfTenSize = ExactPowersOfTen.Length;
 

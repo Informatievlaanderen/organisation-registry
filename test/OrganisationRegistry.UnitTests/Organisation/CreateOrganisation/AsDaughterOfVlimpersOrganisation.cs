@@ -31,7 +31,7 @@ public class AsDaughterOfVlimpersOrganisation : Specification<CreateOrganisation
             new OrganisationCreatedBuilder(new SequentialOvoNumberGenerator())
                 .WithId(new OrganisationId(_organisationId))
                 .Build(),
-            new OrganisationPlacedUnderVlimpersManagement(_organisationId)
+            new OrganisationPlacedUnderVlimpersManagement(_organisationId),
         };
 
     private CreateOrganisation CreateOrganisationCommand

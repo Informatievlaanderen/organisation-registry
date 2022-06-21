@@ -44,7 +44,7 @@ public class
                 .WithValidity(null, null)
                 .Build(),
             new OrganisationBecameActive(_organisationId),
-            new OrganisationPlacedUnderVlimpersManagement(_organisationId)
+            new OrganisationPlacedUnderVlimpersManagement(_organisationId),
         };
 
     private UpdateOrganisationInfo UpdateOrganisationInfoCommand

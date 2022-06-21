@@ -50,7 +50,7 @@ public class CountryCode
             {
                 2 => GetByAlpha2(code.ToUpper()),
                 3 => GetByAlpha3(code.ToUpper()),
-                _ => null
+                _ => null,
             }
             : null;
 

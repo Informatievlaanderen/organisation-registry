@@ -52,7 +52,7 @@ public class BuildingListView :
 
     public enum ProjectionTables
     {
-        BuildingList
+        BuildingList,
     }
 
     private readonly IEventStore _eventStore;
@@ -71,7 +71,7 @@ public class BuildingListView :
         {
             Id = message.Body.BuildingId,
             Name = message.Body.Name,
-            VimId = message.Body.VimId
+            VimId = message.Body.VimId,
         };
 
         using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))

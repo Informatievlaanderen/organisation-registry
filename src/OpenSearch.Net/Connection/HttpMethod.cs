@@ -46,6 +46,6 @@ namespace OpenSearch.Net
 		DELETE,
 
 		[EnumMember(Value = "HEAD")]
-		HEAD
-	}
+		HEAD,
+    }
 }

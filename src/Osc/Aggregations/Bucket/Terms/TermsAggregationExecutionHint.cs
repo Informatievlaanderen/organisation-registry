@@ -58,6 +58,6 @@ namespace Osc
 		/// Order by using per-segment ordinals to compute counts and remap these counts to global counts using global ordinals
 		/// </summary>
 		[EnumMember(Value = "global_ordinals_low_cardinality")]
-		GlobalOrdinalsLowCardinality
-	}
+		GlobalOrdinalsLowCardinality,
+    }
 }

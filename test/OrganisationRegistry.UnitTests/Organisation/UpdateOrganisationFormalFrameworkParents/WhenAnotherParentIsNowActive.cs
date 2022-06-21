@@ -76,7 +76,7 @@ public class WhenAnotherParentIsNowActive : Specification<UpdateOrganisationForm
             organisationCreated.Build(), parentOrganisationCreated.Build(), newParentOrganisationCreated.Build(),
             formalFrameworkCategoryCreated.Build(), formalFrameworkCreated.Build(),
             organisationFormalFrameworkAdded.Build(), newOrganisationFormalFrameworkAdded.Build(),
-            formalFrameworkAssignedToOrganisation.Build()
+            formalFrameworkAssignedToOrganisation.Build(),
         };
     }
 
