@@ -1,3 +1,10 @@
+# [1.210.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.209.0...v1.210.0) (2022-06-22)
+
+
+### Features
+
+* or-1092 implement frontend + command handler ([b5abd42](https://github.com/informatievlaanderen/organisation-registry/commit/b5abd42b471df0d386b333d0cea2def6859509fd))
+
 # [1.209.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.208.3...v1.209.0) (2022-06-21)
 
 
