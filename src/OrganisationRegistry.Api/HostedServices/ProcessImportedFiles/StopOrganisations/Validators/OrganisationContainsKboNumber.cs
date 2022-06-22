@@ -21,5 +21,7 @@ public static class OrganisationContainsKboNumber
     }
 
     public static string FormatMessage(string ovoNumber, string kboNumber)
-        => $"Organisatie met ovo nummer {ovoNumber} heeft een kbo nummer ({kboNumber}). Dit is niet toegelaten.";
+        => $"Organisatie met ovo nummer {ovoNumber} heeft een kbo nummer '{kboNumber}'. Dit is niet toegelaten.";
 }
+
+

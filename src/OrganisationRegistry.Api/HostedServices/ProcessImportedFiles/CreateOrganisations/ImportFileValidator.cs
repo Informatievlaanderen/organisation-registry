@@ -38,9 +38,9 @@ public class ImportFileValidator
             .ToList();
 
     private static CreateOrganisationsFromImportCommandItem ToCommandItem(ParsedRecord<DeserializedRecord> record, ImportCache importCache)
-        => record.OutputRecord!.ToCommandItem(
+        => record.DeserializedRecord!.ToCommandItem(
             importCache.LabelTypes,
-            GetOrganisationParentidentifier(importCache, record.OutputRecord!.Parent.Value!),
+            GetOrganisationParentidentifier(importCache, record.DeserializedRecord!.Parent.Value!),
             record.RowNumber);
 
     private static OrganisationParentIdentifier GetOrganisationParentidentifier(

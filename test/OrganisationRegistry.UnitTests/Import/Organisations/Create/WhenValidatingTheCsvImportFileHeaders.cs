@@ -1,11 +1,11 @@
-﻿namespace OrganisationRegistry.UnitTests.Import.Organisations;
+﻿namespace OrganisationRegistry.UnitTests.Import.Organisations.Create;
 
 using System.Collections.Immutable;
 using System.Linq;
-using Api.Import.Organisations.Validation;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
+using OrganisationRegistry.Api.Import.Organisations.Validation;
 using Xunit;
 
 public class WhenValidatingTheCsvImportFileHeaders

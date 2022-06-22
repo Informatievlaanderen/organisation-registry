@@ -23,14 +23,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Import\Organisations\WhenImportingACsvFile_2_hasNoErrors_input.csv" />
-    <EmbeddedResource Include="Import\Organisations\WhenImportingACsvFile_2_hasNoErrors_output.csv" />
-    <EmbeddedResource Include="Import\Organisations\WhenImportingACsvFile_1_hasErrors_input.csv" />
-    <EmbeddedResource Include="Import\Organisations\WhenImportingACsvFile_1_hasErrors_output.csv" />
-    <None Remove="Import\Organisations\GivenAnInputFile_ThenItReturnsAnOutputFile_3_hasErrors_input.csv" />
-    <EmbeddedResource Include="Import\Organisations\WhenImportingACsvFile_3_hasErrors_input.csv" />
-    <None Remove="Import\Organisations\GivenAnInputFile_ThenItReturnsAnOutputFile_3_hasErrors_output.csv" />
-    <EmbeddedResource Include="Import\Organisations\WhenImportingACsvFile_3_hasErrors_output.csv" />
+    <EmbeddedResource Include="Import\Organisations\Create\WhenImportingAFaultyCsvFile_input_1.csv" />
+    <EmbeddedResource Include="Import\Organisations\Create\WhenImportingAFaultyCsvFile_output_1.csv" />
+    <EmbeddedResource Include="Import\Organisations\Create\WhenImportingACorrectCsvFile_input_1.csv" />
+    <EmbeddedResource Include="Import\Organisations\Create\WhenImportingAFaultyCsvFile_output_2.csv" />
+    <EmbeddedResource Include="Import\Organisations\Terminate\WhenImportingACorrectCsvFile_input_1.csv" />
+    <EmbeddedResource Include="Import\Organisations\Terminate\WhenImportingACorrectCsvFile_output_1.csv" />
+    <EmbeddedResource Include="Import\Organisations\Terminate\WhenImportingAFaultyCsvFile_input_1.csv" />
+    <EmbeddedResource Include="Import\Organisations\Terminate\WhenImportingAFaultyCsvFile_output_1.csv" />
+    <EmbeddedResource Include="Import\Organisations\Create\WhenImportingACorrectCsvFile_output_1.csv" />
+    <EmbeddedResource Include="Import\Organisations\Create\WhenImportingAFaultyCsvFile_input_2.csv" />
   </ItemGroup>
   
   <Import Project="..\..\.paket\Paket.Restore.targets" />

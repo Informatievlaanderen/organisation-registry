@@ -17,7 +17,7 @@ public static class ImportRecordValidator
         if (parsedRecord.ValidationIssues.Any())
             return parsedRecord.ValidationIssues;
 
-        if (parsedRecord.OutputRecord is not { } outputRecord)
+        if (parsedRecord.DeserializedRecord is not { } outputRecord)
             throw new NullReferenceException("parsedRecord.OutputRecord should never be null");
 
         return ValidateRecord(importCache, parsedRecord.RowNumber, outputRecord).Items;

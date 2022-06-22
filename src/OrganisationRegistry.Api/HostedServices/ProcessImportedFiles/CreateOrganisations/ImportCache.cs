@@ -31,7 +31,7 @@ public class ImportCache
     private static IQueryable<OrganisationListItem> GetOrganisationsInScope(OrganisationRegistryContext context, IEnumerable<ParsedRecord<DeserializedRecord>> parsedRecords)
     {
         var parentOvoNumbers = parsedRecords
-            .Select(parsedRecord => parsedRecord.OutputRecord)
+            .Select(parsedRecord => parsedRecord.DeserializedRecord)
             .Select(outputRecord => outputRecord?.Parent.Value)
             .Where(ovoNumber => !string.IsNullOrWhiteSpace(ovoNumber))
             .Select(ovoNumber => ovoNumber!.ToLower())
@@ -41,7 +41,7 @@ public class ImportCache
         return context.OrganisationList
             .Where(org => org.FormalFrameworkId == null)
             .Where(
-                org => parentOvoNumbers.Contains(org.OvoNumber) ||
+                org => parentOvoNumbers.Contains(org.OvoNumber.ToLower()) ||
                        parentOvoNumbers.Contains(org.ParentOrganisationOvoNumber!));
     }
 

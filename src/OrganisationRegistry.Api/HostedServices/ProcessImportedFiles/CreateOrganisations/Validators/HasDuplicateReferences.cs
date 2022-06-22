@@ -13,7 +13,7 @@ public static class HasDuplicateReferences
             .ToList();
 
         var allReferences = validRecords
-            .Select(record => record.OutputRecord!.Reference.Value)
+            .Select(record => record.DeserializedRecord!.Reference.Value)
             .Where(reference => !string.IsNullOrWhiteSpace(reference));
 
         var groupedReferences = from reference in allReferences
@@ -27,10 +27,10 @@ public static class HasDuplicateReferences
             .ToList();
 
         var recordsWithDuplicateReferences = validRecords
-            .Where(record => duplicateReferences.Contains(record.OutputRecord!.Reference.Value))
+            .Where(record => duplicateReferences.Contains(record.DeserializedRecord!.Reference.Value))
             .Select(record => record)
             .Select(
-                record => new ValidationIssue(record.RowNumber, FormatMessage(record.OutputRecord!.Reference.Value!)))
+                record => new ValidationIssue(record.RowNumber, FormatMessage(record.DeserializedRecord!.Reference.Value!)))
             .ToList();
 
         var result = new ValidationIssues();
