@@ -20,7 +20,7 @@ using Validation;
 
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
-[OrganisationRegistryRoute("import/organisations")]
+[OrganisationRegistryRoute("imports")]
 [OrganisationRegistryAuthorize(Roles = Roles.AlgemeenBeheerder)]
 [FeatureGate(FeatureFlags.ImportApi)]
 public class ImportOrganisationsController : OrganisationRegistryController
@@ -29,8 +29,8 @@ public class ImportOrganisationsController : OrganisationRegistryController
     {
     }
 
-    [HttpPost]
-    public async Task<IActionResult> ImportOrganisations(
+    [HttpPost("organisation-creations")]
+    public async Task<IActionResult> ImportOrganisationCreations(
         [FromServices] OrganisationRegistryContext context,
         [FromServices] ISecurityService securityService,
         [FromServices] ILogger<ImportOrganisationsController> logger,
@@ -41,7 +41,7 @@ public class ImportOrganisationsController : OrganisationRegistryController
 
         var labelTypes = await LabelTypes.GetNames(context);
 
-        var validationResult = ImportOrganisationCsvHeaderValidator.Validate(logger, labelTypes, bulkimportfile.FileName, content);
+        var validationResult = OrganisationCreationsCsvHeaderValidator.Validate(logger, labelTypes, bulkimportfile.FileName, content);
         if (!validationResult.IsValid)
             return BadRequest(validationResult);
 
@@ -68,8 +68,45 @@ public class ImportOrganisationsController : OrganisationRegistryController
             });
     }
 
+    [HttpPost("organisation-terminations")]
+    public async Task<IActionResult> ImportOrganisationTerminations(
+        [FromServices] OrganisationRegistryContext context,
+        [FromServices] ISecurityService securityService,
+        [FromServices] ILogger<ImportOrganisationsController> logger,
+        [FromForm] IFormFile bulkimportfile)
+    {
+        var content = await ImportHelper.GetFileData(bulkimportfile);
+        var user = await securityService.GetRequiredUser(User);
+
+        var validationResult = ImportOrganisationTerminationsCsvHeaderValidator.Validate(logger, bulkimportfile.FileName, content);
+        if (!validationResult.IsValid)
+            return BadRequest(validationResult);
+
+        var statusItem = ImportOrganisationsStatusListItem.Create(
+            DateTimeOffset.Now,
+            user,
+            bulkimportfile.FileName,
+            content,
+            ImportFileTypes.Stop
+        );
+
+        context.ImportOrganisationsStatusList.Add(statusItem);
+
+        await context.SaveChangesAsync();
+
+        return Accepted(
+            new
+            {
+                Task = new
+                {
+                    Href = $"import/stoppedorganisations/{statusItem.Id}",
+                    Id = statusItem.Id,
+                },
+            });
+    }
+
     [HttpGet]
-    public async Task<IActionResult> GetImportStatuses(
+    public async Task<IActionResult> GetImports(
         [FromServices] ISecurityService securityService,
         [FromServices] OrganisationRegistryContext context
     )
@@ -88,14 +125,15 @@ public class ImportOrganisationsController : OrganisationRegistryController
                     import.Id,
                     import.Status,
                     import.FileName,
-                    import.UploadedAt
+                    import.UploadedAt,
+                    import.ImportFileType
                 )));
 
         return Ok(response);
     }
 
     [HttpGet("{id:guid}/content")]
-    public async Task<IActionResult> GetImportStatusFile(
+    public async Task<IActionResult> GetImportFile(
         [FromServices] OrganisationRegistryContext context,
         [FromRoute] Guid id
     )

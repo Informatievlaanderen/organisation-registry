@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 using Api.HostedServices.ProcessImportedFiles;
-using Api.HostedServices.ProcessImportedFiles.Strategy.CreateOrganisations;
+using Api.HostedServices.ProcessImportedFiles.CreateOrganisations;
 using Organisation.Import;
 
 public class OutputRecordBuilder
@@ -56,7 +56,7 @@ public class OutputRecordBuilder
     }
 
     public CreateOrganisationsFromImportCommandItem Build()
-        => _deserializedRecord.ToOutputRecord(_labelTypes, _parentOrganisationid, _sortOrder);
+        => _deserializedRecord.ToCommandItem(_labelTypes, _parentOrganisationid, _sortOrder);
 
     public static implicit operator CreateOrganisationsFromImportCommandItem(OutputRecordBuilder builder)
         => builder.Build();

@@ -1,7 +1,5 @@
 ﻿namespace OrganisationRegistry.Organisation;
 
-using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Handling;
 using Infrastructure.Commands;
@@ -33,15 +31,7 @@ public class TerminateOrganisationCommandHandler
                 session =>
                 {
                     var organisation = session.Get<Organisation>(envelope.Command.OrganisationId);
-
-                    var fieldsToTerminateConfig = new OrganisationTerminationCalculator.FieldsToTerminateConfig(
-                        _organisationRegistryConfiguration.Kbo.FormalFrameworkIdsToTerminateEndOfNextYear
-                            ?.FirstOrDefault() ?? Guid.Empty,
-                        _organisationRegistryConfiguration.Kbo.OrganisationCapacityIdsToTerminateEndOfNextYear
-                            ?.FirstOrDefault() ?? Guid.Empty,
-                        _organisationRegistryConfiguration.Kbo.OrganisationClassificationTypeIdsToTerminateEndOfNextYear
-                            ?.FirstOrDefault() ?? Guid.Empty,
-                        _organisationRegistryConfiguration.VlimpersKeyTypeId);
+                    var fieldsToTerminateConfig = OrganisationTerminationCalculator.GetFieldsToTerminate(_organisationRegistryConfiguration);
 
                     organisation.TerminateOrganisation(
                         envelope.Command.DateOfTermination,

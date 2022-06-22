@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OrganisationRegistry.Infrastructure.Commands;
 using OrganisationRegistry.Infrastructure.Configuration;
-using ProcessImportedFiles.Strategy;
+using ProcessImportedFiles.Processor;
 using SqlServer;
 
 public class ProcessImportedFilesService : BackgroundService
@@ -40,7 +40,7 @@ public class ProcessImportedFilesService : BackgroundService
 
         while (!cancellationToken.IsCancellationRequested)
         {
-            await ImportFileProcessor.ProcessNextFile(
+            await ImportNextFileProcessor.ProcessNextFile(
                 _contextFactory,
                 _dateTimeProvider,
                 _logger,

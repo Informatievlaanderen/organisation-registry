@@ -9,6 +9,7 @@ using CsvHelper.Configuration;
 using Magda.Helpers;
 using Organisation.Import;
 using SqlServer.Import.Organisations;
+using Validation;
 
 public static class OutputSerializer
 {

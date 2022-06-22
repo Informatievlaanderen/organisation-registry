@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Exceptions;
+using Infrastructure.Configuration;
 using State;
 
 public static class OrganisationTerminationCalculator
@@ -13,6 +14,16 @@ public static class OrganisationTerminationCalculator
         Guid RekenhofCapacityId,
         Guid RekenhofClassificationTypeId,
         Guid VlimpersKeyTypeId);
+
+    public static FieldsToTerminateConfig GetFieldsToTerminate(IOrganisationRegistryConfiguration organisationRegistryConfiguration)
+        => new(
+            organisationRegistryConfiguration.Kbo.FormalFrameworkIdsToTerminateEndOfNextYear
+                ?.FirstOrDefault() ?? Guid.Empty,
+            organisationRegistryConfiguration.Kbo.OrganisationCapacityIdsToTerminateEndOfNextYear
+                ?.FirstOrDefault() ?? Guid.Empty,
+            organisationRegistryConfiguration.Kbo.OrganisationClassificationTypeIdsToTerminateEndOfNextYear
+                ?.FirstOrDefault() ?? Guid.Empty,
+            organisationRegistryConfiguration.VlimpersKeyTypeId);
 
     public static OrganisationTerminationSummary GetFieldsToTerminate(DateTime dateOfTermination,
         FieldsToTerminateConfig fieldsToTerminateConfig,

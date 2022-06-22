@@ -3,8 +3,8 @@
 using System;
 using System.Linq;
 using Api.HostedServices.ProcessImportedFiles;
-using Api.HostedServices.ProcessImportedFiles.Strategy.CreateOrganisations;
-using Api.HostedServices.ProcessImportedFiles.Validators;
+using Api.HostedServices.ProcessImportedFiles.CreateOrganisations;
+using Api.HostedServices.ProcessImportedFiles.Validation;
 using FluentAssertions;
 using Xunit;
 
