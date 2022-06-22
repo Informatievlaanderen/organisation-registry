@@ -1,7 +1,6 @@
 ﻿namespace OrganisationRegistry.UnitTests.Import.Organisations.Validators;
 
-using Api.HostedServices.ProcessImportedFiles;
-using Api.HostedServices.ProcessImportedFiles.Validators;
+using Api.HostedServices.ProcessImportedFiles.Validation;
 using CsvHelper;
 using FluentAssertions;
 using Moq;

@@ -15,7 +15,8 @@
 <script>
 import {
   getImportStatuses,
-  postImportOrganisations,
+  postImportOrganisationCreations,
+  postImportOrganisationTerminations,
 } from "@/api/importOrganisations";
 import UploadOrganisations from "@/views/ImportOrganisations/UploadOrganisations";
 import ImportStatusList from "@/views/ImportOrganisations/ImportStatusList";
@@ -26,8 +27,8 @@ export default {
   name: "ImportOrganisationsView",
   components: { ImportStatusList, UploadOrganisations },
   methods: {
-    async uploadFile(file, clearUploadOrganisations) {
-      await postImportOrganisations({
+    async uploadFile(file, uploadType, clearUploadOrganisations) {
+      const postImportFileParams = {
         file,
         onSuccess: async () => {
           const alertStore = useAlertStore();
@@ -36,7 +37,9 @@ export default {
           this.importStatuses = await getImportStatuses();
         },
         onError: this.showError,
-      });
+      };
+
+      await uploadImportFile(uploadType, postImportFileParams);
     },
     async fileAdded() {
       const alertStore = useAlertStore();
@@ -72,4 +75,15 @@ export default {
     };
   },
 };
+
+async function uploadImportFile(uploadType, postImportFileParams) {
+  switch (uploadType) {
+    case "Create":
+      await postImportOrganisationCreations(postImportFileParams);
+      break;
+    case "Terminate":
+      await postImportOrganisationTerminations(postImportFileParams);
+      break;
+  }
+}
 </script>

@@ -31,11 +31,11 @@ public class WhenABulkimportfileIsImported
         using var content = new MultipartFormDataContent("Upload----" + DateTime.Now.ToString(CultureInfo.InvariantCulture));
         content.Add(new StreamContent(importFileStream), "bulkimportfile", "upload.csv");
 
-        using var message = await client.PostAsync("import/organisations", content);
+        using var message = await client.PostAsync("imports/organisation-creations", content);
 
         message.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
-        using var result = await client.GetAsync("import/organisations");
+        using var result = await client.GetAsync("imports");
 
         result.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -55,7 +55,7 @@ public class WhenABulkimportfileIsImported
         using var content = new MultipartFormDataContent("Upload----" + DateTime.Now.ToString(CultureInfo.InvariantCulture));
         content.Add(new StreamContent(importFileStream), "bulkimportfile", "upload.csv");
 
-        using var message = await client.PostAsync("import/organisations", content);
+        using var message = await client.PostAsync("imports/organisation-creations", content);
 
         // Assert that the CSV is accepted by the API
         message.StatusCode.Should().Be(HttpStatusCode.Accepted);
@@ -64,7 +64,7 @@ public class WhenABulkimportfileIsImported
         var importResult = await message.Content.ReadAsStringAsync();
         var importResultData = JToken.Parse(importResult);
 
-        using var result = await client.GetAsync("import/organisations");
+        using var result = await client.GetAsync("imports");
 
         // Assert that the list of imports consists of the CSV that we just uploaded
         result.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -93,7 +93,7 @@ public class WhenABulkimportfileIsImported
         // Assert that the import succeeded
         pollResult.success.Should().BeTrue();
 
-        await using var resultFileStream = await client.GetStreamAsync($"import/organisations/{pollResult.id}/content");
+        await using var resultFileStream = await client.GetStreamAsync($"imports/{pollResult.id}/content");
 
         // Assert that result equals expected result
         using var streamReader = new StreamReader(resultFileStream);
@@ -106,7 +106,7 @@ public class WhenABulkimportfileIsImported
 
     private static async Task<(bool completed, bool? success, string? id, string? filename)> PollImportStatus(HttpClient client)
     {
-        using var pollResult = await client.GetAsync("import/organisations");
+        using var pollResult = await client.GetAsync("imports");
 
         var polledStatusResultContent = await pollResult.Content.ReadAsStringAsync();
         var polledActual = JToken.Parse(polledStatusResultContent);

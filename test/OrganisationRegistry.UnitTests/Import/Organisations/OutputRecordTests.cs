@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using Api.HostedServices.ProcessImportedFiles;
-using Api.HostedServices.ProcessImportedFiles.Strategy.CreateOrganisations;
+using Api.HostedServices.ProcessImportedFiles.CreateOrganisations;
 using AutoFixture;
 using FluentAssertions;
 using OrganisationRegistry.Organisation;
@@ -56,7 +56,7 @@ public class OutputRecordTests
             Labels = ImmutableList.Create(Field.FromValue($"{labelprefix}{label1}", expectedLabel1Value), Field.FromValue($"{labelprefix}{label2}", expectedLabel2Value)),
         };
 
-        var outputRecord = deserializedRecord.ToOutputRecord(labelTypes, expectedParent, 1);
+        var outputRecord = deserializedRecord.ToCommandItem(labelTypes, expectedParent, 1);
 
         outputRecord.Article.Should().Be(expectedArticle);
         outputRecord.Name.Should().Be(expectedName);

@@ -9,18 +9,21 @@ public record ImportOrganisationStatusResponse(IEnumerable<ImportOrganisationSta
 
 public class ImportOrganisationStatusResponseItem
 {
-    public ImportOrganisationStatusResponseItem(Guid id, string status, string fileName, DateTimeOffset uploadedAt)
+    public ImportOrganisationStatusResponseItem(Guid id, string status, string fileName, DateTimeOffset uploadedAt, string importFileType)
     {
         Id = id;
         FileName = fileName;
         Status = status;
         UploadedAt = uploadedAt;
+        ImportFileType = importFileType;
     }
 
     public Guid Id { get; init; }
     public string FileName { get; init; }
     public string Status { get; init; }
+
     [JsonConverter(typeof(TimestampConverter))]
     public DateTimeOffset UploadedAt { get; init; }
 
+    public string ImportFileType { get; init; }
 }

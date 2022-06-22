@@ -17,7 +17,7 @@ public class WhenValidatingTheCsvImportFileHeaders
         => Validate("testfile.csv", csvContent);
 
     private static CsvValidationResult Validate(string csvFilename, string csvContent)
-        => ImportOrganisationCsvHeaderValidator.Validate(Mock.Of<ILogger>(), ImmutableList.Create<string>(LabelFormeleNaam, LabelKorteNaam), csvFilename, csvContent);
+        => OrganisationCreationsCsvHeaderValidator.Validate(Mock.Of<ILogger>(), ImmutableList.Create<string>(LabelFormeleNaam, LabelKorteNaam), csvFilename, csvContent);
 
     [Fact]
     public void GivenAnEmptyCsvFile_ThenItReturnsInValid()

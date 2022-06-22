@@ -7,9 +7,9 @@ using Import;
 public class TerminateOrganisationsFromImport : BaseCommand<OrganisationSourceId>
 {
     public Guid ImportFileId { get; }
-    public IEnumerable<StopOrganisationsFromImportCommandItem> Records { get; }
+    public IEnumerable<TerminateOrganisationsFromImportCommandItem> Records { get; }
 
-    public TerminateOrganisationsFromImport(Guid importFileId, IEnumerable<StopOrganisationsFromImportCommandItem> records)
+    public TerminateOrganisationsFromImport(Guid importFileId, IEnumerable<TerminateOrganisationsFromImportCommandItem> records)
     {
         ImportFileId = importFileId;
         Records = records;

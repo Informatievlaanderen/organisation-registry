@@ -22,6 +22,7 @@
       </caption>
       <thead>
         <tr>
+          <th>Soort import</th>
           <th>Bestandsnaam</th>
           <th>Status</th>
           <th>Resultaat</th>
@@ -30,6 +31,7 @@
       </thead>
       <tbody>
         <tr :key="importStatus.id" v-for="importStatus in importStatuses">
+          <td>{{ importStatus.importFileType }}</td>
           <td>{{ importStatus.fileName }}</td>
           <td>{{ importStatus.status }}</td>
           <td>
@@ -53,7 +55,9 @@
       </tbody>
       <tfoot>
         <tr>
-          <td><vl-annotation></vl-annotation></td>
+          <td>
+            <vl-annotation></vl-annotation>
+          </td>
         </tr>
       </tfoot>
     </vl-data-table>

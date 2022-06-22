@@ -4,7 +4,8 @@
       "id": "{id}",
       "fileName": "upload.csv",
       "status": "Processing",
-      "uploadedAt": ""
+      "uploadedAt": "",
+      "importFileType": "create"
     }
   ]
 }

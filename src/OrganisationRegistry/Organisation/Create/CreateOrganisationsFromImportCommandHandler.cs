@@ -31,14 +31,11 @@ public class CreateOrganisationsFromImportCommandHandler :
     }
 
     public Task Handle(ICommandEnvelope<CreateOrganisationsFromImport> envelope)
-    {
-        return Handler.For(envelope.User, Session)
+        => Handler.For(envelope.User, Session)
             .RequiresAdmin()
-            .HandleWithCombinedTransaction(
-                session => ImportOrganisations(envelope, session));
-    }
+            .HandleWithCombinedTransaction(session => CreateOrganisations(envelope, session));
 
-    private void ImportOrganisations(ICommandEnvelope<CreateOrganisationsFromImport> envelope, ISession session)
+    private void CreateOrganisations(ICommandEnvelope<CreateOrganisationsFromImport> envelope, ISession session)
     {
         var parentCache = new Dictionary<string, Organisation>();
         var sortedRecords = SortRecords(envelope.Command.Records.ToImmutableList());
@@ -46,11 +43,11 @@ public class CreateOrganisationsFromImportCommandHandler :
 
         foreach (var record in sortedRecords)
         {
-            CreateOrganisationFromRecord(session, parentCache, importFileId, record);
+            CreateOrganisation(session, parentCache, importFileId, record);
         }
     }
 
-    private void CreateOrganisationFromRecord(
+    private void CreateOrganisation(
         ISession session,
         Dictionary<string, Organisation> parentCache,
         Guid importFileId,
