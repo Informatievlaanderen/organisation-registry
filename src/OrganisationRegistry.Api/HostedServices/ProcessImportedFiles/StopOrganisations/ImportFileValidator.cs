@@ -27,9 +27,9 @@ public class ImportFileValidator
             .ToList();
 
     private static TerminateOrganisationsFromImportCommandItem ToCommandItem(ParsedRecord<DeserializedRecord> record, ImportCache importCache)
-        => record.OutputRecord!.ToCommandItem(
+        => record.DeserializedRecord!.ToCommandItem(
             importCache.GetOrganisationByOvoNumber(
-                record.OutputRecord!.OvoNumber.Value!
+                record.DeserializedRecord!.OvoNumber.Value!
             )!.Id
         );
 }

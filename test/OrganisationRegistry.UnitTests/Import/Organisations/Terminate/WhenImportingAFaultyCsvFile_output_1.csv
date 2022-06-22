@@ -1,0 +1,7 @@
+﻿lijnnummer;fout
+2;Ovo nummer 'ovo999999' werd niet gevonden.
+3;De waarde '05-31-2022' is ongeldig voor kolom 'organisation_end' (Vereist formaat: 'YYYY-MM-DD').
+4;Ovo nummer 'ovo003001' komt niet overeen met organisatie naam 'name555'.
+5;Rij ontbreekt waarde voor volgende kolommen: 'ovonumber', 'name', 'organisation_end'.
+6;Rij ontbreekt waarde voor volgende kolommen: 'name'.
+7;Organisatie met ovo nummer ovo003004 heeft een kbo nummer '0123456789'. Dit is niet toegelaten.

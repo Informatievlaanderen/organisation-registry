@@ -5,5 +5,5 @@ using Validation;
 
 public record ParsedRecord<TDeserializedRecord>(
     int RowNumber,
-    TDeserializedRecord? OutputRecord,
+    TDeserializedRecord? DeserializedRecord,
     IEnumerable<ValidationIssue> ValidationIssues);

@@ -1,14 +1,15 @@
-﻿namespace OrganisationRegistry.UnitTests.Import.Organisations;
+﻿namespace OrganisationRegistry.UnitTests.Import.Organisations.Create;
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using AutoFixture;
+using FluentAssertions;
 using Api.HostedServices.ProcessImportedFiles;
 using Api.HostedServices.ProcessImportedFiles.CreateOrganisations;
 using Api.HostedServices.ProcessImportedFiles.Validation;
-using AutoFixture;
-using FluentAssertions;
-using SqlServer.Organisation;
+using OrganisationRegistry.SqlServer.Organisation;
+using Tests.Shared.TestDataBuilders;
 using Xunit;
 
 public class WhenValidatingTheCsvImportFileContent
@@ -31,12 +32,7 @@ public class WhenValidatingTheCsvImportFileContent
     private static ParsedRecord<DeserializedRecord> GetParsedrecord(int rowNumber, string reference, string parent, string name)
         => new(
             rowNumber,
-            new DeserializedRecord
-            {
-                Reference = Field.FromValue(ColumnNames.Reference, reference),
-                Name = Field.FromValue(ColumnNames.Name, name),
-                Parent = Field.FromValue(ColumnNames.Parent, parent),
-            },
+            new CreateOrganisationsDeserializedRecordBuilder(reference, name).WithParent(parent),
             Array.Empty<ValidationIssue>());
 
     [Fact]

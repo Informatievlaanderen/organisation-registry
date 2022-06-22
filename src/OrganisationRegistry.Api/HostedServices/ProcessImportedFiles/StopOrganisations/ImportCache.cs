@@ -23,7 +23,7 @@ public class ImportCache
     private static IQueryable<OrganisationDetailItem> GetOrganisationsInScope(OrganisationRegistryContext context, IEnumerable<ParsedRecord<DeserializedRecord>> parsedRecords)
     {
         var ovoNumbers = parsedRecords
-            .Select(parsedRecord => parsedRecord.OutputRecord)
+            .Select(parsedRecord => parsedRecord.DeserializedRecord)
             .Select(outputRecord => outputRecord?.OvoNumber.Value)
             .Where(ovoNumber => !string.IsNullOrWhiteSpace(ovoNumber))
             .Select(ovoNumber => ovoNumber!.ToLower())
@@ -31,8 +31,8 @@ public class ImportCache
             .ToList();
 
         return context.OrganisationDetail
-            .Where(org => org.FormalFrameworkId == null)  // todo: klopt deze check hier ?
-            .Where(org => ovoNumbers.Contains(org.OvoNumber));
+            .Where(org => org.FormalFrameworkId == null) // todo: klopt deze check hier ?
+            .Where(org => ovoNumbers.Contains(org.OvoNumber.ToLower()));
     }
 
     public OrganisationDetailItem? GetOrganisationByOvoNumber(string ovoNumber)

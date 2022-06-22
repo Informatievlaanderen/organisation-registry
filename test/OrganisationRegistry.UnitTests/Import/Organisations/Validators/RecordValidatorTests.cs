@@ -5,6 +5,7 @@ using System.Linq;
 using Api.HostedServices.ProcessImportedFiles;
 using Api.HostedServices.ProcessImportedFiles.CreateOrganisations;
 using Api.HostedServices.ProcessImportedFiles.Validation;
+using Create;
 using FluentAssertions;
 using Xunit;
 
@@ -15,7 +16,7 @@ public class RecordValidatorTests
     {
         var parsedRecord = new ParsedRecord<DeserializedRecord>(
             RowNumber: 1,
-            OutputRecord: null,
+            DeserializedRecord: null,
             new[] { new ValidationIssue(RowNumber: 1, InvalidColumnCount.FormatMessage()) });
 
         var issues = ImportRecordValidator.Validate(
@@ -32,7 +33,7 @@ public class RecordValidatorTests
     {
         var parsedRecord = new ParsedRecord<DeserializedRecord>(
             RowNumber: 1,
-            OutputRecord: null,
+            DeserializedRecord: null,
             Array.Empty<ValidationIssue>());
 
         var action = () => ImportRecordValidator.Validate(

@@ -42,7 +42,7 @@ public static class ImportFileParser
     private static ParsedRecord<DeserializedRecord> GetImportRecord(IReaderRow csv, IReadOnlyDictionary<string, int> csvHeaderRecord, Dictionary<string, int> labelColumns)
     {
         if (InvalidColumnCount.Validate(csv) is { } invalidColumnCount)
-            return new ParsedRecord<DeserializedRecord>(csv.Parser.Row, OutputRecord: null, new[] { invalidColumnCount });
+            return new ParsedRecord<DeserializedRecord>(csv.Parser.Row, DeserializedRecord: null, new[] { invalidColumnCount });
 
         var reference = MaybeGetField(csv, csvHeaderRecord, ColumnNames.Reference);
         var name = MaybeGetField(csv, csvHeaderRecord, ColumnNames.Name);
