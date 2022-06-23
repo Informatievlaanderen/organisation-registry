@@ -9,7 +9,7 @@
         <router-link
           slot="title"
           class="functional-header__title"
-          :to="{ name: 'upload-organisations' }"
+          to="/../#/organisations"
           >{{ title }}
         </router-link>
         >
@@ -28,9 +28,11 @@
           >
             <dv-tabs mod-is-functional-header>
               <dv-tab
-                title="Organisaties opladen"
+                v-for="tab in navigations"
+                :key="tab.title"
+                :title="tab.title"
                 exact
-                :to="{ name: 'upload-organisations' }"
+                :to="tab.to"
               />
             </dv-tabs>
           </dv-column>
@@ -61,6 +63,7 @@
 
 <script>
 import DvHeader from "./components/partials/header/Or-Header";
+import Roles from "./stores/roles";
 
 import DvFunctionalHeader from "./components/partials/functional-header/FunctionalHeader";
 import DvUserInfo from "./components/partials/user-info/UserInfo";
@@ -105,6 +108,9 @@ export default {
   computed: {
     ...mapStores(useUserStore),
     ...mapState(useAlertStore, ["alert"]),
+    navigations() {
+      return this.userStore.getNavigations;
+    },
   },
   methods: {
     ...mapActions(useAlertStore, ["setAlert", "clearAlert"]),
@@ -117,7 +123,8 @@ export default {
   },
   data() {
     return {
-      title: "ORGANISATIE REGISTER V2",
+      title: "WEGWIJS ORGANISATIE",
+      Roles: Roles,
     };
   },
 };
