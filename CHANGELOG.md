@@ -1,3 +1,11 @@
+# [1.212.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.211.0...v1.212.0) (2022-06-23)
+
+
+### Features
+
+* or-1092 correct translation for create/stop in UI ([725c27e](https://github.com/informatievlaanderen/organisation-registry/commit/725c27eb67e4d399927babc7a77a8b4767034864))
+* or-1092 write combined exception for domain errors ([0a52902](https://github.com/informatievlaanderen/organisation-registry/commit/0a52902257676e695ffafe4b82c4b129d5f07572))
+
 # [1.211.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.210.0...v1.211.0) (2022-06-22)
 
 
