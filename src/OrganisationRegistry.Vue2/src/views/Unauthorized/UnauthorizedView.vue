@@ -12,6 +12,8 @@
 </template>
 
 <script>
+document.title = "Unauthorized";
+
 import alerts from "@/alerts/alerts";
 import OrAlert from "@/components/partials/alert/Alert";
 

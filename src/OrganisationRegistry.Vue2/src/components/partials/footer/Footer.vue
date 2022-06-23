@@ -37,7 +37,7 @@
           Dit is een officiële website van de Vlaamse overheid
         </div>
         <div id="vlaanderen-footer-info-publisher">
-          <span>uitgegeven door</span>
+          <span>uitgegeven door </span>
           <span
             itemprop="publisher"
             itemscope=""

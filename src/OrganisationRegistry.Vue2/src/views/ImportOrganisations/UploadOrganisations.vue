@@ -1,15 +1,17 @@
 ﻿<template>
   <div>
-    <label for="selectUploadType" class="form__label">Soort import: </label>
-    <select
-      name="selectUploadType"
-      class="select"
-      id="select-demo"
-      ref="selectUploadType"
-    >
-      <option value="Create">{{ translateFileType("create") }}</option>
-      <option value="Terminate">{{ translateFileType("stop") }}</option>
-    </select>
+    <div>
+      <label for="selectUploadType" class="form__label">Soort import: </label>
+      <select
+        name="selectUploadType"
+        class="select"
+        id="select-demo"
+        ref="selectUploadType"
+      >
+        <option value="Create">{{ translateFileType("create") }}</option>
+        <option value="Terminate">{{ translateFileType("stop") }}</option>
+      </select>
+    </div>
     <vl-upload
       id="bulkimportfile"
       max-files="1"
@@ -27,6 +29,8 @@
 </template>
 
 <script>
+document.title = "Wegwijs - Importeren";
+
 import { translateImportFileType } from "./Translations";
 
 export default {

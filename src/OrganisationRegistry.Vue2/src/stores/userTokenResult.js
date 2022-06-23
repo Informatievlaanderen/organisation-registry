@@ -1,4 +1,5 @@
 import jwtDecode from "jwt-decode";
+import Roles from "./roles";
 
 export class UserTokenResult {
   constructor(decodedJwtToken, succeeded) {
@@ -27,17 +28,17 @@ export class UserTokenResult {
   static #translateRole(role) {
     switch (role) {
       case "algemeenBeheerder":
-        return "Algemeen beheerder";
+        return Roles.AlgemeenBeheerder;
       case "vlimpersBeheerder":
-        return "Vlimpers beheerder";
+        return Roles.VlimpersBeheerder;
       case "decentraalBeheerder":
-        return "Decentraal Beheerder";
+        return Roles.DecentraalBeheerder;
       case "orgaanBeheerder":
-        return "Orgaan Beheerder";
+        return Roles.OrgaanBeheerder;
       case "developer":
-        return "Ontwikkelaar";
+        return Roles.Developer;
       case "regelgevingBeheerder": {
-        return "Regelgeving en deugdelijk bestuur beheerder";
+        return Roles.Regelgever;
       }
     }
     return "";

@@ -10,6 +10,7 @@ import OidcClient from "@/api/oidc";
 import { useAlertStore } from "@/stores/alert";
 import alerts from "@/alerts/alerts";
 import { UserTokenResult } from "@/stores/userTokenResult";
+import NavigationTabs from "./nav-bar";
 
 export const useUserStore = defineStore("user", {
   state: () => {
@@ -20,6 +21,7 @@ export const useUserStore = defineStore("user", {
         firstName: "",
         roles: [],
       },
+      navigations: [],
     };
   },
   getters: {
@@ -27,6 +29,7 @@ export const useUserStore = defineStore("user", {
       `${state.user.name} ${
         state.user.firstName
       } (${state.user.translatedRoles.join(", ")})`,
+    getNavigations: (state) => state.navigations,
   },
   actions: {
     async initializeOidcClient() {
@@ -49,6 +52,7 @@ export const useUserStore = defineStore("user", {
         }
 
         this.setUser(userToken);
+        this.setNavigations(userToken.user.translatedRoles);
       } catch (e) {
         console.error("Could not decode provided jwt", e);
         this.clearUser();
@@ -95,6 +99,13 @@ export const useUserStore = defineStore("user", {
         setTimeout(() => alertStore.clearAlert(), 5000);
         console.error(e);
       }
+    },
+    setNavigations(translatedRoles) {
+      this.navigations = NavigationTabs.filter(
+        (tab) =>
+          tab.roles.length === 0 ||
+          tab.roles.some((r) => translatedRoles.includes(r))
+      );
     },
   },
 });
