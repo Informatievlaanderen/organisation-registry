@@ -31,7 +31,7 @@
       </thead>
       <tbody>
         <tr :key="importStatus.id" v-for="importStatus in importStatuses">
-          <td>{{ importStatus.importFileType }}</td>
+          <td>{{ translateFileType(importStatus.importFileType) }}</td>
           <td>{{ importStatus.fileName }}</td>
           <td>{{ importStatus.status }}</td>
           <td>
@@ -66,6 +66,7 @@
 
 <script>
 import { getImportFile } from "@/api/importOrganisations";
+import { translateImportFileType } from "./Translations";
 
 export default {
   name: "ImportStatusList",
@@ -80,6 +81,9 @@ export default {
       link.href = URL.createObjectURL(blob);
       link.download = fileName;
       link.click();
+    },
+    translateFileType(key) {
+      return translateImportFileType(key);
     },
   },
 };
