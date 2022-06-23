@@ -1,3 +1,10 @@
+# [1.214.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.213.0...v1.214.0) (2022-06-23)
+
+
+### Features
+
+* or-1094 navbar + other UI stuff ([ceb00d4](https://github.com/informatievlaanderen/organisation-registry/commit/ceb00d48a3da1ecc37a77155a51730e4fbe8af6b))
+
 # [1.213.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.212.0...v1.213.0) (2022-06-23)
 
 
