@@ -11,18 +11,20 @@ public class OrganisatieRegisterCsvWriter
 {
     private const string NewLine = "\r\n";
 
-    public static string WriteCsv<T>(Action<CsvWriter> writeHeader, Action<CsvWriter, T> writeRecord, IEnumerable<T> items)
+    public static string WriteCsv<T>(Type type, Func<T, object> createRecord, IEnumerable<T> items)
     {
         var stringWriter = new StringWriter();
         var csvWriter = new CsvWriter(
             stringWriter,
             new CsvConfiguration(CultureInfo.InvariantCulture) { Delimiter = ";", NewLine = NewLine });
 
-        writeHeader(csvWriter);
+        csvWriter.WriteHeader(type);
         csvWriter.NextRecord();
         foreach (var item in items)
         {
-            writeRecord(csvWriter, item);
+            var record = createRecord(item);
+            csvWriter.WriteRecord(record);
+
             csvWriter.NextRecord();
         }
 

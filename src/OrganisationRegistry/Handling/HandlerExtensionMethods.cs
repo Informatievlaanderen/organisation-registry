@@ -1,5 +1,7 @@
 namespace OrganisationRegistry.Handling;
 
+using System;
+using System.Collections.Generic;
 using Authorization;
 using Organisation;
 
@@ -13,4 +15,7 @@ public static class HandlerExtensionMethods
 
     public static Handler RequiresAdmin(this Handler source)
         => source.WithPolicy(new AdminOnlyPolicy());
+
+    public static Handler WithImportPolicy(this Handler source, IEnumerable<Guid> organisationIds)
+        => source.WithPolicy(session => new ImportPolicy(session, organisationIds));
 }

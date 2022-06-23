@@ -12,14 +12,8 @@ public static class OutputSerializer
 {
     public static string Serialize(ValidationIssues issues)
         => OrganisatieRegisterCsvWriter.WriteCsv(
-            writer =>
-            {
-                writer.WriteHeader(new { lijnnummer = 0, fout = string.Empty }.GetType());
-            },
-            (writer, issue) =>
-            {
-                writer.WriteRecord(new { lijnnummer = issue.RowNumber, fout = issue.Error });
-            },
+            new { lijnnummer = 0, fout = string.Empty }.GetType(),
+            issue => new { lijnnummer = issue.RowNumber, fout = issue.Error },
             issues.Items);
 
     public static async Task<string> Serialize(

@@ -30,6 +30,12 @@ public class Handler
         return this;
     }
 
+    public Handler WithPolicy(Func<ISession, ISecurityPolicy> createPolicy)
+    {
+        _policy = createPolicy(_session);
+        return this;
+    }
+
     public async Task Handle(Func<ISession, Task> handle)
     {
         var result = _policy?.Check(_user);
