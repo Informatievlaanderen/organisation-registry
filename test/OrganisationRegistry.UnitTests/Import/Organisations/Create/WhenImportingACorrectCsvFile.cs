@@ -12,6 +12,7 @@ using AutoFixture.Kernel;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Moq;
+using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Commands;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.SqlServer.Import.Organisations;
@@ -79,6 +80,7 @@ public class WhenImportingACorrectCsvFile
                     ImportFileType = ImportFileTypes.Create,
                     UserName = fixture.Create<string>(),
                     UserFirstName = fixture.Create<string>(),
+                    UserRoles = $"{Role.VlimpersBeheerder}",
                     UserId = fixture.Create<string>(),
                     UploadedAt = fixture.Create<DateTime>(),
                 },

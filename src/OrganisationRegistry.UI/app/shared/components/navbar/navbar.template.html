@@ -43,6 +43,9 @@
             <li *ngIf="(isLoggedIn | async) && ((isOrganisationRegistryBeheerder | async) || (isDeveloper | async))" class="tab" [routerLinkActive]="['tab--active']">
               <a class="tab__link" [routerLink]="['./system']">Systeem</a>
             </li>
+            <li *ngIf="(isLoggedIn | async) && ((isVlimpersBeheerder | async) || (isOrganisationRegistryBeheerder | async) || (isDeveloper | async))" class="tab" [routerLinkActive]="['tab--active']">
+              <a class="tab__link" href="/v2">Importeren</a>
+            </li>
             <!--<li class="tab" [routerLinkActive]="['tab--active']">
               <a class="tab__link" [routerLink]="['/api']">Integratie (API)</a>
             </li>-->

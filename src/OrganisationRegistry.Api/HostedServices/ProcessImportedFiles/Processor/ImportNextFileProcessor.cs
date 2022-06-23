@@ -39,10 +39,31 @@ public static class ImportNextFileProcessor
 
             UpdateImportFile(dateTimeProvider, logger, result.StatusItem, result.OutputFileContent, result.Success);
         }
-        catch (CombinedException<string> e)
+        catch (CreateOrganisationsImportException e)
         {
             logger.LogError(e, "An error occured while Importing files");
-            UpdateImportFile(dateTimeProvider, logger, importFile, ToCsv(e), false);
+            UpdateImportFile(
+                dateTimeProvider,
+                logger,
+                importFile,
+                OrganisatieRegisterCsvWriter.WriteCsv(
+                    new { reference = 0, fout = string.Empty }.GetType(),
+                    item => new { reference = item.context, fout = item.ex.Message },
+                    e.Exceptions),
+                false);
+        }
+        catch (TerminateOrganisationsImportException e)
+        {
+            logger.LogError(e, "An error occured while Importing files");
+            UpdateImportFile(
+                dateTimeProvider,
+                logger,
+                importFile,
+                OrganisatieRegisterCsvWriter.WriteCsv(
+                    new { ovonummer = 0, fout = string.Empty }.GetType(),
+                    item => new { ovonummer = item.context, fout = item.ex.Message },
+                    e.Exceptions),
+                false);
         }
         catch (Exception e)
         {
@@ -54,18 +75,6 @@ public static class ImportNextFileProcessor
             await context.SaveChangesAsync(cancellationToken);
         }
     }
-
-    private static string ToCsv(CombinedException<string> combinedException)
-        => OrganisatieRegisterCsvWriter.WriteCsv(
-            writer =>
-            {
-                writer.WriteHeader(new { ovonummer = 0, fout = string.Empty }.GetType());
-            },
-            (writer, item) =>
-            {
-                writer.WriteRecord(new { ovonummer = item.context, fout = item.ex.Message });
-            },
-            combinedException.Exceptions);
 
     private static void UpdateImportFile(
         IDateTimeProvider dateTimeProvider,

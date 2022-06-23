@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Immutable;
 
-public class CombinedException<T> : DomainException
+public abstract class CombinedException<T> : DomainException
 {
     public ImmutableList<(Exception ex, T context)> Exceptions { get; private set; } = ImmutableList<(Exception, T)>.Empty;
 
@@ -16,3 +16,9 @@ public class CombinedException<T> : DomainException
         Exceptions = Exceptions.Add((ex, context));
     }
 }
+
+public class CreateOrganisationsImportException : CombinedException<string>
+{ }
+
+public class TerminateOrganisationsImportException : CombinedException<string>
+{ }

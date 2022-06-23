@@ -2,4 +2,4 @@
 
 using System;
 
-public record TerminateOrganisationsFromImportCommandItem(Guid OrganisationId, DateOnly Organisation_End);
+public record TerminateOrganisationsFromImportCommandItem(Guid OrganisationId, string OvoNumber, DateOnly Organisation_End);

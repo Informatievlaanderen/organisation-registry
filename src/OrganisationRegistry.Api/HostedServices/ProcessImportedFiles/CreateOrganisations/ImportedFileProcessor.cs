@@ -48,7 +48,7 @@ public class ImportedFileProcessor : ImportedFileProcessor<DeserializedRecord, C
             importFile.UserName,
             importFile.UserId,
             null,
-            new[] { Role.AlgemeenBeheerder },
+            importFile.UserRoles.Split("|").Select(x => (Role)Enum.Parse(typeof(Role), x)).ToArray(),
             new List<string>());
 
         await _commandSender.Send(

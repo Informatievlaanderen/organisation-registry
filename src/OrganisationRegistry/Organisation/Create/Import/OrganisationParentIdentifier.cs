@@ -23,6 +23,12 @@ public readonly struct OrganisationParentIdentifier
 
     public IdentifierType Type { get; }
 
+    public bool IsId
+        => Type == IdentifierType.Id;
+
+    public bool IsReference
+        => Type == IdentifierType.Reference;
+
     public static implicit operator OrganisationParentIdentifier(Guid parentId)
         => new(parentId);
 
