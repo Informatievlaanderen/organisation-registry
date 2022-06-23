@@ -39,6 +39,11 @@ public static class ImportNextFileProcessor
 
             UpdateImportFile(dateTimeProvider, logger, result.StatusItem, result.OutputFileContent, result.Success);
         }
+        catch (CombinedException<string> e)
+        {
+            logger.LogError(e, "An error occured while Importing files");
+            UpdateImportFile(dateTimeProvider, logger, importFile, ToCsv(e), false);
+        }
         catch (Exception e)
         {
             logger.LogError(e, "An error occured while Importing files");
@@ -49,6 +54,18 @@ public static class ImportNextFileProcessor
             await context.SaveChangesAsync(cancellationToken);
         }
     }
+
+    private static string ToCsv(CombinedException<string> combinedException)
+        => OrganisatieRegisterCsvWriter.WriteCsv(
+            writer =>
+            {
+                writer.WriteHeader(new { ovonummer = 0, fout = string.Empty }.GetType());
+            },
+            (writer, item) =>
+            {
+                writer.WriteRecord(new { ovonummer = item.context, fout = item.ex.Message });
+            },
+            combinedException.Exceptions);
 
     private static void UpdateImportFile(
         IDateTimeProvider dateTimeProvider,
