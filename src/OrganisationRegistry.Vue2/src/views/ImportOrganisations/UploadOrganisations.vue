@@ -7,8 +7,8 @@
       id="select-demo"
       ref="selectUploadType"
     >
-      <option value="Create">Aanmaken</option>
-      <option value="Terminate">Stopzetten</option>
+      <option value="Create">{{ translateFileType("create") }}</option>
+      <option value="Terminate">{{ translateFileType("stop") }}</option>
     </select>
     <vl-upload
       id="bulkimportfile"
@@ -27,6 +27,8 @@
 </template>
 
 <script>
+import { translateImportFileType } from "./Translations";
+
 export default {
   name: "UploadOrganisations",
   data: () => {
@@ -54,6 +56,9 @@ export default {
     },
     fileRemoved() {
       this.file = undefined;
+    },
+    translateFileType(key) {
+      return translateImportFileType(key);
     },
   },
 };
