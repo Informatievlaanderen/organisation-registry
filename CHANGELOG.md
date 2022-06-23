@@ -1,3 +1,10 @@
+# [1.213.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.212.0...v1.213.0) (2022-06-23)
+
+
+### Features
+
+* or-1094 security is correctly checked for import (ie Vlimpers) ([59e6ab7](https://github.com/informatievlaanderen/organisation-registry/commit/59e6ab7224e244669b41ce8a60f006fc2315750b))
+
 # [1.212.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.211.0...v1.212.0) (2022-06-23)
 
 
