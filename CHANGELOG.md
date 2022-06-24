@@ -1,3 +1,10 @@
+## [1.215.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.215.0...v1.215.1) (2022-06-24)
+
+
+### Bug Fixes
+
+* or-1099 use validity in search query ([f6e314d](https://github.com/informatievlaanderen/organisation-registry/commit/f6e314dbc682254b6915087c4d5c494fff863665))
+
 # [1.215.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.214.0...v1.215.0) (2022-06-24)
 
 
