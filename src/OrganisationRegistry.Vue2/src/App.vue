@@ -32,6 +32,7 @@
                 :key="tab.title"
                 :title="tab.title"
                 exact
+                @click.native="refresh()"
                 :to="tab.to"
               />
             </dv-tabs>
@@ -114,6 +115,9 @@ export default {
   },
   methods: {
     ...mapActions(useAlertStore, ["setAlert", "clearAlert"]),
+    refresh() {
+      window.location.reload();
+    },
   },
   async mounted() {
     this.userStore.loadUserFromToken();
