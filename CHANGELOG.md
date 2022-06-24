@@ -1,3 +1,15 @@
+# [1.215.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.214.0...v1.215.0) (2022-06-24)
+
+
+### Bug Fixes
+
+* or-1102 reload page on navigate between legacy and new ([047edb6](https://github.com/informatievlaanderen/organisation-registry/commit/047edb6e8a8b08131f9c6cbb76c0d6ea161c8c38))
+
+
+### Features
+
+* or-1102 use correct vlimpers logic for import ([dd92a8d](https://github.com/informatievlaanderen/organisation-registry/commit/dd92a8daaabdf6a0ba5a3eeae5ffb5fe49e3082c))
+
 # [1.214.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.213.0...v1.214.0) (2022-06-23)
 
 
