@@ -30,7 +30,7 @@ public class UpdateOrganisationLabelCommandHandler
 
                     var labelType = session.Get<LabelType>(envelope.Command.LabelTypeId);
 
-                    KboV2Guards.ThrowIfFormalName(_organisationRegistryConfiguration, labelType);
+                    KboV2Guards.ThrowIfFormalName(_organisationRegistryConfiguration.Kbo, labelType);
 
                     organisation.UpdateLabel(
                         envelope.Command.OrganisationLabelId,

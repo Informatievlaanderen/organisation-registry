@@ -29,13 +29,11 @@ public class AddOrganisationLabelCommandHandler
                 session =>
                 {
                     var organisation = session.Get<Organisation>(envelope.Command.OrganisationId);
-                    organisation.ThrowIfTerminated(envelope.User);
-
                     var labelType = session.Get<LabelType>(envelope.Command.LabelTypeId);
 
-                    KboV2Guards.ThrowIfFormalName(_organisationRegistryConfiguration, labelType);
-
                     organisation.AddLabel(
+                        _organisationRegistryConfiguration.Kbo,
+                        envelope.User,
                         envelope.Command.OrganisationLabelId,
                         labelType,
                         envelope.Command.LabelValue,

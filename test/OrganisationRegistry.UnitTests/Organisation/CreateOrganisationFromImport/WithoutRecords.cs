@@ -4,6 +4,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Moq;
+using OrganisationRegistry.Infrastructure.Configuration;
 using OrganisationRegistry.Infrastructure.Domain;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Import;
@@ -26,7 +27,8 @@ public class WithoutRecords : Specification<CreateOrganisationsFromImportCommand
             Mock.Of<ILogger<CreateOrganisationsFromImportCommandHandler>>(),
             new SequentialOvoNumberGenerator(),
             new DateTimeProviderStub(DateTime.Now),
-            session);
+            session,
+            Mock.Of<IOrganisationRegistryConfiguration>());
 
     [Fact]
     public async Task WhenNoRecords_ThrowsException()

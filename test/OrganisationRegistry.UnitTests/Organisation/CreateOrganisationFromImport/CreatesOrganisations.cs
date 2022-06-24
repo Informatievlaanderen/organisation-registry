@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
+using LabelType.Events;
 using Microsoft.Extensions.Logging;
 using Moq;
 using OrganisationRegistry.Infrastructure.Domain;
@@ -16,6 +17,7 @@ using OrganisationRegistry.Organisation.Import;
 using Tests.Shared;
 using Tests.Shared.TestDataBuilders;
 using OrganisationRegistry.UnitTests.Infrastructure.Tests.Extensions.TestHelpers;
+using Tests.Shared.Stubs;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -26,16 +28,26 @@ public class CreatesOrganisations
     private readonly DateTime _tomorow;
     private static readonly SequentialOvoNumberGenerator SequentialOvoNumberGenerator = new();
     private readonly Fixture _fixture = new();
+    private readonly Guid _label1TypeId;
+    private readonly Guid _label2TypeId;
+    private readonly string _label1TypeName;
+    private readonly string _label2TypeName;
 
     public CreatesOrganisations(ITestOutputHelper helper) : base(helper)
     {
         _parentOrganisationId = Guid.NewGuid();
         _tomorow = DateTime.Today.AddDays(1);
+        _label1TypeId = _fixture.Create<Guid>();
+        _label2TypeId = _fixture.Create<Guid>();
+        _label1TypeName = _fixture.Create<string>();
+        _label2TypeName = _fixture.Create<string>();
     }
 
     private IEvent[] Events
         => new IEvent[]
         {
+            new LabelTypeCreated(_label1TypeId, _label1TypeName),
+            new LabelTypeCreated(_label2TypeId, _label2TypeName),
             new OrganisationCreatedBuilder(SequentialOvoNumberGenerator)
                 .WithId(new OrganisationId(_parentOrganisationId))
                 .Build(),
@@ -49,7 +61,8 @@ public class CreatesOrganisations
             Mock.Of<ILogger<CreateOrganisationsFromImportCommandHandler>>(),
             SequentialOvoNumberGenerator,
             new DateTimeProviderStub(DateTime.Now),
-            session);
+            session,
+            new OrganisationRegistryConfigurationStub());
 
     [Fact]
     public async Task PublishesOrganisationCreatedEventWithMinimumFields()
@@ -150,18 +163,14 @@ public class CreatesOrganisations
     [Fact]
     public async Task Publishes2OrganisationLabelAddedEvents()
     {
-        var label1TypeId = _fixture.Create<Guid>();
-        var label1TypeName = _fixture.Create<string>();
         var label1Value = _fixture.Create<string>();
-        var label2TypeId = _fixture.Create<Guid>();
-        var label2TypeName = _fixture.Create<string>();
         var label2Value = _fixture.Create<string>();
 
         var outputRecords = new List<CreateOrganisationsFromImportCommandItem>()
         {
             new CreateOrganisationsFromImportCommandItemBuilder(_fixture.Create<string>(), _parentOrganisationId, _fixture.Create<string>(), 1)
-                .AddLabel(label1TypeId, label1TypeName, label1Value)
-                .AddLabel(label2TypeId, label2TypeName, label2Value),
+                .AddLabel(_label1TypeId, _label1TypeName, label1Value)
+                .AddLabel(_label2TypeId, _label2TypeName, label2Value),
         };
 
         var command = CreateOrganisationsFromImportCommand(outputRecords);
@@ -176,8 +185,8 @@ public class CreatesOrganisations
         var publishedOrganisationLabelAddedEvents = PublishedEvents.Where(e => e.Body is OrganisationLabelAdded).ToArray();
         publishedOrganisationLabelAddedEvents[0].Body.Should().BeEquivalentTo(
             new OrganisationLabelAddedBuilder()
-                .WithLabelTypeId(label1TypeId)
-                .WithLabelTypeName(label1TypeName)
+                .WithLabelTypeId(_label1TypeId)
+                .WithLabelTypeName(_label1TypeName)
                 .WithValue(label1Value)
                 .WithOrganisationId(organisationId)
                 .Build(),
@@ -186,8 +195,8 @@ public class CreatesOrganisations
                     .ExcludeEventProperties());
         publishedOrganisationLabelAddedEvents[1].Body.Should().BeEquivalentTo(
             new OrganisationLabelAddedBuilder()
-                .WithLabelTypeId(label2TypeId)
-                .WithLabelTypeName(label2TypeName)
+                .WithLabelTypeId(_label2TypeId)
+                .WithLabelTypeName(_label2TypeName)
                 .WithValue(label2Value)
                 .WithOrganisationId(organisationId)
                 .Build(),
