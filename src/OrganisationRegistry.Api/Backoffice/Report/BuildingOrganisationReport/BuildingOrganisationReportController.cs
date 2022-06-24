@@ -22,11 +22,14 @@ public class BuildingOrganisationReportController : OrganisationRegistryControll
     private const int ScrollSize = 500;
 
     private readonly ApiConfigurationSection _config;
+    private readonly IDateTimeProvider _dateTimeProvider;
 
     public BuildingOrganisationReportController(
         ICommandSender commandSender,
-        IOptions<ApiConfigurationSection> config) : base(commandSender)
+        IOptions<ApiConfigurationSection> config,
+        IDateTimeProvider dateTimeProvider) : base(commandSender)
     {
+        _dateTimeProvider = dateTimeProvider;
         _config = config.Value;
     }
 
@@ -55,7 +58,8 @@ public class BuildingOrganisationReportController : OrganisationRegistryControll
                             ScrollSize,
                             ScrollTimeout),
                         id,
-                        _config),
+                        _config,
+                        _dateTimeProvider),
                     sorting)
                 .ToList();
 
