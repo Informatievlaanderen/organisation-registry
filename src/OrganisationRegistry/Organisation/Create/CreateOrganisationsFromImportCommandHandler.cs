@@ -6,8 +6,11 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 using Handling;
+using Handling.Authorization;
 using Import;
+using Infrastructure.Authorization;
 using Infrastructure.Commands;
+using Infrastructure.Configuration;
 using Infrastructure.Domain;
 using LabelType;
 using Microsoft.Extensions.Logging;
@@ -18,16 +21,19 @@ public class CreateOrganisationsFromImportCommandHandler :
 {
     private readonly IOvoNumberGenerator _ovoNumberGenerator;
     private readonly IDateTimeProvider _dateTimeProvider;
+    private readonly IOrganisationRegistryConfiguration _organisationRegistryConfiguration;
 
     public CreateOrganisationsFromImportCommandHandler(
         ILogger<CreateOrganisationsFromImportCommandHandler> logger,
         IOvoNumberGenerator ovoNumberGenerator,
         IDateTimeProvider dateTimeProvider,
-        ISession session
+        ISession session,
+        IOrganisationRegistryConfiguration organisationRegistryConfiguration
     ) : base(logger, session)
     {
         _ovoNumberGenerator = ovoNumberGenerator;
         _dateTimeProvider = dateTimeProvider;
+        _organisationRegistryConfiguration = organisationRegistryConfiguration;
     }
 
     public Task Handle(ICommandEnvelope<CreateOrganisationsFromImport> envelope)
@@ -47,7 +53,9 @@ public class CreateOrganisationsFromImportCommandHandler :
         {
             try
             {
-                CreateOrganisation(session, parentCache, importFileId, record);
+                var organisation = CreateOrganisation(session, parentCache, importFileId, record);
+
+                AddLabels(session, envelope.User, organisation, record.Labels);
             }
             catch (DomainException e)
             {
@@ -59,7 +67,7 @@ public class CreateOrganisationsFromImportCommandHandler :
             throw combinedException;
     }
 
-    private void CreateOrganisation(
+    private Organisation CreateOrganisation(
         ISession session,
         Dictionary<string, Organisation> parentCache,
         Guid importFileId,
@@ -90,18 +98,40 @@ public class CreateOrganisationsFromImportCommandHandler :
             new OrganisationSourceId(importFileId),
             record.Reference);
 
-        foreach (var label in record.Labels)
-        {
-            organisation.AddLabel(
-                Guid.NewGuid(),
-                new LabelType(new LabelTypeId(label.LabelTypeId), new LabelTypeName(label.LabelTypeName)),
-                label.Value,
-                Period.Infinity);
-        }
-
         parentCache.Add(record.Reference.ToLowerInvariant(), organisation);
 
         session.Add(organisation);
+
+        return organisation;
+    }
+
+    private void AddLabels(
+        ISession session,
+        IUser user,
+        Organisation organisation,
+        ImmutableList<Label> labelsToAdd)
+    {
+        var labelPolicy = new LabelPolicy(
+            organisation.State.OvoNumber,
+            organisation.State.UnderVlimpersManagement,
+            _organisationRegistryConfiguration,
+            labelsToAdd.Select(l => l.LabelTypeId).ToArray());
+
+        var result = labelPolicy.Check(user);
+
+        if (result.Exception is { } exception)
+            throw exception;
+
+        foreach (var label in labelsToAdd)
+        {
+            organisation.AddLabel(
+                _organisationRegistryConfiguration.Kbo,
+                user,
+                Guid.NewGuid(),
+                session.Get<LabelType>(label.LabelTypeId),
+                label.Value,
+                Period.Infinity);
+        }
     }
 
     private static IEnumerable<CreateOrganisationsFromImportCommandItem> SortRecords(ImmutableList<CreateOrganisationsFromImportCommandItem> records)

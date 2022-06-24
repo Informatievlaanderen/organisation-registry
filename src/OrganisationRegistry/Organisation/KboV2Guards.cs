@@ -2,6 +2,7 @@ namespace OrganisationRegistry.Organisation;
 
 using System;
 using Exceptions;
+using Infrastructure.Configuration;
 using LabelType;
 using LocationType;
 using OrganisationClassificationType;
@@ -20,14 +21,12 @@ public static class KboV2Guards
             throw new UserCannotCoupleKboRegisteredOffice();
     }
 
-    public static void ThrowIfFormalName(
-        IOrganisationRegistryConfiguration organisationRegistryConfiguration,
-        LabelType labelType)
+    public static void ThrowIfFormalName(IKboConfiguration kboConfiguration, LabelType labelType)
     {
-        if (organisationRegistryConfiguration.Kbo.KboV2FormalNameLabelTypeId == Guid.Empty)
+        if (kboConfiguration.KboV2FormalNameLabelTypeId == Guid.Empty)
             return;
 
-        if (organisationRegistryConfiguration.Kbo.KboV2FormalNameLabelTypeId == labelType.Id)
+        if (kboConfiguration.KboV2FormalNameLabelTypeId == labelType.Id)
             throw new UserCannotCoupleKboLegalName();
     }
 

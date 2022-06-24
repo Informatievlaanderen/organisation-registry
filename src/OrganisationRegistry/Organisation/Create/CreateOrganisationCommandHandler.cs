@@ -89,8 +89,6 @@ public class CreateOrganisationCommandHandler :
                             ? session.Get<Organisation>(parentOrganisationId)
                             : null;
 
-                    parentOrganisation?.ThrowIfUnauthorizedForVlimpers(user);
-
                     if (_uniqueOvoNumberValidator.IsOvoNumberTaken(message.OvoNumber))
                         throw new OvoNumberNotUnique();
 

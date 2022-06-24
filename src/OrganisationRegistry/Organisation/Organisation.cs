@@ -26,6 +26,7 @@ using Commands;
 using Exceptions;
 using Infrastructure;
 using Infrastructure.Authorization;
+using Infrastructure.Configuration;
 using RegulationSubTheme;
 using State;
 using IOrganisationRegistryConfiguration = Infrastructure.Configuration.IOrganisationRegistryConfiguration;
@@ -1028,11 +1029,18 @@ public partial class Organisation : AggregateRoot
             previousContact.Validity.End));
     }
 
-    public void AddLabel(Guid organisationLabelId,
+    public void AddLabel(
+        IKboConfiguration kboConfiguration,
+        IUser user,
+        Guid organisationLabelId,
         LabelType labelType,
         string labelValue,
         Period validity)
     {
+        ThrowIfTerminated(user);
+
+        KboV2Guards.ThrowIfFormalName(kboConfiguration, labelType);
+
         if (State.OrganisationLabels
             .Where(organisationLabel => organisationLabel.LabelTypeId == labelType.Id)
             .Where(organisationLabel => organisationLabel.OrganisationLabelId != organisationLabelId)
@@ -2866,17 +2874,16 @@ public partial class Organisation : AggregateRoot
             .Where(parent => parent.FormalFrameworkId == formalFramework.Id);
     }
 
-    public void ThrowIfTerminated(IUser? maybeUser)
+    public void ThrowIfTerminated(IUser user)
     {
-        if (maybeUser is not { } user)
-            throw new InvalidOperationException("User must not be null");
-
-        if (IsTerminated &&
-            !user.IsInRole(Role.AlgemeenBeheerder) &&
-            !user.IsInRole(Role.AutomatedTask) &&
-            !(user.IsInRole(Role.VlimpersBeheerder) && State.UnderVlimpersManagement))
+        if (!UserCanPerformActionWhenOrganisationIsTerminated(user) && IsTerminated)
             throw new OrganisationAlreadyTerminated();
     }
+
+    private bool UserCanPerformActionWhenOrganisationIsTerminated(IUser user)
+        => user.IsInRole(Role.AlgemeenBeheerder) ||
+           user.IsInRole(Role.AutomatedTask) ||
+           (user.IsInRole(Role.VlimpersBeheerder) && State.UnderVlimpersManagement);
 
     public void ThrowIfUnauthorizedForVlimpers(IUser user)
     {
