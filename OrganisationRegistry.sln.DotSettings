@@ -162,6 +162,7 @@
 	<s:String x:Key="/Default/CodeStyle/Naming/XamlNaming/UserRules/=NAMESPACE_005FALIAS/@EntryIndexedValue">&lt;Policy Inspect="True" Prefix="" Suffix="" Style="aaBb" /&gt;</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/XamlNaming/UserRules/=XAML_005FFIELD/@EntryIndexedValue">&lt;Policy Inspect="True" Prefix="" Suffix="" Style="AaBb" /&gt;</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/XamlNaming/UserRules/=XAML_005FRESOURCE/@EntryIndexedValue">&lt;Policy Inspect="True" Prefix="" Suffix="" Style="AaBb" /&gt;</s:String>
+	<s:String x:Key="/Default/CustomTools/CustomToolsData/@EntryValue"></s:String>
 	<s:String x:Key="/Default/Environment/AssemblyExplorer/XmlDocument/@EntryValue">&lt;AssemblyExplorer&gt;&#xD;
   &lt;Assembly Path="C:\Users\Wodan\.nuget\packages\app.metrics.abstractions\4.3.0\lib\netstandard2.0\App.Metrics.Abstractions.dll" /&gt;&#xD;
   &lt;Assembly Path="C:\Users\Wodan\.nuget\packages\nest\7.10.1\lib\netstandard2.0\Nest.dll" /&gt;&#xD;
@@ -243,6 +244,70 @@ namespace $NAMESPACE$&#xD;
         {         &#xD;
         }&#xD;
     }&#xD;
+}</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=95498C33E7B1FA4D85531AB5BA587883/@KeyIndexDefined">True</s:Boolean>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=95498C33E7B1FA4D85531AB5BA587883/Applicability/=Live/@EntryIndexedValue">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=95498C33E7B1FA4D85531AB5BA587883/Description/@EntryValue">Clever type of enums</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=95498C33E7B1FA4D85531AB5BA587883/Field/=Name/@KeyIndexDefined">True</s:Boolean>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=95498C33E7B1FA4D85531AB5BA587883/Field/=Name/Order/@EntryValue">0</s:Int64>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=95498C33E7B1FA4D85531AB5BA587883/Field/=Value1/@KeyIndexDefined">True</s:Boolean>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=95498C33E7B1FA4D85531AB5BA587883/Field/=VALUE1/@KeyIndexDefined">True</s:Boolean>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=95498C33E7B1FA4D85531AB5BA587883/Field/=Value1/Order/@EntryValue">1</s:Int64>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=95498C33E7B1FA4D85531AB5BA587883/Field/=VALUE1/Order/@EntryValue">2</s:Int64>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=95498C33E7B1FA4D85531AB5BA587883/Field/=Value2/@KeyIndexDefined">True</s:Boolean>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=95498C33E7B1FA4D85531AB5BA587883/Field/=VALUE2/@KeyIndexDefined">True</s:Boolean>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=95498C33E7B1FA4D85531AB5BA587883/Field/=Value2/Order/@EntryValue">3</s:Int64>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=95498C33E7B1FA4D85531AB5BA587883/Field/=VALUE2/Order/@EntryValue">4</s:Int64>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=95498C33E7B1FA4D85531AB5BA587883/Field/=Value3/@KeyIndexDefined">True</s:Boolean>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=95498C33E7B1FA4D85531AB5BA587883/Field/=VALUE3/@KeyIndexDefined">True</s:Boolean>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=95498C33E7B1FA4D85531AB5BA587883/Field/=Value3/Order/@EntryValue">5</s:Int64>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=95498C33E7B1FA4D85531AB5BA587883/Field/=VALUE3/Order/@EntryValue">6</s:Int64>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=95498C33E7B1FA4D85531AB5BA587883/IsBlessed/@EntryValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=95498C33E7B1FA4D85531AB5BA587883/Reformat/@EntryValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=95498C33E7B1FA4D85531AB5BA587883/Scope/=C3001E7C0DA78E4487072B7E050D86C5/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=95498C33E7B1FA4D85531AB5BA587883/Scope/=C3001E7C0DA78E4487072B7E050D86C5/CustomProperties/=minimumLanguageVersion/@EntryIndexedValue">2.0</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=95498C33E7B1FA4D85531AB5BA587883/Scope/=C3001E7C0DA78E4487072B7E050D86C5/Type/@EntryValue">InCSharpFile</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=95498C33E7B1FA4D85531AB5BA587883/Shortcut/@EntryValue">smartenum</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=95498C33E7B1FA4D85531AB5BA587883/ShortenQualifiedReferences/@EntryValue">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=95498C33E7B1FA4D85531AB5BA587883/Text/@EntryValue">using System;
+
+public class $Name$ : IEquatable&lt;$Name$&gt;
+{
+    public static readonly $Name$ $Value1$ = new("$VALUE1$");
+    public static readonly $Name$ $Value2$ = new("$VALUE2$");
+    public static readonly $Name$ $Value3$ = new("$VALUE3$");
+
+    public static readonly $Name$[] All = { 
+        $Value1$, 
+        $Value2$, 
+        $Value3$,  
+    };
+
+    private readonly string? _value;
+
+    public $Name$(string? value)
+        =&gt; _value = value;
+
+    public bool Equals($Name$? other)
+        =&gt; other is { } &amp;&amp; other._value == _value;
+
+    public override bool Equals(object? obj)
+        =&gt; obj is $Name$ type &amp;&amp; Equals(type);
+
+    public override int GetHashCode()
+        =&gt; _value?.GetHashCode() ?? 0;
+
+    public override string ToString()
+        =&gt; _value ?? string.Empty;
+
+    public static implicit operator string($Name$? instance)
+        =&gt; instance?.ToString() ?? string.Empty;
+
+    public static bool operator ==($Name$ left, $Name$ right)
+        =&gt; Equals(left, right);
+
+    public static bool operator !=($Name$ left, $Name$ right)
+        =&gt; !Equals(left, right);
 }</s:String>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=B4BD236DAA435A489A18AED5B226F45D/@KeyIndexDefined">True</s:Boolean>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=B4BD236DAA435A489A18AED5B226F45D/Applicability/=File/@EntryIndexedValue">True</s:Boolean>
