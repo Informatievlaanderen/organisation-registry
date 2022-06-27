@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Commands;
 using Exceptions;
+using Import;
 using Infrastructure;
 using Infrastructure.Authorization;
 using Infrastructure.Commands;
@@ -218,45 +219,51 @@ public class KboOrganisationCommandHandlers :
         }
     }
 
+    public async Task Handle(ICommandEnvelope<CreateOrganisationFromKboNumber> envelope)
+        => await CreateFromKbo(envelope.Command, envelope.User);
+
     public async Task Handle(ICommandEnvelope<CreateOrganisationFromKbo> envelope)
+        => await CreateFromKbo(envelope.Command, envelope.User);
+
+    private async Task CreateFromKbo(CreateOrganisationFromKbo command, IUser user)
     {
         var registeredOfficeLocationType =
             Session.Get<LocationType>(_organisationRegistryConfiguration.Kbo.KboV2RegisteredOfficeLocationTypeId);
 
         var legalFormOrganisationClassificationType = Session.Get<OrganisationClassificationType>(_organisationRegistryConfiguration.Kbo.KboV2LegalFormOrganisationClassificationTypeId);
 
-        if (_uniqueOvoNumberValidator.IsOvoNumberTaken(envelope.Command.OvoNumber))
+        if (_uniqueOvoNumberValidator.IsOvoNumberTaken(command.OvoNumber))
             throw new OvoNumberNotUnique();
 
-        var ovoNumber = GetOvoNumber(envelope.Command);
+        var ovoNumber = GetOvoNumber(command);
 
         var kboOrganisationResult =
-            _kboOrganisationRetriever.RetrieveOrganisation(envelope.User, envelope.Command.KboNumber).GetAwaiter().GetResult();
+            _kboOrganisationRetriever.RetrieveOrganisation(user, command.KboNumber).GetAwaiter().GetResult();
 
         if (kboOrganisationResult.HasErrors)
             throw new KboOrganisationNotFound(kboOrganisationResult.ErrorMessages);
 
         var kboOrganisation = kboOrganisationResult.Value;
 
-        if (_uniqueKboValidator.IsKboNumberTaken(envelope.Command.KboNumber))
+        if (_uniqueKboValidator.IsKboNumberTaken(command.KboNumber))
             throw new KboNumberNotUnique();
 
         if (kboOrganisation.Termination != null)
             throw new CannotCreateOrganisationBecauseKboOrganisationTerminated();
 
-        var parentOrganisation = GetParentOrganisation(envelope.Command);
+        var parentOrganisation = GetParentOrganisation(command);
 
-        var purposes = envelope.Command
+        var purposes = command
             .Purposes?
             .Select(purposeId => Session.Get<Purpose>(purposeId))
             .ToList();
 
         var location = GetOrAddLocations(kboOrganisation.Address);
 
-        await Session.Commit(envelope.User);
+        await Session.Commit(user);
 
         var organisation = Organisation.CreateFromKbo(
-            envelope.Command,
+            command,
             kboOrganisation,
             ovoNumber,
             parentOrganisation,
@@ -273,7 +280,7 @@ public class KboOrganisationCommandHandlers :
 
         AddLabel(organisation, kboOrganisation);
 
-        await Session.Commit(envelope.User);
+        await Session.Commit(user);
     }
 
     public async Task Handle(ICommandEnvelope<CoupleOrganisationToKbo> envelope)

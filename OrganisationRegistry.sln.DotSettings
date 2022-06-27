@@ -348,8 +348,8 @@ namespace $NAMESPACE$&#xD;
 	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=C6AC7C0C5277EE41B1C18AA56036E534/Description/@EntryValue">Clever way to create command handlers</s:String>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=C6AC7C0C5277EE41B1C18AA56036E534/Field/=aggregate/@KeyIndexDefined">True</s:Boolean>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=C6AC7C0C5277EE41B1C18AA56036E534/Field/=Aggregate/@KeyIndexDefined">True</s:Boolean>
-	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=C6AC7C0C5277EE41B1C18AA56036E534/Field/=aggregate/Order/@EntryValue">1</s:Int64>
-	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=C6AC7C0C5277EE41B1C18AA56036E534/Field/=Aggregate/Order/@EntryValue">2</s:Int64>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=C6AC7C0C5277EE41B1C18AA56036E534/Field/=aggregate/Order/@EntryValue">2</s:Int64>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=C6AC7C0C5277EE41B1C18AA56036E534/Field/=Aggregate/Order/@EntryValue">1</s:Int64>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=C6AC7C0C5277EE41B1C18AA56036E534/Field/=AggregateIdType/@KeyIndexDefined">False</s:Boolean>
 	
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=C6AC7C0C5277EE41B1C18AA56036E534/Field/=Command/@KeyIndexDefined">True</s:Boolean>
