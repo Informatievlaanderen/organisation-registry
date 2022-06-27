@@ -6,6 +6,6 @@ using SqlServer.Infrastructure;
 
 public class BodyNumberGenerator : NumberGenerator, IBodyNumberGenerator
 {
-    public BodyNumberGenerator(OrganisationRegistryContext context) : base("ORG", "Orgaan nummer", () => context.BodyDetail.Max(item => item.BodyNumber) ?? "")
+    public BodyNumberGenerator(OrganisationRegistryContext context) : base("ORG", "Orgaan nummer", () => context.BodyDetail.Max(item => item.BodyNumber))
     {}
 }
