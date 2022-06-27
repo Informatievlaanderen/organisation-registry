@@ -1,3 +1,10 @@
+## [1.215.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.215.1...v1.215.2) (2022-06-27)
+
+
+### Bug Fixes
+
+* or-1094 don't check labelpolicy when there are no labels ([253f41a](https://github.com/informatievlaanderen/organisation-registry/commit/253f41aaaccb3fa5ff3952f1a104f95c30e49fc8))
+
 ## [1.215.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.215.0...v1.215.1) (2022-06-24)
 
 
