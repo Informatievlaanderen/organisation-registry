@@ -111,6 +111,9 @@ public class CreateOrganisationsFromImportCommandHandler :
         Organisation organisation,
         ImmutableList<Label> labelsToAdd)
     {
+        if (!labelsToAdd.Any())
+            return;
+
         var labelPolicy = new LabelPolicy(
             organisation.State.OvoNumber,
             organisation.State.UnderVlimpersManagement,
