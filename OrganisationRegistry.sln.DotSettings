@@ -267,7 +267,7 @@ namespace $NAMESPACE$&#xD;
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=95498C33E7B1FA4D85531AB5BA587883/Scope/=C3001E7C0DA78E4487072B7E050D86C5/@KeyIndexDefined">True</s:Boolean>
 	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=95498C33E7B1FA4D85531AB5BA587883/Scope/=C3001E7C0DA78E4487072B7E050D86C5/CustomProperties/=minimumLanguageVersion/@EntryIndexedValue">2.0</s:String>
 	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=95498C33E7B1FA4D85531AB5BA587883/Scope/=C3001E7C0DA78E4487072B7E050D86C5/Type/@EntryValue">InCSharpFile</s:String>
-	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=95498C33E7B1FA4D85531AB5BA587883/Shortcut/@EntryValue">smartenum</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=95498C33E7B1FA4D85531AB5BA587883/Shortcut/@EntryValue">orcasmartenum</s:String>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=95498C33E7B1FA4D85531AB5BA587883/ShortenQualifiedReferences/@EntryValue">True</s:Boolean>
 	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=95498C33E7B1FA4D85531AB5BA587883/Text/@EntryValue">using System;
 
@@ -342,6 +342,58 @@ namespace $NAMESPACE$&#xD;
       $END$      &#xD;
         }&#xD;
     }&#xD;
+}</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=C6AC7C0C5277EE41B1C18AA56036E534/@KeyIndexDefined">True</s:Boolean>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=C6AC7C0C5277EE41B1C18AA56036E534/Applicability/=Live/@EntryIndexedValue">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=C6AC7C0C5277EE41B1C18AA56036E534/Description/@EntryValue">Clever way to create command handlers</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=C6AC7C0C5277EE41B1C18AA56036E534/Field/=aggregate/@KeyIndexDefined">True</s:Boolean>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=C6AC7C0C5277EE41B1C18AA56036E534/Field/=Aggregate/@KeyIndexDefined">True</s:Boolean>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=C6AC7C0C5277EE41B1C18AA56036E534/Field/=aggregate/Order/@EntryValue">1</s:Int64>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=C6AC7C0C5277EE41B1C18AA56036E534/Field/=Aggregate/Order/@EntryValue">2</s:Int64>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=C6AC7C0C5277EE41B1C18AA56036E534/Field/=AggregateIdType/@KeyIndexDefined">False</s:Boolean>
+	
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=C6AC7C0C5277EE41B1C18AA56036E534/Field/=Command/@KeyIndexDefined">True</s:Boolean>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=C6AC7C0C5277EE41B1C18AA56036E534/Field/=Command/Order/@EntryValue">0</s:Int64>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=C6AC7C0C5277EE41B1C18AA56036E534/IsBlessed/@EntryValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=C6AC7C0C5277EE41B1C18AA56036E534/Reformat/@EntryValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=C6AC7C0C5277EE41B1C18AA56036E534/Scope/=C3001E7C0DA78E4487072B7E050D86C5/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=C6AC7C0C5277EE41B1C18AA56036E534/Scope/=C3001E7C0DA78E4487072B7E050D86C5/CustomProperties/=minimumLanguageVersion/@EntryIndexedValue">2.0</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=C6AC7C0C5277EE41B1C18AA56036E534/Scope/=C3001E7C0DA78E4487072B7E050D86C5/Type/@EntryValue">InCSharpFile</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=C6AC7C0C5277EE41B1C18AA56036E534/Shortcut/@EntryValue">orcacommand</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=C6AC7C0C5277EE41B1C18AA56036E534/ShortenQualifiedReferences/@EntryValue">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=C6AC7C0C5277EE41B1C18AA56036E534/Text/@EntryValue">using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using OrganisationRegistry;
+using OrganisationRegistry.Handling;
+using OrganisationRegistry.Infrastructure.Commands;
+using OrganisationRegistry.Infrastructure.Domain;
+
+public class $Command$ : BaseCommand&lt;$Aggregate$Id&gt;
+{
+    public $Aggregate$Id $Aggregate$Id =&gt; Id;
+
+    public $Command$(
+        $Aggregate$Id $aggregate$Id)
+    {
+        Id = $aggregate$Id;
+    }
+}
+
+public class $Command$CommandHandler
+    : BaseCommandHandler&lt;$Command$CommandHandler&gt;,
+        ICommandEnvelopeHandler&lt;$Command$&gt;
+{
+    public $Command$CommandHandler(ILogger&lt;$Command$CommandHandler&gt; logger, ISession session) : base(logger, session)
+    {
+    }
+
+    public Task Handle(ICommandEnvelope&lt;$Command$&gt; envelope)
+        =&gt; UpdateHandler&lt;$Aggregate$&gt;.For(envelope.Command, envelope.User, Session)
+            .Handle(
+                session =&gt;
+                {
+
+                });
 }</s:String>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=DB68E088B8888042B924F4686F852F9F/@KeyIndexDefined">True</s:Boolean>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=DB68E088B8888042B924F4686F852F9F/Applicability/=Live/@EntryIndexedValue">True</s:Boolean>
