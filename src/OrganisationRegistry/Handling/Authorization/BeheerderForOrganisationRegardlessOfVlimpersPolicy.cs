@@ -17,7 +17,7 @@ public class BeheerderForOrganisationRegardlessOfVlimpersPolicy : ISecurityPolic
         if (user.IsInRole(Role.AlgemeenBeheerder))
             return AuthorizationResult.Success();
 
-        if (user.IsOrganisatieBeheerderFor(_ovoNumber))
+        if (user.IsDecentraalBeheerderFor(_ovoNumber))
             return AuthorizationResult.Success();
 
         return AuthorizationResult.Fail(new InsufficientRights());

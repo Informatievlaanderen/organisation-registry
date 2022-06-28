@@ -2,9 +2,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationLabel;
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using FluentAssertions;
 using Infrastructure.Tests.Extensions.TestHelpers;
 using LabelType;
 using LabelType.Events;
@@ -14,12 +12,13 @@ using Moq;
 using OrganisationRegistry.Infrastructure.Domain;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Events;
+using OrganisationRegistry.Organisation.Exceptions;
 using Tests.Shared;
 using Tests.Shared.Stubs;
 using Xunit;
 using Xunit.Abstractions;
 
-public class WhenUpdatingFromVlimpersLabelWhenVlimpers
+public class WhenUpdating_FromVlimpersLabel_ToNonVlimpersLabel_WhenUnderVlimpersManagement_AsVlimpersAdmin
     : Specification<UpdateOrganisationLabelCommandHandler, UpdateOrganisationLabel>
 {
     private readonly Guid _organisationId;
@@ -33,7 +32,7 @@ public class WhenUpdatingFromVlimpersLabelWhenVlimpers
     private readonly string _nonVlimpersLabelTypeName;
     private readonly string _vlimpersLabelTypeName;
 
-    public WhenUpdatingFromVlimpersLabelWhenVlimpers(ITestOutputHelper helper) : base(helper)
+    public WhenUpdating_FromVlimpersLabel_ToNonVlimpersLabel_WhenUnderVlimpersManagement_AsVlimpersAdmin(ITestOutputHelper helper) : base(helper)
     {
         _ovoNumber = "OVO000012345";
         _value = "13135/123lk.,m";
@@ -105,15 +104,18 @@ public class WhenUpdatingFromVlimpersLabelWhenVlimpers
 
 
     [Fact]
-    public async Task PublishesOneEvent()
+    public async Task PublishesNoEvents()
     {
-        await Given(Events).When(UpdateOrganisationLabelCommand, TestUser.VlimpersBeheerder).ThenItPublishesTheCorrectNumberOfEvents(1);
+        await Given(Events)
+            .When(UpdateOrganisationLabelCommand, TestUser.VlimpersBeheerder)
+            .ThenItPublishesTheCorrectNumberOfEvents(numberOfEvents: 0);
     }
 
     [Fact]
     public async Task ThrowsAnException()
     {
-        await Given(Events).When(UpdateOrganisationLabelCommand, TestUser.VlimpersBeheerder).Then();
-        PublishedEvents.Single().Should().BeOfType<Envelope<OrganisationLabelUpdated>>();
+        await Given(Events)
+            .When(UpdateOrganisationLabelCommand, TestUser.VlimpersBeheerder)
+            .ThenThrows<InsufficientRights>();
     }
 }

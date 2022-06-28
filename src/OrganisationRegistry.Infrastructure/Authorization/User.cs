@@ -38,7 +38,7 @@ public class User : IUser
         return Roles.Any(x => x == role);
     }
 
-    public bool IsOrganisatieBeheerderFor(string ovoNumber)
+    public bool IsDecentraalBeheerderFor(string ovoNumber)
         => IsInRole(Role.DecentraalBeheerder) &&
            Organisations.Contains(ovoNumber);
 }

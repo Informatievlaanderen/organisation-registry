@@ -9,6 +9,7 @@ using Be.Vlaanderen.Basisregisters.Api.Exceptions;
 using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
 using Configuration.Database;
 using ElasticSearch;
+using Handling.Authorization;
 using Infrastructure.Search;
 using Infrastructure.Security;
 using Microsoft.AspNetCore.Http;
