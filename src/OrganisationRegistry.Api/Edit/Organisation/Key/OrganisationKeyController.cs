@@ -41,7 +41,7 @@ public class OrganisationKeyController : OrganisationRegistryController
     /// <param name="organisationId">Id van de organisatie.</param>
     /// <param name="message"></param>
     /// <response code="201">Als het verzoek aanvaard is.</response>
-    /// <response code="400">Als het verzoek ongeldige data bevat.<example>a;sdlf</example></response>
+    /// <response code="400">Als het verzoek ongeldige data bevat.</response>
     /// <response code="500">Als er een interne fout is opgetreden.</response>
     [HttpPost]
     [ProducesResponseType(typeof(object), StatusCodes.Status201Created)]

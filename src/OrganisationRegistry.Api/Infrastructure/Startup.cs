@@ -168,6 +168,7 @@ public class Startup
                             {
                                 x.EnableAnnotations();
                                 x.OperationFilter<ProblemJsonResponseFilter>();
+                                x.CustomSchemaIds(type => type.ToString());
                             },
                         },
                         ApiInfo = (_, description) => new OpenApiInfo
