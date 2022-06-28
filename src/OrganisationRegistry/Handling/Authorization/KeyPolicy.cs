@@ -37,7 +37,7 @@ public class KeyPolicy : ISecurityPolicy
             return AuthorizationResult.Success();
 
         if (!containsOrafinKey && !containsVlimpersKey &&
-            user.IsOrganisatieBeheerderFor(_ovoNumber))
+            user.IsDecentraalBeheerderFor(_ovoNumber))
             return AuthorizationResult.Success();
 
         return AuthorizationResult.Fail(new InsufficientRights());

@@ -1,6 +1,7 @@
 namespace OrganisationRegistry.Handling.Authorization;
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Infrastructure.Authorization;
 using Infrastructure.Configuration;
@@ -10,47 +11,55 @@ public class LabelPolicy : ISecurityPolicy
 {
     private readonly string _ovoNumber;
     private readonly bool _isUnderVlimpersManagement;
-    private readonly Guid[] _labelTypeIds;
     private readonly IOrganisationRegistryConfiguration _configuration;
+    private readonly Guid[] _labelTypeIds;
 
-    public LabelPolicy(string ovoNumber,
+    private LabelPolicy(
+        string ovoNumber,
         bool isUnderVlimpersManagement,
         IOrganisationRegistryConfiguration configuration,
-        params Guid[] labelTypeIds)
+        params Guid[] labelTypeIds
+    )
     {
         _ovoNumber = ovoNumber;
         _isUnderVlimpersManagement = isUnderVlimpersManagement;
-        _labelTypeIds = labelTypeIds;
         _configuration = configuration;
+        _labelTypeIds = labelTypeIds;
     }
+
+    public static LabelPolicy ForCreate(string ovoNumber, bool isUnderVlimpersManagement, IOrganisationRegistryConfiguration configuration, params Guid[] labelTypeIds)
+        => new(ovoNumber, isUnderVlimpersManagement, configuration, labelTypeIds);
+
+    public static LabelPolicy ForUpdate(string ovoNumber, bool isUnderVlimpersManagement, IOrganisationRegistryConfiguration configuration, Guid oldLabelTypeId, Guid newLabelTypeId)
+        => new(ovoNumber, isUnderVlimpersManagement, configuration, oldLabelTypeId, newLabelTypeId);
 
     public AuthorizationResult Check(IUser user)
     {
-        if(user.IsInRole(Role.AlgemeenBeheerder))
+        if (user.IsInRole(Role.AlgemeenBeheerder))
             return AuthorizationResult.Success();
-
-        var isVlimpersLabel = ContainsVlimpersLabel(_labelTypeIds);
 
         if (_isUnderVlimpersManagement &&
-            user.IsInRole(Role.VlimpersBeheerder) && isVlimpersLabel)
+            user.IsInRole(Role.VlimpersBeheerder) && AreAllVlimpersLabel(_labelTypeIds))
             return AuthorizationResult.Success();
 
-        if (user.IsOrganisatieBeheerderFor(_ovoNumber))
+        if (!user.IsDecentraalBeheerderFor(_ovoNumber))
+            return AuthorizationResult.Fail(new InsufficientRights());
+
+        if (_isUnderVlimpersManagement && AreAnyVlimpersLabel(_labelTypeIds))
         {
-            if (_isUnderVlimpersManagement && isVlimpersLabel)
-            {
-                return AuthorizationResult.Fail(new InsufficientRights());
-            }
-            return AuthorizationResult.Success();
+            return AuthorizationResult.Fail(new InsufficientRights());
         }
 
-        return AuthorizationResult.Fail(new InsufficientRights());
+        return AuthorizationResult.Success();
     }
 
-    private bool ContainsVlimpersLabel(Guid[] labelTypeIds)
-    {
-        var labelIdsAllowedByVlimpers = _configuration.Authorization.LabelIdsAllowedForVlimpers;
-        return labelTypeIds.Any(labelTypeId =>
-            labelIdsAllowedByVlimpers.Contains(labelTypeId));
-    }
+    private bool AreAllVlimpersLabel(IEnumerable<Guid> labelTypeIds)
+        => labelTypeIds.All(
+            labelTypeId => _configuration.Authorization.LabelIdsAllowedForVlimpers.Contains(labelTypeId)
+        );
+
+    private bool AreAnyVlimpersLabel(IEnumerable<Guid> labelTypeIds)
+        => labelTypeIds.Any(
+            labelTypeId => _configuration.Authorization.LabelIdsAllowedForVlimpers.Contains(labelTypeId)
+        );
 }

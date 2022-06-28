@@ -8,7 +8,7 @@ public static class TestUser
         => new UserBuilder().AddRoles(Role.AlgemeenBeheerder).Build();
 
     public static User DecentraalBeheerder
-        => new UserBuilder().AddRoles(Role.DecentraalBeheerder).Build();
+        => new UserBuilder().AsDecentraalBeheerder().Build();
 
     public static User OrgaanBeheerder
         => new UserBuilder().AddRoles(Role.OrgaanBeheerder).Build();

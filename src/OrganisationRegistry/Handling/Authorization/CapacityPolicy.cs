@@ -33,7 +33,7 @@ public class CapacityPolicy : ISecurityPolicy
             organisationCapacityIdsOwnedByRegelgevingDbBeheerder.Contains(_organisationCapacityId))
             return AuthorizationResult.Success();
 
-        if (user.IsOrganisatieBeheerderFor(_ovoNumber) &&
+        if (user.IsDecentraalBeheerderFor(_ovoNumber) &&
             !organisationCapacityIdsOwnedByRegelgevingDbBeheerder.Contains(_organisationCapacityId))
             return AuthorizationResult.Success();
 
