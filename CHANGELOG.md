@@ -1,3 +1,12 @@
+# [1.217.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.216.0...v1.217.0) (2022-06-28)
+
+
+### Features
+
+* or-1094 fix label policy with unit tests ([0c660a3](https://github.com/informatievlaanderen/organisation-registry/commit/0c660a373829af02a36bc8d34a9fd1f1ea12fba2))
+* or-1094 fix usings + rename methods ([001dad9](https://github.com/informatievlaanderen/organisation-registry/commit/001dad988cbd5abbede9cc7eb1f14c512b0df1d0))
+* or-763 fix route ([93e52bc](https://github.com/informatievlaanderen/organisation-registry/commit/93e52bc63d66ddc5883de84e6540546c5545d38e))
+
 # [1.216.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.215.2...v1.216.0) (2022-06-28)
 
 
