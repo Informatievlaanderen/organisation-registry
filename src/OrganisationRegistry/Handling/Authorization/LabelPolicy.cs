@@ -39,13 +39,13 @@ public class LabelPolicy : ISecurityPolicy
             return AuthorizationResult.Success();
 
         if (_isUnderVlimpersManagement &&
-            user.IsInRole(Role.VlimpersBeheerder) && AreAllVlimpersLabel(_labelTypeIds))
+            user.IsInRole(Role.VlimpersBeheerder) && AreAllLabelsofTypeVlimpers(_labelTypeIds))
             return AuthorizationResult.Success();
 
         if (!user.IsDecentraalBeheerderFor(_ovoNumber))
             return AuthorizationResult.Fail(new InsufficientRights());
 
-        if (_isUnderVlimpersManagement && AreAnyVlimpersLabel(_labelTypeIds))
+        if (_isUnderVlimpersManagement && AreAnyLabelsofTypeVlimpers(_labelTypeIds))
         {
             return AuthorizationResult.Fail(new InsufficientRights());
         }
@@ -53,12 +53,12 @@ public class LabelPolicy : ISecurityPolicy
         return AuthorizationResult.Success();
     }
 
-    private bool AreAllVlimpersLabel(IEnumerable<Guid> labelTypeIds)
+    private bool AreAllLabelsofTypeVlimpers(IEnumerable<Guid> labelTypeIds)
         => labelTypeIds.All(
             labelTypeId => _configuration.Authorization.LabelIdsAllowedForVlimpers.Contains(labelTypeId)
         );
 
-    private bool AreAnyVlimpersLabel(IEnumerable<Guid> labelTypeIds)
+    private bool AreAnyLabelsofTypeVlimpers(IEnumerable<Guid> labelTypeIds)
         => labelTypeIds.Any(
             labelTypeId => _configuration.Authorization.LabelIdsAllowedForVlimpers.Contains(labelTypeId)
         );
