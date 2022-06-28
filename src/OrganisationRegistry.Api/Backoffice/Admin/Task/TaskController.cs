@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using OrganisationRegistry.Body;
-using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Commands;
 using Requests;
 using Security;
@@ -38,8 +37,6 @@ public class TaskController : OrganisationRegistryController
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Post(
         [FromServices] Func<Owned<OrganisationRegistryContext>> contextFactory,
-        [FromServices] IKboSync kboSync,
-        [FromServices] ISecurityService securityService,
         [FromBody] TaskRequest task)
     {
         if (!ModelState.IsValid)

@@ -22,7 +22,7 @@ public class BeheerderForOrganisationButNotUnderVlimpersManagementPolicy : ISecu
             return AuthorizationResult.Success();
 
         if (!_isUnderVlimpersManagement &&
-            user.IsOrganisatieBeheerderFor(_ovoNumber))
+            user.IsDecentraalBeheerderFor(_ovoNumber))
             return AuthorizationResult.Success();
 
         return AuthorizationResult.Fail(new InsufficientRights());

@@ -22,7 +22,7 @@ public static class UpdateHandlerExtensionMethods
         IOrganisationRegistryConfiguration configuration,
         AddOrganisationLabel message)
         => source.WithPolicy(
-            organisation => new LabelPolicy(
+            organisation => LabelPolicy.ForCreate(
                 organisation.State.OvoNumber,
                 organisation.State.UnderVlimpersManagement,
                 configuration,
@@ -33,13 +33,13 @@ public static class UpdateHandlerExtensionMethods
         IOrganisationRegistryConfiguration configuration,
         UpdateOrganisationLabel message)
         => source.WithPolicy(
-            organisation => new LabelPolicy(
+            organisation => LabelPolicy.ForUpdate(
                 organisation.State.OvoNumber,
                 organisation.State.UnderVlimpersManagement,
                 configuration,
-                message.LabelTypeId,
                 organisation.State.OrganisationLabels
-                    .Single(x => x.OrganisationLabelId == message.OrganisationLabelId).LabelTypeId));
+                    .Single(x => x.OrganisationLabelId == message.OrganisationLabelId).LabelTypeId,
+                message.LabelTypeId));
 
     public static UpdateHandler<Organisation> WithKeyPolicy(
         this UpdateHandler<Organisation> source,

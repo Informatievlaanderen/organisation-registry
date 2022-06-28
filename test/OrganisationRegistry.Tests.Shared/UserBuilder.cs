@@ -65,4 +65,13 @@ public class UserBuilder
         => new(
             _firstName,
             _lastName, _userId, _ip, _roles.ToArray(), _organisations);
+
+    public UserBuilder AsDecentraalBeheerder()
+    {
+        AddRoles(Role.DecentraalBeheerder);
+        return this;
+    }
+
+    public static implicit operator User(UserBuilder builder)
+        => builder.Build();
 }

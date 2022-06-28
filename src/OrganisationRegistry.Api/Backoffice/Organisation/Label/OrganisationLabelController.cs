@@ -45,7 +45,7 @@ public class OrganisationLabelController : OrganisationRegistryController
 
         var user = await securityService.GetUser(User);
         Func<Guid, bool> isAuthorizedForLabelType = labelTypeId =>
-            new LabelPolicy(
+            LabelPolicy.ForCreate(
                     memoryCaches.OvoNumbers[organisationId],
                     memoryCaches.UnderVlimpersManagement.Contains(organisationId),
                     configuration,

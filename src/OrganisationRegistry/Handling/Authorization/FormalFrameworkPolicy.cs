@@ -43,7 +43,7 @@ public class FormalFrameworkPolicy : ISecurityPolicy
             formalFrameworkIdsOwnedByVlimpers.Contains(_formalFrameworkId))
             return AuthorizationResult.Success();
 
-        if(user.IsOrganisatieBeheerderFor(_ovoNumberFunc()) &&
+        if(user.IsDecentraalBeheerderFor(_ovoNumberFunc()) &&
            !formalFrameworkIdsExcludedForOrganisatieBeheerder.Contains(_formalFrameworkId))
             return AuthorizationResult.Success();
 

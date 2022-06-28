@@ -33,7 +33,7 @@ public class OrganisationClassificationTypePolicy : ISecurityPolicy
             organisationClassificationTypeIdsOwnedByRegelgevingDbBeheerder.Contains(_organisationClassificationTypeId))
             return AuthorizationResult.Success();
 
-        if (user.IsOrganisatieBeheerderFor(_ovoNumber) &&
+        if (user.IsDecentraalBeheerderFor(_ovoNumber) &&
             !organisationClassificationTypeIdsOwnedByRegelgevingDbBeheerder.Contains(_organisationClassificationTypeId))
             return AuthorizationResult.Success();
 

@@ -47,7 +47,7 @@ public static class ImportNextFileProcessor
                 logger,
                 importFile,
                 OrganisatieRegisterCsvWriter.WriteCsv(
-                    new { reference = 0, fout = string.Empty }.GetType(),
+                    new { reference = string.Empty, fout = string.Empty }.GetType(),
                     item => new { reference = item.context, fout = item.ex.Message },
                     e.Exceptions),
                 false);
@@ -60,7 +60,7 @@ public static class ImportNextFileProcessor
                 logger,
                 importFile,
                 OrganisatieRegisterCsvWriter.WriteCsv(
-                    new { ovonummer = 0, fout = string.Empty }.GetType(),
+                    new { ovonummer = string.Empty, fout = string.Empty }.GetType(),
                     item => new { ovonummer = item.context, fout = item.ex.Message },
                     e.Exceptions),
                 false);

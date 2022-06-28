@@ -14,13 +14,14 @@ using Moq;
 using OrganisationRegistry.Infrastructure.Domain;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Events;
+using OrganisationRegistry.Organisation.Exceptions;
 using Tests.Shared;
 using Tests.Shared.Stubs;
 using Xunit;
 using Xunit.Abstractions;
 
 public class
-    WhenUpdatingToVlimpersLabelWhenVlimpers :
+    WhenUpdating_FromNonVlimpersLabel_ToVlimpersLabel_WhenUnderVlimpersManagement_AsVlimpersAdmin :
         Specification<UpdateOrganisationLabelCommandHandler, UpdateOrganisationLabel>
 {
     private readonly Guid _organisationId;
@@ -34,7 +35,7 @@ public class
     private readonly string _vlimpersLabelTypeName;
     private readonly string _value;
 
-    public WhenUpdatingToVlimpersLabelWhenVlimpers(ITestOutputHelper helper) : base(helper)
+    public WhenUpdating_FromNonVlimpersLabel_ToVlimpersLabel_WhenUnderVlimpersManagement_AsVlimpersAdmin(ITestOutputHelper helper) : base(helper)
     {
         _organisationId = Guid.NewGuid();
 
@@ -104,16 +105,18 @@ public class
             new ValidTo(_validTo));
 
     [Fact]
-    public async Task Publishes1Event()
+    public async Task PublishesNoEvents()
     {
-        await Given(Events).When(UpdateOrganisationLabelCommand, TestUser.VlimpersBeheerder)
-            .ThenItPublishesTheCorrectNumberOfEvents(1);
+        await Given(Events)
+            .When(UpdateOrganisationLabelCommand, TestUser.VlimpersBeheerder)
+            .ThenItPublishesTheCorrectNumberOfEvents(numberOfEvents: 0);
     }
 
     [Fact]
     public async Task ThrowsAnException()
     {
-        await Given(Events).When(UpdateOrganisationLabelCommand, TestUser.VlimpersBeheerder).Then();
-        PublishedEvents.Single().Should().BeOfType<Envelope<OrganisationLabelUpdated>>();
+        await Given(Events)
+            .When(UpdateOrganisationLabelCommand, TestUser.VlimpersBeheerder)
+            .ThenThrows<InsufficientRights>();
     }
 }
