@@ -52,7 +52,7 @@ public class OrganisationsController : OrganisationRegistryController
     /// <response code="201">Als het verzoek aanvaard is.</response>
     /// <response code="400">Als het verzoek ongeldige data bevat.</response>
     /// <response code="500">Als er een interne fout is opgetreden.</response>
-    [HttpPut("/kbo/{kboNumber}")]
+    [HttpPut("kbo/{kboNumber}")]
     [ProducesResponseType(typeof(object), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationErrors), StatusCodes.Status400BadRequest)]
