@@ -4,19 +4,21 @@ public class CreateOrganisationFromKboNumber : BaseCommand<OrganisationId>
 {
     public OrganisationId OrganisationId => Id;
 
+    public string OvoNumber { get; }
     public KboNumber KboNumber { get; }
 
-    public CreateOrganisationFromKboNumber(OrganisationId organisationId, KboNumber kboNumber)
+    public CreateOrganisationFromKboNumber(OrganisationId organisationId, KboNumber kboNumber, string ovoNumber)
     {
         Id = organisationId;
         KboNumber = kboNumber;
+        OvoNumber = ovoNumber;
     }
 
     public static implicit operator CreateOrganisationFromKbo(CreateOrganisationFromKboNumber command)
         => new(
             command.OrganisationId,
             string.Empty,
-            null,
+            command.OvoNumber,
             null,
             Article.None,
             null,

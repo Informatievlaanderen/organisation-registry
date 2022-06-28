@@ -1,5 +1,6 @@
 ﻿namespace OrganisationRegistry.Api.Infrastructure;
 
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using OrganisationRegistry.Infrastructure.Commands;
@@ -39,6 +40,23 @@ public class OrganisationRegistryController : Controller
         => Task.FromResult((IActionResult)Ok(value));
 
     [NonAction]
+    protected Task<IActionResult> CreatedAsync(string uri, object? value)
+        => Task.FromResult((IActionResult)Created(uri, value));
+
+    [NonAction]
+    protected Task<IActionResult> CreatedAsync(Uri uri, object? value)
+        => Task.FromResult((IActionResult)Created(uri, value));
+
+    [NonAction]
     protected Task<IActionResult> ContentAsync(string value)
         => Task.FromResult((IActionResult)Content(value));
+
+    protected string? Action<T>(string actionName, object? parameters = null)
+        where T : Controller
+    {
+        var name = typeof(T).Name;
+        var controllerName = name.EndsWith("Controller")
+            ? name[..^10] : name;
+        return Url.Action(actionName, controllerName, parameters);
+    }
 }
