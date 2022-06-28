@@ -1,3 +1,11 @@
+# [1.216.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.215.2...v1.216.0) (2022-06-28)
+
+
+### Features
+
+* or-763 create organisation from kbonumber ([8cb46ce](https://github.com/informatievlaanderen/organisation-registry/commit/8cb46ceec3ac5a1e07bb75981f4c13541924a6b0))
+* or-763 hyjack createOrgFromKbo ([d148e7c](https://github.com/informatievlaanderen/organisation-registry/commit/d148e7c0d6970faab6a8eae0bac9dbb09729199e))
+
 ## [1.215.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.215.1...v1.215.2) (2022-06-27)
 
 
