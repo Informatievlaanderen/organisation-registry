@@ -1,3 +1,10 @@
+## [1.217.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.217.0...v1.217.1) (2022-06-29)
+
+
+### Bug Fixes
+
+* or-1094 remove policy from handler, add policy to iteration ([a6a70a8](https://github.com/informatievlaanderen/organisation-registry/commit/a6a70a81edc574d80712410c2e26cfb51e3ebe56))
+
 # [1.217.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.216.0...v1.217.0) (2022-06-28)
 
 
