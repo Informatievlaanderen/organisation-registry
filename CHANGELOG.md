@@ -1,3 +1,10 @@
+## [1.217.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.217.1...v1.217.2) (2022-06-29)
+
+
+### Bug Fixes
+
+* or-1094 add roles to user for import terminate organisation ([44cdaa0](https://github.com/informatievlaanderen/organisation-registry/commit/44cdaa09fc3b4d79b8a71b0daeef5d95714513c3))
+
 ## [1.217.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.217.0...v1.217.1) (2022-06-29)
 
 
