@@ -19,6 +19,7 @@ using OrganisationRegistry.SqlServer.Infrastructure;
 using OrganisationRegistry.SqlServer.Organisation;
 using Tests.Shared;
 using Xunit;
+using OrganisationRegistry.Infrastructure.Authorization;
 
 public class WhenImportingACorrectCsvFile
 {
@@ -27,11 +28,11 @@ public class WhenImportingACorrectCsvFile
     public WhenImportingACorrectCsvFile()
     {
         _context = new OrganisationRegistryContext(
-                new DbContextOptionsBuilder<OrganisationRegistryContext>()
-                    .UseInMemoryDatabase(
-                        "import-test-" + Guid.NewGuid(),
-                        _ => { })
-                    .Options);
+            new DbContextOptionsBuilder<OrganisationRegistryContext>()
+                .UseInMemoryDatabase(
+                    "import-test-" + Guid.NewGuid(),
+                    _ => { })
+                .Options);
     }
 
     private async Task<ProcessImportedFileResult> Process(string csvToParse)
@@ -65,6 +66,7 @@ public class WhenImportingACorrectCsvFile
                     UserName = fixture.Create<string>(),
                     UserFirstName = fixture.Create<string>(),
                     UserId = fixture.Create<string>(),
+                    UserRoles = string.Join(separator: '|',Role.AlgemeenBeheerder),
                     UploadedAt = fixture.Create<DateTime>(),
                 },
                 CancellationToken.None);
@@ -80,6 +82,13 @@ public class WhenImportingACorrectCsvFile
     }
 
     private static OrganisationDetailItem CreateOrganisationDetailItem(ISpecimenBuilder fixture, Guid sourceId, string ovoNumber, string name)
-        => new() { Id = fixture.Create<Guid>(), Name = name, OvoNumber = ovoNumber, SourceId = sourceId, SourceType = OrganisationSource.CsvImport, SourceOrganisationIdentifier = "ref1", };
-
+        => new()
+        {
+            Id = fixture.Create<Guid>(),
+            Name = name,
+            OvoNumber = ovoNumber,
+            SourceId = sourceId,
+            SourceType = OrganisationSource.CsvImport,
+            SourceOrganisationIdentifier = "ref1",
+        };
 }

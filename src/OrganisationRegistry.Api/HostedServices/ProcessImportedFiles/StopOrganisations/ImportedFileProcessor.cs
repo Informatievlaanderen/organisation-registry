@@ -1,6 +1,8 @@
 ﻿namespace OrganisationRegistry.Api.HostedServices.ProcessImportedFiles.StopOrganisations;
 
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using OrganisationRegistry.Infrastructure.Authorization;
@@ -41,7 +43,7 @@ public class ImportedFileProcessor : ImportedFileProcessor<DeserializedRecord, T
             importFile.UserName,
             importFile.UserId,
             null,
-            new[] { Role.AlgemeenBeheerder },
+            importFile.UserRoles.Split("|").Select(x => (Role)Enum.Parse(typeof(Role), x)).ToArray(),
             new List<string>());
 
         await _commandSender.Send(
