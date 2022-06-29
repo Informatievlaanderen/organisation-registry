@@ -75,7 +75,7 @@ public class LabelPolicyTests
         );
 
         policy.Check(TestUser.VlimpersBeheerder)
-            .ShouldFailWith<InsufficientRights>();
+            .ShouldFailWith<InsufficientRights<LabelPolicy>>();
     }
 
     [Fact]
@@ -92,7 +92,7 @@ public class LabelPolicyTests
             _fixture.Create<Guid>(),
             _fixture.Create<Guid>());
 
-        policy.Check(user).ShouldFailWith<InsufficientRights>();
+        policy.Check(user).ShouldFailWith<InsufficientRights<LabelPolicy>>();
     }
 
     [Theory]
@@ -110,7 +110,7 @@ public class LabelPolicyTests
             new Guid(oldLabelTypeIdValue),
             new Guid(newLabelTypeIdValue));
 
-        policy.Check(user).ShouldFailWith<InsufficientRights>();
+        policy.Check(user).ShouldFailWith<InsufficientRights<LabelPolicy>>();
     }
 
     [Fact]

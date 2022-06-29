@@ -4,6 +4,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Handling;
+using Handling.Authorization;
 using Import;
 using Infrastructure.Commands;
 using Infrastructure.Configuration;
@@ -29,7 +30,6 @@ public class TerminateOrganisationsFromImportCommandHandler :
 
     public Task Handle(ICommandEnvelope<TerminateOrganisationsFromImport> envelope)
         => Handler.For(envelope.User, Session)
-            .WithImportPolicy(envelope.Command.Records.Select(r => r.OrganisationId))
             .HandleWithCombinedTransaction(session => TerminateOrganisations(envelope, session));
 
     private void TerminateOrganisations(ICommandEnvelope<TerminateOrganisationsFromImport> envelope, ISession session)
@@ -40,6 +40,10 @@ public class TerminateOrganisationsFromImportCommandHandler :
         {
             try
             {
+                new ImportPolicy(Session, record.OrganisationId)
+                    .Check(envelope.User)
+                    .ThrowOnFailure();
+
                 TerminateOrganisation(session, record);
             }
             catch (DomainException e)

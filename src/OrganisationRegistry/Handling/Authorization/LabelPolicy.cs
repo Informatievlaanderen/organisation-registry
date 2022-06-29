@@ -43,12 +43,10 @@ public class LabelPolicy : ISecurityPolicy
             return AuthorizationResult.Success();
 
         if (!user.IsDecentraalBeheerderFor(_ovoNumber))
-            return AuthorizationResult.Fail(new InsufficientRights());
+            return AuthorizationResult.Fail(new InsufficientRights<LabelPolicy>(this));
 
         if (_isUnderVlimpersManagement && AreAnyLabelsofTypeVlimpers(_labelTypeIds))
-        {
-            return AuthorizationResult.Fail(new InsufficientRights());
-        }
+            return AuthorizationResult.Fail(new InsufficientRights<LabelPolicy>(this));
 
         return AuthorizationResult.Success();
     }
@@ -62,4 +60,7 @@ public class LabelPolicy : ISecurityPolicy
         => labelTypeIds.Any(
             labelTypeId => _configuration.Authorization.LabelIdsAllowedForVlimpers.Contains(labelTypeId)
         );
+
+    public override string ToString()
+        => "Geen machtiging op labeltype.";
 }
