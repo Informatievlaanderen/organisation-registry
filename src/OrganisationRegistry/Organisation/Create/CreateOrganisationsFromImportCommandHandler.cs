@@ -38,7 +38,6 @@ public class CreateOrganisationsFromImportCommandHandler :
 
     public Task Handle(ICommandEnvelope<CreateOrganisationsFromImport> envelope)
         => Handler.For(envelope.User, Session)
-            .WithImportPolicy(envelope.Command.Records.Where(r => r.ParentIdentifier.IsId).Select(r => (Guid)r.ParentIdentifier))
             .HandleWithCombinedTransaction(session => CreateOrganisations(envelope, session));
 
     private void CreateOrganisations(ICommandEnvelope<CreateOrganisationsFromImport> envelope, ISession session)
@@ -53,6 +52,11 @@ public class CreateOrganisationsFromImportCommandHandler :
         {
             try
             {
+                if (record.ParentIdentifier.IsId)
+                    new ImportPolicy(Session, record.ParentIdentifier)
+                        .Check(envelope.User)
+                        .ThrowOnFailure();
+
                 var organisation = CreateOrganisation(session, parentCache, importFileId, record);
 
                 AddLabels(session, envelope.User, organisation, record.Labels);

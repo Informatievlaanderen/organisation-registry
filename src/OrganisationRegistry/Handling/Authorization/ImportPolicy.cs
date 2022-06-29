@@ -12,7 +12,7 @@ public class ImportPolicy : ISecurityPolicy
     private readonly ISession _session;
     private readonly IEnumerable<Guid> _organisationIds;
 
-    public ImportPolicy(ISession session, IEnumerable<Guid> organisationIds)
+    public ImportPolicy(ISession session, params Guid[] organisationIds)
     {
         _session = session;
         _organisationIds = organisationIds;
@@ -26,7 +26,7 @@ public class ImportPolicy : ISecurityPolicy
         if (user.IsInRole(Role.VlimpersBeheerder))
             return CheckVlimpers(user);
 
-        return AuthorizationResult.Fail(new InsufficientRights());
+        return AuthorizationResult.Fail(new InsufficientRights<ImportPolicy>(this));
     }
 
     private AuthorizationResult CheckVlimpers(IUser user)
@@ -43,4 +43,7 @@ public class ImportPolicy : ISecurityPolicy
 
         return AuthorizationResult.Success();
     }
+
+    public override string ToString()
+        => "Geen machtiging op deze organisatie.";
 }

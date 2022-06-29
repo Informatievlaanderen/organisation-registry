@@ -3,6 +3,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationLabel;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Handling.Authorization;
 using Infrastructure.Tests.Extensions.TestHelpers;
 using LabelType;
 using LabelType.Events;
@@ -116,6 +117,6 @@ public class WhenUpdating_FromVlimpersLabel_ToNonVlimpersLabel_WhenUnderVlimpers
     {
         await Given(Events)
             .When(UpdateOrganisationLabelCommand, TestUser.VlimpersBeheerder)
-            .ThenThrows<InsufficientRights>();
+            .ThenThrows<InsufficientRights<LabelPolicy>>();
     }
 }

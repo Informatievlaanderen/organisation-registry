@@ -15,4 +15,10 @@ public readonly struct AuthorizationResult
 
     public static AuthorizationResult Success()
         => new(null);
+
+    public void ThrowOnFailure()
+    {
+        if (!IsSuccessful && Exception is { } exception)
+            throw exception;
+    }
 }

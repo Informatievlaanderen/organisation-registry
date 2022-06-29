@@ -27,7 +27,7 @@ public static class HasDuplicateReferences
             .ToList();
 
         var recordsWithDuplicateReferences = validRecords
-            .Where(record => duplicateReferences.Contains(record.DeserializedRecord!.Reference.Value))
+            .Where(record => duplicateReferences.Contains(record.DeserializedRecord!.Reference.Value!))
             .Select(record => record)
             .Select(
                 record => new ValidationIssue(record.RowNumber, FormatMessage(record.DeserializedRecord!.Reference.Value!)))

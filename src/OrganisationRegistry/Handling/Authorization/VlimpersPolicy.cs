@@ -31,6 +31,9 @@ public class VlimpersPolicy : ISecurityPolicy
 
         return _isUnderVlimpersManagement
             ? AuthorizationResult.Fail(new UserIsNotAuthorizedForVlimpersOrganisations())
-            : AuthorizationResult.Fail(new InsufficientRights());
+            : AuthorizationResult.Fail(new InsufficientRights<VlimpersPolicy>(this));
     }
+
+    public override string ToString()
+        => "Geen machtiging op deze organisatie (Vlimpers gerelateerd).";
 }
