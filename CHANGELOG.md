@@ -1,3 +1,17 @@
+# [1.219.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.218.1...v1.219.0) (2022-06-30)
+
+
+### Bug Fixes
+
+* or-1109 create esFacade local instead of field in SearchController ([f4bba0e](https://github.com/informatievlaanderen/organisation-registry/commit/f4bba0e897e4a037ffbbb08d200fdc59f9f438c6))
+* skip unstable test ([014ff4b](https://github.com/informatievlaanderen/organisation-registry/commit/014ff4bdde2718d74ecc5117bb794300ca08a4e0))
+
+
+### Features
+
+* or-763 apply policies for edit api; add tests ([591b155](https://github.com/informatievlaanderen/organisation-registry/commit/591b155c9fb556d8b7b892470f2d17cc59d9d8fb))
+* or-763 reduce load for api integration tests ([d4369e3](https://github.com/informatievlaanderen/organisation-registry/commit/d4369e3664689acf45e2043dc8206721786ff7b5))
+
 ## [1.218.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.218.0...v1.218.1) (2022-06-30)
 
 # [1.218.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.217.2...v1.218.0) (2022-06-30)
