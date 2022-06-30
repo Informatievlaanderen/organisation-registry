@@ -29,14 +29,12 @@ using SortOrder = Infrastructure.Search.Sorting.SortOrder;
 public class SearchController : OrganisationRegistryController
 {
     private readonly ILogger<SearchController> _log;
-    private readonly ElasticSearchFacade _esFacade;
 
     public SearchController(
         ICommandSender commandSender,
         ILogger<SearchController> log) : base(commandSender)
     {
         _log = log;
-        _esFacade = new ElasticSearchFacade(HttpContext, _log);
     }
 
     /// <summary>Entiteiten opzoeken.</summary>
@@ -92,8 +90,10 @@ public class SearchController : OrganisationRegistryController
             sort,
             scroll);
 
-        return await _esFacade.Search(indexName, elastic, q, offset, limit, fields, sort, scroll) is { } searchResult
-            ? _esFacade.BuildApiSearchResult(searchResult)
+        var esFacade = new ElasticSearchFacade(HttpContext, _log);
+
+        return await esFacade.Search(indexName, elastic, q, offset, limit, fields, sort, scroll) is { } searchResult
+            ? esFacade.BuildApiSearchResult(searchResult)
             : NotFound();
     }
 
@@ -137,7 +137,9 @@ public class SearchController : OrganisationRegistryController
         {
             case ElasticSearchFacade.OrganisationsIndexName:
             {
-                var response = await _esFacade.SearchOrganisations(elastic, q, offset, limit, fields, sort, scroll);
+                var esFacade = new ElasticSearchFacade(HttpContext, _log);
+
+                var response = await esFacade.SearchOrganisations(elastic, q, offset, limit, fields, sort, scroll);
 
                 Response.AddElasticsearchMetaDataResponse(
                     new ElasticsearchMetaData<OrganisationDocument>(response));
@@ -267,11 +269,13 @@ public class SearchController : OrganisationRegistryController
             sort,
             scroll);
 
+        var esFacade = new ElasticSearchFacade(HttpContext, _log);
+
         return indexName.ToLower() switch
         {
-            ElasticSearchFacade.OrganisationsIndexName => await _esFacade.PostApiSearchOrganisations(elastic, q, offset, limit, fields, sort, scroll),
-            ElasticSearchFacade.PeopleIndexName => await _esFacade.PostApiSearch<PersonDocument>(elastic, q, offset, limit, fields, sort, scroll),
-            ElasticSearchFacade.BodiesIndexName => await _esFacade.PostApiSearch<BodyDocument>(elastic, q, offset, limit, fields, sort, scroll),
+            ElasticSearchFacade.OrganisationsIndexName => await esFacade.PostApiSearchOrganisations(elastic, q, offset, limit, fields, sort, scroll),
+            ElasticSearchFacade.PeopleIndexName => await esFacade.PostApiSearch<PersonDocument>(elastic, q, offset, limit, fields, sort, scroll),
+            ElasticSearchFacade.BodiesIndexName => await esFacade.PostApiSearch<BodyDocument>(elastic, q, offset, limit, fields, sort, scroll),
             _ => NotFound(),
         };
     }
@@ -292,11 +296,13 @@ public class SearchController : OrganisationRegistryController
 
         _log.LogDebug("[{IndexName}] Scrolling for '{ScrollId}'", indexName, id);
 
+        var esFacade = new ElasticSearchFacade(HttpContext, _log);
+
         return indexName.ToLower() switch
         {
-            ElasticSearchFacade.OrganisationsIndexName => await _esFacade.ScrollApiSearch<OrganisationDocument>(elastic, id),
-            ElasticSearchFacade.PeopleIndexName => await _esFacade.ScrollApiSearch<PersonDocument>(elastic, id),
-            ElasticSearchFacade.BodiesIndexName => await _esFacade.ScrollApiSearch<BodyDocument>(elastic, id),
+            ElasticSearchFacade.OrganisationsIndexName => await esFacade.ScrollApiSearch<OrganisationDocument>(elastic, id),
+            ElasticSearchFacade.PeopleIndexName => await esFacade.ScrollApiSearch<PersonDocument>(elastic, id),
+            ElasticSearchFacade.BodiesIndexName => await esFacade.ScrollApiSearch<BodyDocument>(elastic, id),
             _ => NotFound(),
         };
     }

@@ -3,7 +3,7 @@ namespace OrganisationRegistry.Tests.Shared;
 using System;
 using Xunit;
 
-public class EnvVarIgnoreFactAttribute : FactAttribute
+public sealed class EnvVarIgnoreFactAttribute : FactAttribute
 {
     public EnvVarIgnoreFactAttribute()
     {

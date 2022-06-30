@@ -136,7 +136,7 @@ public class ApiFixture : IDisposable
                     new[]
                     {
                         new KeyValuePair<string, string>("scope", scope),
-                    })
+                    }),
             });
 
         var acmResponse = await tokenClient.RequestTokenAsync(OidcConstants.GrantTypes.ClientCredentials);

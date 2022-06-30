@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Newtonsoft.Json;
-using OrganisationRegistry.Infrastructure.Authorization;
 using Tests.Shared;
 using Xunit;
 
@@ -65,7 +64,7 @@ public class CreateFromKboNumberTests
         var content = await response.Content.ReadAsStringAsync();
         var organisationResponse = JsonConvert.DeserializeObject<OrganisationResponse>(content);
         organisationResponse.Should().NotBeNull();
-        organisationResponse.OvoNumber.Should().NotBeNullOrEmpty();
+        organisationResponse!.OvoNumber.Should().NotBeNullOrEmpty();
     }
 
     private static async Task<HttpResponseMessage> CreateOrganisationFromKboNumber(HttpClient httpClient)
@@ -78,6 +77,6 @@ public class CreateFromKboNumberTests
 
     private class OrganisationResponse
     {
-        public string OvoNumber { get; set; }
+        public string OvoNumber { get; set; } = null!;
     }
 }
