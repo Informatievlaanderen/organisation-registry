@@ -40,7 +40,7 @@ public class KeyPolicy : ISecurityPolicy
             user.IsDecentraalBeheerderFor(_ovoNumber))
             return AuthorizationResult.Success();
 
-        return AuthorizationResult.Fail(new InsufficientRights());
+        return AuthorizationResult.Fail(InsufficientRights.CreateFor(this));
     }
 
     private bool ContainsOrafinKey(Guid[] keyTypeIds)
@@ -58,4 +58,7 @@ public class KeyPolicy : ISecurityPolicy
             labelTypeId =>
                 keyTypeIdsAllowedByVlimpers.Contains(labelTypeId));
     }
+
+    public override string ToString()
+        => "Geen machtiging op sleutel";
 }

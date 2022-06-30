@@ -26,7 +26,7 @@ public class ImportPolicy : ISecurityPolicy
         if (user.IsInRole(Role.VlimpersBeheerder))
             return CheckVlimpers(user);
 
-        return AuthorizationResult.Fail(new InsufficientRights<ImportPolicy>(this));
+        return AuthorizationResult.Fail(InsufficientRights.CreateFor(this));
     }
 
     private AuthorizationResult CheckVlimpers(IUser user)

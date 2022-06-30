@@ -1,17 +1,16 @@
 namespace OrganisationRegistry.Organisation.Exceptions;
 
-using System;
-
 public class InsufficientRights<T> : DomainException
     where T : class
 {
     public InsufficientRights(T source)
-        : base($"U heeft onvoldoende rechten voor deze actie. Bron: {source}") { }
+        : base($"U heeft onvoldoende rechten voor deze actie. Reden: {source}.")
+    {
+    }
 }
 
-[Obsolete("Use the generic variant instead.")]
-public class InsufficientRights : DomainException
+public static class InsufficientRights
 {
-    public InsufficientRights()
-        : base("U heeft onvoldoende rechten voor deze actie.") { }
+    public static InsufficientRights<T> CreateFor<T>(T source) where T : class
+        => new(source);
 }

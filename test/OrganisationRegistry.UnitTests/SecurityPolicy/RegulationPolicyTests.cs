@@ -43,6 +43,6 @@ public class RegulationPolicyTests
             CreatePolicy()
                 .Check(user);
 
-        authorizationResult.ShouldFailWith<InsufficientRights>();
+        authorizationResult.ShouldFailWith<InsufficientRights<RegulationPolicy>>();
     }
 }

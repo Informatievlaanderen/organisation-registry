@@ -43,10 +43,10 @@ public class LabelPolicy : ISecurityPolicy
             return AuthorizationResult.Success();
 
         if (!user.IsDecentraalBeheerderFor(_ovoNumber))
-            return AuthorizationResult.Fail(new InsufficientRights<LabelPolicy>(this));
+            return AuthorizationResult.Fail(InsufficientRights.CreateFor(this));
 
         if (_isUnderVlimpersManagement && AreAnyLabelsofTypeVlimpers(_labelTypeIds))
-            return AuthorizationResult.Fail(new InsufficientRights<LabelPolicy>(this));
+            return AuthorizationResult.Fail(InsufficientRights.CreateFor(this));
 
         return AuthorizationResult.Success();
     }

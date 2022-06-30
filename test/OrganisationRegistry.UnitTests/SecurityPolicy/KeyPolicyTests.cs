@@ -68,7 +68,7 @@ public class KeyPolicyTests
                     _orafinKeyId)
                 .Check(user);
 
-        authorizationResult.ShouldFailWith<InsufficientRights>();
+        authorizationResult.ShouldFailWith<InsufficientRights<KeyPolicy>>();
     }
 
     [Theory]
@@ -107,7 +107,7 @@ public class KeyPolicyTests
                     _vlimpersKeyId)
                 .Check(user);
 
-        authorizationResult.ShouldFailWith<InsufficientRights>();
+        authorizationResult.ShouldFailWith<InsufficientRights<KeyPolicy>>();
     }
 
     [Fact]
@@ -144,7 +144,7 @@ public class KeyPolicyTests
                     _fixture.Create<Guid>())
                 .Check(user);
 
-        authorizationResult.ShouldFailWith<InsufficientRights>();
+        authorizationResult.ShouldFailWith<InsufficientRights<KeyPolicy>>();
     }
 
     [Fact]
@@ -161,6 +161,6 @@ public class KeyPolicyTests
                     _fixture.Create<Guid>())
                 .Check(user);
 
-        authorizationResult.ShouldFailWith<InsufficientRights>();
+        authorizationResult.ShouldFailWith<InsufficientRights<KeyPolicy>>();
     }
 }

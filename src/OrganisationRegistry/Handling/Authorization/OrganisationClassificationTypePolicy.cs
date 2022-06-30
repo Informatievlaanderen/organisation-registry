@@ -37,6 +37,9 @@ public class OrganisationClassificationTypePolicy : ISecurityPolicy
             !organisationClassificationTypeIdsOwnedByRegelgevingDbBeheerder.Contains(_organisationClassificationTypeId))
             return AuthorizationResult.Success();
 
-        return AuthorizationResult.Fail(new InsufficientRights());
+        return AuthorizationResult.Fail(InsufficientRights.CreateFor(this));
     }
+
+    public override string ToString()
+        => "Geen machtiging op Classificatietype voor deze organisatie";
 }

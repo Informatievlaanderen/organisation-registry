@@ -67,7 +67,7 @@ public class FormalFrameworkPolicyTests
             CreatePolicy(_fixture.Create<string>(), _regelgevingDbFormalFrameworkId)
                 .Check(user);
 
-        authorizationResult.ShouldFailWith<InsufficientRights>();
+        authorizationResult.ShouldFailWith<InsufficientRights<FormalFrameworkPolicy>>();
     }
 
     [Theory]
@@ -101,7 +101,7 @@ public class FormalFrameworkPolicyTests
             CreatePolicy(_fixture.Create<string>(), _vlimpersFormalFrameworkId)
                 .Check(user);
 
-        authorizationResult.ShouldFailWith<InsufficientRights>();
+        authorizationResult.ShouldFailWith<InsufficientRights<FormalFrameworkPolicy>>();
     }
 
     [Fact]
@@ -133,7 +133,7 @@ public class FormalFrameworkPolicyTests
             CreatePolicy(ovoNumber, _vlimpersFormalFrameworkId)
                 .Check(user);
 
-        authorizationResult.ShouldFailWith<InsufficientRights>();
+        authorizationResult.ShouldFailWith<InsufficientRights<FormalFrameworkPolicy>>();
     }
 
     [Fact]
@@ -149,7 +149,7 @@ public class FormalFrameworkPolicyTests
             CreatePolicy(ovoNumber, _regelgevingDbFormalFrameworkId)
                 .Check(user);
 
-        authorizationResult.ShouldFailWith<InsufficientRights>();
+        authorizationResult.ShouldFailWith<InsufficientRights<FormalFrameworkPolicy>>();
     }
 
     [Fact]
@@ -164,6 +164,6 @@ public class FormalFrameworkPolicyTests
             CreatePolicy(_fixture.Create<string>(), _fixture.Create<Guid>())
                 .Check(user);
 
-        authorizationResult.ShouldFailWith<InsufficientRights>();
+        authorizationResult.ShouldFailWith<InsufficientRights<FormalFrameworkPolicy>>();
     }
 }
