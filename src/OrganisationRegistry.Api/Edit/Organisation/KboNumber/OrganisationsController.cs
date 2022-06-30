@@ -13,6 +13,7 @@ using Infrastructure.Swagger.Examples;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.FeatureManagement.Mvc;
+using OrganisationRegistry.Infrastructure;
 using OrganisationRegistry.Infrastructure.Commands;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Commands;
@@ -61,29 +62,30 @@ public class OrganisationsController : OrganisationRegistryController
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(OvoNumberResponseExamples))]
     [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples))]
     [SwaggerLocationHeader]
+    [Authorize(AuthenticationSchemes = AuthenticationSchemes.EditApi, Policy = PolicyNames.CJM)]
     public async Task<IActionResult> Put([FromServices] OrganisationRegistryContext context, [FromServices] IOvoNumberGenerator ovoNumberGenerator, [FromRoute] string kboNumber)
     {
         var maybeOrganisation = await context.OrganisationDetail.SingleOrDefaultAsync(x => x.KboNumber == kboNumber);
 
         if (maybeOrganisation is { } organisation)
-            return FoundResponse(organisation);
+            return ExistingOrganisationResponse(organisation);
 
         var ovoNumber = ovoNumberGenerator.GenerateNextNumber();
         var organisationId = OrganisationId.New();
         var command = new CreateOrganisationFromKboNumber(organisationId, new KboNumber(kboNumber), ovoNumber);
 
-        await CommandSender.Send(command);
+        await CommandSender.Send(command, WellknownUsers.Cjm);
 
         return await CreatedResponse(organisationId, ovoNumber);
     }
 
-    private IActionResult FoundResponse(OrganisationDetailItem organisation)
+    private IActionResult ExistingOrganisationResponse(OrganisationDetailItem organisation)
     {
         var foundLocation = Action<OrganisationDetailController>(
             nameof(OrganisationDetailController.Get),
             new { id = organisation.Id })!;
         var foundResponse = new CreateOrganisationByKboNumberResponse(organisation.OvoNumber);
-        return OkWithLocationHeader(foundLocation, foundResponse);
+        return OkValueWithLocationHeader(foundLocation, foundResponse);
     }
 
     private async Task<IActionResult> CreatedResponse(Guid organisationId, string ovoNumber)

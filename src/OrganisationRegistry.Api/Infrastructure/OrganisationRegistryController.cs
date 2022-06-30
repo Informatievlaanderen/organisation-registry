@@ -26,6 +26,13 @@ public class OrganisationRegistryController : Controller
     }
 
     [NonAction]
+    protected OkObjectResult OkValueWithLocationHeader(string uri, object? value)
+    {
+        Response.Headers.Add("Location", uri);
+        return Ok(value);
+    }
+
+    [NonAction]
     protected CreatedResult CreatedWithLocation(string action, object? parameters)
     {
         var maybeLocationHeader = Url.Action(action, parameters);

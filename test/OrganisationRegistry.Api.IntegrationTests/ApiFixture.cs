@@ -1,16 +1,28 @@
 namespace OrganisationRegistry.Api.IntegrationTests;
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
+using System.Threading.Tasks;
+using Backoffice.Organisation.Detail;
+using IdentityModel;
+using IdentityModel.Client;
 using Infrastructure;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
+using OrganisationClassificationType;
+using OrganisationClassificationType.Commands;
 using OrganisationRegistry.Infrastructure;
 using SqlServer.Configuration;
 using SqlServer.Infrastructure;
@@ -62,11 +74,12 @@ public class ApiFixture : IDisposable
             var cert = new X509Certificate2("organisationregistry-api.pfx", "organisationregistry");
 
             hostBuilder = hostBuilder
-                .UseKestrel(server =>
-                {
-                    server.AddServerHeader = false;
-                    server.Listen(IPAddress.Any, 2443, listenOptions => listenOptions.UseHttps(cert));
-                })
+                .UseKestrel(
+                    server =>
+                    {
+                        server.AddServerHeader = false;
+                        server.Listen(IPAddress.Any, 2443, listenOptions => listenOptions.UseHttps(cert));
+                    })
                 .UseUrls("https://api.organisatie.dev-vlaanderen.local:2443");
         }
         else
@@ -74,9 +87,10 @@ public class ApiFixture : IDisposable
             hostBuilder = hostBuilder.UseKestrel(server => server.AddServerHeader = false);
         }
 
+        var configurationRoot = builder.Build();
         _webHost = hostBuilder
             .UseContentRoot(Directory.GetCurrentDirectory())
-            .UseConfiguration(builder.Build())
+            .UseConfiguration(configurationRoot)
             .UseStartup<Startup>()
             .Build();
 
@@ -87,7 +101,49 @@ public class ApiFixture : IDisposable
         OrganisationRegistry.Import.Piavo.Program.Import(
             ApiEndpoint,
             Jwt);
+
+        PostJson("locationtypes", $"{{'id': '{configurationRoot["Api:KboV2RegisteredOfficeLocationTypeId"]}', 'name': 'KBO Location'}}");
+        PostJson("organisationclassificationtypes", $"{{'id': '{configurationRoot["Api:KboV2LegalFormOrganisationClassificationTypeId"]}', 'name': 'KBO Classification'}}");
+        PostJson("labeltypes", $"{{'id': '{configurationRoot["Api:KboV2FormalNameLabelTypeId"]}', 'name': 'KBO label'}}");
     }
+
+    private void PostJson(string requestUri, string body)
+    {
+        HttpClient.PostAsync(
+            requestUri,
+            new StringContent(
+                body,
+                Encoding.UTF8,
+                "application/json")).GetAwaiter().GetResult();
+    }
+
+    public async Task<HttpClient> CreateHttpClientFor(string clientId, string scope)
+    {
+        var tokenClient = new TokenClient(
+            () => new HttpClient(),
+            new TokenClientOptions
+            {
+                Address = "http://localhost:5050/connect/token",
+                ClientId = clientId,
+                ClientSecret = "secret",
+                Parameters = new Parameters(
+                    new[]
+                    {
+                        new KeyValuePair<string, string>("scope", scope),
+                    })
+            });
+
+        var acmResponse = await tokenClient.RequestTokenAsync(OidcConstants.GrantTypes.ClientCredentials);
+        var token = acmResponse.AccessToken;
+        var httpClientFor = new HttpClient
+        {
+            BaseAddress = new Uri(ApiEndpoint),
+        };
+        httpClientFor.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        httpClientFor.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        return httpClientFor;
+    }
+
 
     protected virtual void Dispose(bool disposing)
     {

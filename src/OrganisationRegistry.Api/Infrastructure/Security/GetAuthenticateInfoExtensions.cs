@@ -9,16 +9,16 @@ public static class GetAuthenticateInfoExtensions
 {
     public static async Task<AuthenticateResult?> GetAuthenticateInfoAsync(this HttpContext source)
     {
-        var bearerInfo = await source.GetBearerAuthenticateInfo();
+        var bearerInfo = await source.GetBearerAuthenticateInfo(JwtBearerDefaults.AuthenticationScheme);
         return bearerInfo is { Succeeded: true } ? bearerInfo : null;
     }
 
-    public static AuthenticateResult? GetAuthenticateInfo(this HttpContext source)
+    public static AuthenticateResult? GetAuthenticateInfo(this HttpContext source, string authenticationScheme)
     {
-        var bearerInfo = source.GetBearerAuthenticateInfo().GetAwaiter().GetResult();
+        var bearerInfo = source.GetBearerAuthenticateInfo(authenticationScheme).GetAwaiter().GetResult();
         return bearerInfo is { Succeeded: true } ? bearerInfo : null;
     }
 
-    private static Task<AuthenticateResult> GetBearerAuthenticateInfo(this HttpContext source)
-        => source.AuthenticateAsync(JwtBearerDefaults.AuthenticationScheme);
+    private static Task<AuthenticateResult> GetBearerAuthenticateInfo(this HttpContext source, string authenticationScheme)
+        => source.AuthenticateAsync(authenticationScheme);
 }

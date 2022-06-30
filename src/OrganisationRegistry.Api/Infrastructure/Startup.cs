@@ -194,6 +194,11 @@ public class Startup
                     },
                     MiddlewareHooks =
                     {
+                        Authorization = options =>
+                        {
+                            options.AddPolicy(PolicyNames.CJM, builder => builder.RequireClaim(AcmIdmConstants.Claims.Scope, AcmIdmConstants.Scopes.CjmBeheerder));
+                            options.AddPolicy(PolicyNames.ORAFIN, builder => builder.RequireClaim(AcmIdmConstants.Claims.Scope, AcmIdmConstants.Scopes.OrafinBeheerder));
+                        },
                         ConfigureJsonOptions = options => { options.SerializerSettings.ConfigureForOrganisationRegistry(); },
                         ConfigureMvcCore = cfg =>
                         {

@@ -15,49 +15,144 @@ public static class Config
             new IdentityResources.OpenId(),
             new IdentityResources.Profile(),
             new IdentityResource("vo", "Vlaamse Overheid", new []{"vo_id"}),
-            new IdentityResource("iv_wegwijs", "Wegwijs", new []{"role", "iv_wegwijs_rol_3D"})
-
+            new IdentityResource("iv_wegwijs", "Wegwijs", new []{"role", "iv_wegwijs_rol_3D"}),
         };
 
     public static IEnumerable<ApiScope> ApiScopes =>
-        new ApiScope[]
+        new[]
         {
+            new ApiScope("dv_organisatieregister_orafinbeheerder"),
+            new ApiScope("dv_organisatieregister_testclient"),
+            new ApiScope("dv_organisatieregister_info"),
+            new ApiScope("dv_organisatieregister_cjmbeheerder")
         };
 
-    public static IEnumerable<Client> Clients =>
-        new []{
-        new Client
+    public static IEnumerable<ApiResource> ApiResources => new[]
+    {
+        new ApiResource("organisation-registry-local-dev")
         {
-            ClientId = "organisation-registry-local-dev",
-            ClientSecrets =
+            ApiSecrets = new List<Secret>()
             {
                 new Secret(
                     "a_very=Secr3t*Key".Sha256())
             },
-
-            AllowedGrantTypes = GrantTypes.Code,
-
-            // where to redirect to after login
-            RedirectUris =
+            Scopes = new List<string>()
             {
-                "https://organisatie.dev-vlaanderen.local/#/oic",
-                "https://organisatie.dev-vlaanderen.local/v2/oic"
-            },
+                "dv_organisatieregister_testclient",
+                "dv_organisatieregister_cjmbeheerder",
+                "dv_organisatieregister_orafinbeheerder"
+            }
+        }
+    };
 
-            // where to redirect to after logout
-            PostLogoutRedirectUris = { "https://organisatie.dev-vlaanderen.local" },
-            FrontChannelLogoutUri = "https://organisatie.dev-vlaanderen.local",
-
-            AllowedScopes = new List<string>
+    public static IEnumerable<Client> Clients =>
+        new[]
+        {
+            new Client
             {
-                IdentityServerConstants.StandardScopes.OpenId,
-                IdentityServerConstants.StandardScopes.Profile,
-                "vo",
-                "iv_wegwijs"
+                ClientId = "organisation-registry-local-dev",
+                ClientSecrets =
+                {
+                    new Secret(
+                        "a_very=Secr3t*Key".Sha256())
+                },
+
+                AllowedGrantTypes = GrantTypes.Code,
+
+                // where to redirect to after login
+                RedirectUris =
+                {
+                    "https://organisatie.dev-vlaanderen.local/#/oic",
+                    "https://organisatie.dev-vlaanderen.local/v2/oic"
+                },
+
+                // where to redirect to after logout
+                PostLogoutRedirectUris = { "https://organisatie.dev-vlaanderen.local" },
+                FrontChannelLogoutUri = "https://organisatie.dev-vlaanderen.local",
+
+                AllowedScopes = new List<string>
+                {
+                    IdentityServerConstants.StandardScopes.OpenId,
+                    IdentityServerConstants.StandardScopes.Profile,
+                    "vo",
+                    "iv_wegwijs",
+                    "organisation-registry-local-dev",
+                    "dv_organisatieregister_cjmbeheerder"
+                },
+                AlwaysSendClientClaims = true,
+                AlwaysIncludeUserClaimsInIdToken = true,
             },
-            AlwaysSendClientClaims = true,
-            AlwaysIncludeUserClaimsInIdToken = true,
-        }};
+            new Client
+            {
+                ClientId = "cjmClient",
+
+                // no interactive user, use the clientid/secret for authentication
+                AllowedGrantTypes = GrantTypes.ClientCredentials,
+                AccessTokenLifetime = int.MaxValue,
+                IdentityTokenLifetime = int.MaxValue,
+
+                // secret for authentication
+                ClientSecrets =
+                {
+                    new Secret("secret".Sha256())
+                },
+                ClientClaimsPrefix = String.Empty,
+                // scopes that client has access to
+                AllowedScopes = { "dv_organisatieregister_info", "dv_organisatieregister_cjmbeheerder" },
+                Claims = new List<ClientClaim>()
+                {
+                    new ClientClaim("dv_organisatieregister_orgcode", "OVO000001")
+                }
+            },
+            new Client
+            {
+                ClientId = "orafinClient",
+
+                // no interactive user, use the clientid/secret for authentication
+                AllowedGrantTypes = GrantTypes.ClientCredentials,
+                AccessTokenLifetime = int.MaxValue,
+                IdentityTokenLifetime = int.MaxValue,
+
+                // secret for authentication
+                ClientSecrets =
+                {
+                    new Secret("secret".Sha256())
+                },
+                ClientClaimsPrefix = String.Empty,
+                // scopes that client has access to
+                AllowedScopes = { "dv_organisatieregister_info", "dv_organisatieregister_orafinbeheerder" },
+                Claims = new List<ClientClaim>()
+                {
+                    new ClientClaim("dv_organisatieregister_orgcode", "OVO000001")
+                }
+            },
+            new Client
+            {
+                ClientId = "testClient",
+
+                // no interactive user, use the clientid/secret for authentication
+                AllowedGrantTypes = GrantTypes.ClientCredentials,
+                AccessTokenLifetime = int.MaxValue,
+                IdentityTokenLifetime = int.MaxValue,
+
+                // secret for authentication
+                ClientSecrets =
+                {
+                    new Secret("secret".Sha256())
+                },
+                ClientClaimsPrefix = String.Empty,
+                // scopes that client has access to
+                AllowedScopes = { "dv_organisatieregister_info",
+                    "dv_organisatieregister_testclient",
+                    "dv_organisatieregister_orafinbeheerder",
+                    "dv_organisatieregister_cjmbeheerder"
+                },
+                Claims = new List<ClientClaim>()
+                {
+                    new ClientClaim("dv_organisatieregister_orgcode", "OVO000001")
+                }
+            }
+        };
 
     public static List<TestUser> Users =>
         new List<TestUser>
