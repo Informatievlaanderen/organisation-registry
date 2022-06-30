@@ -64,7 +64,7 @@ public class CapacityPolicyTests
             CreatePolicy(_fixture.Create<string>(), _regelgevingDbCapacityId)
                 .Check(user);
 
-        authorizationResult.ShouldFailWith<InsufficientRights>();
+        authorizationResult.ShouldFailWith<InsufficientRights<CapacityPolicy>>();
     }
 
     [Fact]
@@ -96,7 +96,7 @@ public class CapacityPolicyTests
             CreatePolicy(ovoNumber, _regelgevingDbCapacityId)
                 .Check(user);
 
-        authorizationResult.ShouldFailWith<InsufficientRights>();
+        authorizationResult.ShouldFailWith<InsufficientRights<CapacityPolicy>>();
     }
 
     [Fact]
@@ -111,6 +111,6 @@ public class CapacityPolicyTests
             CreatePolicy(_fixture.Create<string>(), _fixture.Create<Guid>())
                 .Check(user);
 
-        authorizationResult.ShouldFailWith<InsufficientRights>();
+        authorizationResult.ShouldFailWith<InsufficientRights<CapacityPolicy>>();
     }
 }

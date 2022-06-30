@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoFixture;
+using Handling.Authorization;
 using Infrastructure.Tests.Extensions.TestHelpers;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -96,6 +97,6 @@ public class WhenTryingToUpdateATerminatedNonVlimpersOrgAsVlimpersUser : Specifi
     public async Task UpdatesOrganisationName()
     {
         await Given(Events).When(UpdateOrganisationInfoLimitedToVlimpersCommand, TestUser.VlimpersBeheerder)
-            .ThenThrows<InsufficientRights>();
+            .ThenThrows<InsufficientRights<VlimpersOnlyPolicy>>();
     }
 }

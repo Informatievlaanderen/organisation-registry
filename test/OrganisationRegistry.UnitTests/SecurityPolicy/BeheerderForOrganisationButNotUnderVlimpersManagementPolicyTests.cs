@@ -51,7 +51,7 @@ public class BeheerderForOrganisationButNotUnderVlimpersManagementPolicyTests
                     ovoNumber: ovoNumbers[_fixture.Create<int>() % ovoNumbers.Length])
                 .Check(user);
 
-        authorizationResult.ShouldFailWith<InsufficientRights>();
+        authorizationResult.ShouldFailWith<InsufficientRights<BeheerderForOrganisationButNotUnderVlimpersManagementPolicy>>();
     }
 
     [Theory]
@@ -88,6 +88,6 @@ public class BeheerderForOrganisationButNotUnderVlimpersManagementPolicyTests
                     ovoNumber: ovoNumbers[_fixture.Create<int>() % ovoNumbers.Length])
                 .Check(user);
 
-        authorizationResult.ShouldFailWith<InsufficientRights>();
+        authorizationResult.ShouldFailWith<InsufficientRights<BeheerderForOrganisationButNotUnderVlimpersManagementPolicy>>();
     }
 }

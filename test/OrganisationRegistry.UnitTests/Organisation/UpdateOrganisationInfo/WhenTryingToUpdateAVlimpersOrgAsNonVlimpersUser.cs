@@ -3,6 +3,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Handling.Authorization;
 using Infrastructure.Tests.Extensions.TestHelpers;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -71,6 +72,6 @@ public class
     [Fact]
     public async Task ThrowsAnException()
     {
-        await Given(Events).When(UpdateOrganisationInfoCommand, TestUser.User).ThenThrows<InsufficientRights>();
+        await Given(Events).When(UpdateOrganisationInfoCommand, TestUser.User).ThenThrows<InsufficientRights<BeheerderForOrganisationButNotUnderVlimpersManagementPolicy>>();
     }
 }

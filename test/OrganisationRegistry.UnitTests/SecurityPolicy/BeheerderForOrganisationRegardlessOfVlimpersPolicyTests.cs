@@ -80,6 +80,6 @@ public class BeheerderForOrganisationRegardlessOfVlimpersPolicyTests
             new BeheerderForOrganisationRegardlessOfVlimpersPolicy(ovoNumber: ovoNumbers[_fixture.Create<int>() % ovoNumbers.Length])
                 .Check(user);
 
-        authorizationResult.ShouldFailWith<InsufficientRights>();
+        authorizationResult.ShouldFailWith<InsufficientRights<BeheerderForOrganisationRegardlessOfVlimpersPolicy>>();
     }
 }

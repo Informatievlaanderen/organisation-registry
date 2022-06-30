@@ -64,7 +64,7 @@ public class OrganisationClassificationTypePolicyTests
             CreatePolicy(_fixture.Create<string>(), _regelgevingDbClassificationTypeId)
                 .Check(user);
 
-        authorizationResult.ShouldFailWith<InsufficientRights>();
+        authorizationResult.ShouldFailWith<InsufficientRights<OrganisationClassificationTypePolicy>>();
     }
 
     [Fact]
@@ -96,7 +96,7 @@ public class OrganisationClassificationTypePolicyTests
             CreatePolicy(ovoNumber, _regelgevingDbClassificationTypeId)
                 .Check(user);
 
-        authorizationResult.ShouldFailWith<InsufficientRights>();
+        authorizationResult.ShouldFailWith<InsufficientRights<OrganisationClassificationTypePolicy>>();
     }
 
     [Fact]
@@ -111,6 +111,6 @@ public class OrganisationClassificationTypePolicyTests
             CreatePolicy(_fixture.Create<string>(), _fixture.Create<Guid>())
                 .Check(user);
 
-        authorizationResult.ShouldFailWith<InsufficientRights>();
+        authorizationResult.ShouldFailWith<InsufficientRights<OrganisationClassificationTypePolicy>>();
     }
 }

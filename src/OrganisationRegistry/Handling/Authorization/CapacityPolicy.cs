@@ -37,6 +37,9 @@ public class CapacityPolicy : ISecurityPolicy
             !organisationCapacityIdsOwnedByRegelgevingDbBeheerder.Contains(_organisationCapacityId))
             return AuthorizationResult.Success();
 
-        return AuthorizationResult.Fail(new InsufficientRights());
+        return AuthorizationResult.Fail(InsufficientRights.CreateFor(this));
     }
+
+    public override string ToString()
+        => "Geen machtiging op hoedanigheid";
 }

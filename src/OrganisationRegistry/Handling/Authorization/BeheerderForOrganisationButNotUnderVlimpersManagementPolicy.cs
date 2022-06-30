@@ -25,6 +25,9 @@ public class BeheerderForOrganisationButNotUnderVlimpersManagementPolicy : ISecu
             user.IsDecentraalBeheerderFor(_ovoNumber))
             return AuthorizationResult.Success();
 
-        return AuthorizationResult.Fail(new InsufficientRights());
+        return AuthorizationResult.Fail(InsufficientRights.CreateFor(this));
     }
+
+    public override string ToString()
+        => "Geen machtiging op organisatie";
 }

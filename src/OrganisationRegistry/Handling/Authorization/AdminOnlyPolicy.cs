@@ -8,5 +8,8 @@ public class AdminOnlyPolicy : ISecurityPolicy
     public AuthorizationResult Check(IUser user)
         => user.IsInRole(Role.AlgemeenBeheerder) ?
             AuthorizationResult.Success() :
-            AuthorizationResult.Fail(new InsufficientRights());
+            AuthorizationResult.Fail(InsufficientRights.CreateFor(this));
+
+    public override string ToString()
+        => "Geen machtiging om deze actie uit te voeren";
 }
