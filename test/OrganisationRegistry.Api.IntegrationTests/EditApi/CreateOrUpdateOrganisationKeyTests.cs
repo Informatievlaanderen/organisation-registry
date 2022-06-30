@@ -85,7 +85,7 @@ public class CreateOrUpdateOrganisationKeyTests
                     {
                         KeyTypeId = _orafinKeyType,
                         KeyValue = "updates value",
-                        OrganisationKeyId = organisationKeyId
+                        OrganisationKeyId = organisationKeyId,
                     }),
                 Encoding.UTF8,
                 "application/json"));
