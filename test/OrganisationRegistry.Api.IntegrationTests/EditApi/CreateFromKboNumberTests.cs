@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Newtonsoft.Json;
+using OrganisationRegistry.Infrastructure.Authorization;
 using Xunit;
 
 [Collection(ApiTestsCollection.Name)]
@@ -18,8 +19,8 @@ public class CreateFromKboNumberTests
         _fixture = fixture;
     }
 
-    [Fact]
-    public async Task WithoutBearer_Returns401()
+    [Fact()]
+    public async Task WithoutBearer_ReturnsUnauthorized()
     {
         var response = await _fixture.HttpClient.PutAsync(
             "edit/organisations/kbo/0563634435",
@@ -29,25 +30,21 @@ public class CreateFromKboNumberTests
     }
 
     [Fact]
-    public async Task AsOrafin_Returns401()
+    public async Task AsOrafin_ReturnsForbidden()
     {
-        var httpClient = await _fixture.CreateHttpClientFor("orafinClient", "dv_organisatieregister_orafinbeheerder");
+        var httpClient = await _fixture.CreateOrafinClient();
 
-        var response = await httpClient.PutAsync(
-            "edit/organisations/kbo/0563634435",
-            new StringContent("{}", Encoding.UTF8, "application/json"));
+        var response = await CreateOrganisationFromKboNumber(httpClient);
 
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
 
     [Fact]
     public async Task AsCjmBeheerder_ReturnsCreated()
     {
-        var httpClient = await _fixture.CreateHttpClientFor("cjmClient", "dv_organisatieregister_cjmbeheerder");
+        var httpClient = await _fixture.CreateCjmClient();
 
-        var response = await httpClient.PutAsync(
-            "edit/organisations/kbo/0563634435",
-            new StringContent("{}", Encoding.UTF8, "application/json"));
+        var response = await CreateOrganisationFromKboNumber(httpClient);
 
         response.StatusCode.Should().Be(HttpStatusCode.Created);
         await VerifyContent(response);
@@ -56,15 +53,10 @@ public class CreateFromKboNumberTests
     [Fact]
     public async Task AsCjmBeheerder_DuplicateCallReturnsFound()
     {
-        var httpClient = await _fixture.CreateHttpClientFor("cjmClient", "dv_organisatieregister_cjmbeheerder");
+        var httpClient = await _fixture.CreateCjmClient();
 
-        await httpClient.PutAsync(
-            "edit/organisations/kbo/0563634435",
-            new StringContent("{}", Encoding.UTF8, "application/json"));
-
-        var response = await httpClient.PutAsync(
-            "edit/organisations/kbo/0563634435",
-            new StringContent("{}", Encoding.UTF8, "application/json"));
+        await CreateOrganisationFromKboNumber(httpClient);
+        var response = await CreateOrganisationFromKboNumber(httpClient);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         await VerifyContent(response);
@@ -76,6 +68,14 @@ public class CreateFromKboNumberTests
         var organisationResponse = JsonConvert.DeserializeObject<OrganisationResponse>(content);
         organisationResponse.Should().NotBeNull();
         organisationResponse.OvoNumber.Should().NotBeNullOrEmpty();
+    }
+
+    private static async Task<HttpResponseMessage> CreateOrganisationFromKboNumber(HttpClient httpClient)
+    {
+        var response = await httpClient.PutAsync(
+            "edit/organisations/kbo/0563634435",
+            new StringContent("{}", Encoding.UTF8, "application/json"));
+        return response;
     }
 
     private class OrganisationResponse

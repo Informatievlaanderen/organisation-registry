@@ -25,7 +25,7 @@ using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetai
 [ApiExplorerSettings(GroupName = "Organisatiesleutels")]
 [Consumes("application/json")]
 [Produces("application/json")]
-[Authorize(AuthenticationSchemes = AuthenticationSchemes.EditApi)]
+[Authorize(AuthenticationSchemes = AuthenticationSchemes.EditApi, Policy = PolicyNames.ORAFIN)]
 public class OrganisationKeyController : OrganisationRegistryController
 {
     public OrganisationKeyController(ICommandSender commandSender)

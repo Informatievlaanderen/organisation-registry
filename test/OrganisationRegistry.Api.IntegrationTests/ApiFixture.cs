@@ -6,32 +6,32 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Net.Http.Json;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
-using Backoffice.Organisation.Detail;
 using IdentityModel;
 using IdentityModel.Client;
 using Infrastructure;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
-using OrganisationClassificationType;
-using OrganisationClassificationType.Commands;
 using OrganisationRegistry.Infrastructure;
+using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Configuration;
 using SqlServer.Configuration;
 using SqlServer.Infrastructure;
 
 public class ApiFixture : IDisposable
 {
     private readonly IWebHost _webHost;
+    public IOrganisationRegistryConfiguration Configuration { get; }
     public const string ApiEndpoint = "http://localhost:5000/v1/";
     public const string Jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdF9oYXNoIjoiMklEMHdGR3l6WnJWaHRmbi00Ty1EQSIsImF1ZCI6WyJodHRwczovL2RpZW5zdHZlcmxlbmluZy10ZXN0LmJhc2lzcmVnaXN0ZXJzLnZsYWFuZGVyZW4iXSwiYXpwIjoiN2Q4MDExOTctNmQ0My00NzZhLTgzZWYtMzU4NjllZTUyZDg1IiwiZXhwIjoxODkzOTM2ODIzLCJmYW1pbHlfbmFtZSI6IkFwaSIsImdpdmVuX25hbWUiOiJUZXN0IiwiaWF0IjoxNTc4MzExNjMzLCJ2b19pZCI6IjEyMzk4Nzk4Ny0xMjMxMjMiLCJpc3MiOiJodHRwczovL2RpZW5zdHZlcmxlbmluZy10ZXN0LmJhc2lzcmVnaXN0ZXJzLnZsYWFuZGVyZW4iLCJ1cm46YmU6dmxhYW5kZXJlbjpkaWVuc3R2ZXJsZW5pbmc6YWNtaWQiOiJ2b19pZCIsInVybjpiZTp2bGFhbmRlcmVuOmFjbTpmYW1pbGllbmFhbSI6ImZhbWlseV9uYW1lIiwidXJuOmJlOnZsYWFuZGVyZW46YWNtOnZvb3JuYWFtIjoiZ2l2ZW5fbmFtZSIsInVybjpiZTp2bGFhbmRlcmVuOndlZ3dpanM6YWNtaWQiOiJ0ZXN0Iiwicm9sZSI6WyJhbGdlbWVlbkJlaGVlcmRlciJdLCJuYmYiOjE1NzgzOTY2MzN9.wWYDfwbcBxHMdaBIhoFH0UnXNl82lE_rsu-R49km1FM";
+    private const string OrafinClientId = "orafinClient";
+    private const string CjmClientId = "cjmClient";
+
     public HttpClient HttpClient { get; } = new()
     {
         BaseAddress = new Uri(ApiEndpoint),
@@ -87,10 +87,9 @@ public class ApiFixture : IDisposable
             hostBuilder = hostBuilder.UseKestrel(server => server.AddServerHeader = false);
         }
 
-        var configurationRoot = builder.Build();
         _webHost = hostBuilder
             .UseContentRoot(Directory.GetCurrentDirectory())
-            .UseConfiguration(configurationRoot)
+            .UseConfiguration(builder.Build())
             .UseStartup<Startup>()
             .Build();
 
@@ -102,9 +101,16 @@ public class ApiFixture : IDisposable
             ApiEndpoint,
             Jwt);
 
-        PostJson("locationtypes", $"{{'id': '{configurationRoot["Api:KboV2RegisteredOfficeLocationTypeId"]}', 'name': 'KBO Location'}}");
-        PostJson("organisationclassificationtypes", $"{{'id': '{configurationRoot["Api:KboV2LegalFormOrganisationClassificationTypeId"]}', 'name': 'KBO Classification'}}");
-        PostJson("labeltypes", $"{{'id': '{configurationRoot["Api:KboV2FormalNameLabelTypeId"]}', 'name': 'KBO label'}}");
+        Configuration = _webHost.Services.GetRequiredService<IOrganisationRegistryConfiguration>();
+
+        CreateParameter("locationtypes", Configuration.Kbo.KboV2RegisteredOfficeLocationTypeId, "KBO Location");
+        CreateParameter("organisationclassificationtypes", Configuration.Kbo.KboV2LegalFormOrganisationClassificationTypeId, "KBO Classification");
+        CreateParameter("labeltypes", Configuration.Kbo.KboV2FormalNameLabelTypeId, "KBO label");
+    }
+
+    private void CreateParameter(string requestUri, Guid id, string name)
+    {
+        PostJson(requestUri, $"{{'id': '{id}', 'name': '{name}'}}");
     }
 
     private void PostJson(string requestUri, string body)
@@ -117,7 +123,7 @@ public class ApiFixture : IDisposable
                 "application/json")).GetAwaiter().GetResult();
     }
 
-    public async Task<HttpClient> CreateHttpClientFor(string clientId, string scope)
+    private static async Task<HttpClient> CreateMachine2MachineClientFor(string clientId, string scope)
     {
         var tokenClient = new TokenClient(
             () => new HttpClient(),
@@ -143,6 +149,12 @@ public class ApiFixture : IDisposable
         httpClientFor.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         return httpClientFor;
     }
+
+    public async Task<HttpClient> CreateOrafinClient()
+        => await CreateMachine2MachineClientFor(OrafinClientId, AcmIdmConstants.Scopes.OrafinBeheerder);
+
+    public async Task<HttpClient> CreateCjmClient()
+        => await CreateMachine2MachineClientFor(CjmClientId, AcmIdmConstants.Scopes.CjmBeheerder);
 
 
     protected virtual void Dispose(bool disposing)
