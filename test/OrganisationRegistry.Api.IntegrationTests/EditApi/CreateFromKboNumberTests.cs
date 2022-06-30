@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Newtonsoft.Json;
 using OrganisationRegistry.Infrastructure.Authorization;
+using Tests.Shared;
 using Xunit;
 
 [Collection(ApiTestsCollection.Name)]
@@ -19,7 +20,7 @@ public class CreateFromKboNumberTests
         _fixture = fixture;
     }
 
-    [Fact()]
+    [EnvVarIgnoreFact]
     public async Task WithoutBearer_ReturnsUnauthorized()
     {
         var response = await _fixture.HttpClient.PutAsync(
@@ -29,7 +30,7 @@ public class CreateFromKboNumberTests
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
-    [Fact]
+    [EnvVarIgnoreFact]
     public async Task AsOrafin_ReturnsForbidden()
     {
         var httpClient = await _fixture.CreateOrafinClient();
@@ -39,7 +40,7 @@ public class CreateFromKboNumberTests
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
 
-    [Fact]
+    [EnvVarIgnoreFact]
     public async Task AsCjmBeheerder_ReturnsCreated()
     {
         var httpClient = await _fixture.CreateCjmClient();
@@ -50,7 +51,7 @@ public class CreateFromKboNumberTests
         await VerifyContent(response);
     }
 
-    [Fact]
+    [EnvVarIgnoreFact]
     public async Task AsCjmBeheerder_DuplicateCallReturnsFound()
     {
         var httpClient = await _fixture.CreateCjmClient();

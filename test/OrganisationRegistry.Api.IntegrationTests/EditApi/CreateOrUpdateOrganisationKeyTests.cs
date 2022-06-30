@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Edit.Organisation.Key;
 using FluentAssertions;
 using Newtonsoft.Json;
+using Tests.Shared;
 using Xunit;
 
 [Collection(ApiTestsCollection.Name)]
@@ -25,7 +26,7 @@ public class CreateOrUpdateOrganisationKeyTests
         CreateKeyType();
     }
 
-    [Fact]
+    [EnvVarIgnoreFact]
     public async Task WithoutBearer_ReturnsUnauthorized()
     {
         var organisationId = Guid.NewGuid();
@@ -40,7 +41,7 @@ public class CreateOrUpdateOrganisationKeyTests
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
-    [Fact]
+    [EnvVarIgnoreFact]
     public async Task AsOrafin_CanCreateAndUpdate()
     {
         var organisationId = Guid.NewGuid();
@@ -76,7 +77,7 @@ public class CreateOrUpdateOrganisationKeyTests
         return updateResponse;
     }
 
-    [Fact]
+    [EnvVarIgnoreFact]
     public async Task AsCjmBeheerder_ReturnsForbidden()
     {
         var organisationId = Guid.NewGuid();
