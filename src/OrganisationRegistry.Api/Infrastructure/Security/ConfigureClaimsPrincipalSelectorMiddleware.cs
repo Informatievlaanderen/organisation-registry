@@ -2,6 +2,7 @@ namespace OrganisationRegistry.Api.Infrastructure.Security;
 
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using OrganisationRegistry.Infrastructure.Authorization;
 
@@ -20,7 +21,7 @@ public class ConfigureClaimsPrincipalSelectorMiddleware
         {
             try
             {
-                var authInfo = httpContextAccessor.HttpContext?.GetAuthenticateInfo();
+                var authInfo = httpContextAccessor.HttpContext?.GetAuthenticateInfo(JwtBearerDefaults.AuthenticationScheme);
                 if (authInfo?.Principal == null)
                     return null!;
                 if (!(authInfo.Principal.Identity is ClaimsIdentity user))

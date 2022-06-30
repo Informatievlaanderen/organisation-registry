@@ -37,7 +37,6 @@ public class OrganisationKeyController : OrganisationRegistryController
     /// <remarks>Voegt een organisatiesleutel toe aan een organisatie.
     /// <br />
     /// Organisatiesleutels van hetzelfde type mogen niet overlappen in tijd.</remarks>
-    /// <param name="securityService"></param>
     /// <param name="organisationId">Id van de organisatie.</param>
     /// <param name="message"></param>
     /// <response code="201">Als het verzoek aanvaard is.</response>
@@ -51,14 +50,10 @@ public class OrganisationKeyController : OrganisationRegistryController
     [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples))]
     [SwaggerLocationHeader]
     public async Task<IActionResult> Post(
-        [FromServices] IEditSecurityService securityService,
         [FromRoute] Guid organisationId,
         [FromBody] AddOrganisationKeyRequest message)
     {
         var internalMessage = new AddOrganisationKeyInternalRequest(organisationId, message);
-
-        if (!securityService.CanAddKey(message.KeyTypeId))
-            return Forbid();
 
         if (!TryValidateModel(internalMessage))
             return BadRequest(ModelState);

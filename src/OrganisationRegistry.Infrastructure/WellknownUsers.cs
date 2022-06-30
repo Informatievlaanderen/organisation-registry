@@ -10,6 +10,7 @@ public class WellknownUsers
     public static User KboSyncService => Create("KboSyncService", Role.AutomatedTask);
 
     public static User Orafin => Create("Orafin", "Edit Api", "Orafin Edit Api", Role.Orafin);
+    public static User Cjm => Create("Cjm", "Edit Api", "Cjm Edit Api", Role.AlgemeenBeheerder);
 
     public static User Magda => Create("Magda", "Reregistrator", "Magda Reregistrator", Role.AutomatedTask);
 

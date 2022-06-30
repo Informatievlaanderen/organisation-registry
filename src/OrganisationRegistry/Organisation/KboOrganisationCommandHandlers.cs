@@ -23,6 +23,7 @@ using IOrganisationRegistryConfiguration = Infrastructure.Configuration.IOrganis
 public class KboOrganisationCommandHandlers :
     BaseCommandHandler<KboOrganisationCommandHandlers>,
     ICommandEnvelopeHandler<CreateOrganisationFromKbo>,
+    ICommandEnvelopeHandler<CreateOrganisationFromKboNumber>,
     ICommandEnvelopeHandler<CoupleOrganisationToKbo>,
     ICommandEnvelopeHandler<CancelCouplingWithKbo>,
     ICommandEnvelopeHandler<SyncOrganisationWithKbo>,
