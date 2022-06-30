@@ -1,11 +1,5 @@
 ﻿﻿identifier|ovonummer|altLabelId|alternativeLabel|startDate|endDate
-101|OVO000101|Engelse naam|Department of Town and Country Planning, Housing Policy and Immovable Heritage|2006-07-01|9999-12-99
-101|OVO000101|Duitse naam|Raumordnung, Wohnpolitik und unbewegliches Kulturerbe|2006-07-01|9999-12-99
-101|OVO000101|Franse naam|Département de l'Aménagement du Territoire, Politique du Logement et Patrimoine immobilier|2006-07-01|9999-12-99
-103|OVO000103|Engelse naam|Flemish Social Housing Company|2006-07-01|9999-12-99
-103|OVO000103|Duitse naam|Flämische Sozialwohnungsbaugesellschaft|2006-07-01|9999-12-99
-103|OVO000103|Franse naam|Société flamande du Logement social|2006-07-01|9999-12-99
+101|OVO000001|Engelse naam|Department of Town and Country Planning, Housing Policy and Immovable Heritage|2006-07-01|9999-12-99
 105|OVO000105|Franse naam|Inspection de l&#039;Aménagement du Territoire, de la Politique du Logement et du Patrimoine immobilier|2006-07-01|9999-12-99
 105|OVO000105|Duitse naam|Inspektion für Raumordnung, Wohnpolitik und unbewegliches Kulturerbe|2006-07-01|9999-12-99
 105|OVO000105|Engelse naam|Inspectorate for Spatial Planning, Housing Policy and Immovable Heritage|2006-07-01|9999-12-99
-107|OVO000107|Franse naam|Conseil Consultatif Stratégique de l' Aménagement du Territoire et Patrimoine immobilier|2006-07-01|9999-12-99

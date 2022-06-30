@@ -1,15 +1,4 @@
 ﻿﻿id|identifier|Name
-4|DVO|Diensten Vlaamse Overheid
-10|ICTCONTRACT|Raamcontract ICT
-9|INTEGRITEIT|Integriteitsbeleid
-13|VASTGOED|Vastgoedbeleid
-5|AUDIT|Audituniversum Audit Vlaanderen
+0|AUDIT|Audituniversum Audit Vlaanderen
 1|BBB|Kaderdecreet Beter Bestuurllijk Beleid
-11|DEUGDBEST|Decreet Deugdelijk Bestuur
-7|DIVERSITEIT|Diversiteitsbeleid
-0|ESR|Interne rapportering Vlaamse deelstaatoverheid
-8|GDPB|Gemeenschappelijke Dienst Preventie en Bescherming
-12|NBB|Rekendecreet
-6|REKENHOF|Werkgebied Rekenhof
-3|SA|Sectoraal Akkoord
 2|SC18|Sectorcomite XVIII
