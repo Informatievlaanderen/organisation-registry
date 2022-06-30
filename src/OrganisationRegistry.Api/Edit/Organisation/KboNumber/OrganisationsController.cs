@@ -29,7 +29,7 @@ using Swashbuckle.AspNetCore.Filters;
 [ApiExplorerSettings(GroupName = "Organisaties")]
 [Consumes("application/json")]
 [Produces("application/json")]
-[Authorize(AuthenticationSchemes = AuthenticationSchemes.EditApi)]
+[Authorize(AuthenticationSchemes = AuthenticationSchemes.EditApi, Policy = PolicyNames.CJM)]
 public class OrganisationsController : OrganisationRegistryController
 {
     public OrganisationsController(ICommandSender commandSender) : base(commandSender)
@@ -62,7 +62,6 @@ public class OrganisationsController : OrganisationRegistryController
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(OvoNumberResponseExamples))]
     [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples))]
     [SwaggerLocationHeader]
-    [Authorize(AuthenticationSchemes = AuthenticationSchemes.EditApi, Policy = PolicyNames.CJM)]
     public async Task<IActionResult> Put([FromServices] OrganisationRegistryContext context, [FromServices] IOvoNumberGenerator ovoNumberGenerator, [FromRoute] string kboNumber)
     {
         var maybeOrganisation = await context.OrganisationDetail.SingleOrDefaultAsync(x => x.KboNumber == kboNumber);
