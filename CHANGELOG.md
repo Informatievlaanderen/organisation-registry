@@ -1,3 +1,10 @@
+# [1.218.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.217.2...v1.218.0) (2022-06-30)
+
+
+### Features
+
+* or-1093 streaming search for Power BI ([4caec99](https://github.com/informatievlaanderen/organisation-registry/commit/4caec996ecca0be8e5b5854ec2fee1846684ed04))
+
 ## [1.217.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.217.1...v1.217.2) (2022-06-29)
 
 
