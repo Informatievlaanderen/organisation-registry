@@ -60,6 +60,21 @@ public class CreateOrUpdateOrganisationKeyTests
         updateResponse.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
+    [EnvVarIgnoreFact]
+    public async Task AsCjmBeheerder_ReturnsForbidden()
+    {
+        var organisationId = Guid.NewGuid();
+        var createResponse = await CreateOrganisation(organisationId);
+        createResponse.StatusCode.Should().Be(HttpStatusCode.Created);
+
+        var httpClient = await _fixture.CreateCjmClient();
+
+        var organisationKeyId = Guid.NewGuid();
+        var response = await CreateKey(organisationId, organisationKeyId, httpClient);
+
+        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+    }
+
     private async Task<HttpResponseMessage> UpdateKey(Guid organisationId, Guid organisationKeyId, HttpClient httpClient)
     {
         var updateResponse = await httpClient.PutAsync(
@@ -75,21 +90,6 @@ public class CreateOrUpdateOrganisationKeyTests
                 Encoding.UTF8,
                 "application/json"));
         return updateResponse;
-    }
-
-    [EnvVarIgnoreFact]
-    public async Task AsCjmBeheerder_ReturnsForbidden()
-    {
-        var organisationId = Guid.NewGuid();
-        var createResponse = await CreateOrganisation(organisationId);
-        createResponse.StatusCode.Should().Be(HttpStatusCode.Created);
-
-        var httpClient = await _fixture.CreateCjmClient();
-
-        var organisationKeyId = Guid.NewGuid();
-        var response = await CreateKey(organisationId, organisationKeyId, httpClient);
-
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
 
     private async Task<HttpResponseMessage> CreateOrganisation(Guid organisationId)
