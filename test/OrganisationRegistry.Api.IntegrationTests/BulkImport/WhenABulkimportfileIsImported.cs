@@ -44,7 +44,7 @@ public class WhenABulkimportfileIsImported
         statusResultContent.Should().BeEquivalentTo("{\"imports\":[]}");
     }
 
-    [Fact]
+    [Fact(Skip = "Unstable because of dependency on other tests (not) running. Needs to be redone to skip ovo number check, or put in separate context")]
     public async Task GivenAValidFile_ThenItAppearsInTheStatusList_AndAfterAWhileTheFileIsProcessedSuccessfully()
     {
         var client = _fixture.HttpClient;
