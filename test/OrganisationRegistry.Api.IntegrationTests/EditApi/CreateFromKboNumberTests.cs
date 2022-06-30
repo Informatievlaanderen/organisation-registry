@@ -23,10 +23,7 @@ public class CreateFromKboNumberTests
     [EnvVarIgnoreFact]
     public async Task WithoutBearer_ReturnsUnauthorized()
     {
-        var response = await _fixture.HttpClient.PutAsync(
-            "edit/organisations/kbo/0563634435",
-            new StringContent("{}", Encoding.UTF8, "application/json"));
-
+        var response = await CreateOrganisationFromKboNumber(_fixture.HttpClient);
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
