@@ -1,3 +1,10 @@
+## [1.220.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.220.0...v1.220.1) (2022-07-01)
+
+
+### Bug Fixes
+
+* unittests with remote server ([d78cbb4](https://github.com/informatievlaanderen/organisation-registry/commit/d78cbb49dc0fd67dbd1d6ed29797d5d154b66ae6))
+
 # [1.220.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.219.0...v1.220.0) (2022-07-01)
 
 
