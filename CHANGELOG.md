@@ -1,3 +1,10 @@
+## [1.220.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.220.1...v1.220.2) (2022-07-01)
+
+
+### Bug Fixes
+
+* scheduled commands service doesn't stop when fetching of commands fails ([a88bccb](https://github.com/informatievlaanderen/organisation-registry/commit/a88bccb70254a3718732fc6899d727654439a2a5))
+
 ## [1.220.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.220.0...v1.220.1) (2022-07-01)
 
 
