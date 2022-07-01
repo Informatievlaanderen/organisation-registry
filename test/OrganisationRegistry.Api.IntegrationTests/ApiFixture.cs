@@ -26,6 +26,7 @@ using SqlServer.Infrastructure;
 public class ApiFixture : IDisposable
 {
     private readonly IWebHost _webHost;
+    private IConfigurationRoot? _configurationRoot;
     public IOrganisationRegistryConfiguration Configuration { get; }
     public const string ApiEndpoint = "http://localhost:5000/v1/";
     public const string Jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdF9oYXNoIjoiMklEMHdGR3l6WnJWaHRmbi00Ty1EQSIsImF1ZCI6WyJodHRwczovL2RpZW5zdHZlcmxlbmluZy10ZXN0LmJhc2lzcmVnaXN0ZXJzLnZsYWFuZGVyZW4iXSwiYXpwIjoiN2Q4MDExOTctNmQ0My00NzZhLTgzZWYtMzU4NjllZTUyZDg1IiwiZXhwIjoxODkzOTM2ODIzLCJmYW1pbHlfbmFtZSI6IkFwaSIsImdpdmVuX25hbWUiOiJUZXN0IiwiaWF0IjoxNTc4MzExNjMzLCJ2b19pZCI6IjEyMzk4Nzk4Ny0xMjMxMjMiLCJpc3MiOiJodHRwczovL2RpZW5zdHZlcmxlbmluZy10ZXN0LmJhc2lzcmVnaXN0ZXJzLnZsYWFuZGVyZW4iLCJ1cm46YmU6dmxhYW5kZXJlbjpkaWVuc3R2ZXJsZW5pbmc6YWNtaWQiOiJ2b19pZCIsInVybjpiZTp2bGFhbmRlcmVuOmFjbTpmYW1pbGllbmFhbSI6ImZhbWlseV9uYW1lIiwidXJuOmJlOnZsYWFuZGVyZW46YWNtOnZvb3JuYWFtIjoiZ2l2ZW5fbmFtZSIsInVybjpiZTp2bGFhbmRlcmVuOndlZ3dpanM6YWNtaWQiOiJ0ZXN0Iiwicm9sZSI6WyJhbGdlbWVlbkJlaGVlcmRlciJdLCJuYmYiOjE1NzgzOTY2MzN9.wWYDfwbcBxHMdaBIhoFH0UnXNl82lE_rsu-R49km1FM";
@@ -87,9 +88,10 @@ public class ApiFixture : IDisposable
             hostBuilder = hostBuilder.UseKestrel(server => server.AddServerHeader = false);
         }
 
+        _configurationRoot = builder.Build();
         _webHost = hostBuilder
             .UseContentRoot(Directory.GetCurrentDirectory())
-            .UseConfiguration(builder.Build())
+            .UseConfiguration(_configurationRoot)
             .UseStartup<Startup>()
             .Build();
 
@@ -123,13 +125,15 @@ public class ApiFixture : IDisposable
                 "application/json")).GetAwaiter().GetResult();
     }
 
-    private static async Task<HttpClient> CreateMachine2MachineClientFor(string clientId, string scope)
+    private async Task<HttpClient> CreateMachine2MachineClientFor(string clientId, string scope)
     {
+        var editApiConfiguration = _configurationRoot!.GetSection(EditApiConfigurationSection.Name)
+            .Get<EditApiConfigurationSection>();
         var tokenClient = new TokenClient(
             () => new HttpClient(),
             new TokenClientOptions
             {
-                Address = "http://localhost:5050/connect/token",
+                Address = $"{editApiConfiguration.Authority}/connect/token",
                 ClientId = clientId,
                 ClientSecret = "secret",
                 Parameters = new Parameters(
