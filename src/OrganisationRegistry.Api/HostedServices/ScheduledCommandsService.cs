@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using OrganisationRegistry.Infrastructure;
 using OrganisationRegistry.Infrastructure.Commands;
@@ -85,17 +86,32 @@ public class ScheduledCommandsService : BackgroundService
 
         var commands = new List<ICommand>();
 
-        commands.AddRange(await context.ActiveOrganisationParentList.GetScheduledCommandsToExecute(today));
-        commands.AddRange(await context.FutureActiveOrganisationParentList.GetScheduledCommandsToExecute(today));
-        commands.AddRange(await context.ActiveBodyOrganisationList.GetScheduledCommandsToExecute(today));
-        commands.AddRange(await context.FutureActiveBodyOrganisationList.GetScheduledCommandsToExecute(today));
-        commands.AddRange(await context.ActivePeopleAssignedToBodyMandatesList.GetScheduledCommandsToExecute(today));
-        commands.AddRange(await context.FuturePeopleAssignedToBodyMandatesList.GetScheduledCommandsToExecute(today));
-        commands.AddRange(await context.ActiveOrganisationFormalFrameworkList.GetScheduledCommandsToExecute(today));
-        commands.AddRange(
-            await context.FutureActiveOrganisationFormalFrameworkList.GetScheduledCommandsToExecute(today));
-        commands.AddRange(await context.OrganisationCapacityList.GetScheduledCommandsToExecute(today));
+        await commands.TryAddRange(_logger, today, context.ActiveOrganisationParentList, ScheduledCommands.GetScheduledCommandsToExecute);
+        await commands.TryAddRange(_logger, today, context.FutureActiveOrganisationParentList, ScheduledCommands.GetScheduledCommandsToExecute);
+        await commands.TryAddRange(_logger, today, context.ActiveBodyOrganisationList, ScheduledCommands.GetScheduledCommandsToExecute);
+        await commands.TryAddRange(_logger, today, context.FutureActiveBodyOrganisationList, ScheduledCommands.GetScheduledCommandsToExecute);
+        await commands.TryAddRange(_logger, today, context.ActivePeopleAssignedToBodyMandatesList, ScheduledCommands.GetScheduledCommandsToExecute);
+        await commands.TryAddRange(_logger, today, context.FuturePeopleAssignedToBodyMandatesList, ScheduledCommands.GetScheduledCommandsToExecute);
+        await commands.TryAddRange(_logger, today, context.ActiveOrganisationFormalFrameworkList, ScheduledCommands.GetScheduledCommandsToExecute);
+        await commands.TryAddRange(_logger, today, context.FutureActiveOrganisationFormalFrameworkList, ScheduledCommands.GetScheduledCommandsToExecute);
+        await commands.TryAddRange(_logger, today, context.OrganisationCapacityList, ScheduledCommands.GetScheduledCommandsToExecute);
 
         return commands;
+    }
+}
+
+public static class ListOfICommandExtensions
+{
+    public static async Task TryAddRange<T>(this List<ICommand> list, ILogger logger, DateTime date, DbSet<T> dbSet, Func<DbSet<T>, DateTime, Task<List<ICommand>>> getRange)
+        where T : class
+    {
+        try
+        {
+            list.AddRange(await getRange(dbSet, date));
+        }
+        catch (Exception e)
+        {
+            logger.LogCritical(e, "An error occured while retrieving scheduled Commands From: {Commands}", typeof(T).Name);
+        }
     }
 }

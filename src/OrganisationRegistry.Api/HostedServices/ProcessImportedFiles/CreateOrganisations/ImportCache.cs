@@ -25,7 +25,7 @@ public class ImportCache
         OrganisationRegistryContext context,
         IEnumerable<ParsedRecord<DeserializedRecord>> parsedRecords)
         => new(
-            GetOrganisationsInScope(context, parsedRecords).AsNoTracking(),
+            GetOrganisationsInScope(context, parsedRecords).AsNoTracking().ToList(),
             GetLabelTypes(context));
 
     private static IQueryable<OrganisationListItem> GetOrganisationsInScope(OrganisationRegistryContext context, IEnumerable<ParsedRecord<DeserializedRecord>> parsedRecords)
