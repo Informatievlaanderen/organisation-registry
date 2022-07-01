@@ -24,7 +24,7 @@ export default [
   {
     roles: [],
     title: "Rapportering",
-    to: { path: "/../#/manage/report" },
+    to: { path: "/../#/report" },
   },
   {
     roles: [Roles.AlgemeenBeheerder],
