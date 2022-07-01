@@ -196,8 +196,19 @@ public class Startup
                     {
                         Authorization = options =>
                         {
-                            options.AddPolicy(PolicyNames.CJM, builder => builder.RequireClaim(AcmIdmConstants.Claims.Scope, AcmIdmConstants.Scopes.CjmBeheerder));
-                            options.AddPolicy(PolicyNames.ORAFIN, builder => builder.RequireClaim(AcmIdmConstants.Claims.Scope, AcmIdmConstants.Scopes.OrafinBeheerder));
+                            options.AddPolicy(
+                                PolicyNames.CJM,
+                                builder => builder.RequireClaim(
+                                    AcmIdmConstants.Claims.Scope,
+                                    AcmIdmConstants.Scopes.CjmBeheerder,
+                                    AcmIdmConstants.Scopes.TestClient));
+
+                            options.AddPolicy(
+                                PolicyNames.ORAFIN,
+                                builder => builder.RequireClaim(
+                                    AcmIdmConstants.Claims.Scope,
+                                    AcmIdmConstants.Scopes.OrafinBeheerder,
+                                    AcmIdmConstants.Scopes.TestClient));
                         },
                         ConfigureJsonOptions = options => { options.SerializerSettings.ConfigureForOrganisationRegistry(); },
                         ConfigureMvcCore = cfg =>
