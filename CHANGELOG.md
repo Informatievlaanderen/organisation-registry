@@ -1,3 +1,11 @@
+# [1.220.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.219.0...v1.220.0) (2022-07-01)
+
+
+### Features
+
+* or-763 allow testclient in policies ([08a827b](https://github.com/informatievlaanderen/organisation-registry/commit/08a827b3d34bcbbb9d697ed7a3445647b390b32c))
+* or-763 fix link ([1e768d5](https://github.com/informatievlaanderen/organisation-registry/commit/1e768d50247729e4867d79aff7ad881055e3d261))
+
 # [1.219.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.218.1...v1.219.0) (2022-06-30)
 
 
