@@ -1,3 +1,10 @@
+# [1.221.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.220.2...v1.221.0) (2022-07-04)
+
+
+### Features
+
+* or-1113 powerbi featureflag ([350993c](https://github.com/informatievlaanderen/organisation-registry/commit/350993cb6d5ad97ffcca1b47c95573951a4def48))
+
 ## [1.220.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.220.1...v1.220.2) (2022-07-01)
 
 
