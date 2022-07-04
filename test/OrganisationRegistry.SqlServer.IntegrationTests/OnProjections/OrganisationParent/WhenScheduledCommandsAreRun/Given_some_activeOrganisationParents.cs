@@ -1,11 +1,11 @@
 ﻿namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.OrganisationParent.WhenScheduledCommandsAreRun;
 
-using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoFixture;
-using FluentAssertions;
+using Moq;
 using Organisation.ScheduledActions.Parent;
-using OrganisationRegistry.Infrastructure.Commands;
+using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Organisation;
 using Xunit;
 
@@ -22,7 +22,7 @@ public class Given_Some_ActiveOrganisationParents
         var activeOrganisationParent4 = fixture.Create<ActiveOrganisationParentListItem>();
         var activeOrganisationParent5 = fixture.Create<ActiveOrganisationParentListItem>();
 
-        var (service, dateTimeProviderStub) = await ScheduledCommandsScenario.Arrange((testContext, today) =>
+        var (service, dateTimeProviderStub, commandSenderMock) = await ScheduledCommandsScenario.Arrange((testContext, today) =>
         {
             activeOrganisationParent1.ValidTo = today.AddDays(-3);
             testContext.ActiveOrganisationParentList.Add(activeOrganisationParent1);
@@ -40,15 +40,10 @@ public class Given_Some_ActiveOrganisationParents
             testContext.ActiveOrganisationParentList.Add(activeOrganisationParent5);
         });
 
-        var commands = await service.GetCommands(dateTimeProviderStub.Today);
+        await service.SendCommands(dateTimeProviderStub.Today, CancellationToken.None);
 
-        var expectedCommands = new List<ICommand>
-        {
-            new UpdateCurrentOrganisationParent(new OrganisationId(activeOrganisationParent1.OrganisationId)),
-            new UpdateCurrentOrganisationParent(new OrganisationId(activeOrganisationParent3.OrganisationId)),
-            new UpdateCurrentOrganisationParent(new OrganisationId(activeOrganisationParent4.OrganisationId)),
-        };
-
-        commands.Should().BeEquivalentTo(expectedCommands);
+        commandSenderMock.Verify(sender => sender.Send(new UpdateCurrentOrganisationParent(new OrganisationId(activeOrganisationParent1.OrganisationId)), It.IsAny<IUser>()), Times.Once);
+        commandSenderMock.Verify(sender => sender.Send(new UpdateCurrentOrganisationParent(new OrganisationId(activeOrganisationParent3.OrganisationId)), It.IsAny<IUser>()), Times.Once);
+        commandSenderMock.Verify(sender => sender.Send(new UpdateCurrentOrganisationParent(new OrganisationId(activeOrganisationParent4.OrganisationId)), It.IsAny<IUser>()), Times.Once);
     }
 }

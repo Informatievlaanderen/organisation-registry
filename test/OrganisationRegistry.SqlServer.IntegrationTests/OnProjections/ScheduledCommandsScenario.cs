@@ -14,7 +14,7 @@ using UnitTests;
 
 public class ScheduledCommandsScenario
 {
-    public static async Task<(ScheduledCommandsService service, DateTimeProviderStub dateTimeProviderStub)> Arrange(Action<OrganisationRegistryContext, DateTime> setup)
+    public static async Task<(ScheduledCommandsService service, DateTimeProviderStub dateTimeProviderStub, Mock<ICommandSender> commandSender)> Arrange(Action<OrganisationRegistryContext, DateTime> setup)
     {
         var contextOptions = new DbContextOptionsBuilder<OrganisationRegistryContext>()
             .UseInMemoryDatabase(
@@ -26,12 +26,12 @@ public class ScheduledCommandsScenario
         var dateTimeProviderStub = new DateTimeProviderStub(new DateTime(2022, 2, 2));
 
         var loggerMock = new Mock<ILogger<ScheduledCommandsService>>().Object;
-        var commandSenderMock = new Mock<ICommandSender>().Object;
+        var commandSenderMock = new Mock<ICommandSender>();
 
         await using var testContext = testContextFactory.Create();
         setup(testContext, dateTimeProviderStub.Today);
         await testContext.SaveChangesAsync();
 
-        return (new ScheduledCommandsService(testContextFactory, dateTimeProviderStub, commandSenderMock, new OrganisationRegistryConfigurationStub(), loggerMock), dateTimeProviderStub);
+        return (new ScheduledCommandsService(testContextFactory, dateTimeProviderStub, commandSenderMock.Object, new OrganisationRegistryConfigurationStub(), loggerMock), dateTimeProviderStub, commandSenderMock);
     }
 }

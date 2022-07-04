@@ -1,10 +1,11 @@
 ﻿namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.OrganisationCapacity.WhenScheduledCommandsAreRun;
 
-using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoFixture;
-using FluentAssertions;
+using Moq;
 using Organisation;
+using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Commands;
 using Xunit;
 
@@ -17,7 +18,7 @@ public class Bugfix_Given_An_OrganisationCapacity_ValidFrom_Null_ValidTo_Null_Is
         var fixture = new Fixture();
         var organisationCapacity = fixture.Create<OrganisationCapacityListItem>();
 
-        var (service, dateTimeProviderStub) = await ScheduledCommandsScenario.Arrange((testContext, _) =>
+        var (service, dateTimeProviderStub, commandSenderMock) = await ScheduledCommandsScenario.Arrange((testContext, _) =>
         {
             // should be inactive -> is active (a command)
             organisationCapacity.ValidFrom = null;
@@ -26,8 +27,8 @@ public class Bugfix_Given_An_OrganisationCapacity_ValidFrom_Null_ValidTo_Null_Is
             testContext.OrganisationCapacityList.Add(organisationCapacity);
         });
 
-        var commands = await service.GetCommands(dateTimeProviderStub.Today);
+        await service.SendCommands(dateTimeProviderStub.Today, CancellationToken.None);
 
-        commands.Should().BeEquivalentTo(new List<ICommand>());
+        commandSenderMock.Verify(sender => sender.Send(It.IsAny<ICommand>(), It.IsAny<IUser>()), Times.Never());
     }
 }

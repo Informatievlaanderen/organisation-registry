@@ -1,6 +1,8 @@
 namespace OrganisationRegistry.Body;
 
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 public class UpdateCurrentPersonAssignedToBodyMandate : BaseCommand<BodyId>
 {
@@ -16,7 +18,9 @@ public class UpdateCurrentPersonAssignedToBodyMandate : BaseCommand<BodyId>
         MandatesToUpdate = mandatesToUpdate;
     }
 
-    protected bool Equals(UpdateCurrentPersonAssignedToBodyMandate other) => BodyId.Equals(other.BodyId);
+    protected bool Equals(UpdateCurrentPersonAssignedToBodyMandate other)
+        => BodyId.Equals(other.BodyId)
+           && MandatesToUpdate.SequenceEqual(other.MandatesToUpdate);
 
     public override bool Equals(object? obj)
     {
@@ -27,5 +31,5 @@ public class UpdateCurrentPersonAssignedToBodyMandate : BaseCommand<BodyId>
     }
 
     public override int GetHashCode()
-        => BodyId.GetHashCode();
+        => HashCode.Combine(BodyId, MandatesToUpdate);
 }

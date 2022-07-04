@@ -1,12 +1,12 @@
 ﻿namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.OrganisationFormalFramework.WhenScheduledCommandsAreRun;
 
-using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoFixture;
-using FluentAssertions;
+using Moq;
 using Organisation.ScheduledActions.FormalFramework;
 using OrganisationRegistry.FormalFramework;
-using OrganisationRegistry.Infrastructure.Commands;
+using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Organisation;
 using Xunit;
 
@@ -23,7 +23,7 @@ public class Given_Some_ActiveOrganisationFormalFrameworks
         var activeOrganisationFormalFramework4 = fixture.Create<ActiveOrganisationFormalFrameworkListItem>();
         var activeOrganisationFormalFramework5 = fixture.Create<ActiveOrganisationFormalFrameworkListItem>();
 
-        var (service, dateTimeProviderStub) = await ScheduledCommandsScenario.Arrange((testContext, today) =>
+        var (service, dateTimeProviderStub, commandSenderMock) = await ScheduledCommandsScenario.Arrange((testContext, today) =>
         {
             activeOrganisationFormalFramework1.ValidTo = today.AddDays(-3);
             testContext.ActiveOrganisationFormalFrameworkList.Add(activeOrganisationFormalFramework1);
@@ -41,21 +41,16 @@ public class Given_Some_ActiveOrganisationFormalFrameworks
             testContext.ActiveOrganisationFormalFrameworkList.Add(activeOrganisationFormalFramework5);
         });
 
-        var commands = await service.GetCommands(dateTimeProviderStub.Today);
+        await service.SendCommands(dateTimeProviderStub.Today, CancellationToken.None);
 
-        var expectedCommands = new List<ICommand>
-        {
-            new UpdateOrganisationFormalFrameworkParents(
-                new OrganisationId(activeOrganisationFormalFramework1.OrganisationId),
-                new FormalFrameworkId(activeOrganisationFormalFramework1.FormalFrameworkId)),
-            new UpdateOrganisationFormalFrameworkParents(
-                new OrganisationId(activeOrganisationFormalFramework3.OrganisationId),
-                new FormalFrameworkId(activeOrganisationFormalFramework3.FormalFrameworkId)),
-            new UpdateOrganisationFormalFrameworkParents(
-                new OrganisationId(activeOrganisationFormalFramework4.OrganisationId),
-                new FormalFrameworkId(activeOrganisationFormalFramework4.FormalFrameworkId)),
-        };
-
-        commands.Should().BeEquivalentTo(expectedCommands);
+        commandSenderMock.Verify(sender => sender.Send(new UpdateOrganisationFormalFrameworkParents(
+            new OrganisationId(activeOrganisationFormalFramework1.OrganisationId),
+            new FormalFrameworkId(activeOrganisationFormalFramework1.FormalFrameworkId)), It.IsAny<IUser>()), Times.Once);
+        commandSenderMock.Verify(sender => sender.Send(new UpdateOrganisationFormalFrameworkParents(
+            new OrganisationId(activeOrganisationFormalFramework3.OrganisationId),
+            new FormalFrameworkId(activeOrganisationFormalFramework3.FormalFrameworkId)), It.IsAny<IUser>()), Times.Once);
+        commandSenderMock.Verify(sender => sender.Send(new UpdateOrganisationFormalFrameworkParents(
+            new OrganisationId(activeOrganisationFormalFramework4.OrganisationId),
+            new FormalFrameworkId(activeOrganisationFormalFramework4.FormalFrameworkId)), It.IsAny<IUser>()), Times.Once);
     }
 }

@@ -1,11 +1,11 @@
 ﻿namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.OrganisationParent.WhenScheduledCommandsAreRun;
 
-using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoFixture;
-using FluentAssertions;
+using Moq;
 using Organisation.ScheduledActions.Parent;
-using OrganisationRegistry.Infrastructure.Commands;
+using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Organisation;
 using Xunit;
 
@@ -22,7 +22,7 @@ public class Given_Some_FutureActiveOrganisationParents
         var futureActiveOrganisationParent4 = fixture.Create<FutureActiveOrganisationParentListItem>();
         var futureActiveOrganisationParent5 = fixture.Create<FutureActiveOrganisationParentListItem>();
 
-        var (service, dateTimeProviderStub) = await ScheduledCommandsScenario.Arrange((testContext, today) =>
+        var (service, dateTimeProviderStub, commandSenderMock) = await ScheduledCommandsScenario.Arrange((testContext, today) =>
         {
             futureActiveOrganisationParent1.ValidFrom = today.AddDays(-3);
             testContext.FutureActiveOrganisationParentList.Add(futureActiveOrganisationParent1);
@@ -40,16 +40,11 @@ public class Given_Some_FutureActiveOrganisationParents
             testContext.FutureActiveOrganisationParentList.Add(futureActiveOrganisationParent5);
         });
 
-        var commands = await service.GetCommands(dateTimeProviderStub.Today);
+        await service.SendCommands(dateTimeProviderStub.Today, CancellationToken.None);
 
-        var expectedCommands = new List<ICommand>
-        {
-            new UpdateCurrentOrganisationParent(new OrganisationId(futureActiveOrganisationParent1.OrganisationId)),
-            new UpdateCurrentOrganisationParent(new OrganisationId(futureActiveOrganisationParent3.OrganisationId)),
-            new UpdateCurrentOrganisationParent(new OrganisationId(futureActiveOrganisationParent4.OrganisationId)),
-            new UpdateCurrentOrganisationParent(new OrganisationId(futureActiveOrganisationParent5.OrganisationId)),
-        };
-
-        commands.Should().BeEquivalentTo(expectedCommands);
+        commandSenderMock.Verify(sender => sender.Send(new UpdateCurrentOrganisationParent(new OrganisationId(futureActiveOrganisationParent1.OrganisationId)), It.IsAny<IUser>()), Times.Once);
+        commandSenderMock.Verify(sender => sender.Send(new UpdateCurrentOrganisationParent(new OrganisationId(futureActiveOrganisationParent3.OrganisationId)), It.IsAny<IUser>()), Times.Once);
+        commandSenderMock.Verify(sender => sender.Send(new UpdateCurrentOrganisationParent(new OrganisationId(futureActiveOrganisationParent4.OrganisationId)), It.IsAny<IUser>()), Times.Once);
+        commandSenderMock.Verify(sender => sender.Send(new UpdateCurrentOrganisationParent(new OrganisationId(futureActiveOrganisationParent5.OrganisationId)), It.IsAny<IUser>()), Times.Once);
     }
 }

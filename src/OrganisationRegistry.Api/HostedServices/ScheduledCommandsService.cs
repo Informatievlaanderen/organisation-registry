@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using OrganisationRegistry.Infrastructure;
 using OrganisationRegistry.Infrastructure.Commands;
@@ -47,8 +46,38 @@ public class ScheduledCommandsService : BackgroundService
             var today = _dateTimeProvider.Today;
             _logger.LogDebug("Processing scheduled commands");
 
-            var commands = await GetCommands(today);
+            await SendCommands(today, cancellationToken);
 
+            await _configuration.Delay(cancellationToken);
+        }
+    }
+
+    /// <summary>
+    /// made public for testing purposes
+    /// </summary>
+    /// <param name="today"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    public async Task SendCommands(DateTime today, CancellationToken cancellationToken)
+    {
+        await using var context = _contextFactory.Create();
+
+        await TrySendCommands(await context.ActiveOrganisationParentList.GetScheduledCommandsToExecute(today), cancellationToken);
+        await TrySendCommands(await context.FutureActiveOrganisationParentList.GetScheduledCommandsToExecute(today), cancellationToken);
+        await TrySendCommands(await context.ActiveBodyOrganisationList.GetScheduledCommandsToExecute(today), cancellationToken);
+        await TrySendCommands(await context.FutureActiveBodyOrganisationList.GetScheduledCommandsToExecute(today), cancellationToken);
+        await TrySendCommands(await context.ActivePeopleAssignedToBodyMandatesList.GetScheduledCommandsToExecute(today), cancellationToken);
+        await TrySendCommands(await context.FuturePeopleAssignedToBodyMandatesList.GetScheduledCommandsToExecute(today), cancellationToken);
+        await TrySendCommands(await context.ActiveOrganisationFormalFrameworkList.GetScheduledCommandsToExecute(today), cancellationToken);
+        await TrySendCommands(await context.FutureActiveOrganisationFormalFrameworkList.GetScheduledCommandsToExecute(today), cancellationToken);
+        await TrySendCommands(await context.OrganisationCapacityList.GetScheduledCommandsToExecute(today), cancellationToken);
+    }
+
+    public async Task TrySendCommands<TCommand>(List<TCommand> commands, CancellationToken cancellationToken)
+        where TCommand: ICommand
+    {
+        try
+        {
             foreach (var command in commands)
             {
                 if (cancellationToken.IsCancellationRequested)
@@ -69,48 +98,10 @@ public class ScheduledCommandsService : BackgroundService
                     _logger.LogCritical(e, "An error occured while processing scheduled Command: {@Command}", command);
                 }
             }
-
-            await _configuration.Delay(cancellationToken);
-        }
-    }
-
-    /// <summary>
-    /// made public for testing purposes
-    /// </summary>
-    /// <param name="today"></param>
-    /// <returns></returns>
-    public async Task<IEnumerable<ICommand>> GetCommands(DateTime today)
-    {
-        await using var context = _contextFactory.Create();
-
-        var commands = new List<ICommand>();
-
-        await commands.TryAddRange(_logger, today, context.ActiveOrganisationParentList, ScheduledCommands.GetScheduledCommandsToExecute);
-        await commands.TryAddRange(_logger, today, context.FutureActiveOrganisationParentList, ScheduledCommands.GetScheduledCommandsToExecute);
-        await commands.TryAddRange(_logger, today, context.ActiveBodyOrganisationList, ScheduledCommands.GetScheduledCommandsToExecute);
-        await commands.TryAddRange(_logger, today, context.FutureActiveBodyOrganisationList, ScheduledCommands.GetScheduledCommandsToExecute);
-        await commands.TryAddRange(_logger, today, context.ActivePeopleAssignedToBodyMandatesList, ScheduledCommands.GetScheduledCommandsToExecute);
-        await commands.TryAddRange(_logger, today, context.FuturePeopleAssignedToBodyMandatesList, ScheduledCommands.GetScheduledCommandsToExecute);
-        await commands.TryAddRange(_logger, today, context.ActiveOrganisationFormalFrameworkList, ScheduledCommands.GetScheduledCommandsToExecute);
-        await commands.TryAddRange(_logger, today, context.FutureActiveOrganisationFormalFrameworkList, ScheduledCommands.GetScheduledCommandsToExecute);
-        await commands.TryAddRange(_logger, today, context.OrganisationCapacityList, ScheduledCommands.GetScheduledCommandsToExecute);
-
-        return commands;
-    }
-}
-
-public static class ListOfICommandExtensions
-{
-    public static async Task TryAddRange<T>(this List<ICommand> list, ILogger logger, DateTime date, DbSet<T> dbSet, Func<DbSet<T>, DateTime, Task<List<ICommand>>> getRange)
-        where T : class
-    {
-        try
-        {
-            list.AddRange(await getRange(dbSet, date));
         }
         catch (Exception e)
         {
-            logger.LogCritical(e, "An error occured while retrieving scheduled Commands From: {Commands}", typeof(T).Name);
+            _logger.LogCritical(e, "An error occured while sending scheduled Commands of type: {Commands}", typeof(TCommand).Name);
         }
     }
 }
