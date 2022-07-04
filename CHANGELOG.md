@@ -1,3 +1,11 @@
+## [1.221.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.221.0...v1.221.1) (2022-07-04)
+
+
+### Bug Fixes
+
+* or-1113 improve logging ([4fa4c67](https://github.com/informatievlaanderen/organisation-registry/commit/4fa4c675012d65877fa41024a580ea4e3c26c2f6))
+* or-1113 repair some bugs in scheduled commands service ([52cde9a](https://github.com/informatievlaanderen/organisation-registry/commit/52cde9aba7bebe2cf19e124cb68b729effaa010c))
+
 # [1.221.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.220.2...v1.221.0) (2022-07-04)
 
 
