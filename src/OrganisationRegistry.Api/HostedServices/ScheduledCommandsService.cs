@@ -74,7 +74,6 @@ public class ScheduledCommandsService : BackgroundService
         }
     }
 
-
     /// <summary>
     /// made public for testing purposes
     /// </summary>

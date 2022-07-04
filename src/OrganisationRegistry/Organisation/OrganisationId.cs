@@ -12,4 +12,7 @@ public class OrganisationId : GuidValueObject<OrganisationId>
 
     public static OrganisationId New()
         => new(Guid.NewGuid());
+
+    public override string ToString()
+        => Value.ToString();
 }
