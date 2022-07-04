@@ -1,11 +1,11 @@
 ﻿namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.OrganisationCapacity.WhenScheduledCommandsAreRun;
 
-using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoFixture;
-using FluentAssertions;
+using Moq;
 using Organisation;
-using OrganisationRegistry.Infrastructure.Commands;
+using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Organisation;
 using Xunit;
 
@@ -25,7 +25,7 @@ public class Given_Some_OrganisationCapacities
         var organisationCapacity3 = fixture.Create<OrganisationCapacityListItem>();
         var organisationCapacity4 = fixture.Create<OrganisationCapacityListItem>();
 
-        var (service, dateTimeProviderStub) = await ScheduledCommandsScenario.Arrange((testContext, today) =>
+        var (service, dateTimeProviderStub, commandSenderMock) = await ScheduledCommandsScenario.Arrange((testContext, today) =>
         {
             // should be active -> is active (no command)
             organisationCapacity1.ValidFrom = null;
@@ -72,16 +72,11 @@ public class Given_Some_OrganisationCapacities
             testContext.OrganisationCapacityList.Add(organisationCapacity4);
         });
 
-        var commands = await service.GetCommands(dateTimeProviderStub.Today);
+        await service.SendCommands(dateTimeProviderStub.Today, CancellationToken.None);
 
-        var expectedCommands = new List<ICommand>
-        {
-            new UpdateRelationshipValidities(new OrganisationId(organisationCapacity2.OrganisationId), dateTimeProviderStub.Today),
-            new UpdateRelationshipValidities(new OrganisationId(organisationCapacity2B.OrganisationId), dateTimeProviderStub.Today),
-            new UpdateRelationshipValidities(new OrganisationId(organisationCapacity2C.OrganisationId), dateTimeProviderStub.Today),
-            new UpdateRelationshipValidities(new OrganisationId(organisationCapacity3.OrganisationId), dateTimeProviderStub.Today),
-        };
-
-        commands.Should().BeEquivalentTo(expectedCommands);
+        commandSenderMock.Verify(sender => sender.Send(new UpdateRelationshipValidities(new OrganisationId(organisationCapacity2.OrganisationId), dateTimeProviderStub.Today), It.IsAny<IUser>()), Times.Once);
+        commandSenderMock.Verify(sender => sender.Send(new UpdateRelationshipValidities(new OrganisationId(organisationCapacity2B.OrganisationId), dateTimeProviderStub.Today), It.IsAny<IUser>()), Times.Once);
+        commandSenderMock.Verify(sender => sender.Send(new UpdateRelationshipValidities(new OrganisationId(organisationCapacity2C.OrganisationId), dateTimeProviderStub.Today), It.IsAny<IUser>()), Times.Once);
+        commandSenderMock.Verify(sender => sender.Send(new UpdateRelationshipValidities(new OrganisationId(organisationCapacity3.OrganisationId), dateTimeProviderStub.Today), It.IsAny<IUser>()), Times.Once);
     }
 }

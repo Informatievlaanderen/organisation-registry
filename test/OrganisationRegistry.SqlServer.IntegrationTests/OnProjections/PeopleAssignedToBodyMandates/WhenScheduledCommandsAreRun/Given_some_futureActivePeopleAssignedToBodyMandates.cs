@@ -2,12 +2,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoFixture;
-using FluentAssertions;
+using Moq;
 using OrganisationRegistry.Body;
-using OrganisationRegistry.Infrastructure.Commands;
+using OrganisationRegistry.Infrastructure.Authorization;
 using SqlServer.Body.ScheduledActions.PeopleAssignedToBodyMandates;
 using Xunit;
 
@@ -48,66 +48,75 @@ public class Given_Some_FutureActivePeopleAssignedToBodyMandates
         var activePeopleAssignedToBodyMandate4 = fixture.Create<FuturePeopleAssignedToBodyMandatesListItem>();
         var activePeopleAssignedToBodyMandate5 = fixture.Create<FuturePeopleAssignedToBodyMandatesListItem>();
 
-        var (service, dateTimeProviderStub) = await ScheduledCommandsScenario.Arrange((testContext, today) =>
-        {
-            activePeopleAssignedToBodyMandate1A.ValidFrom = today.AddDays(-3);
-            testContext.FuturePeopleAssignedToBodyMandatesList.Add(activePeopleAssignedToBodyMandate1A);
-            activePeopleAssignedToBodyMandate1B.ValidFrom = today.AddDays(5);
-            testContext.FuturePeopleAssignedToBodyMandatesList.Add(activePeopleAssignedToBodyMandate1B);
-            activePeopleAssignedToBodyMandate1C.ValidFrom = today.AddDays(-9);
-            testContext.FuturePeopleAssignedToBodyMandatesList.Add(activePeopleAssignedToBodyMandate1C);
+        var (service, dateTimeProviderStub, commandSenderMock) = await ScheduledCommandsScenario.Arrange(
+            (testContext, today) =>
+            {
+                activePeopleAssignedToBodyMandate1A.ValidFrom = today.AddDays(-3);
+                testContext.FuturePeopleAssignedToBodyMandatesList.Add(activePeopleAssignedToBodyMandate1A);
+                activePeopleAssignedToBodyMandate1B.ValidFrom = today.AddDays(5);
+                testContext.FuturePeopleAssignedToBodyMandatesList.Add(activePeopleAssignedToBodyMandate1B);
+                activePeopleAssignedToBodyMandate1C.ValidFrom = today.AddDays(-9);
+                testContext.FuturePeopleAssignedToBodyMandatesList.Add(activePeopleAssignedToBodyMandate1C);
 
-            activePeopleAssignedToBodyMandate2.ValidFrom = today.AddDays(9);
-            testContext.FuturePeopleAssignedToBodyMandatesList.Add(activePeopleAssignedToBodyMandate2);
+                activePeopleAssignedToBodyMandate2.ValidFrom = today.AddDays(9);
+                testContext.FuturePeopleAssignedToBodyMandatesList.Add(activePeopleAssignedToBodyMandate2);
 
-            activePeopleAssignedToBodyMandate3.ValidFrom = today.AddDays(-5);
-            testContext.FuturePeopleAssignedToBodyMandatesList.Add(activePeopleAssignedToBodyMandate3);
+                activePeopleAssignedToBodyMandate3.ValidFrom = today.AddDays(-5);
+                testContext.FuturePeopleAssignedToBodyMandatesList.Add(activePeopleAssignedToBodyMandate3);
 
-            activePeopleAssignedToBodyMandate4.ValidFrom = today.AddMonths(-2);
-            testContext.FuturePeopleAssignedToBodyMandatesList.Add(activePeopleAssignedToBodyMandate4);
+                activePeopleAssignedToBodyMandate4.ValidFrom = today.AddMonths(-2);
+                testContext.FuturePeopleAssignedToBodyMandatesList.Add(activePeopleAssignedToBodyMandate4);
 
-            activePeopleAssignedToBodyMandate5.ValidFrom = today;
-            testContext.FuturePeopleAssignedToBodyMandatesList.Add(activePeopleAssignedToBodyMandate5);
-        });
+                activePeopleAssignedToBodyMandate5.ValidFrom = today;
+                testContext.FuturePeopleAssignedToBodyMandatesList.Add(activePeopleAssignedToBodyMandate5);
+            });
 
-        var commands = (await service.GetCommands(dateTimeProviderStub.Today)).ToList();
+        await service.SendCommands(dateTimeProviderStub.Today, CancellationToken.None);
 
-        var expectedCommands = new List<ICommand>
-        {
-            new UpdateCurrentPersonAssignedToBodyMandate(
-                new BodyId(body1Id),
-                new List<(BodySeatId bodySeatId, BodyMandateId bodyMandateId)>
-                {
-                    new(new BodySeatId(activePeopleAssignedToBodyMandate1A.BodySeatId), new BodyMandateId(activePeopleAssignedToBodyMandate1A.BodyMandateId)),
-                    new(new BodySeatId(activePeopleAssignedToBodyMandate1C.BodySeatId), new BodyMandateId(activePeopleAssignedToBodyMandate1C.BodyMandateId)),
-                }
-            ),
-            new UpdateCurrentPersonAssignedToBodyMandate(
-                new BodyId(activePeopleAssignedToBodyMandate3.BodyId),
-                new List<(BodySeatId bodySeatId, BodyMandateId bodyMandateId)>
-                {
-                    new(new BodySeatId(activePeopleAssignedToBodyMandate3.BodySeatId), new BodyMandateId(activePeopleAssignedToBodyMandate3.BodyMandateId)),
-                }
-            ),
-            new UpdateCurrentPersonAssignedToBodyMandate(
-                new BodyId(activePeopleAssignedToBodyMandate4.BodyId),
-                new List<(BodySeatId bodySeatId, BodyMandateId bodyMandateId)>
-                {
-                    new(new BodySeatId(activePeopleAssignedToBodyMandate4.BodySeatId), new BodyMandateId(activePeopleAssignedToBodyMandate4.BodyMandateId)),
-                }
-            ),
-            new UpdateCurrentPersonAssignedToBodyMandate(
-                new BodyId(activePeopleAssignedToBodyMandate5.BodyId),
-                new List<(BodySeatId bodySeatId, BodyMandateId bodyMandateId)>
-                {
-                    new(new BodySeatId(activePeopleAssignedToBodyMandate4.BodySeatId), new BodyMandateId(activePeopleAssignedToBodyMandate5.BodyMandateId)),
-                }
-            ),
-        };
-
-        commands.Should().BeEquivalentTo(expectedCommands);
-
-        var nestedCommand = commands.First().As<UpdateCurrentPersonAssignedToBodyMandate>();
-        nestedCommand.MandatesToUpdate.Should().BeEquivalentTo(expectedCommands.First().As<UpdateCurrentPersonAssignedToBodyMandate>().MandatesToUpdate);
+        commandSenderMock.Verify(
+            sender => sender.Send(
+                new UpdateCurrentPersonAssignedToBodyMandate(
+                    new BodyId(body1Id),
+                    new List<(BodySeatId bodySeatId, BodyMandateId bodyMandateId)>
+                    {
+                        new(new BodySeatId(activePeopleAssignedToBodyMandate1A.BodySeatId), new BodyMandateId(activePeopleAssignedToBodyMandate1A.BodyMandateId)),
+                        new(new BodySeatId(activePeopleAssignedToBodyMandate1C.BodySeatId), new BodyMandateId(activePeopleAssignedToBodyMandate1C.BodyMandateId)),
+                    }
+                ),
+                It.IsAny<IUser>()),
+            Times.Once);
+        commandSenderMock.Verify(
+            sender => sender.Send(
+                new UpdateCurrentPersonAssignedToBodyMandate(
+                    new BodyId(activePeopleAssignedToBodyMandate3.BodyId),
+                    new List<(BodySeatId bodySeatId, BodyMandateId bodyMandateId)>
+                    {
+                        new(new BodySeatId(activePeopleAssignedToBodyMandate3.BodySeatId), new BodyMandateId(activePeopleAssignedToBodyMandate3.BodyMandateId)),
+                    }
+                ),
+                It.IsAny<IUser>()),
+            Times.Once);
+        commandSenderMock.Verify(
+            sender => sender.Send(
+                new UpdateCurrentPersonAssignedToBodyMandate(
+                    new BodyId(activePeopleAssignedToBodyMandate4.BodyId),
+                    new List<(BodySeatId bodySeatId, BodyMandateId bodyMandateId)>
+                    {
+                        new(new BodySeatId(activePeopleAssignedToBodyMandate4.BodySeatId), new BodyMandateId(activePeopleAssignedToBodyMandate4.BodyMandateId)),
+                    }
+                ),
+                It.IsAny<IUser>()),
+            Times.Once);
+        commandSenderMock.Verify(
+            sender => sender.Send(
+                new UpdateCurrentPersonAssignedToBodyMandate(
+                    new BodyId(activePeopleAssignedToBodyMandate5.BodyId),
+                    new List<(BodySeatId bodySeatId, BodyMandateId bodyMandateId)>
+                    {
+                        new(new BodySeatId(activePeopleAssignedToBodyMandate5.BodySeatId), new BodyMandateId(activePeopleAssignedToBodyMandate5.BodyMandateId)),
+                    }
+                ),
+                It.IsAny<IUser>()),
+            Times.Once);
     }
 }

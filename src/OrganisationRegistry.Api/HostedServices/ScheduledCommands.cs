@@ -8,7 +8,6 @@ using Body;
 using FormalFramework;
 using Microsoft.EntityFrameworkCore;
 using Organisation;
-using OrganisationRegistry.Infrastructure.Commands;
 using SqlServer.Body.ScheduledActions.Organisation;
 using SqlServer.Organisation;
 using SqlServer.Organisation.ScheduledActions.FormalFramework;
@@ -25,43 +24,39 @@ using FutureBodyMandateAssignment =
 /// </summary>
 public static class ScheduledCommands
 {
-    public static async Task<List<ICommand>> GetScheduledCommandsToExecute(
+    public static async Task<List<UpdateCurrentOrganisationParent>> GetScheduledCommandsToExecute(
         this DbSet<ActiveOrganisationParentListItem> list, DateTime date) =>
         await list.AsQueryable()
             .Where(item => item.ValidTo.HasValue && item.ValidTo.Value < date)
             .Select(item => new UpdateCurrentOrganisationParent(new OrganisationId(item.OrganisationId)))
-            .Cast<ICommand>()
             .AsAsyncEnumerable()
             .ToListAsync();
 
-    public static async Task<List<ICommand>> GetScheduledCommandsToExecute(
+    public static async Task<List<UpdateCurrentOrganisationParent>> GetScheduledCommandsToExecute(
         this DbSet<FutureActiveOrganisationParentListItem> list, DateTime date) =>
         await list.AsQueryable()
             .Where(item => item.ValidFrom.HasValue && item.ValidFrom.Value <= date)
             .Select(item => new UpdateCurrentOrganisationParent(new OrganisationId(item.OrganisationId)))
-            .Cast<ICommand>()
             .AsAsyncEnumerable()
             .ToListAsync();
 
-    public static async Task<List<ICommand>> GetScheduledCommandsToExecute(
+    public static async Task<List<UpdateCurrentBodyOrganisation>> GetScheduledCommandsToExecute(
         this DbSet<ActiveBodyOrganisationListItem> list, DateTime date) =>
         await list.AsQueryable()
             .Where(item => item.ValidTo.HasValue && item.ValidTo.Value < date)
-            .Select(item => new UpdateCurrentBodyOrganisation(new BodyId(item.OrganisationId)))
-            .Cast<ICommand>()
+            .Select(item => new UpdateCurrentBodyOrganisation(new BodyId(item.BodyId)))
             .AsAsyncEnumerable()
             .ToListAsync();
 
-    public static async Task<List<ICommand>> GetScheduledCommandsToExecute(
+    public static async Task<List<UpdateCurrentBodyOrganisation>> GetScheduledCommandsToExecute(
         this DbSet<FutureActiveBodyOrganisationListItem> list, DateTime date) =>
         await list.AsQueryable()
             .Where(item => item.ValidFrom.HasValue && item.ValidFrom.Value <= date)
-            .Select(item => new UpdateCurrentBodyOrganisation(new BodyId(item.OrganisationId)))
-            .Cast<ICommand>()
+            .Select(item => new UpdateCurrentBodyOrganisation(new BodyId(item.BodyId)))
             .AsAsyncEnumerable()
             .ToListAsync();
 
-    public static Task<List<ICommand>> GetScheduledCommandsToExecute(
+    public static Task<List<UpdateCurrentPersonAssignedToBodyMandate>> GetScheduledCommandsToExecute(
         this DbSet<ActiveBodyMandateAssignment> list, DateTime date) =>
         Task.FromResult(MandateAssignmentsThatHaveBecomeInvalid(list, date)
             .Select(group =>
@@ -69,7 +64,7 @@ public static class ScheduledCommands
                     new BodyId(group.Key),
                     group.Value.Select(item =>
                         (new BodySeatId(item.BodySeatId), new BodyMandateId(item.BodyMandateId))).ToList()))
-            .Cast<ICommand>().ToList());
+            .ToList());
 
     private static Dictionary<Guid, IEnumerable<ActiveBodyMandateAssignment>>
         MandateAssignmentsThatHaveBecomeInvalid(DbSet<ActiveBodyMandateAssignment> list, DateTime date) =>
@@ -79,7 +74,7 @@ public static class ScheduledCommands
             .GroupBy(item => item.BodyId)
             .ToDictionary(group => group.Key, group => group.AsEnumerable());
 
-    public static Task<List<ICommand>> GetScheduledCommandsToExecute(this DbSet<FutureBodyMandateAssignment> list,
+    public static Task<List<UpdateCurrentPersonAssignedToBodyMandate>> GetScheduledCommandsToExecute(this DbSet<FutureBodyMandateAssignment> list,
         DateTime date) =>
         Task.FromResult(MandateAssignmentsThatHaveBecomeValid(list, date)
             .Select(group =>
@@ -87,7 +82,7 @@ public static class ScheduledCommands
                     new BodyId(group.Key),
                     group.Value.Select(item =>
                         (new BodySeatId(item.BodySeatId), new BodyMandateId(item.BodyMandateId))).ToList()))
-            .Cast<ICommand>().ToList());
+            .ToList());
 
     private static Dictionary<Guid, IEnumerable<FutureBodyMandateAssignment>> MandateAssignmentsThatHaveBecomeValid(
         DbSet<FutureBodyMandateAssignment> list, DateTime date) =>
@@ -97,27 +92,25 @@ public static class ScheduledCommands
             .GroupBy(item => item.BodyId)
             .ToDictionary(group => group.Key, group => group.AsEnumerable());
 
-    public static async Task<List<ICommand>> GetScheduledCommandsToExecute(
+    public static async Task<List<UpdateOrganisationFormalFrameworkParents>> GetScheduledCommandsToExecute(
         this DbSet<ActiveOrganisationFormalFrameworkListItem> list, DateTime date) =>
         await list.AsAsyncEnumerable()
             .Where(item => item.ValidTo.HasValue && item.ValidTo.Value < date)
             .Select(item =>
                 new UpdateOrganisationFormalFrameworkParents(new OrganisationId(item.OrganisationId),
                     new FormalFrameworkId(item.FormalFrameworkId)))
-            .Cast<ICommand>()
             .ToListAsync();
 
-    public static async Task<List<ICommand>> GetScheduledCommandsToExecute(
+    public static async Task<List<UpdateOrganisationFormalFrameworkParents>> GetScheduledCommandsToExecute(
         this DbSet<FutureActiveOrganisationFormalFrameworkListItem> list, DateTime date) =>
         await list.AsAsyncEnumerable()
             .Where(item => item.ValidFrom.HasValue && item.ValidFrom.Value <= date)
             .Select(item =>
                 new UpdateOrganisationFormalFrameworkParents(new OrganisationId(item.OrganisationId),
                     new FormalFrameworkId(item.FormalFrameworkId)))
-            .Cast<ICommand>()
             .ToListAsync();
 
-    public static async Task<List<ICommand>> GetScheduledCommandsToExecute(
+    public static async Task<List<UpdateRelationshipValidities>> GetScheduledCommandsToExecute(
         this DbSet<OrganisationCapacityListItem> list, DateTime date)
     {
         var shouldBeActive =
@@ -140,7 +133,6 @@ public static class ScheduledCommands
             .Union(shouldBeInactive)
             .Distinct()
             .Select(id => new UpdateRelationshipValidities(new OrganisationId(id), date))
-            .Cast<ICommand>()
             .ToListAsync();
     }
 }
