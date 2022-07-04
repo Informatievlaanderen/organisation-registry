@@ -14,7 +14,7 @@ using Microsoft.FeatureManagement.Mvc;
 using Newtonsoft.Json;
 using OrganisationRegistry.Infrastructure.Commands;
 
-[FeatureGate(FeatureFlags.EditApi)]
+[FeatureGate(FeatureFlags.PowerBIApi)]
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("powerbi/search")]
