@@ -43,6 +43,19 @@ public class OrganisationRegistryController : Controller
     }
 
     [NonAction]
+    protected CreatedResult CreatedWithLocation(string controller, string action, object? parameters)
+    {
+        if (controller.EndsWith("Controller"))
+            controller = controller.Replace("Controller", string.Empty);
+
+        var maybeLocationHeader = Url.Action(action, controller, parameters);
+        if (maybeLocationHeader is not { } locationHeader)
+            throw new ApiException($"Action {action} does not exist");
+
+        return Created(locationHeader, null);
+    }
+
+    [NonAction]
     protected Task<IActionResult> OkAsync(object? value)
         => Task.FromResult((IActionResult)Ok(value));
 

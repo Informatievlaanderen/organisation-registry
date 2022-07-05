@@ -16,6 +16,7 @@ public class UpdateOrganisationBankAccountCommandHandler :
 
     public Task Handle(ICommandEnvelope<UpdateOrganisationBankAccount> envelope)
         => UpdateHandler<Organisation>.For(envelope.Command,envelope.User, Session)
+            .RequiresBeheerderForOrganisationRegardlessOfVlimpers()
             .Handle(
                 session =>
                 {

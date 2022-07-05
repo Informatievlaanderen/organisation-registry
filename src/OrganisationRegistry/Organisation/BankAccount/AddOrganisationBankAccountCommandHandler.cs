@@ -7,15 +7,16 @@ using Infrastructure.Domain;
 using Microsoft.Extensions.Logging;
 
 public class AddOrganisationBankAccountCommandHandler
-:BaseCommandHandler<AddOrganisationBankAccountCommandHandler>,
-    ICommandEnvelopeHandler<AddOrganisationBankAccount>
+    : BaseCommandHandler<AddOrganisationBankAccountCommandHandler>,
+        ICommandEnvelopeHandler<AddOrganisationBankAccount>
 {
     public AddOrganisationBankAccountCommandHandler(ILogger<AddOrganisationBankAccountCommandHandler> logger, ISession session) : base(logger, session)
     {
     }
 
     public Task Handle(ICommandEnvelope<AddOrganisationBankAccount> envelope)
-        => UpdateHandler<Organisation>.For(envelope.Command, envelope.User,Session)
+        => UpdateHandler<Organisation>.For(envelope.Command, envelope.User, Session)
+            .RequiresBeheerderForOrganisationRegardlessOfVlimpers()
             .Handle(
                 session =>
                 {
