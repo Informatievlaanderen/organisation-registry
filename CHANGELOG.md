@@ -1,3 +1,10 @@
+# [1.222.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.221.1...v1.222.0) (2022-07-05)
+
+
+### Features
+
+* or-876 create and update bankaccountnumber through edit api ([9bdcb57](https://github.com/informatievlaanderen/organisation-registry/commit/9bdcb57e581b1779775ba32b557fff929615cc29))
+
 ## [1.221.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.221.0...v1.221.1) (2022-07-04)
 
 
