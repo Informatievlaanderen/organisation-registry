@@ -41,7 +41,7 @@ public class CommandEnvelopeHandlerWrapper<TCommand> : ICommandEnvelopeHandlerWr
     public Task Handle(ICommandEnvelope commandEnvelope)
     {
         if (commandEnvelope is not ICommandEnvelope<TCommand> theCommandEnvelope)
-            return Task.CompletedTask;
+            throw new InvalidOperationException("Could not cast commandEnvelope to ICommandEnvelope<TCommand>");
 
         if (MaybeGetCommandEnvelopeHandler() is { } commandEnvelopeHandler)
             return commandEnvelopeHandler.Handle(theCommandEnvelope);
