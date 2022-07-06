@@ -1,3 +1,13 @@
+# [1.223.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.222.0...v1.223.0) (2022-07-06)
+
+
+### Features
+
+* cleanup of obsolete role: Beheerder ([955c6cf](https://github.com/informatievlaanderen/organisation-registry/commit/955c6cfc5dd5ffbd29cf29931df9a04d117d5620))
+* or-875 allow client to specify whether bankacc nr is iban ([6afd8eb](https://github.com/informatievlaanderen/organisation-registry/commit/6afd8eb3a7e6696dcca15bc197e8ff79e39ac54a))
+* or-875 don't allow overlapping bankaccountnrs anymore ([499f11d](https://github.com/informatievlaanderen/organisation-registry/commit/499f11d717acbbed8ae091f3ce190af2e7ba4193))
+* or-875 use isIban from request msg ([7d524ca](https://github.com/informatievlaanderen/organisation-registry/commit/7d524cafae4bc6d14b321ca8d07beb0d1b752b5a))
+
 # [1.222.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.221.1...v1.222.0) (2022-07-05)
 
 
