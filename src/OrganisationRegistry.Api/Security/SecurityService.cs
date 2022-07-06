@@ -148,6 +148,15 @@ public class SecurityService : ISecurityService
         if (principal == null)
             throw new Exception("Could not determine current user");
 
+        var scope = principal.FindFirstValue(AcmIdmConstants.Claims.Scope);
+        switch (scope)
+        {
+            case AcmIdmConstants.Scopes.CjmBeheerder:
+                return WellknownUsers.Cjm;
+            case AcmIdmConstants.Scopes.OrafinBeheerder:
+                return WellknownUsers.Orafin;
+        }
+
         var firstName = principal.FindFirst(ClaimTypes.GivenName);
         if (firstName == null)
             throw new Exception("Could not determine current user's first name");

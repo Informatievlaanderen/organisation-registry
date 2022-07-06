@@ -2,6 +2,7 @@ namespace OrganisationRegistry.Api.Infrastructure.Security;
 
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using OrganisationRegistry.Infrastructure.Authorization;
@@ -21,18 +22,16 @@ public class ConfigureClaimsPrincipalSelectorMiddleware
         {
             try
             {
-                var authInfo = httpContextAccessor.HttpContext?.GetAuthenticateInfo(JwtBearerDefaults.AuthenticationScheme);
-                if (authInfo?.Principal == null)
-                    return null!;
-                if (!(authInfo.Principal.Identity is ClaimsIdentity user))
-                    return authInfo.Principal;
+                if (TryGetAuthInfo(httpContextAccessor) is not { Principal: { } principal }) return null!;
+
+                if (principal.Identity is not ClaimsIdentity user) return principal;
 
                 var ip = context.Request.HttpContext.Connection.RemoteIpAddress;
 
                 if (!user.HasClaim(x => x.Type == AcmIdmConstants.Claims.Ip))
                     user.AddClaim(new Claim(AcmIdmConstants.Claims.Ip, ip?.ToString() ?? "Unknown", ClaimValueTypes.String));
 
-                return authInfo.Principal;
+                return principal;
             }
             catch
             {
@@ -41,5 +40,12 @@ public class ConfigureClaimsPrincipalSelectorMiddleware
         };
 
         return _next(context);
+    }
+
+    private static AuthenticateResult? TryGetAuthInfo(IHttpContextAccessor httpContextAccessor)
+    {
+        var authInfo = httpContextAccessor.HttpContext?.GetAuthenticateInfo(JwtBearerDefaults.AuthenticationScheme) ??
+                       httpContextAccessor.HttpContext?.GetAuthenticateInfo(AuthenticationSchemes.EditApi);
+        return authInfo;
     }
 }

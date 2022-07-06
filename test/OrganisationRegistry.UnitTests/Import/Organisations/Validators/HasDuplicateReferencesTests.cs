@@ -3,7 +3,7 @@
 using System;
 using Api.HostedServices.ProcessImportedFiles;
 using Api.HostedServices.ProcessImportedFiles.CreateOrganisations;
-using Api.HostedServices.ProcessImportedFiles.CreateOrganisations.Validators;
+using OrganisationRegistry.Api.HostedServices.ProcessImportedFiles.CreateOrganisations.Validators;
 using Api.HostedServices.ProcessImportedFiles.Validation;
 using FluentAssertions;
 using Xunit;

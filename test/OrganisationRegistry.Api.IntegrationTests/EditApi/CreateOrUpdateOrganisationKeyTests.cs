@@ -38,13 +38,15 @@ public class CreateOrUpdateOrganisationKeyTests
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
-    [EnvVarIgnoreFact]
-    public async Task AsOrafinBeheerder_CanCreateAndUpdate()
+    [EnvVarIgnoreTheory]
+    [InlineData(ApiFixture.Orafin.Client, ApiFixture.Orafin.Scope)]
+    [InlineData(ApiFixture.CJM.Client, ApiFixture.CJM.Scope)]
+    public async Task CanCreateAndUpdateAs(string client, string scope)
     {
         var organisationId = Guid.NewGuid();
         await _fixture.CreateOrganisation(organisationId, TestOrganisationName);
 
-        var httpClient = await _fixture.CreateOrafinClient();
+        var httpClient = await _fixture.CreateMachine2MachineClientFor(client, scope);
 
         var organisationKeyId = Guid.NewGuid();
         var response = await CreateKey(organisationId, organisationKeyId, httpClient, _orafinKeyType);
@@ -54,20 +56,6 @@ public class CreateOrUpdateOrganisationKeyTests
         var updateResponse = await UpdateKey(organisationId, organisationKeyId, httpClient, _orafinKeyType);
 
         updateResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-    }
-
-    [EnvVarIgnoreFact]
-    public async Task AsCjmBeheerder_ReturnsForbidden()
-    {
-        var organisationId = Guid.NewGuid();
-        await _fixture.CreateOrganisation(organisationId, TestOrganisationName);
-
-        var httpClient = await _fixture.CreateCjmClient();
-
-        var organisationKeyId = Guid.NewGuid();
-        var response = await CreateKey(organisationId, organisationKeyId, httpClient, _orafinKeyType);
-
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
 
     private static async Task<HttpResponseMessage> UpdateKey(Guid organisationId, Guid organisationKeyId, HttpClient httpClient, Guid orafinKeyType)

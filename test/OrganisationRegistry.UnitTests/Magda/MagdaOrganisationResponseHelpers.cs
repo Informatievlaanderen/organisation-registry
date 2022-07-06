@@ -5,7 +5,7 @@ using System.IO;
 using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
-using Api.Infrastructure.Magda;
+using OrganisationRegistry.Api.Infrastructure.Magda;
 using Autofac.Features.OwnedInstances;
 using Autofac.Util;
 using FluentAssertions;

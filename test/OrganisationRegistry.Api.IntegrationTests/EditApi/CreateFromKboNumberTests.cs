@@ -29,7 +29,7 @@ public class CreateFromKboNumberTests
     [EnvVarIgnoreFact]
     public async Task AsOrafin_ReturnsForbidden()
     {
-        var httpClient = await _fixture.CreateOrafinClient();
+        var httpClient = await _fixture.CreateMachine2MachineClientFor(ApiFixture.Orafin.Client, ApiFixture.Orafin.Scope);
 
         var response = await CreateOrganisationFromKboNumber(httpClient);
 
@@ -39,7 +39,7 @@ public class CreateFromKboNumberTests
     [EnvVarIgnoreFact]
     public async Task AsCjmBeheerder_ReturnsCreated()
     {
-        var httpClient = await _fixture.CreateCjmClient();
+        var httpClient = await _fixture.CreateMachine2MachineClientFor(ApiFixture.CJM.Client, ApiFixture.CJM.Scope);
 
         var response = await CreateOrganisationFromKboNumber(httpClient);
 
@@ -50,7 +50,7 @@ public class CreateFromKboNumberTests
     [EnvVarIgnoreFact]
     public async Task AsCjmBeheerder_DuplicateCallReturnsFound()
     {
-        var httpClient = await _fixture.CreateCjmClient();
+        var httpClient = await _fixture.CreateMachine2MachineClientFor(ApiFixture.CJM.Client, ApiFixture.CJM.Scope);
 
         await CreateOrganisationFromKboNumber(httpClient);
         var response = await CreateOrganisationFromKboNumber(httpClient);

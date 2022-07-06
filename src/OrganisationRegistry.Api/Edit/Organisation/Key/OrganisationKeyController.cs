@@ -11,7 +11,6 @@ using Infrastructure;
 using OrganisationRegistry.Api.Infrastructure.Security;
 using Infrastructure.Swagger;
 using Infrastructure.Swagger.Examples;
-using OrganisationRegistry.Infrastructure;
 using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Commands;
 using Swashbuckle.AspNetCore.Filters;
@@ -25,7 +24,7 @@ using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetai
 [ApiExplorerSettings(GroupName = "Organisatiesleutels")]
 [Consumes("application/json")]
 [Produces("application/json")]
-[Authorize(AuthenticationSchemes = AuthenticationSchemes.EditApi, Policy = PolicyNames.ORAFIN)]
+[Authorize(AuthenticationSchemes = AuthenticationSchemes.EditApi, Policy = PolicyNames.Keys)]
 public class OrganisationKeyController : OrganisationRegistryController
 {
     public OrganisationKeyController(ICommandSender commandSender)
@@ -59,7 +58,7 @@ public class OrganisationKeyController : OrganisationRegistryController
             return BadRequest(ModelState);
 
         var addOrganisationKey = AddOrganisationKeyRequestMapping.Map(internalMessage);
-        await CommandSender.Send(addOrganisationKey, WellknownUsers.Orafin);
+        await CommandSender.Send(addOrganisationKey);
 
         return CreatedWithLocation(
             nameof(Backoffice.Organisation.Key.OrganisationKeyController.Get),
@@ -97,7 +96,7 @@ public class OrganisationKeyController : OrganisationRegistryController
             return BadRequest(ModelState);
 
         var updateOrganisationKey = UpdateOrganisationKeyRequestMapping.Map(internalMessage);
-        await CommandSender.Send(updateOrganisationKey, WellknownUsers.Orafin);
+        await CommandSender.Send(updateOrganisationKey);
 
         return Ok();
     }

@@ -13,7 +13,6 @@ using Infrastructure.Swagger.Examples;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.FeatureManagement.Mvc;
-using OrganisationRegistry.Infrastructure;
 using OrganisationRegistry.Infrastructure.Commands;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Commands;
@@ -29,7 +28,7 @@ using Swashbuckle.AspNetCore.Filters;
 [ApiExplorerSettings(GroupName = "Organisaties")]
 [Consumes("application/json")]
 [Produces("application/json")]
-[Authorize(AuthenticationSchemes = AuthenticationSchemes.EditApi, Policy = PolicyNames.CJM)]
+[Authorize(AuthenticationSchemes = AuthenticationSchemes.EditApi, Policy = PolicyNames.Organisations)]
 public class OrganisationsController : OrganisationRegistryController
 {
     public OrganisationsController(ICommandSender commandSender) : base(commandSender)
@@ -73,7 +72,7 @@ public class OrganisationsController : OrganisationRegistryController
         var organisationId = OrganisationId.New();
         var command = new CreateOrganisationFromKboNumber(organisationId, new KboNumber(kboNumber), ovoNumber);
 
-        await CommandSender.Send(command, WellknownUsers.Cjm);
+        await CommandSender.Send(command);
 
         return await CreatedResponse(organisationId, ovoNumber);
     }
