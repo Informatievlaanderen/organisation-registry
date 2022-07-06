@@ -1511,15 +1511,7 @@ public partial class Organisation : AggregateRoot
         if(State.OrganisationBankAccounts.HasBankAccountNumbersThatWouldOverlapWith(bankAccount))
             throw new BankAccountNumberAlreadyCoupledToInThisPeriod();
 
-        ApplyChange(new OrganisationBankAccountAdded(
-            bankAccount.OrganisationId,
-            bankAccount.OrganisationBankAccountId,
-            bankAccount.BankAccountNumber,
-            bankAccount.IsIban,
-            bankAccount.Bic,
-            bankAccount.IsBic,
-            bankAccount.Validity.Start,
-            bankAccount.Validity.End));
+        ApplyChange(OrganisationBankAccountAdded.FromBankAccountNumber(bankAccount));
     }
 
     public void UpdateBankAccount(
@@ -1544,21 +1536,7 @@ public partial class Organisation : AggregateRoot
         if(State.OrganisationBankAccounts.HasBankAccountNumbersThatWouldOverlapWith(bankAccount))
             throw new BankAccountNumberAlreadyCoupledToInThisPeriod();
 
-        ApplyChange(new OrganisationBankAccountUpdated(
-            bankAccount.OrganisationId,
-            bankAccount.OrganisationBankAccountId,
-            bankAccount.BankAccountNumber,
-            bankAccount.IsIban,
-            bankAccount.Bic,
-            bankAccount.IsBic,
-            bankAccount.Validity.Start,
-            bankAccount.Validity.End,
-            previousBankAccount.BankAccountNumber,
-            previousBankAccount.IsIban,
-            previousBankAccount.Bic,
-            previousBankAccount.IsBic,
-            previousBankAccount.Validity.Start,
-            previousBankAccount.Validity.End));
+        ApplyChange(OrganisationBankAccountUpdated.FromBankAccountNumber(bankAccount, previousBankAccount));
     }
 
     public void AddKboBankAccount(
@@ -1567,15 +1545,13 @@ public partial class Organisation : AggregateRoot
         BankAccountBic bankAccountBic,
         Period validity)
     {
-        ApplyChange(new KboOrganisationBankAccountAdded(
-            Id,
-            organisationBankAccountId,
-            bankAccountNumber.Number,
-            bankAccountNumber.IsValidIban,
-            bankAccountBic.Bic,
-            bankAccountBic.IsValidBic,
-            validity.Start,
-            validity.End));
+        ApplyChange(
+            KboOrganisationBankAccountAdded.From(
+                Id,
+                organisationBankAccountId,
+                bankAccountNumber,
+                bankAccountBic,
+                validity));
     }
 
     public void UpdateKboBankAccount(List<IMagdaBankAccount> kboOrganisationBankAccounts)
