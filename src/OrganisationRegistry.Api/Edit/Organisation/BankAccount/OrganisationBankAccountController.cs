@@ -34,7 +34,7 @@ public class OrganisationBankAccountController : OrganisationRegistryController
     /// <summary>Voeg een bankrekeningnummer toe.</summary>
     /// <remarks>Voegt een bankrekeningnummer toe aan een organisatie.
     /// <br />
-    /// Hetzelfde bankrekeningnummer mag niet meermaals voorkomen binnen een organisatie.</remarks>
+    /// Hetzelfde bankrekeningnummer mag niet overlappen in tijd met eenzelfde bankrekeningnummer binnen een organisatie.</remarks>
     /// <param name="organisationId">Id van de organisatie.</param>
     /// <param name="message"></param>
     /// <response code="201">Als het verzoek aanvaard is.</response>
@@ -70,6 +70,9 @@ public class OrganisationBankAccountController : OrganisationRegistryController
     }
 
     /// <summary>Pas een organisatiesleutel aan.</summary>
+    /// <remarks>Past een bankrekeningnummer aan voor een organisatie.
+    /// <br />
+    /// Hetzelfde bankrekeningnummer mag niet overlappen in tijd met eenzelfde bankrekeningnummer binnen een organisatie.</remarks>
     /// <param name="organisationId">Id van de organisatie.</param>
     /// <param name="organisationBankAccountId">Id van de organisatiesleutel.</param>
     /// <param name="message"></param>
