@@ -1498,15 +1498,28 @@ public partial class Organisation : AggregateRoot
         BankAccountBic bankAccountBic,
         Period validity)
     {
-        ApplyChange(new OrganisationBankAccountAdded(
-            Id,
+        var bankAccount = new OrganisationBankAccount(
             organisationBankAccountId,
+            Id,
             bankAccountNumber.Number,
             bankAccountNumber.IsValidIban,
             bankAccountBic.Bic,
             bankAccountBic.IsValidBic,
-            validity.Start,
-            validity.End));
+            validity
+        );
+
+        if(State.OrganisationBankAccounts.HasBankAccountNumbersThatWouldOverlapWith(bankAccount))
+            throw new BankAccountNumberAlreadyCoupledToInThisPeriod();
+
+        ApplyChange(new OrganisationBankAccountAdded(
+            bankAccount.OrganisationId,
+            bankAccount.OrganisationBankAccountId,
+            bankAccount.BankAccountNumber,
+            bankAccount.IsIban,
+            bankAccount.Bic,
+            bankAccount.IsBic,
+            bankAccount.Validity.Start,
+            bankAccount.Validity.End));
     }
 
     public void UpdateBankAccount(
@@ -1518,15 +1531,28 @@ public partial class Organisation : AggregateRoot
         var previousBankAccount =
             State.OrganisationBankAccounts.Single(bankAccount => bankAccount.OrganisationBankAccountId == organisationBankAccountId);
 
-        ApplyChange(new OrganisationBankAccountUpdated(
-            Id,
+        var bankAccount = new OrganisationBankAccount(
             organisationBankAccountId,
+            Id,
             bankAccountNumber.Number,
             bankAccountNumber.IsValidIban,
             bankAccountBic.Bic,
             bankAccountBic.IsValidBic,
-            validity.Start,
-            validity.End,
+            validity
+        );
+
+        if(State.OrganisationBankAccounts.HasBankAccountNumbersThatWouldOverlapWith(bankAccount))
+            throw new BankAccountNumberAlreadyCoupledToInThisPeriod();
+
+        ApplyChange(new OrganisationBankAccountUpdated(
+            bankAccount.OrganisationId,
+            bankAccount.OrganisationBankAccountId,
+            bankAccount.BankAccountNumber,
+            bankAccount.IsIban,
+            bankAccount.Bic,
+            bankAccount.IsBic,
+            bankAccount.Validity.Start,
+            bankAccount.Validity.End,
             previousBankAccount.BankAccountNumber,
             previousBankAccount.IsIban,
             previousBankAccount.Bic,

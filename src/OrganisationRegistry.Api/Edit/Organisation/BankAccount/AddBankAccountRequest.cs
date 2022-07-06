@@ -19,10 +19,28 @@ public class AddOrganisationBankAccountInternalRequest
 
 public class AddOrganisationBankAccountRequest
 {
+    /// <summary>
+    /// Bankrekeningnummer van de organisatie.
+    /// </summary>
     public string BankAccountNumber { get; set; } = null!;
-    public bool IsIban { get; set; }
+    /// <summary>
+    /// Geeft aan of het bankrekeningnummer een geldig Iban formaat heeft.<br />
+    /// Indien niet meegegeven, is de standaard waarde 'true'.<br />
+    /// Indien deze waarde 'true' is, wordt een foutmelding teruggegeven bij een ongeldig Iban formaat.
+    /// </summary>
+    public bool IsIban { get; set; } = true;
+    /// <summary>
+    /// Optioneel: Bic van het bankrekeningnummer.<br />
+    /// Indien deze waarde is ingevuld, wordt een foutmelding teruggegeven bij een ongeldig Bic formaat.
+    /// </summary>
     public string? Bic { get; set; }
+    /// <summary>
+    /// Geldig vanaf.
+    /// </summary>
     public DateTime? ValidFrom { get; set; }
+    /// <summary>
+    /// Geldig tot.
+    /// </summary>
     public DateTime? ValidTo { get; set; }
 }
 
@@ -52,7 +70,7 @@ public static class AddOrganisationBankAccountRequestMapping
             Guid.NewGuid(),
             new OrganisationId(message.OrganisationId),
             message.Body.BankAccountNumber,
-            message.Body.IsIban,
+            true,
             message.Body.Bic,
             message.Body.Bic is { } bic && bic.IsNotEmptyOrWhiteSpace(),
             new ValidFrom(message.Body.ValidFrom),
