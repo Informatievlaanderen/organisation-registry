@@ -53,6 +53,18 @@ public class CreateBankAccountNumberTests
     }
 
     [EnvVarIgnoreFact]
+    public async Task AsCjmBeheerder_CannotCreateWithInvalidBic()
+    {
+        await _fixture.CreateOrganisation(_organisationId, TestOrganisationForCreatebankaccountnumbers);
+
+        var client = await _fixture.CreateCjmClient();
+
+        var response = await CreateBankAccountNumber(client, _organisationId, "BE86001197741650", "NOT_A_BIC");
+
+        await ApiFixture.VerifyStatusCode(response, HttpStatusCode.BadRequest);
+    }
+
+    [EnvVarIgnoreFact]
     public async Task AsOrafinBeheerder_ReturnsForbidden()
     {
         await _fixture.CreateOrganisation(_organisationId, TestOrganisationForCreatebankaccountnumbers);

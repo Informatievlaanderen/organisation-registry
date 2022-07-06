@@ -23,6 +23,7 @@ public class UpdateOrganisationBankAccountInternalRequest
 public class UpdateOrganisationBankAccountRequest
 {
     public string BankAccountNumber { get; set; } = null!;
+    public bool IsIban { get; set; }
     public string? Bic { get; set; }
     public DateTime? ValidFrom { get; set; }
     public DateTime? ValidTo { get; set; }
@@ -58,7 +59,7 @@ public static class UpdateOrganisationBankAccountRequestMapping
             message.OrganisationBankAccountId,
             new OrganisationId(message.OrganisationId),
             message.Body.BankAccountNumber,
-            true,
+            message.Body.IsIban,
             message.Body.Bic,
             message.Body.Bic is { } bic && bic.IsNotEmptyOrWhiteSpace(),
             new ValidFrom(message.Body.ValidFrom),
