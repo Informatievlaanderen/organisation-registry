@@ -1,4 +1,4 @@
-﻿ namespace OrganisationRegistry.KboMutations; 
+﻿ namespace OrganisationRegistry.KboMutations;
 
  public class WegwijsKboMutationsAssemblyTokenClass
  {

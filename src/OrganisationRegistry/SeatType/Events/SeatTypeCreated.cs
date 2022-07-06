@@ -34,6 +34,6 @@ public class SeatTypeCreated : BaseEvent<SeatTypeCreated>
         : this(
             new SeatTypeId(seatTypeId),
             new SeatTypeName(name),
-            order, 
+            order,
             isEffective) { }
 }

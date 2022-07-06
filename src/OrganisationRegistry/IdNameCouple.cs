@@ -5,7 +5,7 @@ using Be.Vlaanderen.Basisregisters.AggregateSource;
 
 public class IdName<TId, TName> : ValueObject<IdName<TId, TName>>
     where TId : ValueObject<TId>
-    where TName : ValueObject<TName> 
+    where TName : ValueObject<TName>
 {
     public TId Id { get; }
 

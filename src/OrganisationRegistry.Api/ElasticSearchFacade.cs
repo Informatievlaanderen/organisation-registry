@@ -33,7 +33,7 @@ public class ElasticSearchFacade
     private const string BankaccountsFieldName = "bankAccounts";
 
     private const string KeywordSuffix = "keyword";
-    
+
     private const int DefaultResponseLimit = 100;
 
     private const string ScrollTimeout = "30s";

@@ -30,7 +30,6 @@ public class AddOrganisationKeyRequest
     /// Id van het sleuteltype.
     /// </summary>
     public Guid KeyTypeId { get; set; }
-
     /// <summary>
     /// Waarde van de sleutel.
     /// </summary>
