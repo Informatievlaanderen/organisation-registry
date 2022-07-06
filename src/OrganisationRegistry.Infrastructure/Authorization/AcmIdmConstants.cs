@@ -1,7 +1,5 @@
 namespace OrganisationRegistry.Infrastructure.Authorization;
 
-using System;
-
 public static class AcmIdmConstants
 {
     public static class Claims
@@ -25,9 +23,6 @@ public static class AcmIdmConstants
         public const string AlgemeenBeheerder = "algemeenbeheerder";
         public const string VlimpersBeheerder = "vlimpersbeheerder";
         public const string RegelgevingBeheerder = "regelgevingbeheerder";
-
-        [Obsolete("will be overruled with decentraalbeheerder")]
-        public const string Beheerder = "beheerder";
 
         public const string DecentraalBeheerder = "decentraalbeheerder";
         public const string OrgaanBeheerder = "orgaanbeheerder";

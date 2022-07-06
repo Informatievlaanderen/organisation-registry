@@ -143,8 +143,7 @@ public class OrganisationRegistryTokenBuilder : IOrganisationRegistryTokenBuilde
     }
 
     private static bool IsDecentraalBeheerder(string role)
-        => role.StartsWith(AcmIdmConstants.Roles.Beheerder)
-           || role.StartsWith(AcmIdmConstants.Roles.DecentraalBeheerder);
+        => role.StartsWith(AcmIdmConstants.Roles.DecentraalBeheerder);
 
     private static void AddOrganisationRegistryBeheerderClaim(ClaimsIdentity identity)
     {
