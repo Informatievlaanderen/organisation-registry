@@ -34,4 +34,15 @@ public class OrganisationBankAccountAdded : BaseEvent<OrganisationBankAccountAdd
         ValidFrom = validFrom;
         ValidTo = validTo;
     }
+
+    public static OrganisationBankAccountAdded FromBankAccountNumber(OrganisationBankAccount bankAccount)
+        => new(
+            bankAccount.OrganisationId,
+            bankAccount.OrganisationBankAccountId,
+            bankAccount.BankAccountNumber,
+            bankAccount.IsIban,
+            bankAccount.Bic,
+            bankAccount.IsBic,
+            bankAccount.Validity.Start,
+            bankAccount.Validity.End);
 }

@@ -4,7 +4,8 @@ using System;
 
 public class KboOrganisationBankAccountAdded : BaseEvent<KboOrganisationBankAccountAdded>
 {
-    public Guid OrganisationId => Id;
+    public Guid OrganisationId
+        => Id;
 
     public Guid OrganisationBankAccountId { get; }
     public string BankAccountNumber { get; }
@@ -34,4 +35,20 @@ public class KboOrganisationBankAccountAdded : BaseEvent<KboOrganisationBankAcco
         ValidFrom = validFrom;
         ValidTo = validTo;
     }
+
+    public static KboOrganisationBankAccountAdded From(
+        Guid organisationId,
+        Guid organisationBankAccountId,
+        BankAccountNumber bankAccountNumber,
+        BankAccountBic bankAccountBic,
+        Period validity)
+        => new(
+            organisationId,
+            organisationBankAccountId,
+            bankAccountNumber.Number,
+            bankAccountNumber.IsValidIban,
+            bankAccountBic.Bic,
+            bankAccountBic.IsValidBic,
+            validity.Start,
+            validity.End);
 }

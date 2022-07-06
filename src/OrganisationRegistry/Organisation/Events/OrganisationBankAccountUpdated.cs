@@ -4,7 +4,8 @@ using System;
 
 public class OrganisationBankAccountUpdated : BaseEvent<OrganisationBankAccountUpdated>
 {
-    public Guid OrganisationId => Id;
+    public Guid OrganisationId
+        => Id;
 
     public Guid OrganisationBankAccountId { get; }
 
@@ -59,4 +60,24 @@ public class OrganisationBankAccountUpdated : BaseEvent<OrganisationBankAccountU
         PreviouslyValidFrom = previouslyValidFrom;
         PreviouslyValidTo = previouslyValidTo;
     }
+
+    public static OrganisationBankAccountUpdated FromBankAccountNumber(
+        OrganisationBankAccount bankAccount,
+        OrganisationBankAccount previousBankAccount
+    )
+        => new(
+            bankAccount.OrganisationId,
+            bankAccount.OrganisationBankAccountId,
+            bankAccount.BankAccountNumber,
+            bankAccount.IsIban,
+            bankAccount.Bic,
+            bankAccount.IsBic,
+            bankAccount.Validity.Start,
+            bankAccount.Validity.End,
+            previousBankAccount.BankAccountNumber,
+            previousBankAccount.IsIban,
+            previousBankAccount.Bic,
+            previousBankAccount.IsBic,
+            previousBankAccount.Validity.Start,
+            previousBankAccount.Validity.End);
 }
