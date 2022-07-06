@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using AutoFixture;
 using Api.HostedServices.ProcessImportedFiles.CreateOrganisations;
 using Api.HostedServices.ProcessImportedFiles.Processor;
-using Api.Import.Organisations;
+using OrganisationRegistry.Api.Import.Organisations;
 using AutoFixture.Kernel;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;

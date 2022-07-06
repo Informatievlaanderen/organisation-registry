@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.FeatureManagement.Mvc;
-using OrganisationRegistry.Infrastructure;
 using OrganisationRegistry.Infrastructure.Commands;
 using Swashbuckle.AspNetCore.Filters;
 using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetails;
@@ -24,7 +23,7 @@ using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetai
 [ApiExplorerSettings(GroupName = "Organisatiebankrekeningnummers")]
 [Consumes("application/json")]
 [Produces("application/json")]
-[Authorize(AuthenticationSchemes = AuthenticationSchemes.EditApi, Policy = PolicyNames.CJM)]
+[Authorize(AuthenticationSchemes = AuthenticationSchemes.EditApi, Policy = PolicyNames.BankAccounts)]
 public class OrganisationBankAccountController : OrganisationRegistryController
 {
     public OrganisationBankAccountController(ICommandSender commandSender) : base(commandSender)
@@ -57,12 +56,7 @@ public class OrganisationBankAccountController : OrganisationRegistryController
             return BadRequest(ModelState);
 
         var addOrganisationBankAccount = AddOrganisationBankAccountRequestMapping.Map(internalMessage);
-        await CommandSender.Send(addOrganisationBankAccount, WellknownUsers.Cjm);
-        //
-        // return CreatedWithLocation(
-        //     nameof(Backoffice.Organisation.BankAccount.OrganisationBankAccountController),
-        //     nameof(Backoffice.Organisation.BankAccount.OrganisationBankAccountController.Get),
-        //     new { organisationId = organisationId, id = addOrganisationBankAccount.OrganisationBankAccountId });
+        await CommandSender.Send(addOrganisationBankAccount);
 
         return CreatedWithLocation(
             nameof(Backoffice.Organisation.BankAccount.OrganisationBankAccountController.Get),
@@ -98,7 +92,7 @@ public class OrganisationBankAccountController : OrganisationRegistryController
             return BadRequest(ModelState);
 
         var updateOrganisationKey = UpdateOrganisationBankAccountRequestMapping.Map(internalMessage);
-        await CommandSender.Send(updateOrganisationKey, WellknownUsers.Cjm);
+        await CommandSender.Send(updateOrganisationKey);
 
         return Ok();
     }

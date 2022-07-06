@@ -4,7 +4,7 @@ using System;
 using System.Collections.Immutable;
 using Api.HostedServices.ProcessImportedFiles;
 using Api.HostedServices.ProcessImportedFiles.CreateOrganisations;
-using Api.HostedServices.ProcessImportedFiles.CreateOrganisations.Validators;
+using OrganisationRegistry.Api.HostedServices.ProcessImportedFiles.CreateOrganisations.Validators;
 using Api.HostedServices.ProcessImportedFiles.Validation;
 using AutoFixture;
 using FluentAssertions;

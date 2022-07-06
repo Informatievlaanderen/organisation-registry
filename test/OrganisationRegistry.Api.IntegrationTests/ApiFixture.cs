@@ -29,13 +29,24 @@ using Xunit;
 
 public class ApiFixture : IDisposable, IAsyncLifetime
 {
+    public struct Orafin
+    {
+        public const string Client = "orafinClient";
+        public const string Scope = AcmIdmConstants.Scopes.OrafinBeheerder;
+    }
+
+    public struct CJM
+    {
+        public const string Client = "cjmClient";
+        public const string Scope = AcmIdmConstants.Scopes.CjmBeheerder;
+    }
+
     private readonly IWebHost _webHost;
     private readonly IConfigurationRoot? _configurationRoot;
     public IOrganisationRegistryConfiguration Configuration { get; }
     public const string ApiEndpoint = "http://localhost:5000/v1/";
     public const string Jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdF9oYXNoIjoiMklEMHdGR3l6WnJWaHRmbi00Ty1EQSIsImF1ZCI6WyJodHRwczovL2RpZW5zdHZlcmxlbmluZy10ZXN0LmJhc2lzcmVnaXN0ZXJzLnZsYWFuZGVyZW4iXSwiYXpwIjoiN2Q4MDExOTctNmQ0My00NzZhLTgzZWYtMzU4NjllZTUyZDg1IiwiZXhwIjoxODkzOTM2ODIzLCJmYW1pbHlfbmFtZSI6IkFwaSIsImdpdmVuX25hbWUiOiJUZXN0IiwiaWF0IjoxNTc4MzExNjMzLCJ2b19pZCI6IjEyMzk4Nzk4Ny0xMjMxMjMiLCJpc3MiOiJodHRwczovL2RpZW5zdHZlcmxlbmluZy10ZXN0LmJhc2lzcmVnaXN0ZXJzLnZsYWFuZGVyZW4iLCJ1cm46YmU6dmxhYW5kZXJlbjpkaWVuc3R2ZXJsZW5pbmc6YWNtaWQiOiJ2b19pZCIsInVybjpiZTp2bGFhbmRlcmVuOmFjbTpmYW1pbGllbmFhbSI6ImZhbWlseV9uYW1lIiwidXJuOmJlOnZsYWFuZGVyZW46YWNtOnZvb3JuYWFtIjoiZ2l2ZW5fbmFtZSIsInVybjpiZTp2bGFhbmRlcmVuOndlZ3dpanM6YWNtaWQiOiJ0ZXN0Iiwicm9sZSI6WyJhbGdlbWVlbkJlaGVlcmRlciJdLCJuYmYiOjE1NzgzOTY2MzN9.wWYDfwbcBxHMdaBIhoFH0UnXNl82lE_rsu-R49km1FM";
-    private const string OrafinClientId = "orafinClient";
-    private const string CjmClientId = "cjmClient";
+
 
     public HttpClient HttpClient { get; } = new()
     {
@@ -123,7 +134,7 @@ public class ApiFixture : IDisposable, IAsyncLifetime
     private Task CreateParameter(string requestUri, Guid id, string name)
         => Post(HttpClient, requestUri, new { id = id, name = name });
 
-    private async Task<HttpClient> CreateMachine2MachineClientFor(string clientId, string scope)
+    public async Task<HttpClient> CreateMachine2MachineClientFor(string clientId, string scope)
     {
         var editApiConfiguration = _configurationRoot!.GetSection(EditApiConfigurationSection.Name)
             .Get<EditApiConfigurationSection>();
@@ -152,12 +163,6 @@ public class ApiFixture : IDisposable, IAsyncLifetime
         return httpClientFor;
     }
 
-    public async Task<HttpClient> CreateOrafinClient()
-        => await CreateMachine2MachineClientFor(OrafinClientId, AcmIdmConstants.Scopes.OrafinBeheerder);
-
-    public async Task<HttpClient> CreateCjmClient()
-        => await CreateMachine2MachineClientFor(CjmClientId, AcmIdmConstants.Scopes.CjmBeheerder);
-
     public Task CreateOrganisation(Guid organisationId, string organisationName)
         => Post(HttpClient, "organisations", new { id = organisationId, name = organisationName });
 
@@ -180,8 +185,9 @@ public class ApiFixture : IDisposable, IAsyncLifetime
     public static async Task VerifyStatusCode(HttpResponseMessage response, HttpStatusCode expectedStatusCode)
     {
         if (response.StatusCode != expectedStatusCode)
-            throw new AssertionFailedException($"Expected statuscode {expectedStatusCode}, but received {response.StatusCode}.\n" +
-                                               $"The response was '{await response.Content.ReadAsStringAsync()}'\n");
+            throw new AssertionFailedException(
+                $"Expected statuscode {expectedStatusCode}, but received {response.StatusCode}.\n" +
+                $"The response was '{await response.Content.ReadAsStringAsync()}'\n");
     }
 
     protected virtual void Dispose(bool disposing)
@@ -196,6 +202,6 @@ public class ApiFixture : IDisposable, IAsyncLifetime
         Dispose(true);
     }
 
-    public  Task DisposeAsync()
+    public Task DisposeAsync()
         => Task.CompletedTask;
 }

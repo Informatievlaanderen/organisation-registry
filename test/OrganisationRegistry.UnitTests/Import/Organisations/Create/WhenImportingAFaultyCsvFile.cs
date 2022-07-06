@@ -8,7 +8,7 @@ using AutoFixture;
 using FluentAssertions;
 using Api.HostedServices.ProcessImportedFiles.CreateOrganisations;
 using Api.HostedServices.ProcessImportedFiles.Processor;
-using Api.Import.Organisations;
+using OrganisationRegistry.Api.Import.Organisations;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using OrganisationRegistry.Infrastructure.Commands;

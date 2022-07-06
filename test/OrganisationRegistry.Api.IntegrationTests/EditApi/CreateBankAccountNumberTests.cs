@@ -39,7 +39,7 @@ public class CreateBankAccountNumberTests
     {
         await _fixture.CreateOrganisation(_organisationId, TestOrganisationForCreatebankaccountnumbers);
 
-        var client = await _fixture.CreateCjmClient();
+        var client = await _fixture.CreateMachine2MachineClientFor(ApiFixture.CJM.Client, ApiFixture.CJM.Scope);
 
         var response = await CreateBankAccountNumber(client, _organisationId, "BE86001197741650", "GEBABEBB");
 
@@ -57,7 +57,7 @@ public class CreateBankAccountNumberTests
     {
         await _fixture.CreateOrganisation(_organisationId, TestOrganisationForCreatebankaccountnumbers);
 
-        var client = await _fixture.CreateCjmClient();
+        var client = await _fixture.CreateMachine2MachineClientFor(ApiFixture.CJM.Client, ApiFixture.CJM.Scope);
 
         var response = await CreateBankAccountNumber(client, _organisationId, "BE86001197741650", "NOT_A_BIC");
 
@@ -69,7 +69,7 @@ public class CreateBankAccountNumberTests
     {
         await _fixture.CreateOrganisation(_organisationId, TestOrganisationForCreatebankaccountnumbers);
 
-        var client = await _fixture.CreateOrafinClient();
+        var client = await _fixture.CreateMachine2MachineClientFor(ApiFixture.Orafin.Client, ApiFixture.Orafin.Scope);
 
         var response = await CreateBankAccountNumber(client, _organisationId, "BE86001197741650");
 

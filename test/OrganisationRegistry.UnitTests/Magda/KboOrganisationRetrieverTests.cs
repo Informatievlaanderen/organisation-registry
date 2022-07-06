@@ -2,7 +2,7 @@ namespace OrganisationRegistry.UnitTests.Magda;
 
 using System;
 using System.Threading.Tasks;
-using Api.Infrastructure.Magda;
+using OrganisationRegistry.Api.Infrastructure.Magda;
 using FluentAssertions;
 using global::Magda.RegistreerInschrijving;
 using Microsoft.Extensions.Logging;

@@ -1,6 +1,6 @@
 namespace OrganisationRegistry.UnitTests.Magda;
 
-using Api.Infrastructure.Magda;
+using OrganisationRegistry.Api.Infrastructure.Magda;
 using FluentAssertions;
 using global::Magda.GeefOnderneming;
 using Xunit;

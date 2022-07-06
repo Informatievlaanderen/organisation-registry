@@ -5,7 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using Api.Security;
+using OrganisationRegistry.Api.Security;
 using AutoFixture;
 using FluentAssertions;
 using IdentityModel;
