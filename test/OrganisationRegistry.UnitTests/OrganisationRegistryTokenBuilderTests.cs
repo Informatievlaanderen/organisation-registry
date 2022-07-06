@@ -47,7 +47,7 @@ public class OrganisationRegistryTokenBuilderTests
         {
             "WegwijsBeheerder-vlimpersbeheerder:OVO001833",
             "WegwijsBeheerder-algemeenBeheerder:OVO002949",
-            "WegwijsBeheerder-beheerder:OVO002949",
+            "WegwijsBeheerder-decentraalBeheerder:OVO002949",
             "WegwijsBeheerder-orgaanBeheerder:OVO001835",
         };
 
@@ -140,7 +140,7 @@ public class OrganisationRegistryTokenBuilderTests
             {
                 new[]
                 {
-                    "WegwijsBeheerder-beheerder:OVO002949",
+                    "WegwijsBeheerder-decentraalBeheerder:OVO002949",
                 },
                 new[]
                 {
@@ -212,7 +212,7 @@ public class OrganisationRegistryTokenBuilderTests
             {
                 new[]
                 {
-                    "WegwijsBeheerder-beheerder:OVO002949",
+                    "WegwijsBeheerder-decentraalBeheerder:OVO002949",
                 },
                 new[]
                 {
@@ -234,8 +234,8 @@ public class OrganisationRegistryTokenBuilderTests
                 {
                     "WegwijsBeheerder-vlimpersBeheerder:OVO002949",
                     "WegwijsBeheerder-orgaanBeheerder:OVO001835",
-                    "WegwijsBeheerder-Beheerder:OVO001833",
-                    "WegwijsBeheerder-Beheerder:OVO001830",
+                    "WegwijsBeheerder-decentraalBeheerder:OVO001833",
+                    "WegwijsBeheerder-decentraalBeheerder:OVO001830",
                 },
                 new[]
                 {
