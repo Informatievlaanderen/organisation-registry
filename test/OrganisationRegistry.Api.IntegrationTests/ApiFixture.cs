@@ -41,6 +41,12 @@ public class ApiFixture : IDisposable, IAsyncLifetime
         public const string Scope = AcmIdmConstants.Scopes.CjmBeheerder;
     }
 
+    public struct Test
+    {
+        public const string Client = "testClient";
+        public const string Scope = AcmIdmConstants.Scopes.TestClient;
+    }
+
     private readonly IWebHost _webHost;
     private readonly IConfigurationRoot? _configurationRoot;
     public IOrganisationRegistryConfiguration Configuration { get; }

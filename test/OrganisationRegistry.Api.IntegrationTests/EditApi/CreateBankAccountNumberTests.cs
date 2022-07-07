@@ -34,20 +34,22 @@ public class CreateBankAccountNumberTests
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
-    [EnvVarIgnoreFact]
-    public async Task AsCjmBeheerder_CanCreateAndUpdate()
+    [EnvVarIgnoreTheory]
+    [InlineData(ApiFixture.CJM.Client, ApiFixture.CJM.Scope)]
+    [InlineData(ApiFixture.Test.Client, ApiFixture.Test.Scope)]
+    public async Task CanCreateAndUpdateAs(string client, string scope)
     {
         await _fixture.CreateOrganisation(_organisationId, TestOrganisationForCreatebankaccountnumbers);
 
-        var client = await _fixture.CreateMachine2MachineClientFor(ApiFixture.CJM.Client, ApiFixture.CJM.Scope);
+        var httpClient = await _fixture.CreateMachine2MachineClientFor(client, scope);
 
-        var response = await CreateBankAccountNumber(client, _organisationId, "BE86001197741650", "GEBABEBB");
+        var response = await CreateBankAccountNumber(httpClient, _organisationId, "BE86001197741650", "GEBABEBB");
 
         await ApiFixture.VerifyStatusCode(response, HttpStatusCode.Created);
 
         var organisationBankaccountId = GetFromLocation(response.Headers.Location!.ToString());
 
-        var updateResponse = await UpdateBankAccountNumber(client, _organisationId, new Guid(organisationBankaccountId), "BG72UNCR70001522734456");
+        var updateResponse = await UpdateBankAccountNumber(httpClient, _organisationId, new Guid(organisationBankaccountId), "BG72UNCR70001522734456");
 
         await ApiFixture.VerifyStatusCode(updateResponse, HttpStatusCode.OK);
     }

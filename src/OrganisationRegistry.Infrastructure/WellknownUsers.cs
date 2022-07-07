@@ -8,9 +8,9 @@ public class WellknownUsers
     public static User ScheduledCommandsService => Create("ScheduledCommandsService", Role.AutomatedTask);
     public static User SyncRemovedItemsService => Create("SyncRemovedItemsService", Role.AutomatedTask);
     public static User KboSyncService => Create("KboSyncService", Role.AutomatedTask);
-
     public static User Orafin => Create("Orafin", "Edit Api", "Orafin Edit Api", Role.Orafin);
     public static User Cjm => Create("Cjm", "Edit Api", "Cjm Edit Api", Role.AlgemeenBeheerder);
+    public static User TestClient => Create("TestClient", Role.AlgemeenBeheerder); //TODO verify if this is the correct role
 
     public static User Magda => Create("Magda", "Reregistrator", "Magda Reregistrator", Role.AutomatedTask);
 
