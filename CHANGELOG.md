@@ -1,3 +1,10 @@
+# [1.224.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.223.0...v1.224.0) (2022-07-07)
+
+
+### Features
+
+* or-879 allow orafin to add and edit organisation keys ([4a6c68c](https://github.com/informatievlaanderen/organisation-registry/commit/4a6c68cce8cb50f49289b64e5543732e3d223155))
+
 # [1.223.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.222.0...v1.223.0) (2022-07-06)
 
 
