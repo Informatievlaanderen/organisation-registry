@@ -1,3 +1,10 @@
+## [1.224.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.224.0...v1.224.1) (2022-07-07)
+
+
+### Bug Fixes
+
+* or-879 allow test user to add and edit ([0f18ee3](https://github.com/informatievlaanderen/organisation-registry/commit/0f18ee3225bccec944746ef727c61c99cb19def7))
+
 # [1.224.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.223.0...v1.224.0) (2022-07-07)
 
 
