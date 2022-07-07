@@ -155,6 +155,8 @@ public class SecurityService : ISecurityService
                 return WellknownUsers.Cjm;
             case AcmIdmConstants.Scopes.OrafinBeheerder:
                 return WellknownUsers.Orafin;
+            case AcmIdmConstants.Scopes.TestClient:
+                return WellknownUsers.TestClient;
         }
 
         var firstName = principal.FindFirst(ClaimTypes.GivenName);
