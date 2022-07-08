@@ -1,3 +1,10 @@
+# [1.225.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.224.1...v1.225.0) (2022-07-08)
+
+
+### Features
+
+* or-875 thow invalid bic exception ([62b58ae](https://github.com/informatievlaanderen/organisation-registry/commit/62b58ae33128f375c9a70871b6819832b408b60e))
+
 ## [1.224.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.224.0...v1.224.1) (2022-07-07)
 
 
