@@ -5,13 +5,16 @@ public class CreateOrganisationClassificationType : BaseCommand<OrganisationClas
     public OrganisationClassificationTypeId OrganisationClassificationTypeId => Id;
 
     public OrganisationClassificationTypeName Name { get; }
+    public bool AllowDifferentClassificationsToOverlap { get; }
 
     public CreateOrganisationClassificationType(
         OrganisationClassificationTypeId organisationClassificationTypeId,
-        OrganisationClassificationTypeName name)
+        OrganisationClassificationTypeName name,
+        bool allowDifferentClassificationsToOverlap)
     {
         Id = organisationClassificationTypeId;
 
         Name = name;
+        AllowDifferentClassificationsToOverlap = allowDifferentClassificationsToOverlap;
     }
 }

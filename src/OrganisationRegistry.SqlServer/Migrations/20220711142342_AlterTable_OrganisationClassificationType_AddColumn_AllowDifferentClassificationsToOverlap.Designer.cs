@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OrganisationRegistry.SqlServer.Infrastructure;
 
@@ -11,9 +12,10 @@ using OrganisationRegistry.SqlServer.Infrastructure;
 namespace OrganisationRegistry.SqlServer.Migrations
 {
     [DbContext(typeof(OrganisationRegistryContext))]
-    partial class OrganisationRegistryContextModelSnapshot : ModelSnapshot
+    [Migration("20220711142342_AlterTable_OrganisationClassificationType_AddColumn_AllowDifferentClassificationsToOverlap")]
+    partial class AlterTable_OrganisationClassificationType_AddColumn_AllowDifferentClassificationsToOverlap
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

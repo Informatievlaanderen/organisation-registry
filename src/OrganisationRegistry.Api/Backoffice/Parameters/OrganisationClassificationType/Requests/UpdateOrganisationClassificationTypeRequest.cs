@@ -21,6 +21,7 @@ public class UpdateOrganisationClassificationTypeInternalRequest
 public class UpdateOrganisationClassificationTypeRequest
 {
     public string Name { get; set; } = null!;
+    public bool? AllowDifferentClassificationsToOverlap { get; set; }
 }
 
 public class UpdateOrganisationClassificationTypeRequestValidator : AbstractValidator<UpdateOrganisationClassificationTypeInternalRequest>
@@ -46,5 +47,6 @@ public static class UpdateOrganisationClassificationTypeRequestMapping
     public static UpdateOrganisationClassificationType Map(UpdateOrganisationClassificationTypeInternalRequest message)
         => new(
             new OrganisationClassificationTypeId(message.OrganisationClassificationTypeId),
-            new OrganisationClassificationTypeName(message.Body.Name));
+            new OrganisationClassificationTypeName(message.Body.Name),
+            message.Body.AllowDifferentClassificationsToOverlap);
 }

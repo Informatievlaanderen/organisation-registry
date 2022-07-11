@@ -60,8 +60,6 @@ public class ApiFixture : IDisposable, IAsyncLifetime
         DefaultRequestHeaders = { Authorization = new AuthenticationHeaderValue("Bearer", Jwt) },
     };
 
-    public object? FixtureContext { get; set; }
-
     public ApiFixture()
     {
         var maybeRootDirectory = Directory
@@ -140,6 +138,15 @@ public class ApiFixture : IDisposable, IAsyncLifetime
     private Task CreateParameter(string requestUri, Guid id, string name)
         => Post(HttpClient, requestUri, new { id = id, name = name });
 
+    public async Task<HttpClient> CreateCjmClient()
+        => await CreateMachine2MachineClientFor(CJM.Client, CJM.Scope);
+
+    public async Task<HttpClient> CreateOrafinClient()
+        => await CreateMachine2MachineClientFor(Orafin.Client, Orafin.Scope);
+
+    public async Task<HttpClient> CreateTestClient()
+        => await CreateMachine2MachineClientFor(Test.Client, Test.Scope);
+
     public async Task<HttpClient> CreateMachine2MachineClientFor(string clientId, string scope)
     {
         var editApiConfiguration = _configurationRoot!.GetSection(EditApiConfigurationSection.Name)
@@ -187,6 +194,12 @@ public class ApiFixture : IDisposable, IAsyncLifetime
                 JsonConvert.SerializeObject(body),
                 Encoding.UTF8,
                 "application/json"));
+
+    public static async Task<HttpResponseMessage> Get(HttpClient httpClient, string route)
+        => await httpClient.GetAsync(route);
+
+    public static async Task<HttpResponseMessage> Delete(HttpClient httpClient, string route)
+        => await httpClient.DeleteAsync(route);
 
     public static async Task VerifyStatusCode(HttpResponseMessage response, HttpStatusCode expectedStatusCode)
     {

@@ -27,7 +27,7 @@ public class OrganisationClassificationTypeCommandHandlers :
         if (_uniqueNameValidator.IsNameTaken(envelope.Command.Name))
             throw new NameNotUnique();
 
-        var organisationClassificationType = new OrganisationClassificationType(envelope.Command.OrganisationClassificationTypeId, envelope.Command.Name);
+        var organisationClassificationType = OrganisationClassificationType.Create(envelope.Command.OrganisationClassificationTypeId, envelope.Command.Name, envelope.Command.AllowDifferentClassificationsToOverlap);
         Session.Add(organisationClassificationType);
         await Session.Commit(envelope.User);
     }
@@ -39,6 +39,10 @@ public class OrganisationClassificationTypeCommandHandlers :
 
         var organisationClassificationType = Session.Get<OrganisationClassificationType>(envelope.Command.OrganisationClassificationTypeId);
         organisationClassificationType.Update(envelope.Command.Name);
+
+        if (envelope.Command.AllowDifferentClassificationsToOverlap is { } allowDifferentClassificationsToOverlap)
+            organisationClassificationType.ChangeAllowDifferentClassificationsToOverlap(allowDifferentClassificationsToOverlap);
+
         await Session.Commit(envelope.User);
     }
 }
