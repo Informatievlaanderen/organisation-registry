@@ -1,3 +1,10 @@
+# [1.226.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.225.0...v1.226.0) (2022-07-11)
+
+
+### Features
+
+* or-1106 allow different classifications to overlap ([a16f948](https://github.com/informatievlaanderen/organisation-registry/commit/a16f948a0e90ac5658f89621be53a163575d75fa))
+
 # [1.225.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.224.1...v1.225.0) (2022-07-08)
 
 
