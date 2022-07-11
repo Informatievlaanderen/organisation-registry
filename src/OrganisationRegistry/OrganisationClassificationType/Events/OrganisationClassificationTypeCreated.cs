@@ -8,6 +8,7 @@ public class OrganisationClassificationTypeCreated : BaseEvent<OrganisationClass
     public Guid OrganisationClassificationTypeId => Id;
 
     public string Name { get; }
+    public bool AllowDifferentClassificationsToOverlap { get; set; } = false;
 
     public OrganisationClassificationTypeCreated(
         OrganisationClassificationTypeId organisationClassificationTypeId,

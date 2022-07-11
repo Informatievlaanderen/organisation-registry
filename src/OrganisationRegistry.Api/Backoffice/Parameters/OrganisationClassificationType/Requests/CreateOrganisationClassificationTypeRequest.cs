@@ -11,6 +11,7 @@ public class CreateOrganisationClassificationTypeRequest
     public Guid Id { get; set; }
 
     public string Name { get; set; } = null!;
+    public bool AllowDifferentClassificationsToOverlap { get; set; } = false;
 }
 
 public class CreateOrganisationClassificationTypeRequestValidator : AbstractValidator<CreateOrganisationClassificationTypeRequest>
@@ -36,5 +37,7 @@ public static class CreateOrganisationClassificationTypeRequestMapping
     public static CreateOrganisationClassificationType Map(CreateOrganisationClassificationTypeRequest message)
         => new(
             new OrganisationClassificationTypeId(message.Id),
-            new OrganisationClassificationTypeName(message.Name));
+            new OrganisationClassificationTypeName(message.Name),
+            message.AllowDifferentClassificationsToOverlap
+        );
 }

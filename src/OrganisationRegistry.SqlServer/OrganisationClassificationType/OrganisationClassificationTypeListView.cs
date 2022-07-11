@@ -2,7 +2,6 @@
 
 using System;
 using System.Data.Common;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
@@ -17,6 +16,7 @@ public class OrganisationClassificationTypeListItem
     public Guid Id { get; set; }
 
     public string Name { get; set; } = null!;
+    public bool AllowDifferentClassificationsToOverlap { get; set; }
 }
 
 public class OrganisationClassificationTypeListConfiguration : EntityMappingConfiguration<OrganisationClassificationTypeListItem>
@@ -40,10 +40,14 @@ public class OrganisationClassificationTypeListConfiguration : EntityMappingConf
 public class OrganisationClassificationTypeListView :
     Projection<OrganisationClassificationTypeListView>,
     IEventHandler<OrganisationClassificationTypeCreated>,
-    IEventHandler<OrganisationClassificationTypeUpdated>
+    IEventHandler<OrganisationClassificationTypeUpdated>,
+    IEventHandler<OrganisationClassificationTypeAllowDifferentClassificationsToOverlapChanged>
 {
-    protected override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
-    public override string Schema => WellknownSchemas.BackofficeSchema;
+    protected override string[] ProjectionTableNames
+        => Enum.GetNames(typeof(ProjectionTables));
+
+    public override string Schema
+        => WellknownSchemas.BackofficeSchema;
 
     public enum ProjectionTables
     {
@@ -62,34 +66,41 @@ public class OrganisationClassificationTypeListView :
 
     public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationClassificationTypeCreated> message)
     {
-        using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-        {
-            var organisationClassificationType = new OrganisationClassificationTypeListItem
-            {
-                Id = message.Body.OrganisationClassificationTypeId,
-                Name = message.Body.Name,
-            };
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
 
-            await context.OrganisationClassificationTypeList.AddAsync(organisationClassificationType);
-            await context.SaveChangesAsync();
-        }
+        var organisationClassificationType = new OrganisationClassificationTypeListItem
+        {
+            Id = message.Body.OrganisationClassificationTypeId,
+            Name = message.Body.Name,
+            AllowDifferentClassificationsToOverlap = false,
+        };
+
+        context.OrganisationClassificationTypeList.Add(organisationClassificationType);
+        await context.SaveChangesAsync();
     }
 
     public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationClassificationTypeUpdated> message)
     {
-        using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-        {
-            var organisationClassificationType = context.OrganisationClassificationTypeList.SingleOrDefault(x => x.Id == message.Body.OrganisationClassificationTypeId);
-            if (organisationClassificationType == null)
-                return; // TODO: Error?
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
 
-            organisationClassificationType.Name = message.Body.Name;
-            await context.SaveChangesAsync();
-        }
+        var organisationClassificationType = await context.OrganisationClassificationTypeList.SingleAsync(x => x.Id == message.Body.OrganisationClassificationTypeId);
+        organisationClassificationType.Name = message.Body.Name;
+
+        await context.SaveChangesAsync();
     }
 
     public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
     {
         await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+    }
+
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationClassificationTypeAllowDifferentClassificationsToOverlapChanged> message)
+    {
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+
+        var organisationClassificationType = await context.OrganisationClassificationTypeList.SingleAsync(x => x.Id == message.Body.OrganisationClassificationTypeId);
+        organisationClassificationType.AllowDifferentClassificationsToOverlap = message.Body.IsAllowed;
+
+        await context.SaveChangesAsync();
     }
 }

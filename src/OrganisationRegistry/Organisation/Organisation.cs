@@ -1,5 +1,6 @@
 // ReSharper disable UnusedMember.Local
 // ReSharper disable UnusedParameter.Local
+
 namespace OrganisationRegistry.Organisation;
 
 using Building;
@@ -44,11 +45,14 @@ public partial class Organisation : AggregateRoot
     public KboState KboState { get; }
 
     private DateTime? _dateOfTermination;
-    public bool IsTerminated => _dateOfTermination != null;
+
+    public bool IsTerminated
+        => _dateOfTermination != null;
 
     public bool CoupledToKboFromCreation { get; set; }
 
-    private bool HasKboNumber => KboState.KboNumber != null;
+    private bool HasKboNumber
+        => KboState.KboNumber != null;
 
     private Organisation()
     {
@@ -73,24 +77,27 @@ public partial class Organisation : AggregateRoot
         OrganisationSourceId? sourceId = null,
         string? sourceOrganisationIdentifier = null) : this()
     {
-        ApplyChange(new OrganisationCreated(
-            id,
-            name,
-            ovoNumber,
-            shortName,
-            article,
-            description,
-            purposes.Select(x => new Events.Purpose(x.Id,
-                    x.Name))
-                .ToList(),
-            showOnVlaamseOverheidSites,
-            validity.Start,
-            validity.End,
-            operationalValidity.Start,
-            operationalValidity.End,
-            sourceType,
-            sourceId,
-            sourceOrganisationIdentifier));
+        ApplyChange(
+            new OrganisationCreated(
+                id,
+                name,
+                ovoNumber,
+                shortName,
+                article,
+                description,
+                purposes.Select(
+                        x => new Events.Purpose(
+                            x.Id,
+                            x.Name))
+                    .ToList(),
+                showOnVlaamseOverheidSites,
+                validity.Start,
+                validity.End,
+                operationalValidity.Start,
+                operationalValidity.End,
+                sourceType,
+                sourceId,
+                sourceOrganisationIdentifier));
 
         if (validity.OverlapsWith(dateTimeProvider.Today))
             ApplyChange(new OrganisationBecameActive(Id));
@@ -98,24 +105,27 @@ public partial class Organisation : AggregateRoot
         if (parentOrganisation == null)
             return;
 
-        ApplyChange(new OrganisationParentAdded(
-            Id,
-            Id,
-            parentOrganisation.Id,
-            parentOrganisation.State.Name,
-            null,
-            null));
+        ApplyChange(
+            new OrganisationParentAdded(
+                Id,
+                Id,
+                parentOrganisation.Id,
+                parentOrganisation.State.Name,
+                null,
+                null));
 
-        ApplyChange(new ParentAssignedToOrganisation(
-            Id,
-            parentOrganisation.Id,
-            Id));
+        ApplyChange(
+            new ParentAssignedToOrganisation(
+                Id,
+                parentOrganisation.Id,
+                Id));
 
-        if(parentOrganisation.State.UnderVlimpersManagement)
+        if (parentOrganisation.State.UnderVlimpersManagement)
             ApplyChange(new OrganisationPlacedUnderVlimpersManagement(Id));
     }
 
-    public static Organisation Create(OrganisationId id,
+    public static Organisation Create(
+        OrganisationId id,
         string name,
         string ovoNumber,
         string? shortName,
@@ -127,7 +137,8 @@ public partial class Organisation : AggregateRoot
         Period validity,
         Period operationalValidity,
         IDateTimeProvider dateTimeProvider)
-        => new(id,
+        => new(
+            id,
             name,
             ovoNumber,
             shortName,
@@ -140,7 +151,8 @@ public partial class Organisation : AggregateRoot
             operationalValidity,
             dateTimeProvider);
 
-    public static Organisation CreateFromImport(OrganisationId id,
+    public static Organisation CreateFromImport(
+        OrganisationId id,
         string name,
         string ovoNumber,
         string? shortName,
@@ -152,7 +164,8 @@ public partial class Organisation : AggregateRoot
         IDateTimeProvider dateTimeProvider,
         OrganisationSourceId importId,
         string reference)
-        => new(id,
+        => new(
+            id,
             name,
             ovoNumber,
             shortName,
@@ -205,20 +218,21 @@ public partial class Organisation : AggregateRoot
         Period operationalValidity,
         IDateTimeProvider dateTimeProvider) : this()
     {
-        ApplyChange(new OrganisationCreatedFromKbo(
-            id,
-            kboNumber.ToDigitsOnly(),
-            name,
-            ovoNumber,
-            shortName,
-            article,
-            description,
-            purposes.Select(x => new Events.Purpose(x.Id, x.Name)).ToList(),
-            showOnVlaamseOverheidSites,
-            validity.Start,
-            validity.End,
-            operationalValidity.Start,
-            operationalValidity.End));
+        ApplyChange(
+            new OrganisationCreatedFromKbo(
+                id,
+                kboNumber.ToDigitsOnly(),
+                name,
+                ovoNumber,
+                shortName,
+                article,
+                description,
+                purposes.Select(x => new Events.Purpose(x.Id, x.Name)).ToList(),
+                showOnVlaamseOverheidSites,
+                validity.Start,
+                validity.End,
+                operationalValidity.Start,
+                operationalValidity.End));
 
         if (validity.OverlapsWith(dateTimeProvider.Today))
             ApplyChange(new OrganisationBecameActive(Id));
@@ -226,23 +240,26 @@ public partial class Organisation : AggregateRoot
         if (parentOrganisation == null)
             return;
 
-        ApplyChange(new OrganisationParentAdded(
-            Id,
-            Id,
-            parentOrganisation.Id,
-            parentOrganisation.State.Name,
-            null,
-            null));
+        ApplyChange(
+            new OrganisationParentAdded(
+                Id,
+                Id,
+                parentOrganisation.Id,
+                parentOrganisation.State.Name,
+                null,
+                null));
 
-        ApplyChange(new ParentAssignedToOrganisation(
-            Id,
-            parentOrganisation.Id,
-            Id));
+        ApplyChange(
+            new ParentAssignedToOrganisation(
+                Id,
+                parentOrganisation.Id,
+                Id));
     }
 
     // TODO: discuss => Can we make name a Value Object, and put validation there as well?
 
-    public void UpdateInfo(string name,
+    public void UpdateInfo(
+        string name,
         Article article,
         string? description,
         string? shortName,
@@ -261,31 +278,31 @@ public partial class Organisation : AggregateRoot
             KboV2Guards.ThrowIfChanged(State.ShortName, shortName);
         }
 
-        if(!string.Equals(name, State.Name))
+        if (!string.Equals(name, State.Name))
             ApplyChange(new OrganisationNameUpdated(Id, name));
 
-        if(!string.Equals(shortName, State.ShortName))
+        if (!string.Equals(shortName, State.ShortName))
             ApplyChange(new OrganisationShortNameUpdated(Id, shortName));
 
-        if(!string.Equals(article, State.Article))
+        if (!string.Equals(article, State.Article))
             ApplyChange(new OrganisationArticleUpdated(Id, article));
 
-        if(!string.Equals(description, State.Description))
+        if (!string.Equals(description, State.Description))
             ApplyChange(new OrganisationDescriptionUpdated(Id, description));
 
         var purposes2 = purposes.Select(x => new Events.Purpose(x.Id, x.Name)).ToList();
-        if(!purposes2.SequenceEqual(_purposes)) // todo: don't use events as type for List
+        if (!purposes2.SequenceEqual(_purposes)) // todo: don't use events as type for List
         {
             ApplyChange(new OrganisationPurposesUpdated(Id, purposes2));
         }
 
-        if(!showOnVlaamseOverheidSites.Equals(State.ShowOnVlaamseOverheidSites))
+        if (!showOnVlaamseOverheidSites.Equals(State.ShowOnVlaamseOverheidSites))
             ApplyChange(new OrganisationShowOnVlaamseOverheidSitesUpdated(Id, showOnVlaamseOverheidSites));
 
-        if(!validity.Equals(State.Validity))
+        if (!validity.Equals(State.Validity))
             ApplyChange(new OrganisationValidityUpdated(Id, validity.Start, validity.End));
 
-        if(!operationalValidity.Equals(State.OperationalValidity))
+        if (!operationalValidity.Equals(State.OperationalValidity))
             ApplyChange(new OrganisationOperationalValidityUpdated(Id, operationalValidity.Start, operationalValidity.End));
 
         var validityOverlapsWithToday = validity.OverlapsWith(dateTimeProvider.Today);
@@ -296,20 +313,21 @@ public partial class Organisation : AggregateRoot
             ApplyChange(new OrganisationBecameActive(Id));
     }
 
-    public void UpdateInfoNotLimitedByVlimpers(string? description,
+    public void UpdateInfoNotLimitedByVlimpers(
+        string? description,
         IEnumerable<Purpose> purposes,
         bool showOnVlaamseOverheidSites)
     {
-        if(IsDifferent(State.Description, description))
+        if (IsDifferent(State.Description, description))
             ApplyChange(new OrganisationDescriptionUpdated(Id, description));
 
         var purposes2 = purposes.Select(x => new Events.Purpose(x.Id, x.Name)).ToList();
-        if(!purposes2.SequenceEqual(_purposes)) // todo: don't use events as type for List
+        if (!purposes2.SequenceEqual(_purposes)) // todo: don't use events as type for List
         {
             ApplyChange(new OrganisationPurposesUpdated(Id, purposes2));
         }
 
-        if(!showOnVlaamseOverheidSites.Equals(State.ShowOnVlaamseOverheidSites))
+        if (!showOnVlaamseOverheidSites.Equals(State.ShowOnVlaamseOverheidSites))
             ApplyChange(new OrganisationShowOnVlaamseOverheidSitesUpdated(Id, showOnVlaamseOverheidSites));
     }
 
@@ -335,22 +353,22 @@ public partial class Organisation : AggregateRoot
             KboV2Guards.ThrowIfChanged(State.ShortName, shortName);
         }
 
-        if(!string.Equals(name, State.Name))
+        if (!string.Equals(name, State.Name))
             ApplyChange(new OrganisationNameUpdated(Id, name));
 
 
-        if(!string.Equals(shortName, State.ShortName))
+        if (!string.Equals(shortName, State.ShortName))
             ApplyChange(new OrganisationShortNameUpdated(Id, shortName));
 
 
-        if(!string.Equals(article, State.Article))
+        if (!string.Equals(article, State.Article))
             ApplyChange(new OrganisationArticleUpdated(Id, article));
 
 
-        if(!validity.Equals(State.Validity))
+        if (!validity.Equals(State.Validity))
             ApplyChange(new OrganisationValidityUpdated(Id, validity.Start, validity.End));
 
-        if(!operationalValidity.Equals(State.OperationalValidity))
+        if (!operationalValidity.Equals(State.OperationalValidity))
             ApplyChange(new OrganisationOperationalValidityUpdated(Id, operationalValidity.Start, operationalValidity.End));
 
         var validityOverlapsWithToday = validity.OverlapsWith(dateTimeProvider.Today);
@@ -372,12 +390,13 @@ public partial class Organisation : AggregateRoot
         if (KboState.TerminationInKbo != null && termination.Equals(KboState.TerminationInKbo.Value))
             return;
 
-        ApplyChange(new OrganisationTerminationFoundInKbo(
-            Id,
-            KboState.KboNumber!.ToDigitsOnly(),
-            termination.Date,
-            termination.Code,
-            termination.Reason));
+        ApplyChange(
+            new OrganisationTerminationFoundInKbo(
+                Id,
+                KboState.KboNumber!.ToDigitsOnly(),
+                termination.Date,
+                termination.Code,
+                termination.Reason));
     }
 
     public void MarkAsSynced(Guid? kboSyncItemId)
@@ -396,13 +415,14 @@ public partial class Organisation : AggregateRoot
             kboOrganisationShortName == State.ShortName)
             return;
 
-        ApplyChange(new OrganisationInfoUpdatedFromKbo(
-            Id,
-            State.OvoNumber,
-            kboOrganisationName,
-            kboOrganisationShortName,
-            State.Name,
-            State.ShortName));
+        ApplyChange(
+            new OrganisationInfoUpdatedFromKbo(
+                Id,
+                State.OvoNumber,
+                kboOrganisationName,
+                kboOrganisationShortName,
+                State.Name,
+                State.ShortName));
     }
 
     public void AddParent(
@@ -420,13 +440,14 @@ public partial class Organisation : AggregateRoot
             .Any(organisationParent => organisationParent.Validity.OverlapsWith(validity)))
             throw new OrganisationAlreadyCoupledToParentInThisPeriod();
 
-        ApplyChange(new OrganisationParentAdded(
-            Id,
-            organisationOrganisationParentId,
-            parentOrganisation.Id,
-            parentOrganisation.State.Name,
-            validity.Start,
-            validity.End));
+        ApplyChange(
+            new OrganisationParentAdded(
+                Id,
+                organisationOrganisationParentId,
+                parentOrganisation.Id,
+                parentOrganisation.State.Name,
+                validity.Start,
+                validity.End));
 
         CheckIfCurrentParentChanged(
             new OrganisationParent(
@@ -454,17 +475,18 @@ public partial class Organisation : AggregateRoot
 
         var previousParentOrganisation = State.OrganisationParents.Single(parent => parent.OrganisationOrganisationParentId == organisationOrganisationParentId);
 
-        ApplyChange(new OrganisationParentUpdated(
-            Id,
-            organisationOrganisationParentId,
-            parentOrganisation.Id,
-            parentOrganisation.State.Name,
-            validity.Start,
-            validity.End,
-            previousParentOrganisation.ParentOrganisationId,
-            previousParentOrganisation.ParentOrganisationName,
-            previousParentOrganisation.Validity.Start,
-            previousParentOrganisation.Validity.End));
+        ApplyChange(
+            new OrganisationParentUpdated(
+                Id,
+                organisationOrganisationParentId,
+                parentOrganisation.Id,
+                parentOrganisation.State.Name,
+                validity.Start,
+                validity.End,
+                previousParentOrganisation.ParentOrganisationId,
+                previousParentOrganisation.ParentOrganisationName,
+                previousParentOrganisation.Validity.Start,
+                previousParentOrganisation.Validity.End));
 
         CheckIfCurrentParentChanged(
             new OrganisationParent(
@@ -488,15 +510,16 @@ public partial class Organisation : AggregateRoot
             .Any(organisationParent => organisationParent.Validity.OverlapsWith(validity)))
             throw new OrganisationAlreadyCoupledToFormalFrameworkParentInThisPeriod();
 
-        ApplyChange(new OrganisationFormalFrameworkAdded(
-            Id,
-            organisationFormalFrameworkId,
-            formalFramework.Id,
-            formalFramework.Name,
-            parentOrganisation.Id,
-            parentOrganisation.State.Name,
-            validity.Start,
-            validity.End));
+        ApplyChange(
+            new OrganisationFormalFrameworkAdded(
+                Id,
+                organisationFormalFrameworkId,
+                formalFramework.Id,
+                formalFramework.Name,
+                parentOrganisation.Id,
+                parentOrganisation.State.Name,
+                validity.Start,
+                validity.End));
 
         CheckIfCurrentFormalFrameworkParentChanged(
             new OrganisationFormalFramework(
@@ -526,19 +549,20 @@ public partial class Organisation : AggregateRoot
             State.OrganisationFormalFrameworks
                 .Single(x => x.OrganisationFormalFrameworkId == organisationFormalFrameworkId);
 
-        ApplyChange(new OrganisationFormalFrameworkUpdated(
-            Id,
-            organisationFormalFrameworkId,
-            formalFramework.Id,
-            formalFramework.Name,
-            parentOrganisation.Id,
-            parentOrganisation.State.Name,
-            validity.Start,
-            validity.End,
-            previousParentOrganisation.ParentOrganisationId,
-            previousParentOrganisation.ParentOrganisationName,
-            previousParentOrganisation.Validity.Start,
-            previousParentOrganisation.Validity.End));
+        ApplyChange(
+            new OrganisationFormalFrameworkUpdated(
+                Id,
+                organisationFormalFrameworkId,
+                formalFramework.Id,
+                formalFramework.Name,
+                parentOrganisation.Id,
+                parentOrganisation.State.Name,
+                validity.Start,
+                validity.End,
+                previousParentOrganisation.ParentOrganisationId,
+                previousParentOrganisation.ParentOrganisationName,
+                previousParentOrganisation.Validity.Start,
+                previousParentOrganisation.Validity.End));
 
         CheckIfCurrentFormalFrameworkParentChanged(
             new OrganisationFormalFramework(
@@ -567,17 +591,19 @@ public partial class Organisation : AggregateRoot
             .Any(organisationKey => organisationKey.Validity.OverlapsWith(validity)))
             throw new KeyAlreadyCoupledToInThisPeriod();
 
-        ApplyChange(new OrganisationKeyAdded(
-            Id,
-            organisationKeyId,
-            keyType.Id,
-            keyType.Name,
-            value,
-            validity.Start,
-            validity.End));
+        ApplyChange(
+            new OrganisationKeyAdded(
+                Id,
+                organisationKeyId,
+                keyType.Id,
+                keyType.Name,
+                value,
+                validity.Start,
+                validity.End));
     }
 
-    public void UpdateKey(Guid organisationKeyId,
+    public void UpdateKey(
+        Guid organisationKeyId,
         KeyType keyType,
         string value,
         Period validity,
@@ -596,19 +622,20 @@ public partial class Organisation : AggregateRoot
             .Any(organisationKey => organisationKey.Validity.OverlapsWith(validity)))
             throw new KeyAlreadyCoupledToInThisPeriod();
 
-        ApplyChange(new OrganisationKeyUpdated(
-            Id,
-            organisationKeyId,
-            keyType.Id,
-            keyType.Name,
-            value,
-            validity.Start,
-            validity.End,
-            previousOrganisationKey.KeyTypeId,
-            previousOrganisationKey.KeyTypeName,
-            previousOrganisationKey.Value,
-            previousOrganisationKey.Validity.Start,
-            previousOrganisationKey.Validity.Start));
+        ApplyChange(
+            new OrganisationKeyUpdated(
+                Id,
+                organisationKeyId,
+                keyType.Id,
+                keyType.Name,
+                value,
+                validity.Start,
+                validity.End,
+                previousOrganisationKey.KeyTypeId,
+                previousOrganisationKey.KeyTypeName,
+                previousOrganisationKey.Value,
+                previousOrganisationKey.Validity.Start,
+                previousOrganisationKey.Validity.Start));
     }
 
     public void AddFunction(
@@ -621,16 +648,17 @@ public partial class Organisation : AggregateRoot
         if (functionType == null)
             throw new ArgumentNullException(nameof(functionType));
 
-        ApplyChange(new OrganisationFunctionAdded(
-            Id,
-            organisationFunctionId,
-            functionType.Id,
-            functionType.Name,
-            person.Id,
-            person.FullName,
-            contacts.ToDictionary(x => x.ContactType.Id, x => x.Value),
-            validity.Start,
-            validity.End));
+        ApplyChange(
+            new OrganisationFunctionAdded(
+                Id,
+                organisationFunctionId,
+                functionType.Id,
+                functionType.Name,
+                person.Id,
+                person.FullName,
+                contacts.ToDictionary(x => x.ContactType.Id, x => x.Value),
+                validity.Start,
+                validity.End));
     }
 
     public void UpdateFunction(
@@ -643,8 +671,9 @@ public partial class Organisation : AggregateRoot
         if (functionType == null)
             throw new ArgumentNullException(nameof(functionType));
 
-        var previousFunctionType = State.OrganisationFunctionTypes.Single(organisationFunctionType =>
-            organisationFunctionType.OrganisationFunctionId == organisationFunctionId);
+        var previousFunctionType = State.OrganisationFunctionTypes.Single(
+            organisationFunctionType =>
+                organisationFunctionType.OrganisationFunctionId == organisationFunctionId);
 
         var newOrganisationFunctionType =
             new OrganisationFunction(
@@ -657,23 +686,24 @@ public partial class Organisation : AggregateRoot
                 contacts.ToDictionary(x => x.ContactType.Id, x => x.Value),
                 validity);
 
-        ApplyChange(new OrganisationFunctionUpdated(
-            Id,
-            newOrganisationFunctionType.OrganisationFunctionId,
-            newOrganisationFunctionType.FunctionId,
-            newOrganisationFunctionType.FunctionName,
-            newOrganisationFunctionType.PersonId,
-            newOrganisationFunctionType.PersonName,
-            newOrganisationFunctionType.Contacts,
-            newOrganisationFunctionType.Validity.Start,
-            newOrganisationFunctionType.Validity.End,
-            previousFunctionType.FunctionId,
-            previousFunctionType.FunctionName,
-            previousFunctionType.PersonId,
-            previousFunctionType.PersonName,
-            previousFunctionType.Contacts,
-            previousFunctionType.Validity.Start,
-            previousFunctionType.Validity.End));
+        ApplyChange(
+            new OrganisationFunctionUpdated(
+                Id,
+                newOrganisationFunctionType.OrganisationFunctionId,
+                newOrganisationFunctionType.FunctionId,
+                newOrganisationFunctionType.FunctionName,
+                newOrganisationFunctionType.PersonId,
+                newOrganisationFunctionType.PersonName,
+                newOrganisationFunctionType.Contacts,
+                newOrganisationFunctionType.Validity.Start,
+                newOrganisationFunctionType.Validity.End,
+                previousFunctionType.FunctionId,
+                previousFunctionType.FunctionName,
+                previousFunctionType.PersonId,
+                previousFunctionType.PersonName,
+                previousFunctionType.Contacts,
+                previousFunctionType.Validity.Start,
+                previousFunctionType.Validity.End));
     }
 
     public void AddRelation(
@@ -694,17 +724,18 @@ public partial class Organisation : AggregateRoot
         if (Id == relatedOrganisation.Id)
             throw new OrganisationCannotBeLinkedToItself();
 
-        ApplyChange(new OrganisationRelationAdded(
-            Id,
-            State.Name,
-            organisationRelationId,
-            relatedOrganisation.Id,
-            relatedOrganisation.State.Name,
-            relation.Id,
-            relation.Name,
-            relation.InverseName,
-            period.Start,
-            period.End));
+        ApplyChange(
+            new OrganisationRelationAdded(
+                Id,
+                State.Name,
+                organisationRelationId,
+                relatedOrganisation.Id,
+                relatedOrganisation.State.Name,
+                relation.Id,
+                relation.Name,
+                relation.InverseName,
+                period.Start,
+                period.End));
     }
 
     public void UpdateRelation(
@@ -725,8 +756,9 @@ public partial class Organisation : AggregateRoot
         if (Id == relatedOrganisation.Id)
             throw new OrganisationCannotBeLinkedToItself();
 
-        var previousOrganisationRelation = State.OrganisationRelations.Single(organisationRelation =>
-            organisationRelation.OrganisationRelationId == organisationRelationId);
+        var previousOrganisationRelation = State.OrganisationRelations.Single(
+            organisationRelation =>
+                organisationRelation.OrganisationRelationId == organisationRelationId);
 
         var newOrganisationRelation =
             new OrganisationRelation(
@@ -740,24 +772,25 @@ public partial class Organisation : AggregateRoot
                 relatedOrganisation.State.Name,
                 period);
 
-        ApplyChange(new OrganisationRelationUpdated(
-            Id,
-            State.Name,
-            newOrganisationRelation.OrganisationRelationId,
-            newOrganisationRelation.RelatedOrganisationId,
-            newOrganisationRelation.RelatedOrganisationName,
-            newOrganisationRelation.RelationId,
-            newOrganisationRelation.RelationName,
-            newOrganisationRelation.RelationInverseName,
-            newOrganisationRelation.Validity.Start,
-            newOrganisationRelation.Validity.End,
-            previousOrganisationRelation.RelatedOrganisationId,
-            previousOrganisationRelation.RelatedOrganisationName,
-            previousOrganisationRelation.RelationId,
-            previousOrganisationRelation.RelationName,
-            previousOrganisationRelation.RelationInverseName,
-            previousOrganisationRelation.Validity.Start,
-            previousOrganisationRelation.Validity.End));
+        ApplyChange(
+            new OrganisationRelationUpdated(
+                Id,
+                State.Name,
+                newOrganisationRelation.OrganisationRelationId,
+                newOrganisationRelation.RelatedOrganisationId,
+                newOrganisationRelation.RelatedOrganisationName,
+                newOrganisationRelation.RelationId,
+                newOrganisationRelation.RelationName,
+                newOrganisationRelation.RelationInverseName,
+                newOrganisationRelation.Validity.Start,
+                newOrganisationRelation.Validity.End,
+                previousOrganisationRelation.RelatedOrganisationId,
+                previousOrganisationRelation.RelatedOrganisationName,
+                previousOrganisationRelation.RelationId,
+                previousOrganisationRelation.RelationName,
+                previousOrganisationRelation.RelationInverseName,
+                previousOrganisationRelation.Validity.Start,
+                previousOrganisationRelation.Validity.End));
     }
 
     public void AddCapacity(
@@ -770,29 +803,31 @@ public partial class Organisation : AggregateRoot
         Period validity,
         IDateTimeProvider dateTimeProvider)
     {
-        ApplyChange(new OrganisationCapacityAdded(
-            Id,
-            organisationCapacityId,
-            capacity.Id,
-            capacity.Name,
-            person?.Id,
-            person?.FullName ?? "",
-            functionType?.Id,
-            functionType?.Name ?? "",
-            location?.Id,
-            location?.FormattedAddress ?? "",
-            contacts.ToDictionary(x => x.ContactType.Id, x => x.Value),
-            validity.Start,
-            validity.End));
-
-        if (validity.OverlapsWith(dateTimeProvider.Today))
-            ApplyChange(new OrganisationCapacityBecameActive(
+        ApplyChange(
+            new OrganisationCapacityAdded(
                 Id,
                 organisationCapacityId,
                 capacity.Id,
+                capacity.Name,
                 person?.Id,
+                person?.FullName ?? "",
                 functionType?.Id,
-                validity.Start));
+                functionType?.Name ?? "",
+                location?.Id,
+                location?.FormattedAddress ?? "",
+                contacts.ToDictionary(x => x.ContactType.Id, x => x.Value),
+                validity.Start,
+                validity.End));
+
+        if (validity.OverlapsWith(dateTimeProvider.Today))
+            ApplyChange(
+                new OrganisationCapacityBecameActive(
+                    Id,
+                    organisationCapacityId,
+                    capacity.Id,
+                    person?.Id,
+                    functionType?.Id,
+                    validity.Start));
     }
 
     public void UpdateCapacity(
@@ -805,8 +840,9 @@ public partial class Organisation : AggregateRoot
         Period validity,
         IDateTimeProvider dateTimeProvider)
     {
-        var previousCapacity = State.OrganisationCapacities.Single(organisationCapacity =>
-            organisationCapacity.OrganisationCapacityId == organisationCapacityId);
+        var previousCapacity = State.OrganisationCapacities.Single(
+            organisationCapacity =>
+                organisationCapacity.OrganisationCapacityId == organisationCapacityId);
 
         var newOrganisationCapacity =
             new OrganisationCapacity(
@@ -825,50 +861,53 @@ public partial class Organisation : AggregateRoot
                 previousCapacity.IsActive
             );
 
-        ApplyChange(new OrganisationCapacityUpdated(
-            Id,
-            newOrganisationCapacity.OrganisationCapacityId,
-            newOrganisationCapacity.CapacityId,
-            newOrganisationCapacity.CapacityName,
-            newOrganisationCapacity.PersonId,
-            newOrganisationCapacity.PersonName,
-            newOrganisationCapacity.FunctionTypeId,
-            newOrganisationCapacity.FunctionTypeName,
-            newOrganisationCapacity.LocationId,
-            newOrganisationCapacity.LocationName,
-            newOrganisationCapacity.Contacts,
-            newOrganisationCapacity.Validity.Start,
-            newOrganisationCapacity.Validity.End,
-            previousCapacity.CapacityId,
-            previousCapacity.CapacityName,
-            previousCapacity.PersonId,
-            previousCapacity.PersonName,
-            previousCapacity.FunctionTypeId,
-            previousCapacity.FunctionTypeName,
-            previousCapacity.LocationId,
-            previousCapacity.LocationName,
-            previousCapacity.Contacts,
-            previousCapacity.Validity.Start,
-            previousCapacity.Validity.End,
-            previousCapacity.IsActive));
+        ApplyChange(
+            new OrganisationCapacityUpdated(
+                Id,
+                newOrganisationCapacity.OrganisationCapacityId,
+                newOrganisationCapacity.CapacityId,
+                newOrganisationCapacity.CapacityName,
+                newOrganisationCapacity.PersonId,
+                newOrganisationCapacity.PersonName,
+                newOrganisationCapacity.FunctionTypeId,
+                newOrganisationCapacity.FunctionTypeName,
+                newOrganisationCapacity.LocationId,
+                newOrganisationCapacity.LocationName,
+                newOrganisationCapacity.Contacts,
+                newOrganisationCapacity.Validity.Start,
+                newOrganisationCapacity.Validity.End,
+                previousCapacity.CapacityId,
+                previousCapacity.CapacityName,
+                previousCapacity.PersonId,
+                previousCapacity.PersonName,
+                previousCapacity.FunctionTypeId,
+                previousCapacity.FunctionTypeName,
+                previousCapacity.LocationId,
+                previousCapacity.LocationName,
+                previousCapacity.Contacts,
+                previousCapacity.Validity.Start,
+                previousCapacity.Validity.End,
+                previousCapacity.IsActive));
 
         if (newOrganisationCapacity.ShouldBecomeActive(dateTimeProvider.Today))
-            ApplyChange(new OrganisationCapacityBecameActive(
-                Id,
-                organisationCapacityId,
-                newOrganisationCapacity.CapacityId,
-                newOrganisationCapacity.PersonId,
-                newOrganisationCapacity.FunctionTypeId,
-                newOrganisationCapacity.Validity.Start));
+            ApplyChange(
+                new OrganisationCapacityBecameActive(
+                    Id,
+                    organisationCapacityId,
+                    newOrganisationCapacity.CapacityId,
+                    newOrganisationCapacity.PersonId,
+                    newOrganisationCapacity.FunctionTypeId,
+                    newOrganisationCapacity.Validity.Start));
 
         if (newOrganisationCapacity.ShouldBecomeInactive(dateTimeProvider.Today))
-            ApplyChange(new OrganisationCapacityBecameInactive(
-                Id,
-                organisationCapacityId,
-                newOrganisationCapacity.CapacityId,
-                newOrganisationCapacity.PersonId,
-                newOrganisationCapacity.FunctionTypeId,
-                newOrganisationCapacity.Validity.End));
+            ApplyChange(
+                new OrganisationCapacityBecameInactive(
+                    Id,
+                    organisationCapacityId,
+                    newOrganisationCapacity.CapacityId,
+                    newOrganisationCapacity.PersonId,
+                    newOrganisationCapacity.FunctionTypeId,
+                    newOrganisationCapacity.Validity.End));
     }
 
     public void AddOrganisationClassification(
@@ -883,18 +922,19 @@ public partial class Organisation : AggregateRoot
         if (State.OrganisationOrganisationClassifications
             .Where(x => x.OrganisationClassificationTypeId == organisationClassificationType.Id)
             .Where(x => x.OrganisationOrganisationClassificationId != organisationOrganisationClassificationId)
-            .Any(x => x.Validity.OverlapsWith(validity)))
+            .Any(x => !organisationClassificationType.AllowDifferentClassificationsToOverlap && x.Validity.OverlapsWith(validity)))
             throw new OrganisationClassificationTypeAlreadyCoupledToInThisPeriod();
 
-        ApplyChange(new OrganisationOrganisationClassificationAdded(
-            Id,
-            organisationOrganisationClassificationId,
-            organisationClassificationType.Id,
-            organisationClassificationType.Name,
-            organisationClassification.Id,
-            organisationClassification.Name,
-            validity.Start,
-            validity.End));
+        ApplyChange(
+            new OrganisationOrganisationClassificationAdded(
+                Id,
+                organisationOrganisationClassificationId,
+                organisationClassificationType.Id,
+                organisationClassificationType.Name,
+                organisationClassification.Id,
+                organisationClassification.Name,
+                validity.Start,
+                validity.End));
     }
 
     public void AddKboLegalFormOrganisationClassification(Guid organisationOrganisationClassificationId, OrganisationClassificationType organisationClassificationType, OrganisationClassification organisationClassification, Period validity)
@@ -905,7 +945,8 @@ public partial class Organisation : AggregateRoot
                 organisationOrganisationClassificationId,
                 organisationClassificationType.Id,
                 organisationClassificationType.Name,
-                organisationClassification.Id, organisationClassification.Name,
+                organisationClassification.Id,
+                organisationClassification.Name,
                 validity.Start,
                 validity.End));
     }
@@ -968,27 +1009,28 @@ public partial class Organisation : AggregateRoot
         if (State.OrganisationOrganisationClassifications
             .Where(organisationOrganisationClassification => organisationOrganisationClassification.OrganisationClassificationTypeId == organisationClassificationType.Id)
             .Where(organisationOrganisationClassification => organisationOrganisationClassification.OrganisationOrganisationClassificationId != organisationOrganisationClassificationId)
-            .Any(organisationOrganisationClassification => organisationOrganisationClassification.Validity.OverlapsWith(validity)))
+            .Any(organisationOrganisationClassification => !organisationClassificationType.AllowDifferentClassificationsToOverlap && organisationOrganisationClassification.Validity.OverlapsWith(validity)))
             throw new OrganisationClassificationTypeAlreadyCoupledToInThisPeriod();
 
         var previousOrganisationOrganisationClassification =
             State.OrganisationOrganisationClassifications.Single(classification => classification.OrganisationOrganisationClassificationId == organisationOrganisationClassificationId);
 
-        ApplyChange(new OrganisationOrganisationClassificationUpdated(
-            Id,
-            organisationOrganisationClassificationId,
-            organisationClassificationType.Id,
-            organisationClassificationType.Name,
-            organisationClassification.Id,
-            organisationClassification.Name,
-            validity.Start,
-            validity.End,
-            previousOrganisationOrganisationClassification.OrganisationClassificationTypeId,
-            previousOrganisationOrganisationClassification.OrganisationClassificationTypeName,
-            previousOrganisationOrganisationClassification.OrganisationClassificationId,
-            previousOrganisationOrganisationClassification.OrganisationClassificationName,
-            previousOrganisationOrganisationClassification.Validity.Start,
-            previousOrganisationOrganisationClassification.Validity.End));
+        ApplyChange(
+            new OrganisationOrganisationClassificationUpdated(
+                Id,
+                organisationOrganisationClassificationId,
+                organisationClassificationType.Id,
+                organisationClassificationType.Name,
+                organisationClassification.Id,
+                organisationClassification.Name,
+                validity.Start,
+                validity.End,
+                previousOrganisationOrganisationClassification.OrganisationClassificationTypeId,
+                previousOrganisationOrganisationClassification.OrganisationClassificationTypeName,
+                previousOrganisationOrganisationClassification.OrganisationClassificationId,
+                previousOrganisationOrganisationClassification.OrganisationClassificationName,
+                previousOrganisationOrganisationClassification.Validity.Start,
+                previousOrganisationOrganisationClassification.Validity.End));
     }
 
     public void AddContact(
@@ -997,14 +1039,15 @@ public partial class Organisation : AggregateRoot
         string contactValue,
         Period validity)
     {
-        ApplyChange(new OrganisationContactAdded(
-            Id,
-            organisationContactId,
-            contactType.Id,
-            contactType.Name,
-            contactValue,
-            validity.Start,
-            validity.End));
+        ApplyChange(
+            new OrganisationContactAdded(
+                Id,
+                organisationContactId,
+                contactType.Id,
+                contactType.Name,
+                contactValue,
+                validity.Start,
+                validity.End));
     }
 
     public void UpdateContact(
@@ -1016,17 +1059,20 @@ public partial class Organisation : AggregateRoot
         var previousContact =
             State.OrganisationContacts.Single(contact => contact.OrganisationContactId == organisationContactId);
 
-        ApplyChange(new OrganisationContactUpdated(
-            Id,
-            organisationContactId,
-            contactType.Id, contactType.Name,
-            contactValue,
-            validity.Start, validity.End,
-            previousContact.ContactTypeId,
-            previousContact.ContactTypeName,
-            previousContact.Value,
-            previousContact.Validity.Start,
-            previousContact.Validity.End));
+        ApplyChange(
+            new OrganisationContactUpdated(
+                Id,
+                organisationContactId,
+                contactType.Id,
+                contactType.Name,
+                contactValue,
+                validity.Start,
+                validity.End,
+                previousContact.ContactTypeId,
+                previousContact.ContactTypeName,
+                previousContact.Value,
+                previousContact.Validity.Start,
+                previousContact.Validity.End));
     }
 
     public void AddLabel(
@@ -1047,14 +1093,15 @@ public partial class Organisation : AggregateRoot
             .Any(organisationLabel => organisationLabel.Validity.OverlapsWith(validity)))
             throw new LabelAlreadyCoupledToInThisPeriod();
 
-        ApplyChange(new OrganisationLabelAdded(
-            Id,
-            organisationLabelId,
-            labelType.Id,
-            labelType.Name,
-            labelValue,
-            validity.Start,
-            validity.End));
+        ApplyChange(
+            new OrganisationLabelAdded(
+                Id,
+                organisationLabelId,
+                labelType.Id,
+                labelType.Name,
+                labelValue,
+                validity.Start,
+                validity.End));
     }
 
     public void AddKboFormalNameLabel(
@@ -1063,14 +1110,15 @@ public partial class Organisation : AggregateRoot
         string labelValue,
         Period validity)
     {
-        ApplyChange(new KboFormalNameLabelAdded(
-            Id,
-            organisationLabelId,
-            labelType.Id,
-            labelType.Name,
-            labelValue,
-            validity.Start,
-            validity.End));
+        ApplyChange(
+            new KboFormalNameLabelAdded(
+                Id,
+                organisationLabelId,
+                labelType.Id,
+                labelType.Name,
+                labelValue,
+                validity.Start,
+                validity.End));
     }
 
     public void UpdateKboFormalNameLabel(IMagdaName kboFormalName, LabelType formalNameLabelType)
@@ -1100,7 +1148,8 @@ public partial class Organisation : AggregateRoot
                 new ValidTo()));
     }
 
-    public void UpdateLabel(Guid organisationLabelId,
+    public void UpdateLabel(
+        Guid organisationLabelId,
         LabelType labelType,
         string labelValue,
         Period validity)
@@ -1113,19 +1162,20 @@ public partial class Organisation : AggregateRoot
 
         var previousLabel = State.OrganisationLabels.Single(label => label.OrganisationLabelId == organisationLabelId);
 
-        ApplyChange(new OrganisationLabelUpdated(
-            Id,
-            organisationLabelId,
-            labelType.Id,
-            labelType.Name,
-            labelValue,
-            validity.Start,
-            validity.End,
-            previousLabel.LabelTypeId,
-            previousLabel.LabelTypeName,
-            previousLabel.Value,
-            previousLabel.Validity.Start,
-            previousLabel.Validity.End));
+        ApplyChange(
+            new OrganisationLabelUpdated(
+                Id,
+                organisationLabelId,
+                labelType.Id,
+                labelType.Name,
+                labelValue,
+                validity.Start,
+                validity.End,
+                previousLabel.LabelTypeId,
+                previousLabel.LabelTypeName,
+                previousLabel.Value,
+                previousLabel.Validity.Start,
+                previousLabel.Validity.End));
     }
 
     public void AddBuilding(
@@ -1150,14 +1200,15 @@ public partial class Organisation : AggregateRoot
         if (organisationBuilding.IsMainBuilding && State.OrganisationBuildings.OrganisationAlreadyHasAMainBuildingInTheSamePeriod(organisationBuilding))
             throw new OrganisationAlreadyHasAMainBuildingInThisPeriod();
 
-        ApplyChange(new OrganisationBuildingAdded(
-            Id,
-            organisationBuildingId,
-            building.Id,
-            building.Name,
-            isMainBuilding,
-            validity.Start,
-            validity.End));
+        ApplyChange(
+            new OrganisationBuildingAdded(
+                Id,
+                organisationBuildingId,
+                building.Id,
+                building.Name,
+                isMainBuilding,
+                validity.Start,
+                validity.End));
 
         CheckIfMainBuildingChanged(organisationBuilding, dateTimeProvider.Today);
     }
@@ -1187,19 +1238,20 @@ public partial class Organisation : AggregateRoot
         var previousOrganisationBuilding =
             State.OrganisationBuildings.Single(x => x.OrganisationBuildingId == organisationBuildingId);
 
-        ApplyChange(new OrganisationBuildingUpdated(
-            Id,
-            organisationBuildingId,
-            building.Id,
-            building.Name,
-            isMainBuilding,
-            validity.Start,
-            validity.End,
-            previousOrganisationBuilding.BuildingId,
-            previousOrganisationBuilding.BuildingName,
-            previousOrganisationBuilding.IsMainBuilding,
-            previousOrganisationBuilding.Validity.Start,
-            previousOrganisationBuilding.Validity.End));
+        ApplyChange(
+            new OrganisationBuildingUpdated(
+                Id,
+                organisationBuildingId,
+                building.Id,
+                building.Name,
+                isMainBuilding,
+                validity.Start,
+                validity.End,
+                previousOrganisationBuilding.BuildingId,
+                previousOrganisationBuilding.BuildingName,
+                previousOrganisationBuilding.IsMainBuilding,
+                previousOrganisationBuilding.Validity.Start,
+                previousOrganisationBuilding.Validity.End));
 
         CheckIfMainBuildingChanged(organisationBuilding, dateTimeProvider.Today);
     }
@@ -1231,16 +1283,17 @@ public partial class Organisation : AggregateRoot
         if (organisationLocation.IsMainLocation && State.OrganisationLocations.OrganisationAlreadyHasAMainLocationInTheSamePeriod(organisationLocation, KboState.KboRegisteredOffice))
             throw new OrganisationAlreadyHasAMainLocationInThisPeriod();
 
-        ApplyChange(new OrganisationLocationAdded(
-            Id,
-            organisationLocationId,
-            location.Id,
-            location.FormattedAddress,
-            isMainLocation,
-            locationType?.Id,
-            locationType?.Name ?? "",
-            validity.Start,
-            validity.End));
+        ApplyChange(
+            new OrganisationLocationAdded(
+                Id,
+                organisationLocationId,
+                location.Id,
+                location.FormattedAddress,
+                isMainLocation,
+                locationType?.Id,
+                locationType?.Name ?? "",
+                validity.Start,
+                validity.End));
 
         CheckIfMainLocationChanged(organisationLocation, dateTimeProvider.Today);
     }
@@ -1251,16 +1304,17 @@ public partial class Organisation : AggregateRoot
         LocationType? locationType,
         Period validity)
     {
-        ApplyChange(new KboRegisteredOfficeOrganisationLocationAdded(
-            Id,
-            organisationLocationId,
-            location.Id,
-            location.FormattedAddress,
-            false,
-            locationType?.Id,
-            locationType?.Name ?? "",
-            validity.Start,
-            validity.End));
+        ApplyChange(
+            new KboRegisteredOfficeOrganisationLocationAdded(
+                Id,
+                organisationLocationId,
+                location.Id,
+                location.FormattedAddress,
+                false,
+                locationType?.Id,
+                locationType?.Name ?? "",
+                validity.Start,
+                validity.End));
     }
 
     public void UpdateKboRegisteredOfficeLocations(
@@ -1358,23 +1412,24 @@ public partial class Organisation : AggregateRoot
             var previousLocation =
                 State.OrganisationLocations.Single(x => x.OrganisationLocationId == organisationLocationId);
 
-            ApplyChange(new OrganisationLocationUpdated(
-                Id,
-                organisationLocationId,
-                location.Id,
-                location.FormattedAddress,
-                isMainLocation,
-                locationType?.Id,
-                locationType?.Name ?? "",
-                validity.Start,
-                validity.End,
-                previousLocation.LocationId,
-                previousLocation.FormattedAddress,
-                previousLocation.IsMainLocation,
-                previousLocation.LocationTypeId,
-                previousLocation.LocationTypeName,
-                previousLocation.Validity.Start,
-                previousLocation.Validity.End));
+            ApplyChange(
+                new OrganisationLocationUpdated(
+                    Id,
+                    organisationLocationId,
+                    location.Id,
+                    location.FormattedAddress,
+                    isMainLocation,
+                    locationType?.Id,
+                    locationType?.Name ?? "",
+                    validity.Start,
+                    validity.End,
+                    previousLocation.LocationId,
+                    previousLocation.FormattedAddress,
+                    previousLocation.IsMainLocation,
+                    previousLocation.LocationTypeId,
+                    previousLocation.LocationTypeName,
+                    previousLocation.Validity.Start,
+                    previousLocation.Validity.End));
         }
 
         CheckIfMainLocationChanged(organisationLocation, dateTimeProvider.Today);
@@ -1387,14 +1442,15 @@ public partial class Organisation : AggregateRoot
         DayOfWeek? dayOfWeek,
         Period validity)
     {
-        ApplyChange(new OrganisationOpeningHourAdded(
-            Id,
-            organisationOpeningHourId,
-            opens,
-            closes,
-            dayOfWeek,
-            validity.Start,
-            validity.End));
+        ApplyChange(
+            new OrganisationOpeningHourAdded(
+                Id,
+                organisationOpeningHourId,
+                opens,
+                closes,
+                dayOfWeek,
+                validity.Start,
+                validity.End));
     }
 
     public void UpdateOpeningHour(
@@ -1406,22 +1462,24 @@ public partial class Organisation : AggregateRoot
     {
         var previousOpeningHour = State.OrganisationOpeningHours.Single(label => label.OrganisationOpeningHourId == organisationOpeningHourId);
 
-        ApplyChange(new OrganisationOpeningHourUpdated(
-            Id,
-            organisationOpeningHourId,
-            opens,
-            previousOpeningHour.Opens,
-            closes,
-            previousOpeningHour.Closes,
-            dayOfWeek,
-            previousOpeningHour.DayOfWeek,
-            validity.Start,
-            previousOpeningHour.Validity.Start,
-            validity.End,
-            previousOpeningHour.Validity.End));
+        ApplyChange(
+            new OrganisationOpeningHourUpdated(
+                Id,
+                organisationOpeningHourId,
+                opens,
+                previousOpeningHour.Opens,
+                closes,
+                previousOpeningHour.Closes,
+                dayOfWeek,
+                previousOpeningHour.DayOfWeek,
+                validity.Start,
+                previousOpeningHour.Validity.Start,
+                validity.End,
+                previousOpeningHour.Validity.End));
     }
 
-    public void AddRegulation(Guid organisationRegulationId,
+    public void AddRegulation(
+        Guid organisationRegulationId,
         RegulationTheme? regulationTheme,
         RegulationSubTheme? regulationSubTheme,
         string name,
@@ -1432,24 +1490,26 @@ public partial class Organisation : AggregateRoot
         string? descriptionRendered,
         Period validity)
     {
-        ApplyChange(new OrganisationRegulationAdded(
-            Id,
-            organisationRegulationId,
-            regulationTheme?.Id,
-            regulationTheme?.Name ?? "",
-            regulationSubTheme?.Id,
-            regulationSubTheme?.Name ?? "",
-            name,
-            url,
-            workRulesUrl ?? (string?)null,
-            date,
-            description,
-            descriptionRendered,
-            validity.Start,
-            validity.End));
+        ApplyChange(
+            new OrganisationRegulationAdded(
+                Id,
+                organisationRegulationId,
+                regulationTheme?.Id,
+                regulationTheme?.Name ?? "",
+                regulationSubTheme?.Id,
+                regulationSubTheme?.Name ?? "",
+                name,
+                url,
+                workRulesUrl ?? (string?)null,
+                date,
+                description,
+                descriptionRendered,
+                validity.Start,
+                validity.End));
     }
 
-    public void UpdateRegulation(Guid organisationRegulationId,
+    public void UpdateRegulation(
+        Guid organisationRegulationId,
         RegulationTheme? regulationTheme,
         RegulationSubTheme? regulationSubTheme,
         string name,
@@ -1463,32 +1523,34 @@ public partial class Organisation : AggregateRoot
         var previousRegulation =
             State.OrganisationRegulations.Single(regulation => regulation.OrganisationRegulationId == organisationRegulationId);
 
-        ApplyChange(new OrganisationRegulationUpdated(
-            Id,
-            organisationRegulationId,
-            regulationTheme?.Id,
-            regulationTheme?.Name ?? "",
-            regulationSubTheme?.Id,
-            regulationSubTheme?.Name ?? "",
-            name,
-            link,
-            workRulesUrl ?? (string?)null,
-            date,
-            description,
-            descriptionRendered,
-            validity.Start, validity.End,
-            previousRegulation.RegulationThemeId,
-            previousRegulation.RegulationThemeName,
-            previousRegulation.RegulationSubThemeId,
-            previousRegulation.RegulationSubThemeName,
-            previousRegulation.Name,
-            previousRegulation.Validity.Start,
-            previousRegulation.Validity.End,
-            previousRegulation.Link,
-            previousRegulation.WorkRulesUrl,
-            previousRegulation.Date,
-            previousRegulation.Description,
-            previousRegulation.DescriptionRendered));
+        ApplyChange(
+            new OrganisationRegulationUpdated(
+                Id,
+                organisationRegulationId,
+                regulationTheme?.Id,
+                regulationTheme?.Name ?? "",
+                regulationSubTheme?.Id,
+                regulationSubTheme?.Name ?? "",
+                name,
+                link,
+                workRulesUrl ?? (string?)null,
+                date,
+                description,
+                descriptionRendered,
+                validity.Start,
+                validity.End,
+                previousRegulation.RegulationThemeId,
+                previousRegulation.RegulationThemeName,
+                previousRegulation.RegulationSubThemeId,
+                previousRegulation.RegulationSubThemeName,
+                previousRegulation.Name,
+                previousRegulation.Validity.Start,
+                previousRegulation.Validity.End,
+                previousRegulation.Link,
+                previousRegulation.WorkRulesUrl,
+                previousRegulation.Date,
+                previousRegulation.Description,
+                previousRegulation.DescriptionRendered));
     }
 
 
@@ -1508,7 +1570,7 @@ public partial class Organisation : AggregateRoot
             validity
         );
 
-        if(State.OrganisationBankAccounts.HasBankAccountNumbersThatWouldOverlapWith(bankAccount))
+        if (State.OrganisationBankAccounts.HasBankAccountNumbersThatWouldOverlapWith(bankAccount))
             throw new BankAccountNumberAlreadyCoupledToInThisPeriod();
 
         ApplyChange(OrganisationBankAccountAdded.FromBankAccountNumber(bankAccount));
@@ -1533,7 +1595,7 @@ public partial class Organisation : AggregateRoot
             validity
         );
 
-        if(State.OrganisationBankAccounts.HasBankAccountNumbersThatWouldOverlapWith(bankAccount))
+        if (State.OrganisationBankAccounts.HasBankAccountNumbersThatWouldOverlapWith(bankAccount))
             throw new BankAccountNumberAlreadyCoupledToInThisPeriod();
 
         ApplyChange(OrganisationBankAccountUpdated.FromBankAccountNumber(bankAccount, previousBankAccount));
@@ -1559,11 +1621,12 @@ public partial class Organisation : AggregateRoot
         var events = new List<IEvent>();
         foreach (var kboBankAccount in KboState.KboBankAccounts)
         {
-            if (!kboOrganisationBankAccounts.Any(x =>
-                    kboBankAccount.BankAccountNumber == x.AccountNumber &&
-                    kboBankAccount.Bic == x.Bic &&
-                    kboBankAccount.Validity.Start == x.ValidFrom &&
-                    kboBankAccount.Validity.End == x.ValidTo))
+            if (!kboOrganisationBankAccounts.Any(
+                    x =>
+                        kboBankAccount.BankAccountNumber == x.AccountNumber &&
+                        kboBankAccount.Bic == x.Bic &&
+                        kboBankAccount.Validity.Start == x.ValidFrom &&
+                        kboBankAccount.Validity.End == x.ValidTo))
             {
                 events.Add(
                     new KboOrganisationBankAccountRemoved(
@@ -1580,26 +1643,29 @@ public partial class Organisation : AggregateRoot
 
         foreach (var magdaBankAccount in kboOrganisationBankAccounts)
         {
-            if (!KboState.KboBankAccounts.Any(x =>
-                    magdaBankAccount.AccountNumber == x.BankAccountNumber &&
-                    magdaBankAccount.Bic == x.Bic &&
-                    magdaBankAccount.ValidFrom == x.Validity.Start &&
-                    magdaBankAccount.ValidTo == x.Validity.End))
+            if (!KboState.KboBankAccounts.Any(
+                    x =>
+                        magdaBankAccount.AccountNumber == x.BankAccountNumber &&
+                        magdaBankAccount.Bic == x.Bic &&
+                        magdaBankAccount.ValidFrom == x.Validity.Start &&
+                        magdaBankAccount.ValidTo == x.Validity.End))
             {
                 var bankAccountNr = BankAccountNumber.CreateWithUnknownValidity(magdaBankAccount.AccountNumber);
                 var bankAccountBic = BankAccountBic.CreateWithUnknownValidity(magdaBankAccount.Bic);
 
-                events.Add(new KboOrganisationBankAccountAdded(
-                    Id,
-                    Guid.NewGuid(),
-                    bankAccountNr.Number,
-                    bankAccountNr.IsValidIban,
-                    bankAccountBic.Bic,
-                    bankAccountBic.IsValidBic,
-                    magdaBankAccount.ValidFrom,
-                    magdaBankAccount.ValidTo));
+                events.Add(
+                    new KboOrganisationBankAccountAdded(
+                        Id,
+                        Guid.NewGuid(),
+                        bankAccountNr.Number,
+                        bankAccountNr.IsValidIban,
+                        bankAccountBic.Bic,
+                        bankAccountBic.IsValidBic,
+                        magdaBankAccount.ValidFrom,
+                        magdaBankAccount.ValidTo));
             }
         }
+
         events.ForEach(ApplyChange);
     }
 
@@ -1673,26 +1739,29 @@ public partial class Organisation : AggregateRoot
         if (parentForFormalFramework != null &&
             !parentForFormalFramework.Validity.OverlapsWith(today))
         {
-            ApplyChange(new FormalFrameworkClearedFromOrganisation(
-                parentForFormalFramework.OrganisationFormalFrameworkId,
-                Id,
-                parentForFormalFramework.FormalFrameworkId,
-                parentForFormalFramework.ParentOrganisationId));
+            ApplyChange(
+                new FormalFrameworkClearedFromOrganisation(
+                    parentForFormalFramework.OrganisationFormalFrameworkId,
+                    Id,
+                    parentForFormalFramework.FormalFrameworkId,
+                    parentForFormalFramework.ParentOrganisationId));
         }
 
         if (!State.OrganisationFormalFrameworkParentsPerFormalFramework.ContainsKey(formalFrameworkId))
         {
             var organisationFormalFramework =
-                State.OrganisationFormalFrameworks.SingleOrDefault(framework =>
-                    framework.FormalFrameworkId == formalFrameworkId &&
-                    framework.Validity.OverlapsWith(today));
+                State.OrganisationFormalFrameworks.SingleOrDefault(
+                    framework =>
+                        framework.FormalFrameworkId == formalFrameworkId &&
+                        framework.Validity.OverlapsWith(today));
 
             if (organisationFormalFramework != null)
-                ApplyChange(new FormalFrameworkAssignedToOrganisation(
-                    Id,
-                    organisationFormalFramework.FormalFrameworkId,
-                    organisationFormalFramework.ParentOrganisationId,
-                    organisationFormalFramework.OrganisationFormalFrameworkId));
+                ApplyChange(
+                    new FormalFrameworkAssignedToOrganisation(
+                        Id,
+                        organisationFormalFramework.FormalFrameworkId,
+                        organisationFormalFramework.ParentOrganisationId,
+                        organisationFormalFramework.OrganisationFormalFrameworkId));
         }
     }
 
@@ -1701,22 +1770,24 @@ public partial class Organisation : AggregateRoot
         foreach (var organisationCapacity in State.OrganisationCapacities)
         {
             if (organisationCapacity.ShouldBecomeActive(date))
-                ApplyChange(new OrganisationCapacityBecameActive(
-                    Id,
-                    organisationCapacity.OrganisationCapacityId,
-                    organisationCapacity.CapacityId,
-                    organisationCapacity.PersonId,
-                    organisationCapacity.FunctionTypeId,
-                    organisationCapacity.Validity.Start));
+                ApplyChange(
+                    new OrganisationCapacityBecameActive(
+                        Id,
+                        organisationCapacity.OrganisationCapacityId,
+                        organisationCapacity.CapacityId,
+                        organisationCapacity.PersonId,
+                        organisationCapacity.FunctionTypeId,
+                        organisationCapacity.Validity.Start));
 
             else if (organisationCapacity.ShouldBecomeInactive(date))
-                ApplyChange(new OrganisationCapacityBecameInactive(
-                    Id,
-                    organisationCapacity.OrganisationCapacityId,
-                    organisationCapacity.CapacityId,
-                    organisationCapacity.PersonId,
-                    organisationCapacity.FunctionTypeId,
-                    organisationCapacity.Validity.End));
+                ApplyChange(
+                    new OrganisationCapacityBecameInactive(
+                        Id,
+                        organisationCapacity.OrganisationCapacityId,
+                        organisationCapacity.CapacityId,
+                        organisationCapacity.PersonId,
+                        organisationCapacity.FunctionTypeId,
+                        organisationCapacity.Validity.End));
         }
     }
 
@@ -1727,12 +1798,13 @@ public partial class Organisation : AggregateRoot
         if (HasKboNumber)
             throw new OrganisationAlreadyCoupledWithKbo();
 
-        ApplyChange(new OrganisationCoupledWithKbo(
-            Id,
-            kboNumber.ToDigitsOnly(),
-            State.Name,
-            State.OvoNumber,
-            dateTimeProvider.Today));
+        ApplyChange(
+            new OrganisationCoupledWithKbo(
+                Id,
+                kboNumber.ToDigitsOnly(),
+                State.Name,
+                State.OvoNumber,
+                dateTimeProvider.Today));
     }
 
     public void CancelCouplingWithKbo()
@@ -1743,18 +1815,19 @@ public partial class Organisation : AggregateRoot
         if (CoupledToKboFromCreation)
             throw new CannotCancelCouplingWithOrganisationCreatedFromKbo();
 
-        ApplyChange(new OrganisationCouplingWithKboCancelled(
-            Id,
-            KboState.KboNumber!.ToDigitsOnly(),
-            KboState.NameBeforeKboCoupling ?? "",
-            KboState.ShortNameBeforeKboCoupling ?? "",
-            State.Name,
-            State.ShortName,
-            State.OvoNumber,
-            KboState.KboLegalFormOrganisationClassification?.OrganisationOrganisationClassificationId,
-            KboState.KboFormalNameLabel?.OrganisationLabelId,
-            KboState.KboRegisteredOffice?.OrganisationLocationId,
-            KboState.KboBankAccounts.Select(account => account.OrganisationBankAccountId).ToList()));
+        ApplyChange(
+            new OrganisationCouplingWithKboCancelled(
+                Id,
+                KboState.KboNumber!.ToDigitsOnly(),
+                KboState.NameBeforeKboCoupling ?? "",
+                KboState.ShortNameBeforeKboCoupling ?? "",
+                State.Name,
+                State.ShortName,
+                State.OvoNumber,
+                KboState.KboLegalFormOrganisationClassification?.OrganisationOrganisationClassificationId,
+                KboState.KboFormalNameLabel?.OrganisationLabelId,
+                KboState.KboRegisteredOffice?.OrganisationLocationId,
+                KboState.KboBankAccounts.Select(account => account.OrganisationBankAccountId).ToList()));
     }
 
     public void TerminateOrganisationBasedOnKboTermination()
@@ -1780,7 +1853,8 @@ public partial class Organisation : AggregateRoot
                     .Select(account => account.OrganisationBankAccountId).ToList()));
     }
 
-    public void TerminateOrganisation(DateTime dateOfTermination,
+    public void TerminateOrganisation(
+        DateTime dateOfTermination,
         OrganisationTerminationCalculator.FieldsToTerminateConfig fieldsToTerminateConfig,
         IDateTimeProvider dateTimeProvider,
         bool forceKboTermination)
@@ -1791,7 +1865,8 @@ public partial class Organisation : AggregateRoot
         if (KboState.TerminationInKbo.HasValue && forceKboTermination)
             throw new OrganisationAlreadyTerminatedInKbo();
 
-        var organisationTermination = OrganisationTerminationCalculator.GetFieldsToTerminate(dateOfTermination,
+        var organisationTermination = OrganisationTerminationCalculator.GetFieldsToTerminate(
+            dateOfTermination,
             fieldsToTerminateConfig,
             State);
 
@@ -1839,11 +1914,12 @@ public partial class Organisation : AggregateRoot
             if (organisationTermination.FormalFrameworks.ContainsKey(parent.OrganisationFormalFrameworkId) &&
                 organisationTermination.FormalFrameworks[parent.OrganisationFormalFrameworkId] < dateTimeProvider.Today)
             {
-                ApplyChange(new FormalFrameworkClearedFromOrganisation(
-                    parent.OrganisationFormalFrameworkId,
-                    Id,
-                    parent.FormalFrameworkId,
-                    parent.ParentOrganisationId));
+                ApplyChange(
+                    new FormalFrameworkClearedFromOrganisation(
+                        parent.OrganisationFormalFrameworkId,
+                        Id,
+                        parent.FormalFrameworkId,
+                        parent.ParentOrganisationId));
             }
         }
     }
@@ -1879,28 +1955,32 @@ public partial class Organisation : AggregateRoot
     {
         if (_currentOrganisationParent == null && organisationParent.Validity.OverlapsWith(today))
         {
-            ApplyChange(new ParentAssignedToOrganisation(
-                Id,
-                organisationParent.ParentOrganisationId,
-                organisationParent.OrganisationOrganisationParentId));
+            ApplyChange(
+                new ParentAssignedToOrganisation(
+                    Id,
+                    organisationParent.ParentOrganisationId,
+                    organisationParent.OrganisationOrganisationParentId));
         }
         else if (!Equals(_currentOrganisationParent, organisationParent) && organisationParent.Validity.OverlapsWith(today))
         {
             if (_currentOrganisationParent != null)
-                ApplyChange(new ParentClearedFromOrganisation(
-                    Id,
-                    _currentOrganisationParent.ParentOrganisationId));
+                ApplyChange(
+                    new ParentClearedFromOrganisation(
+                        Id,
+                        _currentOrganisationParent.ParentOrganisationId));
 
-            ApplyChange(new ParentAssignedToOrganisation(
-                Id,
-                organisationParent.ParentOrganisationId,
-                organisationParent.OrganisationOrganisationParentId));
+            ApplyChange(
+                new ParentAssignedToOrganisation(
+                    Id,
+                    organisationParent.ParentOrganisationId,
+                    organisationParent.OrganisationOrganisationParentId));
         }
         else if (Equals(_currentOrganisationParent, organisationParent) && !organisationParent.Validity.OverlapsWith(today))
         {
-            ApplyChange(new ParentClearedFromOrganisation(
-                Id,
-                organisationParent.ParentOrganisationId));
+            ApplyChange(
+                new ParentClearedFromOrganisation(
+                    Id,
+                    organisationParent.ParentOrganisationId));
         }
     }
 
@@ -1909,42 +1989,44 @@ public partial class Organisation : AggregateRoot
         DateTime today)
     {
         var currentFormalFrameworkParent =
-            State.OrganisationFormalFrameworkParentsPerFormalFramework.ContainsKey(organisationFormalFramework.FormalFrameworkId) ?
-                State.OrganisationFormalFrameworkParentsPerFormalFramework[organisationFormalFramework.FormalFrameworkId] :
-                null;
+            State.OrganisationFormalFrameworkParentsPerFormalFramework.ContainsKey(organisationFormalFramework.FormalFrameworkId) ? State.OrganisationFormalFrameworkParentsPerFormalFramework[organisationFormalFramework.FormalFrameworkId] : null;
 
         if (currentFormalFrameworkParent == null && organisationFormalFramework.Validity.OverlapsWith(today))
         {
-            ApplyChange(new FormalFrameworkAssignedToOrganisation(
-                Id,
-                organisationFormalFramework.FormalFrameworkId,
-                organisationFormalFramework.ParentOrganisationId,
-                organisationFormalFramework.OrganisationFormalFrameworkId));
+            ApplyChange(
+                new FormalFrameworkAssignedToOrganisation(
+                    Id,
+                    organisationFormalFramework.FormalFrameworkId,
+                    organisationFormalFramework.ParentOrganisationId,
+                    organisationFormalFramework.OrganisationFormalFrameworkId));
         }
         else if (!Equals(currentFormalFrameworkParent, organisationFormalFramework) && organisationFormalFramework.Validity.OverlapsWith(today))
         {
             if (currentFormalFrameworkParent != null)
             {
-                ApplyChange(new FormalFrameworkClearedFromOrganisation(
-                    currentFormalFrameworkParent.OrganisationFormalFrameworkId,
-                    Id,
-                    currentFormalFrameworkParent.FormalFrameworkId,
-                    currentFormalFrameworkParent.ParentOrganisationId));
+                ApplyChange(
+                    new FormalFrameworkClearedFromOrganisation(
+                        currentFormalFrameworkParent.OrganisationFormalFrameworkId,
+                        Id,
+                        currentFormalFrameworkParent.FormalFrameworkId,
+                        currentFormalFrameworkParent.ParentOrganisationId));
             }
 
-            ApplyChange(new FormalFrameworkAssignedToOrganisation(
-                Id,
-                organisationFormalFramework.FormalFrameworkId,
-                organisationFormalFramework.ParentOrganisationId,
-                organisationFormalFramework.OrganisationFormalFrameworkId));
+            ApplyChange(
+                new FormalFrameworkAssignedToOrganisation(
+                    Id,
+                    organisationFormalFramework.FormalFrameworkId,
+                    organisationFormalFramework.ParentOrganisationId,
+                    organisationFormalFramework.OrganisationFormalFrameworkId));
         }
         else if (Equals(currentFormalFrameworkParent, organisationFormalFramework) && !organisationFormalFramework.Validity.OverlapsWith(today))
         {
-            ApplyChange(new FormalFrameworkClearedFromOrganisation(
-                organisationFormalFramework.OrganisationFormalFrameworkId,
-                Id,
-                currentFormalFrameworkParent.FormalFrameworkId,
-                currentFormalFrameworkParent.ParentOrganisationId));
+            ApplyChange(
+                new FormalFrameworkClearedFromOrganisation(
+                    organisationFormalFramework.OrganisationFormalFrameworkId,
+                    Id,
+                    currentFormalFrameworkParent.FormalFrameworkId,
+                    currentFormalFrameworkParent.ParentOrganisationId));
         }
     }
 
@@ -1956,20 +2038,22 @@ public partial class Organisation : AggregateRoot
             (!organisationBuilding.IsMainBuilding || !organisationBuilding.Validity.OverlapsWith(today)))
         {
 #pragma warning disable CS0618
-            ApplyChange(new MainBuildingClearedFromOrganisation(
+            ApplyChange(
+                new MainBuildingClearedFromOrganisation(
 #pragma warning restore CS0618
-                Id,
-                organisationBuilding.BuildingId));
+                    Id,
+                    organisationBuilding.BuildingId));
         }
         else if (Equals(_mainOrganisationBuilding, organisationBuilding) &&
                  !organisationBuilding.IsMainBuilding &&
                  organisationBuilding.Validity.OverlapsWith(today))
         {
 #pragma warning disable CS0618
-            ApplyChange(new MainBuildingClearedFromOrganisation(
+            ApplyChange(
+                new MainBuildingClearedFromOrganisation(
 #pragma warning restore CS0618
-                Id,
-                organisationBuilding.BuildingId));
+                    Id,
+                    organisationBuilding.BuildingId));
         }
         else if (!Equals(_mainOrganisationBuilding, organisationBuilding) &&
                  organisationBuilding.IsMainBuilding &&
@@ -1977,17 +2061,19 @@ public partial class Organisation : AggregateRoot
         {
             if (_mainOrganisationBuilding != null)
 #pragma warning disable CS0618
-                ApplyChange(new MainBuildingClearedFromOrganisation(
+                ApplyChange(
+                    new MainBuildingClearedFromOrganisation(
 #pragma warning restore CS0618
-                    Id,
-                    organisationBuilding.BuildingId));
+                        Id,
+                        organisationBuilding.BuildingId));
 
 #pragma warning disable CS0618
-            ApplyChange(new MainBuildingAssignedToOrganisation(
+            ApplyChange(
+                new MainBuildingAssignedToOrganisation(
 #pragma warning restore CS0618
-                Id,
-                organisationBuilding.BuildingId,
-                organisationBuilding.OrganisationBuildingId));
+                    Id,
+                    organisationBuilding.BuildingId,
+                    organisationBuilding.OrganisationBuildingId));
         }
     }
 
@@ -1999,10 +2085,11 @@ public partial class Organisation : AggregateRoot
             (!organisationLocation.IsMainLocation || !organisationLocation.Validity.OverlapsWith(today)))
         {
 #pragma warning disable CS0618
-            ApplyChange(new MainLocationClearedFromOrganisation(
+            ApplyChange(
+                new MainLocationClearedFromOrganisation(
 #pragma warning restore CS0618
-                Id,
-                organisationLocation.LocationId));
+                    Id,
+                    organisationLocation.LocationId));
         }
         else if (!Equals(_mainOrganisationLocation, organisationLocation) &&
                  organisationLocation.IsMainLocation &&
@@ -2010,17 +2097,19 @@ public partial class Organisation : AggregateRoot
         {
             if (_mainOrganisationLocation != null)
 #pragma warning disable CS0618
-                ApplyChange(new MainLocationClearedFromOrganisation(
+                ApplyChange(
+                    new MainLocationClearedFromOrganisation(
 #pragma warning restore CS0618
-                    Id,
-                    organisationLocation.LocationId));
+                        Id,
+                        organisationLocation.LocationId));
 
 #pragma warning disable CS0618
-            ApplyChange(new MainLocationAssignedToOrganisation(
+            ApplyChange(
+                new MainLocationAssignedToOrganisation(
 #pragma warning restore CS0618
-                Id,
-                organisationLocation.LocationId,
-                organisationLocation.OrganisationLocationId));
+                    Id,
+                    organisationLocation.LocationId,
+                    organisationLocation.OrganisationLocationId));
         }
     }
 
@@ -2103,87 +2192,95 @@ public partial class Organisation : AggregateRoot
         => State.OperationalValidity = new Period(new ValidFrom(@event.OperationalValidFrom), new ValidTo(@event.OperationalValidTo));
 
     private void Apply(OrganisationKeyAdded @event)
-        => State.OrganisationKeys.Add(new OrganisationKey(
-            @event.OrganisationKeyId,
-            @event.OrganisationId,
-            @event.KeyTypeId,
-            @event.KeyTypeName,
-            @event.Value,
-            new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo))));
+        => State.OrganisationKeys.Add(
+            new OrganisationKey(
+                @event.OrganisationKeyId,
+                @event.OrganisationId,
+                @event.KeyTypeId,
+                @event.KeyTypeName,
+                @event.Value,
+                new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo))));
 
     private void Apply(OrganisationParentAdded @event)
-        => State.OrganisationParents.Add(new OrganisationParent(
-            @event.OrganisationOrganisationParentId,
-            @event.ParentOrganisationId,
-            @event.ParentOrganisationName,
-            new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo))));
+        => State.OrganisationParents.Add(
+            new OrganisationParent(
+                @event.OrganisationOrganisationParentId,
+                @event.ParentOrganisationId,
+                @event.ParentOrganisationName,
+                new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo))));
 
     private void Apply(OrganisationFormalFrameworkAdded @event)
-        => State.OrganisationFormalFrameworks.Add(new OrganisationFormalFramework(
-            @event.OrganisationFormalFrameworkId,
-            @event.FormalFrameworkId,
-            @event.FormalFrameworkName,
-            @event.ParentOrganisationId,
-            @event.ParentOrganisationName,
-            new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo))));
+        => State.OrganisationFormalFrameworks.Add(
+            new OrganisationFormalFramework(
+                @event.OrganisationFormalFrameworkId,
+                @event.FormalFrameworkId,
+                @event.FormalFrameworkName,
+                @event.ParentOrganisationId,
+                @event.ParentOrganisationName,
+                new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo))));
 
     private void Apply(OrganisationContactAdded @event)
-        => State.OrganisationContacts.Add(new OrganisationContact(
-            @event.OrganisationContactId,
-            @event.OrganisationId,
-            @event.ContactTypeId,
-            @event.ContactTypeName,
-            @event.Value,
-            new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo))));
+        => State.OrganisationContacts.Add(
+            new OrganisationContact(
+                @event.OrganisationContactId,
+                @event.OrganisationId,
+                @event.ContactTypeId,
+                @event.ContactTypeName,
+                @event.Value,
+                new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo))));
 
     private void Apply(OrganisationFunctionAdded @event)
-        => State.OrganisationFunctionTypes.Add(new OrganisationFunction(
-            @event.OrganisationFunctionId,
-            @event.OrganisationId,
-            @event.FunctionId,
-            @event.FunctionName,
-            @event.PersonId,
-            @event.PersonFullName,
-            @event.Contacts,
-            new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo))));
+        => State.OrganisationFunctionTypes.Add(
+            new OrganisationFunction(
+                @event.OrganisationFunctionId,
+                @event.OrganisationId,
+                @event.FunctionId,
+                @event.FunctionName,
+                @event.PersonId,
+                @event.PersonFullName,
+                @event.Contacts,
+                new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo))));
 
     private void Apply(OrganisationRelationAdded @event)
-        => State.OrganisationRelations.Add(new OrganisationRelation(
-            @event.OrganisationRelationId,
-            @event.OrganisationId,
-            @event.OrganisationName,
-            @event.RelationId,
-            @event.RelationName,
-            @event.RelationInverseName,
-            @event.RelatedOrganisationId,
-            @event.RelatedOrganisationName,
-            new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo))));
+        => State.OrganisationRelations.Add(
+            new OrganisationRelation(
+                @event.OrganisationRelationId,
+                @event.OrganisationId,
+                @event.OrganisationName,
+                @event.RelationId,
+                @event.RelationName,
+                @event.RelationInverseName,
+                @event.RelatedOrganisationId,
+                @event.RelatedOrganisationName,
+                new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo))));
 
     private void Apply(OrganisationCapacityAdded @event)
-        => State.OrganisationCapacities.Add(new OrganisationCapacity(
-            @event.OrganisationCapacityId,
-            @event.OrganisationId,
-            @event.CapacityId,
-            @event.CapacityName,
-            @event.PersonId,
-            @event.PersonFullName,
-            @event.FunctionId,
-            @event.FunctionName,
-            @event.LocationId,
-            @event.LocationName,
-            @event.Contacts,
-            new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo)),
-            false));
+        => State.OrganisationCapacities.Add(
+            new OrganisationCapacity(
+                @event.OrganisationCapacityId,
+                @event.OrganisationId,
+                @event.CapacityId,
+                @event.CapacityName,
+                @event.PersonId,
+                @event.PersonFullName,
+                @event.FunctionId,
+                @event.FunctionName,
+                @event.LocationId,
+                @event.LocationName,
+                @event.Contacts,
+                new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo)),
+                false));
 
     private void Apply(OrganisationOrganisationClassificationAdded @event)
-        => State.OrganisationOrganisationClassifications.Add(new OrganisationOrganisationClassification(
-            @event.OrganisationOrganisationClassificationId,
-            @event.OrganisationId,
-            @event.OrganisationClassificationTypeId,
-            @event.OrganisationClassificationTypeName,
-            @event.OrganisationClassificationId,
-            @event.OrganisationClassificationName,
-            new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo))));
+        => State.OrganisationOrganisationClassifications.Add(
+            new OrganisationOrganisationClassification(
+                @event.OrganisationOrganisationClassificationId,
+                @event.OrganisationId,
+                @event.OrganisationClassificationTypeId,
+                @event.OrganisationClassificationTypeName,
+                @event.OrganisationClassificationId,
+                @event.OrganisationClassificationName,
+                new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo))));
 
     private void Apply(KboLegalFormOrganisationOrganisationClassificationAdded @event)
         => KboState.KboLegalFormOrganisationClassification = new OrganisationOrganisationClassification(
@@ -2199,13 +2296,14 @@ public partial class Organisation : AggregateRoot
         => KboState.KboLegalFormOrganisationClassification = null;
 
     private void Apply(OrganisationLabelAdded @event)
-        => State.OrganisationLabels.Add(new OrganisationLabel(
-            @event.OrganisationLabelId,
-            @event.OrganisationId,
-            @event.LabelTypeId,
-            @event.LabelTypeName,
-            @event.Value,
-            new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo))));
+        => State.OrganisationLabels.Add(
+            new OrganisationLabel(
+                @event.OrganisationLabelId,
+                @event.OrganisationId,
+                @event.LabelTypeId,
+                @event.LabelTypeName,
+                @event.Value,
+                new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo))));
 
     private void Apply(KboFormalNameLabelAdded @event)
         => KboState.KboFormalNameLabel = new OrganisationLabel(
@@ -2222,22 +2320,24 @@ public partial class Organisation : AggregateRoot
         => KboState.KboFormalNameLabel = null;
 
     private void Apply(OrganisationBuildingAdded @event)
-        => State.OrganisationBuildings.Add(new OrganisationBuilding(
-            @event.OrganisationBuildingId,
-            @event.OrganisationId,
-            @event.BuildingId,
-            @event.BuildingName,
-            @event.IsMainBuilding,
-            new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo))));
+        => State.OrganisationBuildings.Add(
+            new OrganisationBuilding(
+                @event.OrganisationBuildingId,
+                @event.OrganisationId,
+                @event.BuildingId,
+                @event.BuildingName,
+                @event.IsMainBuilding,
+                new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo))));
 
     private void Apply(OrganisationOpeningHourAdded @event)
-        => State.OrganisationOpeningHours.Add(new OrganisationOpeningHour(
-            @event.OrganisationOpeningHourId,
-            @event.OrganisationId,
-            @event.Opens,
-            @event.Closes,
-            @event.DayOfWeek,
-            new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo))));
+        => State.OrganisationOpeningHours.Add(
+            new OrganisationOpeningHour(
+                @event.OrganisationOpeningHourId,
+                @event.OrganisationId,
+                @event.Opens,
+                @event.Closes,
+                @event.DayOfWeek,
+                new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo))));
 
     private void Apply(OrganisationBuildingUpdated @event)
     {
@@ -2314,20 +2414,21 @@ public partial class Organisation : AggregateRoot
     }
 
     private void Apply(OrganisationRegulationAdded @event)
-        => State.OrganisationRegulations.Add(new OrganisationRegulation(
-            @event.OrganisationRegulationId,
-            @event.OrganisationId,
-            @event.RegulationThemeId,
-            @event.RegulationThemeName,
-            @event.RegulationSubThemeId,
-            @event.RegulationSubThemeName,
-            @event.Name,
-            @event.Uri,
-            @event.WorkRulesUrl,
-            @event.Date,
-            @event.Description,
-            @event.DescriptionRendered,
-            new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo))));
+        => State.OrganisationRegulations.Add(
+            new OrganisationRegulation(
+                @event.OrganisationRegulationId,
+                @event.OrganisationId,
+                @event.RegulationThemeId,
+                @event.RegulationThemeName,
+                @event.RegulationSubThemeId,
+                @event.RegulationSubThemeName,
+                @event.Name,
+                @event.Uri,
+                @event.WorkRulesUrl,
+                @event.Date,
+                @event.Description,
+                @event.DescriptionRendered,
+                new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo))));
 
     private void Apply(OrganisationRegulationUpdated @event)
     {
@@ -2498,8 +2599,10 @@ public partial class Organisation : AggregateRoot
                 new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo))));
 
     private void Apply(KboOrganisationBankAccountRemoved @event)
-        => KboState.KboBankAccounts.Remove(KboState.KboBankAccounts.Single(account =>
-            account.OrganisationBankAccountId == @event.OrganisationBankAccountId));
+        => KboState.KboBankAccounts.Remove(
+            KboState.KboBankAccounts.Single(
+                account =>
+                    account.OrganisationBankAccountId == @event.OrganisationBankAccountId));
 
     private void Apply(OrganisationBankAccountUpdated @event)
     {
