@@ -8,7 +8,6 @@ using AutoFixture;
 using FluentAssertions;
 using Newtonsoft.Json;
 using SqlServer.OrganisationClassificationType;
-using Tests.Shared;
 using Xunit;
 
 [Collection(ApiTestsCollection.Name)]
@@ -23,7 +22,7 @@ public class OrganisationClassificationTypeTests
         _fixture = new Fixture();
     }
 
-    [EnvVarIgnoreFact]
+    [Fact]
     public async Task OrganisationClassificationTypeTest()
     {
         var client = _apiFixture.HttpClient;

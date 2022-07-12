@@ -6,7 +6,6 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
-using Tests.Shared;
 using Xunit;
 
 [Collection(ApiTestsCollection.Name)]
@@ -21,7 +20,7 @@ public class ParametersTests
         _fixture = new Fixture();
     }
 
-    [EnvVarIgnoreTheory]
+    [Theory]
     [InlineData("keytypes", true)]
     [InlineData("labeltypes", false)]
     public async Task KeyTest(string baseRoute, bool supportsRemoval)

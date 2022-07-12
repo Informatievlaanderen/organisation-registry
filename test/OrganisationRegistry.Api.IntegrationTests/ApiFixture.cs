@@ -11,6 +11,7 @@ using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using AutoFixture;
 using FluentAssertions.Execution;
 using IdentityModel;
 using IdentityModel.Client;
@@ -26,6 +27,8 @@ using OrganisationRegistry.Infrastructure.Configuration;
 using SqlServer.Configuration;
 using SqlServer.Infrastructure;
 using Xunit;
+using CreateOrganisationClassificationRequest = Backoffice.Parameters.OrganisationClassification.Requests.CreateOrganisationClassificationRequest;
+using CreateOrganisationClassificationTypeRequest = Backoffice.Parameters.OrganisationClassificationType.Requests.CreateOrganisationClassificationTypeRequest;
 
 public class ApiFixture : IDisposable, IAsyncLifetime
 {
@@ -59,6 +62,8 @@ public class ApiFixture : IDisposable, IAsyncLifetime
         BaseAddress = new Uri(ApiEndpoint),
         DefaultRequestHeaders = { Authorization = new AuthenticationHeaderValue("Bearer", Jwt) },
     };
+
+    public Fixture Fixture { get; } = new();
 
     public ApiFixture()
     {
@@ -178,6 +183,39 @@ public class ApiFixture : IDisposable, IAsyncLifetime
 
     public Task CreateOrganisation(Guid organisationId, string organisationName)
         => Post(HttpClient, "organisations", new { id = organisationId, name = organisationName });
+
+    public async Task<Guid> CreateOrganisationClassificationType(bool allowDifferentClassificationsToOverlap)
+    {
+        var id = Fixture.Create<Guid>();
+        await Post(
+            HttpClient,
+            "organisationclassificationtypes",
+            new CreateOrganisationClassificationTypeRequest
+            {
+                Id = id,
+                Name = Fixture.Create<string>(),
+                AllowDifferentClassificationsToOverlap = allowDifferentClassificationsToOverlap,
+            });
+        return id;
+    }
+
+    public async Task<Guid> CreateOrganisationClassification(Guid organisationClassificationTypeId)
+    {
+        var id = Fixture.Create<Guid>();
+        await Post(
+            HttpClient,
+            "organisationclassifications",
+            new CreateOrganisationClassificationRequest
+            {
+                Id = id,
+                Name = Fixture.Create<string>(),
+                Order = Fixture.Create<int>(),
+                OrganisationClassificationTypeId = organisationClassificationTypeId,
+                Active = true,
+                ExternalKey = null,
+            });
+        return id;
+    }
 
     public static async Task<HttpResponseMessage> Post(HttpClient httpClient, string route, object body)
         => await httpClient.PostAsync(
