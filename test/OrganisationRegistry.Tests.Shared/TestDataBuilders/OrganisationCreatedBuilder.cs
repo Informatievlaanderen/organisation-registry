@@ -40,6 +40,12 @@ public class OrganisationCreatedBuilder
         return this;
     }
 
+    public OrganisationCreatedBuilder WithId(Guid organisationId)
+    {
+        Id = new OrganisationId(organisationId);
+        return this;
+    }
+
     public OrganisationCreatedBuilder WithOvoNumber(string ovoNumber)
     {
         OvoNumber = ovoNumber;
