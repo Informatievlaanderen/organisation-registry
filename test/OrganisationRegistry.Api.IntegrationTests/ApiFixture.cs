@@ -12,6 +12,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using AutoFixture;
+using Backoffice.Organisation.OrganisationClassification;
 using FluentAssertions.Execution;
 using IdentityModel;
 using IdentityModel.Client;
@@ -53,9 +54,8 @@ public class ApiFixture : IDisposable, IAsyncLifetime
     private readonly IWebHost _webHost;
     private readonly IConfigurationRoot? _configurationRoot;
     public IOrganisationRegistryConfiguration Configuration { get; }
-    public const string ApiEndpoint = "http://localhost:5000/v1/";
+    public const string ApiEndpoint = "http://localhost:5000";
     public const string Jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdF9oYXNoIjoiMklEMHdGR3l6WnJWaHRmbi00Ty1EQSIsImF1ZCI6WyJodHRwczovL2RpZW5zdHZlcmxlbmluZy10ZXN0LmJhc2lzcmVnaXN0ZXJzLnZsYWFuZGVyZW4iXSwiYXpwIjoiN2Q4MDExOTctNmQ0My00NzZhLTgzZWYtMzU4NjllZTUyZDg1IiwiZXhwIjoxODkzOTM2ODIzLCJmYW1pbHlfbmFtZSI6IkFwaSIsImdpdmVuX25hbWUiOiJUZXN0IiwiaWF0IjoxNTc4MzExNjMzLCJ2b19pZCI6IjEyMzk4Nzk4Ny0xMjMxMjMiLCJpc3MiOiJodHRwczovL2RpZW5zdHZlcmxlbmluZy10ZXN0LmJhc2lzcmVnaXN0ZXJzLnZsYWFuZGVyZW4iLCJ1cm46YmU6dmxhYW5kZXJlbjpkaWVuc3R2ZXJsZW5pbmc6YWNtaWQiOiJ2b19pZCIsInVybjpiZTp2bGFhbmRlcmVuOmFjbTpmYW1pbGllbmFhbSI6ImZhbWlseV9uYW1lIiwidXJuOmJlOnZsYWFuZGVyZW46YWNtOnZvb3JuYWFtIjoiZ2l2ZW5fbmFtZSIsInVybjpiZTp2bGFhbmRlcmVuOndlZ3dpanM6YWNtaWQiOiJ0ZXN0Iiwicm9sZSI6WyJhbGdlbWVlbkJlaGVlcmRlciJdLCJuYmYiOjE1NzgzOTY2MzN9.wWYDfwbcBxHMdaBIhoFH0UnXNl82lE_rsu-R49km1FM";
-
 
     public HttpClient HttpClient { get; } = new()
     {
@@ -136,12 +136,14 @@ public class ApiFixture : IDisposable, IAsyncLifetime
 
         await CreateParameter("locationtypes", Configuration.Kbo.KboV2RegisteredOfficeLocationTypeId, "KBO Location");
         await CreateParameter("organisationclassificationtypes", Configuration.Kbo.KboV2LegalFormOrganisationClassificationTypeId, "KBO Classification");
+        await CreateParameter("organisationclassificationtypes", Configuration.Authorization.OrganisationClassificationTypeIdsOwnedByCjm.First(), "CJM Classification 1");
+        await CreateParameter("organisationclassificationtypes", Configuration.Authorization.OrganisationClassificationTypeIdsOwnedByCjm.Last(), "CJM Classification 2");
         await CreateParameter("labeltypes", Configuration.Kbo.KboV2FormalNameLabelTypeId, "KBO label");
         await CreateParameter("keytypes", Configuration.Authorization.KeyIdsAllowedOnlyForOrafin.First(), "orafin key type");
     }
 
     private Task CreateParameter(string requestUri, Guid id, string name)
-        => Post(HttpClient, requestUri, new { id = id, name = name });
+        => Post(HttpClient, $"/v1/{requestUri}", new { id = id, name = name });
 
     public async Task<HttpClient> CreateCjmClient()
         => await CreateMachine2MachineClientFor(CJM.Client, CJM.Scope);
@@ -182,14 +184,14 @@ public class ApiFixture : IDisposable, IAsyncLifetime
     }
 
     public Task CreateOrganisation(Guid organisationId, string organisationName)
-        => Post(HttpClient, "organisations", new { id = organisationId, name = organisationName });
+        => Post(HttpClient, "/v1/organisations", new { id = organisationId, name = organisationName });
 
     public async Task<Guid> CreateOrganisationClassificationType(bool allowDifferentClassificationsToOverlap)
     {
         var id = Fixture.Create<Guid>();
         await Post(
             HttpClient,
-            "organisationclassificationtypes",
+            "/v1/organisationclassificationtypes",
             new CreateOrganisationClassificationTypeRequest
             {
                 Id = id,
@@ -204,7 +206,7 @@ public class ApiFixture : IDisposable, IAsyncLifetime
         var id = Fixture.Create<Guid>();
         await Post(
             HttpClient,
-            "organisationclassifications",
+            "/v1/organisationclassifications",
             new CreateOrganisationClassificationRequest
             {
                 Id = id,
@@ -213,6 +215,23 @@ public class ApiFixture : IDisposable, IAsyncLifetime
                 OrganisationClassificationTypeId = organisationClassificationTypeId,
                 Active = true,
                 ExternalKey = null,
+            });
+        return id;
+    }
+
+    public async Task<Guid> CreateOrganisationOrganisationClassification(Guid organisationId, Guid organisationClassificationTypeId, Guid organisationClassificationId)
+    {
+        var id = Fixture.Create<Guid>();
+        await Post(
+            HttpClient,
+            $"/v1/organisation/{organisationId}/classifications",
+            new AddOrganisationOrganisationClassificationRequest
+            {
+                OrganisationOrganisationClassificationId = id,
+                OrganisationClassificationTypeId = organisationClassificationTypeId,
+                OrganisationClassificationId = organisationClassificationId,
+                ValidFrom = null,
+                ValidTo = null,
             });
         return id;
     }
@@ -246,6 +265,12 @@ public class ApiFixture : IDisposable, IAsyncLifetime
                 $"Expected statuscode {expectedStatusCode}, but received {response.StatusCode}.\n" +
                 $"The response was '{await response.Content.ReadAsStringAsync()}'\n");
     }
+
+    public static Guid GetIdFrom(HttpResponseHeaders headers)
+        => new(headers.Location!.ToString().Split('/').Last());
+
+    public static async Task<Dictionary<string, object>> Deserialize(HttpResponseMessage message)
+        => JsonConvert.DeserializeObject<Dictionary<string, object>>(await message.Content.ReadAsStringAsync())!;
 
     protected virtual void Dispose(bool disposing)
     {

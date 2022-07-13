@@ -1,7 +1,6 @@
 namespace OrganisationRegistry.Handling.Authorization;
 
 using System;
-using System.Linq;
 using Infrastructure.Authorization;
 using Organisation.Exceptions;
 
@@ -19,12 +18,13 @@ public class RequiresRolesPolicy : ISecurityPolicy
 
         _roles = roles;
     }
+
     public AuthorizationResult Check(IUser user)
     {
-        if (user.IsInRole(Role.AlgemeenBeheerder))
+        if (user.IsInAnyOf(Role.AlgemeenBeheerder))
             return AuthorizationResult.Success();
 
-        if (_roles.Any(user.IsInRole))
+        if (user.IsInAnyOf(_roles))
             return AuthorizationResult.Success();
 
         return AuthorizationResult.Fail(InsufficientRights.CreateFor(this));

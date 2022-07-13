@@ -2986,9 +2986,8 @@ public partial class Organisation : AggregateRoot
     }
 
     private bool UserCanPerformActionWhenOrganisationIsTerminated(IUser user)
-        => user.IsInRole(Role.AlgemeenBeheerder) ||
-           user.IsInRole(Role.AutomatedTask) ||
-           (user.IsInRole(Role.VlimpersBeheerder) && State.UnderVlimpersManagement);
+        => user.IsInAnyOf(Role.AlgemeenBeheerder, Role.AutomatedTask)
+           || (State.UnderVlimpersManagement && user.IsInAnyOf(Role.VlimpersBeheerder));
 
     public void ThrowIfUnauthorizedForVlimpers(IUser user)
     {

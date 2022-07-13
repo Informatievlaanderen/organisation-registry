@@ -20,7 +20,7 @@ public class WhenTheImportHasRun
 
     private async Task<IEnumerable<T>> Get<T>(string requestUri)
     {
-        var items = await _fixture.HttpClient.GetStringAsync(requestUri);
+        var items = await _fixture.HttpClient.GetStringAsync($"/v1/{requestUri}");
         return JsonConvert.DeserializeObject<IEnumerable<T>>(items) ?? new List<T>();
     }
 

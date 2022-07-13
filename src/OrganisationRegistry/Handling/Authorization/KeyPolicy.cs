@@ -24,16 +24,16 @@ public class KeyPolicy : ISecurityPolicy
 
     public AuthorizationResult Check(IUser user)
     {
-        if (user.IsInRole(Role.AlgemeenBeheerder))
+        if (user.IsInAnyOf(Role.AlgemeenBeheerder))
             return AuthorizationResult.Success();
 
         var containsVlimpersKey = ContainsVlimpersKey(_keyTypeIds);
         var containsOrafinKey = ContainsOrafinKey(_keyTypeIds);
 
-        if (containsOrafinKey && user.IsInRole(Role.Orafin))
+        if (containsOrafinKey && user.IsInAnyOf(Role.Orafin, Role.CjmBeheerder))
             return AuthorizationResult.Success();
 
-        if (containsVlimpersKey && user.IsInRole(Role.VlimpersBeheerder))
+        if (containsVlimpersKey && user.IsInAnyOf(Role.VlimpersBeheerder))
             return AuthorizationResult.Success();
 
         if (!containsOrafinKey && !containsVlimpersKey &&

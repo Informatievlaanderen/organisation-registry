@@ -24,17 +24,23 @@ public class OrganisationClassificationTypePolicy : ISecurityPolicy
 
     public AuthorizationResult Check(IUser user)
     {
-        if (user.IsInRole(Role.AlgemeenBeheerder))
+        if (user.IsInAnyOf(Role.AlgemeenBeheerder))
             return AuthorizationResult.Success();
 
         var organisationClassificationTypeIdsOwnedByRegelgevingDbBeheerder = _configuration.Authorization.OrganisationClassificationTypeIdsOwnedByRegelgevingDbBeheerder;
+        var organisationClassificationTypeIdsOwnedByCjm = _configuration.Authorization.OrganisationClassificationTypeIdsOwnedByCjm;
 
-        if (user.IsInRole(Role.RegelgevingBeheerder) &&
-            organisationClassificationTypeIdsOwnedByRegelgevingDbBeheerder.Contains(_organisationClassificationTypeId))
+        if (user.IsInAnyOf(Role.CjmBeheerder)
+            && organisationClassificationTypeIdsOwnedByCjm.Contains(_organisationClassificationTypeId))
             return AuthorizationResult.Success();
 
-        if (user.IsDecentraalBeheerderFor(_ovoNumber) &&
-            !organisationClassificationTypeIdsOwnedByRegelgevingDbBeheerder.Contains(_organisationClassificationTypeId))
+        if (user.IsInAnyOf(Role.RegelgevingBeheerder)
+            && organisationClassificationTypeIdsOwnedByRegelgevingDbBeheerder.Contains(_organisationClassificationTypeId))
+            return AuthorizationResult.Success();
+
+        if (user.IsDecentraalBeheerderFor(_ovoNumber)
+            && !organisationClassificationTypeIdsOwnedByRegelgevingDbBeheerder.Contains(_organisationClassificationTypeId)
+            && !organisationClassificationTypeIdsOwnedByCjm.Contains(_organisationClassificationTypeId))
             return AuthorizationResult.Success();
 
         return AuthorizationResult.Fail(InsufficientRights.CreateFor(this));

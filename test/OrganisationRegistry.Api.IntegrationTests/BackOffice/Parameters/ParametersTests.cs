@@ -1,6 +1,7 @@
 ﻿namespace OrganisationRegistry.Api.IntegrationTests.BackOffice.Parameters;
 
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -21,42 +22,74 @@ public class ParametersTests
     }
 
     [Theory]
-    [InlineData("keytypes", true)]
-    [InlineData("labeltypes", false)]
-    public async Task KeyTest(string baseRoute, bool supportsRemoval)
+    [InlineData("/v1/keytypes", true)]
+    [InlineData("/v1/labeltypes", false)]
+    public async Task ParameterTest(string baseRoute, bool supportsRemoval)
     {
-        var client = _apiFixture.HttpClient;
+        var (id, createResponseDictionary) = await CreateAndVerify(baseRoute);
 
-        var id = _fixture.Create<Guid>();
-        var createdName = _fixture.Create<string>();
-
-        // create
-        var createResponse = await Create(client, baseRoute, id, createdName);
-        createResponse.StatusCode.Should().Be(HttpStatusCode.Created);
-
-        // get
-        var getResponse1 = await ApiFixture.Get(client, $"{baseRoute}/{id}");
-        getResponse1.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        var updatedName = _fixture.Create<string>();
-        // update
-        var updateResponse = await Update(client, baseRoute, id, updatedName);
-        updateResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        // get
-        var getResponse2 = await ApiFixture.Get(client, $"{baseRoute}/{id}");
-        getResponse2.StatusCode.Should().Be(HttpStatusCode.OK);
+        var updateResponseDictionary = await UpdateAndVerify(baseRoute, id);
 
         if (!supportsRemoval)
             return;
 
+        createResponseDictionary["isRemoved"].Should().Be(false);
+        updateResponseDictionary["isRemoved"].Should().Be(false);
+
+        var removeResponseDictionary = await RemoveAndVerify(baseRoute, id);
+        removeResponseDictionary["isRemoved"].Should().Be(true);
+    }
+
+    private async Task<(Guid, Dictionary<string, object>)> CreateAndVerify(string baseRoute)
+    {
+        var id = _fixture.Create<Guid>();
+
+        // create
+        var name = _fixture.Create<string>();
+        var createResponse = await Create(_apiFixture.HttpClient, baseRoute, id, name);
+        createResponse.StatusCode.Should().Be(HttpStatusCode.Created);
+
+        // get
+        var getResponse = await ApiFixture.Get(_apiFixture.HttpClient, createResponse.Headers.Location!.ToString());
+        getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        return (id, await ValidateResponse(getResponse, id, name));
+    }
+
+    private async Task<Dictionary<string, object>> UpdateAndVerify(string baseRoute, Guid id)
+    {
+        var updatedName = _fixture.Create<string>();
+        // update
+        var updateResponse = await Update(_apiFixture.HttpClient, baseRoute, id, updatedName);
+        updateResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        // get
+        var getResponse = await ApiFixture.Get(_apiFixture.HttpClient, $"{baseRoute}/{id}");
+        getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        return await ValidateResponse(getResponse, id, updatedName);
+    }
+
+    private async Task<Dictionary<string, object>> RemoveAndVerify(string baseRoute, Guid id)
+    {
         // removekey
-        var deleteResponse = await ApiFixture.Delete(client, $"{baseRoute}/{id}");
+        var deleteResponse = await ApiFixture.Delete(_apiFixture.HttpClient, $"{baseRoute}/{id}");
         deleteResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
-        // getkey (-> not found)
-        var getResponse3 = await ApiFixture.Get(client, $"{baseRoute}/{id}");
-        getResponse3.StatusCode.Should().Be(HttpStatusCode.OK);
+        // getkey
+        var getResponse = await ApiFixture.Get(_apiFixture.HttpClient, $"{baseRoute}/{id}");
+        getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        return await ApiFixture.Deserialize(getResponse);
+    }
+
+    private static async Task<Dictionary<string, object>> ValidateResponse(HttpResponseMessage message, Guid id, string name)
+    {
+        var deserializedResponse = await ApiFixture.Deserialize(message);
+        deserializedResponse.Should().NotBeNull();
+        deserializedResponse["id"].Should().Be(id.ToString());
+        deserializedResponse["name"].Should().Be(name);
+        return deserializedResponse;
     }
 
     private static async Task<HttpResponseMessage> Create(HttpClient client, string baseRoute, Guid id, string name)

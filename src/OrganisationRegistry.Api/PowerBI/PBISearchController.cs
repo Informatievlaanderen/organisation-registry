@@ -30,7 +30,7 @@ public class PBISearchController : OrganisationRegistryController
         _logger = logger;
     }
 
-    /// <summary>Entiteiten opzoeken.</summary>
+    /// <summary>Entiteiten opzoeken (als bestand).</summary>
     /// <remarks>Dit endpoint laat toe entiteiten op te vragen op de ElasticSearch indexes.
     /// <br />
     /// De volgende indexes zijn beschikbaar: <br />

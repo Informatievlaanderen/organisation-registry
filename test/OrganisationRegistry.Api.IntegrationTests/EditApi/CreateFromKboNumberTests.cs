@@ -70,7 +70,7 @@ public class CreateFromKboNumberTests
     private static async Task<HttpResponseMessage> CreateOrganisationFromKboNumber(HttpClient httpClient)
     {
         var response = await httpClient.PutAsync(
-            "edit/organisations/kbo/0563634435",
+            "/v1/edit/organisations/kbo/0563634435",
             new StringContent("{}", Encoding.UTF8, "application/json"));
         return response;
     }

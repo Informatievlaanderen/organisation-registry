@@ -1,7 +1,6 @@
 ﻿namespace OrganisationRegistry.Api.IntegrationTests.EditApi;
 
 using System;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -47,9 +46,9 @@ public class CreateBankAccountNumberTests
 
         await ApiFixture.VerifyStatusCode(response, HttpStatusCode.Created);
 
-        var organisationBankaccountId = GetFromLocation(response.Headers.Location!.ToString());
+        var organisationBankaccountId = ApiFixture.GetIdFrom(response.Headers);
 
-        var updateResponse = await UpdateBankAccountNumber(httpClient, _organisationId, new Guid(organisationBankaccountId), "BG72UNCR70001522734456");
+        var updateResponse = await UpdateBankAccountNumber(httpClient, _organisationId, organisationBankaccountId, "BG72UNCR70001522734456");
 
         await ApiFixture.VerifyStatusCode(updateResponse, HttpStatusCode.OK);
     }
@@ -81,8 +80,8 @@ public class CreateBankAccountNumberTests
     private static async Task<HttpResponseMessage> CreateBankAccountNumber(HttpClient httpClient, Guid organisationId, string bankAccountNumber, string bic = "", DateTime? validFrom = null, DateTime? validTo = null)
         => await ApiFixture.Post(
             httpClient,
-            $"edit/organisations/{organisationId}/bankaccounts",
-            new AddOrganisationBankAccountRequest()
+            $"/v1/edit/organisations/{organisationId}/bankaccounts",
+            new AddOrganisationBankAccountRequest
             {
                 BankAccountNumber = bankAccountNumber,
                 Bic = bic,
@@ -93,15 +92,12 @@ public class CreateBankAccountNumberTests
     private static async Task<HttpResponseMessage> UpdateBankAccountNumber(HttpClient httpClient, Guid organisationId, Guid organisationBankAccountId, string bankAccountNumber, string bic = "", DateTime? validFrom = null, DateTime? validTo = null)
         => await ApiFixture.Put(
             httpClient,
-            $"edit/organisations/{organisationId}/bankaccounts/{organisationBankAccountId}",
-            new AddOrganisationBankAccountRequest()
+            $"/v1/edit/organisations/{organisationId}/bankaccounts/{organisationBankAccountId}",
+            new UpdateOrganisationBankAccountRequest
             {
                 BankAccountNumber = bankAccountNumber,
                 Bic = bic,
                 ValidFrom = validFrom,
                 ValidTo = validTo,
             });
-
-    private static string GetFromLocation(string locationHeader)
-        => locationHeader.Split('/').Last();
 }

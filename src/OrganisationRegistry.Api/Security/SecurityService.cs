@@ -211,12 +211,11 @@ public class SecurityService : ISecurityService
     // TODO: see how we can make SecurityService use IUser everywhere, io ClaimsPrincipal.
     public bool CanUseKeyType(IUser user, Guid keyTypeId)
     {
-        if (user.IsInRole(Role.Developer) ||
-            user.IsInRole(Role.AlgemeenBeheerder))
+        if (user.IsInAnyOf(Role.Developer, Role.AlgemeenBeheerder))
             return true;
 
         if (_configuration.OrafinKeyTypeId.Equals(keyTypeId))
-            return user.IsInRole(Role.Orafin) ||
+            return user.IsInAnyOf(Role.Orafin) ||
                    user.Organisations.Any(x => x.Equals(_configuration.OrafinOvoCode));
         // todo: instead of checking the organisations now, check them on creation of jwt.
 
@@ -228,13 +227,12 @@ public class SecurityService : ISecurityService
 
     public bool CanUseLabelType(IUser user, Guid labelTypeId)
     {
-        if (user.IsInRole(Role.Developer) ||
-            user.IsInRole(Role.AlgemeenBeheerder))
+        if (user.IsInAnyOf(Role.Developer, Role.AlgemeenBeheerder))
             return true;
 
         if (_configuration.FormalNameLabelTypeId.Equals(labelTypeId) ||
             _configuration.FormalShortNameLabelTypeId.Equals(labelTypeId))
-            return user.IsInRole(Role.VlimpersBeheerder);
+            return user.IsInAnyOf(Role.VlimpersBeheerder);
 
         return true;
     }

@@ -7,10 +7,10 @@ public class RegulationPolicy : ISecurityPolicy
 {
     public AuthorizationResult Check(IUser user)
     {
-        if (user.IsInRole(Role.AlgemeenBeheerder))
+        if (user.IsInAnyOf(Role.AlgemeenBeheerder))
             return AuthorizationResult.Success();
 
-        if (user.IsInRole(Role.RegelgevingBeheerder))
+        if (user.IsInAnyOf(Role.RegelgevingBeheerder))
             return AuthorizationResult.Success();
 
         return AuthorizationResult.Fail(InsufficientRights.CreateFor(this));

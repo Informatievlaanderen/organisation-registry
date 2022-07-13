@@ -117,6 +117,11 @@ public static class UpdateHandlerExtensionMethods
         => source.WithPolicy(
             organisation => new BeheerderForOrganisationRegardlessOfVlimpersPolicy(organisation.State.OvoNumber));
 
+    public static UpdateHandler<Organisation> WithBankAccountPolicy(
+        this UpdateHandler<Organisation> source)
+        => source.WithPolicy(
+            organisation => new BankAccountPolicy(organisation.State.OvoNumber));
+
     public static UpdateHandler<Organisation> RequiresAdmin(this UpdateHandler<Organisation> source)
         => source.WithPolicy(_ => new AdminOnlyPolicy());
 

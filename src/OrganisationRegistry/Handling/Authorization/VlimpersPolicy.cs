@@ -18,7 +18,7 @@ public class VlimpersPolicy : ISecurityPolicy
 
     public AuthorizationResult Check(IUser user)
     {
-        if (user.IsInRole(Role.AlgemeenBeheerder))
+        if (user.IsInAnyOf(Role.AlgemeenBeheerder))
             return AuthorizationResult.Success();
 
         if (_isUnderVlimpersManagement &&

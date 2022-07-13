@@ -11,6 +11,6 @@ public interface IUser
     Role[] Roles { get; set; }
     bool IsAuthorizedForVlimpersOrganisations { get; }
     List<string> Organisations { get; }
-    bool IsInRole(Role role);
+    bool IsInAnyOf(params Role[] roles);
     bool IsDecentraalBeheerderFor(string ovoNumber);
 }
