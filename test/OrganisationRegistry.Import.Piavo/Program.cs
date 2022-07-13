@@ -35,7 +35,7 @@ namespace OrganisationRegistry.Import.Piavo
 
         public static void Import(string endpoint, string jwt)
         {
-            var baseAddress = new Uri(endpoint);
+            var baseAddress = new Uri($"{endpoint}/v1/");
 
             var client = new OrganisationRegistryAPI(baseAddress);
             client.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", jwt);

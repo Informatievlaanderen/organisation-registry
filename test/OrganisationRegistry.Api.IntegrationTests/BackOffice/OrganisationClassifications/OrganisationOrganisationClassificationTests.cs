@@ -80,7 +80,7 @@ public class OrganisationOrganisationClassificationTests
         DateTime? validTo = null)
         => await ApiFixture.Post(
             _apiFixture.HttpClient,
-            $"organisations/{organisationId}/classifications",
+            $"/v1/organisations/{organisationId}/classifications",
             new AddOrganisationOrganisationClassificationRequest
             {
                 OrganisationClassificationId = organisationClassificationId,

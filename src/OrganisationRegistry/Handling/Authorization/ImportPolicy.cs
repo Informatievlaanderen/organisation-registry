@@ -20,10 +20,10 @@ public class ImportPolicy : ISecurityPolicy
 
     public AuthorizationResult Check(IUser user)
     {
-        if (user.IsInRole(Role.AlgemeenBeheerder))
+        if (user.IsInAnyOf(Role.AlgemeenBeheerder))
             return AuthorizationResult.Success();
 
-        if (user.IsInRole(Role.VlimpersBeheerder))
+        if (user.IsInAnyOf(Role.VlimpersBeheerder))
             return CheckVlimpers(user);
 
         return AuthorizationResult.Fail(InsufficientRights.CreateFor(this));

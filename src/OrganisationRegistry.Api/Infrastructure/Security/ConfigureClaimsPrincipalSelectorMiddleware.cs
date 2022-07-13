@@ -43,9 +43,6 @@ public class ConfigureClaimsPrincipalSelectorMiddleware
     }
 
     private static AuthenticateResult? TryGetAuthInfo(IHttpContextAccessor httpContextAccessor)
-    {
-        var authInfo = httpContextAccessor.HttpContext?.GetAuthenticateInfo(JwtBearerDefaults.AuthenticationScheme) ??
-                       httpContextAccessor.HttpContext?.GetAuthenticateInfo(AuthenticationSchemes.EditApi);
-        return authInfo;
-    }
+        => httpContextAccessor.HttpContext?.GetAuthenticateInfo(JwtBearerDefaults.AuthenticationScheme) ??
+           httpContextAccessor.HttpContext?.GetAuthenticateInfo(AuthenticationSchemes.EditApi);
 }

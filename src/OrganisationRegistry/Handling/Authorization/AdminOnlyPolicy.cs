@@ -6,7 +6,7 @@ using Organisation.Exceptions;
 public class AdminOnlyPolicy : ISecurityPolicy
 {
     public AuthorizationResult Check(IUser user)
-        => user.IsInRole(Role.AlgemeenBeheerder) ?
+        => user.IsInAnyOf(Role.AlgemeenBeheerder) ?
             AuthorizationResult.Success() :
             AuthorizationResult.Fail(InsufficientRights.CreateFor(this));
 

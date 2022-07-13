@@ -26,7 +26,7 @@ public class OrganisationClassificationTypeTests
     public async Task OrganisationClassificationTypeTest()
     {
         var client = _apiFixture.HttpClient;
-        const string baseRoute = "organisationclassificationtypes";
+        const string baseRoute = "/v1/organisationclassificationtypes";
         var id = _fixture.Create<Guid>();
 
         await CreateAndVerify(client, baseRoute, id, _fixture.Create<string>(), _fixture.Create<bool>());

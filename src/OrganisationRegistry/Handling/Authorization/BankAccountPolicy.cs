@@ -1,20 +1,20 @@
-namespace OrganisationRegistry.Handling.Authorization;
+﻿namespace OrganisationRegistry.Handling.Authorization;
 
 using Infrastructure.Authorization;
 using Organisation.Exceptions;
 
-public class BeheerderForOrganisationRegardlessOfVlimpersPolicy : ISecurityPolicy
+public class BankAccountPolicy : ISecurityPolicy
 {
     private readonly string _ovoNumber;
 
-    public BeheerderForOrganisationRegardlessOfVlimpersPolicy(string ovoNumber)
+    public BankAccountPolicy(string ovoNumber)
     {
         _ovoNumber = ovoNumber;
     }
 
     public AuthorizationResult Check(IUser user)
     {
-        if (user.IsInAnyOf(Role.AlgemeenBeheerder))
+        if (user.IsInAnyOf(Role.AlgemeenBeheerder, Role.CjmBeheerder))
             return AuthorizationResult.Success();
 
         if (user.IsDecentraalBeheerderFor(_ovoNumber))

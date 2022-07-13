@@ -24,7 +24,7 @@ public class FormalFrameworkPolicy : ISecurityPolicy
 
     public AuthorizationResult Check(IUser user)
     {
-        if(user.IsInRole(Role.AlgemeenBeheerder))
+        if(user.IsInAnyOf(Role.AlgemeenBeheerder))
             return AuthorizationResult.Success();
 
         var formalFrameworkIdsOwnedByVlimpers = _configuration.Authorization.FormalFrameworkIdsOwnedByVlimpers;
@@ -35,11 +35,11 @@ public class FormalFrameworkPolicy : ISecurityPolicy
             .Union(formalFrameworkIdsOwnedByAuditVlaanderen)
             .Union(formalFrameworkIdsOwnedByRegelgevingDbBeheerder);
 
-        if (user.IsInRole(Role.RegelgevingBeheerder) &&
+        if (user.IsInAnyOf(Role.RegelgevingBeheerder) &&
             formalFrameworkIdsOwnedByRegelgevingDbBeheerder.Contains(_formalFrameworkId))
             return AuthorizationResult.Success();
 
-        if (user.IsInRole(Role.VlimpersBeheerder) &&
+        if (user.IsInAnyOf(Role.VlimpersBeheerder) &&
             formalFrameworkIdsOwnedByVlimpers.Contains(_formalFrameworkId))
             return AuthorizationResult.Success();
 

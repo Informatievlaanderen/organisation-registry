@@ -29,16 +29,15 @@ public class User : IUser
     public Role[] Roles { get; set; }
 
     public bool IsAuthorizedForVlimpersOrganisations
-        => IsInRole(Role.VlimpersBeheerder) ||
-           IsInRole(Role.Developer) ||
-           IsInRole(Role.AlgemeenBeheerder);
+        => IsInAnyOf(
+            Role.VlimpersBeheerder,
+            Role.Developer,
+            Role.AlgemeenBeheerder);
 
-    public bool IsInRole(Role role)
-    {
-        return Roles.Any(x => x == role);
-    }
+    public bool IsInAnyOf(params Role[] roles)
+        => Roles.Any(roles.Contains);
 
     public bool IsDecentraalBeheerderFor(string ovoNumber)
-        => IsInRole(Role.DecentraalBeheerder) &&
+        => IsInAnyOf(Role.DecentraalBeheerder) &&
            Organisations.Contains(ovoNumber);
 }

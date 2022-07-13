@@ -24,12 +24,12 @@ public class CapacityPolicy : ISecurityPolicy
 
     public AuthorizationResult Check(IUser user)
     {
-        if (user.IsInRole(Role.AlgemeenBeheerder))
+        if (user.IsInAnyOf(Role.AlgemeenBeheerder))
             return AuthorizationResult.Success();
 
         var organisationCapacityIdsOwnedByRegelgevingDbBeheerder = _configuration.Authorization.CapacityIdsOwnedByRegelgevingDbBeheerder;
 
-        if (user.IsInRole(Role.RegelgevingBeheerder) &&
+        if (user.IsInAnyOf(Role.RegelgevingBeheerder) &&
             organisationCapacityIdsOwnedByRegelgevingDbBeheerder.Contains(_organisationCapacityId))
             return AuthorizationResult.Success();
 

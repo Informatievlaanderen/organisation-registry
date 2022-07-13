@@ -15,6 +15,7 @@ public class AuthorizationConfigurationStub: IAuthorizationConfiguration
         LabelIdsAllowedForVlimpers = Array.Empty<Guid>();
         KeyIdsAllowedForVlimpers = Array.Empty<Guid>();
         KeyIdsAllowedOnlyForOrafin = Array.Empty<Guid>();
+        OrganisationClassificationTypeIdsOwnedByCjm = Array.Empty<Guid>();
     }
     public Guid[] FormalFrameworkIdsOwnedByVlimpers { get; set; }
     public Guid[] FormalFrameworkIdsOwnedByAuditVlaanderen { get; set; }
@@ -24,4 +25,5 @@ public class AuthorizationConfigurationStub: IAuthorizationConfiguration
     public Guid[] KeyIdsAllowedOnlyForOrafin { get; set; }
     public Guid[] OrganisationClassificationTypeIdsOwnedByRegelgevingDbBeheerder { get; set; }
     public Guid[] CapacityIdsOwnedByRegelgevingDbBeheerder { get; set; }
+    public Guid[] OrganisationClassificationTypeIdsOwnedByCjm { get; set; }
 }

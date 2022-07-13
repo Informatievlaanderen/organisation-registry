@@ -35,11 +35,11 @@ public class LabelPolicy : ISecurityPolicy
 
     public AuthorizationResult Check(IUser user)
     {
-        if (user.IsInRole(Role.AlgemeenBeheerder))
+        if (user.IsInAnyOf(Role.AlgemeenBeheerder))
             return AuthorizationResult.Success();
 
         if (_isUnderVlimpersManagement &&
-            user.IsInRole(Role.VlimpersBeheerder) && AreAllLabelsofTypeVlimpers(_labelTypeIds))
+            user.IsInAnyOf(Role.VlimpersBeheerder) && AreAllLabelsofTypeVlimpers(_labelTypeIds))
             return AuthorizationResult.Success();
 
         if (!user.IsDecentraalBeheerderFor(_ovoNumber))

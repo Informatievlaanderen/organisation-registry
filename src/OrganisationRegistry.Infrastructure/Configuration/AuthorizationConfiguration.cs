@@ -37,6 +37,10 @@ public class AuthorizationConfiguration : IAuthorizationConfiguration
         KeyIdsAllowedOnlyForOrafin =
             authorizationConfiguration?.KeyIdsAllowedOnlyForOrafin.SplitGuids() ??
             Array.Empty<Guid>();
+
+        OrganisationClassificationTypeIdsOwnedByCjm =
+            authorizationConfiguration?.OrganisationClassificationTypeIdsOwnedByCjm.SplitGuids() ??
+            Array.Empty<Guid>();
     }
     public Guid[] FormalFrameworkIdsOwnedByVlimpers { get; }
     public Guid[] FormalFrameworkIdsOwnedByAuditVlaanderen { get; }
@@ -46,4 +50,5 @@ public class AuthorizationConfiguration : IAuthorizationConfiguration
     public Guid[] KeyIdsAllowedOnlyForOrafin { get; }
     public Guid[] OrganisationClassificationTypeIdsOwnedByRegelgevingDbBeheerder { get; }
     public Guid[] CapacityIdsOwnedByRegelgevingDbBeheerder { get; }
+    public Guid[] OrganisationClassificationTypeIdsOwnedByCjm { get; set; }
 }

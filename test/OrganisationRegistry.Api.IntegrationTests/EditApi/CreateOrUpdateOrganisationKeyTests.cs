@@ -61,7 +61,7 @@ public class CreateOrUpdateOrganisationKeyTests
     private static async Task<HttpResponseMessage> UpdateKey(Guid organisationId, Guid organisationKeyId, HttpClient httpClient, Guid orafinKeyType)
         => await ApiFixture.Put(
             httpClient,
-            $"edit/organisations/{organisationId}/keys/{organisationKeyId}",
+            $"/v1/edit/organisations/{organisationId}/keys/{organisationKeyId}",
             new AddOrganisationKeyRequest
             {
                 KeyTypeId = orafinKeyType,
@@ -72,7 +72,7 @@ public class CreateOrUpdateOrganisationKeyTests
     private static async Task<HttpResponseMessage> CreateKey(Guid organisationId, Guid organisationKeyId, HttpClient fixtureHttpClient, Guid orafinKeyType)
         => await ApiFixture.Post(
             fixtureHttpClient,
-            $"edit/organisations/{organisationId}/keys",
+            $"/v1/edit/organisations/{organisationId}/keys",
             new AddOrganisationKeyRequest
             {
                 KeyTypeId = orafinKeyType,
