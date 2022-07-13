@@ -79,7 +79,6 @@ public class OrganisationKeyController : OrganisationRegistryController
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(EmptyResponseExamples))]
     [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples))]
     public async Task<IActionResult> Put(
-        [FromServices] IEditSecurityService securityService,
         [FromRoute] Guid organisationKeyId,
         [FromRoute] Guid organisationId,
         [FromBody] UpdateOrganisationKeyRequest message)
@@ -88,9 +87,6 @@ public class OrganisationKeyController : OrganisationRegistryController
             organisationId,
             organisationKeyId,
             message);
-
-        if (!securityService.CanEditKey(message.KeyTypeId))
-            ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor dit sleuteltype.");
 
         if (!TryValidateModel(internalMessage))
             return BadRequest(ModelState);
