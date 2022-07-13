@@ -1,3 +1,15 @@
+# [1.229.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.228.0...v1.229.0) (2022-07-13)
+
+
+### Bug Fixes
+
+* or-877 replace Fact with EnvVarIgnoreFact -> ignore test on CI for now ([c82c5c5](https://github.com/informatievlaanderen/organisation-registry/commit/c82c5c5080ba49225c0d0c93d9ab54d89b37ad70))
+
+
+### Features
+
+* or-877 create and update organisationorganisationclassifications through editapi ([cddfcca](https://github.com/informatievlaanderen/organisation-registry/commit/cddfccaf9ad7d884c8da2fa20e6170cb4293b502))
+
 # [1.228.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.227.0...v1.228.0) (2022-07-13)
 
 
