@@ -74,7 +74,7 @@ public class CreateOrganisationOrganisationClassificationTests
         await ApiFixture.VerifyStatusCode(response, HttpStatusCode.Forbidden);
     }
 
-    [Fact]
+    [EnvVarIgnoreFact]
     public async Task CannotCreateAsCjm()
     {
         await _apiFixture.CreateOrganisation(_organisationId, _apiFixture.Fixture.Create<string>());
@@ -86,7 +86,7 @@ public class CreateOrganisationOrganisationClassificationTests
         await ApiFixture.VerifyStatusCode(response, HttpStatusCode.BadRequest);
     }
 
-    [Fact]
+    [EnvVarIgnoreFact]
     public async Task CannotUpdateAsCjm()
     {
         await _apiFixture.CreateOrganisation(_organisationId, _apiFixture.Fixture.Create<string>());
