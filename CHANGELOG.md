@@ -1,3 +1,10 @@
+# [1.228.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.227.0...v1.228.0) (2022-07-13)
+
+
+### Features
+
+* or-879 remove use of security service ([88b3b3e](https://github.com/informatievlaanderen/organisation-registry/commit/88b3b3ea6e86b38fad19ece08572e1e81edfa5e7))
+
 # [1.227.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.226.0...v1.227.0) (2022-07-12)
 
 
