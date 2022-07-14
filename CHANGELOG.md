@@ -1,3 +1,10 @@
+## [1.230.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.230.0...v1.230.1) (2022-07-14)
+
+
+### Bug Fixes
+
+* or-1106 prevent two identical classifications on organisation ([9dc9bca](https://github.com/informatievlaanderen/organisation-registry/commit/9dc9bca28da665ae52152e2bb92e57b0a1539dfd))
+
 # [1.230.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.229.1...v1.230.0) (2022-07-14)
 
 
