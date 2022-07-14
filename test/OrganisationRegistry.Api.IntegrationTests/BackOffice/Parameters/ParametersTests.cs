@@ -24,6 +24,15 @@ public class ParametersTests
     [Theory]
     [InlineData("/v1/keytypes", true)]
     [InlineData("/v1/labeltypes", false)]
+    [InlineData("/v1/bodyclassificationtypes", false)]
+    [InlineData("/v1/capacities", true)]
+    [InlineData("/v1/contacttypes", false)]
+    [InlineData("/v1/formalframeworkcategories", false)]
+    [InlineData("/v1/functiontypes", false)]
+    [InlineData("/v1/locationtypes", false)]
+    [InlineData("/v1/mandateroletypes", false)]
+    [InlineData("/v1/purposes", false)]
+    [InlineData("/v1/regulationthemes", false)]
     public async Task ParameterTest(string baseRoute, bool supportsRemoval)
     {
         var (id, createResponseDictionary) = await CreateAndVerify(baseRoute);
