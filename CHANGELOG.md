@@ -1,3 +1,10 @@
+## [1.229.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.229.0...v1.229.1) (2022-07-14)
+
+
+### Bug Fixes
+
+* or-875 or-876 validate formatting problems correctly ([0fb93c8](https://github.com/informatievlaanderen/organisation-registry/commit/0fb93c89ae6177937f1a0279954dacdaf0c09d4b))
+
 # [1.229.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.228.0...v1.229.0) (2022-07-13)
 
 
