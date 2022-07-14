@@ -1,3 +1,10 @@
+# [1.230.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.229.1...v1.230.0) (2022-07-14)
+
+
+### Features
+
+* or-1119 increase coverage by adding moar parameterstests ([fa8eac5](https://github.com/informatievlaanderen/organisation-registry/commit/fa8eac5e4064a871892a7210da1a089614ca6d8c))
+
 ## [1.229.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.229.0...v1.229.1) (2022-07-14)
 
 
