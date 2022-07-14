@@ -29,7 +29,7 @@ using Swashbuckle.AspNetCore.Filters;
 [Consumes("application/json")]
 [Produces("application/json")]
 [Authorize(AuthenticationSchemes = AuthenticationSchemes.EditApi, Policy = PolicyNames.Organisations)]
-public class OrganisationsController : OrganisationRegistryController
+public class OrganisationsController : EditApiController
 {
     public OrganisationsController(ICommandSender commandSender) : base(commandSender)
     {

@@ -24,7 +24,7 @@ using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetai
 [Consumes("application/json")]
 [Produces("application/json")]
 [Authorize(AuthenticationSchemes = AuthenticationSchemes.EditApi, Policy = PolicyNames.BankAccounts)]
-public class OrganisationBankAccountController : OrganisationRegistryController
+public class OrganisationBankAccountController : EditApiController
 {
     public OrganisationBankAccountController(ICommandSender commandSender) : base(commandSender)
     {
@@ -50,17 +50,15 @@ public class OrganisationBankAccountController : OrganisationRegistryController
         [FromRoute] Guid organisationId,
         [FromBody] AddOrganisationBankAccountRequest message)
     {
-        var internalMessage = new AddOrganisationBankAccountInternalRequest(organisationId, message);
+        if (!TryValidateModel(message))
+            return ValidationProblem(ModelState);
 
-        if (!TryValidateModel(internalMessage))
-            return BadRequest(ModelState);
-
-        var addOrganisationBankAccount = AddOrganisationBankAccountRequestMapping.Map(internalMessage);
-        await CommandSender.Send(addOrganisationBankAccount);
+        var command = AddOrganisationBankAccountRequestMapping.Map(organisationId, message);
+        await CommandSender.Send(command);
 
         return CreatedWithLocation(
             nameof(Backoffice.Organisation.BankAccount.OrganisationBankAccountController.Get),
-            new { organisationId = organisationId, id = addOrganisationBankAccount.OrganisationBankAccountId });
+            new { organisationId = organisationId, id = command.OrganisationBankAccountId });
     }
 
     /// <summary>Pas een organisatiesleutel aan.</summary>
@@ -83,16 +81,11 @@ public class OrganisationBankAccountController : OrganisationRegistryController
         [FromRoute] Guid organisationId,
         [FromBody] UpdateOrganisationBankAccountRequest message)
     {
-        var internalMessage = new UpdateOrganisationBankAccountInternalRequest(
-            organisationId,
-            organisationBankAccountId,
-            message);
+        if (!TryValidateModel(message))
+            return ValidationProblem(ModelState);
 
-        if (!TryValidateModel(internalMessage))
-            return BadRequest(ModelState);
-
-        var updateOrganisationKey = UpdateOrganisationBankAccountRequestMapping.Map(internalMessage);
-        await CommandSender.Send(updateOrganisationKey);
+        var command = UpdateOrganisationBankAccountRequestMapping.Map(organisationId, organisationBankAccountId, message);
+        await CommandSender.Send(command);
 
         return Ok();
     }

@@ -4,21 +4,23 @@ using System;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Edit.Organisation.BankAccount;
 using FluentAssertions;
 using Tests.Shared;
 using Xunit;
+using Xunit.Abstractions;
 
 [Collection(ApiTestsCollection.Name)]
 public class CreateBankAccountNumberTests
 {
     private const string TestOrganisationForCreatebankaccountnumbers = "test organisation for createBankAccountNumbers";
     private readonly ApiFixture _fixture;
+    private readonly ITestOutputHelper _testOutputHelper;
     private readonly Guid _organisationId;
 
-    public CreateBankAccountNumberTests(ApiFixture fixture)
+    public CreateBankAccountNumberTests(ApiFixture fixture, ITestOutputHelper testOutputHelper)
     {
         _fixture = fixture;
+        _testOutputHelper = testOutputHelper;
         _organisationId = Guid.NewGuid();
     }
 
@@ -66,6 +68,59 @@ public class CreateBankAccountNumberTests
     }
 
     [EnvVarIgnoreFact]
+    public async Task AsCjmBeheerder_CannotCreateWithInvalidFrom_InvalidTo()
+    {
+        await _fixture.CreateOrganisation(_organisationId, TestOrganisationForCreatebankaccountnumbers);
+
+        var response = await CreateBankAccountNumber(await _fixture.CreateCjmClient(), _organisationId, "BE86001197741650", "NOT_A_BIC", invalidValidFrom: "XX", invalidValidTo: "YY");
+
+        await ApiFixture.VerifyStatusCode(response, HttpStatusCode.BadRequest);
+
+        _testOutputHelper.WriteLine(await response.Content.ReadAsStringAsync());
+    }
+
+    [EnvVarIgnoreFact]
+    public async Task AsCjmBeheerder_CannotCreateWithEmptyOrganisationId()
+    {
+        await _fixture.CreateOrganisation(_organisationId, TestOrganisationForCreatebankaccountnumbers);
+
+        var response = await CreateBankAccountNumber(await _fixture.CreateCjmClient(), Guid.Empty, "BE86001197741650", "NOT_A_BIC");
+
+        await ApiFixture.VerifyStatusCode(response, HttpStatusCode.BadRequest);
+
+        _testOutputHelper.WriteLine(await response.Content.ReadAsStringAsync());
+    }
+
+    [EnvVarIgnoreFact]
+    public async Task AsCjmBeheerder_CannotCreateWithInvalidOrganisationId()
+    {
+        await _fixture.CreateOrganisation(_organisationId, TestOrganisationForCreatebankaccountnumbers);
+
+        var response = await CreateBankAccountNumber(await _fixture.CreateCjmClient(), Guid.Empty, "BE86001197741650", "NOT_A_BIC", invalidOrganisationId: "XX");
+
+        await ApiFixture.VerifyStatusCode(response, HttpStatusCode.NotFound);
+
+        _testOutputHelper.WriteLine(await response.Content.ReadAsStringAsync());
+    }
+
+    [EnvVarIgnoreFact]
+    public async Task AsCjmBeheerder_CannotUpdateWithInvalidFrom_InvalidTo()
+    {
+        await _fixture.CreateOrganisation(_organisationId, TestOrganisationForCreatebankaccountnumbers);
+
+        var httpClient = await _fixture.CreateCjmClient();
+
+        var response = await CreateBankAccountNumber(httpClient, _organisationId, "BE86001197741650", "GEBABEBB");
+        var organisationBankaccountId = ApiFixture.GetIdFrom(response.Headers);
+
+        var updateResponse = await UpdateBankAccountNumber(httpClient, _organisationId, organisationBankaccountId, "BG72UNCR70001522734456", invalidValidFrom: "XX", invalidValidTo: "YY");
+
+        await ApiFixture.VerifyStatusCode(updateResponse, HttpStatusCode.BadRequest);
+
+        _testOutputHelper.WriteLine(await updateResponse.Content.ReadAsStringAsync());
+    }
+
+    [EnvVarIgnoreFact]
     public async Task AsOrafinBeheerder_ReturnsForbidden()
     {
         await _fixture.CreateOrganisation(_organisationId, TestOrganisationForCreatebankaccountnumbers);
@@ -77,27 +132,27 @@ public class CreateBankAccountNumberTests
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
 
-    private static async Task<HttpResponseMessage> CreateBankAccountNumber(HttpClient httpClient, Guid organisationId, string bankAccountNumber, string bic = "", DateTime? validFrom = null, DateTime? validTo = null)
+    private static async Task<HttpResponseMessage> CreateBankAccountNumber(HttpClient httpClient, Guid organisationId, string bankAccountNumber, string bic = "", DateTime? validFrom = null, DateTime? validTo = null, string? invalidValidFrom = null, string? invalidValidTo = null, string? invalidOrganisationId = null)
         => await ApiFixture.Post(
             httpClient,
-            $"/v1/edit/organisations/{organisationId}/bankaccounts",
-            new AddOrganisationBankAccountRequest
+            $"/v1/edit/organisations/{invalidOrganisationId ?? organisationId.ToString()}/bankaccounts",
+            new
             {
                 BankAccountNumber = bankAccountNumber,
                 Bic = bic,
-                ValidFrom = validFrom,
-                ValidTo = validTo,
+                ValidFrom = invalidValidFrom ?? validFrom?.ToString("O"),
+                ValidTo = invalidValidTo ?? validTo?.ToString("O"),
             });
 
-    private static async Task<HttpResponseMessage> UpdateBankAccountNumber(HttpClient httpClient, Guid organisationId, Guid organisationBankAccountId, string bankAccountNumber, string bic = "", DateTime? validFrom = null, DateTime? validTo = null)
+    private static async Task<HttpResponseMessage> UpdateBankAccountNumber(HttpClient httpClient, Guid organisationId, Guid organisationBankAccountId, string bankAccountNumber, string bic = "", DateTime? validFrom = null, DateTime? validTo = null, string? invalidValidFrom = null, string? invalidValidTo = null, string? invalidOrganisationId = null)
         => await ApiFixture.Put(
             httpClient,
-            $"/v1/edit/organisations/{organisationId}/bankaccounts/{organisationBankAccountId}",
-            new UpdateOrganisationBankAccountRequest
+            $"/v1/edit/organisations/{invalidOrganisationId ?? organisationId.ToString()}/bankaccounts/{organisationBankAccountId}",
+            new
             {
                 BankAccountNumber = bankAccountNumber,
                 Bic = bic,
-                ValidFrom = validFrom,
-                ValidTo = validTo,
+                ValidFrom = invalidValidFrom ?? validFrom?.ToString("O"),
+                ValidTo = invalidValidTo ?? validTo?.ToString("O"),
             });
 }

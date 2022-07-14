@@ -23,7 +23,7 @@ using Swashbuckle.AspNetCore.Filters;
 [Consumes("application/json")]
 [Produces("application/json")]
 [Authorize(AuthenticationSchemes = AuthenticationSchemes.EditApi, Policy = PolicyNames.OrganisationClassifications)]
-public class OrganisationOrganisationClassificationController : OrganisationRegistryController
+public class OrganisationOrganisationClassificationController : EditApiController
 {
     public OrganisationOrganisationClassificationController(ICommandSender commandSender) : base(commandSender)
     {
@@ -49,12 +49,10 @@ public class OrganisationOrganisationClassificationController : OrganisationRegi
         [FromRoute] Guid organisationId,
         [FromBody] AddOrganisationOrganisationClassificationRequest message)
     {
-        var internalMessage = new AddOrganisationOrganisationClassificationInternalRequest(organisationId, message);
+        if (!TryValidateModel(message))
+            return ValidationProblem(ModelState);
 
-        if (!TryValidateModel(internalMessage))
-            return BadRequest(ModelState);
-
-        var command = AddOrganisationOrganisationClassificationRequestMapping.Map(internalMessage);
+        var command = AddOrganisationOrganisationClassificationRequestMapping.Map(organisationId, message);
         await CommandSender.Send(command);
 
         return await Task.FromResult(
@@ -84,15 +82,10 @@ public class OrganisationOrganisationClassificationController : OrganisationRegi
         [FromRoute] Guid organisationId,
         [FromBody] UpdateOrganisationOrganisationClassificationRequest message)
     {
-        var internalMessage = new UpdateOrganisationOrganisationClassificationInternalRequest(
-            organisationId,
-            organisationOrganisationClassificationId,
-            message);
+        if (!TryValidateModel(message))
+            return ValidationProblem(ModelState);
 
-        if (!TryValidateModel(internalMessage))
-            return BadRequest(ModelState);
-
-        var command = UpdateOrganisationOrganisationClassificationRequestMapping.Map(internalMessage);
+        var command = UpdateOrganisationOrganisationClassificationRequestMapping.Map(organisationId, organisationOrganisationClassificationId, message);
         await CommandSender.Send(command);
 
         return Ok();
