@@ -919,11 +919,11 @@ public partial class Organisation : AggregateRoot
     {
         KboV2Guards.ThrowIfLegalForm(organisationRegistryConfiguration, organisationClassificationType);
 
-        if (State.OrganisationOrganisationClassifications
-            .Where(x => x.OrganisationClassificationTypeId == organisationClassificationType.Id)
-            .Where(x => x.OrganisationOrganisationClassificationId != organisationOrganisationClassificationId)
-            .Any(x => !organisationClassificationType.AllowDifferentClassificationsToOverlap && x.Validity.OverlapsWith(validity)))
-            throw new OrganisationClassificationTypeAlreadyCoupledToInThisPeriod();
+        ValidateOverlappingOrganisationOrganisationClassifications(
+            organisationOrganisationClassificationId,
+            organisationClassificationType,
+            organisationClassification,
+            validity);
 
         ApplyChange(
             new OrganisationOrganisationClassificationAdded(
@@ -937,6 +937,35 @@ public partial class Organisation : AggregateRoot
                 validity.End));
     }
 
+    private void ValidateOverlappingOrganisationOrganisationClassifications(Guid organisationOrganisationClassificationId, OrganisationClassificationType organisationClassificationType, OrganisationClassification organisationClassification, Period validity)
+    {
+        var organisationOrganisationClassificationsWithSameType =
+            GetOrganisationOrganisationClassificationsWithSameType(
+                organisationOrganisationClassificationId,
+                organisationClassificationType,
+                organisationClassification.Id);
+
+        if (organisationOrganisationClassificationsWithSameType
+            .Any(x => x.Validity.OverlapsWith(validity)))
+            throw new OrganisationClassificationTypeAlreadyCoupledToInThisPeriod();
+    }
+
+    private IEnumerable<OrganisationOrganisationClassification> GetOrganisationOrganisationClassificationsWithSameType(
+        Guid organisationOrganisationClassificationId,
+        OrganisationClassificationType organisationClassificationType,
+        Guid organisationClassificationId)
+    {
+        var organisationOrganisationClassificationsWithSameType = State.OrganisationOrganisationClassifications
+            .Where(x => x.OrganisationClassificationTypeId == organisationClassificationType.Id)
+            .Where(x => x.OrganisationOrganisationClassificationId != organisationOrganisationClassificationId);
+
+        if (!organisationClassificationType.AllowDifferentClassificationsToOverlap)
+            return organisationOrganisationClassificationsWithSameType;
+
+        return organisationOrganisationClassificationsWithSameType
+            .Where(x => x.OrganisationClassificationId == organisationClassificationId);
+    }
+    
     public void AddKboLegalFormOrganisationClassification(Guid organisationOrganisationClassificationId, OrganisationClassificationType organisationClassificationType, OrganisationClassification organisationClassification, Period validity)
     {
         ApplyChange(
@@ -1006,11 +1035,11 @@ public partial class Organisation : AggregateRoot
         if (organisationClassification == null)
             throw new ArgumentNullException(nameof(organisationClassification));
 
-        if (State.OrganisationOrganisationClassifications
-            .Where(organisationOrganisationClassification => organisationOrganisationClassification.OrganisationClassificationTypeId == organisationClassificationType.Id)
-            .Where(organisationOrganisationClassification => organisationOrganisationClassification.OrganisationOrganisationClassificationId != organisationOrganisationClassificationId)
-            .Any(organisationOrganisationClassification => !organisationClassificationType.AllowDifferentClassificationsToOverlap && organisationOrganisationClassification.Validity.OverlapsWith(validity)))
-            throw new OrganisationClassificationTypeAlreadyCoupledToInThisPeriod();
+        ValidateOverlappingOrganisationOrganisationClassifications(
+            organisationOrganisationClassificationId,
+            organisationClassificationType,
+            organisationClassification,
+            validity);
 
         var previousOrganisationOrganisationClassification =
             State.OrganisationOrganisationClassifications.Single(classification => classification.OrganisationOrganisationClassificationId == organisationOrganisationClassificationId);
@@ -1032,6 +1061,8 @@ public partial class Organisation : AggregateRoot
                 previousOrganisationOrganisationClassification.Validity.Start,
                 previousOrganisationOrganisationClassification.Validity.End));
     }
+
+
 
     public void AddContact(
         Guid organisationContactId,
