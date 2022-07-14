@@ -7,25 +7,8 @@ using OrganisationRegistry.Organisation;
 using OrganisationRegistry.SqlServer.Organisation;
 using Swashbuckle.AspNetCore.Annotations;
 
-public class AddOrganisationKeyInternalRequest
-{
-    public Guid OrganisationId { get; set; }
-    public AddOrganisationKeyRequest Body { get; }
-
-    public AddOrganisationKeyInternalRequest(Guid organisationId, AddOrganisationKeyRequest message)
-    {
-        OrganisationId = organisationId;
-        Body = message;
-        Body.OrganisationKeyId ??= Guid.NewGuid();
-    }
-}
-
 public class AddOrganisationKeyRequest
 {
-    /// <summary>
-    /// Unieke id van de organisatie sleutel. Wordt gegenereerd indien niet meegegeven.
-    /// </summary>
-    public Guid? OrganisationKeyId { get; set; }
     /// <summary>
     /// Id van het sleuteltype.
     /// </summary>
@@ -46,45 +29,37 @@ public class AddOrganisationKeyRequest
     public DateTime? ValidTo { get; set; }
 }
 
-public class AddOrganisationKeyInternalRequestValidator : AbstractValidator<AddOrganisationKeyInternalRequest>
+public class AddOrganisationKeyInternalRequestValidator : AbstractValidator<AddOrganisationKeyRequest>
 {
     public AddOrganisationKeyInternalRequestValidator()
     {
-        RuleFor(x => x.OrganisationId)
-            .NotEmpty()
-            .WithMessage("Id is required.");
-
-        RuleFor(x => x.Body.KeyTypeId)
+        RuleFor(x => x.KeyTypeId)
             .NotEmpty()
             .WithMessage("Key Type Id is required.");
 
-        RuleFor(x => x.Body.KeyValue)
+        RuleFor(x => x.KeyValue)
             .NotEmpty()
             .WithMessage("Key Value is required.");
 
-        RuleFor(x => x.Body.KeyValue)
+        RuleFor(x => x.KeyValue)
             .Length(0, OrganisationKeyListConfiguration.KeyValueLength)
             .WithMessage($"Key Value cannot be longer than {OrganisationKeyListConfiguration.KeyValueLength}.");
 
-        RuleFor(x => x.Body.ValidTo)
-            .GreaterThanOrEqualTo(x => x.Body.ValidFrom)
-            .When(x => x.Body.ValidFrom.HasValue)
+        RuleFor(x => x.ValidTo)
+            .GreaterThanOrEqualTo(x => x.ValidFrom)
+            .When(x => x.ValidFrom.HasValue)
             .WithMessage("Valid To must be greater than or equal to Valid From.");
-
-        RuleFor(x => x.OrganisationId)
-            .NotEmpty()
-            .WithMessage("Organisation Id is required.");
     }
 }
 
 public static class AddOrganisationKeyRequestMapping
 {
-    public static AddOrganisationKey Map(AddOrganisationKeyInternalRequest message)
+    public static AddOrganisationKey Map(Guid organisationId, AddOrganisationKeyRequest message)
         => new(
-            message.Body.OrganisationKeyId!.Value,
-            new OrganisationId(message.OrganisationId),
-            new KeyTypeId(message.Body.KeyTypeId),
-            message.Body.KeyValue,
-            new ValidFrom(message.Body.ValidFrom),
-            new ValidTo(message.Body.ValidTo));
+            Guid.NewGuid(),
+            new OrganisationId(organisationId),
+            new KeyTypeId(message.KeyTypeId),
+            message.KeyValue,
+            new ValidFrom(message.ValidFrom),
+            new ValidTo(message.ValidTo));
 }

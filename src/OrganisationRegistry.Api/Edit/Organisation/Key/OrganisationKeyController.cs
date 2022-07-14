@@ -11,7 +11,6 @@ using Infrastructure;
 using OrganisationRegistry.Api.Infrastructure.Security;
 using Infrastructure.Swagger;
 using Infrastructure.Swagger.Examples;
-using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Commands;
 using Swashbuckle.AspNetCore.Filters;
 using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetails;
@@ -25,7 +24,7 @@ using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetai
 [Consumes("application/json")]
 [Produces("application/json")]
 [Authorize(AuthenticationSchemes = AuthenticationSchemes.EditApi, Policy = PolicyNames.Keys)]
-public class OrganisationKeyController : OrganisationRegistryController
+public class OrganisationKeyController : EditApiController
 {
     public OrganisationKeyController(ICommandSender commandSender)
         : base(commandSender)
@@ -52,22 +51,19 @@ public class OrganisationKeyController : OrganisationRegistryController
         [FromRoute] Guid organisationId,
         [FromBody] AddOrganisationKeyRequest message)
     {
-        var internalMessage = new AddOrganisationKeyInternalRequest(organisationId, message);
+        if (!TryValidateModel(message))
+            return ValidationProblem(ModelState);
 
-        if (!TryValidateModel(internalMessage))
-            return BadRequest(ModelState);
-
-        var addOrganisationKey = AddOrganisationKeyRequestMapping.Map(internalMessage);
-        await CommandSender.Send(addOrganisationKey);
+        var command = AddOrganisationKeyRequestMapping.Map(organisationId, message);
+        await CommandSender.Send(command);
 
         return CreatedWithLocation(
             nameof(Backoffice.Organisation.Key.OrganisationKeyController.Get),
-            new { id = message.OrganisationKeyId });
+            new { id = command.OrganisationKeyId });
     }
 
     /// <summary>Pas een organisatiesleutel aan.</summary>
     /// <param name="organisationId">Id van de organisatie.</param>
-    /// <param name="securityService"></param>
     /// <param name="organisationKeyId">Id van de organisatiesleutel.</param>
     /// <param name="message"></param>
     /// <response code="200">Indien de organisatiesleutel succesvol is aangepast.</response>
@@ -83,16 +79,11 @@ public class OrganisationKeyController : OrganisationRegistryController
         [FromRoute] Guid organisationId,
         [FromBody] UpdateOrganisationKeyRequest message)
     {
-        var internalMessage = new UpdateOrganisationKeyInternalRequest(
-            organisationId,
-            organisationKeyId,
-            message);
+        if (!TryValidateModel(message))
+            return ValidationProblem(ModelState);
 
-        if (!TryValidateModel(internalMessage))
-            return BadRequest(ModelState);
-
-        var updateOrganisationKey = UpdateOrganisationKeyRequestMapping.Map(internalMessage);
-        await CommandSender.Send(updateOrganisationKey);
+        var command = UpdateOrganisationKeyRequestMapping.Map(organisationId, organisationKeyId, message);
+        await CommandSender.Send(command);
 
         return Ok();
     }
