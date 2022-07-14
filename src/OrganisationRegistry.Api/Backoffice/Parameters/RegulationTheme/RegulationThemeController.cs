@@ -10,7 +10,6 @@ using Infrastructure.Security;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.FeatureManagement.Mvc;
 using OrganisationRegistry.Infrastructure.Commands;
 using Queries;
 using Requests;
@@ -21,7 +20,6 @@ using SqlServer.RegulationTheme;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("regulationthemes")]
-[FeatureGate(FeatureFlags.RegulationsManagement)]
 public class RegulationThemeController : OrganisationRegistryController
 {
     public RegulationThemeController(ICommandSender commandSender)

@@ -11,7 +11,6 @@ using Infrastructure.Security;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.FeatureManagement.Mvc;
 using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Commands;
 using SqlServer.Infrastructure;
@@ -19,7 +18,6 @@ using SqlServer.Infrastructure;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("organisations/{organisationId}/regulations")]
-[FeatureGate(FeatureFlags.RegulationsManagement)]
 public class OrganisationRegulationController : OrganisationRegistryController
 {
     public OrganisationRegulationController(ICommandSender commandSender)
@@ -64,7 +62,8 @@ public class OrganisationRegulationController : OrganisationRegistryController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid organisationId, [FromRoute] Guid id)
     {
-        var organisation = await context.OrganisationRegulationList.FirstOrDefaultAsync(x => x.OrganisationRegulationId == id);
+        var organisation = await context.OrganisationRegulationList
+            .SingleOrDefaultAsync(x => x.OrganisationId == organisationId && x.OrganisationRegulationId == id);
 
         if (organisation == null)
             return NotFound();

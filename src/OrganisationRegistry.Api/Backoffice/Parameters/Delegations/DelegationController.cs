@@ -63,7 +63,7 @@ public class DelegationController : OrganisationRegistryController
             return NotFound();
 
         if (!await securityService.CanEditDelegation(User, delegation.OrganisationId, delegation.BodyId))
-            return Unauthorized(); // ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor deze delegatie.");
+            return Unauthorized();
 
         return Ok(new DelegationResponse(delegation));
     }
