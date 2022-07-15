@@ -12,7 +12,9 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using AutoFixture;
+using AutoFixture.Kernel;
 using Backoffice.Organisation.OrganisationClassification;
+using FluentAssertions;
 using FluentAssertions.Execution;
 using IdentityModel;
 using IdentityModel.Client;
@@ -126,6 +128,10 @@ public class ApiFixture : IDisposable, IAsyncLifetime
         Configuration = _webHost.Services.GetRequiredService<IOrganisationRegistryConfiguration>();
     }
 
+
+    public dynamic CreateInstanceOf(Type requestType)
+        => new SpecimenContext(Fixture).Resolve(requestType);
+
     public async Task InitializeAsync()
     {
         HttpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
@@ -236,27 +242,26 @@ public class ApiFixture : IDisposable, IAsyncLifetime
         return id;
     }
 
+    public async Task<HttpResponseMessage> Create(string baseRoute, object body)
+        => await Post(HttpClient, $"{baseRoute}", body);
+
+    public async Task<HttpResponseMessage> Update(string baseRoute, Guid id, object updateRequest)
+        => await Put(HttpClient, $"{baseRoute}/{id}", updateRequest);
+
     public static async Task<HttpResponseMessage> Post(HttpClient httpClient, string route, object body)
-        => await httpClient.PostAsync(
-            route,
-            new StringContent(
-                JsonConvert.SerializeObject(body),
-                Encoding.UTF8,
-                "application/json"));
+        => await httpClient.PostAsync(route, ToJson(body));
 
     public static async Task<HttpResponseMessage> Put(HttpClient httpClient, string route, object body)
-        => await httpClient.PutAsync(
-            route,
-            new StringContent(
-                JsonConvert.SerializeObject(body),
-                Encoding.UTF8,
-                "application/json"));
+        => await httpClient.PutAsync(route, ToJson(body));
 
     public static async Task<HttpResponseMessage> Get(HttpClient httpClient, string route)
         => await httpClient.GetAsync(route);
 
     public static async Task<HttpResponseMessage> Delete(HttpClient httpClient, string route)
         => await httpClient.DeleteAsync(route);
+
+    private static StringContent ToJson(object body)
+        => new(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
 
     public static async Task VerifyStatusCode(HttpResponseMessage response, HttpStatusCode expectedStatusCode)
     {
@@ -266,11 +271,35 @@ public class ApiFixture : IDisposable, IAsyncLifetime
                 $"The response was '{await response.Content.ReadAsStringAsync()}'\n");
     }
 
+    public static async Task<Dictionary<string, object>> ValidateResponse(Type responseType, HttpResponseMessage actualResponseMessage, dynamic expectedResponse)
+    {
+        var deserializedResponse = await Deserialize(actualResponseMessage);
+        deserializedResponse.Should().NotBeNull();
+
+        var properties = responseType.GetProperties();
+        foreach (var propertyInfo in properties)
+        {
+            var propertyKey = propertyInfo.Name.ToLowerInvariant();
+
+            if (!deserializedResponse.ContainsKey(propertyKey))
+                continue;
+
+            var expectedValue = propertyInfo.GetValue(expectedResponse, null);
+
+            deserializedResponse[propertyKey].ToString().Should().Be(expectedValue.ToString());
+        }
+
+        return deserializedResponse;
+    }
+
     public static Guid GetIdFrom(HttpResponseHeaders headers)
         => new(headers.Location!.ToString().Split('/').Last());
 
     public static async Task<Dictionary<string, object>> Deserialize(HttpResponseMessage message)
         => JsonConvert.DeserializeObject<Dictionary<string, object>>(await message.Content.ReadAsStringAsync())!;
+
+    public static async Task<Dictionary<string, object>[]> DeserializeAsList(HttpResponseMessage message)
+        => JsonConvert.DeserializeObject<Dictionary<string, object>[]>(await message.Content.ReadAsStringAsync())!;
 
     protected virtual void Dispose(bool disposing)
     {

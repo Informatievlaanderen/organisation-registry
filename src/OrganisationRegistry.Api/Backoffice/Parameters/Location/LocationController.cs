@@ -71,9 +71,10 @@ public class LocationController : OrganisationRegistryController
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        await CommandSender.Send(CreateLocationRequestMapping.Map(message));
+        var command = CreateLocationRequestMapping.Map(message);
+        await CommandSender.Send(command);
 
-        return CreatedWithLocation(nameof(Get), new { id = message.Id });
+        return CreatedWithLocation(nameof(Get), new { id = command.Id });
     }
 
     /// <summary>Update a location.</summary>
