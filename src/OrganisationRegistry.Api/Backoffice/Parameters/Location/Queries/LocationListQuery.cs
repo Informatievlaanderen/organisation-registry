@@ -37,14 +37,15 @@ public class LocationListQueryResult
     }
 }
 
-public class LocationListQuery: Query<LocationListItem, LocationListItemFilter, LocationListQueryResult>
+public class LocationListQuery : Query<LocationListItem, LocationListItemFilter, LocationListQueryResult>
 {
     private readonly OrganisationRegistryContext _context;
 
-    protected override ISorting Sorting => new LocationListSorting();
+    protected override ISorting Sorting
+        => new LocationListSorting();
 
-    protected override Expression<Func<LocationListItem, LocationListQueryResult>> Transformation =>
-        x => new LocationListQueryResult(
+    protected override Expression<Func<LocationListItem, LocationListQueryResult>> Transformation
+        => x => new LocationListQueryResult(
             x.Id,
             x.City,
             x.Street,
