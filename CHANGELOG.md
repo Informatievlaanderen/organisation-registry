@@ -1,3 +1,10 @@
+# [1.231.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.230.1...v1.231.0) (2022-07-18)
+
+
+### Features
+
+* or-1119 add coverage for parameters ([422d366](https://github.com/informatievlaanderen/organisation-registry/commit/422d366f836a791582714ff0a1020ece23bfe837))
+
 ## [1.230.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.230.0...v1.230.1) (2022-07-14)
 
 
