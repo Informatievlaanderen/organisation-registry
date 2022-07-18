@@ -4,7 +4,8 @@ using System;
 
 public class OrganisationContactUpdated : BaseEvent<OrganisationContactUpdated>
 {
-    public Guid OrganisationId => Id;
+    public Guid OrganisationId
+        => Id;
 
     public Guid OrganisationContactId { get; }
 
@@ -52,4 +53,19 @@ public class OrganisationContactUpdated : BaseEvent<OrganisationContactUpdated>
         PreviouslyValidFrom = previouslyValidFrom;
         PreviouslyValidTo = previouslyValidTo;
     }
+
+    public static OrganisationContactUpdated From(Guid organisationId, OrganisationContact previousContact, OrganisationContact newContact)
+        => new(
+            organisationId,
+            newContact.OrganisationContactId,
+            newContact.ContactTypeId,
+            newContact.ContactTypeName,
+            newContact.Value,
+            newContact.Validity.Start,
+            newContact.Validity.End,
+            previousContact.ContactTypeId,
+            previousContact.ContactTypeName,
+            previousContact.Value,
+            previousContact.Validity.Start,
+            previousContact.Validity.End);
 }

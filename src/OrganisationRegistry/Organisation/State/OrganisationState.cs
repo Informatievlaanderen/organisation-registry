@@ -15,7 +15,7 @@ public class OrganisationState
     public bool ShowOnVlaamseOverheidSites { get; set; }
     public bool IsActive { get; set; }
     public List<OrganisationKey> OrganisationKeys { get; set; }
-    public List<OrganisationContact> OrganisationContacts { get; }
+    public OrganisationContacts OrganisationContacts { get; }
     public List<OrganisationLabel> OrganisationLabels { get; }
     public List<OrganisationOrganisationClassification> OrganisationOrganisationClassifications { get; }
     public List<OrganisationFunction> OrganisationFunctionTypes { get; }
@@ -43,7 +43,7 @@ public class OrganisationState
         Article = Article.None;
 
         OrganisationKeys = new List<OrganisationKey>();
-        OrganisationContacts = new List<OrganisationContact>();
+        OrganisationContacts = new OrganisationContacts();
         OrganisationLabels = new List<OrganisationLabel>();
         OrganisationOrganisationClassifications = new List<OrganisationOrganisationClassification>();
         OrganisationFunctionTypes = new List<OrganisationFunction>();

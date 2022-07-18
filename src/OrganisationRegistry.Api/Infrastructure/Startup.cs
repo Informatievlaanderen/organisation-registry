@@ -218,6 +218,13 @@ public class Startup
                                     AcmIdmConstants.Scopes.TestClient));
 
                             options.AddPolicy(
+                                PolicyNames.OrganisationContacts,
+                                builder => builder.RequireClaim(
+                                    AcmIdmConstants.Claims.Scope,
+                                    AcmIdmConstants.Scopes.CjmBeheerder,
+                                    AcmIdmConstants.Scopes.TestClient));
+
+                            options.AddPolicy(
                                 PolicyNames.Keys,
                                 builder => builder.RequireClaim(
                                     AcmIdmConstants.Claims.Scope,

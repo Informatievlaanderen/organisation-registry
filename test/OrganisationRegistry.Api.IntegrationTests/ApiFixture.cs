@@ -242,6 +242,14 @@ public class ApiFixture : IDisposable, IAsyncLifetime
         return id;
     }
 
+    public async Task CreateContactType(Guid conactTypeId, string? contactTypeName = null)
+    {
+        await Post(
+            HttpClient,
+            $"/v1/contacttypes",
+            new { Id = conactTypeId, Name = contactTypeName ?? Fixture.Create<string>() });
+    }
+
     public async Task<HttpResponseMessage> Create(string baseRoute, object body)
         => await Post(HttpClient, $"{baseRoute}", body);
 
