@@ -34,6 +34,10 @@ public class OrganisationCreatedBuilder
         OperationalValidTo = null;
     }
 
+    public OrganisationCreatedBuilder():this(new SequentialOvoNumberGenerator())
+    {
+    }
+
     public OrganisationCreatedBuilder WithId(OrganisationId organisationId)
     {
         Id = organisationId;
