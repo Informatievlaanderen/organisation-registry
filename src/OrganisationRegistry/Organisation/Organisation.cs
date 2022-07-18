@@ -919,6 +919,9 @@ public partial class Organisation : AggregateRoot
     {
         KboV2Guards.ThrowIfLegalForm(organisationRegistryConfiguration, organisationClassificationType);
 
+        if (organisationClassification.OrganisationClassificationTypeId != organisationClassificationType.Id)
+            throw new OrganisationClassificationIsNotPartOfSpecifiedOrganisationClassificationType();
+
         ValidateOverlappingOrganisationOrganisationClassifications(
             organisationOrganisationClassificationId,
             organisationClassificationType,
@@ -965,7 +968,7 @@ public partial class Organisation : AggregateRoot
         return organisationOrganisationClassificationsWithSameType
             .Where(x => x.OrganisationClassificationId == organisationClassificationId);
     }
-    
+
     public void AddKboLegalFormOrganisationClassification(Guid organisationOrganisationClassificationId, OrganisationClassificationType organisationClassificationType, OrganisationClassification organisationClassification, Period validity)
     {
         ApplyChange(
@@ -1034,6 +1037,9 @@ public partial class Organisation : AggregateRoot
     {
         if (organisationClassification == null)
             throw new ArgumentNullException(nameof(organisationClassification));
+
+        if (organisationClassification.OrganisationClassificationTypeId != organisationClassificationType.Id)
+            throw new OrganisationClassificationIsNotPartOfSpecifiedOrganisationClassificationType();
 
         ValidateOverlappingOrganisationOrganisationClassifications(
             organisationOrganisationClassificationId,
