@@ -1,3 +1,10 @@
+## [1.231.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.231.0...v1.231.1) (2022-07-18)
+
+
+### Bug Fixes
+
+* or-877 assure classification is part of type ([b9de629](https://github.com/informatievlaanderen/organisation-registry/commit/b9de62910e56895c0780479fe4e82f5858e0187b))
+
 # [1.231.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.230.1...v1.231.0) (2022-07-18)
 
 
