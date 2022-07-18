@@ -1,3 +1,10 @@
+# [1.232.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.231.1...v1.232.0) (2022-07-18)
+
+
+### Features
+
+* or-1121 or-1124 add contact edit api endpoints and tests ([33284ef](https://github.com/informatievlaanderen/organisation-registry/commit/33284ef1815dcb00a389b63cc221c4b795d6c2f3))
+
 ## [1.231.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.231.0...v1.231.1) (2022-07-18)
 
 
