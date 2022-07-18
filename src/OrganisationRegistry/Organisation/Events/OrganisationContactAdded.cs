@@ -31,4 +31,14 @@ public class OrganisationContactAdded : BaseEvent<OrganisationContactAdded>
         ValidFrom = validFrom;
         ValidTo = validTo;
     }
+
+    public static OrganisationContactAdded From(Guid organisationId, OrganisationContact newContact)
+        => new(
+            organisationId,
+            newContact.OrganisationContactId,
+            newContact.ContactTypeId,
+            newContact.ContactTypeName,
+            newContact.Value,
+            newContact.Validity.Start,
+            newContact.Validity.End);
 }

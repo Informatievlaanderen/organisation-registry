@@ -1068,23 +1068,24 @@ public partial class Organisation : AggregateRoot
                 previousOrganisationOrganisationClassification.Validity.End));
     }
 
-
-
     public void AddContact(
         Guid organisationContactId,
         ContactType contactType,
         string contactValue,
         Period validity)
     {
-        ApplyChange(
-            new OrganisationContactAdded(
-                Id,
-                organisationContactId,
-                contactType.Id,
-                contactType.Name,
-                contactValue,
-                validity.Start,
-                validity.End));
+        var newOrganisationContact = new OrganisationContact(
+            organisationContactId,
+            Id,
+            contactType.Id,
+            contactType.Name,
+            contactValue,
+            validity);
+        if (State.OrganisationContacts.HasDuplicatContactOverlappingWith(
+                newOrganisationContact)
+           ) throw new CannotAddDuplicateContact();
+
+        ApplyChange(OrganisationContactAdded.From(Id, newOrganisationContact));
     }
 
     public void UpdateContact(
@@ -1093,23 +1094,25 @@ public partial class Organisation : AggregateRoot
         string contactValue,
         Period validity)
     {
+        var newOrganisationContact = new OrganisationContact(
+            organisationContactId,
+            Id,
+            contactType.Id,
+            contactType.Name,
+            contactValue,
+            validity);
+        if (State.OrganisationContacts.HasDuplicatContactOverlappingWith(
+                newOrganisationContact)
+           ) throw new CannotAddDuplicateContact();
+
         var previousContact =
-            State.OrganisationContacts.Single(contact => contact.OrganisationContactId == organisationContactId);
+            State.OrganisationContacts[organisationContactId];
 
         ApplyChange(
-            new OrganisationContactUpdated(
+            OrganisationContactUpdated.From(
                 Id,
-                organisationContactId,
-                contactType.Id,
-                contactType.Name,
-                contactValue,
-                validity.Start,
-                validity.End,
-                previousContact.ContactTypeId,
-                previousContact.ContactTypeName,
-                previousContact.Value,
-                previousContact.Validity.Start,
-                previousContact.Validity.End));
+                previousContact,
+                newOrganisationContact));
     }
 
     public void AddLabel(

@@ -6,4 +6,5 @@ public static class PolicyNames
     public const string Organisations = "ORGANISATIONS";
     public const string Keys = "KEYS";
     public const string OrganisationClassifications = "ORGANISATIONCLASSIFICATIONS";
+    public const string OrganisationContacts = "ORGANISATIONCONTACTS";
 }
