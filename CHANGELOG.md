@@ -1,3 +1,11 @@
+## [1.232.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.232.0...v1.232.1) (2022-07-18)
+
+
+### Bug Fixes
+
+* or-887 correct error message ([8773981](https://github.com/informatievlaanderen/organisation-registry/commit/8773981c0fe9f1a01049f9c315d4345ce227bf0d))
+* or-887 correct error message ([abe23c4](https://github.com/informatievlaanderen/organisation-registry/commit/abe23c4d61f8a8165496257010003d238ae54458))
+
 # [1.232.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.231.1...v1.232.0) (2022-07-18)
 
 
