@@ -22,7 +22,8 @@ public class OrganisationBankAccount :
     IElasticEventHandler<OrganisationTerminationSyncedWithKbo>,
     IElasticEventHandler<OrganisationBankAccountUpdated>,
     IElasticEventHandler<OrganisationTerminated>,
-    IElasticEventHandler<OrganisationTerminatedV2>
+    IElasticEventHandler<OrganisationTerminatedV2>,
+    IElasticEventHandler<OrganisationBankAccountRemoved>
 {
     public OrganisationBankAccount(
         ILogger<OrganisationBankAccount> logger)
@@ -195,6 +196,21 @@ public class OrganisationBankAccount :
 
                     organisationBankAccount.Validity.End = value;
                 }
+            }
+        ).ToAsyncResult();
+    }
+
+    public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationBankAccountRemoved> message)
+    {
+        return await new ElasticPerDocumentChange<OrganisationDocument>
+        (
+            message.Body.OrganisationId,
+            document =>
+            {
+                document.ChangeId = message.Number;
+                document.ChangeTime = message.Timestamp;
+
+                document.BankAccounts.RemoveExistingListItems(x => x.OrganisationBankAccountId == message.Body.OrganisationBankAccountId);
             }
         ).ToAsyncResult();
     }

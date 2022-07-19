@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Commands;
+using OrganisationRegistry.Organisation;
 using SqlServer.Infrastructure;
 
 [ApiVersion("1.0")]
@@ -97,5 +98,12 @@ public class OrganisationBankAccountController : OrganisationRegistryController
         await CommandSender.Send(UpdateOrganisationBankAccountRequestMapping.Map(internalMessage));
 
         return Ok();
+    }
+
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> Delete([FromRoute] Guid organisationId, [FromRoute] Guid id)
+    {
+        await CommandSender.Send(new RemoveOrganisationBankAccount(new OrganisationId(organisationId), id));
+        return NoContent();
     }
 }

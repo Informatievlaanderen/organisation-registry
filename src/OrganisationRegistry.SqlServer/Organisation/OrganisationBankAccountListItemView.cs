@@ -25,7 +25,8 @@ public class OrganisationBankAccountListItem
 
     public string? Source { get; set; }
 
-    public bool IsEditable => Source != OrganisationRegistry.Organisation.LocationSource.Kbo;
+    public bool IsEditable
+        => Source != OrganisationRegistry.Organisation.LocationSource.Kbo;
 
     public OrganisationBankAccountListItem()
     {
@@ -90,10 +91,14 @@ public class OrganisationBankAccountListView :
     IEventHandler<OrganisationTerminationSyncedWithKbo>,
     IEventHandler<OrganisationBankAccountUpdated>,
     IEventHandler<OrganisationTerminated>,
-    IEventHandler<OrganisationTerminatedV2>
+    IEventHandler<OrganisationTerminatedV2>,
+    IEventHandler<OrganisationBankAccountRemoved>
 {
-    protected override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
-    public override string Schema => WellknownSchemas.BackofficeSchema;
+    protected override string[] ProjectionTableNames
+        => Enum.GetNames(typeof(ProjectionTables));
+
+    public override string Schema
+        => WellknownSchemas.BackofficeSchema;
 
     public enum ProjectionTables
     {
@@ -101,6 +106,7 @@ public class OrganisationBankAccountListView :
     }
 
     private readonly IEventStore _eventStore;
+
     public OrganisationBankAccountListView(
         ILogger<OrganisationBankAccountListView> logger,
         IEventStore eventStore,
@@ -240,5 +246,13 @@ public class OrganisationBankAccountListView :
     public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
     {
         await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+    }
+
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationBankAccountRemoved> message)
+    {
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+        var bankaccountToRemove = await context.OrganisationBankAccountList.SingleAsync(ob => ob.OrganisationBankAccountId == message.Body.OrganisationBankAccountId);
+        context.OrganisationBankAccountList.Remove(bankaccountToRemove);
+        await context.SaveChangesAsync();
     }
 }

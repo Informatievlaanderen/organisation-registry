@@ -131,7 +131,7 @@ public class ParametersTests
         await CreateWithDependencies(route, testData.CreateParameterRequestType, testData.DependencyRoutes);
 
         var getResponse = await ApiFixture.Get(_apiFixture.HttpClient, $"{route}");
-        getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        await ApiFixture.VerifyStatusCode(getResponse, HttpStatusCode.OK);
 
         var deserializedResponse = await ApiFixture.DeserializeAsList(getResponse);
         deserializedResponse.Should().NotBeNull();
@@ -143,7 +143,6 @@ public class ParametersTests
     {
         // remove
         var deleteResponse = await ApiFixture.Delete(_apiFixture.HttpClient, $"{baseRoute}/{id}");
-        deleteResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
         await ApiFixture.VerifyStatusCode(deleteResponse, HttpStatusCode.NoContent);
 
         // get
