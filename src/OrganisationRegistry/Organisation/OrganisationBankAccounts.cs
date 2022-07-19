@@ -6,11 +6,17 @@ using System.Linq;
 
 public class OrganisationBankAccounts : List<OrganisationBankAccount>
 {
-    public OrganisationBankAccounts() { }
+    public OrganisationBankAccounts()
+    {
+    }
 
-    public OrganisationBankAccounts(IEnumerable<OrganisationBankAccount> organisationBuildings) : base(organisationBuildings) { }
+    public OrganisationBankAccounts(IEnumerable<OrganisationBankAccount> organisationBuildings) : base(organisationBuildings)
+    {
+    }
 
-    public OrganisationBankAccounts(params OrganisationBankAccount[] organisationBuildings) : base(organisationBuildings) { }
+    public OrganisationBankAccounts(params OrganisationBankAccount[] organisationBuildings) : base(organisationBuildings)
+    {
+    }
 
     public bool HasBankAccountNumbersThatWouldOverlapWith(OrganisationBankAccount organisationBankAccount)
         => Except(organisationBankAccount.OrganisationBankAccountId)
@@ -29,4 +35,8 @@ public class OrganisationBankAccounts : List<OrganisationBankAccount>
     public OrganisationBankAccounts OverlappingWith(Period validity)
         => new(
             this.Where(ob => ob.Validity.OverlapsWith(validity)));
+
+    public OrganisationBankAccount? this[Guid id]
+        => this.SingleOrDefault(ob => ob.Id == id);
+
 }

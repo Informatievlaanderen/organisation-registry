@@ -3040,4 +3040,16 @@ public partial class Organisation : AggregateRoot
         if (!State.UnderVlimpersManagement && user.IsAuthorizedForVlimpersOrganisations)
             throw new UserIsNotAuthorizedForOrganisation();
     }
+
+    public void RemoveBankAccount(Guid organisationBankAccountId)
+    {
+        if (State.OrganisationBankAccounts[organisationBankAccountId] is not { })
+            throw new OrganisationBankAccountNotFound();
+        ApplyChange(new OrganisationBankAccountRemoved(Id, organisationBankAccountId));
+    }
+
+    public void Apply(OrganisationBankAccountRemoved evnt)
+    {
+        State.OrganisationBankAccounts.Remove(State.OrganisationBankAccounts[evnt.OrganisationBankAccountId]!);
+    }
 }
