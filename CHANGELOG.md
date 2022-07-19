@@ -1,3 +1,10 @@
+# [1.233.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.232.1...v1.233.0) (2022-07-19)
+
+
+### Features
+
+* or-1118 add removal of bankAccounts ([d724420](https://github.com/informatievlaanderen/organisation-registry/commit/d7244208177bf47720c53d258af03b86a3d9259d))
+
 ## [1.232.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.232.0...v1.232.1) (2022-07-18)
 
 
