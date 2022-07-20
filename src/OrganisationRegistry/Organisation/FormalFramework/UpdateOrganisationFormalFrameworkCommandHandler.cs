@@ -29,7 +29,7 @@ public class UpdateOrganisationFormalFrameworkCommandHandler
         => UpdateHandler<Organisation>.For(envelope.Command,envelope.User, Session)
             .WithPolicy(
                 organisation => new FormalFrameworkPolicy(
-                    () => organisation.State.OvoNumber,
+                    organisation.State.OvoNumber,
                     envelope.Command.FormalFrameworkId,
                     _organisationRegistryConfiguration))
             .Handle(
