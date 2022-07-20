@@ -44,7 +44,7 @@ public class OrganisationFormalFrameworkListQueryResult
 
         IsActive = new Period(new ValidFrom(validFrom), new ValidTo(validTo)).OverlapsWith(DateTime.Today);
         IsEditable =
-            new FormalFrameworkPolicy(() => ovoNumber, formalFrameworkId, configuration)
+            new FormalFrameworkPolicy(ovoNumber, formalFrameworkId, configuration)
                 .Check(user)
                 .IsSuccessful;
     }

@@ -34,7 +34,7 @@ public class FormalFrameworkPolicyTests
     }
 
     public FormalFrameworkPolicy CreatePolicy(string ovoNumber, Guid formalFrameworkId)
-        => new(() => ovoNumber, formalFrameworkId, _configuration);
+        => new(ovoNumber, formalFrameworkId, _configuration);
 
     [Theory]
     [InlineData(Role.RegelgevingBeheerder)]

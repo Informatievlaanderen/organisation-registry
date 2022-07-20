@@ -8,16 +8,16 @@ using Organisation.Exceptions;
 
 public class FormalFrameworkPolicy : ISecurityPolicy
 {
-    private readonly Func<string> _ovoNumberFunc;
+    private readonly string _ovoNumber;
     private readonly Guid _formalFrameworkId;
     private readonly IOrganisationRegistryConfiguration _configuration;
 
     public FormalFrameworkPolicy(
-        Func<string> ovoNumberFunc,
+        string ovoNumber,
         Guid formalFrameworkId,
         IOrganisationRegistryConfiguration configuration)
     {
-        _ovoNumberFunc = ovoNumberFunc;
+        _ovoNumber = ovoNumber;
         _formalFrameworkId = formalFrameworkId;
         _configuration = configuration;
     }
@@ -43,7 +43,7 @@ public class FormalFrameworkPolicy : ISecurityPolicy
             formalFrameworkIdsOwnedByVlimpers.Contains(_formalFrameworkId))
             return AuthorizationResult.Success();
 
-        if(user.IsDecentraalBeheerderFor(_ovoNumberFunc()) &&
+        if(user.IsDecentraalBeheerderFor(_ovoNumber) &&
            !formalFrameworkIdsExcludedForOrganisatieBeheerder.Contains(_formalFrameworkId))
             return AuthorizationResult.Success();
 
