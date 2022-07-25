@@ -94,9 +94,15 @@ public class GeefOndernemingQuery : IGeefOndernemingQuery
                     }
                 }
             }
+            catch (TaskCanceledException ex)
+            {
+                _logger.LogError(ex, "{Message}", ex.Message);
+                throw new ApiException("A timeout occurred when calling the Magda services", ex);
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "{Message}", ex.Message);
+                throw new ApiException(ex.Message, ex);
             }
         }
 
