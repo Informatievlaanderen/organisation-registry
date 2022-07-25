@@ -1,3 +1,16 @@
+# [1.234.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.233.1...v1.234.0) (2022-07-25)
+
+
+### Bug Fixes
+
+* or-1119 fix build ([505c697](https://github.com/informatievlaanderen/organisation-registry/commit/505c697342e9245e4d15caa7a1015af2ebded67d))
+
+
+### Features
+
+* or-1119 increase coverage organisationFormalFramework ([7968548](https://github.com/informatievlaanderen/organisation-registry/commit/796854856d92733cd8b108990ef654775108782a))
+* or-1119 unittest AddOrganisationCapacity ([88a65f6](https://github.com/informatievlaanderen/organisation-registry/commit/88a65f6df4c0adbb28358c14cf772f01d1fe6c01))
+
 ## [1.233.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.233.0...v1.233.1) (2022-07-25)
 
 
