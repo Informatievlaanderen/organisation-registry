@@ -2,7 +2,7 @@
 
 public class OrganisationBankAccountNotFound : DomainException
 {
-    public OrganisationBankAccountNotFound() : base("Het opgegeven bank account werd niet gevonden bij de organisatie")
+    public OrganisationBankAccountNotFound() : base("De opgegeven bankrekening werd niet gevonden bij de organisatie")
     {
     }
 }

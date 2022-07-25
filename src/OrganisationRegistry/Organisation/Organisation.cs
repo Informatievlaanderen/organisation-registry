@@ -3043,13 +3043,25 @@ public partial class Organisation : AggregateRoot
 
     public void RemoveBankAccount(Guid organisationBankAccountId)
     {
-        if (State.OrganisationBankAccounts[organisationBankAccountId] is not { })
+        if (!State.OrganisationBankAccounts.Exists(organisationBankAccountId))
             throw new OrganisationBankAccountNotFound();
         ApplyChange(new OrganisationBankAccountRemoved(Id, organisationBankAccountId));
     }
 
+    public void RemoveFormalFramework(Guid organisationFormalFrameworkId)
+    {
+        if (!State.OrganisationFormalFrameworks.Exists(organisationFormalFrameworkId))
+            throw new OrganisationFormalFrameworkNotFound();
+        ApplyChange(new OrganisationFormalFrameworkRemoved(Id, organisationFormalFrameworkId));
+    }
+
     public void Apply(OrganisationBankAccountRemoved evnt)
     {
-        State.OrganisationBankAccounts.Remove(State.OrganisationBankAccounts[evnt.OrganisationBankAccountId]!);
+        State.OrganisationBankAccounts.Remove(State.OrganisationBankAccounts[evnt.OrganisationBankAccountId]);
+    }
+
+    public void Apply(OrganisationFormalFrameworkRemoved evnt)
+    {
+        State.OrganisationFormalFrameworks.Remove(State.OrganisationFormalFrameworks[evnt.OrganisationFormalFrameworkId]);
     }
 }

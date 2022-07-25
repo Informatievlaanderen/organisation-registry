@@ -15,8 +15,7 @@ public class RemoveOrganisationBankAccountCommandHandler
     }
 
     public async Task Handle(ICommandEnvelope<RemoveOrganisationBankAccount> envelope)
-    {
-        await UpdateHandler<Organisation>.For(envelope.Command, envelope.User, Session)
+        => await UpdateHandler<Organisation>.For(envelope.Command, envelope.User, Session)
             .RequiresAdmin()
             .Handle(
                 session =>
@@ -24,5 +23,4 @@ public class RemoveOrganisationBankAccountCommandHandler
                     var organisation = session.Get<Organisation>(envelope.Command.Id);
                     organisation.RemoveBankAccount(envelope.Command.OrganisationBankAccountId);
                 });
-    }
 }

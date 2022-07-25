@@ -46,6 +46,7 @@ public class FutureActiveOrganisationFormalFrameworkListView :
     Projection<FutureActiveOrganisationFormalFrameworkListView>,
     IEventHandler<OrganisationFormalFrameworkAdded>,
     IEventHandler<OrganisationFormalFrameworkUpdated>,
+    IEventHandler<OrganisationFormalFrameworkRemoved>,
     IEventHandler<FormalFrameworkAssignedToOrganisation>
 {
     private readonly IEventStore _eventStore;
@@ -76,7 +77,7 @@ public class FutureActiveOrganisationFormalFrameworkListView :
             return;
 
         await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-        InsertFutureActiveOrganisationFormalFramework(context, message);
+        await InsertFutureActiveOrganisationFormalFramework(context, message);
     }
 
     public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFormalFrameworkUpdated> message)
@@ -86,18 +87,24 @@ public class FutureActiveOrganisationFormalFrameworkListView :
         var validFrom = new ValidFrom(message.Body.ValidFrom);
         if (validFrom.IsInPastOf(_dateTimeProvider.Today, true))
         {
-            DeleteFutureActiveOrganisationFormalFramework(context, message.Body.OrganisationFormalFrameworkId);
+            await DeleteFutureActiveOrganisationFormalFramework(context, message.Body.OrganisationFormalFrameworkId);
         }
         else
         {
-            UpsertFutureActiveOrganisationFormalFramework(context, message);
+            await UpsertFutureActiveOrganisationFormalFramework(context, message);
         }
+    }
+
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFormalFrameworkRemoved> message)
+    {
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+        await DeleteFutureActiveOrganisationFormalFramework(context, message.Body.OrganisationFormalFrameworkId);
     }
 
     public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FormalFrameworkAssignedToOrganisation> message)
     {
         await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-        DeleteFutureActiveOrganisationFormalFramework(context, message.Body.OrganisationFormalFrameworkId);
+        await DeleteFutureActiveOrganisationFormalFramework(context, message.Body.OrganisationFormalFrameworkId);
     }
 
     public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
@@ -105,7 +112,7 @@ public class FutureActiveOrganisationFormalFrameworkListView :
         await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
     }
 
-    private static void InsertFutureActiveOrganisationFormalFramework(
+    private static async Task InsertFutureActiveOrganisationFormalFramework(
         OrganisationRegistryContext context,
         IEnvelope<OrganisationFormalFrameworkAdded> message)
     {
@@ -118,10 +125,10 @@ public class FutureActiveOrganisationFormalFrameworkListView :
         };
 
         context.FutureActiveOrganisationFormalFrameworkList.Add(futureActiveOrganisationFormalFrameworkListItem);
-        context.SaveChanges();
+        await context.SaveChangesAsync();
     }
 
-    private static void UpsertFutureActiveOrganisationFormalFramework(
+    private static async Task UpsertFutureActiveOrganisationFormalFramework(
         OrganisationRegistryContext context,
         IEnvelope<OrganisationFormalFrameworkUpdated> message)
     {
@@ -150,21 +157,21 @@ public class FutureActiveOrganisationFormalFrameworkListView :
             futureActiveOrganisationFormalFramework.ValidFrom = message.Body.ValidFrom;
         }
 
-        context.SaveChanges();
+        await context.SaveChangesAsync();
     }
 
-    private static void DeleteFutureActiveOrganisationFormalFramework(
+    private static async Task DeleteFutureActiveOrganisationFormalFramework(
         OrganisationRegistryContext context,
         Guid organisationFormalFrameworkId)
     {
         var futureActiveOrganisationFormalFramework =
-            context.FutureActiveOrganisationFormalFrameworkList.SingleOrDefault(
+            await context.FutureActiveOrganisationFormalFrameworkList.SingleOrDefaultAsync(
                 item => item.OrganisationFormalFrameworkId == organisationFormalFrameworkId);
 
         if (futureActiveOrganisationFormalFramework == null)
             return;
 
         context.FutureActiveOrganisationFormalFrameworkList.Remove(futureActiveOrganisationFormalFramework);
-        context.SaveChanges();
+        await context.SaveChangesAsync();
     }
 }

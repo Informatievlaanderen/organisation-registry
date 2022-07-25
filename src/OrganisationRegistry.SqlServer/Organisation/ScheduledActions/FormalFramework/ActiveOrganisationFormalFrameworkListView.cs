@@ -47,6 +47,7 @@ public class ActiveOrganisationFormalFrameworkListView :
     Projection<ActiveOrganisationFormalFrameworkListView>,
     IEventHandler<OrganisationFormalFrameworkAdded>,
     IEventHandler<OrganisationFormalFrameworkUpdated>,
+    IEventHandler<OrganisationFormalFrameworkRemoved>,
     IEventHandler<FormalFrameworkAssignedToOrganisation>,
     IEventHandler<FormalFrameworkClearedFromOrganisation>
 {
@@ -99,21 +100,33 @@ public class ActiveOrganisationFormalFrameworkListView :
         if (validTo.IsInPastOf(_dateTimeProvider.Today))
             return;
 
-        using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-        {
-            var activeOrganisationFormalFramework =
-                context.ActiveOrganisationFormalFrameworkList.SingleOrDefault(item => item.OrganisationFormalFrameworkId == message.Body.OrganisationFormalFrameworkId);
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+        var activeOrganisationFormalFramework =
+            context.ActiveOrganisationFormalFrameworkList.SingleOrDefault(item => item.OrganisationFormalFrameworkId == message.Body.OrganisationFormalFrameworkId);
 
-            if (activeOrganisationFormalFramework == null)
-                return;
+        if (activeOrganisationFormalFramework == null)
+            return;
 
-            activeOrganisationFormalFramework.OrganisationFormalFrameworkId = message.Body.OrganisationFormalFrameworkId;
-            activeOrganisationFormalFramework.OrganisationId = message.Body.OrganisationId;
-            activeOrganisationFormalFramework.FormalFrameworkId = message.Body.FormalFrameworkId;
-            activeOrganisationFormalFramework.ValidTo = validTo;
+        activeOrganisationFormalFramework.OrganisationFormalFrameworkId = message.Body.OrganisationFormalFrameworkId;
+        activeOrganisationFormalFramework.OrganisationId = message.Body.OrganisationId;
+        activeOrganisationFormalFramework.FormalFrameworkId = message.Body.FormalFrameworkId;
+        activeOrganisationFormalFramework.ValidTo = validTo;
 
-            await context.SaveChangesAsync();
-        }
+        await context.SaveChangesAsync();
+    }
+
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFormalFrameworkRemoved> message)
+    {
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+        var maybeOrganisationFormalFramework = await context.ActiveOrganisationFormalFrameworkList
+            .SingleOrDefaultAsync(item => item.OrganisationFormalFrameworkId == message.Body.OrganisationFormalFrameworkId);
+
+        if (maybeOrganisationFormalFramework is not {} organisationFormalFramework)
+            return;
+
+        context.ActiveOrganisationFormalFrameworkList.Remove(organisationFormalFramework);
+
+        await context.SaveChangesAsync();
     }
 
     public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FormalFrameworkAssignedToOrganisation> message)

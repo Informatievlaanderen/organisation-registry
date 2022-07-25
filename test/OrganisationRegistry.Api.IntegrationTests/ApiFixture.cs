@@ -14,6 +14,8 @@ using System.Threading.Tasks;
 using AutoFixture;
 using AutoFixture.Kernel;
 using Backoffice.Organisation.OrganisationClassification;
+using Backoffice.Parameters.FormalFramework.Requests;
+using Backoffice.Parameters.FormalFrameworkCategory.Requests;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using IdentityModel;
@@ -242,12 +244,42 @@ public class ApiFixture : IDisposable, IAsyncLifetime
         return id;
     }
 
-    public async Task CreateContactType(Guid conactTypeId, string? contactTypeName = null)
+    public async Task CreateContactType(Guid contactTypeId, string? contactTypeName = null)
     {
         await Post(
             HttpClient,
             $"/v1/contacttypes",
-            new { Id = conactTypeId, Name = contactTypeName ?? Fixture.Create<string>() });
+            new { Id = contactTypeId, Name = contactTypeName ?? Fixture.Create<string>() });
+    }
+
+    public async Task<Guid> CreateFormalFramework(Guid formalFrameworkCategoryId)
+    {
+        var id = Fixture.Create<Guid>();
+        await Post(
+            HttpClient,
+            $"/v1/formalframeworks",
+            new CreateFormalFrameworkRequest
+            {
+                Id = id,
+                Name = Fixture.Create<string>(),
+                Code = Fixture.Create<string>(),
+                FormalFrameworkCategoryId = formalFrameworkCategoryId,
+            });
+        return id;
+    }
+
+    public async Task<Guid> CreateFormalFrameworkCategory()
+    {
+        var id = Fixture.Create<Guid>();
+        await Post(
+            HttpClient,
+            $"/v1/formalframeworkcategories",
+            new CreateFormalFrameworkCategoryRequest()
+            {
+                Id = id,
+                Name = Fixture.Create<string>(),
+            });
+        return id;
     }
 
     public async Task<HttpResponseMessage> Create(string baseRoute, object body)
