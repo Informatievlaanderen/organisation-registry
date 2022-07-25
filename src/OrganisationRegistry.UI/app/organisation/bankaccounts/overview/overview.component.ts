@@ -28,7 +28,6 @@ export class OrganisationBankAccountsOverviewComponent
 {
   public isLoading: boolean = true;
   public organisationBankAccounts: PagedResult<OrganisationBankAccountListItem>;
-  public canRemove: Observable<boolean>;
 
   private filter: OrganisationBankAccountFilter =
     new OrganisationBankAccountFilter();
@@ -60,11 +59,6 @@ export class OrganisationBankAccountsOverviewComponent
         this.loadBankAccounts();
       })
     );
-
-    this.canRemove = forkJoin([
-      this.oidcService.isLoggedIn,
-      this.oidcService.hasAnyOfRoles([Role.AlgemeenBeheerder]),
-    ]).pipe(map(([a, b]) => a && b));
   }
 
   ngOnDestroy() {
