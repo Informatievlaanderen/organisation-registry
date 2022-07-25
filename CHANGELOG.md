@@ -1,3 +1,10 @@
+## [1.233.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.233.0...v1.233.1) (2022-07-25)
+
+
+### Bug Fixes
+
+* or-1125 add timeout message to exception when calling magda ([108e61d](https://github.com/informatievlaanderen/organisation-registry/commit/108e61dc75889701a14bfd4324aeada6f4bff5bb))
+
 # [1.233.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.232.1...v1.233.0) (2022-07-19)
 
 
