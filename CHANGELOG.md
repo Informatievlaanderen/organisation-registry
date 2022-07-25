@@ -1,3 +1,12 @@
+# [1.235.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.234.0...v1.235.0) (2022-07-25)
+
+
+### Features
+
+* or-1129 add trashbin on UI ([0aa01d0](https://github.com/informatievlaanderen/organisation-registry/commit/0aa01d0a76783b41fa4ac1c57268cc0068838630))
+* or-1129 refactor permissions ([757aff6](https://github.com/informatievlaanderen/organisation-registry/commit/757aff692daa27a43daabc1e3f19a606802b8a5f))
+* or-1129 verwijderen van organisationformalframeworks ([e3ef047](https://github.com/informatievlaanderen/organisation-registry/commit/e3ef047b09bac121d3344ffd39b9ebae0edb2878))
+
 # [1.234.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.233.1...v1.234.0) (2022-07-25)
 
 
