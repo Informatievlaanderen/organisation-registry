@@ -17,7 +17,7 @@
       [isBusy]="isLoading"
       (changePage)="changePage($event)"
       [canEdit]="store.canAddAndUpdateFormalFrameworksChanged$"
-      [canDelete]="canRemove"
+      [canDelete]="store.canRemoveFormalFrameworksChanged$"
       (removeOrganisationFormalFrameworkClicked)="removeOrganisationFormalFramework($event)">
 
     </ww-organisation-formal-framework-list>

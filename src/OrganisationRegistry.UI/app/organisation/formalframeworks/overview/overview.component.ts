@@ -40,7 +40,6 @@ export class OrganisationFormalFrameworksOverviewComponent
   private currentSortOrder: SortOrder = SortOrder.Ascending;
 
   private readonly subscriptions: Subscription[] = new Array<Subscription>();
-  canRemove: Observable<boolean>;
 
   constructor(
     private route: ActivatedRoute,
@@ -62,10 +61,6 @@ export class OrganisationFormalFrameworksOverviewComponent
         this.store.loadOrganisation(this.organisationId);
       })
     );
-    this.canRemove = forkJoin([
-      this.oidcService.isLoggedIn,
-      this.oidcService.hasAnyOfRoles([Role.AlgemeenBeheerder]),
-    ]).pipe(map(([a, b]) => a && b));
   }
 
   ngOnDestroy() {

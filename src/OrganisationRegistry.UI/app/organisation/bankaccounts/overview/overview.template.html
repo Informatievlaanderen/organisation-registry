@@ -16,7 +16,7 @@
       [isBusy]="isLoading"
       (changePage)="changePage($event)"
       [canEdit]="store.canAddAndUpdateBankAccountsChanged$"
-      [canDelete]="canRemove"
+      [canDelete]="store.canRemoveBankAccountsChanged$"
       (removeBankAccountClicked)="removeBankAccount($event)"
     >
     </ww-organisation-bank-account-list>
