@@ -14,6 +14,7 @@ using OrganisationRegistry.Infrastructure.AppSpecific;
 using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Commands;
 using OrganisationRegistry.Infrastructure.Configuration;
+using OrganisationRegistry.Organisation;
 using SqlServer.Infrastructure;
 
 [ApiVersion("1.0")]
@@ -106,5 +107,16 @@ public class OrganisationFormalFrameworkController : OrganisationRegistryControl
         await CommandSender.Send(UpdateOrganisationFormalFrameworkRequestMapping.Map(internalMessage));
 
         return Ok();
+    }
+
+    [HttpDelete("{id}")]
+    [OrganisationRegistryAuthorize]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Delete([FromRoute] Guid organisationId, [FromRoute] Guid id)
+    {
+        await CommandSender.Send(new RemoveOrganisationFormalFramework(id, new OrganisationId(organisationId)));
+
+        return NoContent();
     }
 }

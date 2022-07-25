@@ -13,7 +13,6 @@ using OrganisationRegistry.Infrastructure;
 using OrganisationRegistry.Infrastructure.Events;
 using OrganisationRegistry.Organisation.Events;
 using OrganisationRegistry.OrganisationClassification.Events;
-
 using RebuildProjection = OrganisationRegistry.Infrastructure.Events.RebuildProjection;
 
 public class OrganisationListItem
@@ -165,6 +164,7 @@ public class OrganisationListItemView :
     IEventHandler<FormalFrameworkClearedFromOrganisation>,
     IEventHandler<OrganisationFormalFrameworkAdded>,
     IEventHandler<OrganisationFormalFrameworkUpdated>,
+    IEventHandler<OrganisationFormalFrameworkRemoved>,
     IEventHandler<OrganisationOrganisationClassificationAdded>,
     IEventHandler<KboLegalFormOrganisationOrganisationClassificationAdded>,
     IEventHandler<KboLegalFormOrganisationOrganisationClassificationRemoved>,
@@ -175,8 +175,11 @@ public class OrganisationListItemView :
     IEventHandler<OrganisationTerminated>,
     IEventHandler<OrganisationTerminatedV2>
 {
-    protected override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
-    public override string Schema => WellknownSchemas.BackofficeSchema;
+    protected override string[] ProjectionTableNames
+        => Enum.GetNames(typeof(ProjectionTables));
+
+    public override string Schema
+        => WellknownSchemas.BackofficeSchema;
 
     public enum ProjectionTables
     {
@@ -186,6 +189,7 @@ public class OrganisationListItemView :
     }
 
     private readonly IEventStore _eventStore;
+
     public OrganisationListItemView(
         ILogger<OrganisationListItemView> logger,
         IEventStore eventStore,
@@ -317,10 +321,11 @@ public class OrganisationListItemView :
             return;
 
         await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-        var organisationListItem = context.OrganisationList.SingleOrDefault(item =>
-            item.OrganisationId == message.Body.OrganisationId &&
-            item.ParentOrganisationsRelationshipId == message.Body.OrganisationOrganisationParentId &&
-            item.FormalFrameworkId == null);
+        var organisationListItem = context.OrganisationList.SingleOrDefault(
+            item =>
+                item.OrganisationId == message.Body.OrganisationId &&
+                item.ParentOrganisationsRelationshipId == message.Body.OrganisationOrganisationParentId &&
+                item.FormalFrameworkId == null);
 
         if (organisationListItem == null)
             return;
@@ -337,9 +342,10 @@ public class OrganisationListItemView :
     public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ParentAssignedToOrganisation> message)
     {
         await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-        var organisationListItem = context.OrganisationList.Single(item =>
-            item.OrganisationId == message.Body.OrganisationId &&
-            item.FormalFrameworkId == null);
+        var organisationListItem = context.OrganisationList.Single(
+            item =>
+                item.OrganisationId == message.Body.OrganisationId &&
+                item.FormalFrameworkId == null);
 
         organisationListItem.ParentOrganisationId = message.Body.ParentOrganisationId;
         var parentOrganisation = GetParentOrganisation(context, message.Body.ParentOrganisationId);
@@ -353,9 +359,10 @@ public class OrganisationListItemView :
     public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ParentClearedFromOrganisation> message)
     {
         await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-        var organisationListItem = context.OrganisationList.Single(item =>
-            item.OrganisationId == message.Body.OrganisationId &&
-            item.FormalFrameworkId == null);
+        var organisationListItem = context.OrganisationList.Single(
+            item =>
+                item.OrganisationId == message.Body.OrganisationId &&
+                item.FormalFrameworkId == null);
 
         organisationListItem.ParentOrganisationId = null;
         organisationListItem.ParentOrganisation = null;
@@ -368,9 +375,10 @@ public class OrganisationListItemView :
     public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FormalFrameworkAssignedToOrganisation> message)
     {
         await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-        var organisationListItem = context.OrganisationList.Single(item =>
-            item.FormalFrameworkId == message.Body.FormalFrameworkId &&
-            item.OrganisationId == message.Body.OrganisationId);
+        var organisationListItem = context.OrganisationList.Single(
+            item =>
+                item.FormalFrameworkId == message.Body.FormalFrameworkId &&
+                item.OrganisationId == message.Body.OrganisationId);
 
         organisationListItem.ParentOrganisationId = message.Body.ParentOrganisationId;
         var parentOrganisation = GetParentOrganisation(context, message.Body.ParentOrganisationId);
@@ -384,9 +392,10 @@ public class OrganisationListItemView :
     public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FormalFrameworkClearedFromOrganisation> message)
     {
         await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-        var organisationListItem = context.OrganisationList.Single(item =>
-            item.FormalFrameworkId == message.Body.FormalFrameworkId &&
-            item.OrganisationId == message.Body.OrganisationId);
+        var organisationListItem = context.OrganisationList.Single(
+            item =>
+                item.FormalFrameworkId == message.Body.FormalFrameworkId &&
+                item.OrganisationId == message.Body.OrganisationId);
 
         organisationListItem.ParentOrganisationId = null;
         organisationListItem.ParentOrganisation = null;
@@ -406,9 +415,10 @@ public class OrganisationListItemView :
             var regularOrganisationListItem =
                 context.OrganisationList
                     .Include(item => item.OrganisationClassificationValidities)
-                    .Single(item =>
-                        item.OrganisationId == message.Body.OrganisationId &&
-                        item.FormalFrameworkId == null);
+                    .Single(
+                        item =>
+                            item.OrganisationId == message.Body.OrganisationId &&
+                            item.FormalFrameworkId == null);
 
             var organisationListItemForFormalFramework = new OrganisationListItem
             {
@@ -439,9 +449,10 @@ public class OrganisationListItemView :
             var organisationListItem =
                 context.OrganisationList
                     .Include(item => item.FormalFrameworkValidities)
-                    .Single(item =>
-                        item.FormalFrameworkId == message.Body.FormalFrameworkId &&
-                        item.OrganisationId == message.Body.OrganisationId);
+                    .Single(
+                        item =>
+                            item.FormalFrameworkId == message.Body.FormalFrameworkId &&
+                            item.OrganisationId == message.Body.OrganisationId);
 
             organisationListItem.ParentOrganisationId = message.Body.ParentOrganisationId;
             organisationListItem.ParentOrganisation = message.Body.ParentOrganisationName;
@@ -466,9 +477,10 @@ public class OrganisationListItemView :
             var regularParentListItem =
                 context.OrganisationList
                     .Include(item => item.OrganisationClassificationValidities)
-                    .Single(item =>
-                        item.OrganisationId == message.Body.ParentOrganisationId &&
-                        item.FormalFrameworkId == null);
+                    .Single(
+                        item =>
+                            item.OrganisationId == message.Body.ParentOrganisationId &&
+                            item.FormalFrameworkId == null);
 
             var parentListItemForFormalFramework = new OrganisationListItem
             {
@@ -501,9 +513,10 @@ public class OrganisationListItemView :
         {
             var parentListItemForFormalFramework = context.OrganisationList
                 .Include(item => item.FormalFrameworkValidities)
-                .Single(item =>
-                    item.OrganisationId == message.Body.ParentOrganisationId &&
-                    item.FormalFrameworkId == message.Body.FormalFrameworkId);
+                .Single(
+                    item =>
+                        item.OrganisationId == message.Body.ParentOrganisationId &&
+                        item.FormalFrameworkId == message.Body.FormalFrameworkId);
 
             parentListItemForFormalFramework.FormalFrameworkValidities.Add(
                 new OrganisationFormalFrameworkValidity
@@ -524,9 +537,10 @@ public class OrganisationListItemView :
         var organisationListItem =
             context.OrganisationList
                 .Include(item => item.FormalFrameworkValidities)
-                .Single(item =>
-                    item.FormalFrameworkId == message.Body.FormalFrameworkId &&
-                    item.OrganisationId == message.Body.OrganisationId);
+                .Single(
+                    item =>
+                        item.FormalFrameworkId == message.Body.FormalFrameworkId &&
+                        item.OrganisationId == message.Body.OrganisationId);
 
         organisationListItem.ParentOrganisationId = message.Body.ParentOrganisationId;
         organisationListItem.ParentOrganisation = message.Body.ParentOrganisationName;
@@ -535,8 +549,9 @@ public class OrganisationListItemView :
         organisationListItem.ParentOrganisationsRelationshipId = message.Body.OrganisationFormalFrameworkId;
 
         var organisationFormalFrameworkValidity =
-            organisationListItem.FormalFrameworkValidities.SingleOrDefault(validity =>
-                validity.OrganisationFormalFrameworkId == message.Body.OrganisationFormalFrameworkId);
+            organisationListItem.FormalFrameworkValidities.SingleOrDefault(
+                validity =>
+                    validity.OrganisationFormalFrameworkId == message.Body.OrganisationFormalFrameworkId);
 
         if (organisationFormalFrameworkValidity != null)
         {
@@ -562,9 +577,10 @@ public class OrganisationListItemView :
             var regularParentListItem =
                 context.OrganisationList
                     .Include(item => item.OrganisationClassificationValidities)
-                    .Single(item =>
-                        item.OrganisationId == message.Body.ParentOrganisationId &&
-                        item.FormalFrameworkId == null);
+                    .Single(
+                        item =>
+                            item.OrganisationId == message.Body.ParentOrganisationId &&
+                            item.FormalFrameworkId == null);
 
             var parentListItemForFormalFramework = new OrganisationListItem
             {
@@ -599,13 +615,15 @@ public class OrganisationListItemView :
             var parentListItem =
                 context.OrganisationList
                     .Include(item => item.FormalFrameworkValidities)
-                    .Single(item =>
-                        item.OrganisationId == message.Body.ParentOrganisationId &&
-                        item.FormalFrameworkId == message.Body.FormalFrameworkId);
+                    .Single(
+                        item =>
+                            item.OrganisationId == message.Body.ParentOrganisationId &&
+                            item.FormalFrameworkId == message.Body.FormalFrameworkId);
 
             var parentFormalFrameworkValidity =
-                parentListItem.FormalFrameworkValidities.SingleOrDefault(validity =>
-                    validity.OrganisationFormalFrameworkId == message.Body.OrganisationFormalFrameworkId);
+                parentListItem.FormalFrameworkValidities.SingleOrDefault(
+                    validity =>
+                        validity.OrganisationFormalFrameworkId == message.Body.OrganisationFormalFrameworkId);
 
             if (parentFormalFrameworkValidity != null)
             {
@@ -623,6 +641,7 @@ public class OrganisationListItemView :
                     });
             }
         }
+
         await context.SaveChangesAsync();
 
         // OLD PARENT STUFF
@@ -635,11 +654,30 @@ public class OrganisationListItemView :
         await context.SaveChangesAsync();
     }
 
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFormalFrameworkRemoved> message)
+    {
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+
+        var organisationListItem =
+            context.OrganisationList
+                .Include(item => item.FormalFrameworkValidities)
+                .Where(item => item.FormalFrameworkValidities.Any(ffv => ffv.OrganisationFormalFrameworkId == message.Body.OrganisationFormalFrameworkId))
+                .Single(item => item.OrganisationId == message.Body.OrganisationId);
+
+        var formalFrameworkValidity = organisationListItem.FormalFrameworkValidities.Single(
+            validity => validity.OrganisationFormalFrameworkId == message.Body.OrganisationFormalFrameworkId);
+
+        organisationListItem.FormalFrameworkValidities.Remove(formalFrameworkValidity);
+
+        await context.SaveChangesAsync();
+    }
+
     private static bool OrganisationExistsForFormalFramework(OrganisationRegistryContext context, Guid organisationId, Guid formalFrameworkId)
     {
-        return context.OrganisationList.Any(item =>
-            item.FormalFrameworkId == formalFrameworkId &&
-            item.OrganisationId == organisationId);
+        return context.OrganisationList.Any(
+            item =>
+                item.FormalFrameworkId == formalFrameworkId &&
+                item.OrganisationId == organisationId);
     }
 
     public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationOrganisationClassificationAdded> message)
@@ -670,17 +708,18 @@ public class OrganisationListItemView :
             .Include(item => item.OrganisationClassificationValidities)
             .Where(item => item.OrganisationId == organisationId)
             .ToList()
-            .ForEach(item =>
-                item.OrganisationClassificationValidities.Add(
-                    new OrganisationClassificationValidity
-                    {
-                        OrganisationOrganisationClassificationId =
-                            organisationOrganisationClassificationId,
-                        OrganisationClassificationId = organisationClassificationId,
-                        OrganisationClassificationTypeId = organisationClassificationTypeId,
-                        ValidFrom = validFrom,
-                        ValidTo = validTo,
-                    }));
+            .ForEach(
+                item =>
+                    item.OrganisationClassificationValidities.Add(
+                        new OrganisationClassificationValidity
+                        {
+                            OrganisationOrganisationClassificationId =
+                                organisationOrganisationClassificationId,
+                            OrganisationClassificationId = organisationClassificationId,
+                            OrganisationClassificationTypeId = organisationClassificationTypeId,
+                            ValidFrom = validFrom,
+                            ValidTo = validTo,
+                        }));
 
         context.SaveChanges();
     }
@@ -692,16 +731,18 @@ public class OrganisationListItemView :
             .Include(item => item.OrganisationClassificationValidities)
             .Where(item => item.OrganisationId == message.Body.OrganisationId)
             .ToList()
-            .ForEach(item =>
-            {
-                var organisationClassificationValidities = item.OrganisationClassificationValidities
-                    .Where(validity =>
-                        validity.OrganisationOrganisationClassificationId ==
-                        message.Body.OrganisationOrganisationClassificationId)
-                    .ToList();
+            .ForEach(
+                item =>
+                {
+                    var organisationClassificationValidities = item.OrganisationClassificationValidities
+                        .Where(
+                            validity =>
+                                validity.OrganisationOrganisationClassificationId ==
+                                message.Body.OrganisationOrganisationClassificationId)
+                        .ToList();
 
-                context.OrganisationClassificationValidities.RemoveRange(organisationClassificationValidities);
-            });
+                    context.OrganisationClassificationValidities.RemoveRange(organisationClassificationValidities);
+                });
 
         await context.SaveChangesAsync();
     }
@@ -722,16 +763,18 @@ public class OrganisationListItemView :
             .Include(item => item.OrganisationClassificationValidities)
             .Where(item => item.OrganisationId == message.Body.OrganisationId)
             .ToList()
-            .ForEach(item =>
-            {
-                var organisationClassificationValidities = item.OrganisationClassificationValidities
-                    .Where(validity =>
-                        validity.OrganisationOrganisationClassificationId ==
-                        message.Body.LegalFormOrganisationOrganisationClassificationIdToCancel)
-                    .ToList();
+            .ForEach(
+                item =>
+                {
+                    var organisationClassificationValidities = item.OrganisationClassificationValidities
+                        .Where(
+                            validity =>
+                                validity.OrganisationOrganisationClassificationId ==
+                                message.Body.LegalFormOrganisationOrganisationClassificationIdToCancel)
+                        .ToList();
 
-                context.OrganisationClassificationValidities.RemoveRange(organisationClassificationValidities);
-            });
+                    context.OrganisationClassificationValidities.RemoveRange(organisationClassificationValidities);
+                });
 
         await context.SaveChangesAsync();
     }
@@ -743,17 +786,19 @@ public class OrganisationListItemView :
             .Include(item => item.OrganisationClassificationValidities)
             .Where(item => item.OrganisationId == message.Body.OrganisationId)
             .ToList()
-            .ForEach(item =>
-            {
-                var organisationClassificationValidities = item
-                    .OrganisationClassificationValidities
-                    .Where(validity =>
-                        validity.OrganisationOrganisationClassificationId ==
-                        message.Body.LegalFormOrganisationOrganisationClassificationIdToTerminate)
-                    .ToList();
+            .ForEach(
+                item =>
+                {
+                    var organisationClassificationValidities = item
+                        .OrganisationClassificationValidities
+                        .Where(
+                            validity =>
+                                validity.OrganisationOrganisationClassificationId ==
+                                message.Body.LegalFormOrganisationOrganisationClassificationIdToTerminate)
+                        .ToList();
 
-                organisationClassificationValidities.ForEach(validity => validity.ValidTo = message.Body.DateOfTermination);
-            });
+                    organisationClassificationValidities.ForEach(validity => validity.ValidTo = message.Body.DateOfTermination);
+                });
 
         await context.SaveChangesAsync();
     }
@@ -765,21 +810,24 @@ public class OrganisationListItemView :
             .Include(item => item.OrganisationClassificationValidities)
             .Where(item => item.OrganisationId == message.Body.OrganisationId)
             .ToList()
-            .ForEach(item =>
-            {
-                item.OrganisationClassificationValidities
-                    .Where(validity =>
-                        validity.OrganisationOrganisationClassificationId == message.Body.OrganisationOrganisationClassificationId)
-                    .ToList()
-                    .ForEach(validity =>
-                    {
-                        validity.OrganisationOrganisationClassificationId = message.Body.OrganisationOrganisationClassificationId;
-                        validity.OrganisationClassificationId = message.Body.OrganisationClassificationId;
-                        validity.OrganisationClassificationTypeId = message.Body.OrganisationClassificationTypeId;
-                        validity.ValidFrom = message.Body.ValidFrom;
-                        validity.ValidTo = message.Body.ValidTo;
-                    });
-            });
+            .ForEach(
+                item =>
+                {
+                    item.OrganisationClassificationValidities
+                        .Where(
+                            validity =>
+                                validity.OrganisationOrganisationClassificationId == message.Body.OrganisationOrganisationClassificationId)
+                        .ToList()
+                        .ForEach(
+                            validity =>
+                            {
+                                validity.OrganisationOrganisationClassificationId = message.Body.OrganisationOrganisationClassificationId;
+                                validity.OrganisationClassificationId = message.Body.OrganisationClassificationId;
+                                validity.OrganisationClassificationTypeId = message.Body.OrganisationClassificationTypeId;
+                                validity.ValidFrom = message.Body.ValidFrom;
+                                validity.ValidTo = message.Body.ValidTo;
+                            });
+                });
 
         await context.SaveChangesAsync();
     }
@@ -808,25 +856,28 @@ public class OrganisationListItemView :
 
     private static bool OrganisationHasChildrenForFormalFramework(OrganisationRegistryContext context, Guid parentOrganisationId, Guid formalFrameworkId)
     {
-        return context.OrganisationList.Any(item =>
-            item.FormalFrameworkId == formalFrameworkId &&
-            item.ParentOrganisationId == parentOrganisationId);
+        return context.OrganisationList.Any(
+            item =>
+                item.FormalFrameworkId == formalFrameworkId &&
+                item.ParentOrganisationId == parentOrganisationId);
     }
 
     private static bool OrganisationHasParentForFormalFramework(OrganisationRegistryContext context, Guid organisationId, Guid formalFrameworkId)
     {
-        return context.OrganisationList.Single(item =>
-            item.FormalFrameworkId == formalFrameworkId &&
-            item.OrganisationId == organisationId).ParentOrganisationId.HasValue;
+        return context.OrganisationList.Single(
+            item =>
+                item.FormalFrameworkId == formalFrameworkId &&
+                item.OrganisationId == organisationId).ParentOrganisationId.HasValue;
     }
 
     private static void RemoveOrganisationFromFormalFramework(OrganisationRegistryContext context, Guid organisationId, Guid formalFrameworkId)
     {
         var organisationListItem =
             context.OrganisationList
-                .SingleOrDefault(item =>
-                    item.FormalFrameworkId == formalFrameworkId &&
-                    item.OrganisationId == organisationId);
+                .SingleOrDefault(
+                    item =>
+                        item.FormalFrameworkId == formalFrameworkId &&
+                        item.OrganisationId == organisationId);
 
         if (organisationListItem == null)
             return;

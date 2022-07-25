@@ -17,6 +17,7 @@ public class OrganisationFormalFramework :
     BaseProjection<OrganisationFormalFramework>,
     IElasticEventHandler<OrganisationFormalFrameworkAdded>,
     IElasticEventHandler<OrganisationFormalFrameworkUpdated>,
+    IElasticEventHandler<OrganisationFormalFrameworkRemoved>,
     IElasticEventHandler<FormalFrameworkUpdated>,
     IElasticEventHandler<OrganisationInfoUpdated>,
     IElasticEventHandler<OrganisationNameUpdated>,
@@ -115,6 +116,22 @@ public class OrganisationFormalFramework :
                         message.Body.ParentOrganisationId,
                         message.Body.ParentOrganisationName,
                         Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
+            }
+        ).ToAsyncResult();
+    }
+
+    public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFormalFrameworkRemoved> message)
+    {
+        return await new ElasticPerDocumentChange<OrganisationDocument>
+        (
+            message.Body.OrganisationId,
+            document =>
+            {
+                document.ChangeId = message.Number;
+                document.ChangeTime = message.Timestamp;
+
+                document.FormalFrameworks.RemoveExistingListItems(x =>
+                    x.OrganisationFormalFrameworkId == message.Body.OrganisationFormalFrameworkId);
             }
         ).ToAsyncResult();
     }

@@ -60,6 +60,7 @@ public class OrganisationFormalFrameworkListView :
     Projection<OrganisationFormalFrameworkListView>,
     IEventHandler<OrganisationFormalFrameworkAdded>,
     IEventHandler<OrganisationFormalFrameworkUpdated>,
+    IEventHandler<OrganisationFormalFrameworkRemoved>,
     IEventHandler<OrganisationInfoUpdated>,
     IEventHandler<OrganisationNameUpdated>,
     IEventHandler<OrganisationInfoUpdatedFromKbo>,
@@ -169,6 +170,16 @@ public class OrganisationFormalFrameworkListView :
         organisationFormalFramework.ParentOrganisationName = message.Body.ParentOrganisationName;
         organisationFormalFramework.ValidFrom = message.Body.ValidFrom;
         organisationFormalFramework.ValidTo = message.Body.ValidTo;
+
+        await context.SaveChangesAsync();
+    }
+
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFormalFrameworkRemoved> message)
+    {
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+        var organisationFormalFramework = await context.OrganisationFormalFrameworkList.SingleAsync(item => item.OrganisationFormalFrameworkId == message.Body.OrganisationFormalFrameworkId);
+
+        context.OrganisationFormalFrameworkList.Remove(organisationFormalFramework);
 
         await context.SaveChangesAsync();
     }

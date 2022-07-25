@@ -22,7 +22,7 @@ public class OrganisationState
     public List<OrganisationRelation> OrganisationRelations { get; }
     public List<OrganisationCapacity> OrganisationCapacities { get; set; }
     public List<OrganisationParent> OrganisationParents { get; }
-    public List<OrganisationFormalFramework> OrganisationFormalFrameworks { get; }
+    public OrganisationList<OrganisationFormalFramework> OrganisationFormalFrameworks { get; }
     public OrganisationBankAccounts OrganisationBankAccounts { get; }
     public List<OrganisationOpeningHour> OrganisationOpeningHours { get; }
     public Dictionary<Guid, OrganisationFormalFramework> OrganisationFormalFrameworkParentsPerFormalFramework { get; }
@@ -50,7 +50,7 @@ public class OrganisationState
         OrganisationRelations = new List<OrganisationRelation>();
         OrganisationCapacities = new List<OrganisationCapacity>();
         OrganisationParents = new List<OrganisationParent>();
-        OrganisationFormalFrameworks = new List<OrganisationFormalFramework>();
+        OrganisationFormalFrameworks = new OrganisationList<OrganisationFormalFramework>();
         OrganisationBankAccounts = new OrganisationBankAccounts();
         OrganisationOpeningHours = new List<OrganisationOpeningHour>();
         OrganisationFormalFrameworkParentsPerFormalFramework = new Dictionary<Guid, OrganisationFormalFramework>();
