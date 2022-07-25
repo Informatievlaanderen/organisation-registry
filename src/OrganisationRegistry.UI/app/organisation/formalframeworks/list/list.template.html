@@ -64,6 +64,11 @@
             </td>
             <td *ngIf="formalFramework.isEditable" class="u-align-right">
               <a [routerLink]="['edit', formalFramework.organisationFormalFrameworkId]" class="vi vi-u-badge vi-u-badge--grey vi-u-badge--small vi-edit" title="Bewerken" aria-label="Bewerken"></a>
+              <a *ngIf="(canDelete | async)"
+                 aria-label="Verwijderen"
+                 class="vi vi-u-badge vi-u-badge--grey vi-u-badge--small vi-trash"
+                 title="Verwijderen"
+                 (click)="remove(formalFramework)"></a>
             </td>
           </tr>
         </template>
