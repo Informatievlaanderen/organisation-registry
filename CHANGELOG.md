@@ -1,3 +1,10 @@
+# [1.239.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.238.0...v1.239.0) (2022-07-26)
+
+
+### Features
+
+* or-1019 add ui element for removal of functions ([7608712](https://github.com/informatievlaanderen/organisation-registry/commit/7608712763e32ec0a1e2f1636cf63958bbbc4ff8))
+
 # [1.238.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.237.0...v1.238.0) (2022-07-26)
 
 
