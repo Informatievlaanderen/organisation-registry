@@ -1,3 +1,10 @@
+# [1.236.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.235.0...v1.236.0) (2022-07-26)
+
+
+### Features
+
+* or-1019 cleanup duplicate validations ([1e2ba4e](https://github.com/informatievlaanderen/organisation-registry/commit/1e2ba4e168f831578fb1e5dabad1ca5bfadc1fbd))
+
 # [1.235.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.234.0...v1.235.0) (2022-07-25)
 
 
