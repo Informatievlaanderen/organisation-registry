@@ -33,7 +33,7 @@ public class AddOrganisationKeyInternalRequestValidator : AbstractValidator<AddO
     {
         RuleFor(x => x.OrganisationId)
             .NotEmpty()
-            .WithMessage("Id is required.");
+            .WithMessage("Organisation Id is required.");
 
         RuleFor(x => x.Body.KeyTypeId)
             .NotEmpty()
@@ -51,10 +51,6 @@ public class AddOrganisationKeyInternalRequestValidator : AbstractValidator<AddO
             .GreaterThanOrEqualTo(x => x.Body.ValidFrom)
             .When(x => x.Body.ValidFrom.HasValue)
             .WithMessage("Valid To must be greater than or equal to Valid From.");
-
-        RuleFor(x => x.OrganisationId)
-            .NotEmpty()
-            .WithMessage("Organisation Id is required.");
     }
 }
 

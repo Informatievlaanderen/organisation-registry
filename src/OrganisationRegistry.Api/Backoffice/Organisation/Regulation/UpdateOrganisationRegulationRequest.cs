@@ -42,7 +42,7 @@ public class UpdateOrganisationRegulationInternalRequestValidator : AbstractVali
     {
         RuleFor(x => x.OrganisationId)
             .NotEmpty()
-            .WithMessage("Id is required.");
+            .WithMessage("Organisation Id is required.");
 
         RuleFor(x => x.Body.Name)
             .NotEmpty()
@@ -52,10 +52,6 @@ public class UpdateOrganisationRegulationInternalRequestValidator : AbstractVali
             .GreaterThanOrEqualTo(x => x.Body.ValidFrom)
             .When(x => x.Body.ValidFrom.HasValue)
             .WithMessage("Valid To must be greater than or equal to Valid From.");
-
-        RuleFor(x => x.OrganisationId)
-            .NotEmpty()
-            .WithMessage("Organisation Id is required.");
 
         RuleFor(x => x.Body.WorkRulesUrl)
             .Custom(

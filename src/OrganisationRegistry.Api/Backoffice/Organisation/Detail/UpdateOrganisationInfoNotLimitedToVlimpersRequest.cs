@@ -32,7 +32,7 @@ public class UpdateOrganisationInfoNotLimitedByVlimpersRequestValidator : Abstra
     {
         RuleFor(x => x.OrganisationId)
             .NotEmpty()
-            .WithMessage("Id is required.");
+            .WithMessage("Organisation Id is required.");
     }
 }
 
