@@ -1,6 +1,7 @@
 ﻿namespace OrganisationRegistry.Api.IntegrationTests.BackOffice.Organisation;
 
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using AutoFixture;
@@ -28,30 +29,23 @@ public class OrganisationBankAccountTests
         getResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
         // CREATE
-        await CreateWithInvalidDataAndVerifyBadRequest(route);
+        await _apiFixture.CreateWithInvalidDataAndVerifyBadRequest(route);
 
         var id = await CreateAndVerify(route);
 
         // UPDATE
         await UpdateAndVerify(route, id);
 
-        await UpdateWithInvalidDataAndVerifyBadRequest(route, id);
+        await _apiFixture.UpdateWithInvalidDataAndVerifyBadRequest(route, id);
 
         // LIST
         await GetListAndVerify(route);
 
         //REMOVE
-        await RemoveAndVerify(route, id);
+        await _apiFixture.RemoveAndVerify(route, id);
     }
 
-    private async Task CreateWithInvalidDataAndVerifyBadRequest(string route)
-    {
-        var createResponse = await ApiFixture.Post(_apiFixture.HttpClient, $"{route}", "prut");
-        await ApiFixture.VerifyStatusCode(createResponse, HttpStatusCode.BadRequest);
-    }
-
-    private async Task<Guid> CreateAndVerify(
-        string baseRoute)
+    private async Task<Guid> CreateAndVerify(string baseRoute)
     {
         var creationId = _apiFixture.Fixture.Create<Guid>();
         var body = new
@@ -62,29 +56,13 @@ public class OrganisationBankAccountTests
             Bic = _apiFixture.Fixture.Create<string>(),
             IsBic = false,
         };
-        var createResponse = await ApiFixture.Post(
-            _apiFixture.HttpClient,
-            baseRoute,
-            body);
-        await ApiFixture.VerifyStatusCode(createResponse, HttpStatusCode.Created);
 
-        // get
-        var getResponse = await ApiFixture.Get(_apiFixture.HttpClient, createResponse.Headers.Location!.ToString());
-        await ApiFixture.VerifyStatusCode(getResponse, HttpStatusCode.OK);
-
-        var responseBody = await ApiFixture.Deserialize(getResponse);
-        responseBody["bankAccountNumber"].Should().Be(body.BankAccountNumber);
-        responseBody["isIban"].Should().Be(body.IsIban);
-        responseBody["bic"].Should().Be(body.Bic);
-        responseBody["isBic"].Should().Be(body.IsBic);
+        await _apiFixture.CreateAndVerify(baseRoute, body, VerifyResult);
 
         return creationId;
     }
 
-    private async Task UpdateAndVerify(
-        string baseRoute,
-        Guid id
-    )
+    private async Task UpdateAndVerify(string baseRoute, Guid id)
     {
         var body = new
         {
@@ -95,29 +73,15 @@ public class OrganisationBankAccountTests
             IsBic = false,
         };
 
-        // update
-        var updateResponse = await ApiFixture.Put(
-            _apiFixture.HttpClient,
-            $"{baseRoute}/{id}",
-            body);
-        await ApiFixture.VerifyStatusCode(updateResponse, HttpStatusCode.OK);
+        await _apiFixture.UpdateAndVerify(baseRoute, id, body, VerifyResult);
+    }
 
-        // get
-        var getResponse = await ApiFixture.Get(_apiFixture.HttpClient, $"{baseRoute}/{id}");
-        await ApiFixture.VerifyStatusCode(getResponse, HttpStatusCode.OK);
-
-        var responseBody = await ApiFixture.Deserialize(getResponse);
+    private static void VerifyResult(IReadOnlyDictionary<string, object> responseBody, dynamic body)
+    {
         responseBody["bankAccountNumber"].Should().Be(body.BankAccountNumber);
         responseBody["isIban"].Should().Be(body.IsIban);
         responseBody["bic"].Should().Be(body.Bic);
         responseBody["isBic"].Should().Be(body.IsBic);
-    }
-
-    private async Task UpdateWithInvalidDataAndVerifyBadRequest(string baseRoute, Guid id)
-    {
-        // update
-        var updateResponse = await ApiFixture.Put(_apiFixture.HttpClient, $"{baseRoute}/{id}", "prut");
-        await ApiFixture.VerifyStatusCode(updateResponse, HttpStatusCode.BadRequest);
     }
 
     private async Task GetListAndVerify(string route)
@@ -125,23 +89,6 @@ public class OrganisationBankAccountTests
         await CreateAndVerify(route);
         await CreateAndVerify(route);
 
-        var getResponse = await ApiFixture.Get(_apiFixture.HttpClient, $"{route}");
-        getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        var deserializedResponse = await ApiFixture.DeserializeAsList(getResponse);
-        deserializedResponse.Should().NotBeNull();
-
-        deserializedResponse.Should().HaveCountGreaterThanOrEqualTo(2);
-    }
-
-    private async Task RemoveAndVerify(string baseRoute, Guid id)
-    {
-        // remove
-        var deleteResponse = await ApiFixture.Delete(_apiFixture.HttpClient, $"{baseRoute}/{id}");
-        await ApiFixture.VerifyStatusCode(deleteResponse, HttpStatusCode.NoContent);
-
-        // get
-        var getResponse = await ApiFixture.Get(_apiFixture.HttpClient, $"{baseRoute}/{id}");
-        await ApiFixture.VerifyStatusCode(getResponse, HttpStatusCode.NotFound);
+        await _apiFixture.GetListAndVerify(route);
     }
 }
