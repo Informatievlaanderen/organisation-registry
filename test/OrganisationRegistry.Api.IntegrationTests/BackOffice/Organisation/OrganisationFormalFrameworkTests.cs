@@ -1,6 +1,7 @@
 ﻿namespace OrganisationRegistry.Api.IntegrationTests.BackOffice.Organisation;
 
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using AutoFixture;
@@ -31,26 +32,20 @@ public class OrganisationFormalFrameworkTests
         getResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
         // CREATE
-        await CreateWithInvalidDataAndVerifyBadRequest(route);
+        await _apiFixture.CreateWithInvalidDataAndVerifyBadRequest(route);
 
         var (id, formalFrameworkId) = await CreateAndVerify(route, parentOrganisationId);
 
         // UPDATE
         await UpdateAndVerify(route, id, formalFrameworkId, parentOrganisationId);
 
-        await UpdateWithInvalidDataAndVerifyBadRequest(route, id);
+        await _apiFixture.UpdateWithInvalidDataAndVerifyBadRequest(route, id);
 
         // LIST
         await GetListAndVerify(route, parentOrganisationId);
 
         //REMOVE
-        await RemoveAndVerify(route, id);
-    }
-
-    private async Task CreateWithInvalidDataAndVerifyBadRequest(string route)
-    {
-        var createResponse = await ApiFixture.Post(_apiFixture.HttpClient, $"{route}", "prut");
-        await ApiFixture.VerifyStatusCode(createResponse, HttpStatusCode.BadRequest);
+        await _apiFixture.RemoveAndVerify(route, id);
     }
 
     private async Task<(Guid creationId, Guid formalFrameworkId)> CreateAndVerify(string baseRoute, Guid parentOrganisationId)
@@ -67,19 +62,8 @@ public class OrganisationFormalFrameworkTests
             ValidFrom = null,
             ValidTo = null,
         };
-        var createResponse = await ApiFixture.Post(
-            _apiFixture.HttpClient,
-            baseRoute,
-            body);
-        await ApiFixture.VerifyStatusCode(createResponse, HttpStatusCode.Created);
 
-        // get
-        var getResponse = await ApiFixture.Get(_apiFixture.HttpClient, createResponse.Headers.Location!.ToString());
-        await ApiFixture.VerifyStatusCode(getResponse, HttpStatusCode.OK);
-
-        var responseBody = await ApiFixture.Deserialize(getResponse);
-        responseBody["formalFrameworkId"].Should().Be(body.FormalFrameworkId.ToString());
-        responseBody["parentOrganisationId"].Should().Be(body.ParentOrganisationId.ToString());
+        await _apiFixture.CreateAndVerify(baseRoute, body, VerifyResult);
 
         return (creationId, formalFrameworkId);
     }
@@ -91,7 +75,6 @@ public class OrganisationFormalFrameworkTests
         Guid parentOrganisationId)
     {
         var today = _apiFixture.Fixture.Create<DateTime>();
-
         var body = new UpdateOrganisationFormalFrameworkRequest
         {
             OrganisationFormalFrameworkId = id,
@@ -101,29 +84,15 @@ public class OrganisationFormalFrameworkTests
             ValidTo = today.AddDays(10),
         };
 
-        // update
-        var updateResponse = await ApiFixture.Put(
-            _apiFixture.HttpClient,
-            $"{baseRoute}/{id}",
-            body);
-        await ApiFixture.VerifyStatusCode(updateResponse, HttpStatusCode.OK);
-
-        // get
-        var getResponse = await ApiFixture.Get(_apiFixture.HttpClient, $"{baseRoute}/{id}");
-        await ApiFixture.VerifyStatusCode(getResponse, HttpStatusCode.OK);
-
-        var responseBody = await ApiFixture.Deserialize(getResponse);
-        responseBody["formalFrameworkId"].Should().Be(body.FormalFrameworkId.ToString());
-        responseBody["parentOrganisationId"].Should().Be(body.ParentOrganisationId.ToString());
-        responseBody["validFrom"].Should().Be(body.ValidFrom.Value.Date);
-        responseBody["validTo"].Should().Be(body.ValidTo.Value.Date);
+        await _apiFixture.UpdateAndVerify(baseRoute, id, body, VerifyResult);
     }
 
-    private async Task UpdateWithInvalidDataAndVerifyBadRequest(string baseRoute, Guid id)
+    private static void VerifyResult(IReadOnlyDictionary<string, object> responseBody, dynamic body)
     {
-        // update
-        var updateResponse = await ApiFixture.Put(_apiFixture.HttpClient, $"{baseRoute}/{id}", "prut");
-        await ApiFixture.VerifyStatusCode(updateResponse, HttpStatusCode.BadRequest);
+        responseBody["formalFrameworkId"].Should().Be(body.FormalFrameworkId.ToString());
+        responseBody["parentOrganisationId"].Should().Be(body.ParentOrganisationId.ToString());
+        responseBody["validFrom"].Should().Be(body.ValidFrom?.Date);
+        responseBody["validTo"].Should().Be(body.ValidTo?.Date);
     }
 
     private async Task GetListAndVerify(string route, Guid parentOrganisationId)
@@ -131,23 +100,6 @@ public class OrganisationFormalFrameworkTests
         await CreateAndVerify(route, parentOrganisationId);
         await CreateAndVerify(route, parentOrganisationId);
 
-        var getResponse = await ApiFixture.Get(_apiFixture.HttpClient, $"{route}");
-        getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        var deserializedResponse = await ApiFixture.DeserializeAsList(getResponse);
-        deserializedResponse.Should().NotBeNull();
-
-        deserializedResponse.Should().HaveCountGreaterThanOrEqualTo(2);
-    }
-
-    private async Task RemoveAndVerify(string baseRoute, Guid id)
-    {
-        // remove
-        var deleteResponse = await ApiFixture.Delete(_apiFixture.HttpClient, $"{baseRoute}/{id}");
-        await ApiFixture.VerifyStatusCode(deleteResponse, HttpStatusCode.NoContent);
-
-        // get
-        var getResponse = await ApiFixture.Get(_apiFixture.HttpClient, $"{baseRoute}/{id}");
-        await ApiFixture.VerifyStatusCode(getResponse, HttpStatusCode.NotFound);
+        await _apiFixture.GetListAndVerify(route);
     }
 }

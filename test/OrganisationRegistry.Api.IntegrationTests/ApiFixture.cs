@@ -332,6 +332,76 @@ public class ApiFixture : IDisposable, IAsyncLifetime
         return deserializedResponse;
     }
 
+    public async Task RemoveAndVerify(string baseRoute, Guid id)
+    {
+        // remove
+        var deleteResponse = await Delete(HttpClient, $"{baseRoute}/{id}");
+        await VerifyStatusCode(deleteResponse, HttpStatusCode.NoContent);
+
+        // get
+        var getResponse = await Get(HttpClient, $"{baseRoute}/{id}");
+        await VerifyStatusCode(getResponse, HttpStatusCode.NotFound);
+    }
+
+    public async Task GetListAndVerify(string route)
+    {
+        var getResponse = await Get(HttpClient, $"{route}");
+        getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var deserializedResponse = await DeserializeAsList(getResponse);
+        deserializedResponse.Should().NotBeNull();
+
+        deserializedResponse.Should().HaveCountGreaterThanOrEqualTo(2);
+    }
+
+    public async Task CreateWithInvalidDataAndVerifyBadRequest(string route)
+    {
+        var createResponse = await Post(HttpClient, $"{route}", "prut");
+        await VerifyStatusCode(createResponse, HttpStatusCode.BadRequest);
+    }
+
+    public async Task UpdateWithInvalidDataAndVerifyBadRequest(string baseRoute, Guid id)
+    {
+        // update
+        var updateResponse = await Put(HttpClient, $"{baseRoute}/{id}", "prut");
+        await VerifyStatusCode(updateResponse, HttpStatusCode.BadRequest);
+    }
+
+    public async Task CreateAndVerify<T>(string baseRoute, T body, Action<Dictionary<string, object>, T> verifyResult)
+        where T : notnull
+    {
+        var createResponse = await Post(
+            HttpClient,
+            baseRoute,
+            body);
+        await VerifyStatusCode(createResponse, HttpStatusCode.Created);
+
+        // get
+        var getResponse = await Get(HttpClient, createResponse.Headers.Location!.ToString());
+        await VerifyStatusCode(getResponse, HttpStatusCode.OK);
+
+        var responseBody = await Deserialize(getResponse);
+        verifyResult(responseBody, body);
+    }
+
+    public async Task UpdateAndVerify<T>(string baseRoute, Guid id, T body, Action<Dictionary<string, object>, T> verifyResult)
+        where T : notnull
+    {
+        // update
+        var updateResponse = await Put(
+            HttpClient,
+            $"{baseRoute}/{id}",
+            body);
+        await VerifyStatusCode(updateResponse, HttpStatusCode.OK);
+
+        // get
+        var getResponse = await Get(HttpClient, $"{baseRoute}/{id}");
+        await VerifyStatusCode(getResponse, HttpStatusCode.OK);
+
+        var responseBody = await Deserialize(getResponse);
+        verifyResult(responseBody, body);
+    }
+
     public static Guid GetIdFrom(HttpResponseHeaders headers)
         => new(headers.Location!.ToString().Split('/').Last());
 
