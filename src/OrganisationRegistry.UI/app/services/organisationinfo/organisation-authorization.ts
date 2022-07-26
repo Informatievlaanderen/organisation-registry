@@ -343,4 +343,12 @@ export class OrganisationAuthorization {
 
     return false;
   }
+
+  public static canRemoveFunctions(organisation, securityInfo) {
+    if (!securityInfo.isLoggedIn) return false;
+
+    if (securityInfo.hasAnyOfRoles([Role.AlgemeenBeheerder])) return true;
+
+    return false;
+  }
 }

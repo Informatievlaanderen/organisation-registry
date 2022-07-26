@@ -118,6 +118,11 @@ export class OrganisationInfoService implements OnDestroy {
   public readonly canRemoveFormalFrameworksChanged$ =
     this.canRemoveFormalFrameworksChangedSource.asObservable();
 
+  private canRemoveFunctionsChangedSource: BehaviorSubject<boolean> =
+    new BehaviorSubject<boolean>(false);
+  public readonly canRemoveFunctionsChanged$ =
+    this.canRemoveFunctionsChangedSource.asObservable();
+
   private currentSortBy: string = "name";
   private currentSortOrder: SortOrder = SortOrder.Ascending;
 
@@ -504,6 +509,13 @@ export class OrganisationInfoService implements OnDestroy {
         );
         this.canRemoveFormalFrameworksChangedSource.next(
           OrganisationAuthorization.canRemoveFormalFrameworks(
+            organisation,
+            securityInfo
+          )
+        );
+
+        this.canRemoveFunctionsChangedSource.next(
+          OrganisationAuthorization.canRemoveFunctions(
             organisation,
             securityInfo
           )
