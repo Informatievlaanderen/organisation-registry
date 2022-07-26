@@ -1,3 +1,10 @@
+# [1.238.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.237.0...v1.238.0) (2022-07-26)
+
+
+### Features
+
+* or-1019 do not remove when function is used in capacity ([7818bbe](https://github.com/informatievlaanderen/organisation-registry/commit/7818bbecb16a65de2cb01fb8fc268af2114f2406))
+
 # [1.237.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.236.1...v1.237.0) (2022-07-26)
 
 
