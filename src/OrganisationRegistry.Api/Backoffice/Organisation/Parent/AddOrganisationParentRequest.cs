@@ -30,24 +30,16 @@ public class AddOrganisationParentInternalRequestValidator : AbstractValidator<A
     {
         RuleFor(x => x.OrganisationId)
             .NotEmpty()
-            .WithMessage("Id is required.");
+            .WithMessage("Organisation Id is required.");
 
         RuleFor(x => x.Body.ParentOrganisationId)
             .NotEmpty()
             .WithMessage("Parent Organisation Id is required.");
 
-        // TODO: Validate if FunctionTypeId is valid
-
         RuleFor(x => x.Body.ValidTo)
             .GreaterThanOrEqualTo(x => x.Body.ValidFrom)
             .When(x => x.Body.ValidFrom.HasValue)
             .WithMessage("Valid To must be greater than or equal to Valid From.");
-
-        RuleFor(x => x.OrganisationId)
-            .NotEmpty()
-            .WithMessage("Organisation Id is required.");
-
-        // TODO: Validate if org id is valid
     }
 }
 

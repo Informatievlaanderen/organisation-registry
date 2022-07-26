@@ -33,7 +33,7 @@ public class UpdateOrganisationOrganisationClassificationInternalRequestValidato
     {
         RuleFor(x => x.OrganisationId)
             .NotEmpty()
-            .WithMessage("Id is required.");
+            .WithMessage("Organisation Id is required.");
 
         RuleFor(x => x.Body.OrganisationClassificationTypeId)
             .NotEmpty()
@@ -43,18 +43,10 @@ public class UpdateOrganisationOrganisationClassificationInternalRequestValidato
             .NotEmpty()
             .WithMessage("Organisation Classification Id is required.");
 
-        // TODO: Validate if OrganisationClassificationTypeId is valid
-
         RuleFor(x => x.Body.ValidTo)
             .GreaterThanOrEqualTo(x => x.Body.ValidFrom)
             .When(x => x.Body.ValidFrom.HasValue)
             .WithMessage("Valid To must be greater than or equal to Valid From.");
-
-        RuleFor(x => x.OrganisationId)
-            .NotEmpty()
-            .WithMessage("Organisation Id is required.");
-
-        // TODO: Validate if org id is valid
     }
 }
 

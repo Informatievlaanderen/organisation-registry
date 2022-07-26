@@ -32,7 +32,7 @@ public class UpdateOrganisationFormalFrameworkInternalRequestValidator : Abstrac
     {
         RuleFor(x => x.OrganisationId)
             .NotEmpty()
-            .WithMessage("Id is required.");
+            .WithMessage("Organisation Id is required.");
 
         RuleFor(x => x.Body.FormalFrameworkId)
             .NotEmpty()
@@ -46,12 +46,6 @@ public class UpdateOrganisationFormalFrameworkInternalRequestValidator : Abstrac
             .GreaterThanOrEqualTo(x => x.Body.ValidFrom)
             .When(x => x.Body.ValidFrom.HasValue)
             .WithMessage("Valid To must be greater than or equal to Valid From.");
-
-        RuleFor(x => x.OrganisationId)
-            .NotEmpty()
-            .WithMessage("Organisation Id is required.");
-
-        // TODO: Validate if org id is valid
     }
 }
 
