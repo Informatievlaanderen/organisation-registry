@@ -67,6 +67,7 @@ public class OrganisationFunctionListView :
     Projection<OrganisationFunctionListView>,
     IEventHandler<OrganisationFunctionAdded>,
     IEventHandler<OrganisationFunctionUpdated>,
+    IEventHandler<OrganisationFunctionRemoved>,
     IEventHandler<FunctionUpdated>,
     IEventHandler<PersonUpdated>,
     IEventHandler<OrganisationTerminated>,
@@ -138,17 +139,27 @@ public class OrganisationFunctionListView :
     public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFunctionUpdated> message)
     {
         await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-        var key = await context.OrganisationFunctionList.SingleAsync(item => item.OrganisationFunctionId == message.Body.OrganisationFunctionId);
+        var function = await context.OrganisationFunctionList.SingleAsync(item => item.OrganisationFunctionId == message.Body.OrganisationFunctionId);
 
-        key.OrganisationFunctionId = message.Body.OrganisationFunctionId;
-        key.OrganisationId = message.Body.OrganisationId;
-        key.FunctionId = message.Body.FunctionId;
-        key.PersonId = message.Body.PersonId;
-        key.FunctionName = message.Body.FunctionName;
-        key.PersonName = message.Body.PersonFullName;
-        key.ContactsJson = JsonConvert.SerializeObject(message.Body.Contacts);
-        key.ValidFrom = message.Body.ValidFrom;
-        key.ValidTo = message.Body.ValidTo;
+        function.OrganisationFunctionId = message.Body.OrganisationFunctionId;
+        function.OrganisationId = message.Body.OrganisationId;
+        function.FunctionId = message.Body.FunctionId;
+        function.PersonId = message.Body.PersonId;
+        function.FunctionName = message.Body.FunctionName;
+        function.PersonName = message.Body.PersonFullName;
+        function.ContactsJson = JsonConvert.SerializeObject(message.Body.Contacts);
+        function.ValidFrom = message.Body.ValidFrom;
+        function.ValidTo = message.Body.ValidTo;
+
+        await context.SaveChangesAsync();
+    }
+
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFunctionRemoved> message)
+    {
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+        var function = await context.OrganisationFunctionList.SingleAsync(item => item.OrganisationFunctionId == message.Body.OrganisationFunctionId);
+
+        context.OrganisationFunctionList.Remove(function);
 
         await context.SaveChangesAsync();
     }

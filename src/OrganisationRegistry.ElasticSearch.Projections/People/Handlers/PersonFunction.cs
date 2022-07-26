@@ -20,6 +20,7 @@ public class PersonFunction :
     BaseProjection<PersonFunction>,
     IElasticEventHandler<OrganisationFunctionAdded>,
     IElasticEventHandler<OrganisationFunctionUpdated>,
+    IElasticEventHandler<OrganisationFunctionRemoved>,
     IElasticEventHandler<FunctionUpdated>,
     IElasticEventHandler<OrganisationInfoUpdated>,
     IElasticEventHandler<OrganisationNameUpdated>,
@@ -147,6 +148,29 @@ public class PersonFunction :
                         message.Body.Contacts.Select(x => new Contact(x.Key, contactTypeNames[x.Key], x.Value))
                             .ToList(),
                         Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
+            });
+
+        return await new ElasticPerDocumentChange<PersonDocument>(changes).ToAsyncResult();
+    }
+
+    public async Task<IElasticChange> Handle(
+        DbConnection dbConnection,
+        DbTransaction dbTransaction,
+        IEnvelope<OrganisationFunctionRemoved> message)
+    {
+        var changes = new Dictionary<Guid, Func<PersonDocument, Task>>();
+
+        changes.Add(
+            message.Body.PersonId,
+            async document =>
+            {
+                await using var organisationRegistryContext = _contextFactory.Create();
+
+                document.ChangeId = message.Number;
+                document.ChangeTime = message.Timestamp;
+
+                document.Functions.RemoveExistingListItems(
+                    x => x.PersonFunctionId == message.Body.OrganisationFunctionId);
             });
 
         return await new ElasticPerDocumentChange<PersonDocument>(changes).ToAsyncResult();

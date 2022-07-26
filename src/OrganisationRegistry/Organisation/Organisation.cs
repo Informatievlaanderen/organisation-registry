@@ -3055,6 +3055,14 @@ public partial class Organisation : AggregateRoot
         ApplyChange(new OrganisationFormalFrameworkRemoved(Id, organisationFormalFrameworkId));
     }
 
+    public void RemoveFunction(Guid organisationFunctionId)
+    {
+        if (!State.OrganisationFunctionTypes.Exists(organisationFunctionId))
+            throw new OrganisationFunctionNotFound();
+        var function = State.OrganisationFunctionTypes[organisationFunctionId];
+        ApplyChange(new OrganisationFunctionRemoved(Id, organisationFunctionId, function.PersonId));
+    }
+
     public void Apply(OrganisationBankAccountRemoved evnt)
     {
         State.OrganisationBankAccounts.Remove(State.OrganisationBankAccounts[evnt.OrganisationBankAccountId]);
@@ -3063,5 +3071,10 @@ public partial class Organisation : AggregateRoot
     public void Apply(OrganisationFormalFrameworkRemoved evnt)
     {
         State.OrganisationFormalFrameworks.Remove(State.OrganisationFormalFrameworks[evnt.OrganisationFormalFrameworkId]);
+    }
+
+    public void Apply(OrganisationFunctionRemoved evnt)
+    {
+        State.OrganisationFunctionTypes.Remove(State.OrganisationFunctionTypes[evnt.OrganisationFunctionId]);
     }
 }
