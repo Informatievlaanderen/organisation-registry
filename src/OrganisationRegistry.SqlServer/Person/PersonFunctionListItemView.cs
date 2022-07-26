@@ -63,6 +63,7 @@ public class PersonFunctionListView :
     Projection<PersonFunctionListView>,
     IEventHandler<OrganisationFunctionAdded>,
     IEventHandler<OrganisationFunctionUpdated>,
+    IEventHandler<OrganisationFunctionRemoved>,
     IEventHandler<FunctionUpdated>,
     IEventHandler<OrganisationInfoUpdated>,
     IEventHandler<OrganisationNameUpdated>,
@@ -121,32 +122,28 @@ public class PersonFunctionListView :
         Guid organisationId,
         string organisationName)
     {
-        using (var context = contextFactory.CreateTransactional(dbConnection, dbTransaction))
-        {
-            var personFunctions = context.PersonFunctionList.Where(x => x.OrganisationId == organisationId);
-            if (!personFunctions.Any())
-                return;
+        using var context = contextFactory.CreateTransactional(dbConnection, dbTransaction);
+        var personFunctions = context.PersonFunctionList.Where(x => x.OrganisationId == organisationId);
+        if (!personFunctions.Any())
+            return;
 
-            foreach (var personFunction in personFunctions)
-                personFunction.OrganisationName = organisationName;
+        foreach (var personFunction in personFunctions)
+            personFunction.OrganisationName = organisationName;
 
-            context.SaveChanges();
-        }
+        context.SaveChanges();
     }
 
     public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FunctionUpdated> message)
     {
-        using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-        {
-            var personFunctions = context.PersonFunctionList.Where(x => x.FunctionId == message.Body.FunctionId);
-            if (!personFunctions.Any())
-                return;
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+        var personFunctions = context.PersonFunctionList.Where(x => x.FunctionId == message.Body.FunctionId);
+        if (!personFunctions.Any())
+            return;
 
-            foreach (var personFunction in personFunctions)
-                personFunction.FunctionName = message.Body.Name;
+        foreach (var personFunction in personFunctions)
+            personFunction.FunctionName = message.Body.Name;
 
-            await context.SaveChangesAsync();
-        }
+        await context.SaveChangesAsync();
     }
 
     public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFunctionAdded> message)
@@ -163,30 +160,36 @@ public class PersonFunctionListView :
             ValidTo = message.Body.ValidTo,
         };
 
-        using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-        {
-            await context.PersonFunctionList.AddAsync(personFunctionListItem);
-            await context.SaveChangesAsync();
-        }
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+        await context.PersonFunctionList.AddAsync(personFunctionListItem);
+        await context.SaveChangesAsync();
     }
 
     public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFunctionUpdated> message)
     {
-        using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-        {
-            var key = await context.PersonFunctionList.SingleAsync(item => item.OrganisationFunctionId == message.Body.OrganisationFunctionId);
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+        var function = await context.PersonFunctionList.SingleAsync(item => item.OrganisationFunctionId == message.Body.OrganisationFunctionId);
 
-            key.OrganisationFunctionId = message.Body.OrganisationFunctionId;
-            key.OrganisationId = message.Body.OrganisationId;
-            key.OrganisationName = _memoryCaches.OrganisationNames[message.Body.OrganisationId];
-            key.FunctionId = message.Body.FunctionId;
-            key.PersonId = message.Body.PersonId;
-            key.FunctionName = message.Body.FunctionName;
-            key.ValidFrom = message.Body.ValidFrom;
-            key.ValidTo = message.Body.ValidTo;
+        function.OrganisationFunctionId = message.Body.OrganisationFunctionId;
+        function.OrganisationId = message.Body.OrganisationId;
+        function.OrganisationName = _memoryCaches.OrganisationNames[message.Body.OrganisationId];
+        function.FunctionId = message.Body.FunctionId;
+        function.PersonId = message.Body.PersonId;
+        function.FunctionName = message.Body.FunctionName;
+        function.ValidFrom = message.Body.ValidFrom;
+        function.ValidTo = message.Body.ValidTo;
 
-            await context.SaveChangesAsync();
-        }
+        await context.SaveChangesAsync();
+    }
+
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFunctionRemoved> message)
+    {
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+        var function = await context.PersonFunctionList.SingleAsync(item => item.OrganisationFunctionId == message.Body.OrganisationFunctionId);
+
+        context.PersonFunctionList.Remove(function);
+
+        await context.SaveChangesAsync();
     }
 
     public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)

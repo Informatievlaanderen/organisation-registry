@@ -19,6 +19,7 @@ public class OrganisationFunction :
     BaseProjection<OrganisationFunction>,
     IElasticEventHandler<OrganisationFunctionAdded>,
     IElasticEventHandler<OrganisationFunctionUpdated>,
+    IElasticEventHandler<OrganisationFunctionRemoved>,
     IElasticEventHandler<FunctionUpdated>,
     IElasticEventHandler<PersonUpdated>,
     IElasticEventHandler<OrganisationTerminated>,
@@ -34,8 +35,7 @@ public class OrganisationFunction :
     }
 
     public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FunctionUpdated> message)
-    {
-        return await new ElasticMassChange
+        => await new ElasticMassChange
         (
             elastic => elastic.TryAsync(() => elastic
                 .MassUpdateOrganisationAsync(
@@ -45,11 +45,9 @@ public class OrganisationFunction :
                     message.Number,
                     message.Timestamp))
         ).ToAsyncResult();
-    }
 
     public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonUpdated> message)
-    {
-        return await new ElasticMassChange
+        => await new ElasticMassChange
         (
             elastic => elastic.TryAsync(() => elastic
                 .MassUpdateOrganisationAsync(
@@ -59,11 +57,9 @@ public class OrganisationFunction :
                     message.Number,
                     message.Timestamp))
         ).ToAsyncResult();
-    }
 
     public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFunctionAdded> message)
-    {
-        return await new ElasticPerDocumentChange<OrganisationDocument>
+        => await new ElasticPerDocumentChange<OrganisationDocument>
         (
             message.Body.OrganisationId, async document =>
             {
@@ -88,11 +84,9 @@ public class OrganisationFunction :
                         Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
             }
         ).ToAsyncResult();
-    }
 
     public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFunctionUpdated> message)
-    {
-        return await new ElasticPerDocumentChange<OrganisationDocument>
+        => await new ElasticPerDocumentChange<OrganisationDocument>
         (
             message.Body.OrganisationId, async document =>
             {
@@ -117,7 +111,20 @@ public class OrganisationFunction :
                         Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
             }
         ).ToAsyncResult();
-    }
+
+    public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFunctionRemoved> message)
+        => await new ElasticPerDocumentChange<OrganisationDocument>
+        (
+            message.Body.OrganisationId, async document =>
+            {
+                await using var organisationRegistryContext = _contextFactory.Create();
+
+                document.ChangeId = message.Number;
+                document.ChangeTime = message.Timestamp;
+
+                document.Functions.RemoveExistingListItems(x => x.OrganisationFunctionId == message.Body.OrganisationFunctionId);
+            }
+        ).ToAsyncResult();
 
     public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
     {

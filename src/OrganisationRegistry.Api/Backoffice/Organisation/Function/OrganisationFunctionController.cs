@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Commands;
+using OrganisationRegistry.Organisation;
 using SqlServer.Infrastructure;
 
 [ApiVersion("1.0")]
@@ -98,5 +99,17 @@ public class OrganisationFunctionController : OrganisationRegistryController
         await CommandSender.Send(UpdateOrganisationFunctionRequestMapping.Map(internalMessage));
 
         return Ok();
+    }
+
+    /// <summary>Remove a function from an organisation</summary>
+    /// <response code="204">If the function is removed.</response>
+    /// <response code="400">If the function is not found for the organisation.</response>
+    [HttpDelete("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Delete([FromRoute] Guid organisationId, [FromRoute] Guid id)
+    {
+        await CommandSender.Send(new RemoveOrganisationFunction(new OrganisationId(organisationId), id));
+        return NoContent();
     }
 }

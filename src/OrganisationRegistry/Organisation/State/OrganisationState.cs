@@ -18,7 +18,7 @@ public class OrganisationState
     public OrganisationContacts OrganisationContacts { get; }
     public List<OrganisationLabel> OrganisationLabels { get; }
     public List<OrganisationOrganisationClassification> OrganisationOrganisationClassifications { get; }
-    public List<OrganisationFunction> OrganisationFunctionTypes { get; }
+    public OrganisationList<OrganisationFunction> OrganisationFunctionTypes { get; }
     public List<OrganisationRelation> OrganisationRelations { get; }
     public List<OrganisationCapacity> OrganisationCapacities { get; set; }
     public List<OrganisationParent> OrganisationParents { get; }
@@ -46,7 +46,7 @@ public class OrganisationState
         OrganisationContacts = new OrganisationContacts();
         OrganisationLabels = new List<OrganisationLabel>();
         OrganisationOrganisationClassifications = new List<OrganisationOrganisationClassification>();
-        OrganisationFunctionTypes = new List<OrganisationFunction>();
+        OrganisationFunctionTypes = new OrganisationList<OrganisationFunction>();
         OrganisationRelations = new List<OrganisationRelation>();
         OrganisationCapacities = new List<OrganisationCapacity>();
         OrganisationParents = new List<OrganisationParent>();

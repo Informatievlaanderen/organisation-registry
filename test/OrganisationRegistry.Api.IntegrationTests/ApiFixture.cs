@@ -16,6 +16,8 @@ using AutoFixture.Kernel;
 using Backoffice.Organisation.OrganisationClassification;
 using Backoffice.Parameters.FormalFramework.Requests;
 using Backoffice.Parameters.FormalFrameworkCategory.Requests;
+using Backoffice.Parameters.FunctionType.Requests;
+using Backoffice.Person.Detail;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using IdentityModel;
@@ -29,6 +31,7 @@ using Newtonsoft.Json;
 using OrganisationRegistry.Infrastructure;
 using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Configuration;
+using Person;
 using SqlServer.Configuration;
 using SqlServer.Infrastructure;
 using Xunit;
@@ -275,6 +278,41 @@ public class ApiFixture : IDisposable, IAsyncLifetime
             HttpClient,
             $"/v1/formalframeworkcategories",
             new CreateFormalFrameworkCategoryRequest()
+            {
+                Id = id,
+                Name = Fixture.Create<string>(),
+            });
+        return id;
+    }
+
+    public async Task<Guid> CreatePerson()
+    {
+        var id = Fixture.Create<Guid>();
+        await Post(
+            HttpClient,
+            $"/v1/people",
+            new CreatePersonRequest
+            {
+                Id = id,
+                Name = Fixture.Create<string>(),
+                FirstName = Fixture.Create<string>(),
+                Sex = Fixture.Create<bool>() ? Sex.Male : Sex.Female,
+                DateOfBirth = Fixture.Create<DateTime>(),
+            });
+        return id;
+    }
+
+    /// <summary>
+    /// Function or FunctionType, make up your f***ing mind
+    /// </summary>
+    /// <returns></returns>
+    public async Task<Guid> CreateFunction()
+    {
+        var id = Fixture.Create<Guid>();
+        await Post(
+            HttpClient,
+            $"/v1/functiontypes",
+            new CreateFunctionTypeRequest()
             {
                 Id = id,
                 Name = Fixture.Create<string>(),

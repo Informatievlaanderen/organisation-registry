@@ -100,7 +100,12 @@ public class OrganisationBankAccountController : OrganisationRegistryController
         return Ok();
     }
 
+    /// <summary>Remove a bankaccount from an organisation</summary>
+    /// <response code="204">If the bankAccount is removed.</response>
+    /// <response code="400">If the bankAccount is not found for the organisation.</response>
     [HttpDelete("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Delete([FromRoute] Guid organisationId, [FromRoute] Guid id)
     {
         await CommandSender.Send(new RemoveOrganisationBankAccount(new OrganisationId(organisationId), id));

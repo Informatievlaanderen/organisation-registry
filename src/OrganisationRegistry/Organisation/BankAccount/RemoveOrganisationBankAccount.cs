@@ -13,5 +13,4 @@ public class RemoveOrganisationBankAccount : BaseCommand<OrganisationId>
         Id = organisationId;
         OrganisationBankAccountId = organisationBankAccountId;
     }
-
 }
