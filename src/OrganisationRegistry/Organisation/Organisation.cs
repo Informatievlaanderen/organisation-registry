@@ -3059,7 +3059,11 @@ public partial class Organisation : AggregateRoot
     {
         if (!State.OrganisationFunctionTypes.Exists(organisationFunctionId))
             throw new OrganisationFunctionNotFound();
+
         var function = State.OrganisationFunctionTypes[organisationFunctionId];
+        if (State.OrganisationCapacities.Any(oc => oc.FunctionTypeId == function.FunctionId))
+            throw new FunctionStillUsedInCapacity();
+
         ApplyChange(new OrganisationFunctionRemoved(Id, organisationFunctionId, function.PersonId));
     }
 
