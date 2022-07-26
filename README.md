@@ -2,7 +2,7 @@
 
 ## Goal
 
-> Authentic organisation registry.
+> Authentic organisation registry containing public organisations in Flanders.
 
 Please see our [contributing guidelines](CONTRIBUTING.md) before contributing.
 
