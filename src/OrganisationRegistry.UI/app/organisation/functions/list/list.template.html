@@ -64,6 +64,11 @@
             </td>
             <td *ngIf="(canEdit | async)" class="u-align-right">
               <a [routerLink]="['edit', function.organisationFunctionId]" class="vi vi-u-badge vi-u-badge--grey vi-u-badge--small vi-edit" title="Bewerken" aria-label="Bewerken"></a>
+              <a *ngIf="(canDelete | async)"
+                 aria-label="Verwijderen"
+                 class="vi vi-u-badge vi-u-badge--grey vi-u-badge--small vi-trash"
+                 title="Verwijderen"
+                 (click)="removeClicked.emit(function)"></a>
             </td>
           </tr>
         </template>

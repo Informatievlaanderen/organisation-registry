@@ -15,6 +15,8 @@
       [items]="organisationFunctions"
       [isBusy]="isLoading"
       (changePage)="changePage($event)"
-      [canEdit]="store.canAddAndUpdateFunctionsChanged$">
+      [canEdit]="store.canAddAndUpdateFunctionsChanged$"
+      [canDelete]="store.canRemoveFunctionsChanged$"
+      (removeClicked)="removeFunction($event)">
     </ww-organisation-function-list>
 </div>
