@@ -1,3 +1,10 @@
+# [1.237.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.236.1...v1.237.0) (2022-07-26)
+
+
+### Features
+
+* or-1019 implement deletion of organisationfunctions ([00732fb](https://github.com/informatievlaanderen/organisation-registry/commit/00732fb15926b601d9da348856d2b0e537c86447))
+
 ## [1.236.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.236.0...v1.236.1) (2022-07-26)
 
 # [1.236.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.235.0...v1.236.0) (2022-07-26)
