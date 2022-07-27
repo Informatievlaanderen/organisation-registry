@@ -27,7 +27,6 @@ public class ParametersTests
     [InlineData(ParametersTestData.LabeltypesRoute)]
     [InlineData(ParametersTestData.BodyclassificationtypesRoute)]
     [InlineData(ParametersTestData.CapacitiesRoute)]
-    [InlineData(ParametersTestData.ContacttypesRoute)]
     [InlineData(ParametersTestData.FormalframeworkcategoriesRoute)]
     [InlineData(ParametersTestData.FunctiontypesRoute)]
     [InlineData(ParametersTestData.LocationtypesRoute)]
