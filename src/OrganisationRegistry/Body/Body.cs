@@ -472,6 +472,9 @@ public class Body : AggregateRoot
         List<Contact> contacts,
         Period validity)
     {
+        foreach (var contact in contacts)
+            contact.ContactType.ThrowIfInvalidValue(contact.Value);
+
         var bodySeat = _bodySeats.Single(seat => seat.BodySeatId == bodySeatId);
 
         if (bodySeat.HasABodyMandateWithOverlappingValidity(validity))
@@ -553,6 +556,9 @@ public class Body : AggregateRoot
         List<Contact> contacts,
         Period validity)
     {
+        foreach (var contact in contacts)
+            contact.ContactType.ThrowIfInvalidValue(contact.Value);
+
         var previousBodySeat = _bodySeats.Single(seat => seat.BodyMandates.Any(mandate => mandate.BodyMandateId == bodyMandateId));
         var previousBodyMandate = previousBodySeat.BodyMandates.Single(mandate => mandate.BodyMandateId == bodyMandateId);
         var previousPersonMandate = (PersonBodyMandate)previousBodyMandate;
@@ -680,6 +686,9 @@ public class Body : AggregateRoot
         Period validity,
         DateTime today)
     {
+        foreach (var contact in contacts)
+            contact.ContactType.ThrowIfInvalidValue(contact.Value);
+
         var bodySeat = _bodySeats.Single(seat => seat.BodySeatId == bodySeatId);
         var bodyMandate = bodySeat.BodyMandates.Single(mandate => mandate.BodyMandateId == bodyMandateId);
 
@@ -714,6 +723,9 @@ public class Body : AggregateRoot
         Period validity,
         DateTime today)
     {
+        foreach (var contact in contacts)
+            contact.ContactType.ThrowIfInvalidValue(contact.Value);
+
         var bodySeat = _bodySeats.Single(seat => seat.BodySeatId == bodySeatId);
         var bodyMandate = bodySeat.BodyMandates.Single(mandate => mandate.BodyMandateId == bodyMandateId);
 
@@ -825,6 +837,8 @@ public class Body : AggregateRoot
         string contactValue,
         Period validity)
     {
+        contactType.ThrowIfInvalidValue(contactValue);
+
         ApplyChange(new BodyContactAdded(
             Id,
             bodyContactId,
@@ -841,6 +855,8 @@ public class Body : AggregateRoot
         string contactValue,
         Period validity)
     {
+        contactType.ThrowIfInvalidValue(contactValue);
+
         var previousContact =
             _bodyContacts.Single(contact => contact.BodyContactId == bodyContactId);
 

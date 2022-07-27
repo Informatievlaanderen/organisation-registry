@@ -25,7 +25,9 @@ public class WhenAddingADuplicateOrganisationContact
     private readonly Guid _organisationContactId;
     private readonly string _contactValue;
     private readonly Fixture _fixture;
-    private string _contactTypeName;
+    private readonly string _contactTypeName;
+    private readonly string _contactTypeRegex;
+    private readonly string _contactTypeExample;
 
     public WhenAddingADuplicateOrganisationContact(ITestOutputHelper helper) : base(helper)
     {
@@ -36,6 +38,8 @@ public class WhenAddingADuplicateOrganisationContact
         _organisationId = _fixture.Create<Guid>();
         _contactValue = _fixture.Create<string>();
         _contactTypeName = _fixture.Create<string>();
+        _contactTypeRegex = ".*";
+        _contactTypeExample = _fixture.Create<string>();
     }
 
     protected override AddOrganisationContactCommandHandler BuildHandler(ISession session)
@@ -79,7 +83,7 @@ public class WhenAddingADuplicateOrganisationContact
         => new OrganisationCreatedBuilder().WithId(_organisationId);
 
     private ContactTypeCreated ContactTypeCreated
-        => new(_contactTypeId, _contactTypeName);
+        => new(_contactTypeId, _contactTypeName, _contactTypeRegex, _contactTypeExample);
 
     private OrganisationContactAdded OrganisationContactAdded
         => new(_organisationId,_organisationContactId,_contactTypeId, _contactTypeName,_contactValue, null, null);

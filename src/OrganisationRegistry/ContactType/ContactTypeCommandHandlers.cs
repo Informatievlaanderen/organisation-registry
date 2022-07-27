@@ -27,7 +27,11 @@ public class ContactTypeCommandHandlers :
         if (_uniqueNameValidator.IsNameTaken(envelope.Command.Name))
             throw new NameNotUnique();
 
-        var contactType = new ContactType(envelope.Command.ContactTypeId, envelope.Command.Name);
+        var contactType = new ContactType(
+            envelope.Command.ContactTypeId,
+            envelope.Command.Name,
+            envelope.Command.Regex,
+            envelope.Command.Example);
         Session.Add(contactType);
         await Session.Commit(envelope.User);
     }
@@ -38,7 +42,7 @@ public class ContactTypeCommandHandlers :
             throw new NameNotUnique();
 
         var contactType = Session.Get<ContactType>(envelope.Command.ContactTypeId);
-        contactType.Update(envelope.Command.Name);
+        contactType.Update(envelope.Command.Name, envelope.Command.Regex, envelope.Command.Example);
         await Session.Commit(envelope.User);
     }
 }

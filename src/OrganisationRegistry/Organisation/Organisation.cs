@@ -648,6 +648,9 @@ public partial class Organisation : AggregateRoot
         if (functionType == null)
             throw new ArgumentNullException(nameof(functionType));
 
+        foreach (var contact in contacts)
+            contact.ContactType.ThrowIfInvalidValue(contact.Value);
+
         ApplyChange(
             new OrganisationFunctionAdded(
                 Id,
@@ -670,6 +673,9 @@ public partial class Organisation : AggregateRoot
     {
         if (functionType == null)
             throw new ArgumentNullException(nameof(functionType));
+
+        foreach (var contact in contacts)
+            contact.ContactType.ThrowIfInvalidValue(contact.Value);
 
         var previousFunctionType = State.OrganisationFunctionTypes.Single(
             organisationFunctionType =>
@@ -803,6 +809,9 @@ public partial class Organisation : AggregateRoot
         Period validity,
         IDateTimeProvider dateTimeProvider)
     {
+        foreach (var contact in contacts)
+            contact.ContactType.ThrowIfInvalidValue(contact.Value);
+
         ApplyChange(
             new OrganisationCapacityAdded(
                 Id,
@@ -840,6 +849,9 @@ public partial class Organisation : AggregateRoot
         Period validity,
         IDateTimeProvider dateTimeProvider)
     {
+        foreach (var contact in contacts)
+            contact.ContactType.ThrowIfInvalidValue(contact.Value);
+
         var previousCapacity = State.OrganisationCapacities.Single(
             organisationCapacity =>
                 organisationCapacity.OrganisationCapacityId == organisationCapacityId);
@@ -1074,6 +1086,8 @@ public partial class Organisation : AggregateRoot
         string contactValue,
         Period validity)
     {
+        contactType.ThrowIfInvalidValue(contactValue);
+
         var newOrganisationContact = new OrganisationContact(
             organisationContactId,
             Id,
@@ -1094,6 +1108,8 @@ public partial class Organisation : AggregateRoot
         string contactValue,
         Period validity)
     {
+        contactType.ThrowIfInvalidValue(contactValue);
+
         var newOrganisationContact = new OrganisationContact(
             organisationContactId,
             Id,
