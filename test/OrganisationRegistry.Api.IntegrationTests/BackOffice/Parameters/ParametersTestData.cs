@@ -30,7 +30,6 @@ public class ParametersTestData
     public const string LabeltypesRoute = "/v1/labeltypes";
     public const string BodyclassificationtypesRoute = "/v1/bodyclassificationtypes";
     public const string CapacitiesRoute = "/v1/capacities";
-    public const string ContacttypesRoute = "/v1/contacttypes";
     public const string FormalframeworkcategoriesRoute = "/v1/formalframeworkcategories";
     public const string FunctiontypesRoute = "/v1/functiontypes";
     public const string LocationtypesRoute = "/v1/locationtypes";
@@ -63,7 +62,6 @@ public class ParametersTestData
         { LabeltypesRoute, new ParameterTestParameters(typeof(CreateLabelTypeRequest), false, ImmutableList<string>.Empty) },
         { BodyclassificationtypesRoute, new ParameterTestParameters(typeof(CreateBodyClassificationTypeRequest), false, ImmutableList<string>.Empty) },
         { CapacitiesRoute, new ParameterTestParameters(typeof(CreateCapacityRequest), true, ImmutableList<string>.Empty) },
-        { ContacttypesRoute, new ParameterTestParameters(typeof(CreateContactTypeRequest), false, ImmutableList<string>.Empty) },
         { FormalframeworkcategoriesRoute, new ParameterTestParameters(typeof(CreateFormalFrameworkCategoryRequest), false, ImmutableList<string>.Empty) },
         { FunctiontypesRoute, new ParameterTestParameters(typeof(CreateFunctionTypeRequest), false, ImmutableList<string>.Empty) },
         { LocationtypesRoute, new ParameterTestParameters(typeof(CreateLocationTypeRequest), false, ImmutableList<string>.Empty) },

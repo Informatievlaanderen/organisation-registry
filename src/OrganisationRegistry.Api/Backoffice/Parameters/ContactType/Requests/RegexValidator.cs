@@ -15,12 +15,11 @@ public class RegexValidator<T> : IPropertyValidator<T, string?>
     {
         try
         {
-            Regex? maybeRegex = null;
+            if (value is { })
+                // ReSharper disable once ObjectCreationAsStatement
+                new Regex(value);
 
-            if (value is { } regex)
-                maybeRegex = new Regex(regex);
-
-            return maybeRegex is { };
+            return true;
         }
         catch (Exception)
         {
