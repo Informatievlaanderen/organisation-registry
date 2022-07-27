@@ -29,6 +29,10 @@ public class WhenUpdatingAnOrganisationContact
     private readonly string _contactType2Name;
     private readonly string _newContactValue;
     private readonly string _oldContactValue;
+    private readonly string _contactType1Regex;
+    private readonly string _contactType1Example;
+    private readonly string _contactType2Regex;
+    private readonly string _contactType2Example;
 
     public WhenUpdatingAnOrganisationContact(ITestOutputHelper helper) : base(helper)
     {
@@ -36,8 +40,12 @@ public class WhenUpdatingAnOrganisationContact
         _organisationId = fixture.Create<Guid>();
         _contactType1Id = fixture.Create<Guid>();
         _contactType1Name = fixture.Create<string>();
+        _contactType1Regex = ".*";
+        _contactType1Example = fixture.Create<string>();
         _contactType2Id = fixture.Create<Guid>();
         _contactType2Name = fixture.Create<string>();
+        _contactType2Regex = ".*";
+        _contactType2Example = fixture.Create<string>();
         _organisationContactId = fixture.Create<Guid>();
         _newContactValue = fixture.Create<string>();
         _oldContactValue = fixture.Create<string>();
@@ -91,10 +99,10 @@ public class WhenUpdatingAnOrganisationContact
         => new OrganisationCreatedBuilder().WithId(_organisationId);
 
     private ContactTypeCreated ContactType1Created
-        => new(_contactType1Id, _contactType1Name);
+        => new(_contactType1Id, _contactType1Name, _contactType1Regex, _contactType1Example);
 
     private ContactTypeCreated ContactType2Created
-        => new(_contactType2Id, _contactType2Name);
+        => new(_contactType2Id, _contactType2Name, _contactType2Regex, _contactType2Example);
 
     private OrganisationContactAdded OrganisationContact1Added
         => new(_organisationId, _organisationContactId, _contactType1Id, _contactType1Name, _oldContactValue, null, null);

@@ -102,7 +102,7 @@ public class WhenAddingAnOrganisationCapacity
     }
 
     private ContactTypeCreated ContactTypeCreated
-        => new(_contactTypeId1, _fixture.Create<string>());
+        => new(_contactTypeId1, _fixture.Create<string>(), ".*", _fixture.Create<string>());
 
     private LocationCreated LocationCreated
         => new(_locationId, null, _fixture.Create<string>(), _fixture.Create<string>(), _fixture.Create<string>(), _fixture.Create<string>(), _fixture.Create<string>());

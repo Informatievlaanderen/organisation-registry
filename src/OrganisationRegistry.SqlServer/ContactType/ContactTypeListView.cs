@@ -17,6 +17,10 @@ public class ContactTypeListItem
     public Guid Id { get; set; }
 
     public string Name { get; set; } = null!;
+
+    public string Regex { get; set; } = null!;
+
+    public string Example { get; set; } = null!;
 }
 
 public class ContactTypeListConfiguration : EntityMappingConfiguration<ContactTypeListItem>
@@ -31,6 +35,12 @@ public class ContactTypeListConfiguration : EntityMappingConfiguration<ContactTy
 
         b.Property(p => p.Name)
             .HasMaxLength(NameLength)
+            .IsRequired();
+
+        b.Property(p => p.Regex)
+            .IsRequired();
+
+        b.Property(p => p.Example)
             .IsRequired();
 
         b.HasIndex(x => x.Name).IsUnique().IsClustered();
@@ -66,30 +76,32 @@ public class ContactTypeListView :
 
     public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ContactTypeCreated> message)
     {
-        using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-        {
-            var contactType = new ContactTypeListItem
-            {
-                Id = message.Body.ContactTypeId,
-                Name = message.Body.Name,
-            };
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
 
-            await context.ContactTypeList.AddAsync(contactType);
-            await context.SaveChangesAsync();
-        }
+        var contactType = new ContactTypeListItem
+        {
+            Id = message.Body.ContactTypeId,
+            Name = message.Body.Name,
+            Regex = message.Body.Regex ?? ".*",
+            Example = message.Body.Example ?? string.Empty,
+        };
+
+        await context.ContactTypeList.AddAsync(contactType);
+        await context.SaveChangesAsync();
     }
 
     public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ContactTypeUpdated> message)
     {
-        using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-        {
-            var contactType = context.ContactTypeList.SingleOrDefault(x => x.Id == message.Body.ContactTypeId);
-            if (contactType == null)
-                return; // TODO: Error?
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
 
-            contactType.Name = message.Body.Name;
-            await context.SaveChangesAsync();
-        }
+        var contactType = context.ContactTypeList.SingleOrDefault(x => x.Id == message.Body.ContactTypeId);
+        if (contactType == null)
+            return;
+
+        contactType.Name = message.Body.Name;
+        contactType.Regex = message.Body.Regex ?? ".*";
+        contactType.Example = message.Body.Example ?? string.Empty;
+        await context.SaveChangesAsync();
     }
 
     public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)

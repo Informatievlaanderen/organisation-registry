@@ -1,14 +1,12 @@
 ﻿namespace OrganisationRegistry.Api.IntegrationTests.BackOffice.Organisation;
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using AutoFixture;
 using Backoffice.Organisation.Function;
 using FluentAssertions;
-using OrganisationRegistry.Organisation;
 using Xunit;
 
 [Collection(ApiTestsCollection.Name)]

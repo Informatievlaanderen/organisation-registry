@@ -23,6 +23,8 @@ public class WhenAddingAnOrganisationContact
 {
     private readonly Guid _organisationId;
     private readonly Guid _contactTypeId;
+    private readonly string _contactTypeRegex;
+    private readonly string _contactTypeExample;
     private readonly Guid _organisationContactId;
     private readonly DateTime _validTo;
     private readonly DateTime _validFrom;
@@ -38,6 +40,8 @@ public class WhenAddingAnOrganisationContact
         _validTo = dateTimeProviderStub.Today.AddDays(2);
         _organisationId = Guid.NewGuid();
         _contactValue = "info@email.com";
+        _contactTypeRegex = ".*";
+        _contactTypeExample = "example@example.be";
     }
 
     protected override AddOrganisationContactCommandHandler BuildHandler(ISession session)
@@ -62,7 +66,7 @@ public class WhenAddingAnOrganisationContact
                 null,
                 null,
                 null),
-            new ContactTypeCreated(_contactTypeId, "Contact type A"),
+            new ContactTypeCreated(_contactTypeId, "Contact type A", _contactTypeRegex, _contactTypeExample),
         };
 
     private AddOrganisationContact AddOrganisationContactCommand

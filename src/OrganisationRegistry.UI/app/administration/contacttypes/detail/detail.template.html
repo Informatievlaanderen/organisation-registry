@@ -18,6 +18,20 @@
             [name]="'Naam'"
             [focus]="true">
           </ww-form-group-textbox>
+          <ww-form-group-textbox
+            [id]="'regex'"
+            [label]="'Regex'"
+            [control]="form.get('regex')"
+            [placeholder]="'Regular expression'"
+            [name]="'Regex'">
+          </ww-form-group-textbox>
+          <ww-form-group-textbox
+            [id]="'example'"
+            [label]="'Example'"
+            [control]="form.get('example')"
+            [placeholder]="'Voorbeeld'"
+            [name]="'Example'">
+          </ww-form-group-textbox>
 
           <div class="form__row">
             <div class="form__buttons">
