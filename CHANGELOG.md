@@ -1,3 +1,11 @@
+# [1.240.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.239.0...v1.240.0) (2022-07-27)
+
+
+### Features
+
+* or-1127 fix tests validate email ([b817a22](https://github.com/informatievlaanderen/organisation-registry/commit/b817a225279fc92abc299e1c124ed7539974df79))
+* or-1127 validate email addresses ([20bdae8](https://github.com/informatievlaanderen/organisation-registry/commit/20bdae8f48583af8fdfb81e5e6f07ee11f177dad))
+
 # [1.239.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.238.0...v1.239.0) (2022-07-26)
 
 
