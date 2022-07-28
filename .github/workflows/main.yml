@@ -201,7 +201,7 @@ jobs:
         docker push $BUILD_DOCKER_REGISTRY/organisation-registry/projections-reporting:$SEMVER
         docker push $BUILD_DOCKER_REGISTRY/organisation-registry/kbo-mutations:$SEMVER
         docker push $BUILD_DOCKER_REGISTRY/organisation-registry/ui:$SEMVER
-        docker push $BUILD_DOCKER_REGISTRY/organisation-registry/scheduler:$SEMVER
+        docker push $BUILD_DOCKER_REGISTRY/organisation-registry/acmidm:$SEMVER
       env:
         BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY }}
         SEMVER: ${{ env.RELEASE_VERSION }}
