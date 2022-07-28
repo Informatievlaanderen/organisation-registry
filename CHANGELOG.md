@@ -1,3 +1,10 @@
+## [1.241.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.241.0...v1.241.1) (2022-07-28)
+
+
+### Bug Fixes
+
+* or-1127 allow empty string as valid value ([94bd125](https://github.com/informatievlaanderen/organisation-registry/commit/94bd125654330c76a03f52d59d60fbcf4abf7722))
+
 # [1.241.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.240.0...v1.241.0) (2022-07-28)
 
 
