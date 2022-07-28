@@ -40,6 +40,7 @@ public class ContactType : AggregateRoot
 
     public void ThrowIfInvalidValue(string value)
     {
+        if (string.IsNullOrEmpty(value)) return;
         if (!Regex.IsMatch(value))
             throw new ValueDoesNotMatchRegex(Name, Example);
     }
