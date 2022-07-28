@@ -648,8 +648,7 @@ public partial class Organisation : AggregateRoot
         if (functionType == null)
             throw new ArgumentNullException(nameof(functionType));
 
-        foreach (var contact in contacts)
-            contact.ContactType.ThrowIfInvalidValue(contact.Value);
+        contacts.ThrowIfAnyInvalid();
 
         ApplyChange(
             new OrganisationFunctionAdded(
@@ -674,8 +673,7 @@ public partial class Organisation : AggregateRoot
         if (functionType == null)
             throw new ArgumentNullException(nameof(functionType));
 
-        foreach (var contact in contacts)
-            contact.ContactType.ThrowIfInvalidValue(contact.Value);
+        contacts.ThrowIfAnyInvalid();
 
         var previousFunctionType = State.OrganisationFunctionTypes.Single(
             organisationFunctionType =>
@@ -809,8 +807,7 @@ public partial class Organisation : AggregateRoot
         Period validity,
         IDateTimeProvider dateTimeProvider)
     {
-        foreach (var contact in contacts)
-            contact.ContactType.ThrowIfInvalidValue(contact.Value);
+        contacts.ThrowIfAnyInvalid();
 
         ApplyChange(
             new OrganisationCapacityAdded(
@@ -849,8 +846,7 @@ public partial class Organisation : AggregateRoot
         Period validity,
         IDateTimeProvider dateTimeProvider)
     {
-        foreach (var contact in contacts)
-            contact.ContactType.ThrowIfInvalidValue(contact.Value);
+        contacts.ThrowIfAnyInvalid();
 
         var previousCapacity = State.OrganisationCapacities.Single(
             organisationCapacity =>
