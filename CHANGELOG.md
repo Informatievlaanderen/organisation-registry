@@ -1,3 +1,10 @@
+# [1.241.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.240.0...v1.241.0) (2022-07-28)
+
+
+### Features
+
+* or-1127 make validation error more readable ([21c27a4](https://github.com/informatievlaanderen/organisation-registry/commit/21c27a4002c725b194c2de6261ea5a82257e8f2d))
+
 # [1.240.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.239.0...v1.240.0) (2022-07-27)
 
 
