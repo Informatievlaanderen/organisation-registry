@@ -13,6 +13,9 @@ open Fake.IO.FileSystemOperators
 open Fake.IO.Globbing.Operators
 open Fake.JavaScript
 open ``Build-generic``
+open System
+open System.IO
+
 
 let product = "Basisregisters Vlaanderen"
 let copyright = "Copyright (c) Vlaamse overheid"
@@ -45,6 +48,10 @@ Target.create "Restore_Solution" (fun _ -> restore "OrganisationRegistry")
 Target.create "Build_Solution" (fun _ ->
   setVersions "SolutionInfo.cs"
   buildSolution "OrganisationRegistry")
+
+Target.create "Build_AcmIdm" (fun _ ->
+  setVersions "SolutionInfo.cs"
+  buildSolution "src/IdentityServer/IdentityServer")
 
 Target.create "Site_Build" (fun _ ->
   Npm.exec "run build" id
@@ -83,12 +90,6 @@ Target.create "Publish_Solution" (fun _ ->
     "OrganisationRegistry.KboMutations"
     "OrganisationRegistry.Rebuilder"
   ] |> List.iter publishSource
-
-  let dist = (buildDir @@ "OrganisationRegistry.Scheduler" @@ "linux")
-  let source = "src" @@ "OrganisationRegistry.Scheduler"
-
-  Shell.mkdir dist
-  Shell.copyFile dist (source @@ "Dockerfile")
 )
 
 Target.create "Clean_Solution" (fun _ ->
@@ -129,8 +130,27 @@ Target.create "PushContainer_Rebuilder" (fun _ -> push "rebuilder")
 Target.create "Containerize_Site" (fun _ -> containerize "OrganisationRegistry.UI" "ui")
 Target.create "PushContainer_Site" (fun _ -> push "ui")
 
-Target.create "Containerize_Scheduler" (fun _ -> containerize "OrganisationRegistry.Scheduler" "scheduler")
-Target.create "PushContainer_Scheduler" (fun _ -> push "scheduler")
+let containerizeAcmIdm path containerName =
+  let result1 =
+    [ "build"; "."; "--no-cache"; "--tag"; sprintf "%s/%s/%s:%s" dockerRegistry dockerRepository containerName buildNumber; "--build-arg"; sprintf "build_number=%s" buildNumber]
+    |> CreateProcess.fromRawCommand "docker"
+    |> CreateProcess.withWorkingDirectory (path)
+    |> CreateProcess.withTimeout (TimeSpan.FromMinutes 5.)
+    |> Proc.run
+
+  if result1.ExitCode <> 0 then failwith "Failed result from Docker Build"
+
+  let result2 =
+    [ "tag"; sprintf "%s/%s/%s:%s" dockerRegistry dockerRepository containerName buildNumber; sprintf "%s/%s/%s:latest" dockerRegistry dockerRepository containerName]
+    |> CreateProcess.fromRawCommand "docker"
+    |> CreateProcess.withTimeout (TimeSpan.FromMinutes 5.)
+    |> Proc.run
+
+  if result2.ExitCode <> 0 then failwith "Failed result from Docker Tag"
+
+Target.create "Containerize_AcmIdm" (fun _ -> containerizeAcmIdm "src/IdentityServer" "acmidm")
+Target.create "PushContainer_AcmIdm" (fun _ -> push "acmidm")
+
 
 // --------------------------------------------------------------------------------
 
@@ -146,6 +166,7 @@ Target.create "Push" ignore
   ==> "CleanAll"
   ==> "Restore_Solution"
   ==> "Build_Solution"
+  ==> "Build_AcmIdm"
   ==> "Build"
 
 "Build"
@@ -172,7 +193,7 @@ Target.create "Push" ignore
   ==> "Containerize_KboMutations"
   ==> "Containerize_Rebuilder"
   ==> "Containerize_Site"
-  ==> "Containerize_Scheduler"
+  ==> "Containerize_AcmIdm"
   ==> "Containerize"
 // Possibly add more projects to containerize here
 
@@ -187,7 +208,7 @@ Target.create "Push" ignore
   ==> "PushContainer_KboMutations"
   ==> "PushContainer_Rebuilder"
   ==> "PushContainer_Site"
-  ==> "PushContainer_Scheduler"
+  ==> "PushContainer_AcmIdm"
   ==> "Push"
 // Possibly add more projects to push here
 
