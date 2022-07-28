@@ -1,3 +1,10 @@
+# [1.243.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.242.0...v1.243.0) (2022-07-28)
+
+
+### Features
+
+* or-1126 remove scheduler push ([10a5d73](https://github.com/informatievlaanderen/organisation-registry/commit/10a5d738df14710050db9eeb6da8181d86854791))
+
 # [1.242.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.241.2...v1.242.0) (2022-07-28)
 
 
