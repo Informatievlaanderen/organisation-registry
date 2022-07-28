@@ -1,3 +1,11 @@
+# [1.242.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.241.2...v1.242.0) (2022-07-28)
+
+
+### Features
+
+* or-1126 containerize identity server ([30c8764](https://github.com/informatievlaanderen/organisation-registry/commit/30c87641c5134d26b40370fb76435c329424198d))
+* or-1126 push identity server ([76dde42](https://github.com/informatievlaanderen/organisation-registry/commit/76dde424d09c494b90e716b88494cc9aafbab4af))
+
 ## [1.241.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.241.1...v1.241.2) (2022-07-28)
 
 
