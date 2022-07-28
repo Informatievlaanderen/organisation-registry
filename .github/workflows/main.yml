@@ -20,10 +20,6 @@ jobs:
           MSSQL_TCP_PORT: 21433
         ports:
           - 21433:21433
-      acm:
-        image: 830031229216.dkr.ecr.eu-west-1.amazonaws.com/organisation-registry/acmidm:1.242.0
-        ports:
-          - 5050:80
       opensearch:
         image: opensearchproject/opensearch:1.1.0
         env:
