@@ -185,6 +185,15 @@ jobs:
         aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.VBR_AWS_REGION }}
 
+    - name: Push acm image to Staging
+      if: env.RELEASE_VERSION != 'none'
+      shell: bash
+      run: |
+        docker push ghcr.io/informatievlaanderen/acmidm:$SEMVER
+      env:
+        SEMVER: ${{ env.RELEASE_VERSION }}
+        WORKSPACE: ${{ github.workspace }}
+
     - name: Login to Amazon ECR (Staging)
       if: env.RELEASE_VERSION != 'none'
       uses: aws-actions/amazon-ecr-login@v1
@@ -201,7 +210,6 @@ jobs:
         docker push $BUILD_DOCKER_REGISTRY/organisation-registry/projections-reporting:$SEMVER
         docker push $BUILD_DOCKER_REGISTRY/organisation-registry/kbo-mutations:$SEMVER
         docker push $BUILD_DOCKER_REGISTRY/organisation-registry/ui:$SEMVER
-        docker push $BUILD_DOCKER_REGISTRY/organisation-registry/acmidm:$SEMVER
       env:
         BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY }}
         SEMVER: ${{ env.RELEASE_VERSION }}
