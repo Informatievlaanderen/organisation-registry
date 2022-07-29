@@ -1,3 +1,10 @@
+# [1.244.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.243.0...v1.244.0) (2022-07-29)
+
+
+### Features
+
+* or-1126 push acm image to ghcr ([8a9cd16](https://github.com/informatievlaanderen/organisation-registry/commit/8a9cd16696127ef07a7ddc7fa18013793877de8c))
+
 # [1.243.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.242.0...v1.243.0) (2022-07-28)
 
 
