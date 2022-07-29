@@ -6,7 +6,6 @@ using Backoffice.Parameters.BodyClassification.Requests;
 using Backoffice.Parameters.BodyClassificationType.Requests;
 using Backoffice.Parameters.Building.Requests;
 using Backoffice.Parameters.Capacity.Requests;
-using Backoffice.Parameters.ContactType.Requests;
 using Backoffice.Parameters.FormalFramework.Requests;
 using Backoffice.Parameters.FormalFrameworkCategory.Requests;
 using Backoffice.Parameters.FunctionType.Requests;

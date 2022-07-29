@@ -1,4 +1,4 @@
-import { Role } from './role.model';
+import { Role } from "./role.model";
 
 export class User {
   roles: Array<Role>;
@@ -17,27 +17,27 @@ export class User {
     const roles = new Array<Role>();
     for (let role of externalRoles) {
       switch (role) {
-        case 'algemeenBeheerder':
+        case "algemeenBeheerder":
           roles.push(Role.AlgemeenBeheerder);
           break;
 
-        case 'vlimpersBeheerder':
+        case "vlimpersBeheerder":
           roles.push(Role.VlimpersBeheerder);
           break;
 
-        case 'orgaanBeheerder':
+        case "orgaanBeheerder":
           roles.push(Role.OrgaanBeheerder);
           break;
 
-        case 'decentraalBeheerder':
+        case "decentraalBeheerder":
           roles.push(Role.DecentraalBeheerder);
           break;
 
-        case 'regelgevingBeheerder':
+        case "regelgevingBeheerder":
           roles.push(Role.RegelgevingBeheerder);
           break;
 
-        case 'developer':
+        case "developer":
           roles.push(Role.Developer);
           break;
 
