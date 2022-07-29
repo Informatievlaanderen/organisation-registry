@@ -12,8 +12,9 @@ import { User } from "./user.model";
 import { Role } from "./role.model";
 import { OidcClient } from "oidc-client";
 import { Subscription } from "rxjs/Subscription";
+import { catchError, map } from "rxjs/operators";
 
-interface SecurityInfo {
+export interface SecurityInfo {
   isLoggedIn: boolean;
   userName: string;
   roles: Array<Role>;
@@ -84,7 +85,8 @@ export class OidcService implements OnDestroy {
   private data$ = new BehaviorSubject(this.storage);
   private request$ = new Subject<SecurityInfo>();
 
-  private readonly securityInfoChanged$: Observable<SecurityInfo>;
+  private readonly securityInfoChanged$: Observable<SecurityInfo> =
+    this.data$.asObservable();
 
   private client: OidcClient;
 
@@ -94,8 +96,6 @@ export class OidcService implements OnDestroy {
     private http: Http,
     private configurationService: ConfigurationService
   ) {
-    this.securityInfoChanged$ = this.data$.asObservable();
-
     this.subscriptions.push(
       http.get(this.securityInfoUrl).subscribe((r) => {
         var data = r.json();
@@ -147,25 +147,21 @@ export class OidcService implements OnDestroy {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
 
-  exchangeCode(code: string, configurationService: ConfigurationService) {
+  exchangeCode(code: string): Observable<string> {
     const url = `${
       this.securityUrl
     }/exchange?code=${code}&verifier=${localStorage.getItem("verifier")}`;
 
     let headers = new HeadersBuilder().json().build();
 
-    const subscription = this.http
-      .get(url, { headers: headers })
-      .catch(this.handleError)
-      .subscribe((res) => {
+    return this.http.get(url, { headers: headers }).pipe(
+      catchError(this.handleError),
+      map((res: Response) => {
         const token = res.json();
         localStorage.setItem("token", token);
-        window.location.href = configurationService.uiUrl;
-      });
-
-    this.subscriptions.push(subscription);
-
-    return subscription;
+        return token;
+      })
+    );
   }
 
   public signIn() {
@@ -289,11 +285,11 @@ export class OidcService implements OnDestroy {
     this.request$.next(null);
   }
 
-  public get securityInfo() {
+  public get securityInfo(): Observable<SecurityInfo> {
     return this.securityInfoChanged$;
   }
 
-  private getOrUpdateValue(): Observable<SecurityInfo> {
+  public getOrUpdateValue(): Observable<SecurityInfo> {
     return this.data$
       .take(1)
       .filter((value, index) => {
@@ -310,7 +306,7 @@ export class OidcService implements OnDestroy {
       });
   }
 
-  private loadFromServer(): Observable<SecurityInfo> {
+  public loadFromServer(): Observable<SecurityInfo> {
     // console.log('loading from server request');
     return this.get()
       .map((user) => {
