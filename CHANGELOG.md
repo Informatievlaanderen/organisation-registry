@@ -1,3 +1,14 @@
+# [1.245.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.244.0...v1.245.0) (2022-07-29)
+
+
+### Features
+
+* or-1126 fix indenting ([b1dbc58](https://github.com/informatievlaanderen/organisation-registry/commit/b1dbc5881a77851d3fe25081031c22b47d74c0ce))
+* or-1126 fix indenting (again) ([6acedc8](https://github.com/informatievlaanderen/organisation-registry/commit/6acedc83456d238c0a8b2f07ee26a0867e1ee1d6))
+* or-1126 fix more indenting ([2cf64ca](https://github.com/informatievlaanderen/organisation-registry/commit/2cf64ca8eb5cb67dbcc32e1884904e469d9cc612))
+* or-1126 tag image before pushing & run in parallel ([8085519](https://github.com/informatievlaanderen/organisation-registry/commit/808551953c711fc641375294433666a53c45aaf1))
+* or-1139 redirect decentraal beheerder on login ([8954c1d](https://github.com/informatievlaanderen/organisation-registry/commit/8954c1df899701c27c4ee198fcb12415fe466d53))
+
 # [1.244.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.243.0...v1.244.0) (2022-07-29)
 
 
