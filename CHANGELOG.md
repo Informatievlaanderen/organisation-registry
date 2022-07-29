@@ -1,3 +1,10 @@
+# [1.246.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.245.1...v1.246.0) (2022-07-29)
+
+
+### Features
+
+* or-1126 don't push scheduler ([23e8335](https://github.com/informatievlaanderen/organisation-registry/commit/23e8335724b0b189e0704513e9e9e499b1f1ae33))
+
 ## [1.245.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.245.0...v1.245.1) (2022-07-29)
 
 
