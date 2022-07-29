@@ -205,71 +205,71 @@ jobs:
         SEMVER: ${{ env.RELEASE_VERSION }}
         WORKSPACE: ${{ github.workspace }}
 
-        - name: Login to Amazon ECR (Staging)
-          if: env.RELEASE_VERSION != 'none'
-          uses: aws-actions/amazon-ecr-login@v1
+          - name: Login to Amazon ECR (Staging)
+            if: env.RELEASE_VERSION != 'none'
+            uses: aws-actions/amazon-ecr-login@v1
 
-        - name: Push to Staging
-          if: env.RELEASE_VERSION != 'none'
-          shell: bash
-          run: |
-            docker push $BUILD_DOCKER_REGISTRY/organisation-registry/api:$SEMVER
-            docker push $BUILD_DOCKER_REGISTRY/organisation-registry/batch-agentschapzorgengezondheidftpdump:$SEMVER
-            docker push $BUILD_DOCKER_REGISTRY/organisation-registry/batch-vlaanderenbe:$SEMVER
-            docker push $BUILD_DOCKER_REGISTRY/organisation-registry/projections-elasticsearch:$SEMVER
-            docker push $BUILD_DOCKER_REGISTRY/organisation-registry/projections-delegations:$SEMVER
-            docker push $BUILD_DOCKER_REGISTRY/organisation-registry/projections-reporting:$SEMVER
-            docker push $BUILD_DOCKER_REGISTRY/organisation-registry/kbo-mutations:$SEMVER
-            docker push $BUILD_DOCKER_REGISTRY/organisation-registry/ui:$SEMVER
-          env:
-            BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY }}
-            SEMVER: ${{ env.RELEASE_VERSION }}
-            WORKSPACE: ${{ github.workspace }}
+          - name: Push to Staging
+            if: env.RELEASE_VERSION != 'none'
+            shell: bash
+            run: |
+              docker push $BUILD_DOCKER_REGISTRY/organisation-registry/api:$SEMVER
+              docker push $BUILD_DOCKER_REGISTRY/organisation-registry/batch-agentschapzorgengezondheidftpdump:$SEMVER
+              docker push $BUILD_DOCKER_REGISTRY/organisation-registry/batch-vlaanderenbe:$SEMVER
+              docker push $BUILD_DOCKER_REGISTRY/organisation-registry/projections-elasticsearch:$SEMVER
+              docker push $BUILD_DOCKER_REGISTRY/organisation-registry/projections-delegations:$SEMVER
+              docker push $BUILD_DOCKER_REGISTRY/organisation-registry/projections-reporting:$SEMVER
+              docker push $BUILD_DOCKER_REGISTRY/organisation-registry/kbo-mutations:$SEMVER
+              docker push $BUILD_DOCKER_REGISTRY/organisation-registry/ui:$SEMVER
+            env:
+              BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY }}
+              SEMVER: ${{ env.RELEASE_VERSION }}
+              WORKSPACE: ${{ github.workspace }}
 
-        - name: Configure AWS credentials (Production)
-          if: env.RELEASE_VERSION != 'none'
-          uses: aws-actions/configure-aws-credentials@v1
-          with:
-            aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_PRD }}
-            aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_PRD }}
-            aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
+          - name: Configure AWS credentials (Production)
+            if: env.RELEASE_VERSION != 'none'
+            uses: aws-actions/configure-aws-credentials@v1
+            with:
+              aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_PRD }}
+              aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_PRD }}
+              aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
 
-        - name: Login to Amazon ECR (Production)
-          if: env.RELEASE_VERSION != 'none'
-          uses: aws-actions/amazon-ecr-login@v1
+          - name: Login to Amazon ECR (Production)
+            if: env.RELEASE_VERSION != 'none'
+            uses: aws-actions/amazon-ecr-login@v1
 
-        - name: Push to Production
-          if: env.RELEASE_VERSION != 'none'
-          shell: bash
-          run: |
-            docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/api:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/api:$SEMVER
-            docker push $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/api:$SEMVER
+          - name: Push to Production
+            if: env.RELEASE_VERSION != 'none'
+            shell: bash
+            run: |
+              docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/api:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/api:$SEMVER
+              docker push $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/api:$SEMVER
 
-            docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/batch-agentschapzorgengezondheidftpdump:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/batch-agentschapzorgengezondheidftpdump:$SEMVER
-            docker push $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/batch-agentschapzorgengezondheidftpdump:$SEMVER
+              docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/batch-agentschapzorgengezondheidftpdump:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/batch-agentschapzorgengezondheidftpdump:$SEMVER
+              docker push $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/batch-agentschapzorgengezondheidftpdump:$SEMVER
 
-            docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/batch-vlaanderenbe:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/batch-vlaanderenbe:$SEMVER
-            docker push $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/batch-vlaanderenbe:$SEMVER
+              docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/batch-vlaanderenbe:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/batch-vlaanderenbe:$SEMVER
+              docker push $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/batch-vlaanderenbe:$SEMVER
 
-            docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/projections-elasticsearch:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/projections-elasticsearch:$SEMVER
-            docker push $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/projections-elasticsearch:$SEMVER
+              docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/projections-elasticsearch:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/projections-elasticsearch:$SEMVER
+              docker push $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/projections-elasticsearch:$SEMVER
 
-            docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/projections-delegations:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/projections-delegations:$SEMVER
-            docker push $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/projections-delegations:$SEMVER
+              docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/projections-delegations:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/projections-delegations:$SEMVER
+              docker push $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/projections-delegations:$SEMVER
 
-            docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/projections-reporting:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/projections-reporting:$SEMVER
-            docker push $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/projections-reporting:$SEMVER
+              docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/projections-reporting:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/projections-reporting:$SEMVER
+              docker push $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/projections-reporting:$SEMVER
 
-            docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/kbo-mutations:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/kbo-mutations:$SEMVER
-            docker push $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/kbo-mutations:$SEMVER
+              docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/kbo-mutations:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/kbo-mutations:$SEMVER
+              docker push $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/kbo-mutations:$SEMVER
 
-            docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/ui:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/ui:$SEMVER
-            docker push $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/ui:$SEMVER
-          env:
-            BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY }}
-            BUILD_DOCKER_REGISTRY_PRD: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_PRD }}
-            SEMVER: ${{ env.RELEASE_VERSION }}
-            WORKSPACE: ${{ github.workspace }}
+              docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/ui:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/ui:$SEMVER
+              docker push $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/ui:$SEMVER
+            env:
+              BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY }}
+              BUILD_DOCKER_REGISTRY_PRD: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_PRD }}
+              SEMVER: ${{ env.RELEASE_VERSION }}
+              WORKSPACE: ${{ github.workspace }}
 
   publish:
     needs: push_docker
