@@ -1,3 +1,10 @@
+## [1.245.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.245.0...v1.245.1) (2022-07-29)
+
+
+### Reverts
+
+* Revert all build script changes ([3d91187](https://github.com/informatievlaanderen/organisation-registry/commit/3d9118783ffe0177e6fd98f38cda49f76bbe4661))
+
 # [1.245.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.244.0...v1.245.0) (2022-07-29)
 
 
