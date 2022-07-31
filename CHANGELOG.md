@@ -1,3 +1,10 @@
+# [1.247.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.246.0...v1.247.0) (2022-07-31)
+
+
+### Features
+
+* or-1126 run targets in parallel ([0560e98](https://github.com/informatievlaanderen/organisation-registry/commit/0560e987a616a94750c2a25e67ddaa4ed3659a31))
+
 # [1.246.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.245.1...v1.246.0) (2022-07-29)
 
 
