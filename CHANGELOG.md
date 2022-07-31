@@ -1,3 +1,10 @@
+# [1.249.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.248.0...v1.249.0) (2022-07-31)
+
+
+### Features
+
+* or-1126 push acm through build-push-action ([86d2f25](https://github.com/informatievlaanderen/organisation-registry/commit/86d2f253160c7d4ef3959594178d5e2ddfbe6041))
+
 # [1.248.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.247.0...v1.248.0) (2022-07-31)
 
 
