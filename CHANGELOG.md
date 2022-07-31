@@ -1,3 +1,11 @@
+# [1.248.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.247.0...v1.248.0) (2022-07-31)
+
+
+### Features
+
+* or-1126 only use 2 cpus ([3be3f8e](https://github.com/informatievlaanderen/organisation-registry/commit/3be3f8e1c93cf87361e19359dd16c903bfb06a41))
+* or-1126 push acm image ([0a5f62f](https://github.com/informatievlaanderen/organisation-registry/commit/0a5f62fe7af559c40f2aff2ff322f41f64a9abd1))
+
 # [1.247.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.246.0...v1.247.0) (2022-07-31)
 
 
