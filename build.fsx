@@ -65,6 +65,13 @@ Target.create "Site_Build" (fun _ ->
   Shell.copyFile dist (source @@ "config.js")
   Shell.copyFile dist (source @@ "init.sh")
 
+  ()
+)
+
+Target.create "Vue_Build" (fun _ ->
+  let dist = (buildDir @@ "OrganisationRegistry.UI" @@ "linux")
+  let source = "src" @@ "OrganisationRegistry.UI"
+
   Npm.install (fun o -> { o with WorkingDirectory = "src" @@ "OrganisationRegistry.Vue2" })
 
   Npm.exec "run build"  (fun o -> { o with WorkingDirectory = "src" @@ "OrganisationRegistry.Vue2" })
@@ -89,7 +96,8 @@ Target.create "Publish_Solution" (fun _ ->
     "OrganisationRegistry.Projections.Reporting"
     "OrganisationRegistry.KboMutations"
     "OrganisationRegistry.Rebuilder"
-  ] |> List.iter publishSource
+  ] |> Seq.toArray
+    |> Array.Parallel.iter publishSource
 )
 
 Target.create "Clean_Solution" (fun _ ->
@@ -154,27 +162,27 @@ Target.create "PushContainer_AcmIdm" (fun _ -> push "acmidm")
 
 // --------------------------------------------------------------------------------
 
-Target.create "Build" ignore
-Target.create "Test" ignore
+Target.create "Default" ignore
 Target.create "Publish" ignore
 Target.create "Pack" ignore
 Target.create "Containerize" ignore
 Target.create "Push" ignore
 
-"NpmInstall"
-  ==> "DotNetCli"
-  ==> "CleanAll"
-  ==> "Restore_Solution"
+"Restore_Solution"
   ==> "Build_Solution"
-  ==> "Build_AcmIdm"
-  ==> "Build"
-
-"Build"
-  ==> "Site_Build"
   ==> "Test_Solution"
-  ==> "Test"
+  ==> "Default"
 
-"Test"
+"Site_Build"
+  ==> "Default"
+
+"Vue_Build"
+  ==> "Default"
+
+"Build_AcmIdm"
+  ==> "Default"
+
+"Default"
   ==> "Publish_Solution"
   ==> "Clean_Solution"
   ==> "Publish"
@@ -184,7 +192,6 @@ Target.create "Push" ignore
   ==> "Pack"
 
 "Pack"
-  ==> "Containerize_Api"
   ==> "Containerize_AgentschapZorgEnGezondheid"
   ==> "Containerize_VlaanderenBeNotifier"
   ==> "Containerize_ElasticSearch"
@@ -192,10 +199,16 @@ Target.create "Push" ignore
   ==> "Containerize_Reporting"
   ==> "Containerize_KboMutations"
   ==> "Containerize_Rebuilder"
-  ==> "Containerize_Site"
+  ==> "Containerize_Api"
+  ==> "Containerize"
+
+"Pack"
   ==> "Containerize_AcmIdm"
   ==> "Containerize"
-// Possibly add more projects to containerize here
+
+"Pack"
+  ==> "Containerize_Site"
+  ==> "Containerize"
 
 "Containerize"
   ==> "DockerLogin"
@@ -210,7 +223,6 @@ Target.create "Push" ignore
   ==> "PushContainer_Site"
   ==> "PushContainer_AcmIdm"
   ==> "Push"
-// Possibly add more projects to push here
 
 // By default we build & test
-Target.runOrDefault "Test"
+Target.runOrDefault "Default"
