@@ -9,7 +9,7 @@ FAKE_ALLOW_NO_DEPENDENCIES=true dotnet fake build -t "CleanAll"
 
 if [ $# -eq 0 ]
 then
-  FAKE_ALLOW_NO_DEPENDENCIES=true dotnet fake build --parallel 8
+  FAKE_ALLOW_NO_DEPENDENCIES=true dotnet fake build --parallel 2
 else
-  FAKE_ALLOW_NO_DEPENDENCIES=true dotnet fake build --parallel 8 -t "$@"
+  FAKE_ALLOW_NO_DEPENDENCIES=true dotnet fake build --parallel 2 -t "$@"
 fi
