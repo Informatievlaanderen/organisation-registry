@@ -177,6 +177,17 @@ jobs:
       run: |
         ./.sonar/scanner/dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
 
+    - name: Push acm image to Staging
+      if: env.RELEASE_VERSION != 'none'
+      shell: bash
+      run: |
+        docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/acmidm:$SEMVER ghcr.io/informatievlaanderen/acmidm:$SEMVER
+        docker push ghcr.io/informatievlaanderen/acmidm:$SEMVER
+      env:
+        SEMVER: ${{ env.RELEASE_VERSION }}
+        WORKSPACE: ${{ github.workspace }}
+        BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY }}
+
     - name: Configure AWS credentials (Staging)
       if: env.RELEASE_VERSION != 'none'
       uses: aws-actions/configure-aws-credentials@v1
