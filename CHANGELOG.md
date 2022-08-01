@@ -1,3 +1,10 @@
+# [1.251.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.250.0...v1.251.0) (2022-08-01)
+
+
+### Features
+
+* or-1126 use interpolation ([b71da25](https://github.com/informatievlaanderen/organisation-registry/commit/b71da25c076b05765ee6a371a4b9bc7aba57c71e))
+
 # [1.250.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.249.0...v1.250.0) (2022-08-01)
 
 
