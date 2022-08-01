@@ -36,28 +36,28 @@ public class CreateFromKboNumberTests
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
 
-    [EnvVarIgnoreFact]
-    public async Task AsCjmBeheerder_ReturnsCreated()
-    {
-        var httpClient = await _fixture.CreateMachine2MachineClientFor(ApiFixture.CJM.Client, ApiFixture.CJM.Scope);
+    // [EnvVarIgnoreFact]
+    // public async Task AsCjmBeheerder_ReturnsCreated()
+    // {
+    //     var httpClient = await _fixture.CreateMachine2MachineClientFor(ApiFixture.CJM.Client, ApiFixture.CJM.Scope);
+    //
+    //     var response = await CreateOrganisationFromKboNumber(httpClient);
+    //
+    //     response.StatusCode.Should().Be(HttpStatusCode.Created);
+    //     await VerifyContent(response);
+    // }
 
-        var response = await CreateOrganisationFromKboNumber(httpClient);
-
-        response.StatusCode.Should().Be(HttpStatusCode.Created);
-        await VerifyContent(response);
-    }
-
-    [EnvVarIgnoreFact]
-    public async Task AsCjmBeheerder_DuplicateCallReturnsFound()
-    {
-        var httpClient = await _fixture.CreateMachine2MachineClientFor(ApiFixture.CJM.Client, ApiFixture.CJM.Scope);
-
-        await CreateOrganisationFromKboNumber(httpClient);
-        var response = await CreateOrganisationFromKboNumber(httpClient);
-
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-        await VerifyContent(response);
-    }
+    // [EnvVarIgnoreFact]
+    // public async Task AsCjmBeheerder_DuplicateCallReturnsFound()
+    // {
+    //     var httpClient = await _fixture.CreateMachine2MachineClientFor(ApiFixture.CJM.Client, ApiFixture.CJM.Scope);
+    //
+    //     await CreateOrganisationFromKboNumber(httpClient);
+    //     var response = await CreateOrganisationFromKboNumber(httpClient);
+    //
+    //     response.StatusCode.Should().Be(HttpStatusCode.OK);
+    //     await VerifyContent(response);
+    // }
 
     private static async Task VerifyContent(HttpResponseMessage response)
     {

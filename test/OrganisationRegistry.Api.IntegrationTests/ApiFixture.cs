@@ -170,6 +170,7 @@ public class ApiFixture : IDisposable, IAsyncLifetime
     {
         var editApiConfiguration = _configurationRoot!.GetSection(EditApiConfigurationSection.Name)
             .Get<EditApiConfigurationSection>();
+
         var tokenClient = new TokenClient(
             () => new HttpClient(),
             new TokenClientOptions
