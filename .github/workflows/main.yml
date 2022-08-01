@@ -181,7 +181,7 @@ jobs:
       if: env.RELEASE_VERSION != 'none'
       shell: bash
       run: |
-        docker tag $BUILD_DOCKER_REGISTRY/inro/acmidm:$SEMVER ghcr.io/informatievlaanderen/acmidm:$SEMVER
+        docker tag $BUILD_DOCKER_REGISTRY/organisation-registry/acmidm:$SEMVER ghcr.io/informatievlaanderen/acmidm:$SEMVER
       env:
         SEMVER: ${{ env.RELEASE_VERSION }}
         WORKSPACE: ${{ github.workspace }}
