@@ -1,3 +1,10 @@
+# [1.250.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.249.0...v1.250.0) (2022-08-01)
+
+
+### Features
+
+* or-1126 fix typ ([d2509e6](https://github.com/informatievlaanderen/organisation-registry/commit/d2509e638e58d49818e61f205f3b41d9de8ba011))
+
 # [1.249.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.248.0...v1.249.0) (2022-07-31)
 
 
