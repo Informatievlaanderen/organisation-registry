@@ -1,3 +1,16 @@
+# [1.254.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.253.0...v1.254.0) (2022-08-01)
+
+
+### Features
+
+* or-1126 don't skip tests ([12e89f6](https://github.com/informatievlaanderen/organisation-registry/commit/12e89f69aca706875d365c8b967d015dc7a62ac0))
+* or-1126 ignore failing tests for now ([3a7a836](https://github.com/informatievlaanderen/organisation-registry/commit/3a7a83667c34b50d6c1ba62cd06344982e103cf6))
+* or-1126 log webhost to console ([153641a](https://github.com/informatievlaanderen/organisation-registry/commit/153641a933840f7f944c07127c9dc8fbda041652))
+* or-1126 remove logging from test webserver ([70b3183](https://github.com/informatievlaanderen/organisation-registry/commit/70b3183230e20aed449bfbec8eacfe34c565c6f0))
+* or-1126 use acm image in tests ([3b4f737](https://github.com/informatievlaanderen/organisation-registry/commit/3b4f737d3929ad76d6b1b5918a10b14a875637b9))
+* or-1126 use localhost ([c59559e](https://github.com/informatievlaanderen/organisation-registry/commit/c59559ec19303ece1ea3c9c8a76764bd0af1e4e4))
+* or-1126 use localhost ([69894f9](https://github.com/informatievlaanderen/organisation-registry/commit/69894f976564bd7d9ca238509f541d47a9139eaf))
+
 # [1.253.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.252.0...v1.253.0) (2022-08-01)
 
 
