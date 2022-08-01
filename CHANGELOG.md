@@ -1,3 +1,10 @@
+# [1.253.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.252.0...v1.253.0) (2022-08-01)
+
+
+### Features
+
+* or-1126 push to ghcr ([e7e3bd9](https://github.com/informatievlaanderen/organisation-registry/commit/e7e3bd962d07ee0c20cf6b087f1e8e1e37f3ccea))
+
 # [1.252.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.251.0...v1.252.0) (2022-08-01)
 
 
