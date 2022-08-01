@@ -182,6 +182,7 @@ jobs:
       shell: bash
       run: |
         docker tag $BUILD_DOCKER_REGISTRY/organisation-registry/acmidm:$SEMVER ghcr.io/informatievlaanderen/acmidm:$SEMVER
+        docker images
       env:
         SEMVER: ${{ env.RELEASE_VERSION }}
         WORKSPACE: ${{ github.workspace }}
@@ -192,7 +193,7 @@ jobs:
       uses: docker/build-push-action@v3
       with:
         push: true
-        tags: ghcr.io/informatievlaanderen/acmidm:$SEMVER
+        tags: ghcr.io/informatievlaanderen/acmidm:${{ env.RELEASE_VERSION }}
       env:
         SEMVER: ${{ env.RELEASE_VERSION }}
         WORKSPACE: ${{ github.workspace }}
