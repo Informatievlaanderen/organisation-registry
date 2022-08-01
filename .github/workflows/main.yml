@@ -177,7 +177,14 @@ jobs:
       run: |
         ./.sonar/scanner/dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
 
-    - name: Tag acm image
+    - name: Log in to the Container registry
+      uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Push acm image
       if: env.RELEASE_VERSION != 'none'
       shell: bash
       run: |
@@ -187,16 +194,6 @@ jobs:
         SEMVER: ${{ env.RELEASE_VERSION }}
         WORKSPACE: ${{ github.workspace }}
         BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY }}
-
-    - name: Push acm image
-      if: env.RELEASE_VERSION != 'none'
-      uses: docker/build-push-action@v3
-      with:
-        push: true
-        tags: ghcr.io/informatievlaanderen/acmidm:${{ env.RELEASE_VERSION }}
-      env:
-        SEMVER: ${{ env.RELEASE_VERSION }}
-        WORKSPACE: ${{ github.workspace }}
 
     - name: Configure AWS credentials (Staging)
       if: env.RELEASE_VERSION != 'none'
