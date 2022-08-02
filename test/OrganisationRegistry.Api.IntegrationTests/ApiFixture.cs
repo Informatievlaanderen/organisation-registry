@@ -27,6 +27,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using OrganisationRegistry.Infrastructure;
 using OrganisationRegistry.Infrastructure.Authorization;
@@ -130,6 +131,7 @@ public class ApiFixture : IDisposable, IAsyncLifetime
             .UseContentRoot(Directory.GetCurrentDirectory())
             .UseConfiguration(_configurationRoot)
             .UseStartup<Startup>()
+            .ConfigureLogging(loggingBuilder => loggingBuilder.AddConsole())
             .Build();
 
         _webHost.Start();
