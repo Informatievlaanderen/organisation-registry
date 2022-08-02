@@ -11,6 +11,9 @@ using Tests.Shared;
 
 public static class WiremockSetup
 {
+    private const string WiremockMappingsPrefix = "OrganisationRegistry.Api.IntegrationTests.Wiremock.mappings.";
+    private const string WiremockFilesPrefix = "OrganisationRegistry.Api.IntegrationTests.Wiremock.files.";
+
     public static async Task Run(string wiremockUri)
     {
         var httpClient = new HttpClient
@@ -30,7 +33,7 @@ public static class WiremockSetup
 
     private static async Task AddMappings(Assembly assembly, HttpClient httpClient)
     {
-        foreach (var mappingName in assembly.GetManifestResourceNames().Where(s => s.StartsWith("OrganisationRegistry.Api.IntegrationTests.Wiremock.mappings")))
+        foreach (var mappingName in assembly.GetManifestResourceNames().Where(s => s.StartsWith(WiremockMappingsPrefix)))
         {
             var mapping = assembly.GetResourceString(mappingName);
 
@@ -45,11 +48,11 @@ public static class WiremockSetup
 
     private static async Task AddFiles(Assembly assembly, HttpClient httpClient)
     {
-        foreach (var mappingName in assembly.GetManifestResourceNames().Where(s => s.StartsWith("OrganisationRegistry.Api.IntegrationTests.Wiremock.files")))
+        foreach (var mappingName in assembly.GetManifestResourceNames().Where(s => s.StartsWith(WiremockFilesPrefix)))
         {
             var mapping = assembly.GetResourceString(mappingName);
 
-            var fileName = mappingName[mappingName.LastIndexOf(".files.", StringComparison.Ordinal)..];
+            var fileName = mappingName.Replace(WiremockFilesPrefix, "");
 
             var result = await httpClient.PutAsync(
                 $"__admin/files/{fileName}",
