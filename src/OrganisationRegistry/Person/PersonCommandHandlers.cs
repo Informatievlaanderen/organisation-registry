@@ -2,6 +2,8 @@
 
 using System.Threading.Tasks;
 using Commands;
+using Handling;
+using Infrastructure.Authorization;
 using Infrastructure.Commands;
 using Infrastructure.Domain;
 using Microsoft.Extensions.Logging;
@@ -17,16 +19,22 @@ public class PersonCommandHandlers :
     { }
 
     public async Task Handle(ICommandEnvelope<CreatePerson> envelope)
-    {
-        var person = new Person(envelope.Command.PersonId, envelope.Command.FirstName, envelope.Command.Name, envelope.Command.Sex, envelope.Command.DateOfBirth);
-        Session.Add(person);
-        await Session.Commit(envelope.User);
-    }
+        => await Handler.For(envelope.User, Session)
+            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .Handle(
+                session =>
+                {
+                    var person = new Person(envelope.Command.PersonId, envelope.Command.FirstName, envelope.Command.Name, envelope.Command.Sex, envelope.Command.DateOfBirth);
+                    session.Add(person);
+                });
 
     public async Task Handle(ICommandEnvelope<UpdatePerson> envelope)
-    {
-        var person = Session.Get<Person>(envelope.Command.PersonId);
-        person.Update(envelope.Command.FirstName, envelope.Command.Name, envelope.Command.Sex, envelope.Command.DateOfBirth);
-        await Session.Commit(envelope.User);
-    }
+        => await UpdateHandler<Person>.For(envelope.Command, envelope.User, Session)
+            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .Handle(
+                session =>
+                {
+                    var person = session.Get<Person>(envelope.Command.PersonId);
+                    person.Update(envelope.Command.FirstName, envelope.Command.Name, envelope.Command.Sex, envelope.Command.DateOfBirth);
+                });
 }

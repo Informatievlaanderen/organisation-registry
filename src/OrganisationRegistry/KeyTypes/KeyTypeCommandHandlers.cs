@@ -3,6 +3,8 @@
 using System.Threading.Tasks;
 using Commands;
 using Exceptions;
+using Handling;
+using Infrastructure.Authorization;
 using Infrastructure.Commands;
 using Infrastructure.Domain;
 using Microsoft.Extensions.Logging;
@@ -24,29 +26,38 @@ public class KeyTypeCommandHandlers :
     }
 
     public async Task Handle(ICommandEnvelope<CreateKeyType> envelope)
-    {
-        if (_uniqueNameValidator.IsNameTaken(envelope.Command.Name))
-            throw new NameNotUnique();
+        => await Handler.For(envelope.User, Session)
+            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .Handle(
+                session =>
+                {
+                    if (_uniqueNameValidator.IsNameTaken(envelope.Command.Name))
+                        throw new NameNotUnique();
 
-        var keyType = new KeyType(envelope.Command.KeyTypeId, envelope.Command.Name);
-        Session.Add(keyType);
-        await Session.Commit(envelope.User);
-    }
+                    var keyType = new KeyType(envelope.Command.KeyTypeId, envelope.Command.Name);
+                    session.Add(keyType);
+                });
 
     public async Task Handle(ICommandEnvelope<UpdateKeyType> envelope)
-    {
-        if (_uniqueNameValidator.IsNameTaken(envelope.Command.KeyTypeId, envelope.Command.Name))
-            throw new NameNotUnique();
+        => await UpdateHandler<KeyType>.For(envelope.Command, envelope.User, Session)
+            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .Handle(
+                session =>
+                {
+                    if (_uniqueNameValidator.IsNameTaken(envelope.Command.KeyTypeId, envelope.Command.Name))
+                        throw new NameNotUnique();
 
-        var keyType = Session.Get<KeyType>(envelope.Command.KeyTypeId);
-        keyType.Update(envelope.Command.Name);
-        await Session.Commit(envelope.User);
-    }
+                    var keyType = session.Get<KeyType>(envelope.Command.KeyTypeId);
+                    keyType.Update(envelope.Command.Name);
+                });
 
     public async Task Handle(ICommandEnvelope<RemoveKeyType> envelope)
-    {
-        var keyType = Session.Get<KeyType>(envelope.Command.KeyTypeId);
-        keyType.Remove();
-        await Session.Commit(envelope.User);
-    }
+        => await UpdateHandler<KeyType>.For(envelope.Command, envelope.User, Session)
+            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .Handle(
+                session =>
+                {
+                    var keyType = session.Get<KeyType>(envelope.Command.KeyTypeId);
+                    keyType.Remove();
+                });
 }

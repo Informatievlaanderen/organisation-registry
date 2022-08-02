@@ -43,14 +43,14 @@ public class WithParticipation : Specification<UpdateBodyBalancedParticipationCo
     [Fact]
     public async Task Publishes1Event()
     {
-        await Given(Events).When(UpdateBodyBalancedParticipationCommand, TestUser.User)
+        await Given(Events).When(UpdateBodyBalancedParticipationCommand, TestUser.AlgemeenBeheerder)
             .ThenItPublishesTheCorrectNumberOfEvents(1);
     }
 
     [Fact]
     public async Task SetsParticipation()
     {
-        await Given(Events).When(UpdateBodyBalancedParticipationCommand, TestUser.User).Then();
+        await Given(Events).When(UpdateBodyBalancedParticipationCommand, TestUser.AlgemeenBeheerder).Then();
         var bodyBalancedParticipationChanged = PublishedEvents[0].UnwrapBody<BodyBalancedParticipationChanged>();
         bodyBalancedParticipationChanged.BodyId.Should().Be(_bodyId);
 

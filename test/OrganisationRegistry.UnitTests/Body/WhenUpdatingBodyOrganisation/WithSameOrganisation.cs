@@ -71,13 +71,13 @@ public class
     [Fact]
     public async Task Publishes1Event()
     {
-        await Given(Events).When(UpdateBodyOrganisationCommand, TestUser.User).ThenItPublishesTheCorrectNumberOfEvents(1);
+        await Given(Events).When(UpdateBodyOrganisationCommand, TestUser.OrgaanBeheerder).ThenItPublishesTheCorrectNumberOfEvents(1);
     }
 
     [Fact]
     public async Task UpdatesTheBodyOrganisation()
     {
-        await Given(Events).When(UpdateBodyOrganisationCommand, TestUser.User).Then();
+        await Given(Events).When(UpdateBodyOrganisationCommand, TestUser.OrgaanBeheerder).Then();
         var bodyBalancedParticipationChanged = PublishedEvents[0].UnwrapBody<BodyOrganisationUpdated>();
         bodyBalancedParticipationChanged.BodyId.Should().Be(_bodyId);
 

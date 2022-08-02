@@ -6,14 +6,11 @@ using Infrastructure;
 using Infrastructure.Search.Filtering;
 using Infrastructure.Search.Pagination;
 using Infrastructure.Search.Sorting;
-using Infrastructure.Security;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OrganisationRegistry.Infrastructure.Commands;
 using Queries;
-using Requests;
-using Security;
 using SqlServer.BodyClassificationType;
 using SqlServer.Infrastructure;
 
@@ -57,41 +54,5 @@ public class BodyClassificationTypeController : OrganisationRegistryController
             return NotFound();
 
         return Ok(key);
-    }
-
-    /// <summary>Create an body classification type.</summary>
-    /// <response code="201">If the body classificiation type is created, together with the location.</response>
-    /// <response code="400">If the body classificiation type information does not pass validation.</response>
-    [HttpPost]
-    [OrganisationRegistryAuthorize(Roles = Roles.AlgemeenBeheerder)]
-    [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Post([FromBody] CreateBodyClassificationTypeRequest message)
-    {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
-
-        await CommandSender.Send(CreateBodyClassificationTypeRequestMapping.Map(message));
-
-        return CreatedWithLocation(nameof(Get), new { id = message.Id });
-    }
-
-    /// <summary>Update an body classification type.</summary>
-    /// <response code="200">If the body classification type is updated, together with the location.</response>
-    /// <response code="400">If the body classification type information does not pass validation.</response>
-    [HttpPut("{id}")]
-    [OrganisationRegistryAuthorize(Roles = Roles.AlgemeenBeheerder)]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Put([FromRoute] Guid id, [FromBody] UpdateBodyClassificationTypeRequest message)
-    {
-        var internalMessage = new UpdateBodyClassificationTypeInternalRequest(id, message);
-
-        if (!TryValidateModel(internalMessage))
-            return BadRequest(ModelState);
-
-        await CommandSender.Send(UpdateBodyClassificationTypeRequestMapping.Map(internalMessage));
-
-        return OkWithLocationHeader(nameof(Get), new { id = internalMessage.BodyClassificationTypeId });
     }
 }

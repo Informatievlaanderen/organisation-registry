@@ -213,14 +213,14 @@ public class
     [Fact]
     public async Task PublishesOneEvent()
     {
-        await Given(Events).When(SyncOrganisationWithKboCommand, TestUser.User)
+        await Given(Events).When(SyncOrganisationWithKboCommand, TestUser.AlgemeenBeheerder)
             .ThenItPublishesTheCorrectNumberOfEvents(1);
     }
 
     [Fact]
     public async Task MarksAsSynced()
     {
-        await Given(Events).When(SyncOrganisationWithKboCommand, TestUser.User).Then();
+        await Given(Events).When(SyncOrganisationWithKboCommand, TestUser.AlgemeenBeheerder).Then();
 
         var organisationSyncedFromKbo = PublishedEvents[0].UnwrapBody<OrganisationSyncedFromKbo>();
         organisationSyncedFromKbo.Should().NotBeNull();

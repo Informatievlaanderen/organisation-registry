@@ -3,6 +3,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using ContactType;
+using Handling;
 using Infrastructure.Commands;
 using Infrastructure.Domain;
 using Microsoft.Extensions.Logging;
@@ -25,24 +26,29 @@ public class AddDelegationAssignmentCommandHandler
 
     public async Task Handle(ICommandEnvelope<AddDelegationAssignment> envelope)
     {
-        var body = Session.Get<Body>(envelope.Command.BodyId);
-        var person = Session.Get<Person>(envelope.Command.PersonId);
+        await UpdateHandler<Body>.For(envelope.Command, envelope.User, Session)
+            .WithEditDelegationPolicy(envelope.Command.OrganisationId)
+            .Handle(
+                session =>
+                {
+                    var body = session.Get<Body>(envelope.Command.BodyId);
+                    var person = session.Get<Person>(envelope.Command.PersonId);
 
-        var contacts = envelope.Command.Contacts.Select(contact =>
-        {
-            var contactType = Session.Get<ContactType>(contact.Key);
-            return new Contact(contactType, contact.Value);
-        }).ToList();
+                    var contacts = envelope.Command.Contacts.Select(
+                        contact =>
+                        {
+                            var contactType = session.Get<ContactType>(contact.Key);
+                            return new Contact(contactType, contact.Value);
+                        }).ToList();
 
-        body.AssignPersonToDelegation(
-            envelope.Command.BodySeatId,
-            envelope.Command.BodyMandateId,
-            envelope.Command.DelegationAssignmentId,
-            person,
-            contacts,
-            envelope.Command.Validity,
-            _dateTimeProvider.Today);
-
-        await Session.Commit(envelope.User);
+                    body.AssignPersonToDelegation(
+                        envelope.Command.BodySeatId,
+                        envelope.Command.BodyMandateId,
+                        envelope.Command.DelegationAssignmentId,
+                        person,
+                        contacts,
+                        envelope.Command.Validity,
+                        _dateTimeProvider.Today);
+                });
     }
 }

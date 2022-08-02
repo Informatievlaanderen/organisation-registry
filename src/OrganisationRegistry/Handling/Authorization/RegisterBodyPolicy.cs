@@ -1,23 +1,25 @@
 ﻿namespace OrganisationRegistry.Handling.Authorization;
 
+using System;
 using Infrastructure.Authorization;
+using Organisation;
 using Organisation.Exceptions;
 
-public class BankAccountPolicy : ISecurityPolicy
+public class RegisterBodyPolicy : ISecurityPolicy
 {
-    private readonly string _ovoNumber;
+    private readonly OrganisationId? _organisationId;
 
-    public BankAccountPolicy(string ovoNumber)
+    public RegisterBodyPolicy(OrganisationId? organisationId)
     {
-        _ovoNumber = ovoNumber;
+        _organisationId = organisationId;
     }
 
     public AuthorizationResult Check(IUser user)
     {
-        if (user.IsInAnyOf(Role.AlgemeenBeheerder, Role.CjmBeheerder))
+        if (user.IsInAnyOf(Role.AlgemeenBeheerder, Role.OrgaanBeheerder, Role.CjmBeheerder))
             return AuthorizationResult.Success();
 
-        if (user.IsDecentraalBeheerderFor(_ovoNumber))
+        if (_organisationId is { } organisationId && user.IsDecentraalBeheerderForOrganisation((Guid)organisationId))
             return AuthorizationResult.Success();
 
         return AuthorizationResult.Fail(InsufficientRights.CreateFor(this));

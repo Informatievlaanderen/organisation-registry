@@ -16,7 +16,7 @@ public class AddOrganisationBankAccountCommandHandler
 
     public Task Handle(ICommandEnvelope<AddOrganisationBankAccount> envelope)
         => UpdateHandler<Organisation>.For(envelope.Command, envelope.User, Session)
-            .WithBankAccountPolicy()
+            .WithBeheerderForOrganisationPolicy()
             .Handle(
                 session =>
                 {

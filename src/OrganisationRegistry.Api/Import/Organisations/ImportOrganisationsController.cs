@@ -13,7 +13,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.FeatureManagement.Mvc;
 using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Commands;
-using Security;
 using SqlServer.Import.Organisations;
 using SqlServer.Infrastructure;
 using Validation;
@@ -21,7 +20,7 @@ using Validation;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("imports")]
-[OrganisationRegistryAuthorize(Roles = Roles.AlgemeenBeheerder + "," + Roles.VlimpersBeheerder)]
+[OrganisationRegistryAuthorize(Role.AlgemeenBeheerder, Role.VlimpersBeheerder)]
 [FeatureGate(FeatureFlags.ImportApi)]
 public class ImportOrganisationsController : OrganisationRegistryController
 {

@@ -13,7 +13,7 @@ using Microsoft.Extensions.Logging;
 using OrganisationRegistry.Body;
 using OrganisationRegistry.Infrastructure.Commands;
 using Requests;
-using Security;
+using OrganisationRegistry.Infrastructure.Authorization;
 using SqlServer.Infrastructure;
 
 [ApiVersion("1.0")]
@@ -32,7 +32,7 @@ public class TaskController : OrganisationRegistryController
     /// <response code="200">If the task was performed.</response>
     /// <response code="400">If the task information does not pass validation.</response>
     [HttpPost]
-    [OrganisationRegistryAuthorize(Roles = Roles.AutomatedTask + "," + Roles.Developer)]
+    [OrganisationRegistryAuthorize(Role.AutomatedTask,Role.Developer)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Post(

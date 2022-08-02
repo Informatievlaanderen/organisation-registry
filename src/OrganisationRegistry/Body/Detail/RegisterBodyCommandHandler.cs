@@ -2,6 +2,7 @@
 
 using System.Threading.Tasks;
 using Exceptions;
+using Handling;
 using Infrastructure.Commands;
 using Infrastructure.Domain;
 using LifecyclePhaseType;
@@ -27,37 +28,43 @@ public class RegisterBodyCommandHandler
 
     public async Task Handle(ICommandEnvelope<RegisterBody> envelope)
     {
-        var bodyNumber = GetBodyNumber(envelope.Command);
+        await Handler.For(envelope.User, Session)
+            .WithRegisterBodyPolicy(envelope.Command.OrganisationId)
+            .Handle(
+                session =>
+                {
+                    var bodyNumber = GetBodyNumber(envelope.Command);
 
-        var organisation =
-            envelope.Command.OrganisationId is { } organisationId
-                ? Session.Get<Organisation>(organisationId)
-                : null;
+                    var organisation =
+                        envelope.Command.OrganisationId is { } organisationId
+                            ? session.Get<Organisation>(organisationId)
+                            : null;
 
-        var activeLifecyclePhaseType =
-            envelope.Command.ActiveLifecyclePhaseTypeId is { } activeLifecyclePhaseTypeId
-                ? Session.Get<LifecyclePhaseType>(activeLifecyclePhaseTypeId)
-                : null;
+                    var activeLifecyclePhaseType =
+                        envelope.Command.ActiveLifecyclePhaseTypeId is { } activeLifecyclePhaseTypeId
+                            ? session.Get<LifecyclePhaseType>(activeLifecyclePhaseTypeId)
+                            : null;
 
-        var inActiveLifecyclePhaseType =
-            envelope.Command.InactiveLifecyclePhaseTypeId is { } inactiveLifecyclePhaseTypeId
-                ? Session.Get<LifecyclePhaseType>(inactiveLifecyclePhaseTypeId)
-                : null;
+                    var inActiveLifecyclePhaseType =
+                        envelope.Command.InactiveLifecyclePhaseTypeId is { } inactiveLifecyclePhaseTypeId
+                            ? session.Get<LifecyclePhaseType>(inactiveLifecyclePhaseTypeId)
+                            : null;
 
-        var body = new Body(
-            envelope.Command.BodyId,
-            envelope.Command.Name,
-            bodyNumber,
-            envelope.Command.ShortName,
-            organisation,
-            envelope.Command.Description,
-            envelope.Command.Validity,
-            envelope.Command.FormalValidity,
-            activeLifecyclePhaseType,
-            inActiveLifecyclePhaseType);
+                    var body = new Body(
+                        envelope.Command.BodyId,
+                        envelope.Command.Name,
+                        bodyNumber,
+                        envelope.Command.ShortName,
+                        organisation,
+                        envelope.Command.Description,
+                        envelope.Command.Validity,
+                        envelope.Command.FormalValidity,
+                        activeLifecyclePhaseType,
+                        inActiveLifecyclePhaseType);
 
-        Session.Add(body);
-        await Session.Commit(envelope.User);
+                    session.Add(body);
+                });
+
     }
 
     private string GetBodyNumber(RegisterBody message)

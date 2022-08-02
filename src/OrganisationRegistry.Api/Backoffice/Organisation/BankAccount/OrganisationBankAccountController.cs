@@ -10,9 +10,7 @@ using Infrastructure.Security;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Commands;
-using OrganisationRegistry.Organisation;
 using SqlServer.Infrastructure;
 
 [ApiVersion("1.0")]
@@ -50,65 +48,11 @@ public class OrganisationBankAccountController : OrganisationRegistryController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid organisationId, [FromRoute] Guid id)
     {
-        var organisation = await context.OrganisationBankAccountList.FirstOrDefaultAsync(x => x.OrganisationBankAccountId == id);
+        var organisation = await context.OrganisationBankAccountList.FirstOrDefaultAsync(x => x.OrganisationId == organisationId && x.OrganisationBankAccountId == id);
 
         if (organisation == null)
             return NotFound();
 
         return Ok(organisation);
-    }
-
-    /// <summary>Add a bankAccount to an organisation.</summary>
-    /// <response code="201">If the bankAccount is added, together with the location.</response>
-    /// <response code="400">If the bankAccount information does not pass validation.</response>
-    [HttpPost]
-    [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Post([FromServices] ISecurityService securityService, [FromRoute] Guid organisationId, [FromBody] AddOrganisationBankAccountRequest message)
-    {
-        var internalMessage = new AddOrganisationBankAccountInternalRequest(organisationId, message);
-
-        if (!await securityService.CanEditOrganisation(User, internalMessage.OrganisationId))
-            ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor deze organisatie.");
-
-        if (!TryValidateModel(internalMessage))
-            return BadRequest(ModelState);
-
-        await CommandSender.Send(AddOrganisationBankAccountRequestMapping.Map(internalMessage));
-
-        return CreatedWithLocation(nameof(Get), new { id = message.OrganisationBankAccountId });
-    }
-
-    /// <summary>Update a bankAccount for an organisation.</summary>
-    /// <response code="201">If the bankAccount is updated, together with the location.</response>
-    /// <response code="400">If the bankAccount information does not pass validation.</response>
-    [HttpPut("{id}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Put([FromServices] ISecurityService securityService, [FromRoute] Guid organisationId, [FromBody] UpdateOrganisationBankAccountRequest message)
-    {
-        var internalMessage = new UpdateOrganisationBankAccountInternalRequest(organisationId, message);
-
-        if (!await securityService.CanEditOrganisation(User, internalMessage.OrganisationId))
-            ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor deze organisatie.");
-
-        if (!TryValidateModel(internalMessage))
-            return BadRequest(ModelState);
-
-        await CommandSender.Send(UpdateOrganisationBankAccountRequestMapping.Map(internalMessage));
-
-        return Ok();
-    }
-
-    /// <summary>Remove a bankaccount from an organisation</summary>
-    /// <response code="204">If the bankAccount is removed.</response>
-    /// <response code="400">If the bankAccount is not found for the organisation.</response>
-    [HttpDelete("{id:guid}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Delete([FromRoute] Guid organisationId, [FromRoute] Guid id)
-    {
-        await CommandSender.Send(new RemoveOrganisationBankAccount(new OrganisationId(organisationId), id));
-        return NoContent();
     }
 }

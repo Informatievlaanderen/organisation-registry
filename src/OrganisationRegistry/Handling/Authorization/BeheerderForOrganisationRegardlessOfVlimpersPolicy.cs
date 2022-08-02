@@ -14,10 +14,10 @@ public class BeheerderForOrganisationRegardlessOfVlimpersPolicy : ISecurityPolic
 
     public AuthorizationResult Check(IUser user)
     {
-        if (user.IsInAnyOf(Role.AlgemeenBeheerder))
+        if (user.IsInAnyOf(Role.AlgemeenBeheerder, Role.CjmBeheerder))
             return AuthorizationResult.Success();
 
-        if (user.IsDecentraalBeheerderFor(_ovoNumber))
+        if (user.IsDecentraalBeheerderForOrganisation(_ovoNumber))
             return AuthorizationResult.Success();
 
         return AuthorizationResult.Fail(InsufficientRights.CreateFor(this));

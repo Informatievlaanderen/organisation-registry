@@ -72,7 +72,7 @@ public class OrganisationRegistryTokenBuilder : IOrganisationRegistryTokenBuilde
 
         if (!string.IsNullOrEmpty(acmIdClaim) &&
             developers.Contains(acmIdClaim.ToLowerInvariant()))
-            AddRoleClaim(identity, Roles.Developer);
+            AddRoleClaim(identity, Role.Developer);
 
         if (!roles.Any())
             return identity;
@@ -97,7 +97,7 @@ public class OrganisationRegistryTokenBuilder : IOrganisationRegistryTokenBuilde
         if (!roles.Any(x => x.Contains(AcmIdmConstants.Roles.RegelgevingBeheerder)))
             return;
 
-        AddRoleClaim(identity, Roles.RegelgevingBeheerder);
+        AddRoleClaim(identity, Role.RegelgevingBeheerder);
     }
 
     private static void AddVlimpersBeheerderClaim(IEnumerable<string> roles, ClaimsIdentity identity)
@@ -105,7 +105,7 @@ public class OrganisationRegistryTokenBuilder : IOrganisationRegistryTokenBuilde
         if (!roles.Any(x => x.Contains(AcmIdmConstants.Roles.VlimpersBeheerder)))
             return;
 
-        AddRoleClaim(identity, Roles.VlimpersBeheerder);
+        AddRoleClaim(identity, Role.VlimpersBeheerder);
     }
 
     private static void AddOrgaanBeheerderClaim(IList<string> roles, ClaimsIdentity identity)
@@ -115,7 +115,7 @@ public class OrganisationRegistryTokenBuilder : IOrganisationRegistryTokenBuilde
         if (!roles.Any(x => x.Contains(AcmIdmConstants.Roles.OrgaanBeheerder)))
             return;
 
-        AddRoleClaim(identity, Roles.OrgaanBeheerder);
+        AddRoleClaim(identity, Role.OrgaanBeheerder);
 
         for (var i = 0; i < roles.Count; i++)
             roles[i] = roles[i].Replace(
@@ -129,7 +129,7 @@ public class OrganisationRegistryTokenBuilder : IOrganisationRegistryTokenBuilde
             return;
 
         // If any of the roles is admin, you are an admin and we add the organisations separatly
-        AddRoleClaim(identity, Roles.DecentraalBeheerder);
+        AddRoleClaim(identity, Role.DecentraalBeheerder);
 
         var adminRoles = roles.Where(IsDecentraalBeheerder);
         foreach (var role in adminRoles)
@@ -147,13 +147,15 @@ public class OrganisationRegistryTokenBuilder : IOrganisationRegistryTokenBuilde
 
     private static void AddOrganisationRegistryBeheerderClaim(ClaimsIdentity identity)
     {
-        AddRoleClaim(identity, Roles.AlgemeenBeheerder);
+        AddRoleClaim(identity, Role.AlgemeenBeheerder);
     }
 
-    private static void AddRoleClaim(ClaimsIdentity identity, string value)
+    private static void AddRoleClaim(ClaimsIdentity identity, Role value)
     {
-        var claim = new Claim(ClaimTypes.Role, value, ClaimValueTypes.String);
-        if (!identity.HasClaim(ClaimTypes.Role, value))
+        var role = RoleMapping.Map(value);
+
+        var claim = new Claim(ClaimTypes.Role, role, ClaimValueTypes.String);
+        if (!identity.HasClaim(ClaimTypes.Role, role))
             identity.AddClaim(claim);
     }
 

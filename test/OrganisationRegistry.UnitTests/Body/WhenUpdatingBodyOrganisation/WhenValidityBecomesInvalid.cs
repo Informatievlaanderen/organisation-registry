@@ -74,13 +74,13 @@ public class WhenValidityBecomesInvalid : Specification<UpdateBodyOrganisationCo
   [Fact]
     public async Task Publishes2Events()
     {
-        await Given(Events).When(UpdateBodyOrganisationCommand, TestUser.User).ThenItPublishesTheCorrectNumberOfEvents(2);
+        await Given(Events).When(UpdateBodyOrganisationCommand, TestUser.OrgaanBeheerder).ThenItPublishesTheCorrectNumberOfEvents(2);
     }
 
     [Fact]
     public async Task UpdatesTheBodyOrganisation()
     {
-        await Given(Events).When(UpdateBodyOrganisationCommand, TestUser.User).Then();
+        await Given(Events).When(UpdateBodyOrganisationCommand, TestUser.OrgaanBeheerder).Then();
         var bodyBalancedParticipationChanged = PublishedEvents[0].UnwrapBody<BodyOrganisationUpdated>();
         bodyBalancedParticipationChanged.BodyId.Should().Be(_bodyId);
 
@@ -90,7 +90,7 @@ public class WhenValidityBecomesInvalid : Specification<UpdateBodyOrganisationCo
     [Fact]
     public async Task  ClearsTheBodyOrganisation()
     {
-        await Given(Events).When(UpdateBodyOrganisationCommand, TestUser.User).Then();
+        await Given(Events).When(UpdateBodyOrganisationCommand, TestUser.OrgaanBeheerder).Then();
 
         var bodyBalancedParticipationChanged = PublishedEvents[1].UnwrapBody<BodyClearedFromOrganisation>();
         bodyBalancedParticipationChanged.BodyId.Should().Be(_bodyId);

@@ -8,13 +8,14 @@ using AutoFixture;
 using FluentAssertions;
 using LifecyclePhaseType;
 using Microsoft.Extensions.Logging.Abstractions;
-using Moq;
 using OrganisationRegistry.Body;
 using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Commands;
 using OrganisationRegistry.Infrastructure.Domain;
+using Tests.Shared;
 using Xunit;
 
+//TODO rewrite as specification !
 public class GivenTheCommandContainsABodyNumberThatIsAnEmptyString
 {
     [Fact]
@@ -55,7 +56,7 @@ public class GivenTheCommandContainsABodyNumberThatIsAnEmptyString
             fixedBodyNumberGenerator,
             new FakeUniqueBodyNumberValidator());
 
-        await handler.Handle(new CommandEnvelope<RegisterBody>(command, Mock.Of<IUser>()));
+        await handler.Handle(new CommandEnvelope<RegisterBody>(command, TestUser.AlgemeenBeheerder));
 
         mockSession.AddedAggregate.Should().NotBeNull();
         var aggregate = mockSession.AddedAggregate!;

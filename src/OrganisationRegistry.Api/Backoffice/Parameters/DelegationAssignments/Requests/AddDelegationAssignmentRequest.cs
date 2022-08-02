@@ -6,6 +6,7 @@ using System.Linq;
 using FluentValidation;
 using OrganisationRegistry.Body;
 using OrganisationRegistry.ContactType;
+using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Person;
 
 public class AddDelegationAssignmentInternalRequest
@@ -64,13 +65,14 @@ public class AddDelegationAssignmentInternalRequestValidator : AbstractValidator
 
 public static class AddDelegationAssignmentRequestMapping
 {
-    public static AddDelegationAssignment Map(AddDelegationAssignmentInternalRequest message)
+    public static AddDelegationAssignment Map(AddDelegationAssignmentInternalRequest message, Guid organisationId)
         => new(
             new BodyMandateId(message.BodyMandateId),
             new BodyId(message.Body.BodyId),
             new BodySeatId(message.Body.BodySeatId),
             new DelegationAssignmentId(message.Body.DelegationAssignmentId),
             new PersonId(message.Body.PersonId),
+            new OrganisationId(organisationId),
             message.Body.Contacts?.ToDictionary(x => new ContactTypeId(x.Key), x => x.Value) ?? new Dictionary<ContactTypeId, string>(),
             new Period(
                 new ValidFrom(message.Body.ValidFrom),

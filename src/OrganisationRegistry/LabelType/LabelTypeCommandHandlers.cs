@@ -3,6 +3,8 @@
 using System.Threading.Tasks;
 using Commands;
 using Exceptions;
+using Handling;
+using Infrastructure.Authorization;
 using Infrastructure.Commands;
 using Infrastructure.Domain;
 using Microsoft.Extensions.Logging;
@@ -23,22 +25,28 @@ public class LabelTypeCommandHandlers :
     }
 
     public async Task Handle(ICommandEnvelope<CreateLabelType> envelope)
-    {
-        if (_uniqueNameValidator.IsNameTaken(envelope.Command.Name))
-            throw new NameNotUnique();
+        => await Handler.For(envelope.User, Session)
+            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .Handle(
+                session =>
+                {
+                    if (_uniqueNameValidator.IsNameTaken(envelope.Command.Name))
+                        throw new NameNotUnique();
 
-        var labelType = new LabelType(envelope.Command.LabelTypeId, envelope.Command.Name);
-        Session.Add(labelType);
-        await Session.Commit(envelope.User);
-    }
+                    var labelType = new LabelType(envelope.Command.LabelTypeId, envelope.Command.Name);
+                    session.Add(labelType);
+                });
 
     public async Task Handle(ICommandEnvelope<UpdateLabelType> envelope)
-    {
-        if (_uniqueNameValidator.IsNameTaken(envelope.Command.LabelTypeId, envelope.Command.Name))
-            throw new NameNotUnique();
+        => await UpdateHandler<LabelType>.For(envelope.Command, envelope.User, Session)
+            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .Handle(
+                session =>
+                {
+                    if (_uniqueNameValidator.IsNameTaken(envelope.Command.LabelTypeId, envelope.Command.Name))
+                        throw new NameNotUnique();
 
-        var labelType = Session.Get<LabelType>(envelope.Command.LabelTypeId);
-        labelType.Update(envelope.Command.Name);
-        await Session.Commit(envelope.User);
-    }
+                    var labelType = session.Get<LabelType>(envelope.Command.LabelTypeId);
+                    labelType.Update(envelope.Command.Name);
+                });
 }

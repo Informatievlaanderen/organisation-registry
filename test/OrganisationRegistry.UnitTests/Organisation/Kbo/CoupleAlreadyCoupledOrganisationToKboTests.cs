@@ -156,12 +156,12 @@ public class CoupleAlreadyCoupledOrganisationToKboTests: Specification<KboOrgani
     [Fact]
     public async Task ThrowsOrganisationAlreadyCoupledWithKbo()
         => await Given(Events)
-            .When(CoupleOrganisationToKboCommand, TestUser.User)
+            .When(CoupleOrganisationToKboCommand, TestUser.AlgemeenBeheerder)
             .ThenThrows<OrganisationAlreadyCoupledWithKbo>();
 
     [Fact]
     public async Task PublishesNoEvents()
         => await Given(Events)
-            .When(CoupleOrganisationToKboCommand, TestUser.User)
+            .When(CoupleOrganisationToKboCommand, TestUser.AlgemeenBeheerder)
             .ThenItPublishesTheCorrectNumberOfEvents(0);
 }

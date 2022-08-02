@@ -1,5 +1,6 @@
 namespace OrganisationRegistry.Tests.Shared;
 
+using System;
 using System.Collections.Generic;
 using Infrastructure.Authorization;
 
@@ -11,6 +12,8 @@ public class UserBuilder
     private string _ip;
     private readonly List<Role> _roles;
     private readonly List<string> _organisations;
+    private readonly List<Guid> _bodies;
+    private readonly List<Guid> _organisationIds;
 
     public UserBuilder()
     {
@@ -20,6 +23,8 @@ public class UserBuilder
         _ip = string.Empty;
         _roles = new List<Role>();
         _organisations = new List<string>();
+        _bodies = new List<Guid>();
+        _organisationIds = new List<Guid>();
     }
 
     public UserBuilder WithFirstName(string firstName)
@@ -61,10 +66,28 @@ public class UserBuilder
         return this;
     }
 
+    public UserBuilder AddOrganisationIds(params Guid[] organisations)
+    {
+        _organisationIds.AddRange(organisations);
+        return this;
+    }
+
+    public UserBuilder AddBodies(params Guid[] bodies)
+    {
+        _bodies.AddRange(bodies);
+        return this;
+    }
+
     public User Build()
         => new(
             _firstName,
-            _lastName, _userId, _ip, _roles.ToArray(), _organisations);
+            _lastName,
+            _userId,
+            _ip,
+            _roles.ToArray(),
+            _organisations,
+            _bodies,
+            _organisationIds);
 
     public UserBuilder AsDecentraalBeheerder()
     {

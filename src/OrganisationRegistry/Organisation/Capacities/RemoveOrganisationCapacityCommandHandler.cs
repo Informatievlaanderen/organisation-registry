@@ -17,7 +17,7 @@ public class RemoveOrganisationCapacityCommandHandler:
 
     public Task Handle(ICommandEnvelope<RemoveOrganisationCapacity> envelope)
         => UpdateHandler<Organisation>.For(envelope.Command, envelope.User, Session)
-            .RequiresOneOfRole(Role.AutomatedTask)
+            .RequiresOneOfRole(Role.AutomatedTask, Role.AlgemeenBeheerder, Role.CjmBeheerder)
             .Handle(
                 session =>
                 {

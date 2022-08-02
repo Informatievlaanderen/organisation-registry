@@ -2,6 +2,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo;
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Infrastructure.Tests.Extensions.TestHelpers;
@@ -152,10 +153,10 @@ public class CoupleOrganisationToKboTests: Specification<KboOrganisationCommandH
     public async Task CreatesTheMissingLocationsOnceBeforeCreatingTheOrganisation()
     {
         await Given(Events)
-            .When(CoupleOrganisationToKboCommand, TestUser.User)
+            .When(CoupleOrganisationToKboCommand, TestUser.AlgemeenBeheerder)
             .Then();
 
-        var organisationCreated = PublishedEvents[0].UnwrapBody<LocationCreated>();
+        var organisationCreated = PublishedEvents.Where(evt=>evt.Body is LocationCreated).ToList()[0].UnwrapBody<LocationCreated>();
         organisationCreated.Should().NotBeNull();
 
         organisationCreated.LocationId.Should().NotBeEmpty();
@@ -171,10 +172,10 @@ public class CoupleOrganisationToKboTests: Specification<KboOrganisationCommandH
     public async Task CouplesTheOrganisationWithTheKboNumber()
     {
         await Given(Events)
-            .When(CoupleOrganisationToKboCommand, TestUser.User)
+            .When(CoupleOrganisationToKboCommand, TestUser.AlgemeenBeheerder)
             .Then();
 
-        var organisationCoupledWithKbo = PublishedEvents[1].UnwrapBody<OrganisationCoupledWithKbo>();
+        var organisationCoupledWithKbo = PublishedEvents.Where(evt=>evt.Body is OrganisationCoupledWithKbo).ToList()[0].UnwrapBody<OrganisationCoupledWithKbo>();
         organisationCoupledWithKbo.Should().NotBeNull();
 
         organisationCoupledWithKbo.OrganisationId.Should().Be(_organisationId);
@@ -188,10 +189,10 @@ public class CoupleOrganisationToKboTests: Specification<KboOrganisationCommandH
     public async Task UpdatesTheOrganisationInfoFromKbo()
     {
         await Given(Events)
-            .When(CoupleOrganisationToKboCommand, TestUser.User)
+            .When(CoupleOrganisationToKboCommand, TestUser.AlgemeenBeheerder)
             .Then();
 
-        var organisationCoupledWithKbo = PublishedEvents[2].UnwrapBody<OrganisationInfoUpdatedFromKbo>();
+        var organisationCoupledWithKbo = PublishedEvents.Where(evt=>evt.Body is OrganisationInfoUpdatedFromKbo).ToList()[0].UnwrapBody<OrganisationInfoUpdatedFromKbo>();
         organisationCoupledWithKbo.Should().NotBeNull();
 
         organisationCoupledWithKbo.OrganisationId.Should().Be(_organisationId);
@@ -203,10 +204,10 @@ public class CoupleOrganisationToKboTests: Specification<KboOrganisationCommandH
     public async Task AddsBankAccounts()
     {
         await Given(Events)
-            .When(CoupleOrganisationToKboCommand, TestUser.User)
+            .When(CoupleOrganisationToKboCommand, TestUser.AlgemeenBeheerder)
             .Then();
 
-        var organisationBankAccountAdded = PublishedEvents[3].UnwrapBody<KboOrganisationBankAccountAdded>();
+        var organisationBankAccountAdded = PublishedEvents.Where(evt=>evt.Body is KboOrganisationBankAccountAdded).ToList()[0].UnwrapBody<KboOrganisationBankAccountAdded>();
         organisationBankAccountAdded.Should().NotBeNull();
 
         organisationBankAccountAdded.OrganisationId.Should().Be(_organisationId);
@@ -223,10 +224,10 @@ public class CoupleOrganisationToKboTests: Specification<KboOrganisationCommandH
     public async Task AddsLegalForms()
     {
         await Given(Events)
-            .When(CoupleOrganisationToKboCommand, TestUser.User)
+            .When(CoupleOrganisationToKboCommand, TestUser.AlgemeenBeheerder)
             .Then();
 
-        var organisationClassificationAdded = PublishedEvents[4].UnwrapBody<KboLegalFormOrganisationOrganisationClassificationAdded>();
+        var organisationClassificationAdded = PublishedEvents.Where(evt=>evt.Body is KboLegalFormOrganisationOrganisationClassificationAdded).ToList()[0].UnwrapBody<KboLegalFormOrganisationOrganisationClassificationAdded>();
         organisationClassificationAdded.Should().NotBeNull();
 
         organisationClassificationAdded.OrganisationId.Should().Be(_organisationId);
@@ -243,15 +244,17 @@ public class CoupleOrganisationToKboTests: Specification<KboOrganisationCommandH
     public async Task AddsLocations()
     {
         await Given(Events)
-            .When(CoupleOrganisationToKboCommand, TestUser.User)
+            .When(CoupleOrganisationToKboCommand, TestUser.AlgemeenBeheerder)
             .Then();
 
-        var organisationLocationAdded = PublishedEvents[5].UnwrapBody<KboRegisteredOfficeOrganisationLocationAdded>();
+        var locationId = PublishedEvents.Where(evt=>evt.Body is LocationCreated).ToList()[0].UnwrapBody<LocationCreated>().LocationId;
+
+        var organisationLocationAdded = PublishedEvents.Where(evt=>evt.Body is KboRegisteredOfficeOrganisationLocationAdded).ToList()[0].UnwrapBody<KboRegisteredOfficeOrganisationLocationAdded>();
         organisationLocationAdded.Should().NotBeNull();
 
         organisationLocationAdded.OrganisationId.Should().Be(_organisationId);
         organisationLocationAdded.OrganisationLocationId.Should().NotBeEmpty();
-        organisationLocationAdded.LocationId.Should().Be(PublishedEvents[0].UnwrapBody<LocationCreated>().LocationId);
+        organisationLocationAdded.LocationId.Should().Be(locationId);
         organisationLocationAdded.IsMainLocation.Should().BeFalse();
         organisationLocationAdded.LocationFormattedAddress.Should().Be("Zedelgemsestraat, 9999 Evergem, Belgie");
         organisationLocationAdded.LocationTypeId.Should().Be(_organisationRegistryConfigurationStub.Kbo.KboV2RegisteredOfficeLocationTypeId);
@@ -264,10 +267,10 @@ public class CoupleOrganisationToKboTests: Specification<KboOrganisationCommandH
     public async Task AddsFormalNameLabel()
     {
         await Given(Events)
-            .When(CoupleOrganisationToKboCommand, TestUser.User)
+            .When(CoupleOrganisationToKboCommand, TestUser.AlgemeenBeheerder)
             .Then();
 
-        var organisationLabelAdded = PublishedEvents[6].UnwrapBody<KboFormalNameLabelAdded>();
+        var organisationLabelAdded = PublishedEvents.Where(evt=>evt.Body is KboFormalNameLabelAdded).ToList()[0].UnwrapBody<KboFormalNameLabelAdded>();
         organisationLabelAdded.Should().NotBeNull();
 
         organisationLabelAdded.OrganisationId.Should().Be(_organisationId);
@@ -282,6 +285,6 @@ public class CoupleOrganisationToKboTests: Specification<KboOrganisationCommandH
     [Fact]
     public async Task PublishesTheCorrectNumberOfEvents()
         => await Given(Events)
-            .When(CoupleOrganisationToKboCommand, TestUser.User)
+            .When(CoupleOrganisationToKboCommand, TestUser.AlgemeenBeheerder)
             .ThenItPublishesTheCorrectNumberOfEvents(7);
 }

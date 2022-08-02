@@ -1,14 +1,15 @@
 ﻿namespace OrganisationRegistry.Body;
 
 using System.Threading.Tasks;
+using Handling;
 using Infrastructure.Commands;
 using Infrastructure.Domain;
 using Microsoft.Extensions.Logging;
 using Organisation;
 
 public class AddBodyOrganisationCommandHandler
-:BaseCommandHandler<AddBodyOrganisationCommandHandler>,
-    ICommandEnvelopeHandler<AddBodyOrganisation>
+    : BaseCommandHandler<AddBodyOrganisationCommandHandler>,
+        ICommandEnvelopeHandler<AddBodyOrganisation>
 {
     private readonly IDateTimeProvider _dateTimeProvider;
 
@@ -21,16 +22,19 @@ public class AddBodyOrganisationCommandHandler
     }
 
     public async Task Handle(ICommandEnvelope<AddBodyOrganisation> envelope)
-    {
-        var organisation = Session.Get<Organisation>(envelope.Command.OrganisationId);
-        var body = Session.Get<Body>(envelope.Command.BodyId);
+        => await UpdateHandler<Body>
+            .For(envelope.Command, envelope.User, Session)
+            .WithEditBodyPolicy()
+            .Handle(
+                session =>
+                {
+                    var organisation = session.Get<Organisation>(envelope.Command.OrganisationId);
+                    var body = session.Get<Body>(envelope.Command.BodyId);
 
-        body.AddOrganisation(
-            envelope.Command.BodyOrganisationId,
-            organisation,
-            envelope.Command.Validity,
-            _dateTimeProvider);
-
-        await Session.Commit(envelope.User);
-    }
+                    body.AddOrganisation(
+                        envelope.Command.BodyOrganisationId,
+                        organisation,
+                        envelope.Command.Validity,
+                        _dateTimeProvider);
+                });
 }

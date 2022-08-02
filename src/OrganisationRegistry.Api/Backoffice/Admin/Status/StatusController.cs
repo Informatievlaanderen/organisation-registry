@@ -18,9 +18,9 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using OrganisationRegistry.Configuration.Database.Configuration;
 using OrganisationRegistry.Infrastructure;
+using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Commands;
 using OrganisationRegistry.Infrastructure.Configuration;
-using Security;
 using SqlServer.Configuration;
 
 [ApiVersion("1.0")]
@@ -58,7 +58,7 @@ public class StatusController : OrganisationRegistryController
 
     [HttpGet]
     [Route("configuration")]
-    [OrganisationRegistryAuthorize(Roles = Roles.Developer)]
+    [OrganisationRegistryAuthorize(Role.Developer)]
     public async Task<IActionResult> GetConfiguration(
         [FromServices] IConfiguration configuration,
         [FromServices] IExternalIpFetcher externalIpFetcher)

@@ -14,11 +14,11 @@ using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Commands;
 using Queries;
 using Responses;
-using Security;
 using SqlServer.Infrastructure;
 
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
+[OrganisationRegistryAuthorize(Role.AlgemeenBeheerder , Role.DecentraalBeheerder)]
 [OrganisationRegistryRoute("manage/delegations")]
 public class DelegationController : OrganisationRegistryController
 {
@@ -29,7 +29,6 @@ public class DelegationController : OrganisationRegistryController
 
     /// <summary>Get a list of available delegations.</summary>
     [HttpGet]
-    [OrganisationRegistryAuthorize(Roles = Roles.AlgemeenBeheerder + "," + Roles.DecentraalBeheerder)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromServices] ISecurityService securityService)
     {
@@ -52,7 +51,6 @@ public class DelegationController : OrganisationRegistryController
     /// <response code="200">If the delegation is found.</response>
     /// <response code="404">If the delegation cannot be found.</response>
     [HttpGet("{id}")]
-    [OrganisationRegistryAuthorize(Roles = Roles.AlgemeenBeheerder + "," + Roles.DecentraalBeheerder)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get([FromServices] ISecurityService securityService, [FromServices] OrganisationRegistryContext context, [FromRoute] Guid id)

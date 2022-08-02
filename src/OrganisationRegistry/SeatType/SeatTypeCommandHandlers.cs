@@ -3,6 +3,8 @@ namespace OrganisationRegistry.SeatType;
 using System.Threading.Tasks;
 using Commands;
 using Exceptions;
+using Handling;
+using Infrastructure.Authorization;
 using Infrastructure.Commands;
 using Infrastructure.Domain;
 using Microsoft.Extensions.Logging;
@@ -23,22 +25,28 @@ public class SeatTypeCommandHandlers :
     }
 
     public async Task Handle(ICommandEnvelope<CreateSeatType> envelope)
-    {
-        if (_uniqueNameValidator.IsNameTaken(envelope.Command.Name))
-            throw new NameNotUnique();
+        => await Handler.For(envelope.User, Session)
+            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .Handle(
+                session =>
+                {
+                    if (_uniqueNameValidator.IsNameTaken(envelope.Command.Name))
+                        throw new NameNotUnique();
 
-        var seatType = new SeatType(envelope.Command.SeatTypeId, envelope.Command.Name, envelope.Command.Order, envelope.Command.IsEffective);
-        Session.Add(seatType);
-        await Session.Commit(envelope.User);
-    }
+                    var seatType = new SeatType(envelope.Command.SeatTypeId, envelope.Command.Name, envelope.Command.Order, envelope.Command.IsEffective);
+                    session.Add(seatType);
+                });
 
     public async Task Handle(ICommandEnvelope<UpdateSeatType> envelope)
-    {
-        if (_uniqueNameValidator.IsNameTaken(envelope.Command.SeatTypeId, envelope.Command.Name))
-            throw new NameNotUnique();
+        => await UpdateHandler<SeatType>.For(envelope.Command, envelope.User, Session)
+            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .Handle(
+                session =>
+                {
+                    if (_uniqueNameValidator.IsNameTaken(envelope.Command.SeatTypeId, envelope.Command.Name))
+                        throw new NameNotUnique();
 
-        var seatType = Session.Get<SeatType>(envelope.Command.SeatTypeId);
-        seatType.Update(envelope.Command.Name, envelope.Command.Order, envelope.Command.IsEffective);
-        await Session.Commit(envelope.User);
-    }
+                    var seatType = session.Get<SeatType>(envelope.Command.SeatTypeId);
+                    seatType.Update(envelope.Command.Name, envelope.Command.Order, envelope.Command.IsEffective);
+                });
 }

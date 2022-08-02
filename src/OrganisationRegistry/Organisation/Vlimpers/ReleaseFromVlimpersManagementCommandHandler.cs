@@ -2,6 +2,7 @@
 
 using System.Threading.Tasks;
 using Handling;
+using Infrastructure.Authorization;
 using Infrastructure.Commands;
 using Infrastructure.Domain;
 using Microsoft.Extensions.Logging;
@@ -16,7 +17,7 @@ public class ReleaseFromVlimpersManagementCommandHandler :
 
     public Task Handle(ICommandEnvelope<ReleaseFromVlimpersManagement> envelope)
         => UpdateHandler<Organisation>.For(envelope.Command, envelope.User, Session)
-            .RequiresAdmin()
+            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
             .Handle(
                 session =>
                 {

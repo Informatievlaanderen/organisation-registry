@@ -6,14 +6,11 @@ using Infrastructure;
 using Infrastructure.Search.Filtering;
 using Infrastructure.Search.Pagination;
 using Infrastructure.Search.Sorting;
-using Infrastructure.Security;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OrganisationRegistry.Infrastructure.Commands;
 using Queries;
-using Requests;
-using Security;
 using SqlServer.Infrastructure;
 using SqlServer.MandateRoleType;
 
@@ -57,41 +54,5 @@ public class MandateRoleTypeController : OrganisationRegistryController
             return NotFound();
 
         return Ok(key);
-    }
-
-    /// <summary>Create a mandate role type.</summary>
-    /// <response code="201">If the mandate role type is created, together with the location.</response>
-    /// <response code="400">If the mandate role type information does not pass validation.</response>
-    [HttpPost]
-    [OrganisationRegistryAuthorize(Roles = Roles.AlgemeenBeheerder)]
-    [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Post([FromBody] CreateMandateRoleTypeRequest message)
-    {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
-
-        await CommandSender.Send(CreateMandateRoleTypeRequestMapping.Map(message));
-
-        return CreatedWithLocation(nameof(Get), new { id = message.Id });
-    }
-
-    /// <summary>Update a mandate role type.</summary>
-    /// <response code="200">If the mandate role type is updated, together with the location.</response>
-    /// <response code="400">If the mandate role type information does not pass validation.</response>
-    [HttpPut("{id}")]
-    [OrganisationRegistryAuthorize(Roles = Roles.AlgemeenBeheerder)]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Put([FromRoute] Guid id, [FromBody] UpdateMandateRoleTypeRequest message)
-    {
-        var internalMessage = new UpdateMandateRoleTypeInternalRequest(id, message);
-
-        if (!TryValidateModel(internalMessage))
-            return BadRequest(ModelState);
-
-        await CommandSender.Send(UpdateMandateRoleTypeRequestMapping.Map(internalMessage));
-
-        return OkWithLocationHeader(nameof(Get), new { id = internalMessage.MandateRoleTypeId });
     }
 }

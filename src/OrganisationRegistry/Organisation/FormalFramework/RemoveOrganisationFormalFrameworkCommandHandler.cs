@@ -2,6 +2,7 @@
 
 using System.Threading.Tasks;
 using Handling;
+using Infrastructure.Authorization;
 using Infrastructure.Commands;
 using Infrastructure.Domain;
 using Microsoft.Extensions.Logging;
@@ -16,7 +17,7 @@ public class RemoveOrganisationFormalFrameworkCommandHandler
 
     public async Task Handle(ICommandEnvelope<RemoveOrganisationFormalFramework> envelope)
         => await UpdateHandler<Organisation>.For(envelope.Command, envelope.User, Session)
-            .RequiresAdmin()
+            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
             .Handle(
                 session =>
                 {

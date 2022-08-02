@@ -10,10 +10,8 @@ using Infrastructure.Security;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Commands;
-using OrganisationRegistry.Organisation;
-using OrganisationRegistry.Organisation.Commands;
-using Security;
 using SqlServer.Infrastructure;
 
 [ApiVersion("1.0")]
@@ -22,72 +20,13 @@ using SqlServer.Infrastructure;
 public class OrganisationKboController : OrganisationRegistryController
 {
     public OrganisationKboController(ICommandSender commandSender)
-        : base(commandSender) { }
-
-    /// <summary>Couple an organisation to a KBO number.</summary>
-    /// <response code="200">If the organisation was coupled.</response>
-    [HttpPut("{id}/kbo/number/{kboNumber}")]
-    [OrganisationRegistryAuthorize(Roles = Roles.AlgemeenBeheerder + "," + Roles.Developer)]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> CoupleToKboNumber(
-        [FromRoute] Guid id,
-        [FromRoute] string kboNumber)
+        : base(commandSender)
     {
-        await CommandSender.Send(
-            new CoupleOrganisationToKbo(
-                new OrganisationId(id),
-                new KboNumber(kboNumber)));
-
-        return Ok();
-    }
-
-    /// <summary>Cancel an organisation's active coupling with a KBO number.</summary>
-    /// <response code="200">If the organisation coupling was cancelled.</response>
-    [HttpPut("{id}/kbo/cancel")]
-    [OrganisationRegistryAuthorize(Roles = Roles.AlgemeenBeheerder + "," + Roles.Developer)]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> CancelCouplingWithKbo([FromRoute] Guid id)
-    {
-        await CommandSender.Send(
-            new CancelCouplingWithKbo(
-                new OrganisationId(id)));
-
-        return Ok();
-    }
-
-    /// <summary>Update the organisation according to data in the KBO.</summary>
-    /// <response code="200">If the organisation was updated.</response>
-    [HttpPut("{id}/kbo/sync")]
-    [OrganisationRegistryAuthorize(Roles = Roles.AlgemeenBeheerder + "," + Roles.Developer)]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> UpdateFromKbo([FromRoute] Guid id)
-    {
-        await CommandSender.Send(
-            new SyncOrganisationWithKbo(
-                new OrganisationId(id),
-                DateTimeOffset.Now,
-                null));
-
-        return Ok();
-    }
-
-    /// <summary>Terminate the organisation according to data in the KBO.</summary>
-    /// <response code="200">If the organisation was terminated.</response>
-    [HttpPut("{id}/kbo/terminate")]
-    [OrganisationRegistryAuthorize(Roles = Roles.AlgemeenBeheerder + "," + Roles.Developer)]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> TerminateKboCoupling([FromRoute] Guid id)
-    {
-        await CommandSender.Send(
-            new SyncOrganisationTerminationWithKbo(
-                new OrganisationId(id)));
-
-        return Ok();
     }
 
     /// <summary>Gets the termination status of an organisation coupled with the KBO.</summary>
     [HttpGet("{id}/kbo/{kboNumber}/termination")]
-    [OrganisationRegistryAuthorize(Roles = Roles.AlgemeenBeheerder + "," + Roles.Developer + "," + Roles.VlimpersBeheerder)]
+    [OrganisationRegistryAuthorize(Role.AlgemeenBeheerder, Role.Developer, Role.VlimpersBeheerder)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetTerminationStatus(
         [FromServices] OrganisationRegistryContext context,
@@ -104,7 +43,7 @@ public class OrganisationKboController : OrganisationRegistryController
 
     /// <summary>Get a list of organisations to be terminated according to the KBO.</summary>
     [HttpGet("kbo/terminated")]
-    [OrganisationRegistryAuthorize(Roles = Roles.AlgemeenBeheerder + "," + Roles.Developer)]
+    [OrganisationRegistryAuthorize(Role.AlgemeenBeheerder, Role.Developer)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
     {

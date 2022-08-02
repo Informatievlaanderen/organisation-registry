@@ -6,14 +6,11 @@ using Infrastructure;
 using Infrastructure.Search.Filtering;
 using Infrastructure.Search.Pagination;
 using Infrastructure.Search.Sorting;
-using Infrastructure.Security;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OrganisationRegistry.Infrastructure.Commands;
 using Queries;
-using Requests;
-using Security;
 using SqlServer.Infrastructure;
 
 [ApiVersion("1.0")]
@@ -57,41 +54,5 @@ public class OrganisationClassificationController : OrganisationRegistryControll
             return NotFound();
 
         return Ok(organisationClassification);
-    }
-
-    /// <summary>Create an organisation classification.</summary>
-    /// <response code="201">If the organisation classificiation is created, together with the location.</response>
-    /// <response code="400">If the organisation classificiation information does not pass validation.</response>
-    [HttpPost]
-    [OrganisationRegistryAuthorize(Roles = Roles.AlgemeenBeheerder)]
-    [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Post([FromBody] CreateOrganisationClassificationRequest message)
-    {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
-
-        await CommandSender.Send(CreateOrganisationClassificationRequestMapping.Map(message));
-
-        return CreatedWithLocation(nameof(Get), new { id = message.Id });
-    }
-
-    /// <summary>Update an organisation classification.</summary>
-    /// <response code="200">If the organisation classification is updated, together with the location.</response>
-    /// <response code="400">If the organisation classification information does not pass validation.</response>
-    [HttpPut("{id}")]
-    [OrganisationRegistryAuthorize(Roles = Roles.AlgemeenBeheerder)]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Put([FromRoute] Guid id, [FromBody] UpdateOrganisationClassificationRequest message)
-    {
-        var internalMessage = new UpdateOrganisationClassificationInternalRequest(id, message);
-
-        if (!TryValidateModel(internalMessage))
-            return BadRequest(ModelState);
-
-        await CommandSender.Send(UpdateOrganisationClassificationRequestMapping.Map(internalMessage));
-
-        return OkWithLocationHeader(nameof(Get), new { id = internalMessage.OrganisationClassificationId });
     }
 }

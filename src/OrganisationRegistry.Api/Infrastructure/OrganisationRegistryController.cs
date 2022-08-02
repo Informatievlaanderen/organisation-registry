@@ -15,9 +15,24 @@ public class OrganisationRegistryController : Controller
     }
 
     [NonAction]
+    [Obsolete("replace with overload with controllername")]
     protected OkResult OkWithLocationHeader(string action, object? parameters)
     {
         var maybeLocationHeader = Url.Action(action, parameters);
+        if (maybeLocationHeader is not { } locationHeader)
+            throw new ApiException($"Action {action} does not exist");
+
+        Response.Headers.Add("Location", locationHeader);
+        return Ok();
+    }
+
+    [NonAction]
+    protected OkResult OkWithLocationHeader(string controller, string action, object? parameters)
+    {
+        if (controller.EndsWith("Controller"))
+            controller = controller.Replace("Controller", string.Empty);
+
+        var maybeLocationHeader = Url.Action(action, controller, parameters);
         if (maybeLocationHeader is not { } locationHeader)
             throw new ApiException($"Action {action} does not exist");
 
@@ -33,6 +48,7 @@ public class OrganisationRegistryController : Controller
     }
 
     [NonAction]
+    [Obsolete("replace with overload with controllername")]
     protected CreatedResult CreatedWithLocation(string action, object? parameters)
     {
         var maybeLocationHeader = Url.Action(action, parameters);

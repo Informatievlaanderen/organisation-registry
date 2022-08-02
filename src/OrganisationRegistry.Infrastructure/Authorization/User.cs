@@ -1,5 +1,6 @@
 namespace OrganisationRegistry.Infrastructure.Authorization;
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -11,7 +12,9 @@ public class User : IUser
         string userId,
         string? ip,
         Role[] roles,
-        IEnumerable<string> organisations)
+        IEnumerable<string> organisations,
+        IEnumerable<Guid> bodies,
+        IEnumerable<Guid> organisationIds)
     {
         Organisations = organisations.ToList();
         FirstName = firstName;
@@ -19,14 +22,18 @@ public class User : IUser
         UserId = userId;
         Ip = ip ?? string.Empty;
         Roles = roles;
+        Bodies = bodies;
+        OrganisationIds = organisationIds.ToList();
     }
 
     public List<string> Organisations { get; }
+    public List<Guid> OrganisationIds { get; }
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public string Ip { get; set; }
     public string UserId { get; set; }
     public Role[] Roles { get; set; }
+    public IEnumerable<Guid> Bodies { get; }
 
     public bool IsAuthorizedForVlimpersOrganisations
         => IsInAnyOf(
@@ -37,7 +44,14 @@ public class User : IUser
     public bool IsInAnyOf(params Role[] roles)
         => Roles.Any(roles.Contains);
 
-    public bool IsDecentraalBeheerderFor(string ovoNumber)
+    public bool IsDecentraalBeheerderForOrganisation(string ovoNumber)
         => IsInAnyOf(Role.DecentraalBeheerder) &&
            Organisations.Contains(ovoNumber);
+    public bool IsDecentraalBeheerderForOrganisation(Guid organisationId)
+        => IsInAnyOf(Role.DecentraalBeheerder) &&
+           OrganisationIds.Contains(organisationId);
+
+    public bool IsDecentraalBeheerderForBody(Guid bodyId)
+        => IsInAnyOf(Role.DecentraalBeheerder) &&
+           Bodies.Contains(bodyId);
 }

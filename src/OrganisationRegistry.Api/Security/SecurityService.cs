@@ -1,7 +1,6 @@
 namespace OrganisationRegistry.Api.Security;
 
 using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Security.Claims;
@@ -22,17 +21,6 @@ public class SecurityService : ISecurityService
     private readonly IOrganisationRegistryConfiguration _configuration;
 
     private readonly IContextFactory _contextFactory;
-
-    private readonly Dictionary<string, Role> _roleMapping = new()
-    {
-        { Roles.AlgemeenBeheerder, Role.AlgemeenBeheerder },
-        { Roles.VlimpersBeheerder, Role.VlimpersBeheerder },
-        { Roles.DecentraalBeheerder, Role.DecentraalBeheerder },
-        { Roles.RegelgevingBeheerder, Role.RegelgevingBeheerder },
-        { Roles.OrgaanBeheerder, Role.OrgaanBeheerder },
-        { Roles.Developer, Role.Developer },
-        { Roles.AutomatedTask, Role.AutomatedTask },
-    };
 
     public SecurityService(
         IContextFactory contextFactory,
@@ -123,8 +111,8 @@ public class SecurityService : ISecurityService
 
         var roles = user
             .GetClaims(ClaimTypes.Role)
-            .Where(role => _roleMapping.ContainsKey(role))
-            .Select(role => _roleMapping[role])
+            .Where(RoleMapping.Exists)
+            .Select(RoleMapping.Map)
             .ToImmutableArray();
 
         var organisationSecurityInformation = await _cache.GetOrAdd(
@@ -181,7 +169,9 @@ public class SecurityService : ISecurityService
             acmId.Value,
             ip?.Value,
             securityInformation.Roles.ToArray(),
-            securityInformation.OvoNumbers);
+            securityInformation.OvoNumbers,
+            securityInformation.BodyIds,
+            securityInformation.OrganisationIds);
     }
 
     public async Task<IUser> GetUser(ClaimsPrincipal? principal)
@@ -205,7 +195,9 @@ public class SecurityService : ISecurityService
             acmId,
             ip,
             securityInformation.Roles.ToArray(),
-            securityInformation.OvoNumbers);
+            securityInformation.OvoNumbers,
+            securityInformation.BodyIds,
+            securityInformation.OrganisationIds);
     }
 
     // TODO: see how we can make SecurityService use IUser everywhere, io ClaimsPrincipal.

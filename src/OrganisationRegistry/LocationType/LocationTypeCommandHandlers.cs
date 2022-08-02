@@ -3,6 +3,8 @@
 using System.Threading.Tasks;
 using Commands;
 using Exceptions;
+using Handling;
+using Infrastructure.Authorization;
 using Infrastructure.Commands;
 using Infrastructure.Domain;
 using Microsoft.Extensions.Logging;
@@ -23,22 +25,28 @@ public class LocationTypeCommandHandlers :
     }
 
     public async Task Handle(ICommandEnvelope<CreateLocationType> envelope)
-    {
-        if (_uniqueNameValidator.IsNameTaken(envelope.Command.Name))
-            throw new NameNotUnique();
+        => await Handler.For(envelope.User, Session)
+            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .Handle(
+                session =>
+                {
+                    if (_uniqueNameValidator.IsNameTaken(envelope.Command.Name))
+                        throw new NameNotUnique();
 
-        var locationType = new LocationType(envelope.Command.LocationTypeId, envelope.Command.Name);
-        Session.Add(locationType);
-        await Session.Commit(envelope.User);
-    }
+                    var locationType = new LocationType(envelope.Command.LocationTypeId, envelope.Command.Name);
+                    session.Add(locationType);
+                });
 
     public async Task Handle(ICommandEnvelope<UpdateLocationType> envelope)
-    {
-        if (_uniqueNameValidator.IsNameTaken(envelope.Command.LocationTypeId, envelope.Command.Name))
-            throw new NameNotUnique();
+        => await UpdateHandler<LocationType>.For(envelope.Command, envelope.User, Session)
+            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .Handle(
+                session =>
+                {
+                    if (_uniqueNameValidator.IsNameTaken(envelope.Command.LocationTypeId, envelope.Command.Name))
+                        throw new NameNotUnique();
 
-        var locationType = Session.Get<LocationType>(envelope.Command.LocationTypeId);
-        locationType.Update(envelope.Command.Name);
-        await Session.Commit(envelope.User);
-    }
+                    var locationType = session.Get<LocationType>(envelope.Command.LocationTypeId);
+                    locationType.Update(envelope.Command.Name);
+                });
 }
