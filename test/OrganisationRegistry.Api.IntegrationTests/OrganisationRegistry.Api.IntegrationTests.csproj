@@ -22,6 +22,8 @@
     <EmbeddedResource Include="BulkImport\Valid_TestImportFileOutput.csv" />
     <None Remove="Wiremock\mappings\*.json" />
     <EmbeddedResource Include="Wiremock\mappings\*.json" />
+    <None Remove="Wiremock\files\*.xml" />
+    <EmbeddedResource Include="Wiremock\files\*.xml" />
   </ItemGroup>
 
   <Import Project="..\..\.paket\Paket.Restore.targets" />
