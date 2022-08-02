@@ -1,3 +1,16 @@
+# [1.255.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.254.0...v1.255.0) (2022-08-02)
+
+
+### Features
+
+* or-1126 add console again ([619e626](https://github.com/informatievlaanderen/organisation-registry/commit/619e626c1f27370e7befee2fd6d30a75ffbe4c5f))
+* or-1126 correctly substitute prefix from resources ([ae74150](https://github.com/informatievlaanderen/organisation-registry/commit/ae74150bc7711d3ce8db8abd0ac25580fa0093cc))
+* or-1126 perform wiremock setup if none ([4e6fbe9](https://github.com/informatievlaanderen/organisation-registry/commit/4e6fbe9fba671129cfa6cecf9add4b6e20fa5523))
+* or-1126 put files for wiremock mapping ([05c4757](https://github.com/informatievlaanderen/organisation-registry/commit/05c4757930239e1ac67bc36f3cc5a5241d8c61cd))
+* or-1126 try putting via api fixture ([07bf04a](https://github.com/informatievlaanderen/organisation-registry/commit/07bf04ac0f2cda4f0b5a1c23e44d1a5b320f839d))
+* or-1126 use System.Net.Http.Json & optimize includes ([980d9a4](https://github.com/informatievlaanderen/organisation-registry/commit/980d9a47fba81e47f1c3149d3e3b331cdaab1a0e))
+* use prebuilt wiremock image ([cfe5f72](https://github.com/informatievlaanderen/organisation-registry/commit/cfe5f727cd867d703d20ff2afc4e8932619fd3ee))
+
 # [1.254.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.253.0...v1.254.0) (2022-08-01)
 
 
