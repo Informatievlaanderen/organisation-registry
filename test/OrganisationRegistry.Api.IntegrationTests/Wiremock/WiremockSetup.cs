@@ -3,6 +3,7 @@ namespace OrganisationRegistry.Api.IntegrationTests.Wiremock;
 using System;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
 using Tests.Shared;
@@ -21,7 +22,7 @@ public static class WiremockSetup
 
         var mappingsResult = await httpClient.GetAsync("__admin/mappings");
 
-        if (mappingsResult.IsSuccessStatusCode && (await mappingsResult.Content.ReadAsAsync<Mappings>()).Meta.Total > 0)
+        if (mappingsResult.IsSuccessStatusCode && (await mappingsResult.Content.ReadFromJsonAsync<Mappings>())!.Meta.Total > 0)
             return; // if there's any mapping available, we assume wiremock has been already set up.
 
         foreach (var mappingName in assembly.GetManifestResourceNames().Where(s => s.StartsWith("OrganisationRegistry.Api.IntegrationTests.Wiremock.mappings")))
