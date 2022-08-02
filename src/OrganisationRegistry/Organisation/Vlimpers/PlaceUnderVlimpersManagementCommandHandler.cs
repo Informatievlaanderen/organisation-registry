@@ -20,7 +20,7 @@ public class PlaceUnderVlimpersManagementCommandHandler
 
     private Task Handle(PlaceUnderVlimpersManagement message, IUser user)
         => UpdateHandler<Organisation>.For(message, user, Session)
-            .RequiresAdmin()
+            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
             .Handle(
                 session =>
                 {

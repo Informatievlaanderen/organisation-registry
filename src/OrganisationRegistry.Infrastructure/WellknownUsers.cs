@@ -19,7 +19,7 @@ public class WellknownUsers
     private static User Create(string name = "", Role? role = null) => Create(name, name, name, role);
 
     private static User Create(string firstName, string lastName, string userId, Role? role = null) =>
-        new(firstName, lastName, userId, string.Empty, GetRoles(role), Array.Empty<string>());
+        new(firstName, lastName, userId, string.Empty, GetRoles(role), Array.Empty<string>(), Array.Empty<Guid>(), Array.Empty<Guid>());
 
     private static Role[] GetRoles(Role? role) =>
         role != null ? new[] { role.Value } : Array.Empty<Role>();

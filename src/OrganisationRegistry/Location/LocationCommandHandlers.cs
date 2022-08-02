@@ -3,6 +3,8 @@
 using System.Threading.Tasks;
 using Commands;
 using Exceptions;
+using Handling;
+using Infrastructure.Authorization;
 using Infrastructure.Commands;
 using Infrastructure.Domain;
 using Microsoft.Extensions.Logging;
@@ -23,22 +25,28 @@ public class LocationCommandHandlers :
     }
 
     public async Task Handle(ICommandEnvelope<CreateLocation> envelope)
-    {
-        if (_uniqueNameValidator.IsNameTaken(envelope.Command.Address.FullAddress))
-            throw new NameNotUnique();
+        => await Handler.For(envelope.User, Session)
+            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .Handle(
+                session =>
+                {
+                    if (_uniqueNameValidator.IsNameTaken(envelope.Command.Address.FullAddress))
+                        throw new NameNotUnique();
 
-        var location = new Location(envelope.Command.LocationId, envelope.Command.CrabLocationId, envelope.Command.Address);
-        Session.Add(location);
-        await Session.Commit(envelope.User);
-    }
+                    var location = new Location(envelope.Command.LocationId, envelope.Command.CrabLocationId, envelope.Command.Address);
+                    session.Add(location);
+                });
 
     public async Task Handle(ICommandEnvelope<UpdateLocation> envelope)
-    {
-        if (_uniqueNameValidator.IsNameTaken(envelope.Command.LocationId, envelope.Command.Address.FullAddress))
-            throw new NameNotUnique();
+        => await UpdateHandler<Location>.For(envelope.Command, envelope.User, Session)
+            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .Handle(
+                session =>
+                {
+                    if (_uniqueNameValidator.IsNameTaken(envelope.Command.LocationId, envelope.Command.Address.FullAddress))
+                        throw new NameNotUnique();
 
-        var location = Session.Get<Location>(envelope.Command.LocationId);
-        location.Update(envelope.Command.CrabLocationId, envelope.Command.Address);
-        await Session.Commit(envelope.User);
-    }
+                    var location = session.Get<Location>(envelope.Command.LocationId);
+                    location.Update(envelope.Command.CrabLocationId, envelope.Command.Address);
+                });
 }

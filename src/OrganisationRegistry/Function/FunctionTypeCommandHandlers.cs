@@ -3,6 +3,8 @@
 using System.Threading.Tasks;
 using Commands;
 using Exceptions;
+using Handling;
+using Infrastructure.Authorization;
 using Infrastructure.Commands;
 using Infrastructure.Domain;
 using Microsoft.Extensions.Logging;
@@ -23,24 +25,30 @@ public class FunctionTypeCommandHandlers :
     }
 
     public async Task Handle(ICommandEnvelope<CreateFunctionType> envelope)
-    {
-        if (_uniqueNameValidator.IsNameTaken(envelope.Command.Name))
-            throw new NameNotUnique();
+        => await Handler.For(envelope.User, Session)
+            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .Handle(
+                session =>
+                {
+                    if (_uniqueNameValidator.IsNameTaken(envelope.Command.Name))
+                        throw new NameNotUnique();
 
-        var functionType = new FunctionType(envelope.Command.FunctionTypeId, envelope.Command.Name);
+                    var functionType = new FunctionType(envelope.Command.FunctionTypeId, envelope.Command.Name);
 
-        Session.Add(functionType);
-        await Session.Commit(envelope.User);
-    }
+                    session.Add(functionType);
+                });
 
     public async Task Handle(ICommandEnvelope<UpdateFunctionType> envelope)
-    {
-        if (_uniqueNameValidator.IsNameTaken(envelope.Command.FunctionTypeId, envelope.Command.Name))
-            throw new NameNotUnique();
+        => await UpdateHandler<FunctionType>.For(envelope.Command, envelope.User, Session)
+            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .Handle(
+                session =>
+                {
+                    if (_uniqueNameValidator.IsNameTaken(envelope.Command.FunctionTypeId, envelope.Command.Name))
+                        throw new NameNotUnique();
 
-        var functionType = Session.Get<FunctionType>(envelope.Command.FunctionTypeId);
+                    var functionType = session.Get<FunctionType>(envelope.Command.FunctionTypeId);
 
-        functionType.Update(envelope.Command.Name);
-        await Session.Commit(envelope.User);
-    }
+                    functionType.Update(envelope.Command.Name);
+                });
 }

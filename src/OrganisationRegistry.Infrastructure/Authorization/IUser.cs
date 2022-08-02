@@ -1,5 +1,6 @@
 namespace OrganisationRegistry.Infrastructure.Authorization;
 
+using System;
 using System.Collections.Generic;
 
 public interface IUser
@@ -12,5 +13,7 @@ public interface IUser
     bool IsAuthorizedForVlimpersOrganisations { get; }
     List<string> Organisations { get; }
     bool IsInAnyOf(params Role[] roles);
-    bool IsDecentraalBeheerderFor(string ovoNumber);
+    bool IsDecentraalBeheerderForOrganisation(string ovoNumber);
+    bool IsDecentraalBeheerderForOrganisation(Guid organisationId);
+    bool IsDecentraalBeheerderForBody(Guid bodyId);
 }

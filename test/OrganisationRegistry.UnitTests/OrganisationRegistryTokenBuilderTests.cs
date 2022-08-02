@@ -37,7 +37,7 @@ public class OrganisationRegistryTokenBuilderTests
             .Select(claim => claim.Value)
             .ToList()
             .Should()
-            .NotContain(Roles.DecentraalBeheerder);
+            .NotContain(RoleMapping.Map(Role.DecentraalBeheerder));
     }
 
     [Fact]
@@ -65,7 +65,7 @@ public class OrganisationRegistryTokenBuilderTests
             .Select(claim => claim.Value)
             .ToList()
             .Should()
-            .BeEquivalentTo(Roles.AlgemeenBeheerder);
+            .BeEquivalentTo(RoleMapping.Map(Role.AlgemeenBeheerder));
     }
 
     [Theory]
@@ -122,7 +122,7 @@ public class OrganisationRegistryTokenBuilderTests
                 },
                 new[]
                 {
-                    Roles.VlimpersBeheerder,
+                    RoleMapping.Map(Role.VlimpersBeheerder),
                 },
             };
             yield return new object[]
@@ -133,7 +133,7 @@ public class OrganisationRegistryTokenBuilderTests
                 },
                 new[]
                 {
-                    Roles.OrgaanBeheerder,
+                    RoleMapping.Map(Role.OrgaanBeheerder),
                 },
             };
             yield return new object[]
@@ -144,7 +144,7 @@ public class OrganisationRegistryTokenBuilderTests
                 },
                 new[]
                 {
-                    Roles.DecentraalBeheerder,
+                    RoleMapping.Map(Role.DecentraalBeheerder),
                 },
             };
             yield return new object[]
@@ -155,7 +155,7 @@ public class OrganisationRegistryTokenBuilderTests
                 },
                 new[]
                 {
-                    Roles.AlgemeenBeheerder,
+                    RoleMapping.Map(Role.AlgemeenBeheerder),
                 },
             };
             yield return new object[]
@@ -167,8 +167,8 @@ public class OrganisationRegistryTokenBuilderTests
                 },
                 new[]
                 {
-                    Roles.VlimpersBeheerder,
-                    Roles.OrgaanBeheerder,
+                    RoleMapping.Map(Role.VlimpersBeheerder),
+                    RoleMapping.Map(Role.OrgaanBeheerder),
                 },
             };
             yield return new object[]
@@ -179,12 +179,13 @@ public class OrganisationRegistryTokenBuilderTests
                 },
                 new[]
                 {
-                    Roles.RegelgevingBeheerder,
+                    RoleMapping.Map(Role.RegelgevingBeheerder),
                 },
             };
         }
 
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator()
+            => GetEnumerator();
     }
 
     class OrganisationClaimTestData : IEnumerable<object[]>
@@ -198,7 +199,6 @@ public class OrganisationRegistryTokenBuilderTests
                     "WegwijsBeheerder-vlimpersbeheerder:OVO001833",
                 },
                 Array.Empty<string>(),
-
             };
             yield return new object[]
             {
@@ -226,7 +226,6 @@ public class OrganisationRegistryTokenBuilderTests
                     "WegwijsBeheerder-algemeenBeheerder:OVO002949",
                 },
                 Array.Empty<string>(),
-
             };
             yield return new object[]
             {
@@ -245,6 +244,7 @@ public class OrganisationRegistryTokenBuilderTests
             };
         }
 
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator()
+            => GetEnumerator();
     }
 }

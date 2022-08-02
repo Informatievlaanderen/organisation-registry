@@ -6,14 +6,11 @@ using Infrastructure;
 using Infrastructure.Search.Filtering;
 using Infrastructure.Search.Pagination;
 using Infrastructure.Search.Sorting;
-using Infrastructure.Security;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OrganisationRegistry.Infrastructure.Commands;
 using Queries;
-using Requests;
-using Security;
 using SqlServer.FormalFrameworkCategory;
 using SqlServer.Infrastructure;
 
@@ -57,41 +54,5 @@ public class FormalFrameworkCategoryController : OrganisationRegistryController
             return NotFound();
 
         return Ok(formalFrameworkCategory);
-    }
-
-    /// <summary>Create a formal framework category.</summary>
-    /// <response code="201">If the formal framework category is created, together with the location.</response>
-    /// <response code="400">If the formal framework category information does not pass validation.</response>
-    [HttpPost]
-    [OrganisationRegistryAuthorize(Roles = Roles.AlgemeenBeheerder)]
-    [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Post([FromBody] CreateFormalFrameworkCategoryRequest message)
-    {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
-
-        await CommandSender.Send(CreateFormalFrameworkCategoryRequestMapping.Map(message));
-
-        return CreatedWithLocation(nameof(Get), new { id = message.Id });
-    }
-
-    /// <summary>Update a formal framework category.</summary>
-    /// <response code="200">If the formal framework category is updated, together with the location.</response>
-    /// <response code="400">If the formal framework category information does not pass validation.</response>
-    [HttpPut("{id}")]
-    [OrganisationRegistryAuthorize(Roles = Roles.AlgemeenBeheerder)]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Put([FromRoute] Guid id, [FromBody] UpdateFormalFrameworkCategoryRequest message)
-    {
-        var internalMessage = new UpdateFormalFrameworkCategoryInternalRequest(id, message);
-
-        if (!TryValidateModel(internalMessage))
-            return BadRequest(ModelState);
-
-        await CommandSender.Send(UpdateFormalFrameworkCategoryRequestMapping.Map(internalMessage));
-
-        return OkWithLocationHeader(nameof(Get), new { id = internalMessage.FormalFrameworkCategoryId });
     }
 }

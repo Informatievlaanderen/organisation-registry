@@ -16,8 +16,6 @@ using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Commands;
 using OrganisationRegistry.Infrastructure.Configuration;
 using Queries;
-using Requests;
-using Security;
 using SqlServer.Infrastructure;
 using SqlServer.LabelType;
 
@@ -79,41 +77,5 @@ public class LabelTypeController : OrganisationRegistryController
             return NotFound();
 
         return Ok(key);
-    }
-
-    /// <summary>Create a label type.</summary>
-    /// <response code="201">If the label type is created, together with the location.</response>
-    /// <response code="400">If the label type information does not pass validation.</response>
-    [HttpPost]
-    [OrganisationRegistryAuthorize(Roles = Roles.AlgemeenBeheerder)]
-    [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Post([FromBody] CreateLabelTypeRequest message)
-    {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
-
-        await CommandSender.Send(CreateLabelTypeRequestMapping.Map(message));
-
-        return CreatedWithLocation(nameof(Get), new { id = message.Id });
-    }
-
-    /// <summary>Update a label type.</summary>
-    /// <response code="200">If the label type is updated, together with the location.</response>
-    /// <response code="400">If the label type information does not pass validation.</response>
-    [HttpPut("{id}")]
-    [OrganisationRegistryAuthorize(Roles = Roles.AlgemeenBeheerder)]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Put([FromRoute] Guid id, [FromBody] UpdateLabelTypeRequest message)
-    {
-        var internalMessage = new UpdateLabelTypeInternalRequest(id, message);
-
-        if (!TryValidateModel(internalMessage))
-            return BadRequest(ModelState);
-
-        await CommandSender.Send(UpdateLabelTypeRequestMapping.Map(internalMessage));
-
-        return OkWithLocationHeader(nameof(Get), new { id = internalMessage.LabelTypeId });
     }
 }

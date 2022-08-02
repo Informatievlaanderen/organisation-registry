@@ -3,6 +3,8 @@
 using System.Threading.Tasks;
 using Commands;
 using Exceptions;
+using Handling;
+using Infrastructure.Authorization;
 using Infrastructure.Commands;
 using Infrastructure.Domain;
 using Microsoft.Extensions.Logging;
@@ -24,25 +26,35 @@ public class ContactTypeCommandHandlers :
 
     public async Task Handle(ICommandEnvelope<CreateContactType> envelope)
     {
-        if (_uniqueNameValidator.IsNameTaken(envelope.Command.Name))
-            throw new NameNotUnique();
+        await Handler.For(envelope.User, Session)
+            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .Handle(
+                session =>
+                {
+                    if (_uniqueNameValidator.IsNameTaken(envelope.Command.Name))
+                        throw new NameNotUnique();
 
-        var contactType = new ContactType(
-            envelope.Command.ContactTypeId,
-            envelope.Command.Name,
-            envelope.Command.Regex,
-            envelope.Command.Example);
-        Session.Add(contactType);
-        await Session.Commit(envelope.User);
+                    var contactType = new ContactType(
+                        envelope.Command.ContactTypeId,
+                        envelope.Command.Name,
+                        envelope.Command.Regex,
+                        envelope.Command.Example);
+                    session.Add(contactType);
+                });
     }
 
     public async Task Handle(ICommandEnvelope<UpdateContactType> envelope)
     {
-        if (_uniqueNameValidator.IsNameTaken(envelope.Command.ContactTypeId, envelope.Command.Name))
-            throw new NameNotUnique();
+        await UpdateHandler<ContactType>.For(envelope.Command, envelope.User, Session)
+            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .Handle(
+                session =>
+                {
+                    if (_uniqueNameValidator.IsNameTaken(envelope.Command.ContactTypeId, envelope.Command.Name))
+                        throw new NameNotUnique();
 
-        var contactType = Session.Get<ContactType>(envelope.Command.ContactTypeId);
-        contactType.Update(envelope.Command.Name, envelope.Command.Regex, envelope.Command.Example);
-        await Session.Commit(envelope.User);
+                    var contactType = session.Get<ContactType>(envelope.Command.ContactTypeId);
+                    contactType.Update(envelope.Command.Name, envelope.Command.Regex, envelope.Command.Example);
+                });
     }
 }

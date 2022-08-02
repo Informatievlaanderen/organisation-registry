@@ -2,8 +2,10 @@ namespace OrganisationRegistry.Handling;
 
 using System.Linq;
 using Authorization;
+using Body;
 using Infrastructure.Authorization;
 using Infrastructure.Configuration;
+using Infrastructure.Domain;
 using Organisation;
 
 public static class UpdateHandlerExtensionMethods
@@ -12,6 +14,11 @@ public static class UpdateHandlerExtensionMethods
         => source.WithPolicy(
             organisation => new VlimpersPolicy(
                 organisation.State.UnderVlimpersManagement,
+                organisation.State.OvoNumber));
+
+    public static UpdateHandler<Organisation> WithBeheerderForOrganisationPolicy(this UpdateHandler<Organisation> source)
+        => source.WithPolicy(
+            organisation => new BeheerderForOrganisationRegardlessOfVlimpersPolicy(
                 organisation.State.OvoNumber));
 
     public static UpdateHandler<Organisation> WithVlimpersOnlyPolicy(this UpdateHandler<Organisation> source)
@@ -117,16 +124,18 @@ public static class UpdateHandlerExtensionMethods
         => source.WithPolicy(
             organisation => new BeheerderForOrganisationRegardlessOfVlimpersPolicy(organisation.State.OvoNumber));
 
-    public static UpdateHandler<Organisation> WithBankAccountPolicy(
-        this UpdateHandler<Organisation> source)
-        => source.WithPolicy(
-            organisation => new BankAccountPolicy(organisation.State.OvoNumber));
-
     public static UpdateHandler<Organisation> RequiresAdmin(this UpdateHandler<Organisation> source)
         => source.WithPolicy(_ => new AdminOnlyPolicy());
 
-    public static UpdateHandler<Organisation> RequiresOneOfRole(
-        this UpdateHandler<Organisation> source,
+    public static UpdateHandler<TAggregate> RequiresOneOfRole<TAggregate>(
+        this UpdateHandler<TAggregate> source,
         params Role[] roles)
+        where TAggregate : AggregateRoot
         => source.WithPolicy(_ => new RequiresRolesPolicy(roles));
+
+    public static UpdateHandler<Body> WithEditBodyPolicy(this UpdateHandler<Body> source)
+        => source.WithPolicy(body => new EditBodyPolicy(body.Id));
+
+    public static UpdateHandler<Body> WithEditDelegationPolicy(this UpdateHandler<Body> source, OrganisationId organisationId)
+        => source.WithPolicy(body => new EditDelegationPolicy(organisationId, body.Id));
 }

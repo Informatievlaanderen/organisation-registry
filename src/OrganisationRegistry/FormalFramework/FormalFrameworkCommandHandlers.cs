@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using Commands;
 using Exceptions;
 using FormalFrameworkCategory;
+using Handling;
+using Infrastructure.Authorization;
 using Infrastructure.Commands;
 using Infrastructure.Domain;
 using Microsoft.Extensions.Logging;
@@ -27,32 +29,38 @@ public class FormalFrameworkCommandHandlers :
     }
 
     public async Task Handle(ICommandEnvelope<CreateFormalFramework> envelope)
-    {
-        if (_uniqueNameValidator.IsNameTaken(envelope.Command.Name, envelope.Command.FormalFrameworkCategoryId))
-            throw new NameNotUniqueWithinType();
+        => await Handler.For(envelope.User, Session)
+            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .Handle(
+                session =>
+                {
+                    if (_uniqueNameValidator.IsNameTaken(envelope.Command.Name, envelope.Command.FormalFrameworkCategoryId))
+                        throw new NameNotUniqueWithinType();
 
-        if (_uniqueCodeValidator.IsCodeTaken(envelope.Command.Code))
-            throw new CodeNotUnique();
+                    if (_uniqueCodeValidator.IsCodeTaken(envelope.Command.Code))
+                        throw new CodeNotUnique();
 
-        var formalFrameworkCategory = Session.Get<FormalFrameworkCategory>(envelope.Command.FormalFrameworkCategoryId);
+                    var formalFrameworkCategory = session.Get<FormalFrameworkCategory>(envelope.Command.FormalFrameworkCategoryId);
 
-        var formalFramework = new FormalFramework(envelope.Command.FormalFrameworkId, envelope.Command.Name, envelope.Command.Code, formalFrameworkCategory);
-        Session.Add(formalFramework);
-        await Session.Commit(envelope.User);
-    }
+                    var formalFramework = new FormalFramework(envelope.Command.FormalFrameworkId, envelope.Command.Name, envelope.Command.Code, formalFrameworkCategory);
+                    session.Add(formalFramework);
+                });
 
     public async Task Handle(ICommandEnvelope<UpdateFormalFramework> envelope)
-    {
-        if (_uniqueNameValidator.IsNameTaken(envelope.Command.FormalFrameworkId, envelope.Command.Name, envelope.Command.FormalFrameworkCategoryId))
-            throw new NameNotUniqueWithinType();
+        => await UpdateHandler<FormalFramework>.For(envelope.Command, envelope.User, Session)
+            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .Handle(
+                session =>
+                {
+                    if (_uniqueNameValidator.IsNameTaken(envelope.Command.FormalFrameworkId, envelope.Command.Name, envelope.Command.FormalFrameworkCategoryId))
+                        throw new NameNotUniqueWithinType();
 
-        if (_uniqueCodeValidator.IsCodeTaken(envelope.Command.FormalFrameworkId, envelope.Command.Code))
-            throw new CodeNotUnique();
+                    if (_uniqueCodeValidator.IsCodeTaken(envelope.Command.FormalFrameworkId, envelope.Command.Code))
+                        throw new CodeNotUnique();
 
-        var formalFrameworkCategory = Session.Get<FormalFrameworkCategory>(envelope.Command.FormalFrameworkCategoryId);
+                    var formalFrameworkCategory = session.Get<FormalFrameworkCategory>(envelope.Command.FormalFrameworkCategoryId);
 
-        var formalFramework = Session.Get<FormalFramework>(envelope.Command.FormalFrameworkId);
-        formalFramework.Update(envelope.Command.Name, envelope.Command.Code, formalFrameworkCategory);
-        await Session.Commit(envelope.User);
-    }
+                    var formalFramework = session.Get<FormalFramework>(envelope.Command.FormalFrameworkId);
+                    formalFramework.Update(envelope.Command.Name, envelope.Command.Code, formalFrameworkCategory);
+                });
 }

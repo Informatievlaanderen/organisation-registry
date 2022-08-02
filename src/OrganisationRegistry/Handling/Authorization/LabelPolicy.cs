@@ -42,7 +42,7 @@ public class LabelPolicy : ISecurityPolicy
             user.IsInAnyOf(Role.VlimpersBeheerder) && AreAllLabelsofTypeVlimpers(_labelTypeIds))
             return AuthorizationResult.Success();
 
-        if (!user.IsDecentraalBeheerderFor(_ovoNumber))
+        if (!user.IsDecentraalBeheerderForOrganisation(_ovoNumber))
             return AuthorizationResult.Fail(InsufficientRights.CreateFor(this));
 
         if (_isUnderVlimpersManagement && AreAnyLabelsofTypeVlimpers(_labelTypeIds))

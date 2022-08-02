@@ -9,14 +9,14 @@ using Infrastructure.Security;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Commands;
-using Requests;
-using Security;
 using SqlServer;
 using SqlServer.Infrastructure;
 
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
+[OrganisationRegistryAuthorize(Role.Developer)]
 [OrganisationRegistryRoute("projections")]
 public class ProjectionsController : OrganisationRegistryController
 {
@@ -27,7 +27,6 @@ public class ProjectionsController : OrganisationRegistryController
 
     /// <summary>Get a list of projections.</summary>
     [HttpGet]
-    [OrganisationRegistryAuthorize(Roles = Roles.Developer)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get()
     {
@@ -51,7 +50,6 @@ public class ProjectionsController : OrganisationRegistryController
 
     /// <summary>Get a list of available projection states.</summary>
     [HttpGet("states")]
-    [OrganisationRegistryAuthorize(Roles = Roles.Developer)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
         => Ok(await context.ProjectionStates
@@ -60,7 +58,6 @@ public class ProjectionsController : OrganisationRegistryController
 
     /// <summary>Get a projection state by its id.</summary>
     [HttpGet("states/{id}")]
-    [OrganisationRegistryAuthorize(Roles = Roles.Developer)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, Guid id)
     {
@@ -75,33 +72,11 @@ public class ProjectionsController : OrganisationRegistryController
 
     /// <summary>Get the max event number.</summary>
     [HttpGet("states/last-event")]
-    [OrganisationRegistryAuthorize(Roles = Roles.Developer)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> LastEvent([FromServices] OrganisationRegistryContext context)
     {
         return Ok(await context.Events
             .AsQueryable()
             .MaxAsync(x => x.Number));
-    }
-
-    [HttpPut("states/{id}")]
-    [OrganisationRegistryAuthorize(Roles = Roles.Developer)]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Put([FromServices] OrganisationRegistryContext context, Guid id, [FromBody] UpdateProjectionStateRequest message)
-    {
-        var state = await context.ProjectionStates
-            .AsQueryable()
-            .FirstOrDefaultAsync(x => x.Id == id);
-
-        if (state == null)
-            return NotFound();
-
-        state.Name = message.Name;
-        state.EventNumber = message.EventNumber;
-
-        await context.SaveChangesAsync();
-
-        return OkWithLocationHeader(nameof(Get), new { id });
     }
 }

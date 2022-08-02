@@ -10,7 +10,6 @@ using Newtonsoft.Json;
 using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Commands;
 using OrganisationRegistry.Organisation;
-using Security;
 
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
@@ -32,7 +31,7 @@ public class KboRawController : OrganisationRegistryController
     /// <summary>Return raw result from magda kbo lookup.</summary>
     /// <response code="200">The raw request/response from magda kbo lookup.</response>
     [HttpGet("{kboNumberInput}")]
-    [OrganisationRegistryAuthorize(Roles = Roles.AlgemeenBeheerder + "," + Roles.Developer)]
+    [OrganisationRegistryAuthorize(Role.AlgemeenBeheerder,Role.Developer)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get(
         [FromServices] ISecurityService securityService,

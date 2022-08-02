@@ -6,6 +6,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Commands;
 using Exceptions;
+using Handling;
+using Handling.Authorization;
 using Infrastructure;
 using Infrastructure.Authorization;
 using Infrastructure.Commands;
@@ -78,8 +80,9 @@ public class KboOrganisationCommandHandlers :
         var formalNameLabelType = Session.Get<LabelType>(_organisationRegistryConfiguration.Kbo.KboV2FormalNameLabelTypeId);
 
         var legalFormOrganisationClassificationType =
-            Session.Get<OrganisationClassificationType>(_organisationRegistryConfiguration
-                .Kbo.KboV2LegalFormOrganisationClassificationTypeId);
+            Session.Get<OrganisationClassificationType>(
+                _organisationRegistryConfiguration
+                    .Kbo.KboV2LegalFormOrganisationClassificationTypeId);
 
         var organisation = Session.Get<Organisation>(organisationId);
 
@@ -138,8 +141,14 @@ public class KboOrganisationCommandHandlers :
         Location location;
         if (!existingLocationId.HasValue)
         {
-            location = new Location(new LocationId(Guid.NewGuid()), null, new Address(
-                address.Street, address.ZipCode, address.City, address.Country));
+            location = new Location(
+                new LocationId(Guid.NewGuid()),
+                null,
+                new Address(
+                    address.Street,
+                    address.ZipCode,
+                    address.City,
+                    address.Country));
 
             Session.Add(location);
         }
@@ -164,7 +173,8 @@ public class KboOrganisationCommandHandlers :
                 new ValidTo()));
     }
 
-    private void AddAddresses(Organisation organisation,
+    private void AddAddresses(
+        Organisation organisation,
         KboRegisteredOffice? address,
         LocationType registeredOfficeLocationType)
     {
@@ -180,7 +190,9 @@ public class KboOrganisationCommandHandlers :
                 new ValidTo(address.ValidTo)));
     }
 
-    private void AddLegalForm(Organisation organisation, IMagdaLegalForm? legalForm,
+    private void AddLegalForm(
+        Organisation organisation,
+        IMagdaLegalForm? legalForm,
         OrganisationClassificationType legalFormOrganisationClassificationType)
     {
         if (legalForm == null)
@@ -220,10 +232,20 @@ public class KboOrganisationCommandHandlers :
     }
 
     public async Task Handle(ICommandEnvelope<CreateOrganisationFromKboNumber> envelope)
-        => await CreateFromKbo(envelope.Command, envelope.User);
+    {
+        new RequiresRolesPolicy(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .ThrowOnViolation(envelope.User);
+
+        await CreateFromKbo(envelope.Command, envelope.User);
+    }
 
     public async Task Handle(ICommandEnvelope<CreateOrganisationFromKbo> envelope)
-        => await CreateFromKbo(envelope.Command, envelope.User);
+    {
+        new RequiresRolesPolicy(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .ThrowOnViolation(envelope.User);
+
+        await CreateFromKbo(envelope.Command, envelope.User);
+    }
 
     private async Task CreateFromKbo(CreateOrganisationFromKbo command, IUser user)
     {
@@ -284,67 +306,77 @@ public class KboOrganisationCommandHandlers :
     }
 
     public async Task Handle(ICommandEnvelope<CoupleOrganisationToKbo> envelope)
-    {
-        var registeredOfficeLocationType =
-            Session.Get<LocationType>(_organisationRegistryConfiguration.Kbo.KboV2RegisteredOfficeLocationTypeId);
+        => await UpdateHandler<Organisation>.For(envelope.Command, envelope.User, Session)
+            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .Handle(
+                session =>
+                {
+                    var registeredOfficeLocationType =
+                        session.Get<LocationType>(_organisationRegistryConfiguration.Kbo.KboV2RegisteredOfficeLocationTypeId);
 
-        var legalFormOrganisationClassificationType = Session.Get<OrganisationClassificationType>(_organisationRegistryConfiguration.Kbo.KboV2LegalFormOrganisationClassificationTypeId);
+                    var legalFormOrganisationClassificationType = session.Get<OrganisationClassificationType>(_organisationRegistryConfiguration.Kbo.KboV2LegalFormOrganisationClassificationTypeId);
 
-        var kboOrganisationResult =
-            _kboOrganisationRetriever.RetrieveOrganisation(envelope.User, envelope.Command.KboNumber).GetAwaiter().GetResult();
+                    var kboOrganisationResult =
+                        _kboOrganisationRetriever.RetrieveOrganisation(envelope.User, envelope.Command.KboNumber).GetAwaiter().GetResult();
 
-        if (kboOrganisationResult.HasErrors)
-            throw new KboOrganisationNotFound(kboOrganisationResult.ErrorMessages);
+                    if (kboOrganisationResult.HasErrors)
+                        throw new KboOrganisationNotFound(kboOrganisationResult.ErrorMessages);
 
-        var kboOrganisation = kboOrganisationResult.Value;
+                    var kboOrganisation = kboOrganisationResult.Value;
 
-        if (kboOrganisation.Termination != null)
-            throw new CannotCoupleOrganisationBecauseKboOrganisationTerminated();
+                    if (kboOrganisation.Termination != null)
+                        throw new CannotCoupleOrganisationBecauseKboOrganisationTerminated();
 
-        var location = GetOrAddLocations(kboOrganisation.Address);
+                    var location = GetOrAddLocations(kboOrganisation.Address);
 
-        var organisation = Session.Get<Organisation>(envelope.Command.OrganisationId);
-        organisation.ThrowIfTerminated(envelope.User);
+                    var organisation = session.Get<Organisation>(envelope.Command.OrganisationId);
+                    organisation.ThrowIfTerminated(envelope.User);
 
-        organisation.CoupleToKbo(envelope.Command.KboNumber, _dateTimeProvider);
+                    organisation.CoupleToKbo(envelope.Command.KboNumber, _dateTimeProvider);
 
-        if (_uniqueKboValidator.IsKboNumberTaken(envelope.Command.KboNumber))
-            throw new KboNumberNotUnique();
+                    if (_uniqueKboValidator.IsKboNumberTaken(envelope.Command.KboNumber))
+                        throw new KboNumberNotUnique();
 
-        organisation.UpdateInfoFromKbo(kboOrganisation.FormalName.Value, kboOrganisation.ShortName.Value);
+                    organisation.UpdateInfoFromKbo(kboOrganisation.FormalName.Value, kboOrganisation.ShortName.Value);
 
-        AddBankAccounts(organisation, kboOrganisation.BankAccounts);
+                    AddBankAccounts(organisation, kboOrganisation.BankAccounts);
 
-        AddLegalForm(organisation, kboOrganisation.LegalForm, legalFormOrganisationClassificationType);
+                    AddLegalForm(organisation, kboOrganisation.LegalForm, legalFormOrganisationClassificationType);
 
-        AddAddresses(organisation, location, registeredOfficeLocationType);
+                    AddAddresses(organisation, location, registeredOfficeLocationType);
 
-        AddLabel(organisation, kboOrganisation);
-
-        await Session.Commit(envelope.User);
-    }
+                    AddLabel(organisation, kboOrganisation);
+                });
 
     public async Task Handle(ICommandEnvelope<CancelCouplingWithKbo> envelope)
-    {
-        var organisation = Session.Get<Organisation>(envelope.Command.OrganisationId);
+        => await UpdateHandler<Organisation>.For(envelope.Command, envelope.User, Session)
+            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .Handle(
+                session =>
+                {
+                    var organisation = session.Get<Organisation>(envelope.Command.OrganisationId);
 
-        organisation.CancelCouplingWithKbo();
-
-        await Session.Commit(envelope.User);
-    }
+                    organisation.CancelCouplingWithKbo();
+                });
 
     public async Task Handle(ICommandEnvelope<SyncOrganisationWithKbo> envelope)
-        => await SyncWithKbo(envelope.Command.OrganisationId, envelope.User, envelope.Command.KboSyncItemId);
+    {
+        new RequiresRolesPolicy(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .ThrowOnViolation(envelope.User);
+
+        await SyncWithKbo(envelope.Command.OrganisationId, envelope.User, envelope.Command.KboSyncItemId);
+    }
 
     public async Task Handle(ICommandEnvelope<SyncOrganisationTerminationWithKbo> envelope)
     {
+        new RequiresRolesPolicy(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .ThrowOnViolation(envelope.User);
+
         await SyncWithKbo(envelope.Command.OrganisationId, envelope.User, null);
 
         var organisation = Session.Get<Organisation>(envelope.Command.OrganisationId);
 
         organisation.TerminateOrganisationBasedOnKboTermination();
-
-        await Session.Commit(envelope.User);
     }
 }
 

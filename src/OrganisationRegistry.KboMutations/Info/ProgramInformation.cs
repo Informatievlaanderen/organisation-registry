@@ -15,7 +15,6 @@
          progInfo.AppendLine();
          progInfo.AppendLine("Application settings:");
          progInfo.AppendLine(new string('-', 50));
-         AppendKeyValue(progInfo, "Created", ObfuscateToken(kboMutationsConfiguration.Created.ToLongTimeString()));
          progInfo.AppendLine(new string('-', 50));
          progInfo.AppendLine();
          return progInfo.ToString();
@@ -28,8 +27,5 @@
          progInfo.AppendLine(value);
      }
 
-     private static string ObfuscateToken(string text)
-         => text.Substring(0, 5) +
-            new string('*', text.Length - 8) +
-            text.Substring(text.Length - 3);
+
  }

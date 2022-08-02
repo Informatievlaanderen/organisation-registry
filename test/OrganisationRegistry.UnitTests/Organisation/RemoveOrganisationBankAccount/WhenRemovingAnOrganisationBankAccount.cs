@@ -67,7 +67,6 @@ public class WhenRemovingAnOrganisationBankAccount
     [InlineData(Role.VlimpersBeheerder)]
     [InlineData(Role.Orafin)]
     [InlineData(Role.AutomatedTask)]
-    [InlineData(Role.CjmBeheerder)]
     [InlineData(Role.DecentraalBeheerder)]
     [InlineData(Role.OrgaanBeheerder)]
     [InlineData(Role.RegelgevingBeheerder)]
@@ -77,14 +76,13 @@ public class WhenRemovingAnOrganisationBankAccount
                 OrganisationCreated,
                 OrganisationBankAccountAdded)
             .When(RemoveOrganisationBankAccountCommand, new UserBuilder().AddRoles(role).Build())
-            .ThenThrows<InsufficientRights<AdminOnlyPolicy>>();
+            .ThenThrows<InsufficientRights<RequiresRolesPolicy>>();
     }
 
     [Theory]
     [InlineData(Role.VlimpersBeheerder)]
     [InlineData(Role.Orafin)]
     [InlineData(Role.AutomatedTask)]
-    [InlineData(Role.CjmBeheerder)]
     [InlineData(Role.DecentraalBeheerder)]
     [InlineData(Role.OrgaanBeheerder)]
     [InlineData(Role.RegelgevingBeheerder)]

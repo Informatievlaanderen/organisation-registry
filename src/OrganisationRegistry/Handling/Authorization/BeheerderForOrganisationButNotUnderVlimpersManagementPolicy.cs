@@ -18,11 +18,11 @@ public class BeheerderForOrganisationButNotUnderVlimpersManagementPolicy : ISecu
 
     public AuthorizationResult Check(IUser user)
     {
-        if (user.IsInAnyOf(Role.AlgemeenBeheerder))
+        if (user.IsInAnyOf(Role.AlgemeenBeheerder, Role.CjmBeheerder))
             return AuthorizationResult.Success();
 
         if (!_isUnderVlimpersManagement &&
-            user.IsDecentraalBeheerderFor(_ovoNumber))
+            user.IsDecentraalBeheerderForOrganisation(_ovoNumber))
             return AuthorizationResult.Success();
 
         return AuthorizationResult.Fail(InsufficientRights.CreateFor(this));

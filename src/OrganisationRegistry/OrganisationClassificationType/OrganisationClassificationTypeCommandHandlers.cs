@@ -3,6 +3,8 @@
 using System.Threading.Tasks;
 using Commands;
 using Exceptions;
+using Handling;
+using Infrastructure.Authorization;
 using Infrastructure.Commands;
 using Infrastructure.Domain;
 using Microsoft.Extensions.Logging;
@@ -23,26 +25,31 @@ public class OrganisationClassificationTypeCommandHandlers :
     }
 
     public async Task Handle(ICommandEnvelope<CreateOrganisationClassificationType> envelope)
-    {
-        if (_uniqueNameValidator.IsNameTaken(envelope.Command.Name))
-            throw new NameNotUnique();
+        => await Handler.For(envelope.User, Session)
+            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .Handle(
+                session =>
+                {
+                    if (_uniqueNameValidator.IsNameTaken(envelope.Command.Name))
+                        throw new NameNotUnique();
 
-        var organisationClassificationType = OrganisationClassificationType.Create(envelope.Command.OrganisationClassificationTypeId, envelope.Command.Name, envelope.Command.AllowDifferentClassificationsToOverlap);
-        Session.Add(organisationClassificationType);
-        await Session.Commit(envelope.User);
-    }
+                    var organisationClassificationType = OrganisationClassificationType.Create(envelope.Command.OrganisationClassificationTypeId, envelope.Command.Name, envelope.Command.AllowDifferentClassificationsToOverlap);
+                    session.Add(organisationClassificationType);
+                });
 
     public async Task Handle(ICommandEnvelope<UpdateOrganisationClassificationType> envelope)
-    {
-        if (_uniqueNameValidator.IsNameTaken(envelope.Command.OrganisationClassificationTypeId, envelope.Command.Name))
-            throw new NameNotUnique();
+        => await UpdateHandler<OrganisationClassificationType>.For(envelope.Command, envelope.User, Session)
+            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .Handle(
+                session =>
+                {
+                    if (_uniqueNameValidator.IsNameTaken(envelope.Command.OrganisationClassificationTypeId, envelope.Command.Name))
+                        throw new NameNotUnique();
 
-        var organisationClassificationType = Session.Get<OrganisationClassificationType>(envelope.Command.OrganisationClassificationTypeId);
-        organisationClassificationType.Update(envelope.Command.Name);
+                    var organisationClassificationType = session.Get<OrganisationClassificationType>(envelope.Command.OrganisationClassificationTypeId);
+                    organisationClassificationType.Update(envelope.Command.Name);
 
-        if (envelope.Command.AllowDifferentClassificationsToOverlap is { } allowDifferentClassificationsToOverlap)
-            organisationClassificationType.ChangeAllowDifferentClassificationsToOverlap(allowDifferentClassificationsToOverlap);
-
-        await Session.Commit(envelope.User);
-    }
+                    if (envelope.Command.AllowDifferentClassificationsToOverlap is { } allowDifferentClassificationsToOverlap)
+                        organisationClassificationType.ChangeAllowDifferentClassificationsToOverlap(allowDifferentClassificationsToOverlap);
+                });
 }

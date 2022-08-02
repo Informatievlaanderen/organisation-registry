@@ -26,7 +26,7 @@ public class VlimpersPolicy : ISecurityPolicy
             return AuthorizationResult.Success();
 
         if (!_isUnderVlimpersManagement &&
-            user.IsDecentraalBeheerderFor(_ovoNumber))
+            user.IsDecentraalBeheerderForOrganisation(_ovoNumber))
             return AuthorizationResult.Success();
 
         return _isUnderVlimpersManagement

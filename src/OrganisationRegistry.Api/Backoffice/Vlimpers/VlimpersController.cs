@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OrganisationRegistry.Infrastructure.Commands;
 using OrganisationRegistry.Organisation;
-using Security;
 
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
@@ -23,7 +22,7 @@ public class VlimpersController : OrganisationRegistryController
     /// <summary>Couple an organisation to a KBO number.</summary>
     /// <response code="200">If the organisation was coupled.</response>
     [HttpPatch("{id}/vlimpers")]
-    [OrganisationRegistryAuthorize(Roles = Roles.AlgemeenBeheerder + "," + Roles.Developer)]
+    [OrganisationRegistryAuthorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Vlimpers(
         [FromRoute] Guid id,

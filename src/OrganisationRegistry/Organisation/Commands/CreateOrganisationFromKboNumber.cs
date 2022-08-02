@@ -2,7 +2,8 @@
 
 public class CreateOrganisationFromKboNumber : BaseCommand<OrganisationId>
 {
-    public OrganisationId OrganisationId => Id;
+    public OrganisationId OrganisationId
+        => Id;
 
     public string OvoNumber { get; }
     public KboNumber KboNumber { get; }

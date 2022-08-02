@@ -38,7 +38,7 @@ public class CreateOrganisationCommandHandler :
     private Task CreateTopLevelOrganisation(IUser user, CreateOrganisation message)
     {
         return Handler.For(user, Session)
-            .RequiresAdmin()
+            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
             .Handle(
                 session =>
                 {
