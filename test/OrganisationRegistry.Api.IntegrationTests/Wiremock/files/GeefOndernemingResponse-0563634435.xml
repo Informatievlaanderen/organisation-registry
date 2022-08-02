@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+    <SOAP-ENV:Header xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" />
+    <SOAP-ENV:Body xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+        <web:GeefOndernemingResponse xmlns:web="http://webservice.geefondernemingdienst-02_00.onderneming-02_00.vip.vlaanderen.be">
+            <Repliek>
+                <Context>
+                    <Naam>GeefOnderneming</Naam>
+                    <Versie>02.00.0000</Versie>
+                    <Bericht>
+                        <Type>ANTWOORD</Type>
+                        <Tijdstip>
+                            <Datum>2021-08-19</Datum>
+                            <Tijd>15:36:50.405</Tijd>
+                        </Tijdstip>
+                        <Afzender>
+                            <Identificatie>vip.vlaanderen.be</Identificatie>
+                            <Naam>MagdaGateway</Naam>
+                            <Referte>896a5f22-d134-4c3c-ad03-d715ea213cd6</Referte>
+                        </Afzender>
+                        <Ontvanger>
+                            <Identificatie>kb.vlaanderen.be/aiv/organisatieregister-ond-aip</Identificatie>
+                            <Referte>d79fd20e-7f70-486e-8941-c46059ecaf21</Referte>
+                        </Ontvanger>
+                    </Bericht>
+                </Context>
+                <Antwoorden>
+                    <Antwoord>
+                        <Referte>d79fd20e-7f70-486e-8941-c46059ecaf21</Referte>
+                        <Inhoud>
+                            <Onderneming>
+                                <Ondernemingsnummer>
+                                    0563634435
+                                </Ondernemingsnummer>
+                                <AuthentiekBron>
+                                    <Code>03</Code>
+                                    <Omschrijving>KBO</Omschrijving>
+                                </AuthentiekBron>
+                                <OndernemingOfVestiging>
+                                    <Code Beschrijving="Onderneming">1</Code>
+                                </OndernemingOfVestiging>
+                                <StatusKBO>
+                                    <Code>AC</Code>
+                                    <Omschrijving>Actief</Omschrijving>
+                                </StatusKBO>
+                                <SoortOnderneming>
+                                    <Code Beschrijving="Rechtspersoon">2</Code>
+                                </SoortOnderneming>
+                                <Namen>
+                                    <MaatschappelijkeNamen>
+                                        <MaatschappelijkeNaam DatumBegin="2008-06-09">
+                                            <Naam>
+                                                {{regexExtract request.body '<Ondernemingsnummer>([0-9]{10})</Ondernemingsnummer>' 'parts'}}{{parts.0}}
+                                            </Naam>
+                                            <Taalcode>de</Taalcode>
+                                        </MaatschappelijkeNaam>
+                                    </MaatschappelijkeNamen>
+                                </Namen>
+                                <Adressen>
+                                    <Adres DatumBegin="2011-11-26">
+                                        <Straat>
+                                            <Code>{{randomInt lower=1000 upper=9999 }}</Code>
+                                        </Straat>
+                                        <Huisnummer>{{randomInt lower=1 upper=1000}}</Huisnummer>
+                                        <Gemeente>
+                                            <NISCode>{{randomInt}}</NISCode>
+                                            <PostCode>{{randomInt lower=1000 upper=9999}}</PostCode>
+                                        </Gemeente>
+                                        <Land>
+                                            <NISCode>{{randomInt}}</NISCode>
+                                            <ISOCode>BE</ISOCode>
+                                            <Naam>BELGIE</Naam>
+                                        </Land>
+                                        <Type>
+                                            <Code>001</Code>
+                                            <Omschrijving>Zetel</Omschrijving>
+                                        </Type>
+                                        <Descripties>
+                                            <Descriptie>
+                                                <Adres>
+                                                    <Straat>
+                                                        <Naam>Straat {{randomInt}}</Naam>
+                                                    </Straat>
+                                                    <Gemeente>
+                                                        <Naam>Gemeente {{randomInt}}</Naam>
+                                                    </Gemeente>
+                                                    <Land>
+                                                        <NISCode>{{randomInt}}</NISCode>
+                                                        <Naam>Belgi&#235;</Naam>
+                                                    </Land>
+                                                </Adres>
+                                            </Descriptie>
+                                        </Descripties>
+                                    </Adres>
+                                </Adressen>
+                                <Start>
+                                    <Datum>{{now offset='-10 years' format='yyyy-MM-dd'}}</Datum>
+                                </Start>
+                                <Inschrijving>
+                                    <Datum>{{now offset='10 years' format='yyyy-MM-dd'}}</Datum>
+                                </Inschrijving>
+                                <Rechtsvormen>
+                                    <Rechtsvorm DatumBegin="1957-11-02">
+                                        <Code>017</Code>
+                                        <Omschrijving>Vereniging zonder winstoogmerk</Omschrijving>
+                                        <Afkorting>VZW</Afkorting>
+                                    </Rechtsvorm>
+                                </Rechtsvormen>
+                                <Rechtstoestanden>
+                                    <Rechtstoestand DatumBegin="1957-11-02">
+                                        <Code>000</Code>
+                                        <Omschrijving>Normale toestand</Omschrijving>
+                                        <InstrumenterendeOverheid>410951386</InstrumenterendeOverheid>
+                                    </Rechtstoestand>
+                                </Rechtstoestanden>
+                                <Vestigingen>
+                                    <Vestiging>
+                                        <Vestigingsnummer>2157130144</Vestigingsnummer>
+                                        <StatusKBO>
+                                            <Code>AC</Code>
+                                            <Omschrijving>Actief</Omschrijving>
+                                        </StatusKBO>
+                                        <Namen>
+                                            <CommercieleNamen>
+                                                <CommercieleNaam DatumBegin="2006-11-06">
+                                                    <Naam>Volksbildungswerk St. Vith VoG</Naam>
+                                                    <Taalcode>de</Taalcode>
+                                                </CommercieleNaam>
+                                            </CommercieleNamen>
+                                        </Namen>
+                                        <Adressen>
+                                            <Adres DatumBegin="2006-11-06">
+                                                <Straat>
+                                                    <Code>4161</Code>
+                                                </Straat>
+                                                <Huisnummer>42</Huisnummer>
+                                                <Gemeente>
+                                                    <NISCode>63001</NISCode>
+                                                    <PostCode>4770</PostCode>
+                                                </Gemeente>
+                                                <Land>
+                                                    <NISCode>150</NISCode>
+                                                    <ISOCode>BE</ISOCode>
+                                                    <Naam>BELGIE</Naam>
+                                                </Land>
+                                                <Type>
+                                                    <Code>002</Code>
+                                                    <Omschrijving>Vestigingseenheid adres</Omschrijving>
+                                                </Type>
+                                                <Descripties>
+                                                    <Descriptie>
+                                                        <Adres>
+                                                            <Straat>
+                                                                <Naam>Medell,Hochkreuz</Naam>
+                                                            </Straat>
+                                                            <Gemeente>
+                                                                <Naam>Amel</Naam>
+                                                            </Gemeente>
+                                                            <Land>
+                                                                <NISCode>150</NISCode>
+                                                                <Naam>Belgi&#235;</Naam>
+                                                            </Land>
+                                                        </Adres>
+                                                    </Descriptie>
+                                                </Descripties>
+                                            </Adres>
+                                        </Adressen>
+                                    </Vestiging>
+                                </Vestigingen>
+                                <Functies>
+                                    <Functie DatumBegin="2012-01-01">
+                                        <FunctiehouderVan>0410951386</FunctiehouderVan>
+                                        <AardFunctie>
+                                            <Code>10002</Code>
+                                            <Omschrijving>Bestuurder</Omschrijving>
+                                        </AardFunctie>
+                                    </Functie>
+                                    <Functie DatumBegin="2012-01-01">
+                                        <FunctiehouderVan>0410951386</FunctiehouderVan>
+                                        <AardFunctie>
+                                            <Code>10002</Code>
+                                            <Omschrijving>Bestuurder</Omschrijving>
+                                        </AardFunctie>
+                                    </Functie>
+                                    <Functie DatumBegin="2012-01-01">
+                                        <FunctiehouderVan>0410951386</FunctiehouderVan>
+                                        <AardFunctie>
+                                            <Code>10002</Code>
+                                            <Omschrijving>Bestuurder</Omschrijving>
+                                        </AardFunctie>
+                                    </Functie>
+                                    <Functie DatumBegin="1986-02-02">
+                                        <FunctiehouderVan>0410951386</FunctiehouderVan>
+                                        <AardFunctie>
+                                            <Code>10006</Code>
+                                            <Omschrijving>Zaakvoerder</Omschrijving>
+                                        </AardFunctie>
+                                    </Functie>
+                                </Functies>
+                                <Activiteiten>
+                                    <Activiteit DatumBegin="2008-01-01">
+                                        <Nace>
+                                            <Code>59140</Code>
+                                            <Omschrijving>Vertoning van films</Omschrijving>
+                                            <Versie>2008</Versie>
+                                        </Nace>
+                                        <Type>
+                                            <Code Beschrijving="Hoofdactiviteit">P</Code>
+                                        </Type>
+                                        <Groep>001</Groep>
+                                    </Activiteit>
+                                    <Activiteit DatumBegin="1992-12-01" DatumEinde="2007-12-31">
+                                        <Nace>
+                                            <Code>92130</Code>
+                                            <Omschrijving>Vertoning van bioscoopfilms</Omschrijving>
+                                            <Versie>2003</Versie>
+                                        </Nace>
+                                        <Type>
+                                            <Code Beschrijving="Hoofdactiviteit">P</Code>
+                                        </Type>
+                                        <Groep>001</Groep>
+                                    </Activiteit>
+                                    <Activiteit DatumBegin="2008-01-01">
+                                        <Nace>
+                                            <Code>58110</Code>
+                                            <Omschrijving>Uitgeverijen van boeken</Omschrijving>
+                                            <Versie>2008</Versie>
+                                        </Nace>
+                                        <Type>
+                                            <Code Beschrijving="Nevenactiviteit">S</Code>
+                                        </Type>
+                                        <Groep>001</Groep>
+                                    </Activiteit>
+                                    <Activiteit DatumBegin="1992-12-01" DatumEinde="2007-12-31">
+                                        <Nace>
+                                            <Code>22110</Code>
+                                            <Omschrijving>Uitgeverijen van boeken</Omschrijving>
+                                            <Versie>2003</Versie>
+                                        </Nace>
+                                        <Type>
+                                            <Code Beschrijving="Nevenactiviteit">S</Code>
+                                        </Type>
+                                        <Groep>001</Groep>
+                                    </Activiteit>
+                                    <Activiteit DatumBegin="2008-01-01">
+                                        <Nace>
+                                            <Code>47620</Code>
+                                            <Omschrijving>Detailhandel in kranten en kantoorbehoeften in gespecialiseerde  winkels</Omschrijving>
+                                            <Versie>2008</Versie>
+                                        </Nace>
+                                        <Type>
+                                            <Code Beschrijving="Nevenactiviteit">S</Code>
+                                        </Type>
+                                        <Groep>001</Groep>
+                                    </Activiteit>
+                                    <Activiteit DatumBegin="1992-12-01" DatumEinde="2007-12-31">
+                                        <Nace>
+                                            <Code>52470</Code>
+                                            <Omschrijving>Detailhandel in boeken, kranten, tijdschriften en kantoorbehoeften</Omschrijving>
+                                            <Versie>2003</Versie>
+                                        </Nace>
+                                        <Type>
+                                            <Code Beschrijving="Nevenactiviteit">S</Code>
+                                        </Type>
+                                        <Groep>001</Groep>
+                                    </Activiteit>
+                                    <Activiteit DatumBegin="2008-01-01">
+                                        <Nace>
+                                            <Code>90042</Code>
+                                            <Omschrijving>Exploitatie van culturele centra en multifunctionele zalen ten behoeve van culturele activiteiten</Omschrijving>
+                                            <Versie>2008</Versie>
+                                        </Nace>
+                                        <Type>
+                                            <Code Beschrijving="Hoofdactiviteit">P</Code>
+                                        </Type>
+                                        <Groep>006</Groep>
+                                    </Activiteit>
+                                    <Activiteit DatumBegin="2000-04-01" DatumEinde="2007-12-31">
+                                        <Nace>
+                                            <Code>92322</Code>
+                                            <Omschrijving>Beheer en exploitatie van culturele centra</Omschrijving>
+                                            <Versie>2003</Versie>
+                                        </Nace>
+                                        <Type>
+                                            <Code Beschrijving="Hoofdactiviteit">P</Code>
+                                        </Type>
+                                        <Groep>006</Groep>
+                                    </Activiteit>
+                                </Activiteiten>
+                                <Hoedanigheden>
+                                    <Hoedanigheid DatumBegin="1992-12-01">
+                                        <Code Beschrijving="Onderneming onderworpen aan BTW">00084</Code>
+                                        <InstrumenterendeAdministratie>BTW001</InstrumenterendeAdministratie>
+                                        <Inschrijving>
+                                            <Datum>2003-01-19</Datum>
+                                        </Inschrijving>
+                                        <Duurtijd>0.0</Duurtijd>
+                                        <Fase>
+                                            <Code Beschrijving="hoedanigheid/Toelating verworven">002</Code>
+                                        </Fase>
+                                    </Hoedanigheid>
+                                    <Hoedanigheid DatumBegin="1996-01-01">
+                                        <Code Beschrijving="Werkgever RSZ">00070</Code>
+                                        <InstrumenterendeAdministratie>RSZ001</InstrumenterendeAdministratie>
+                                        <Inschrijving>
+                                            <Datum>2003-01-20</Datum>
+                                        </Inschrijving>
+                                        <Duurtijd>0.0</Duurtijd>
+                                        <Fase>
+                                            <Code Beschrijving="hoedanigheid/Toelating verworven">002</Code>
+                                        </Fase>
+                                    </Hoedanigheid>
+                                </Hoedanigheden>
+                                <Bijhuis DatumBegin="1994-10-25">
+                                    <Adres>
+                                        <Huisnummer>175</Huisnummer>
+                                        <Gemeente>
+                                            <NISCode>63001</NISCode>
+                                            <PostCode>4770</PostCode>
+                                        </Gemeente>
+                                        <Land>
+                                            <NISCode>150</NISCode>
+                                            <ISOCode>BE</ISOCode>
+                                            <Naam>BELGIE</Naam>
+                                        </Land>
+                                        <Type>
+                                            <Code>003</Code>
+                                            <Omschrijving>Adres van het bijkantoor</Omschrijving>
+                                        </Type>
+                                        <Descripties>
+                                            <Descriptie>
+                                                <Adres>
+                                                    <Straat>
+                                                        <Naam>Medell-Hochkreuz</Naam>
+                                                    </Straat>
+                                                    <Gemeente>
+                                                        <Naam>Amel</Naam>
+                                                    </Gemeente>
+                                                    <Land>
+                                                        <NISCode>150</NISCode>
+                                                        <Naam>Belgi&#235;</Naam>
+                                                    </Land>
+                                                </Adres>
+                                            </Descriptie>
+                                        </Descripties>
+                                    </Adres>
+                                </Bijhuis>
+                            </Onderneming>
+                        </Inhoud>
+                    </Antwoord>
+                </Antwoorden>
+            </Repliek>
+        </web:GeefOndernemingResponse>
+    </SOAP-ENV:Body>
+</soapenv:Envelope>

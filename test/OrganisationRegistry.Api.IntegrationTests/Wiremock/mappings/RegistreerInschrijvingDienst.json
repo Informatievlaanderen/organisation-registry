@@ -1,0 +1,11 @@
+{
+    "priority": 2,
+    "request": {
+	"method": "POST",
+        "urlPath": "/RegistreerInschrijvingDienst-02.01/soap/WebService"
+    },
+    "response": {
+        "bodyFileName": "RegistreerInschrijvingResponse.xml",
+        "transformers": ["response-template"]
+    }
+}

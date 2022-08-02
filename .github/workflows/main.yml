@@ -26,9 +26,6 @@ jobs:
           - 5050:80
       wiremock:
         image: ghcr.io/informatievlaanderen/wiremock:main
-        volumes:
-          - ./wiremock/mappings:/home/wiremock/mappings
-          - ./wiremock/files:/home/wiremock/__files
         ports:
           - 8080:8080
       opensearch:

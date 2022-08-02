@@ -1,0 +1,11 @@
+{
+    "priority": 2,
+    "request": {
+	"method": "POST",
+        "urlPath": "/GeefOndernemingDienst-02.00/soap/WebService"
+    },
+    "response": {
+        "bodyFileName": "GeefOndernemingResponse-fallback.xml",
+        "transformers": ["response-template"]
+    }
+}

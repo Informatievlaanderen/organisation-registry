@@ -27,7 +27,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using OrganisationRegistry.Infrastructure;
 using OrganisationRegistry.Infrastructure.Authorization;
@@ -35,6 +34,7 @@ using OrganisationRegistry.Infrastructure.Configuration;
 using Person;
 using SqlServer.Configuration;
 using SqlServer.Infrastructure;
+using Wiremock;
 using Xunit;
 using CreateOrganisationClassificationRequest = Backoffice.Parameters.OrganisationClassification.Requests.CreateOrganisationClassificationRequest;
 using CreateOrganisationClassificationTypeRequest = Backoffice.Parameters.OrganisationClassificationType.Requests.CreateOrganisationClassificationTypeRequest;
@@ -123,6 +123,9 @@ public class ApiFixture : IDisposable, IAsyncLifetime
         }
 
         _configurationRoot = builder.Build();
+
+        WiremockSetup.Run(_configurationRoot["Api:KboMagdaEndpoint"]).GetAwaiter().GetResult();
+
         _webHost = hostBuilder
             .UseContentRoot(Directory.GetCurrentDirectory())
             .UseConfiguration(_configurationRoot)

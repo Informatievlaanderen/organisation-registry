@@ -20,6 +20,12 @@
     <EmbeddedResource Include="BulkImport\Valid_TestImportFile.csv" />
     <EmbeddedResource Include="BulkImport\ExpectedStatusResult.json" />
     <EmbeddedResource Include="BulkImport\Valid_TestImportFileOutput.csv" />
+    <None Remove="Wiremock\mappings\GeefOndernemingDienst.json" />
+    <EmbeddedResource Include="Wiremock\mappings\GeefOndernemingDienst.json" />
+    <None Remove="Wiremock\mappings\GeefOndernemingDienst-fallback.json" />
+    <EmbeddedResource Include="Wiremock\mappings\GeefOndernemingDienst-fallback.json" />
+    <None Remove="Wiremock\mappings\RegistreerInschrijvingDienst.json" />
+    <EmbeddedResource Include="Wiremock\mappings\RegistreerInschrijvingDienst.json" />
   </ItemGroup>
 
   <Import Project="..\..\.paket\Paket.Restore.targets" />
