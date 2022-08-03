@@ -12,7 +12,7 @@ const routes: Routes = [
     component: PersonOverviewComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.AlgemeenBeheerder],
+      roles: [Role.AlgemeenBeheerder, Role.CjmBeheerder],
       title: 'Parameters - Personen'
     }
   },
@@ -21,7 +21,7 @@ const routes: Routes = [
     component: PersonDetailComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.AlgemeenBeheerder],
+      roles: [Role.AlgemeenBeheerder, Role.CjmBeheerder],
       title: 'Parameters - Nieuwe persoon'
     }
   },
@@ -30,7 +30,7 @@ const routes: Routes = [
     component: PersonDetailComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.AlgemeenBeheerder],
+      roles: [Role.AlgemeenBeheerder, Role.CjmBeheerder],
       title: 'Parameters - Bewerken persoon'
     }
   },

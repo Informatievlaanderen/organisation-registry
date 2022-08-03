@@ -5,4 +5,5 @@
   OrgaanBeheerder: "Orgaan Beheerder",
   Developer: "Ontwikkelaar",
   Regelgever: "Regelgeving en deugdelijk bestuur beheerder",
+  CjmBeheerder: "CJM Beheerder",
 };

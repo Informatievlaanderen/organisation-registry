@@ -1,523 +1,607 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { NgModule } from "@angular/core";
+import { RouterModule, Routes } from "@angular/router";
 
-import { BodyGuard, RoleGuard, Role, RolesResolver } from 'core/auth';
+import { BodyGuard, RoleGuard, Role, RolesResolver } from "core/auth";
 
-import { BodyDetailComponent } from './detail.component';
+import { BodyDetailComponent } from "./detail.component";
 
-import { LifecyclePhaseTypeResolver } from 'services/lifecyclephasetypes';
-import { SeatTypeResolver } from 'services/seattypes';
-import { MandateRoleTypeResolver } from 'services/mandateroletypes';
-import { BodySeatResolver } from 'services/bodyseats';
-import { FunctionResolver } from 'services/functions';
-import { ContactTypeResolver } from 'services/contacttypes';
-
-import {
-    BodyInfoComponent,
-    BodyInfoOverviewComponent,
-    BodyInfoValidityComponent,
-    BodyInfoGeneralComponent
-} from 'body/info';
+import { LifecyclePhaseTypeResolver } from "services/lifecyclephasetypes";
+import { SeatTypeResolver } from "services/seattypes";
+import { MandateRoleTypeResolver } from "services/mandateroletypes";
+import { BodySeatResolver } from "services/bodyseats";
+import { FunctionResolver } from "services/functions";
+import { ContactTypeResolver } from "services/contacttypes";
 
 import {
-    BodyOrganisationsComponent,
-    BodyOrganisationsOverviewComponent,
-    BodyOrganisationsCreateBodyOrganisationComponent,
-    BodyOrganisationsUpdateBodyOrganisationComponent
-} from 'body/organisations';
+  BodyInfoComponent,
+  BodyInfoOverviewComponent,
+  BodyInfoValidityComponent,
+  BodyInfoGeneralComponent,
+} from "body/info";
 
 import {
-    BodyMandatesComponent,
-    BodyMandatesOverviewComponent,
-    BodyMandatesLinkPersonComponent,
-    BodyMandatesLinkFunctionComponent,
-    BodyMandatesLinkOrganisationComponent,
-    BodyMandatesUpdatePersonComponent,
-    BodyMandatesUpdateFunctionComponent,
-    BodyMandatesUpdateOrganisationComponent,
-} from 'body/mandates';
+  BodyOrganisationsComponent,
+  BodyOrganisationsOverviewComponent,
+  BodyOrganisationsCreateBodyOrganisationComponent,
+  BodyOrganisationsUpdateBodyOrganisationComponent,
+} from "body/organisations";
 
 import {
-    BodyCompositionComponent,
-    BodySeatsOverviewComponent,
-    BodySeatsCreateBodySeatComponent,
-    BodySeatsUpdateBodySeatComponent
-} from 'body/composition';
+  BodyMandatesComponent,
+  BodyMandatesOverviewComponent,
+  BodyMandatesLinkPersonComponent,
+  BodyMandatesLinkFunctionComponent,
+  BodyMandatesLinkOrganisationComponent,
+  BodyMandatesUpdatePersonComponent,
+  BodyMandatesUpdateFunctionComponent,
+  BodyMandatesUpdateOrganisationComponent,
+} from "body/mandates";
 
 import {
-    BodyFormalFrameworksComponent,
-    BodyFormalFrameworksOverviewComponent,
-    BodyFormalFrameworksCreateBodyFormalFrameworkComponent,
-    BodyFormalFrameworksUpdateBodyFormalFrameworkComponent
-} from 'body/formalframeworks';
+  BodyCompositionComponent,
+  BodySeatsOverviewComponent,
+  BodySeatsCreateBodySeatComponent,
+  BodySeatsUpdateBodySeatComponent,
+} from "body/composition";
 
 import {
-    BodyLifecyclePhasesComponent,
-    BodyLifecyclePhasesOverviewComponent,
-    BodyLifecyclePhasesCreateBodyLifecyclePhaseComponent,
-    BodyLifecyclePhasesUpdateBodyLifecyclePhaseComponent
-} from 'body/lifecyclephases';
+  BodyFormalFrameworksComponent,
+  BodyFormalFrameworksOverviewComponent,
+  BodyFormalFrameworksCreateBodyFormalFrameworkComponent,
+  BodyFormalFrameworksUpdateBodyFormalFrameworkComponent,
+} from "body/formalframeworks";
 
 import {
-    BodyResponsibilitiesComponent
-} from 'body/responsibilities';
+  BodyLifecyclePhasesComponent,
+  BodyLifecyclePhasesOverviewComponent,
+  BodyLifecyclePhasesCreateBodyLifecyclePhaseComponent,
+  BodyLifecyclePhasesUpdateBodyLifecyclePhaseComponent,
+} from "body/lifecyclephases";
+
+import { BodyResponsibilitiesComponent } from "body/responsibilities";
 
 import {
-    BodyParticipationComponent,
-    BodyParticipationOverviewComponent,
-    BodyParticipationManageComponent
-} from 'body/participation';
+  BodyParticipationComponent,
+  BodyParticipationOverviewComponent,
+  BodyParticipationManageComponent,
+} from "body/participation";
 
 import {
   BodyContactsComponent,
   BodyContactsOverviewComponent,
   BodyContactsCreateBodyContactComponent,
-  BodyContactsUpdateBodyContactComponent
-} from 'body/contacts';
+  BodyContactsUpdateBodyContactComponent,
+} from "body/contacts";
 
 import {
   BodyBodyClassificationsComponent,
   BodyBodyClassificationsOverviewComponent,
   BodyBodyClassificationsCreateBodyBodyClassificationComponent,
-  BodyBodyClassificationsUpdateBodyBodyClassificationComponent
-} from 'body/classifications';
+  BodyBodyClassificationsUpdateBodyBodyClassificationComponent,
+} from "body/classifications";
 
 const routes: Routes = [
   {
-    path: 'bodies/:id',
+    path: "bodies/:id",
     component: BodyDetailComponent,
     children: [
-      { path: '', pathMatch: 'prefix', redirectTo: 'info' },
+      { path: "", pathMatch: "prefix", redirectTo: "info" },
       {
-        path: 'info',
+        path: "info",
         component: BodyInfoComponent,
         children: [
           {
-            path: '',
+            path: "",
             component: BodyInfoOverviewComponent,
-            data: { title: 'Orgaan - Algemeen' }
+            data: { title: "Orgaan - Algemeen" },
           },
           {
-            path: 'general',
+            path: "general",
             component: BodyInfoGeneralComponent,
             canActivate: [RoleGuard, BodyGuard],
             data: {
-              title: 'Orgaan - Algemeen - Bewerken Algemene Informatie',
-              roles: [Role.AlgemeenBeheerder, Role.DecentraalBeheerder, Role.OrgaanBeheerder],
+              title: "Orgaan - Algemeen - Bewerken Algemene Informatie",
+              roles: [
+                Role.AlgemeenBeheerder,
+                Role.CjmBeheerder,
+                Role.DecentraalBeheerder,
+                Role.OrgaanBeheerder,
+              ],
               bodyGuard: {
-                params: 'route.parent.parent.params',
-                idPart: 'id'
-              }
-            }
+                params: "route.parent.parent.params",
+                idPart: "id",
+              },
+            },
           },
           {
-            path: 'validity',
+            path: "validity",
             component: BodyInfoValidityComponent,
             canActivate: [RoleGuard, BodyGuard],
             data: {
-              title: 'Orgaan - Algemeen - Bewerken Duurtijd',
-              roles: [Role.AlgemeenBeheerder, Role.DecentraalBeheerder, Role.OrgaanBeheerder],
+              title: "Orgaan - Algemeen - Bewerken Duurtijd",
+              roles: [
+                Role.AlgemeenBeheerder,
+                Role.CjmBeheerder,
+                Role.DecentraalBeheerder,
+                Role.OrgaanBeheerder,
+              ],
               bodyGuard: {
-                params: 'route.parent.parent.params',
-                idPart: 'id'
-              }
-            }
-          }
-        ]
+                params: "route.parent.parent.params",
+                idPart: "id",
+              },
+            },
+          },
+        ],
       },
       {
-        path: 'organisations', component: BodyOrganisationsComponent,
+        path: "organisations",
+        component: BodyOrganisationsComponent,
         children: [
           {
-            path: '',
+            path: "",
             component: BodyOrganisationsOverviewComponent,
-            data: { title: 'Orgaan - Organisaties' }
+            data: { title: "Orgaan - Organisaties" },
           },
           {
-            path: 'create',
+            path: "create",
             component: BodyOrganisationsCreateBodyOrganisationComponent,
             canActivate: [RoleGuard, BodyGuard],
             resolve: {
-              userRoles: RolesResolver
+              userRoles: RolesResolver,
             },
             data: {
-              title: 'Orgaan - Organisaties - Organisatie koppelen',
-              roles: [Role.AlgemeenBeheerder, Role.DecentraalBeheerder, Role.OrgaanBeheerder],
+              title: "Orgaan - Organisaties - Organisatie koppelen",
+              roles: [
+                Role.AlgemeenBeheerder,
+                Role.CjmBeheerder,
+                Role.DecentraalBeheerder,
+                Role.OrgaanBeheerder,
+              ],
               bodyGuard: {
-                params: 'route.parent.parent.params',
-                idPart: 'id'
-              }
-            }
+                params: "route.parent.parent.params",
+                idPart: "id",
+              },
+            },
           },
           {
-            path: 'edit/:id',
+            path: "edit/:id",
             component: BodyOrganisationsUpdateBodyOrganisationComponent,
             canActivate: [RoleGuard, BodyGuard],
             resolve: {
-              userRoles: RolesResolver
+              userRoles: RolesResolver,
             },
             data: {
-              title: 'Orgaan - Organisaties - Bewerken organisatie',
-              roles: [Role.AlgemeenBeheerder, Role.DecentraalBeheerder, Role.OrgaanBeheerder],
+              title: "Orgaan - Organisaties - Bewerken organisatie",
+              roles: [
+                Role.AlgemeenBeheerder,
+                Role.CjmBeheerder,
+                Role.DecentraalBeheerder,
+                Role.OrgaanBeheerder,
+              ],
               bodyGuard: {
-                params: 'route.parent.parent.params',
-                idPart: 'id'
-              }
-            }
-          }
-        ]
+                params: "route.parent.parent.params",
+                idPart: "id",
+              },
+            },
+          },
+        ],
       },
       {
-        path: 'composition', component: BodyCompositionComponent,
+        path: "composition",
+        component: BodyCompositionComponent,
         children: [
           {
-            path: '',
+            path: "",
             component: BodySeatsOverviewComponent,
-            data: { title: 'Orgaan - Posten' }
+            data: { title: "Orgaan - Posten" },
           },
           {
-            path: 'create',
+            path: "create",
             component: BodySeatsCreateBodySeatComponent,
             canActivate: [RoleGuard, BodyGuard],
             resolve: {
-              seatTypes: SeatTypeResolver
+              seatTypes: SeatTypeResolver,
             },
             data: {
-              title: 'Orgaan - Posten - Nieuwe post',
-              roles: [Role.AlgemeenBeheerder, Role.DecentraalBeheerder, Role.OrgaanBeheerder],
+              title: "Orgaan - Posten - Nieuwe post",
+              roles: [
+                Role.AlgemeenBeheerder,
+                Role.CjmBeheerder,
+                Role.DecentraalBeheerder,
+                Role.OrgaanBeheerder,
+              ],
               bodyGuard: {
-                params: 'route.parent.parent.params',
-                idPart: 'id'
-              }
-            }
+                params: "route.parent.parent.params",
+                idPart: "id",
+              },
+            },
           },
           {
-            path: 'edit/:id',
+            path: "edit/:id",
             component: BodySeatsUpdateBodySeatComponent,
             canActivate: [RoleGuard, BodyGuard],
             resolve: {
-              seatTypes: SeatTypeResolver
+              seatTypes: SeatTypeResolver,
             },
             data: {
-              title: 'Orgaan - Posten - Bewerken post',
-              roles: [Role.AlgemeenBeheerder, Role.DecentraalBeheerder, Role.OrgaanBeheerder],
+              title: "Orgaan - Posten - Bewerken post",
+              roles: [
+                Role.AlgemeenBeheerder,
+                Role.CjmBeheerder,
+                Role.DecentraalBeheerder,
+                Role.OrgaanBeheerder,
+              ],
               bodyGuard: {
-                params: 'route.parent.parent.params',
-                idPart: 'id'
-              }
-            }
-          }
-        ]
+                params: "route.parent.parent.params",
+                idPart: "id",
+              },
+            },
+          },
+        ],
       },
       {
-        path: 'mandates', component: BodyMandatesComponent,
+        path: "mandates",
+        component: BodyMandatesComponent,
         children: [
           {
-            path: '',
+            path: "",
             component: BodyMandatesOverviewComponent,
-            data: { title: 'Orgaan - Mandaat' }
+            data: { title: "Orgaan - Mandaat" },
           },
           {
-            path: 'linkperson',
+            path: "linkperson",
             component: BodyMandatesLinkPersonComponent,
             canActivate: [RoleGuard, BodyGuard],
             resolve: {
               bodySeats: BodySeatResolver,
-              contactTypes: ContactTypeResolver
+              contactTypes: ContactTypeResolver,
             },
             data: {
-              title: 'Orgaan - Mandaat - Persoon toewijzen',
-              roles: [Role.AlgemeenBeheerder, Role.DecentraalBeheerder, Role.OrgaanBeheerder],
+              title: "Orgaan - Mandaat - Persoon toewijzen",
+              roles: [
+                Role.AlgemeenBeheerder,
+                Role.CjmBeheerder,
+                Role.DecentraalBeheerder,
+                Role.OrgaanBeheerder,
+              ],
               bodyGuard: {
-                params: 'route.parent.parent.params',
-                idPart: 'id'
-              }
-            }
+                params: "route.parent.parent.params",
+                idPart: "id",
+              },
+            },
           },
           {
-            path: 'updateperson/:id',
+            path: "updateperson/:id",
             component: BodyMandatesUpdatePersonComponent,
             canActivate: [RoleGuard, BodyGuard],
             resolve: {
               bodySeats: BodySeatResolver,
-              contactTypes: ContactTypeResolver
+              contactTypes: ContactTypeResolver,
             },
             data: {
-              title: 'Orgaan - Mandaat - Bewerken mandaat (persoon)',
-              roles: [Role.AlgemeenBeheerder, Role.DecentraalBeheerder, Role.OrgaanBeheerder],
+              title: "Orgaan - Mandaat - Bewerken mandaat (persoon)",
+              roles: [
+                Role.AlgemeenBeheerder,
+                Role.CjmBeheerder,
+                Role.DecentraalBeheerder,
+                Role.OrgaanBeheerder,
+              ],
               bodyGuard: {
-                params: 'route.parent.parent.params',
-                idPart: 'id'
-              }
-            }
+                params: "route.parent.parent.params",
+                idPart: "id",
+              },
+            },
           },
           {
-            path: 'linkfunction',
+            path: "linkfunction",
             component: BodyMandatesLinkFunctionComponent,
             canActivate: [RoleGuard, BodyGuard],
             resolve: {
               bodySeats: BodySeatResolver,
-              functionTypes: FunctionResolver
+              functionTypes: FunctionResolver,
             },
             data: {
-              title: 'Orgaan - Mandaat - Functie toewijzen',
-              roles: [Role.AlgemeenBeheerder, Role.DecentraalBeheerder, Role.OrgaanBeheerder],
+              title: "Orgaan - Mandaat - Functie toewijzen",
+              roles: [
+                Role.AlgemeenBeheerder,
+                Role.CjmBeheerder,
+                Role.DecentraalBeheerder,
+                Role.OrgaanBeheerder,
+              ],
               bodyGuard: {
-                params: 'route.parent.parent.params',
-                idPart: 'id'
-              }
-            }
+                params: "route.parent.parent.params",
+                idPart: "id",
+              },
+            },
           },
           {
-            path: 'updatefunction/:id',
+            path: "updatefunction/:id",
             component: BodyMandatesUpdateFunctionComponent,
             canActivate: [RoleGuard, BodyGuard],
             resolve: {
               bodySeats: BodySeatResolver,
-              functionTypes: FunctionResolver
+              functionTypes: FunctionResolver,
             },
             data: {
-              title: 'Orgaan - Mandaat - Bewerken mandaat (functie)',
-              roles: [Role.AlgemeenBeheerder, Role.DecentraalBeheerder, Role.OrgaanBeheerder],
+              title: "Orgaan - Mandaat - Bewerken mandaat (functie)",
+              roles: [
+                Role.AlgemeenBeheerder,
+                Role.CjmBeheerder,
+                Role.DecentraalBeheerder,
+                Role.OrgaanBeheerder,
+              ],
               bodyGuard: {
-                params: 'route.parent.parent.params',
-                idPart: 'id'
-              }
-            }
+                params: "route.parent.parent.params",
+                idPart: "id",
+              },
+            },
           },
           {
-            path: 'linkorganisation',
+            path: "linkorganisation",
             component: BodyMandatesLinkOrganisationComponent,
             canActivate: [RoleGuard, BodyGuard],
             resolve: {
-              bodySeats: BodySeatResolver
+              bodySeats: BodySeatResolver,
             },
             data: {
-              title: 'Orgaan - Mandaat - Organisatie toewijzen',
-              roles: [Role.AlgemeenBeheerder, Role.DecentraalBeheerder, Role.OrgaanBeheerder],
+              title: "Orgaan - Mandaat - Organisatie toewijzen",
+              roles: [
+                Role.AlgemeenBeheerder,
+                Role.CjmBeheerder,
+                Role.DecentraalBeheerder,
+                Role.OrgaanBeheerder,
+              ],
               bodyGuard: {
-                params: 'route.parent.parent.params',
-                idPart: 'id'
-              }
-            }
+                params: "route.parent.parent.params",
+                idPart: "id",
+              },
+            },
           },
           {
-            path: 'updateorganisation/:id',
+            path: "updateorganisation/:id",
             component: BodyMandatesUpdateOrganisationComponent,
             canActivate: [RoleGuard, BodyGuard],
             resolve: {
-              bodySeats: BodySeatResolver
+              bodySeats: BodySeatResolver,
             },
             data: {
-              title: 'Orgaan - Mandaat - Bewerken mandaat (organisatie)',
-              roles: [Role.AlgemeenBeheerder, Role.DecentraalBeheerder, Role.OrgaanBeheerder],
+              title: "Orgaan - Mandaat - Bewerken mandaat (organisatie)",
+              roles: [
+                Role.AlgemeenBeheerder,
+                Role.CjmBeheerder,
+                Role.DecentraalBeheerder,
+                Role.OrgaanBeheerder,
+              ],
               bodyGuard: {
-                params: 'route.parent.parent.params',
-                idPart: 'id'
-              }
-            }
-          }
-        ]
+                params: "route.parent.parent.params",
+                idPart: "id",
+              },
+            },
+          },
+        ],
       },
       {
-        path: 'lifecycle', component: BodyLifecyclePhasesComponent,
+        path: "lifecycle",
+        component: BodyLifecyclePhasesComponent,
         children: [
           {
-            path: '',
+            path: "",
             component: BodyLifecyclePhasesOverviewComponent,
-            data: { title: 'Orgaan - Levensloop' }
+            data: { title: "Orgaan - Levensloop" },
           },
           {
-            path: 'create',
+            path: "create",
             component: BodyLifecyclePhasesCreateBodyLifecyclePhaseComponent,
             canActivate: [RoleGuard, BodyGuard],
             resolve: {
-              lifecyclePhaseTypes: LifecyclePhaseTypeResolver
+              lifecyclePhaseTypes: LifecyclePhaseTypeResolver,
             },
             data: {
-              title: 'Orgaan - Levensloop - Levensloopfase koppelen',
-              roles: [Role.AlgemeenBeheerder, Role.DecentraalBeheerder, Role.OrgaanBeheerder],
+              title: "Orgaan - Levensloop - Levensloopfase koppelen",
+              roles: [
+                Role.AlgemeenBeheerder,
+                Role.CjmBeheerder,
+                Role.DecentraalBeheerder,
+                Role.OrgaanBeheerder,
+              ],
               bodyGuard: {
-                params: 'route.parent.parent.params',
-                idPart: 'id'
-              }
-            }
+                params: "route.parent.parent.params",
+                idPart: "id",
+              },
+            },
           },
           {
-            path: 'edit/:id',
+            path: "edit/:id",
             component: BodyLifecyclePhasesUpdateBodyLifecyclePhaseComponent,
             canActivate: [RoleGuard, BodyGuard],
             resolve: {
-              lifecyclePhaseTypes: LifecyclePhaseTypeResolver
+              lifecyclePhaseTypes: LifecyclePhaseTypeResolver,
             },
             data: {
-              title: 'Orgaan - Levensloop - Bewerken levensloopfase',
-              roles: [Role.AlgemeenBeheerder, Role.DecentraalBeheerder, Role.OrgaanBeheerder],
+              title: "Orgaan - Levensloop - Bewerken levensloopfase",
+              roles: [
+                Role.AlgemeenBeheerder,
+                Role.CjmBeheerder,
+                Role.DecentraalBeheerder,
+                Role.OrgaanBeheerder,
+              ],
               bodyGuard: {
-                params: 'route.parent.parent.params',
-                idPart: 'id'
-              }
-            }
-          }
-        ]
+                params: "route.parent.parent.params",
+                idPart: "id",
+              },
+            },
+          },
+        ],
       },
       {
-        path: 'formalframeworks', component: BodyFormalFrameworksComponent,
+        path: "formalframeworks",
+        component: BodyFormalFrameworksComponent,
         children: [
           {
-            path: '',
+            path: "",
             component: BodyFormalFrameworksOverviewComponent,
             resolve: {
-              userRoles: RolesResolver
+              userRoles: RolesResolver,
             },
-            data: { title: 'Orgaan - Toepassingsgebieden' }
+            data: { title: "Orgaan - Toepassingsgebieden" },
           },
           {
-            path: 'create',
+            path: "create",
             component: BodyFormalFrameworksCreateBodyFormalFrameworkComponent,
             canActivate: [RoleGuard, BodyGuard],
             data: {
-              title: 'Orgaan - Toepassingsgebieden - Toepassingsgebied koppelen',
-              roles: [Role.AlgemeenBeheerder, Role.OrgaanBeheerder],
+              title:
+                "Orgaan - Toepassingsgebieden - Toepassingsgebied koppelen",
+              roles: [Role.AlgemeenBeheerder,
+                Role.CjmBeheerder, Role.OrgaanBeheerder],
               bodyGuard: {
-                params: 'route.parent.parent.params',
-                idPart: 'id'
-              }
-            }
+                params: "route.parent.parent.params",
+                idPart: "id",
+              },
+            },
           },
           {
-            path: 'edit/:id',
+            path: "edit/:id",
             component: BodyFormalFrameworksUpdateBodyFormalFrameworkComponent,
             canActivate: [RoleGuard, BodyGuard],
             data: {
-              title: 'Orgaan - Toepassingsgebieden - Bewerken toepassingsgebied',
-              roles: [Role.AlgemeenBeheerder, Role.OrgaanBeheerder],
+              title:
+                "Orgaan - Toepassingsgebieden - Bewerken toepassingsgebied",
+              roles: [Role.AlgemeenBeheerder,
+                Role.CjmBeheerder, Role.OrgaanBeheerder],
               bodyGuard: {
-                params: 'route.parent.parent.params',
-                idPart: 'id'
-              }
-            }
-          }
-        ]
+                params: "route.parent.parent.params",
+                idPart: "id",
+              },
+            },
+          },
+        ],
       },
       {
-        path: 'contacts', component: BodyContactsComponent,
+        path: "contacts",
+        component: BodyContactsComponent,
         children: [
           {
-            path: '',
+            path: "",
             component: BodyContactsOverviewComponent,
             resolve: {
-              userRoles: RolesResolver
+              userRoles: RolesResolver,
             },
-            data: { title: 'Orgaan - Contacten' }
+            data: { title: "Orgaan - Contacten" },
           },
           {
-            path: 'create',
+            path: "create",
             component: BodyContactsCreateBodyContactComponent,
             canActivate: [RoleGuard, BodyGuard],
             data: {
-              title: 'Orgaan - Contacten - Nieuw contact',
-              roles: [Role.AlgemeenBeheerder, Role.OrgaanBeheerder],
+              title: "Orgaan - Contacten - Nieuw contact",
+              roles: [Role.AlgemeenBeheerder,
+                Role.CjmBeheerder, Role.OrgaanBeheerder],
               bodyGuard: {
-                params: 'route.parent.parent.params',
-                idPart: 'id'
-              }
-            }
+                params: "route.parent.parent.params",
+                idPart: "id",
+              },
+            },
           },
           {
-            path: 'edit/:id',
+            path: "edit/:id",
             component: BodyContactsUpdateBodyContactComponent,
             canActivate: [RoleGuard, BodyGuard],
             data: {
-              title: 'Orgaan - Contacten - Bewerken contact',
-              roles: [Role.AlgemeenBeheerder, Role.OrgaanBeheerder],
+              title: "Orgaan - Contacten - Bewerken contact",
+              roles: [Role.AlgemeenBeheerder,
+                Role.CjmBeheerder, Role.OrgaanBeheerder],
               bodyGuard: {
-                params: 'route.parent.parent.params',
-                idPart: 'id'
-              }
-            }
-          }
-        ]
+                params: "route.parent.parent.params",
+                idPart: "id",
+              },
+            },
+          },
+        ],
       },
       {
-        path: 'responsibilities', component: BodyResponsibilitiesComponent,
-        data: { title: 'Orgaan - Bevoegdheden' }
+        path: "responsibilities",
+        component: BodyResponsibilitiesComponent,
+        data: { title: "Orgaan - Bevoegdheden" },
       },
       {
-        path: 'participation', component: BodyParticipationComponent,
+        path: "participation",
+        component: BodyParticipationComponent,
         children: [
           {
-            path: '',
+            path: "",
             component: BodyParticipationOverviewComponent,
-            resolve:{
-              userRoles: RolesResolver
+            resolve: {
+              userRoles: RolesResolver,
             },
-            data: { title: 'Orgaan - Participatie' }
+            data: { title: "Orgaan - Participatie" },
           },
           {
-            path: 'manage',
+            path: "manage",
             component: BodyParticipationManageComponent,
             canActivate: [RoleGuard, BodyGuard],
             data: {
-              title: 'Orgaan - Participatie - Beheer MEP',
-              roles: [Role.AlgemeenBeheerder, Role.OrgaanBeheerder],
+              title: "Orgaan - Participatie - Beheer MEP",
+              roles: [Role.AlgemeenBeheerder,
+                Role.CjmBeheerder, Role.OrgaanBeheerder],
               bodyGuard: {
-                params: 'route.parent.parent.params',
-                idPart: 'id'
-              }
-            }
-          }
-        ]
+                params: "route.parent.parent.params",
+                idPart: "id",
+              },
+            },
+          },
+        ],
       },
       {
-        path: 'classifications', component: BodyBodyClassificationsComponent,
+        path: "classifications",
+        component: BodyBodyClassificationsComponent,
         children: [
           {
-            path: '',
+            path: "",
             component: BodyBodyClassificationsOverviewComponent,
             resolve: {
-              userRoles: RolesResolver
+              userRoles: RolesResolver,
             },
-            data: { title: 'Orgaan - Classificaties' }
+            data: { title: "Orgaan - Classificaties" },
           },
           {
-            path: 'create',
-            component: BodyBodyClassificationsCreateBodyBodyClassificationComponent,
+            path: "create",
+            component:
+              BodyBodyClassificationsCreateBodyBodyClassificationComponent,
             canActivate: [RoleGuard, BodyGuard],
             data: {
-              title: 'Orgaan - Classificaties - Nieuwe classificatie',
-              roles: [Role.AlgemeenBeheerder, Role.OrgaanBeheerder],
+              title: "Orgaan - Classificaties - Nieuwe classificatie",
+              roles: [Role.AlgemeenBeheerder,
+                Role.CjmBeheerder, Role.OrgaanBeheerder],
               bodyGuard: {
-                params: 'route.parent.parent.params',
-                idPart: 'id'
-              }
-            }
+                params: "route.parent.parent.params",
+                idPart: "id",
+              },
+            },
           },
           {
-            path: 'edit/:id',
-            component: BodyBodyClassificationsUpdateBodyBodyClassificationComponent,
+            path: "edit/:id",
+            component:
+              BodyBodyClassificationsUpdateBodyBodyClassificationComponent,
             canActivate: [RoleGuard, BodyGuard],
             data: {
-              title: 'Orgaan - Classificaties - Bewerken classificatie',
-              roles: [Role.AlgemeenBeheerder, Role.OrgaanBeheerder],
+              title: "Orgaan - Classificaties - Bewerken classificatie",
+              roles: [Role.AlgemeenBeheerder,
+                Role.CjmBeheerder, Role.OrgaanBeheerder],
               bodyGuard: {
-                params: 'route.parent.parent.params',
-                idPart: 'id'
-              }
-            }
-          }
-        ]
-      }
-    ]
-  }
+                params: "route.parent.parent.params",
+                idPart: "id",
+              },
+            },
+          },
+        ],
+      },
+    ],
+  },
 ];
 
 @NgModule({
-  imports: [
-    RouterModule.forChild(routes)
-  ],
-  exports: [
-    RouterModule
-  ]
+  imports: [RouterModule.forChild(routes)],
+  exports: [RouterModule],
 })
-export class BodyDetailRoutingModule { }
+export class BodyDetailRoutingModule {}

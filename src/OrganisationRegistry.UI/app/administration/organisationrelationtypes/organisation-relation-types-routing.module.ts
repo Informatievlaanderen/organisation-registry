@@ -12,7 +12,7 @@ const routes: Routes = [
     component: OrganisationRelationTypeOverviewComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.AlgemeenBeheerder],
+      roles: [Role.AlgemeenBeheerder, Role.CjmBeheerder],
       title: 'Parameters - Organisatie relatie types'
     }
   },
@@ -21,7 +21,7 @@ const routes: Routes = [
     component: OrganisationRelationTypeDetailComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.AlgemeenBeheerder],
+      roles: [Role.AlgemeenBeheerder, Role.CjmBeheerder],
       title: 'Parameters - Nieuw organisatie relatie type'
     }
   },
@@ -30,7 +30,7 @@ const routes: Routes = [
     component: OrganisationRelationTypeDetailComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.AlgemeenBeheerder],
+      roles: [Role.AlgemeenBeheerder, Role.CjmBeheerder],
       title: 'Parameters - Bewerken organisatie relatie type'
     }
   },

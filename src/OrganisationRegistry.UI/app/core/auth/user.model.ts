@@ -1,4 +1,4 @@
-import { Role } from "./role.model";
+import { Role, RoleMapping } from "./role.model";
 
 export class User {
   roles: Array<Role>;
@@ -14,37 +14,6 @@ export class User {
   }
 
   static toRoles(externalRoles): Array<Role> {
-    const roles = new Array<Role>();
-    for (let role of externalRoles) {
-      switch (role) {
-        case "algemeenBeheerder":
-          roles.push(Role.AlgemeenBeheerder);
-          break;
-
-        case "vlimpersBeheerder":
-          roles.push(Role.VlimpersBeheerder);
-          break;
-
-        case "orgaanBeheerder":
-          roles.push(Role.OrgaanBeheerder);
-          break;
-
-        case "decentraalBeheerder":
-          roles.push(Role.DecentraalBeheerder);
-          break;
-
-        case "regelgevingBeheerder":
-          roles.push(Role.RegelgevingBeheerder);
-          break;
-
-        case "developer":
-          roles.push(Role.Developer);
-          break;
-
-        default:
-          break;
-      }
-    }
-    return roles;
+    return externalRoles.map((role) => RoleMapping.map(role));
   }
 }

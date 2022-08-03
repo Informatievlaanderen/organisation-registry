@@ -3,7 +3,7 @@
     <div class="functional-header__actions">
       <div *ngIf="isLoggedIn | async">
         <ul>
-          <li class="functional-header__action">{{userName | async}} ({{role | async}})</li>
+          <li class="functional-header__action">{{userName | async}} ({{roleName$ | async}})</li>
           <li class="functional-header__action"><a (click)="logoutClicked()">Meld af</a></li>
         </ul>
       </div>

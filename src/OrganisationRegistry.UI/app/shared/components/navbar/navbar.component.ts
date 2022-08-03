@@ -1,18 +1,24 @@
-﻿import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
+﻿import {
+  ChangeDetectionStrategy,
+  Component,
+  Input,
+  OnInit,
+} from "@angular/core";
 
-import {Observable} from 'rxjs/Observable';
+import { Observable } from "rxjs/Observable";
 
-import {OidcService, Role} from 'core/auth';
-import {Environments} from "../../../environments";
+import { OidcService, Role } from "core/auth";
+import { Environments } from "../../../environments";
+import { map } from "rxjs/operators";
 
 @Component({
-  selector: 'ww-navbar',
+  selector: "ww-navbar",
   changeDetection: ChangeDetectionStrategy.OnPush,
-  styleUrls: ['./navbar.style.css'],
-  templateUrl: 'navbar.template.html'
+  styleUrls: ["./navbar.style.css"],
+  templateUrl: "navbar.template.html",
 })
 export class NavbarComponent implements OnInit {
-  @Input('environment') environment: string;
+  @Input("environment") environment: string;
 
   public isLoggedIn: Observable<boolean>;
   public isOrganisationRegistryBeheerder: Observable<boolean>;
@@ -21,57 +27,68 @@ export class NavbarComponent implements OnInit {
   public isDeveloper: Observable<boolean>;
   public isOrgaanBeheerder: Observable<boolean>;
   public userName: Observable<string>;
-  public role: Observable<string>;
-  public showEnvironment: boolean;
-  constructor(
-    private oidcService: OidcService,
-  ) {
-   }
+  public roleName$: Observable<string>;
+  public showEnvironment: boolean = this.environment != Environments.production;
+
+  constructor(private oidcService: OidcService) {}
 
   ngOnInit() {
-    this.showEnvironment = this.environment != Environments.production;
-
     this.isLoggedIn = this.oidcService.isLoggedIn;
 
-    const roles = this.oidcService.roles;
+    this.isOrganisationRegistryBeheerder = this.oidcService.hasAnyOfRoles([
+      Role.AlgemeenBeheerder,Role.CjmBeheerder
+    ]);
 
-    this.isOrganisationRegistryBeheerder =
-      this.oidcService.hasAnyOfRoles([Role.AlgemeenBeheerder]);
+    this.isVlimpersBeheerder = this.oidcService.hasAnyOfRoles([
+      Role.VlimpersBeheerder,
+    ]);
 
-    this.isVlimpersBeheerder =
-      this.oidcService.hasAnyOfRoles([Role.VlimpersBeheerder]);
+    this.isOrganisatieBeheerder = this.oidcService.hasAnyOfRoles([
+      Role.DecentraalBeheerder,
+    ]);
 
-    this.isOrganisatieBeheerder =
-      this.oidcService.hasAnyOfRoles([Role.DecentraalBeheerder]);
+    this.isDeveloper = this.oidcService.hasAnyOfRoles([Role.Developer]);
 
-    this.isDeveloper =
-      this.oidcService.hasAnyOfRoles([Role.Developer]);
-
-    this.isOrgaanBeheerder =
-      this.oidcService.hasAnyOfRoles([Role.OrgaanBeheerder]);
+    this.isOrgaanBeheerder = this.oidcService.hasAnyOfRoles([
+      Role.OrgaanBeheerder,
+    ]);
 
     this.userName = this.oidcService.userName;
 
-    this.role = roles.map(x => {
-      let role = '';
-      if (x.indexOf(Role.AlgemeenBeheerder) !== -1) {
-        role = 'Algemeen beheerder';
-      } else if (x.indexOf(Role.VlimpersBeheerder) !== -1) {
-        role = 'Vlimpers beheerder';
-      } else if (x.indexOf(Role.DecentraalBeheerder) !== -1) {
-        role = 'Decentraal beheerder';
-      } else if (x.indexOf(Role.RegelgevingBeheerder) !== -1) {
-        role = 'Regelgeving en deugdelijk bestuur beheerder';
-      } else if (x.indexOf(Role.OrgaanBeheerder) !== -1) {
-        role = 'Orgaan beheerder';
-      }
+    this.roleName$ = this.oidcService.roles.pipe(
+      map((roles: Role[]) => {
+        let role = NavbarComponent.getRoleName(roles);
+        return NavbarComponent.appendDeveloperIfInRole(role, roles);
+      })
+    );
+  }
 
-      if (x.indexOf(Role.Developer) !== -1) {
-        role = role + ' | Ontwikkelaar';
-      }
+  private static getRoleName(roles: Role[]): string {
+    if (roles.indexOf(Role.AlgemeenBeheerder) !== -1) {
+      return "Algemeen beheerder";
+    }
+    if (roles.indexOf(Role.VlimpersBeheerder) !== -1) {
+      return "Vlimpers beheerder";
+    }
+    if (roles.indexOf(Role.DecentraalBeheerder) !== -1) {
+      return "Decentraal beheerder";
+    }
+    if (roles.indexOf(Role.RegelgevingBeheerder) !== -1) {
+      return "Regelgeving en deugdelijk bestuur beheerder";
+    }
+    if (roles.indexOf(Role.OrgaanBeheerder) !== -1) {
+      return "Orgaan beheerder";
+    }
+    if (roles.indexOf(Role.CjmBeheerder) !== -1) {
+      return "Cjm beheerder";
+    }
+  }
 
-      return role;
-    });
+  private static appendDeveloperIfInRole(s: string, roles: Role[]): string {
+    if (roles.indexOf(Role.Developer) !== -1) {
+      return s + " | Ontwikkelaar";
+    }
+    return s;
   }
 
   loginClicked(): void {

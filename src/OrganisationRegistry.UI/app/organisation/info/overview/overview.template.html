@@ -17,7 +17,6 @@
            class="button form__button button--secondary button--warning"
            [ngClass]="{'button--disabled': isBusy, 'button--loading': isBusy}"
            [routerLink]="'./terminate'">Sluit organisatie af</a>
-
         <a
             *ngIf="store.canUpdateOrganisationChanged$ | async"
            class="button"

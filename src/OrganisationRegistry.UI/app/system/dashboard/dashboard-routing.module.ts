@@ -1,20 +1,20 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { NgModule } from "@angular/core";
+import { RouterModule, Routes } from "@angular/router";
 
-import { RoleGuard, Role } from 'core/auth';
+import { Role, RoleGuard } from "core/auth";
 
-import { DashboardOverviewComponent } from './overview';
+import { DashboardOverviewComponent } from "./overview";
 
 const routes: Routes = [
   {
-    path: 'system',
+    path: "system",
     component: DashboardOverviewComponent,
     canActivate: [RoleGuard],
     data: {
-      title: 'Systeem',
-      roles: [Role.AlgemeenBeheerder, Role.Developer]
-    }
-  }
+      title: "Systeem",
+      roles: [Role.AlgemeenBeheerder, Role.CjmBeheerder, Role.Developer],
+    },
+  },
 ];
 
 @NgModule({

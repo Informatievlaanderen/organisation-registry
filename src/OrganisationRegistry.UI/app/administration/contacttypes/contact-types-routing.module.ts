@@ -12,7 +12,7 @@ const routes: Routes = [
     component: ContactTypeOverviewComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.AlgemeenBeheerder],
+      roles: [Role.AlgemeenBeheerder, Role.CjmBeheerder],
       title: 'Parameters - Contact types'
     }
   },
@@ -21,7 +21,7 @@ const routes: Routes = [
     component: ContactTypeDetailComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.AlgemeenBeheerder],
+      roles: [Role.AlgemeenBeheerder, Role.CjmBeheerder],
       title: 'Parameters - Nieuw contact type'
     }
   },
@@ -30,7 +30,7 @@ const routes: Routes = [
     component: ContactTypeDetailComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.AlgemeenBeheerder],
+      roles: [Role.AlgemeenBeheerder, Role.CjmBeheerder],
       title: 'Parameters - Bewerken contact type'
     }
   },

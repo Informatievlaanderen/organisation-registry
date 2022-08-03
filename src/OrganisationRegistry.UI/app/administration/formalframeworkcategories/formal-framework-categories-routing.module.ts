@@ -12,7 +12,7 @@ const routes: Routes = [
     component: FormalFrameworkCategoryOverviewComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.AlgemeenBeheerder],
+      roles: [Role.AlgemeenBeheerder, Role.CjmBeheerder],
       title: 'Parameters - Toepassingsgebiedcategorieën'
     }
   },
@@ -21,7 +21,7 @@ const routes: Routes = [
     component: FormalFrameworkCategoryDetailComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.AlgemeenBeheerder],
+      roles: [Role.AlgemeenBeheerder, Role.CjmBeheerder],
       title: 'Parameters - Nieuwe toepassingsgebiedcategorie'
     }
   },
@@ -30,7 +30,7 @@ const routes: Routes = [
     component: FormalFrameworkCategoryDetailComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.AlgemeenBeheerder],
+      roles: [Role.AlgemeenBeheerder, Role.CjmBeheerder],
       title: 'Parameters - Bewerken toepassingsgebiedcategorie'
     }
   },
