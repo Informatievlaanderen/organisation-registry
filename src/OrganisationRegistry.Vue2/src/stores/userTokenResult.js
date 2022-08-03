@@ -40,7 +40,7 @@ export class UserTokenResult {
       case "regelgevingBeheerder":
         return Roles.Regelgever;
       case "cjmBeheerder":
-        return Roles.CjmBeheerder
+        return Roles.CjmBeheerder;
     }
     return "";
   }
