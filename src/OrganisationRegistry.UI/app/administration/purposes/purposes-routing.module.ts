@@ -12,7 +12,7 @@ const routes: Routes = [
     component: PurposeOverviewComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.AlgemeenBeheerder],
+      roles: [Role.AlgemeenBeheerder, Role.CjmBeheerder],
       title: 'Parameters - Beleidsvelden'
     }
   },
@@ -21,7 +21,7 @@ const routes: Routes = [
     component: PurposeDetailComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.AlgemeenBeheerder],
+      roles: [Role.AlgemeenBeheerder, Role.CjmBeheerder],
       title: 'Parameters - Nieuw beleidsveld'
     }
   },
@@ -30,7 +30,7 @@ const routes: Routes = [
     component: PurposeDetailComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.AlgemeenBeheerder],
+      roles: [Role.AlgemeenBeheerder, Role.CjmBeheerder],
       title: 'Parameters - Bewerken beleidsveld'
     }
   },

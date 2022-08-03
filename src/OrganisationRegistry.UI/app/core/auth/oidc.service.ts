@@ -23,7 +23,7 @@ export interface SecurityInfo {
   bodyIds: Array<string>;
   refreshtoken: number;
   expires: number;
-  hasAnyOfRoles: (desiredRoles: Array<Role>) => boolean;
+  hasAnyOfRoles: (...desiredRoles: Array<Role>) => boolean;
   isOrganisatieBeheerderFor: (organisationId: string) => boolean;
 }
 
@@ -54,7 +54,7 @@ function createSecurityInfo(
     bodyIds,
     refreshtoken,
     expires,
-    hasAnyOfRoles: (desiredRoles: Role[]): boolean =>
+    hasAnyOfRoles: (...desiredRoles: Role[]): boolean =>
       hasAnyOfRoles(roles, desiredRoles),
     isOrganisatieBeheerderFor: (organisationId: string): boolean => {
       return (
@@ -265,6 +265,14 @@ export class OidcService implements OnDestroy {
       .catch((err) => {
         return Observable.of(false);
       });
+  }
+
+  public requiresOneOfRoles(...requiredRoles: Role[]): Observable<boolean> {
+    return this.roles.pipe(
+      map((roles: Role[]) =>
+        roles.some((r) => !!requiredRoles.find((rr) => rr == r))
+      )
+    );
   }
 
   public hasAnyOfRoles(desiredRoles: Array<Role>): Observable<boolean> {

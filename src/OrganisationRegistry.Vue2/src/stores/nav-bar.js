@@ -17,7 +17,11 @@ export default [
     to: { path: "/../#/people" },
   },
   {
-    roles: [Roles.DecentraalBeheerder, Roles.AlgemeenBeheerder],
+    roles: [
+      Roles.DecentraalBeheerder,
+      Roles.AlgemeenBeheerder,
+      Roles.CjmBeheerder,
+    ],
     title: "Delegaties",
     to: { path: "/../#/manage/delegations" },
   },
@@ -27,17 +31,22 @@ export default [
     to: { path: "/../#/report" },
   },
   {
-    roles: [Roles.AlgemeenBeheerder],
+    roles: [Roles.AlgemeenBeheerder, Roles.CjmBeheerder],
     title: "Parameters",
     to: { path: "/../#/administration" },
   },
   {
-    roles: [Roles.AlgemeenBeheerder, Roles.Developer],
+    roles: [Roles.AlgemeenBeheerder, Roles.Developer, Roles.CjmBeheerder],
     title: "Systeem",
     to: { path: "/../#/system" },
   },
   {
-    roles: [Roles.VlimpersBeheerder, Roles.AlgemeenBeheerder, Roles.Developer],
+    roles: [
+      Roles.VlimpersBeheerder,
+      Roles.AlgemeenBeheerder,
+      Roles.Developer,
+      Roles.CjmBeheerder,
+    ],
     title: "Importeren",
     to: { name: "upload-organisations" },
   },

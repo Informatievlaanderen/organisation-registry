@@ -11,7 +11,7 @@ const routes: Routes = [
     component: DashboardOverviewComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.AlgemeenBeheerder],
+      roles: [Role.AlgemeenBeheerder, Role.CjmBeheerder],
       title: 'Parameters'
     }
   }

@@ -12,7 +12,7 @@ const routes: Routes = [
     component: LocationOverviewComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.AlgemeenBeheerder],
+      roles: [Role.AlgemeenBeheerder, Role.CjmBeheerder],
       title: 'Parameters - Locaties'
     }
   },
@@ -21,7 +21,7 @@ const routes: Routes = [
     component: LocationDetailComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.AlgemeenBeheerder],
+      roles: [Role.AlgemeenBeheerder, Role.CjmBeheerder],
       title: 'Parameters - Nieuwe locatie'
     }
   },
@@ -30,7 +30,7 @@ const routes: Routes = [
     component: LocationDetailComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.AlgemeenBeheerder],
+      roles: [Role.AlgemeenBeheerder, Role.CjmBeheerder],
       title: 'Parameters - Bewerken locatie'
     }
   },

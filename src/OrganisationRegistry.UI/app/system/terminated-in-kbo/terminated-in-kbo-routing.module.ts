@@ -1,28 +1,24 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { NgModule } from "@angular/core";
+import { RouterModule, Routes } from "@angular/router";
 
-import { RoleGuard, Role } from 'core/auth';
+import { RoleGuard, Role } from "core/auth";
 
-import { TerminatedInKboOverviewComponent } from './overview';
+import { TerminatedInKboOverviewComponent } from "./overview";
 
 const routes: Routes = [
   {
-    path: 'system/terminated-in-kbo',
+    path: "system/terminated-in-kbo",
     component: TerminatedInKboOverviewComponent,
     canActivate: [RoleGuard],
     data: {
-      title: 'Systeem - Stopgezet in de KBO',
-      roles: [Role.AlgemeenBeheerder, Role.Developer]
-    }
+      title: "Systeem - Stopgezet in de KBO",
+      roles: [Role.AlgemeenBeheerder, Role.CjmBeheerder, Role.Developer],
+    },
   },
 ];
 
 @NgModule({
-  imports: [
-    RouterModule.forChild(routes)
-  ],
-  exports: [
-    RouterModule
-  ]
+  imports: [RouterModule.forChild(routes)],
+  exports: [RouterModule],
 })
-export class TerminatedInKboRoutingModule { }
+export class TerminatedInKboRoutingModule {}

@@ -45,7 +45,7 @@ export class BodyFormalFrameworksOverviewComponent implements OnInit, OnDestroy 
 
   ngOnInit() {
     let roles = this.route.snapshot.data['userRoles'];
-    this.isOrganisationRegistryBeheerder = roles.indexOf(Role.AlgemeenBeheerder) !== -1;
+    this.isOrganisationRegistryBeheerder = roles.indexOf(Role.AlgemeenBeheerder) !== -1 || roles.indexOf(Role.CjmBeheerder) !== -1 ;
     this.isOrgaanBeheerder = roles.indexOf(Role.OrgaanBeheerder) !== -1;
 
     this.subscriptions.push(this.route.parent.parent.params.subscribe((params: Params) => {

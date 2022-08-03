@@ -12,7 +12,7 @@ const routes: Routes = [
     component: FunctionOverviewComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.AlgemeenBeheerder],
+      roles: [Role.AlgemeenBeheerder, Role.CjmBeheerder],
       title: 'Parameters - Functies'
     }
   },
@@ -21,7 +21,7 @@ const routes: Routes = [
     component: FunctionDetailComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.AlgemeenBeheerder],
+      roles: [Role.AlgemeenBeheerder, Role.CjmBeheerder],
       title: 'Parameters - Nieuwe functie'
     }
   },
@@ -30,7 +30,7 @@ const routes: Routes = [
     component: FunctionDetailComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.AlgemeenBeheerder],
+      roles: [Role.AlgemeenBeheerder, Role.CjmBeheerder],
       title: 'Parameters - Bewerken functie'
     }
   },

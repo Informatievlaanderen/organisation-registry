@@ -1,40 +1,41 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { NgModule } from "@angular/core";
+import { RouterModule, Routes } from "@angular/router";
 
-import { RoleGuard, Role, RolesResolver } from 'core/auth';
+import { RoleGuard, Role, RolesResolver } from "core/auth";
 
-import { BodyOverviewComponent } from './overview';
-import { CreateBodyComponent } from './create';
+import { BodyOverviewComponent } from "./overview";
+import { CreateBodyComponent } from "./create";
 
 const routes: Routes = [
   {
-    path: 'bodies',
+    path: "bodies",
     component: BodyOverviewComponent,
     data: {
-      title: 'Organen'
-    }
+      title: "Organen",
+    },
   },
   {
-    path: 'bodies/create',
+    path: "bodies/create",
     canActivate: [RoleGuard],
     canActivateChild: [RoleGuard],
     resolve: {
-      userRoles: RolesResolver
+      userRoles: RolesResolver,
     },
     data: {
-      roles: [Role.AlgemeenBeheerder, Role.DecentraalBeheerder, Role.OrgaanBeheerder],
-      title: 'Nieuw orgaan'
+      roles: [
+        Role.AlgemeenBeheerder,
+        Role.CjmBeheerder,
+        Role.DecentraalBeheerder,
+        Role.OrgaanBeheerder,
+      ],
+      title: "Nieuw orgaan",
     },
-    component: CreateBodyComponent
-  }
+    component: CreateBodyComponent,
+  },
 ];
 
 @NgModule({
-  imports: [
-    RouterModule.forChild(routes)
-  ],
-  exports: [
-    RouterModule
-  ]
+  imports: [RouterModule.forChild(routes)],
+  exports: [RouterModule],
 })
-export class BodyRoutingModule { }
+export class BodyRoutingModule {}

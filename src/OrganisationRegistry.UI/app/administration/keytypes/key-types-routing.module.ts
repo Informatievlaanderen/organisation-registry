@@ -12,7 +12,7 @@ const routes: Routes = [
     component: KeyTypeOverviewComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.AlgemeenBeheerder],
+      roles: [Role.AlgemeenBeheerder, Role.CjmBeheerder],
       title: 'Parameters - Informatiesystemen'
     }
   },
@@ -21,7 +21,7 @@ const routes: Routes = [
     component: KeyTypeDetailComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.AlgemeenBeheerder],
+      roles: [Role.AlgemeenBeheerder, Role.CjmBeheerder],
       title: 'Parameters - Nieuw informatiesysteem'
     }
   },
@@ -30,7 +30,7 @@ const routes: Routes = [
     component: KeyTypeDetailComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.AlgemeenBeheerder],
+      roles: [Role.AlgemeenBeheerder, Role.CjmBeheerder],
       title: 'Parameters - Bewerken informatiesysteem'
     }
   },

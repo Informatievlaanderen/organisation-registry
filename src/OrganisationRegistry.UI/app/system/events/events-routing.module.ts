@@ -13,7 +13,7 @@ const routes: Routes = [
     canActivate: [RoleGuard],
     data: {
       title: 'Systeem - Events',
-      roles: [Role.AlgemeenBeheerder, Role.Developer]
+      roles: [Role.AlgemeenBeheerder, Role.CjmBeheerder, Role.Developer]
     }
   },
   {
@@ -22,7 +22,7 @@ const routes: Routes = [
     canActivate: [RoleGuard],
     data: {
       title: 'Systeem - Event - Algemeen',
-      roles: [Role.AlgemeenBeheerder, Role.Developer]
+      roles: [Role.AlgemeenBeheerder, Role.CjmBeheerder, Role.Developer]
     }
   },
 ];

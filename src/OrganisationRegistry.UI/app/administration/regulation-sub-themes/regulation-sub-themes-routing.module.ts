@@ -12,7 +12,7 @@ const routes: Routes = [
     component: RegulationSubThemeOverviewComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.AlgemeenBeheerder],
+      roles: [Role.AlgemeenBeheerder, Role.CjmBeheerder],
       title: 'Parameters - Regelgevingsubthema\'s'
     }
   },
@@ -21,7 +21,7 @@ const routes: Routes = [
     component: RegulationSubThemeDetailComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.AlgemeenBeheerder],
+      roles: [Role.AlgemeenBeheerder, Role.CjmBeheerder],
       title: 'Parameters - Nieuw Regelgevingsubthema'
     }
   },
@@ -30,7 +30,7 @@ const routes: Routes = [
     component: RegulationSubThemeDetailComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.AlgemeenBeheerder],
+      roles: [Role.AlgemeenBeheerder, Role.CjmBeheerder],
       title: 'Parameters - Bewerken Regelgevingsubthema'
     }
   },
