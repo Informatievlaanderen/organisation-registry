@@ -15,7 +15,7 @@ using SqlServer.Infrastructure;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryAuthorize]
 [OrganisationRegistryRoute("manage/delegations")]
-public class DelegationAssignmentCommandController : OrganisationRegistryController
+public class DelegationAssignmentCommandController : OrganisationRegistryCommandController
 {
     public DelegationAssignmentCommandController(ICommandSender commandSender)
         : base(commandSender)

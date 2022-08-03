@@ -13,7 +13,7 @@ using Requests;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("labeltypes")]
 [OrganisationRegistryAuthorize]
-public class LabelTypeCommandController : OrganisationRegistryController
+public class LabelTypeCommandController : OrganisationRegistryCommandController
 {
     public LabelTypeCommandController(ICommandSender commandSender)
         : base(commandSender)

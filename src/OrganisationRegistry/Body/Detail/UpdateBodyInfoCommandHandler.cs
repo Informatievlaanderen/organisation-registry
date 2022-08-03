@@ -1,6 +1,7 @@
 ﻿namespace OrganisationRegistry.Body;
 
 using System.Threading.Tasks;
+using Handling;
 using Infrastructure.Commands;
 using Infrastructure.Domain;
 using Microsoft.Extensions.Logging;
@@ -14,14 +15,16 @@ public class UpdateBodyInfoCommandHandler
     }
 
     public async Task Handle(ICommandEnvelope<UpdateBodyInfo> envelope)
-    {
-        var body = Session.Get<Body>(envelope.Command.BodyId);
+        => await UpdateHandler<Body>.For(envelope.Command, envelope.User, Session)
+            .WithEditBodyPolicy()
+            .Handle(
+                session =>
+                {
+                    var body = session.Get<Body>(envelope.Command.BodyId);
 
-        body.UpdateInfo(
-            envelope.Command.Name,
-            envelope.Command.ShortName,
-            envelope.Command.Description);
-
-        await Session.Commit(envelope.User);
-    }
+                    body.UpdateInfo(
+                        envelope.Command.Name,
+                        envelope.Command.ShortName,
+                        envelope.Command.Description);
+                });
 }

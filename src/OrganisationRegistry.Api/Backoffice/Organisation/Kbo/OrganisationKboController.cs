@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OrganisationRegistry.Infrastructure.Authorization;
-using OrganisationRegistry.Infrastructure.Commands;
 using SqlServer.Infrastructure;
 
 [ApiVersion("1.0")]
@@ -19,14 +18,9 @@ using SqlServer.Infrastructure;
 [OrganisationRegistryRoute("organisations")]
 public class OrganisationKboController : OrganisationRegistryController
 {
-    public OrganisationKboController(ICommandSender commandSender)
-        : base(commandSender)
-    {
-    }
-
     /// <summary>Gets the termination status of an organisation coupled with the KBO.</summary>
     [HttpGet("{id}/kbo/{kboNumber}/termination")]
-    [OrganisationRegistryAuthorize(Role.AlgemeenBeheerder, Role.Developer, Role.VlimpersBeheerder)]
+    [OrganisationRegistryAuthorize(Role.AlgemeenBeheerder, Role.CjmBeheerder, Role.Developer, Role.VlimpersBeheerder)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetTerminationStatus(
         [FromServices] OrganisationRegistryContext context,
@@ -43,7 +37,7 @@ public class OrganisationKboController : OrganisationRegistryController
 
     /// <summary>Get a list of organisations to be terminated according to the KBO.</summary>
     [HttpGet("kbo/terminated")]
-    [OrganisationRegistryAuthorize(Role.AlgemeenBeheerder, Role.Developer)]
+    [OrganisationRegistryAuthorize(Role.AlgemeenBeheerder, Role.CjmBeheerder, Role.Developer)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
     {

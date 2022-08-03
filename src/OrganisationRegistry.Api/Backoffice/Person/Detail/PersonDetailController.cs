@@ -9,7 +9,6 @@ using Infrastructure;
 using OrganisationRegistry.Api.Infrastructure.Security;
 using OrganisationRegistry.Infrastructure.Authorization;
 using Security;
-using OrganisationRegistry.Infrastructure.Commands;
 using OrganisationRegistry.SqlServer.Infrastructure;
 using OrganisationRegistry.SqlServer.Person;
 
@@ -18,11 +17,6 @@ using OrganisationRegistry.SqlServer.Person;
 [OrganisationRegistryRoute("people")]
 public class PersonDetailController : OrganisationRegistryController
 {
-    public PersonDetailController(ICommandSender commandSender)
-        : base(commandSender)
-    {
-    }
-
     /// <summary>Get a person.</summary>
     /// <response code="200">If the person is found.</response>
     /// <response code="404">If the person cannot be found.</response>

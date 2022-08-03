@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OrganisationRegistry.Infrastructure.Authorization;
-using OrganisationRegistry.Infrastructure.Commands;
+using Requests;
 using SqlServer;
 using SqlServer.Infrastructure;
 
@@ -20,11 +20,6 @@ using SqlServer.Infrastructure;
 [OrganisationRegistryRoute("projections")]
 public class ProjectionsController : OrganisationRegistryController
 {
-    public ProjectionsController(ICommandSender commandSender)
-        : base(commandSender)
-    {
-    }
-
     /// <summary>Get a list of projections.</summary>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -75,8 +70,26 @@ public class ProjectionsController : OrganisationRegistryController
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> LastEvent([FromServices] OrganisationRegistryContext context)
     {
-        return Ok(await context.Events
+        return Ok(await context.Events.AsQueryable().MaxAsync(x => x.Number));
+    }
+
+    [HttpPut("states/{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Put([FromServices] OrganisationRegistryContext context, Guid id, [FromBody] UpdateProjectionStateRequest message)
+    {
+        var state = await context.ProjectionStates
             .AsQueryable()
-            .MaxAsync(x => x.Number));
+            .FirstOrDefaultAsync(x => x.Id == id);
+
+        if (state == null)
+            return NotFound();
+
+        state.Name = message.Name;
+        state.EventNumber = message.EventNumber;
+
+        await context.SaveChangesAsync();
+
+        return OkWithLocationHeader(nameof(ProjectionsController), nameof(ProjectionsController.Get), new { id });
     }
 }

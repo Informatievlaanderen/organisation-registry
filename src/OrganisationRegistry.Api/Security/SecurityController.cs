@@ -13,7 +13,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrganisationRegistry.Infrastructure.Authorization;
-using OrganisationRegistry.Infrastructure.Commands;
 using OrganisationRegistry.Infrastructure.Configuration;
 
 [ApiVersion("1.0")]
@@ -26,9 +25,7 @@ public class SecurityController : OrganisationRegistryController
 
     public SecurityController(
         IOptions<OpenIdConnectConfigurationSection> openIdConnectConfiguration,
-        ICommandSender commandSender,
         ILogger<SecurityController> logger)
-        : base(commandSender)
     {
         _openIdConnectConfiguration = openIdConnectConfiguration.Value;
         _logger = logger;

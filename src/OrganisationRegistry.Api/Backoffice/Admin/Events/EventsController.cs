@@ -10,23 +10,17 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OrganisationRegistry.Infrastructure.Authorization;
-using OrganisationRegistry.Infrastructure.Commands;
 using Queries;
 using SqlServer.Infrastructure;
 
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("events")]
+[OrganisationRegistryAuthorize(Role.AlgemeenBeheerder, Role.Developer)]
 public class EventsController : OrganisationRegistryController
 {
-    public EventsController(ICommandSender commandSender)
-        : base(commandSender)
-    {
-    }
-
     /// <summary>Get a list of events.</summary>
     [HttpGet]
-    [OrganisationRegistryAuthorize(Role.AlgemeenBeheerder, Role.Developer)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
     {
@@ -46,7 +40,6 @@ public class EventsController : OrganisationRegistryController
     /// <response code="200">If the event is found.</response>
     /// <response code="404">If the event cannot be found.</response>
     [HttpGet("{id}")]
-    [OrganisationRegistryAuthorize(Role.AlgemeenBeheerder, Role.Developer)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] int id)

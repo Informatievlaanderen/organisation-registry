@@ -9,7 +9,6 @@ using Infrastructure.Search.Sorting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using OrganisationRegistry.Infrastructure.Commands;
 using OrganisationRegistry.Infrastructure.Configuration;
 using Queries;
 using SqlServer.Infrastructure;
@@ -20,11 +19,6 @@ using SqlServer.LocationType;
 [OrganisationRegistryRoute("locationtypes")]
 public class LocationTypeController : OrganisationRegistryController
 {
-    public LocationTypeController(ICommandSender commandSender)
-        : base(commandSender)
-    {
-    }
-
     /// <summary>Get a list of available location types.</summary>
     [HttpGet]
     public async Task<IActionResult> Get(

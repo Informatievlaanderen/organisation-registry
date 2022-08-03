@@ -8,13 +8,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OrganisationRegistry.Infrastructure.Commands;
 using Requests;
-using Security;
 
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("regulationsubthemes")]
 [OrganisationRegistryAuthorize]
-public class RegulationSubThemeCommandController : OrganisationRegistryController
+public class RegulationSubThemeCommandController : OrganisationRegistryCommandController
 {
     public RegulationSubThemeCommandController(ICommandSender commandSender)
         : base(commandSender)

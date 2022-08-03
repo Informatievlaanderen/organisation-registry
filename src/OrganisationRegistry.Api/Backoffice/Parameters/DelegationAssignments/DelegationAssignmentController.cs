@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OrganisationRegistry.Infrastructure.Authorization;
-using OrganisationRegistry.Infrastructure.Commands;
 using Queries;
 using Responses;
 using SqlServer.Infrastructure;
@@ -22,11 +21,6 @@ using SqlServer.Infrastructure;
 [OrganisationRegistryRoute("manage/delegations")]
 public class DelegationAssignmentController : OrganisationRegistryController
 {
-    public DelegationAssignmentController(ICommandSender commandSender)
-        : base(commandSender)
-    {
-    }
-
     /// <summary>Get a list of available delegation assignments.</summary>
     [HttpGet("{delegationId}/assignments")]
     [ProducesResponseType(StatusCodes.Status200OK)]

@@ -13,7 +13,7 @@ using Requests;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("functiontypes")]
 [OrganisationRegistryAuthorize]
-public class FunctionTypeCommandController : OrganisationRegistryController
+public class FunctionTypeCommandController : OrganisationRegistryCommandController
 {
     public FunctionTypeCommandController(ICommandSender commandSender)
         : base(commandSender)

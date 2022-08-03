@@ -2,6 +2,7 @@
 
 using System.Threading.Tasks;
 using Function;
+using Handling;
 using Infrastructure.Commands;
 using Infrastructure.Domain;
 using Microsoft.Extensions.Logging;
@@ -16,18 +17,20 @@ public class AssignFunctionTypeToBodySeatCommandHandler
     }
 
     public async Task Handle(ICommandEnvelope<AssignFunctionTypeToBodySeat> envelope)
-    {
-        var body = Session.Get<Body>(envelope.Command.BodyId);
-        var organisation = Session.Get<Organisation>(envelope.Command.OrganisationId);
-        var functionType = Session.Get<FunctionType>(envelope.Command.FunctionTypeId);
+        => await UpdateHandler<Body>.For(envelope.Command, envelope.User, Session)
+            .WithEditBodyPolicy()
+            .Handle(
+                session =>
+                {
+                    var body = session.Get<Body>(envelope.Command.BodyId);
+                    var organisation = session.Get<Organisation>(envelope.Command.OrganisationId);
+                    var functionType = session.Get<FunctionType>(envelope.Command.FunctionTypeId);
 
-        body.AssignFunctionTypeToBodySeat(
-            organisation,
-            functionType,
-            envelope.Command.BodyMandateId,
-            envelope.Command.BodySeatId,
-            envelope.Command.Validity);
-
-        await Session.Commit(envelope.User);
-    }
+                    body.AssignFunctionTypeToBodySeat(
+                        organisation,
+                        functionType,
+                        envelope.Command.BodyMandateId,
+                        envelope.Command.BodySeatId,
+                        envelope.Command.Validity);
+                });
 }

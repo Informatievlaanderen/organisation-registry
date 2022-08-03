@@ -8,7 +8,6 @@ using Infrastructure.Search.Pagination;
 using Infrastructure.Search.Sorting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using OrganisationRegistry.Infrastructure.Commands;
 using SqlServer.Infrastructure;
 
 [ApiVersion("1.0")]
@@ -16,11 +15,6 @@ using SqlServer.Infrastructure;
 [OrganisationRegistryRoute("organisations/{organisationId}/bodies")]
 public class OrganisationBodyController : OrganisationRegistryController
 {
-    public OrganisationBodyController(ICommandSender commandSender)
-        : base(commandSender)
-    {
-    }
-
     /// <summary>Get a list of available bodies for an organisation.</summary>
     [HttpGet]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid organisationId)

@@ -13,7 +13,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OrganisationRegistry.Infrastructure.AppSpecific;
 using OrganisationRegistry.Infrastructure.Authorization;
-using OrganisationRegistry.Infrastructure.Commands;
 using OrganisationRegistry.Infrastructure.Configuration;
 using Queries;
 using SqlServer.Infrastructure;
@@ -23,11 +22,6 @@ using SqlServer.Infrastructure;
 [OrganisationRegistryRoute("keytypes")]
 public class KeyTypeController : OrganisationRegistryController
 {
-    public KeyTypeController(ICommandSender commandSender)
-        : base(commandSender)
-    {
-    }
-
     /// <summary>Get a list of available key types.</summary>
     [HttpGet]
     [OrganisationRegistryAuthorize]

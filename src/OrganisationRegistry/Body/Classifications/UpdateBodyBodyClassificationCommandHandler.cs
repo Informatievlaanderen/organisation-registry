@@ -3,6 +3,7 @@
 using System.Threading.Tasks;
 using BodyClassification;
 using BodyClassificationType;
+using Handling;
 using Infrastructure.Commands;
 using Infrastructure.Domain;
 using Microsoft.Extensions.Logging;
@@ -16,17 +17,20 @@ public class UpdateBodyBodyClassificationCommandHandler
     }
 
     public async Task Handle(ICommandEnvelope<UpdateBodyBodyClassification> envelope)
-    {
-        var bodyClassification = Session.Get<BodyClassification>(envelope.Command.BodyClassificationId);
-        var bodyClassificationType = Session.Get<BodyClassificationType>(envelope.Command.BodyClassificationTypeId);
-        var body = Session.Get<Body>(envelope.Command.BodyId);
+        => await UpdateHandler<Body>.For(envelope.Command, envelope.User, Session)
+            .WithEditBodyPolicy()
+            .Handle(
+                session =>
+                {
+                    var bodyClassification = session.Get<BodyClassification>(envelope.Command.BodyClassificationId);
+                    var bodyClassificationType = session.Get<BodyClassificationType>(envelope.Command.BodyClassificationTypeId);
+                    var body = session.Get<Body>(envelope.Command.BodyId);
 
-        body.UpdateBodyClassification(
-            envelope.Command.BodyBodyClassificationId,
-            bodyClassificationType,
-            bodyClassification,
-            new Period(new ValidFrom(envelope.Command.ValidFrom), new ValidTo(envelope.Command.ValidTo)));
+                    body.UpdateBodyClassification(
+                        envelope.Command.BodyBodyClassificationId,
+                        bodyClassificationType,
+                        bodyClassification,
+                        new Period(new ValidFrom(envelope.Command.ValidFrom), new ValidTo(envelope.Command.ValidTo)));
 
-        await Session.Commit(envelope.User);
-    }
+                });
 }

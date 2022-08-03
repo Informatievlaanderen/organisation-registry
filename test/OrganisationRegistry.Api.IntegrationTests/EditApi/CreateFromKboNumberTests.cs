@@ -2,7 +2,6 @@ namespace OrganisationRegistry.Api.IntegrationTests.EditApi;
 
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Newtonsoft.Json;

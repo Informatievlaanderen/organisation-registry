@@ -3,6 +3,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using ContactType;
+using Handling;
 using Infrastructure.Commands;
 using Infrastructure.Domain;
 using Microsoft.Extensions.Logging;
@@ -18,23 +19,26 @@ public class AssignPersonToBodySeatCommandHandler
     }
 
     public async Task Handle(ICommandEnvelope<AssignPersonToBodySeat> envelope)
-    {
-        var body = Session.Get<Body>(envelope.Command.BodyId);
-        var person = Session.Get<Person>(envelope.Command.PersonId);
+        => await UpdateHandler<Body>.For(envelope.Command, envelope.User, Session)
+            .WithEditBodyPolicy()
+            .Handle(
+                session =>
+                {
+                    var body = session.Get<Body>(envelope.Command.BodyId);
+                    var person = session.Get<Person>(envelope.Command.PersonId);
 
-        var contacts = envelope.Command.Contacts.Select(contact =>
-        {
-            var contactType = Session.Get<ContactType>(contact.Key);
-            return new Contact(contactType, contact.Value);
-        }).ToList();
+                    var contacts = envelope.Command.Contacts.Select(
+                        contact =>
+                        {
+                            var contactType = session.Get<ContactType>(contact.Key);
+                            return new Contact(contactType, contact.Value);
+                        }).ToList();
 
-        body.AssignPersonToBodySeat(
-            person,
-            envelope.Command.BodyMandateId,
-            envelope.Command.BodySeatId,
-            contacts,
-            envelope.Command.Validity);
-
-        await Session.Commit(envelope.User);
-    }
+                    body.AssignPersonToBodySeat(
+                        person,
+                        envelope.Command.BodyMandateId,
+                        envelope.Command.BodySeatId,
+                        contacts,
+                        envelope.Command.Validity);
+                });
 }

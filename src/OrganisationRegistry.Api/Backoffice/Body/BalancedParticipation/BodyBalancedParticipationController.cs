@@ -8,7 +8,6 @@ using Microsoft.EntityFrameworkCore;
 using Infrastructure;
 using OrganisationRegistry.Api.Infrastructure.Security;
 using OrganisationRegistry.Infrastructure.Authorization;
-using OrganisationRegistry.Infrastructure.Commands;
 using OrganisationRegistry.SqlServer.Infrastructure;
 
 [ApiVersion("1.0")]
@@ -17,11 +16,6 @@ using OrganisationRegistry.SqlServer.Infrastructure;
 [OrganisationRegistryAuthorize(Role.AlgemeenBeheerder, Role.OrgaanBeheerder, Role.CjmBeheerder)]
 public class BodyBalancedParticipationController : OrganisationRegistryController
 {
-    public BodyBalancedParticipationController(ICommandSender commandSender)
-        : base(commandSender)
-    {
-    }
-
     /// <summary>Get a body's balanced participation info.</summary>
     /// <response code="200">If the body is found.</response>
     /// <response code="404">If the body cannot be found.</response>

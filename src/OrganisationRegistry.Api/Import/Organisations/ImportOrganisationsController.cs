@@ -12,7 +12,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.FeatureManagement.Mvc;
 using OrganisationRegistry.Infrastructure.Authorization;
-using OrganisationRegistry.Infrastructure.Commands;
 using SqlServer.Import.Organisations;
 using SqlServer.Infrastructure;
 using Validation;
@@ -24,10 +23,6 @@ using Validation;
 [FeatureGate(FeatureFlags.ImportApi)]
 public class ImportOrganisationsController : OrganisationRegistryController
 {
-    public ImportOrganisationsController(ICommandSender commandSender) : base(commandSender)
-    {
-    }
-
     [HttpPost("organisation-creations")]
     public async Task<IActionResult> ImportOrganisationCreations(
         [FromServices] OrganisationRegistryContext context,

@@ -13,7 +13,7 @@ using Requests;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("formalframeworks")]
 [OrganisationRegistryAuthorize]
-public class FormalFrameworkCommandController : OrganisationRegistryController
+public class FormalFrameworkCommandController : OrganisationRegistryCommandController
 {
     public FormalFrameworkCommandController(
         ICommandSender commandSender)

@@ -18,7 +18,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using OrganisationRegistry.Infrastructure.Commands;
 using SortOrder = Infrastructure.Search.Sorting.SortOrder;
 
 [ApiVersion("1.0")]
@@ -31,8 +30,7 @@ public class SearchController : OrganisationRegistryController
     private readonly ILogger<SearchController> _log;
 
     public SearchController(
-        ICommandSender commandSender,
-        ILogger<SearchController> log) : base(commandSender)
+        ILogger<SearchController> log)
     {
         _log = log;
     }

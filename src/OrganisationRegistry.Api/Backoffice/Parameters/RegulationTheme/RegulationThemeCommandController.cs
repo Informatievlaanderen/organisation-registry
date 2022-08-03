@@ -13,7 +13,7 @@ using Requests;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("regulationthemes")]
 [OrganisationRegistryAuthorize]
-public class RegulationThemeCommandController : OrganisationRegistryController
+public class RegulationThemeCommandController : OrganisationRegistryCommandController
 {
     public RegulationThemeCommandController(ICommandSender commandSender)
         : base(commandSender)

@@ -9,7 +9,6 @@ using Infrastructure.Search.Sorting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using OrganisationRegistry.Infrastructure.Commands;
 using Queries;
 using SqlServer.Infrastructure;
 using SqlServer.OrganisationRelationType;
@@ -19,11 +18,6 @@ using SqlServer.OrganisationRelationType;
 [OrganisationRegistryRoute("organisationrelationtypes")]
 public class OrganisationRelationTypeController : OrganisationRegistryController
 {
-    public OrganisationRelationTypeController(ICommandSender commandSender)
-        : base(commandSender)
-    {
-    }
-
     /// <summary>Get a list of available organisation relation types.</summary>
     [HttpGet]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)

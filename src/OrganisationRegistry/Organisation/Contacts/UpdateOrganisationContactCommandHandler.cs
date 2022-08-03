@@ -17,6 +17,7 @@ public class UpdateOrganisationContactCommandHandler
 
     public Task Handle(ICommandEnvelope<UpdateOrganisationContact> envelope)
         => UpdateHandler<Organisation>.For(envelope.Command,envelope.User, Session)
+            .WithBeheerderForOrganisationPolicy()
             .Handle(
                 session =>
                 {

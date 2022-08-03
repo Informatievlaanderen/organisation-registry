@@ -16,7 +16,7 @@ using Security;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryAuthorize]
 [OrganisationRegistryRoute("organisations")]
-public class OrganisationDetailCommandController : OrganisationRegistryController
+public class OrganisationDetailCommandController : OrganisationRegistryCommandController
 {
     public OrganisationDetailCommandController(ICommandSender commandSender) : base(commandSender)
     {

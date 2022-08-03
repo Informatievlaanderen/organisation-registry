@@ -1,6 +1,7 @@
 ﻿namespace OrganisationRegistry.Body;
 
 using System.Threading.Tasks;
+using Handling;
 using Infrastructure.Commands;
 using Infrastructure.Domain;
 using Microsoft.Extensions.Logging;
@@ -15,16 +16,18 @@ public class AssignOrganisationToBodySeatCommandHandler
     }
 
     public async Task Handle(ICommandEnvelope<AssignOrganisationToBodySeat> envelope)
-    {
-        var body = Session.Get<Body>(envelope.Command.BodyId);
-        var organisation = Session.Get<Organisation>(envelope.Command.OrganisationId);
+        => await UpdateHandler<Body>.For(envelope.Command, envelope.User, Session)
+            .WithEditBodyPolicy()
+            .Handle(
+                session =>
+                {
+                    var body = session.Get<Body>(envelope.Command.BodyId);
+                    var organisation = session.Get<Organisation>(envelope.Command.OrganisationId);
 
-        body.AssignOrganisationToBodySeat(
-            organisation,
-            envelope.Command.BodyMandateId,
-            envelope.Command.BodySeatId,
-            envelope.Command.Validity);
-
-        await Session.Commit(envelope.User);
-    }
+                    body.AssignOrganisationToBodySeat(
+                        organisation,
+                        envelope.Command.BodyMandateId,
+                        envelope.Command.BodySeatId,
+                        envelope.Command.Validity);
+                });
 }

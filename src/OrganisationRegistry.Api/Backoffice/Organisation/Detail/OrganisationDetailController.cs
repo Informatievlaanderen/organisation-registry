@@ -6,7 +6,6 @@ using Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using OrganisationRegistry.Infrastructure.Commands;
 using SqlServer.Infrastructure;
 
 [ApiVersion("1.0")]
@@ -14,10 +13,6 @@ using SqlServer.Infrastructure;
 [OrganisationRegistryRoute("organisations")]
 public class OrganisationDetailController : OrganisationRegistryController
 {
-    public OrganisationDetailController(ICommandSender commandSender) : base(commandSender)
-    {
-    }
-
     /// <summary>Get an organisation.</summary>
     /// <response code="200">If the organisation is found.</response>
     /// <response code="404">If the organisation cannot be found.</response>

@@ -13,7 +13,6 @@ using OrganisationRegistry.Api.Infrastructure.Search.Filtering;
 using OrganisationRegistry.Api.Infrastructure.Search.Pagination;
 using OrganisationRegistry.Api.Infrastructure.Search.Sorting;
 using ElasticSearch.Client;
-using OrganisationRegistry.Infrastructure.Commands;
 using OrganisationRegistry.Infrastructure.Configuration;
 using OrganisationRegistry.SqlServer.Infrastructure;
 
@@ -28,8 +27,7 @@ public class OrganisationClassificationReportController : OrganisationRegistryCo
     private readonly ApiConfigurationSection _config;
 
     public OrganisationClassificationReportController(
-        ICommandSender commandSender,
-        IOptions<ApiConfigurationSection> config) : base(commandSender)
+        IOptions<ApiConfigurationSection> config)
     {
         _config = config.Value;
     }

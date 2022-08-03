@@ -13,7 +13,7 @@ using Requests;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryAuthorize]
 [OrganisationRegistryRoute("bodyclassificationtypes")]
-public class BodyClassificationTypeCommandController : OrganisationRegistryController
+public class BodyClassificationTypeCommandController : OrganisationRegistryCommandController
 {
     public BodyClassificationTypeCommandController(ICommandSender commandSender)
         : base(commandSender)

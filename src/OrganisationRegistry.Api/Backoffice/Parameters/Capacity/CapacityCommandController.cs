@@ -13,7 +13,7 @@ using Requests;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryAuthorize]
 [OrganisationRegistryRoute("capacities")]
-public class CapacityCommandController : OrganisationRegistryController
+public class CapacityCommandController : OrganisationRegistryCommandController
 {
     public CapacityCommandController(ICommandSender commandSender)
         : base(commandSender)

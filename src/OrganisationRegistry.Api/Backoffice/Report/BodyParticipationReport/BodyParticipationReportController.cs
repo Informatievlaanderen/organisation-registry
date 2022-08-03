@@ -9,7 +9,6 @@ using Infrastructure;
 using OrganisationRegistry.Api.Infrastructure.Search.Filtering;
 using OrganisationRegistry.Api.Infrastructure.Search.Pagination;
 using OrganisationRegistry.Api.Infrastructure.Search.Sorting;
-using OrganisationRegistry.Infrastructure.Commands;
 using OrganisationRegistry.SqlServer.Infrastructure;
 using Participation;
 
@@ -18,11 +17,6 @@ using Participation;
 [OrganisationRegistryRoute("reports")]
 public class BodyParticipationReportController : OrganisationRegistryController
 {
-    public BodyParticipationReportController(
-        ICommandSender commandSender) : base(commandSender)
-    {
-    }
-
     /// <summary>
     /// Get gender ratio for a body (grouped by body and bodyseat)
     /// </summary>

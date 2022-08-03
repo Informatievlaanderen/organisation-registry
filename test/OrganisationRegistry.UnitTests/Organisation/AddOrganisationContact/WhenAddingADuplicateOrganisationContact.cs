@@ -64,7 +64,7 @@ public class WhenAddingADuplicateOrganisationContact
                 OrganisationCreated,
                 ContactTypeCreated,
                 OrganisationContactAdded)
-            .When(AddOrganisationContactCommand, TestUser.User)
+            .When(AddOrganisationContactCommand, TestUser.AlgemeenBeheerder)
             .ThenItPublishesTheCorrectNumberOfEvents(0);
     }
 
@@ -75,7 +75,7 @@ public class WhenAddingADuplicateOrganisationContact
                 OrganisationCreated,
                 ContactTypeCreated,
                 OrganisationContactAdded)
-            .When(AddOrganisationContactCommand, TestUser.User)
+            .When(AddOrganisationContactCommand, TestUser.AlgemeenBeheerder)
             .ThenThrows<CannotAddDuplicateContact>();
     }
 

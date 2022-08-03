@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.FeatureManagement.Mvc;
 using Newtonsoft.Json;
-using OrganisationRegistry.Infrastructure.Commands;
 
 [FeatureGate(FeatureFlags.PowerBIApi)]
 [ApiVersion("1.0")]
@@ -24,8 +23,7 @@ public class PBISearchController : OrganisationRegistryController
 {
     private readonly ILogger<PBISearchController> _logger;
 
-    public PBISearchController(ICommandSender commandSender, ILogger<PBISearchController> logger)
-        : base(commandSender)
+    public PBISearchController(ILogger<PBISearchController> logger)
     {
         _logger = logger;
     }

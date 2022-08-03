@@ -9,10 +9,6 @@ using Infrastructure;
 using OrganisationRegistry.Api.Infrastructure.Search.Filtering;
 using OrganisationRegistry.Api.Infrastructure.Search.Pagination;
 using OrganisationRegistry.Api.Infrastructure.Search.Sorting;
-using OrganisationRegistry.Api.Infrastructure.Security;
-using OrganisationRegistry.Body;
-using OrganisationRegistry.Infrastructure.Authorization;
-using OrganisationRegistry.Infrastructure.Commands;
 using OrganisationRegistry.SqlServer.Infrastructure;
 
 [ApiVersion("1.0")]
@@ -20,11 +16,6 @@ using OrganisationRegistry.SqlServer.Infrastructure;
 [OrganisationRegistryRoute("bodies/{bodyId}/mandates")]
 public class BodyMandateController : OrganisationRegistryController
 {
-    public BodyMandateController(ICommandSender commandSender)
-        : base(commandSender)
-    {
-    }
-
     /// <summary>Get a list of available mandates for a body.</summary>
     [HttpGet]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid bodyId)
@@ -55,77 +46,5 @@ public class BodyMandateController : OrganisationRegistryController
             return NotFound();
 
         return Ok(new BodyMandateResponse(bodyMandate));
-    }
-
-    /// <summary>Create a mandate for a body.</summary>
-    /// <response code="201">If the mandate is created, together with the location.</response>
-    /// <response code="400">If the mandate information does not pass validation.</response>
-    [HttpPost]
-    [OrganisationRegistryAuthorize]
-    [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Post([FromServices] ISecurityService securityService, [FromRoute] Guid bodyId, [FromBody] AddBodyMandateRequest message)
-    {
-        var internalMessage = new AddBodyMandateInternalRequest(bodyId, message);
-
-        if (!await securityService.CanEditBody(User, internalMessage.BodyId))
-            ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor dit orgaan.");
-
-        if (!TryValidateModel(internalMessage))
-            return BadRequest(ModelState);
-
-        if (!internalMessage.Body.BodyMandateType.HasValue)
-            return BadRequest("Body Mandate Type is required."); // NOTE: this should never happen.
-
-        switch (internalMessage.Body.BodyMandateType.Value)
-        {
-            case BodyMandateType.Person:
-                await CommandSender.Send(AddBodyMandateRequestMapping.MapForPerson(internalMessage));
-                break;
-            case BodyMandateType.FunctionType:
-                await CommandSender.Send(AddBodyMandateRequestMapping.MapForFunctionType(internalMessage));
-                break;
-            case BodyMandateType.Organisation:
-                await CommandSender.Send(AddBodyMandateRequestMapping.MapForOrganisation(internalMessage));
-                break;
-        }
-
-        return CreatedWithLocation(nameof(Get), new { id = message.BodyMandateId });
-    }
-
-    /// <summary>Update a mandate for a body.</summary>
-    /// <response code="201">If the mandate is updated, together with the location.</response>
-    /// <response code="400">If the mandate information does not pass validation.</response>
-    [HttpPut("{id}")]
-    [OrganisationRegistryAuthorize]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Put([FromServices] ISecurityService securityService, [FromRoute] Guid bodyId, [FromBody] UpdateBodyMandateRequest message)
-    {
-        var internalMessage = new UpdateBodyMandateInternalRequest(bodyId, message);
-
-        if (!await securityService.CanEditBody(User, internalMessage.BodyId))
-            ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor dit orgaan.");
-
-        if (!TryValidateModel(internalMessage))
-            return BadRequest(ModelState);
-
-        if (!internalMessage.Body.BodyMandateType.HasValue)
-            return BadRequest("Body Mandate Type is required."); // NOTE: this should never happen.
-
-        switch (internalMessage.Body.BodyMandateType.Value)
-        {
-            case BodyMandateType.Person:
-                await CommandSender.Send(UpdateBodyMandateRequestMapping.MapForPerson(internalMessage));
-                break;
-            case BodyMandateType.FunctionType:
-                await CommandSender.Send(UpdateBodyMandateRequestMapping.MapForFunctionType(internalMessage));
-                break;
-            case BodyMandateType.Organisation:
-                await CommandSender.Send(UpdateBodyMandateRequestMapping.MapForOrganisation(internalMessage));
-                break;
-        }
-
-        return OkWithLocationHeader(nameof(Get), new { id = internalMessage.BodyId });
     }
 }

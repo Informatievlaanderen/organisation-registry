@@ -19,7 +19,7 @@ using SqlServer.Infrastructure;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("tasks")]
-public class TaskController : OrganisationRegistryController
+public class TaskController : OrganisationRegistryCommandController
 {
     private readonly ILogger<TaskController> _logger;
 
@@ -32,7 +32,7 @@ public class TaskController : OrganisationRegistryController
     /// <response code="200">If the task was performed.</response>
     /// <response code="400">If the task information does not pass validation.</response>
     [HttpPost]
-    [OrganisationRegistryAuthorize(Role.AutomatedTask,Role.Developer)]
+    [OrganisationRegistryAuthorize(Role.AutomatedTask, Role.Developer)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Post(

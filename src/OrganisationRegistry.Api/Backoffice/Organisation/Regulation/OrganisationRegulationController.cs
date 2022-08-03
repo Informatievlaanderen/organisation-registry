@@ -7,12 +7,10 @@ using Infrastructure;
 using Infrastructure.Search.Filtering;
 using Infrastructure.Search.Pagination;
 using Infrastructure.Search.Sorting;
-using Infrastructure.Security;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OrganisationRegistry.Infrastructure.Authorization;
-using OrganisationRegistry.Infrastructure.Commands;
 using SqlServer.Infrastructure;
 
 [ApiVersion("1.0")]
@@ -20,11 +18,6 @@ using SqlServer.Infrastructure;
 [OrganisationRegistryRoute("organisations/{organisationId}/regulations")]
 public class OrganisationRegulationController : OrganisationRegistryController
 {
-    public OrganisationRegulationController(ICommandSender commandSender)
-        : base(commandSender)
-    {
-    }
-
     /// <summary>Get a list of available regulations for an organisation.</summary>
     [HttpGet]
     public async Task<IActionResult> Get(
@@ -69,47 +62,5 @@ public class OrganisationRegulationController : OrganisationRegistryController
             return NotFound();
 
         return Ok(organisation);
-    }
-
-    /// <summary>Create a regulation for an organisation.</summary>
-    /// <response code="201">If the regulation is created, together with the location.</response>
-    /// <response code="400">If the regulation information does not pass validation.</response>
-    [HttpPost]
-    [OrganisationRegistryAuthorize]
-    [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Post(
-        [FromRoute] Guid organisationId,
-        [FromBody] AddOrganisationRegulationRequest message)
-    {
-        var internalMessage = new AddOrganisationRegulationInternalRequest(organisationId, message);
-
-        if (!TryValidateModel(internalMessage))
-            return BadRequest(ModelState);
-
-        await CommandSender.Send(AddOrganisationRegulationRequestMapping.Map(internalMessage));
-
-        return CreatedWithLocation(nameof(Get), new { id = message.OrganisationRegulationId });
-    }
-
-    /// <summary>Update a regulation for an organisation.</summary>
-    /// <response code="201">If the regulation is updated, together with the location.</response>
-    /// <response code="400">If the regulation information does not pass validation.</response>
-    [HttpPut("{id}")]
-    [OrganisationRegistryAuthorize]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Put(
-        [FromRoute] Guid organisationId,
-        [FromBody] UpdateOrganisationRegulationRequest message)
-    {
-        var internalMessage = new UpdateOrganisationRegulationInternalRequest(organisationId, message);
-
-        if (!TryValidateModel(internalMessage))
-            return BadRequest(ModelState);
-
-        await CommandSender.Send(UpdateOrganisationRegulationRequestMapping.Map(internalMessage));
-
-        return Ok();
     }
 }

@@ -13,7 +13,7 @@ using Requests;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("organisationclassificationtypes")]
 [OrganisationRegistryAuthorize]
-public class OrganisationClassificationTypeCommandController : OrganisationRegistryController
+public class OrganisationClassificationTypeCommandController : OrganisationRegistryCommandController
 {
     public OrganisationClassificationTypeCommandController(ICommandSender commandSender)
         : base(commandSender)

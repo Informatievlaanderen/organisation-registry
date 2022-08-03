@@ -10,7 +10,6 @@ using Infrastructure;
 using OrganisationRegistry.Api.Infrastructure.Search.Pagination;
 using OrganisationRegistry.Api.Infrastructure.Search.Sorting;
 using ElasticSearch.Client;
-using OrganisationRegistry.Infrastructure.Commands;
 using OrganisationRegistry.Infrastructure.Configuration;
 
 [ApiVersion("1.0")]
@@ -25,9 +24,8 @@ public class BuildingOrganisationReportController : OrganisationRegistryControll
     private readonly IDateTimeProvider _dateTimeProvider;
 
     public BuildingOrganisationReportController(
-        ICommandSender commandSender,
         IOptions<ApiConfigurationSection> config,
-        IDateTimeProvider dateTimeProvider) : base(commandSender)
+        IDateTimeProvider dateTimeProvider)
     {
         _dateTimeProvider = dateTimeProvider;
         _config = config.Value;
