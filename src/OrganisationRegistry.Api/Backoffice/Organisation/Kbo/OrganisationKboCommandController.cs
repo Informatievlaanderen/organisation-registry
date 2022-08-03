@@ -14,7 +14,7 @@ using OrganisationRegistry.Organisation.Commands;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryAuthorize]
 [OrganisationRegistryRoute("organisations")]
-public class OrganisationKboCommandController : OrganisationRegistryController
+public class OrganisationKboCommandController : OrganisationRegistryCommandController
 {
     public OrganisationKboCommandController(ICommandSender commandSender)
         : base(commandSender) { }

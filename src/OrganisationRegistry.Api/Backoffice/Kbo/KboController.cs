@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using OrganisationRegistry.Infrastructure.Authorization;
-using OrganisationRegistry.Infrastructure.Commands;
 using OrganisationRegistry.Organisation;
 using SqlServer.Infrastructure;
 
@@ -24,8 +23,7 @@ public class KboController : OrganisationRegistryController
     private readonly ILogger<KboController> _logger;
 
     public KboController(
-        ILogger<KboController> logger,
-        ICommandSender commandSender) : base(commandSender)
+        ILogger<KboController> logger)
     {
         _logger = logger;
     }

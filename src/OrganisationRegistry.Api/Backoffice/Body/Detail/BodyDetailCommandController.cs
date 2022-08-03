@@ -14,7 +14,8 @@ using OrganisationRegistry.SqlServer.Infrastructure;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("bodies")]
-public class BodyDetailCommandController : OrganisationRegistryController
+[OrganisationRegistryAuthorize]
+public class BodyDetailCommandController : OrganisationRegistryCommandController
 {
     public BodyDetailCommandController(ICommandSender commandSender)
         : base(commandSender)
@@ -25,7 +26,6 @@ public class BodyDetailCommandController : OrganisationRegistryController
     /// <response code="201">If the body is registered, together with the location.</response>
     /// <response code="400">If the body information does not pass validation.</response>
     [HttpPost]
-    [OrganisationRegistryAuthorize]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Post([FromServices] ISecurityService securityService, [FromServices] OrganisationRegistryContext context, [FromBody] RegisterBodyRequest message)

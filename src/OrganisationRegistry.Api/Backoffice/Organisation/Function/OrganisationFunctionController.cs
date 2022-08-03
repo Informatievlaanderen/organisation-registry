@@ -6,13 +6,9 @@ using Infrastructure;
 using Infrastructure.Search.Filtering;
 using Infrastructure.Search.Pagination;
 using Infrastructure.Search.Sorting;
-using Infrastructure.Security;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using OrganisationRegistry.Infrastructure.Authorization;
-using OrganisationRegistry.Infrastructure.Commands;
-using OrganisationRegistry.Organisation;
 using SqlServer.Infrastructure;
 
 [ApiVersion("1.0")]
@@ -20,11 +16,6 @@ using SqlServer.Infrastructure;
 [OrganisationRegistryRoute("organisations/{organisationId}/functions")]
 public class OrganisationFunctionController : OrganisationRegistryController
 {
-    public OrganisationFunctionController(ICommandSender commandSender)
-        : base(commandSender)
-    {
-    }
-
     /// <summary>Get a list of available functions for an organisation.</summary>
     [HttpGet]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid organisationId)
@@ -55,61 +46,5 @@ public class OrganisationFunctionController : OrganisationRegistryController
             return NotFound();
 
         return Ok(new OrganisationFunctionResponse(organisation));
-    }
-
-    /// <summary>Create a function for an organisation.</summary>
-    /// <response code="201">If the function is created, together with the location.</response>
-    /// <response code="400">If the function information does not pass validation.</response>
-    [HttpPost]
-    [OrganisationRegistryAuthorize]
-    [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Post([FromServices] ISecurityService securityService, [FromRoute] Guid organisationId, [FromBody] AddOrganisationFunctionRequest message)
-    {
-        var internalMessage = new AddOrganisationFunctionInternalRequest(organisationId, message);
-
-        if (!await securityService.CanEditOrganisation(User, internalMessage.OrganisationId))
-            ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor deze organisatie.");
-
-        if (!TryValidateModel(internalMessage))
-            return BadRequest(ModelState);
-
-        await CommandSender.Send(AddOrganisationFunctionRequestMapping.Map(internalMessage));
-
-        return CreatedWithLocation(nameof(Get), new { id = message.OrganisationFunctionId });
-    }
-
-    /// <summary>Update a function for an organisation.</summary>
-    /// <response code="201">If the function is updated, together with the location.</response>
-    /// <response code="400">If the function information does not pass validation.</response>
-    [HttpPut("{id}")]
-    [OrganisationRegistryAuthorize]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Put([FromServices] ISecurityService securityService, [FromRoute] Guid organisationId, [FromBody] UpdateOrganisationFunctionRequest message)
-    {
-        var internalMessage = new UpdateOrganisationFunctionInternalRequest(organisationId, message);
-
-        if (!await securityService.CanEditOrganisation(User, internalMessage.OrganisationId))
-            ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor deze organisatie.");
-
-        if (!TryValidateModel(internalMessage))
-            return BadRequest(ModelState);
-
-        await CommandSender.Send(UpdateOrganisationFunctionRequestMapping.Map(internalMessage));
-
-        return Ok();
-    }
-
-    /// <summary>Remove a function from an organisation</summary>
-    /// <response code="204">If the function is removed.</response>
-    /// <response code="400">If the function is not found for the organisation.</response>
-    [HttpDelete("{id:guid}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Delete([FromRoute] Guid organisationId, [FromRoute] Guid id)
-    {
-        await CommandSender.Send(new RemoveOrganisationFunction(new OrganisationId(organisationId), id));
-        return NoContent();
     }
 }

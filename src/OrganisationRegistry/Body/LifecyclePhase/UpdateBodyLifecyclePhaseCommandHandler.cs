@@ -1,6 +1,7 @@
 ﻿namespace OrganisationRegistry.Body;
 
 using System.Threading.Tasks;
+using Handling;
 using Infrastructure.Commands;
 using Infrastructure.Domain;
 using LifecyclePhaseType;
@@ -16,15 +17,17 @@ public class UpdateBodyLifecyclePhaseCommandHandler
     }
 
     public async Task Handle(ICommandEnvelope<UpdateBodyLifecyclePhase> envelope)
-    {
-        var lifecyclePhaseType = Session.Get<LifecyclePhaseType>(envelope.Command.LifecyclePhaseTypeId);
-        var body = Session.Get<Body>(envelope.Command.BodyId);
+        => await UpdateHandler<Body>.For(envelope.Command, envelope.User, Session)
+            .WithEditBodyPolicy()
+            .Handle(
+                session =>
+                {
+                    var lifecyclePhaseType = session.Get<LifecyclePhaseType>(envelope.Command.LifecyclePhaseTypeId);
+                    var body = session.Get<Body>(envelope.Command.BodyId);
 
-        body.UpdateLifecyclePhase(
-            envelope.Command.BodyLifecyclePhaseId,
-            lifecyclePhaseType,
-            envelope.Command.Validity);
-
-        await Session.Commit(envelope.User);
-    }
+                    body.UpdateLifecyclePhase(
+                        envelope.Command.BodyLifecyclePhaseId,
+                        lifecyclePhaseType,
+                        envelope.Command.Validity);
+                });
 }

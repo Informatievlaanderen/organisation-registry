@@ -9,9 +9,6 @@ using Infrastructure;
 using OrganisationRegistry.Api.Infrastructure.Search.Filtering;
 using OrganisationRegistry.Api.Infrastructure.Search.Pagination;
 using OrganisationRegistry.Api.Infrastructure.Search.Sorting;
-using OrganisationRegistry.Api.Infrastructure.Security;
-using OrganisationRegistry.Infrastructure.Authorization;
-using OrganisationRegistry.Infrastructure.Commands;
 using OrganisationRegistry.SqlServer.Infrastructure;
 
 [ApiVersion("1.0")]
@@ -19,11 +16,6 @@ using OrganisationRegistry.SqlServer.Infrastructure;
 [OrganisationRegistryRoute("bodies/{bodyId}/seats")]
 public class BodySeatController : OrganisationRegistryController
 {
-    public BodySeatController(ICommandSender commandSender)
-        : base(commandSender)
-    {
-    }
-
     /// <summary>Get a list of available seats for a body.</summary>
     [HttpGet]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid bodyId)
@@ -48,55 +40,11 @@ public class BodySeatController : OrganisationRegistryController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid bodyId, [FromRoute] Guid id)
     {
-        var bodySeat = await context.BodySeatList.FirstOrDefaultAsync(x => x.BodySeatId == id);
+        var bodySeat = await context.BodySeatList.FirstOrDefaultAsync(x => x.BodyId == bodyId && x.BodySeatId == id);
 
         if (bodySeat == null)
             return NotFound();
 
         return Ok(bodySeat);
-    }
-
-    /// <summary>Create a seat for a body.</summary>
-    /// <response code="201">If the seat is created, together with the location.</response>
-    /// <response code="400">If the seat information does not pass validation.</response>
-    [HttpPost]
-    [OrganisationRegistryAuthorize]
-    [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Post([FromServices] ISecurityService securityService, [FromRoute] Guid bodyId, [FromBody] AddBodySeatRequest message)
-    {
-        var internalMessage = new AddBodySeatInternalRequest(bodyId, message);
-
-        if (!await securityService.CanEditBody(User, internalMessage.BodyId))
-            ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor dit orgaan.");
-
-        if (!TryValidateModel(internalMessage))
-            return BadRequest(ModelState);
-
-        await CommandSender.Send(AddBodySeatRequestMapping.Map(internalMessage));
-
-        return CreatedWithLocation(nameof(Get), new { id = message.BodySeatId });
-    }
-
-    /// <summary>Update a seat for a body.</summary>
-    /// <response code="201">If the seat is updated, together with the location.</response>
-    /// <response code="400">If the seat information does not pass validation.</response>
-    [HttpPut("{id}")]
-    [OrganisationRegistryAuthorize]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Put([FromServices] ISecurityService securityService, [FromRoute] Guid bodyId, [FromBody] UpdateBodySeatRequest message)
-    {
-        var internalMessage = new UpdateBodySeatInternalRequest(bodyId, message);
-
-        if (!await securityService.CanEditBody(User, internalMessage.BodyId))
-            ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor dit orgaan.");
-
-        if (!TryValidateModel(internalMessage))
-            return BadRequest(ModelState);
-
-        await CommandSender.Send(UpdateBodySeatRequestMapping.Map(internalMessage));
-
-        return OkWithLocationHeader(nameof(Get), new { id = internalMessage.BodyId });
     }
 }

@@ -12,7 +12,7 @@ using OrganisationRegistry.Infrastructure.Commands;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("bodies/{bodyId}/organisations")]
 [OrganisationRegistryAuthorize]
-public class BodyOrganisationCommandController : OrganisationRegistryController
+public class BodyOrganisationCommandController : OrganisationRegistryCommandController
 {
     public BodyOrganisationCommandController(ICommandSender commandSender)
         : base(commandSender)

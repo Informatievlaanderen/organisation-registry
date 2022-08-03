@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using OrganisationRegistry.Infrastructure.Commands;
 using OrganisationRegistry.Infrastructure.Configuration;
 using Queries;
 using SqlServer.Infrastructure;
@@ -23,10 +22,7 @@ public class FormalFrameworkController : OrganisationRegistryController
 {
     private readonly IOptions<ApiConfigurationSection> _config;
 
-    public FormalFrameworkController(
-        ICommandSender commandSender,
-        IOptions<ApiConfigurationSection> config)
-        : base(commandSender)
+    public FormalFrameworkController(IOptions<ApiConfigurationSection> config)
     {
         _config = config;
     }
@@ -59,7 +55,8 @@ public class FormalFrameworkController : OrganisationRegistryController
             filtering.Filter = new FormalFrameworkListItemFilter();
 
         if (!_config.Value.VademecumReport_FormalFrameworkIds.IsNullOrWhiteSpace())
-            foreach (var id in _config.Value.VademecumReport_FormalFrameworkIds.Split(new[] { ',' },
+            foreach (var id in _config.Value.VademecumReport_FormalFrameworkIds.Split(
+                         new[] { ',' },
                          StringSplitOptions.RemoveEmptyEntries))
                 if (Guid.TryParse(id, out Guid guid))
                     filtering.Filter.Ids.Add(guid);

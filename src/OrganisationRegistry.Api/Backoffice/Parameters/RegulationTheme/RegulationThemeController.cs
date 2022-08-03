@@ -9,7 +9,6 @@ using Infrastructure.Search.Sorting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using OrganisationRegistry.Infrastructure.Commands;
 using Queries;
 using SqlServer.Infrastructure;
 using SqlServer.RegulationTheme;
@@ -19,11 +18,6 @@ using SqlServer.RegulationTheme;
 [OrganisationRegistryRoute("regulationthemes")]
 public class RegulationThemeController : OrganisationRegistryController
 {
-    public RegulationThemeController(ICommandSender commandSender)
-        : base(commandSender)
-    {
-    }
-
     /// <summary>Get a list of available regulation themes.</summary>
     [HttpGet]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)

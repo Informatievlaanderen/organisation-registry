@@ -13,7 +13,7 @@ using Requests;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("purposes")]
 [OrganisationRegistryAuthorize]
-public class PurposeCommandController : OrganisationRegistryController
+public class PurposeCommandController : OrganisationRegistryCommandController
 {
     public PurposeCommandController(ICommandSender commandSender)
         : base(commandSender)

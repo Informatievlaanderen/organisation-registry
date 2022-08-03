@@ -7,18 +7,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using Infrastructure;
 using Microsoft.AspNetCore.Mvc;
-using OrganisationRegistry.Infrastructure.Commands;
 
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("mgmt")]
 public class ManagementController : OrganisationRegistryController
 {
-    public ManagementController(ICommandSender commandSender)
-        : base(commandSender)
-    {
-    }
-
     [HttpGet("days")]
     public async Task<IActionResult> GetDayNames()
     {

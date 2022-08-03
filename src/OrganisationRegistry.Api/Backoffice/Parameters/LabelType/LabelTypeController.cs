@@ -13,7 +13,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OrganisationRegistry.Infrastructure.AppSpecific;
 using OrganisationRegistry.Infrastructure.Authorization;
-using OrganisationRegistry.Infrastructure.Commands;
 using OrganisationRegistry.Infrastructure.Configuration;
 using Queries;
 using SqlServer.Infrastructure;
@@ -24,11 +23,6 @@ using SqlServer.LabelType;
 [OrganisationRegistryRoute("labeltypes")]
 public class LabelTypeController : OrganisationRegistryController
 {
-    public LabelTypeController(ICommandSender commandSender)
-        : base(commandSender)
-    {
-    }
-
     /// <summary>Get a list of available label types.</summary>
     [HttpGet]
     [OrganisationRegistryAuthorize]

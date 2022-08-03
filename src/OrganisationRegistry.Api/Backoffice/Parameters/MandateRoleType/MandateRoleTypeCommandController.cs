@@ -13,7 +13,7 @@ using Requests;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("mandateroletypes")]
 [OrganisationRegistryAuthorize]
-public class MandateRoleTypeCommandController : OrganisationRegistryController
+public class MandateRoleTypeCommandController : OrganisationRegistryCommandController
 {
     public MandateRoleTypeCommandController(ICommandSender commandSender)
         : base(commandSender)

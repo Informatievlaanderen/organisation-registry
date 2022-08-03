@@ -67,7 +67,7 @@ public class WhenUpdatingAnOrganisationContact
     public async Task PublishesOneEvent()
     {
         await Given(OrganisationCreated, ContactType1Created, ContactType2Created, OrganisationContact1Added)
-            .When(UpdateOrganisationContactCommand, TestUser.User)
+            .When(UpdateOrganisationContactCommand, TestUser.AlgemeenBeheerder)
             .ThenItPublishesTheCorrectNumberOfEvents(1);
     }
 
@@ -75,7 +75,7 @@ public class WhenUpdatingAnOrganisationContact
     public async Task UpdatesAnOrganisationContact()
     {
         await Given(OrganisationCreated, ContactType1Created, ContactType2Created, OrganisationContact1Added)
-            .When(UpdateOrganisationContactCommand, TestUser.User)
+            .When(UpdateOrganisationContactCommand, TestUser.AlgemeenBeheerder)
             .Then();
         var updatedEvent = PublishedEvents
             .First()

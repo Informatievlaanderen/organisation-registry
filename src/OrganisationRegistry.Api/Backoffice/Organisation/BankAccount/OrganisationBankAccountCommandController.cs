@@ -13,7 +13,7 @@ using OrganisationRegistry.Organisation;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("organisations/{organisationId}/bankAccounts")]
 [OrganisationRegistryAuthorize]
-public class OrganisationBankAccountCommandController : OrganisationRegistryController
+public class OrganisationBankAccountCommandController : OrganisationRegistryCommandController
 {
     public OrganisationBankAccountCommandController(ICommandSender commandSender)
         : base(commandSender)

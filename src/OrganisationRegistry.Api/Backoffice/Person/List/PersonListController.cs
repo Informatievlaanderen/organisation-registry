@@ -7,7 +7,6 @@ using Infrastructure;
 using OrganisationRegistry.Api.Infrastructure.Search.Filtering;
 using OrganisationRegistry.Api.Infrastructure.Search.Pagination;
 using OrganisationRegistry.Api.Infrastructure.Search.Sorting;
-using OrganisationRegistry.Infrastructure.Commands;
 using OrganisationRegistry.SqlServer.Infrastructure;
 
 [ApiVersion("1.0")]
@@ -15,11 +14,6 @@ using OrganisationRegistry.SqlServer.Infrastructure;
 [OrganisationRegistryRoute("people")]
 public class PersonListController : OrganisationRegistryController
 {
-    public PersonListController(ICommandSender commandSender)
-        : base(commandSender)
-    {
-    }
-
     /// <summary>Get a list of available people.</summary>
     [HttpGet]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)

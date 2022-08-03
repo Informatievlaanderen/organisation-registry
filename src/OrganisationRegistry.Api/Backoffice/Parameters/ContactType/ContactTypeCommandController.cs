@@ -13,7 +13,7 @@ using Requests;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryAuthorize]
 [OrganisationRegistryRoute("contacttypes")]
-public class ContactTypeCommandController : OrganisationRegistryController
+public class ContactTypeCommandController : OrganisationRegistryCommandController
 {
     public ContactTypeCommandController(ICommandSender commandSender)
         : base(commandSender)

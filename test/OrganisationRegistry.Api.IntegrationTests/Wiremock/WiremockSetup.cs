@@ -18,7 +18,7 @@ public static class WiremockSetup
     {
         var httpClient = new HttpClient
         {
-            BaseAddress = new Uri(wiremockUri)
+            BaseAddress = new Uri(wiremockUri),
         };
 
         var assembly = typeof(WiremockSetup).Assembly;
@@ -65,7 +65,7 @@ public static class WiremockSetup
 
     private class Mappings
     {
-        public MappingsMeta Meta { get; set; }
+        public MappingsMeta Meta { get; set; } = null!;
 
         internal class MappingsMeta
         {

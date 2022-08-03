@@ -1,6 +1,7 @@
 ﻿namespace OrganisationRegistry.Body;
 
 using System.Threading.Tasks;
+using Handling;
 using Infrastructure.Commands;
 using Infrastructure.Domain;
 using Microsoft.Extensions.Logging;
@@ -21,20 +22,22 @@ public class AddBodySeatCommandHandler
     }
 
     public async Task Handle(ICommandEnvelope<AddBodySeat> envelope)
-    {
-        var body = Session.Get<Body>(envelope.Command.BodyId);
-        var seatType = Session.Get<SeatType>(envelope.Command.SeatTypeId);
-        var bodySeatNumber = _bodySeatNumberGenerator.GenerateNumber();
+        => await UpdateHandler<Body>.For(envelope.Command, envelope.User, Session)
+            .WithEditBodyPolicy()
+            .Handle(
+                session =>
+                {
+                    var body = session.Get<Body>(envelope.Command.BodyId);
+                    var seatType = session.Get<SeatType>(envelope.Command.SeatTypeId);
+                    var bodySeatNumber = _bodySeatNumberGenerator.GenerateNumber();
 
-        body.AddSeat(
-            envelope.Command.BodySeatId,
-            envelope.Command.Name,
-            bodySeatNumber,
-            seatType,
-            envelope.Command.PaidSeat,
-            envelope.Command.EntitledToVote,
-            envelope.Command.Validity);
-
-        await Session.Commit(envelope.User);
-    }
+                    body.AddSeat(
+                        envelope.Command.BodySeatId,
+                        envelope.Command.Name,
+                        bodySeatNumber,
+                        seatType,
+                        envelope.Command.PaidSeat,
+                        envelope.Command.EntitledToVote,
+                        envelope.Command.Validity);
+                });
 }

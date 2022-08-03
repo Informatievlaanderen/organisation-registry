@@ -13,7 +13,7 @@ using Requests;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("seattypes")]
 [OrganisationRegistryAuthorize]
-public class SeatTypeCommandController : OrganisationRegistryController
+public class SeatTypeCommandController : OrganisationRegistryCommandController
 {
     public SeatTypeCommandController(ICommandSender commandSender)
         : base(commandSender)

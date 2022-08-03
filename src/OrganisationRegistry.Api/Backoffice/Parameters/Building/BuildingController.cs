@@ -9,7 +9,6 @@ using Infrastructure.Search.Sorting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using OrganisationRegistry.Infrastructure.Commands;
 using Queries;
 using SqlServer.Infrastructure;
 
@@ -18,11 +17,6 @@ using SqlServer.Infrastructure;
 [OrganisationRegistryRoute("buildings")]
 public class BuildingController : OrganisationRegistryController
 {
-    public BuildingController(ICommandSender commandSender)
-        : base(commandSender)
-    {
-    }
-
     /// <summary>Get a list of available buildings.</summary>
     [HttpGet]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)

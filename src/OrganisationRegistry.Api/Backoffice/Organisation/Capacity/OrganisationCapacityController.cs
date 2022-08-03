@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OrganisationRegistry.Infrastructure.AppSpecific;
 using OrganisationRegistry.Infrastructure.Authorization;
-using OrganisationRegistry.Infrastructure.Commands;
 using OrganisationRegistry.Infrastructure.Configuration;
 using SqlServer.Infrastructure;
 
@@ -21,11 +20,6 @@ using SqlServer.Infrastructure;
 [OrganisationRegistryRoute("organisations/{organisationId}/capacities")]
 public class OrganisationCapacityController : OrganisationRegistryController
 {
-    public OrganisationCapacityController(ICommandSender commandSender)
-        : base(commandSender)
-    {
-    }
-
     /// <summary>Get a list of available capacities for an organisation.</summary>
     [HttpGet]
     public async Task<IActionResult> Get(

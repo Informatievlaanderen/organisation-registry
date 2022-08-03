@@ -14,7 +14,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OrganisationRegistry.Infrastructure.AppSpecific;
 using OrganisationRegistry.Infrastructure.Authorization;
-using OrganisationRegistry.Infrastructure.Commands;
 using OrganisationRegistry.Infrastructure.Configuration;
 using SqlServer.Infrastructure;
 
@@ -23,11 +22,6 @@ using SqlServer.Infrastructure;
 [OrganisationRegistryRoute("organisations/{organisationId}/keys")]
 public class OrganisationKeyController : OrganisationRegistryController
 {
-    public OrganisationKeyController(ICommandSender commandSender)
-        : base(commandSender)
-    {
-    }
-
     /// <summary>Get a list of available keys for an organisation.</summary>
     [HttpGet]
     [OrganisationRegistryAuthorize]
@@ -73,43 +67,5 @@ public class OrganisationKeyController : OrganisationRegistryController
             return NotFound();
 
         return Ok(organisation);
-    }
-
-    /// <summary>Create a key for an organisation.</summary>
-    /// <response code="201">If the key is created, together with the location.</response>
-    /// <response code="400">If the key information does not pass validation.</response>
-    [HttpPost]
-    [OrganisationRegistryAuthorize]
-    [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Post([FromRoute] Guid organisationId, [FromBody] AddOrganisationKeyRequest message)
-    {
-        var internalMessage = new AddOrganisationKeyInternalRequest(organisationId, message);
-
-        if (!TryValidateModel(internalMessage))
-            return BadRequest(ModelState);
-
-        await CommandSender.Send(AddOrganisationKeyRequestMapping.Map(internalMessage));
-
-        return CreatedWithLocation(nameof(Get), new { id = message.OrganisationKeyId });
-    }
-
-    /// <summary>Update a key for an organisation.</summary>
-    /// <response code="201">If the key is updated, together with the location.</response>
-    /// <response code="400">If the key information does not pass validation.</response>
-    [HttpPut("{id}")]
-    [OrganisationRegistryAuthorize]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Put([FromRoute] Guid organisationId, [FromBody] UpdateOrganisationKeyRequest message)
-    {
-        var internalMessage = new UpdateOrganisationKeyInternalRequest(organisationId, message);
-
-        if (!TryValidateModel(internalMessage))
-            return BadRequest(ModelState);
-
-        await CommandSender.Send(UpdateOrganisationKeyRequestMapping.Map(internalMessage));
-
-        return Ok();
     }
 }

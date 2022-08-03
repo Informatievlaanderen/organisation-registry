@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OrganisationRegistry.Infrastructure.Authorization;
-using OrganisationRegistry.Infrastructure.Commands;
 using SqlServer.Infrastructure;
 
 [ApiVersion("1.0")]
@@ -17,10 +16,6 @@ using SqlServer.Infrastructure;
 [OrganisationRegistryRoute("organisations")]
 public class OrganisationListController : OrganisationRegistryController
 {
-    public OrganisationListController(ICommandSender commandSender) : base(commandSender)
-    {
-    }
-
     /// <summary>Get a list of available organisations.</summary>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]

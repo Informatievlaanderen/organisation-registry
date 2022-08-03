@@ -9,7 +9,6 @@ using Infrastructure.Search.Sorting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using OrganisationRegistry.Infrastructure.Commands;
 using Queries;
 using SqlServer.Infrastructure;
 using SqlServer.SeatType;
@@ -19,11 +18,6 @@ using SqlServer.SeatType;
 [OrganisationRegistryRoute("seattypes")]
 public class SeatTypeController : OrganisationRegistryController
 {
-    public SeatTypeController(ICommandSender commandSender)
-        : base(commandSender)
-    {
-    }
-
     /// <summary>Get a list of available seat types.</summary>
     [HttpGet]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)

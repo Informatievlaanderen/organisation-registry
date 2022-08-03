@@ -12,7 +12,7 @@ using OrganisationRegistry.Infrastructure.Commands;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("bodies")]
 [OrganisationRegistryAuthorize]
-public class BodyBalancedParticipationCommandController : OrganisationRegistryController
+public class BodyBalancedParticipationCommandController : OrganisationRegistryCommandController
 {
     public BodyBalancedParticipationCommandController(ICommandSender commandSender)
         : base(commandSender)

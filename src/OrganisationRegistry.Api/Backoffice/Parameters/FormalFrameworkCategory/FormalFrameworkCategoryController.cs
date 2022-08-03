@@ -9,7 +9,6 @@ using Infrastructure.Search.Sorting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using OrganisationRegistry.Infrastructure.Commands;
 using Queries;
 using SqlServer.FormalFrameworkCategory;
 using SqlServer.Infrastructure;
@@ -19,11 +18,6 @@ using SqlServer.Infrastructure;
 [OrganisationRegistryRoute("formalframeworkcategories")]
 public class FormalFrameworkCategoryController : OrganisationRegistryController
 {
-    public FormalFrameworkCategoryController(ICommandSender commandSender)
-        : base(commandSender)
-    {
-    }
-
     /// <summary>Get a list of available formal framework categories.</summary>
     [HttpGet]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)

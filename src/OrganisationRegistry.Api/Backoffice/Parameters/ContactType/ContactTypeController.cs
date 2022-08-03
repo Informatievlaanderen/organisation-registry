@@ -9,7 +9,6 @@ using Infrastructure.Search.Sorting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using OrganisationRegistry.Infrastructure.Commands;
 using Queries;
 using SqlServer.ContactType;
 using SqlServer.Infrastructure;
@@ -19,11 +18,6 @@ using SqlServer.Infrastructure;
 [OrganisationRegistryRoute("contacttypes")]
 public class ContactTypeController : OrganisationRegistryController
 {
-    public ContactTypeController(ICommandSender commandSender)
-        : base(commandSender)
-    {
-    }
-
     /// <summary>Get a list of available contact types.</summary>
     [HttpGet]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)

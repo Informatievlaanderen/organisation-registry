@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using OrganisationRegistry.Infrastructure.Commands;
 using OrganisationRegistry.Infrastructure.Infrastructure.Json;
 
 [ApiVersion("1.0")]
@@ -25,9 +24,7 @@ public class DumpController : OrganisationRegistryController
     private const int ScrollSize = 500;
 
     public DumpController(
-        ICommandSender commandSender,
         IActionContextAccessor actionContextAccessor)
-        : base(commandSender)
     {
         _actionContextAccessor = actionContextAccessor;
     }

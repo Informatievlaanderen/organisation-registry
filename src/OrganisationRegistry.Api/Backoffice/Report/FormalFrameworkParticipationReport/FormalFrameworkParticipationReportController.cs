@@ -9,7 +9,6 @@ using Microsoft.Extensions.Options;
 using Infrastructure;
 using OrganisationRegistry.Api.Infrastructure.Search.Pagination;
 using OrganisationRegistry.Api.Infrastructure.Search.Sorting;
-using OrganisationRegistry.Infrastructure.Commands;
 using OrganisationRegistry.Infrastructure.Configuration;
 using OrganisationRegistry.SqlServer.Infrastructure;
 
@@ -18,11 +17,6 @@ using OrganisationRegistry.SqlServer.Infrastructure;
 [OrganisationRegistryRoute("reports")]
 public class FormalFrameworkParticipationReportController : OrganisationRegistryController
 {
-    public FormalFrameworkParticipationReportController(
-        ICommandSender commandSender) : base(commandSender)
-    {
-    }
-
     /// <summary>
     /// Get gender ratio for a formalframework (grouped by body, organisation and bodyseat)
     /// </summary>

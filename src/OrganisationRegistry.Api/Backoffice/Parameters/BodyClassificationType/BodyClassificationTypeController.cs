@@ -9,7 +9,6 @@ using Infrastructure.Search.Sorting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using OrganisationRegistry.Infrastructure.Commands;
 using Queries;
 using SqlServer.BodyClassificationType;
 using SqlServer.Infrastructure;
@@ -19,11 +18,6 @@ using SqlServer.Infrastructure;
 [OrganisationRegistryRoute("bodyclassificationtypes")]
 public class BodyClassificationTypeController : OrganisationRegistryController
 {
-    public BodyClassificationTypeController(ICommandSender commandSender)
-        : base(commandSender)
-    {
-    }
-
     /// <summary>Get a list of available body classification types.</summary>
     [HttpGet]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)

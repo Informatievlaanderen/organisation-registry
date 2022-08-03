@@ -12,7 +12,7 @@ using OrganisationRegistry.Organisation;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("organisations")]
-public class VlimpersController : OrganisationRegistryController
+public class VlimpersController : OrganisationRegistryCommandController
 {
     public VlimpersController(ICommandSender commandSender)
         : base(commandSender)

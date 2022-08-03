@@ -2,6 +2,7 @@
 
 using System.Threading.Tasks;
 using FormalFramework;
+using Handling;
 using Infrastructure.Commands;
 using Infrastructure.Domain;
 using Microsoft.Extensions.Logging;
@@ -15,15 +16,17 @@ public class UpdateBodyFormalFrameworkCommandHandler
     }
 
     public async Task Handle(ICommandEnvelope<UpdateBodyFormalFramework> envelope)
-    {
-        var formalFramework = Session.Get<FormalFramework>(envelope.Command.FormalFrameworkId);
-        var body = Session.Get<Body>(envelope.Command.BodyId);
+        => await UpdateHandler<Body>.For(envelope.Command, envelope.User, Session)
+            .WithEditBodyPolicy()
+            .Handle(
+                session =>
+                {
+                    var formalFramework = session.Get<FormalFramework>(envelope.Command.FormalFrameworkId);
+                    var body = session.Get<Body>(envelope.Command.BodyId);
 
-        body.UpdateFormalFramework(
-            envelope.Command.BodyFormalFrameworkId,
-            formalFramework,
-            envelope.Command.Validity);
-
-        await Session.Commit(envelope.User);
-    }
+                    body.UpdateFormalFramework(
+                        envelope.Command.BodyFormalFrameworkId,
+                        formalFramework,
+                        envelope.Command.Validity);
+                });
 }

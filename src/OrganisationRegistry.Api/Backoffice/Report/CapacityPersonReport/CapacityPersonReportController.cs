@@ -10,7 +10,6 @@ using Infrastructure;
 using OrganisationRegistry.Api.Infrastructure.Search.Pagination;
 using OrganisationRegistry.Api.Infrastructure.Search.Sorting;
 using ElasticSearch.Client;
-using OrganisationRegistry.Infrastructure.Commands;
 using OrganisationRegistry.Infrastructure.Configuration;
 
 [ApiVersion("1.0")]
@@ -24,8 +23,7 @@ public class CapacityPersonReportController: OrganisationRegistryController
     private readonly ApiConfigurationSection _config;
 
     public CapacityPersonReportController(
-        ICommandSender commandSender,
-        IOptions<ApiConfigurationSection> config) : base(commandSender)
+        IOptions<ApiConfigurationSection> config)
     {
         _config = config.Value;
     }

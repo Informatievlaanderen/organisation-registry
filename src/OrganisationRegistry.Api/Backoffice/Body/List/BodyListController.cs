@@ -8,7 +8,6 @@ using Infrastructure;
 using OrganisationRegistry.Api.Infrastructure.Search.Filtering;
 using OrganisationRegistry.Api.Infrastructure.Search.Pagination;
 using OrganisationRegistry.Api.Infrastructure.Search.Sorting;
-using OrganisationRegistry.Infrastructure.Commands;
 using OrganisationRegistry.SqlServer.Infrastructure;
 
 [ApiVersion("1.0")]
@@ -16,11 +15,6 @@ using OrganisationRegistry.SqlServer.Infrastructure;
 [OrganisationRegistryRoute("bodies")]
 public class BodyListController : OrganisationRegistryController
 {
-    public BodyListController(ICommandSender commandSender)
-        : base(commandSender)
-    {
-    }
-
     /// <summary>Get a list of available bodies.</summary>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]

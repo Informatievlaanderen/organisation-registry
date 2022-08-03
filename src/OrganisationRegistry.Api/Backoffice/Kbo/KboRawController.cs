@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using OrganisationRegistry.Infrastructure.Authorization;
-using OrganisationRegistry.Infrastructure.Commands;
 using OrganisationRegistry.Organisation;
 
 [ApiVersion("1.0")]
@@ -21,8 +20,7 @@ public class KboRawController : OrganisationRegistryController
 
     public KboRawController(
         IRegistreerInschrijvingCommand registerInscriptionCommand,
-        IGeefOndernemingQuery geefOndernemingQuery,
-        ICommandSender commandSender) : base(commandSender)
+        IGeefOndernemingQuery geefOndernemingQuery)
     {
         _registerInscriptionCommand = registerInscriptionCommand;
         _geefOndernemingQuery = geefOndernemingQuery;
@@ -31,7 +29,7 @@ public class KboRawController : OrganisationRegistryController
     /// <summary>Return raw result from magda kbo lookup.</summary>
     /// <response code="200">The raw request/response from magda kbo lookup.</response>
     [HttpGet("{kboNumberInput}")]
-    [OrganisationRegistryAuthorize(Role.AlgemeenBeheerder,Role.Developer)]
+    [OrganisationRegistryAuthorize(Role.AlgemeenBeheerder, Role.Developer)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get(
         [FromServices] ISecurityService securityService,
@@ -44,10 +42,12 @@ public class KboRawController : OrganisationRegistryController
         var registerInscription = await _registerInscriptionCommand.Execute(user, digitsOnly);
         var giveOrganisation = await _geefOndernemingQuery.Execute(user, digitsOnly);
 
-        return Ok(JsonConvert.SerializeObject(new
-        {
-            registerInscription,
-            giveOrganisation,
-        }));
+        return Ok(
+            JsonConvert.SerializeObject(
+                new
+                {
+                    registerInscription,
+                    giveOrganisation,
+                }));
     }
 }

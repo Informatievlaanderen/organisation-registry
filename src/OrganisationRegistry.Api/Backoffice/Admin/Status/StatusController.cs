@@ -19,7 +19,6 @@ using Newtonsoft.Json.Serialization;
 using OrganisationRegistry.Configuration.Database.Configuration;
 using OrganisationRegistry.Infrastructure;
 using OrganisationRegistry.Infrastructure.Authorization;
-using OrganisationRegistry.Infrastructure.Commands;
 using OrganisationRegistry.Infrastructure.Configuration;
 using SqlServer.Configuration;
 
@@ -28,10 +27,6 @@ using SqlServer.Configuration;
 [OrganisationRegistryRoute("status")]
 public class StatusController : OrganisationRegistryController
 {
-    public StatusController(ICommandSender commandSender) : base(commandSender)
-    {
-    }
-
     [HttpGet]
     public async Task<IActionResult> Get()
         => await OkAsync("I'm ok!");

@@ -9,7 +9,6 @@ using Infrastructure;
 using OrganisationRegistry.Api.Infrastructure.Search.Filtering;
 using OrganisationRegistry.Api.Infrastructure.Search.Pagination;
 using OrganisationRegistry.Api.Infrastructure.Search.Sorting;
-using OrganisationRegistry.Infrastructure.Commands;
 using OrganisationRegistry.SqlServer.Infrastructure;
 
 [ApiVersion("1.0")]
@@ -17,11 +16,6 @@ using OrganisationRegistry.SqlServer.Infrastructure;
 [OrganisationRegistryRoute("bodies/{bodyId}/organisations")]
 public class BodyOrganisationController : OrganisationRegistryController
 {
-    public BodyOrganisationController(ICommandSender commandSender)
-        : base(commandSender)
-    {
-    }
-
     /// <summary>Get a list of available organisations for a body.</summary>
     [HttpGet]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid bodyId)

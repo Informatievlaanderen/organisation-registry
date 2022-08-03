@@ -8,7 +8,6 @@ using Infrastructure.Search.Pagination;
 using Infrastructure.Search.Sorting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using OrganisationRegistry.Infrastructure.Commands;
 using SqlServer.Infrastructure;
 using SqlServer.Organisation;
 
@@ -17,11 +16,6 @@ using SqlServer.Organisation;
 [OrganisationRegistryRoute("organisations/{organisationId}/children")]
 public class OrganisationChildrenController : OrganisationRegistryController
 {
-    public OrganisationChildrenController(ICommandSender commandSender)
-        : base(commandSender)
-    {
-    }
-
     /// <summary>Get a list of available children for an organisation.</summary>
     [HttpGet]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid organisationId)

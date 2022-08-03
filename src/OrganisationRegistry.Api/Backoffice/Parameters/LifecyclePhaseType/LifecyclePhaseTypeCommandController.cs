@@ -13,7 +13,7 @@ using Requests;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("lifecyclephasetypes")]
 [OrganisationRegistryAuthorize]
-public class LifecyclePhaseTypeCommandController : OrganisationRegistryController
+public class LifecyclePhaseTypeCommandController : OrganisationRegistryCommandController
 {
     public LifecyclePhaseTypeCommandController(ICommandSender commandSender)
         : base(commandSender)

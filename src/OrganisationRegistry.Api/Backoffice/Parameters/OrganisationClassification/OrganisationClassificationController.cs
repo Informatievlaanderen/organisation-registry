@@ -9,7 +9,6 @@ using Infrastructure.Search.Sorting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using OrganisationRegistry.Infrastructure.Commands;
 using Queries;
 using SqlServer.Infrastructure;
 
@@ -18,12 +17,6 @@ using SqlServer.Infrastructure;
 [OrganisationRegistryRoute("organisationclassifications")]
 public class OrganisationClassificationController : OrganisationRegistryController
 {
-    public OrganisationClassificationController(
-        ICommandSender commandSender)
-        : base(commandSender)
-    {
-    }
-
     /// <summary>Get a list of available organisation classifications.</summary>
     [HttpGet]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)

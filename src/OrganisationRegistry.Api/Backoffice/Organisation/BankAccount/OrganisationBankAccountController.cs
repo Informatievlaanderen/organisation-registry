@@ -10,7 +10,6 @@ using Infrastructure.Security;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using OrganisationRegistry.Infrastructure.Commands;
 using SqlServer.Infrastructure;
 
 [ApiVersion("1.0")]
@@ -19,11 +18,6 @@ using SqlServer.Infrastructure;
 [OrganisationRegistryAuthorize]
 public class OrganisationBankAccountController : OrganisationRegistryController
 {
-    public OrganisationBankAccountController(ICommandSender commandSender)
-        : base(commandSender)
-    {
-    }
-
     /// <summary>Get a list of available bankAccounts for an organisation.</summary>
     [HttpGet]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid organisationId)

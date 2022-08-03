@@ -9,7 +9,6 @@ using Infrastructure.Search.Sorting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using OrganisationRegistry.Infrastructure.Commands;
 using Queries;
 using SqlServer.Infrastructure;
 using SqlServer.MandateRoleType;
@@ -19,11 +18,6 @@ using SqlServer.MandateRoleType;
 [OrganisationRegistryRoute("mandateroletypes")]
 public class MandateRoleTypeController : OrganisationRegistryController
 {
-    public MandateRoleTypeController(ICommandSender commandSender)
-        : base(commandSender)
-    {
-    }
-
     /// <summary>Get a list of available mandate role types.</summary>
     [HttpGet]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)

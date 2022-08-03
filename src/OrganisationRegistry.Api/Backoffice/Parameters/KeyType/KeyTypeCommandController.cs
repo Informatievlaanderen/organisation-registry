@@ -13,7 +13,7 @@ using Requests;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("keytypes")]
 [OrganisationRegistryAuthorize]
-public class KeyTypeCommandController : OrganisationRegistryController
+public class KeyTypeCommandController : OrganisationRegistryCommandController
 {
     public KeyTypeCommandController(ICommandSender commandSender)
         : base(commandSender)

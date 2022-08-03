@@ -12,7 +12,7 @@ using OrganisationRegistry.Infrastructure.Commands;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("people")]
 [OrganisationRegistryAuthorize]
-public class PersonDetailCommandController : OrganisationRegistryController
+public class PersonDetailCommandController : OrganisationRegistryCommandController
 {
     public PersonDetailCommandController(ICommandSender commandSender)
         : base(commandSender)

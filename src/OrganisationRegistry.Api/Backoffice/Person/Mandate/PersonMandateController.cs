@@ -8,7 +8,6 @@ using Infrastructure;
 using OrganisationRegistry.Api.Infrastructure.Search.Filtering;
 using OrganisationRegistry.Api.Infrastructure.Search.Pagination;
 using OrganisationRegistry.Api.Infrastructure.Search.Sorting;
-using OrganisationRegistry.Infrastructure.Commands;
 using OrganisationRegistry.SqlServer.Infrastructure;
 using OrganisationRegistry.SqlServer.Person;
 
@@ -17,11 +16,6 @@ using OrganisationRegistry.SqlServer.Person;
 [OrganisationRegistryRoute("people/{personId}/mandates")]
 public class PersonMandateController : OrganisationRegistryController
 {
-    public PersonMandateController(ICommandSender commandSender)
-        : base(commandSender)
-    {
-    }
-
     /// <summary>Get a list of available mandates for a person.</summary>
     [HttpGet]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid personId)

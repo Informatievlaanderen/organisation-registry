@@ -16,6 +16,7 @@ public class AddOrganisationOpeningHourCommandHandler
 
     public Task Handle(ICommandEnvelope<AddOrganisationOpeningHour> envelope)
         => UpdateHandler<Organisation>.For(envelope.Command, envelope.User, Session)
+            .WithBeheerderForOrganisationPolicy()
             .Handle(
                 session =>
                 {

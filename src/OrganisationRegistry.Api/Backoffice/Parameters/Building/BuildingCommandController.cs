@@ -13,7 +13,7 @@ using Requests;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryAuthorize]
 [OrganisationRegistryRoute("buildings")]
-public class BuildingCommandController : OrganisationRegistryController
+public class BuildingCommandController : OrganisationRegistryCommandController
 {
     public BuildingCommandController(ICommandSender commandSender)
         : base(commandSender)

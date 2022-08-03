@@ -2,6 +2,7 @@
 
 using System.Threading.Tasks;
 using ContactType;
+using Handling;
 using Infrastructure.Commands;
 using Infrastructure.Domain;
 using Microsoft.Extensions.Logging;
@@ -15,16 +16,18 @@ public class UpdateBodyContactCommandHandler
     }
 
     public async Task Handle(ICommandEnvelope<UpdateBodyContact> envelope)
-    {
-        var contactType = Session.Get<ContactType>(envelope.Command.ContactTypeId);
-        var body = Session.Get<Body>(envelope.Command.BodyId);
+        => await UpdateHandler<Body>.For(envelope.Command, envelope.User, Session)
+            .WithEditBodyPolicy()
+            .Handle(
+                session =>
+                {
+                    var contactType = session.Get<ContactType>(envelope.Command.ContactTypeId);
+                    var body = session.Get<Body>(envelope.Command.BodyId);
 
-        body.UpdateContact(
-            envelope.Command.BodyContactId,
-            contactType,
-            envelope.Command.Value,
-            new Period(new ValidFrom(envelope.Command.ValidFrom), new ValidTo(envelope.Command.ValidTo)));
-
-        await Session.Commit(envelope.User);
-    }
+                    body.UpdateContact(
+                        envelope.Command.BodyContactId,
+                        contactType,
+                        envelope.Command.Value,
+                        new Period(new ValidFrom(envelope.Command.ValidFrom), new ValidTo(envelope.Command.ValidTo)));
+                });
 }

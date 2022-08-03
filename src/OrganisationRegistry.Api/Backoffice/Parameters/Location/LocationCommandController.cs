@@ -13,7 +13,7 @@ using Requests;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("locations")]
 [OrganisationRegistryAuthorize]
-public class LocationCommandController : OrganisationRegistryController
+public class LocationCommandController : OrganisationRegistryCommandController
 {
     public LocationCommandController(ICommandSender commandSender)
         : base(commandSender)
