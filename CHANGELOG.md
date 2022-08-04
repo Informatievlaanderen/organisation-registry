@@ -1,3 +1,16 @@
+# [1.256.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.255.0...v1.256.0) (2022-08-04)
+
+
+### Bug Fixes
+
+* or-1111 repair unittests ([baf85c0](https://github.com/informatievlaanderen/organisation-registry/commit/baf85c098b9a987a88f146b0be853ecfdf491c58))
+
+
+### Features
+
+* or-1111 cjm beheerder can do algemeen beheer ([0742bb8](https://github.com/informatievlaanderen/organisation-registry/commit/0742bb80e08b46d8ee6b7d8c3d77849f3cff843b))
+* or-1111 enabling cjm beheerder: policies ([57589a3](https://github.com/informatievlaanderen/organisation-registry/commit/57589a3912e02d629708145a16a63748fa5d3312))
+
 # [1.255.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.254.0...v1.255.0) (2022-08-02)
 
 
