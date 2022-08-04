@@ -93,14 +93,14 @@ public class WhenValidityBecomesInvalidAndIsMainBuildingChangesToFalseBugfix :
     [Fact]
     public async Task Publishes2Events()
     {
-        await Given(Events).When(UpdateOrganisationBuildingCommand, TestUser.User)
+        await Given(Events).When(UpdateOrganisationBuildingCommand, TestUser.AlgemeenBeheerder)
             .ThenItPublishesTheCorrectNumberOfEvents(2);
     }
 
     [Fact]
     public async Task UpdatesTheOrganisationBuilding()
     {
-        await Given(Events).When(UpdateOrganisationBuildingCommand, TestUser.User).Then();
+        await Given(Events).When(UpdateOrganisationBuildingCommand, TestUser.AlgemeenBeheerder).Then();
         var @event = PublishedEvents[0];
         @event.Should().BeOfType<Envelope<OrganisationBuildingUpdated>>();
 
@@ -115,7 +115,7 @@ public class WhenValidityBecomesInvalidAndIsMainBuildingChangesToFalseBugfix :
     [Fact]
     public async Task ClearsTheMainBuilding()
     {
-        await Given(Events).When(UpdateOrganisationBuildingCommand, TestUser.User).Then();
+        await Given(Events).When(UpdateOrganisationBuildingCommand, TestUser.AlgemeenBeheerder).Then();
 
         var @event = PublishedEvents[1];
 #pragma warning disable CS0618

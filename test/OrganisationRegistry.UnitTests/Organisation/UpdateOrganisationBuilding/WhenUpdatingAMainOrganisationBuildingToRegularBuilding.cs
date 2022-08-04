@@ -89,14 +89,14 @@ public class
     [Fact]
     public async Task Publishes2Events()
     {
-        await Given(Events).When(UpdateOrganisationBuildingCommand, TestUser.User)
+        await Given(Events).When(UpdateOrganisationBuildingCommand, TestUser.AlgemeenBeheerder)
             .ThenItPublishesTheCorrectNumberOfEvents(2);
     }
 
     [Fact]
     public async Task UpdatesTheOrganisationBuilding()
     {
-        await Given(Events).When(UpdateOrganisationBuildingCommand, TestUser.User).Then();
+        await Given(Events).When(UpdateOrganisationBuildingCommand, TestUser.AlgemeenBeheerder).Then();
         PublishedEvents[0].Should().BeOfType<Envelope<OrganisationBuildingUpdated>>();
 
         var organisationBuildingAdded = PublishedEvents.First().UnwrapBody<OrganisationBuildingUpdated>();
@@ -110,7 +110,7 @@ public class
     [Fact]
     public async Task ClearsTheMainBuilding()
     {
-        await Given(Events).When(UpdateOrganisationBuildingCommand, TestUser.User).Then();
+        await Given(Events).When(UpdateOrganisationBuildingCommand, TestUser.AlgemeenBeheerder).Then();
         var mainBuildingAssignedToOrganisation =
 #pragma warning disable CS0618
             PublishedEvents[1].UnwrapBody<MainBuildingClearedFromOrganisation>();

@@ -87,7 +87,7 @@ public class WhenAddingAMainOrganisationBuildingWhenThereAlreadyIsOne : Specific
     public async Task PublishesNoEvents()
     {
         await Given(Events)
-            .When(AddOrganisationBuildingCommand, TestUser.User)
+            .When(AddOrganisationBuildingCommand, TestUser.AlgemeenBeheerder)
             .ThenItPublishesTheCorrectNumberOfEvents(0);
     }
 
@@ -95,7 +95,7 @@ public class WhenAddingAMainOrganisationBuildingWhenThereAlreadyIsOne : Specific
     public async Task ThrowsAnException()
     {
         await Given(Events)
-            .When(AddOrganisationBuildingCommand, TestUser.User)
+            .When(AddOrganisationBuildingCommand, TestUser.AlgemeenBeheerder)
             .ThenThrows<OrganisationAlreadyHasAMainBuildingInThisPeriod>()
             .WithMessage("Deze organisatie heeft reeds een hoofdgebouw binnen deze periode.");
     }
