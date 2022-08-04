@@ -85,12 +85,12 @@ public class
     [Fact]
     public async Task PublishesOneEvent()
     {
-        await Given(Events).When(UpdateOrganisationBuildingCommand, TestUser.User).ThenItPublishesTheCorrectNumberOfEvents(1);
+        await Given(Events).When(UpdateOrganisationBuildingCommand, TestUser.AlgemeenBeheerder).ThenItPublishesTheCorrectNumberOfEvents(1);
     }
     [Fact]
     public async Task UpdatesTheOrganisationBuilding()
     {
-        await Given(Events).When(UpdateOrganisationBuildingCommand, TestUser.User).Then();
+        await Given(Events).When(UpdateOrganisationBuildingCommand, TestUser.AlgemeenBeheerder).Then();
         PublishedEvents.First().Should().BeOfType<Envelope<OrganisationBuildingUpdated>>();
         var organisationBuildingAdded = PublishedEvents.First().UnwrapBody<OrganisationBuildingUpdated>();
         organisationBuildingAdded.OrganisationId.Should().Be(_organisationId);

@@ -85,7 +85,7 @@ public class WhenAddingTheSameBuildingTwice
     public async Task PublishesNoEvents()
     {
         await Given(Events)
-            .When(AddOrganisationBuildingCommand, TestUser.User)
+            .When(AddOrganisationBuildingCommand, TestUser.AlgemeenBeheerder)
             .ThenItPublishesTheCorrectNumberOfEvents(0);
     }
 
@@ -94,7 +94,7 @@ public class WhenAddingTheSameBuildingTwice
     public async Task ThrowsAnException()
     {
         await Given(Events)
-            .When(AddOrganisationBuildingCommand, TestUser.User)
+            .When(AddOrganisationBuildingCommand, TestUser.AlgemeenBeheerder)
             .ThenThrows<BuildingAlreadyCoupledToInThisPeriod>()
             .WithMessage("Dit gebouw is in deze periode reeds gekoppeld aan de organisatie.");
     }

@@ -94,13 +94,13 @@ public class WhenMakingAnOrganisationBuildingAMainBuildingWhenThereAlreadyIsOne 
     [Fact]
     public async Task PublishesNoEvent()
     {
-        await Given(Events).When(UpdateOrganisationBuildingCommand, TestUser.User).ThenItPublishesTheCorrectNumberOfEvents(0);
+        await Given(Events).When(UpdateOrganisationBuildingCommand, TestUser.AlgemeenBeheerder).ThenItPublishesTheCorrectNumberOfEvents(0);
     }
 
     [Fact]
     public async Task ThrowsAnException()
     {
-        await Given(Events).When(UpdateOrganisationBuildingCommand, TestUser.User)
+        await Given(Events).When(UpdateOrganisationBuildingCommand, TestUser.AlgemeenBeheerder)
             .ThenThrows<OrganisationAlreadyHasAMainBuildingInThisPeriod>()
             .WithMessage("Deze organisatie heeft reeds een hoofdgebouw binnen deze periode.");
 

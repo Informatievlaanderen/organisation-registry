@@ -24,7 +24,7 @@ public class OrganisationClassificationTypePolicy : ISecurityPolicy
 
     public AuthorizationResult Check(IUser user)
     {
-        if (user.IsInAnyOf(Role.AlgemeenBeheerder, Role.CjmBeheerder))
+        if (user.IsInAnyOf(Role.AlgemeenBeheerder))
             return AuthorizationResult.Success();
 
         var organisationClassificationTypeIdsOwnedByRegelgevingDbBeheerder = _configuration.Authorization.OrganisationClassificationTypeIdsOwnedByRegelgevingDbBeheerder;
