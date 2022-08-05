@@ -9,7 +9,7 @@ on:
 jobs:
   build:
     if: github.repository_owner == 'Informatievlaanderen'
-    name: Build
+    name: Run Tests
     runs-on: ubuntu-latest
 
     services:
@@ -121,7 +121,7 @@ jobs:
 
   build-angular:
     if: github.repository_owner == 'Informatievlaanderen'
-    name: BuildAngular
+    name: Build Angular site
     runs-on: ubuntu-latest
 
     steps:
@@ -189,7 +189,7 @@ jobs:
 
   build-vue:
     if: github.repository_owner == 'Informatievlaanderen'
-    name: BuildVue
+    name: Build Vue Site
     runs-on: ubuntu-latest
 
     steps:
