@@ -34,7 +34,7 @@ export class OrganisationInfoService {
 
   private onSecurityChanged = combineLatest(
     this.organisationChanged$,
-    this.oidcService.securityInfo
+    this.oidcService.getOrUpdateValue()
   );
 
   public readonly canViewKboManagementChanged$: Observable<boolean> =

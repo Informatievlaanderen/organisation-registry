@@ -2,17 +2,45 @@ import { Injectable, OnDestroy } from "@angular/core";
 import { Http, Response } from "@angular/http";
 import { Observable } from "rxjs/Observable";
 import { BehaviorSubject } from "rxjs/BehaviorSubject";
-import { Subject } from "rxjs/Subject";
 
-import { ConfigurationService } from "./../configuration";
-import { HeadersBuilder } from "./../http";
+import { ConfigurationService } from "../configuration";
+import { HeadersBuilder } from "../http";
 
 import { User } from "./user.model";
 
 import { Role } from "./role.model";
 import { OidcClient } from "oidc-client";
 import { Subscription } from "rxjs/Subscription";
-import { catchError, map } from "rxjs/operators";
+import {
+  catchError,
+  combineLatest,
+  concatMap,
+  distinctUntilChanged,
+  map,
+  mergeMap,
+  tap,
+  withLatestFrom,
+} from "rxjs/operators";
+
+export function hasAnyOfRoles(
+  securityInfo: SecurityInfo,
+  ...desiredRoles: Array<Role>
+): boolean {
+  for (let userRole of securityInfo.roles) {
+    if (desiredRoles.findIndex((x) => x === userRole) > -1) return true;
+  }
+  return securityInfo.roles.findIndex((x) => x === Role.Developer) > -1;
+}
+
+export function isOrganisatieBeheerderFor(
+  securityInfo: SecurityInfo,
+  organisationId: string
+): boolean {
+  return (
+    hasAnyOfRoles(securityInfo, Role.DecentraalBeheerder) &&
+    securityInfo.organisationIds.findIndex((x) => x === organisationId) > -1
+  );
+}
 
 export interface SecurityInfo {
   isLoggedIn: boolean;
@@ -23,45 +51,21 @@ export interface SecurityInfo {
   bodyIds: Array<string>;
   refreshtoken: number;
   expires: number;
-  hasAnyOfRoles: (...desiredRoles: Array<Role>) => boolean;
-  isOrganisatieBeheerderFor: (organisationId: string) => boolean;
-}
-
-function hasAnyOfRoles(roles: Role[], desiredRoles: Role[]): boolean {
-  for (let userRole of roles) {
-    if (desiredRoles.findIndex((x) => x === userRole) > -1) return true;
-  }
-
-  return roles.findIndex((x) => x === Role.Developer) > -1;
 }
 
 function createSecurityInfo(
-  isLoggedIn: boolean,
-  userName: string,
-  roles: Array<Role>,
-  ovoNumbers: Array<string>,
-  organisationIds: Array<string>,
-  bodyIds: Array<string>,
-  refreshtoken: number,
-  expires: number
+  user: User = null,
+  refreshToken: number = 1000
 ): SecurityInfo {
   return {
-    isLoggedIn,
-    userName,
-    roles,
-    ovoNumbers,
-    organisationIds,
-    bodyIds,
-    refreshtoken,
-    expires,
-    hasAnyOfRoles: (...desiredRoles: Role[]): boolean =>
-      hasAnyOfRoles(roles, desiredRoles),
-    isOrganisatieBeheerderFor: (organisationId: string): boolean => {
-      return (
-        hasAnyOfRoles(roles, [Role.DecentraalBeheerder]) &&
-        organisationIds.findIndex((x) => x === organisationId) > -1
-      );
-    },
+    isLoggedIn: !!user,
+    bodyIds: user ? user.bodyIds : new Array<string>(),
+    organisationIds: user ? user.organisationIds : new Array<string>(),
+    ovoNumbers: user ? user.ovoNumbers : new Array<string>(),
+    userName: user ? user.userName : "",
+    roles: user ? user.roles : new Array<Role>(),
+    expires: new Date().getTime() - 60 * 1000,
+    refreshtoken: refreshToken,
   };
 }
 
@@ -69,24 +73,11 @@ function createSecurityInfo(
 export class OidcService implements OnDestroy {
   private securityUrl = `${this.configurationService.apiUrl}/v1/security`;
   private securityInfoUrl = `${this.configurationService.apiUrl}/v1/security/info`;
-  private cacheTimeInMs: number = 60000;
 
-  private storage: SecurityInfo = createSecurityInfo(
-    false,
-    "",
-    new Array<Role>(),
-    new Array<string>(),
-    new Array<string>(),
-    new Array<string>(),
-    1000,
-    new Date().getTime() - 60 * 1000
+  private securityInfoSubject = new BehaviorSubject<SecurityInfo>(
+    createSecurityInfo()
   );
-
-  private data$ = new BehaviorSubject(this.storage);
-  private request$ = new Subject<SecurityInfo>();
-
-  private readonly securityInfoChanged$: Observable<SecurityInfo> =
-    this.data$.asObservable();
+  private securityInfo$ = this.securityInfoSubject.asObservable();
 
   private client: OidcClient;
 
@@ -96,9 +87,10 @@ export class OidcService implements OnDestroy {
     private http: Http,
     private configurationService: ConfigurationService
   ) {
+    this.updateFromServer().subscribe();
     this.subscriptions.push(
-      http.get(this.securityInfoUrl).subscribe((r) => {
-        var data = r.json();
+      this.http.get(this.securityInfoUrl).subscribe((r) => {
+        const data = r.json();
         const settings = {
           authority: data.authority,
           metadata: {
@@ -121,33 +113,13 @@ export class OidcService implements OnDestroy {
         this.client = new OidcClient(settings);
       })
     );
-
-    this.subscriptions.push(
-      this.request$
-        .exhaustMap(this.loadFromServer.bind(this))
-        .share()
-        .startWith(this.storage)
-        .subscribe(
-          (x) => {
-            this.data$.next(x as SecurityInfo);
-          },
-          (err) => {
-            this.data$.next(err as SecurityInfo);
-          },
-          () => {}
-        )
-    );
-
-    this.subscriptions.push(
-      this.data$.subscribe(this.saveToStorage.bind(this))
-    );
   }
 
   ngOnDestroy() {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
 
-  exchangeCode(code: string): Observable<string> {
+  exchangeCode(code: string): Observable<[string, SecurityInfo]> {
     const url = `${
       this.securityUrl
     }/exchange?code=${code}&verifier=${localStorage.getItem("verifier")}`;
@@ -155,12 +127,16 @@ export class OidcService implements OnDestroy {
     let headers = new HeadersBuilder().json().build();
 
     return this.http.get(url, { headers: headers }).pipe(
-      catchError(this.handleError),
+      catchError(OidcService.handleError),
       map((res: Response) => {
-        const token = res.json();
-        localStorage.setItem("token", token);
-        return token;
-      })
+        localStorage.setItem("token", res.json());
+        return localStorage.getItem("token");
+      }),
+      mergeMap((token) =>
+        this.updateFromServer().pipe(
+          map((securityInfo: SecurityInfo) => [token, securityInfo])
+        )
+      )
     );
   }
 
@@ -213,30 +189,12 @@ export class OidcService implements OnDestroy {
     return this.getOrUpdateValue().map((user) => user.bodyIds);
   }
 
-  public isVlimpersBeheerder(): Observable<boolean> {
-    let wegwijsBeheerderCheck = this.hasAnyOfRoles([Role.AlgemeenBeheerder]);
-    let vlimpersBeheerderCheck = this.hasAnyOfRoles([Role.VlimpersBeheerder]);
-
-    return Observable.zip(wegwijsBeheerderCheck, vlimpersBeheerderCheck)
-      .map((zipped) => {
-        let isOrganisationRegistryBeheerder = zipped[0];
-        let isVlimpersBeheerder = zipped[1];
-
-        if (isOrganisationRegistryBeheerder || isVlimpersBeheerder) return true;
-
-        return false;
-      })
-      .catch((err) => {
-        return Observable.of(false);
-      });
-  }
-
   public canEditBody(bodyId): Observable<boolean> {
-    let wegwijsBeheerderCheck = this.hasAnyOfRoles([Role.AlgemeenBeheerder]);
-    let orgaanBeheerderCheck = this.hasAnyOfRoles([Role.OrgaanBeheerder]);
-    let organisatieBeheerderCheck = this.hasAnyOfRoles([
-      Role.DecentraalBeheerder,
-    ]);
+    let wegwijsBeheerderCheck = this.hasAnyOfRoles(Role.AlgemeenBeheerder);
+    let orgaanBeheerderCheck = this.hasAnyOfRoles(Role.OrgaanBeheerder);
+    let organisatieBeheerderCheck = this.hasAnyOfRoles(
+      Role.DecentraalBeheerder
+    );
 
     return Observable.zip(
       wegwijsBeheerderCheck,
@@ -267,15 +225,7 @@ export class OidcService implements OnDestroy {
       });
   }
 
-  public requiresOneOfRoles(...requiredRoles: Role[]): Observable<boolean> {
-    return this.roles.pipe(
-      map((roles: Role[]) =>
-        roles.some((r) => !!requiredRoles.find((rr) => rr == r))
-      )
-    );
-  }
-
-  public hasAnyOfRoles(desiredRoles: Array<Role>): Observable<boolean> {
+  public hasAnyOfRoles(...desiredRoles: Array<Role>): Observable<boolean> {
     return this.roles
       .map((roles) => {
         for (let userRole of roles) {
@@ -284,89 +234,47 @@ export class OidcService implements OnDestroy {
 
         return roles.findIndex((x) => x === Role.Developer) > -1;
       })
-      .catch((err) => {
+      .catch((_) => {
         return Observable.of(false);
       });
   }
 
-  public resetSecurityCache() {
-    this.request$.next(null);
-  }
-
-  public get securityInfo(): Observable<SecurityInfo> {
-    return this.securityInfoChanged$;
-  }
-
   public getOrUpdateValue(): Observable<SecurityInfo> {
-    return this.data$
-      .take(1)
-      .filter((value, index) => {
-        return value && value.refreshtoken > 0;
-      })
-      .switchMap((data) => {
-        if (data.expires > new Date().getTime()) {
-          return this.data$.take(1);
-        } else {
-          // console.log('expired ...');
-          this.request$.next(null);
-          return this.data$.skip(1).take(1);
+    return this.securityInfo$.pipe(
+      tap((securityInfo: SecurityInfo) => {
+        if (securityInfo.expires > new Date().getTime()) {
+          this.updateFromServer().subscribe();
         }
-      });
+      }),
+      distinctUntilChanged()
+    );
   }
 
-  public loadFromServer(): Observable<SecurityInfo> {
-    // console.log('loading from server request');
-    return this.get()
-      .map((user) => {
-        return createSecurityInfo(
-          true,
-          user.userName,
-          user.roles,
-          user.ovoNumbers,
-          user.organisationIds,
-          user.bodyIds,
-          this.storage.refreshtoken + 1,
-          new Date().getTime() + this.cacheTimeInMs
-        );
+  public updateFromServer(): Observable<SecurityInfo> {
+    return this.getUser().pipe(
+      map((user: User) =>
+        createSecurityInfo(
+          user,
+          this.securityInfoSubject.getValue().refreshtoken + 1
+        )
+      ),
+      tap((securityInfo: SecurityInfo) => {
+        this.securityInfoSubject.next(securityInfo);
       })
-      .catch((err) => {
-        return Observable.throw(
-          createSecurityInfo(
-            false,
-            "",
-            new Array<Role>(),
-            new Array<string>(),
-            new Array<string>(),
-            new Array<string>(),
-            this.storage.refreshtoken + 1,
-            new Date().getTime() + this.cacheTimeInMs
-          )
-        );
-      });
+    );
   }
 
-  private loadFromStorage(): Observable<SecurityInfo> {
-    return Observable.of(this.storage);
-  }
-
-  private saveToStorage(data: SecurityInfo) {
-    // console.log('saving: ', data);
-    this.storage = data;
-    return data;
-  }
-
-  private get(): Observable<User> {
+  private getUser(): Observable<User> {
     const url = `${this.securityUrl}`;
 
     let headers = new HeadersBuilder().json().build();
 
     return this.http
       .get(url, { headers: headers })
-      .map(this.toUser)
-      .catch(this.handleError);
+      .pipe(map(OidcService.toUser), catchError(OidcService.handleError));
   }
 
-  private toUser(res: Response): User {
+  private static toUser(res: Response): User {
     let body = res.json();
     return new User(
       body.userName,
@@ -377,7 +285,7 @@ export class OidcService implements OnDestroy {
     );
   }
 
-  private handleError(error: any): Observable<any> {
+  private static handleError(error: any): Observable<any> {
     if (error.status === 401) return Observable.throw(error);
 
     // In a real world app, we might use a remote logging infrastructure
