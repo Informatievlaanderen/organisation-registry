@@ -61,11 +61,11 @@ public class OrganisationKeyController : OrganisationRegistryController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid organisationId, [FromRoute] Guid id)
     {
-        var organisation = await context.OrganisationKeyList.FirstOrDefaultAsync(x => x.OrganisationKeyId == id);
+        var organisationKey = await context.OrganisationKeyList.FirstOrDefaultAsync(x => x.OrganisationId == organisationId && x.OrganisationKeyId == id);
 
-        if (organisation == null)
+        if (organisationKey == null)
             return NotFound();
 
-        return Ok(organisation);
+        return Ok(organisationKey);
     }
 }

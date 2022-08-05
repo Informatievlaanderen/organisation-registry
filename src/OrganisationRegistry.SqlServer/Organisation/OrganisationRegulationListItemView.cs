@@ -141,6 +141,7 @@ public class OrganisationRegulationListView :
         regulation.WorkRulesUrl = message.Body.WorkRulesUrl;
         regulation.Date = message.Body.Date;
         regulation.Description = message.Body.Description;
+        regulation.DescriptionRendered = message.Body.DescriptionRendered;
         regulation.Name = message.Body.Name;
         regulation.RegulationThemeId = message.Body.RegulationThemeId;
         regulation.RegulationThemeName = message.Body.RegulationThemeName;
