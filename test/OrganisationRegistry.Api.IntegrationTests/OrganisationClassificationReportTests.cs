@@ -46,7 +46,7 @@ public class OrganisationClassificationReportTests
 
         classificationOrganisationParticipations
             .Should()
-            .HaveCount(0);
+            .HaveCount(1);
 
         classificationOrganisationParticipations
             .Single()

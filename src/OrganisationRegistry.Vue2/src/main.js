@@ -8,6 +8,8 @@ import { createPinia, PiniaVuePlugin } from "pinia";
 import { markRaw } from "@vue/composition-api/dist/vue-composition-api";
 import { useUserStore } from "@/stores/user";
 
+import moment from "moment";
+
 (async () => {
   Vue.prototype.moment = moment;
   moment.locale("nl");
