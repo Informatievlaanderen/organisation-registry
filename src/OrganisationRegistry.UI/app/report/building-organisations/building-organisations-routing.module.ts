@@ -16,7 +16,7 @@ const routes: Routes = [
   },
   {
     path: 'report/building-organisations/:id',
-    component: BuildingDtailComponent,
+    component: BuildingDetailComponent,
     data: {
       title: 'Rapportering - Gebouwen - Gebouw'
     }
