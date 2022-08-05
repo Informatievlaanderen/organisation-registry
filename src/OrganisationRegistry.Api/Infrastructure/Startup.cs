@@ -72,6 +72,8 @@ public class Startup
         var editApiConfiguration = _configuration.GetSection(EditApiConfigurationSection.Name)
             .Get<EditApiConfigurationSection>();
 
+        throw new Exception("Testing Sonar");
+
         if (apiConfiguration.KboCertificate is { } kboCertificate && kboCertificate.IsNotEmptyOrWhiteSpace())
         {
             var clientCertificate = MagdaClientCertificate.Create(
