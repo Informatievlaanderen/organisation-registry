@@ -1,3 +1,11 @@
+# [1.257.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.256.0...v1.257.0) (2022-08-05)
+
+
+### Features
+
+* or-1111 add CjmBeheerder role in Angular ([a896271](https://github.com/informatievlaanderen/organisation-registry/commit/a8962712403683b79f175016f42b567984b9e3a1))
+* or-1111 add CjmBeheerder role in Angular ([ad99037](https://github.com/informatievlaanderen/organisation-registry/commit/ad990374096936fdc06e805ad7c612f8a1429435))
+
 # [1.256.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.255.0...v1.256.0) (2022-08-04)
 
 
