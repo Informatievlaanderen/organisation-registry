@@ -257,7 +257,7 @@ jobs:
 
   code-analysis:
     if: github.repository_owner == 'Informatievlaanderen'
-    name: Build Vue Site
+    name: Run code analysis
     runs-on: ubuntu-latest
 
     steps:
