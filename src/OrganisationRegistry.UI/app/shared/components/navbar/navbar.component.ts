@@ -22,6 +22,7 @@ export class NavbarComponent implements OnInit {
 
   public isLoggedIn: Observable<boolean>;
   public isOrganisationRegistryBeheerder: Observable<boolean>;
+  public isCjmBeheerder: Observable<boolean>;
   public isVlimpersBeheerder: Observable<boolean>;
   public isOrganisatieBeheerder: Observable<boolean>;
   public isDeveloper: Observable<boolean>;
@@ -35,23 +36,24 @@ export class NavbarComponent implements OnInit {
   ngOnInit() {
     this.isLoggedIn = this.oidcService.isLoggedIn;
 
-    this.isOrganisationRegistryBeheerder = this.oidcService.hasAnyOfRoles([
-      Role.AlgemeenBeheerder,Role.CjmBeheerder
-    ]);
+    this.isOrganisationRegistryBeheerder = this.oidcService.hasAnyOfRoles(
+      Role.AlgemeenBeheerder
+    );
+    this.isCjmBeheerder = this.oidcService.hasAnyOfRoles(Role.CjmBeheerder);
 
-    this.isVlimpersBeheerder = this.oidcService.hasAnyOfRoles([
-      Role.VlimpersBeheerder,
-    ]);
+    this.isVlimpersBeheerder = this.oidcService.hasAnyOfRoles(
+      Role.VlimpersBeheerder
+    );
 
-    this.isOrganisatieBeheerder = this.oidcService.hasAnyOfRoles([
-      Role.DecentraalBeheerder,
-    ]);
+    this.isOrganisatieBeheerder = this.oidcService.hasAnyOfRoles(
+      Role.DecentraalBeheerder
+    );
 
-    this.isDeveloper = this.oidcService.hasAnyOfRoles([Role.Developer]);
+    this.isDeveloper = this.oidcService.hasAnyOfRoles(Role.Developer);
 
-    this.isOrgaanBeheerder = this.oidcService.hasAnyOfRoles([
-      Role.OrgaanBeheerder,
-    ]);
+    this.isOrgaanBeheerder = this.oidcService.hasAnyOfRoles(
+      Role.OrgaanBeheerder
+    );
 
     this.userName = this.oidcService.userName;
 

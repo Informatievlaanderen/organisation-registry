@@ -1,5 +1,10 @@
 import { AllowedOrganisationFields } from "services";
-import { Role, SecurityInfo } from "core/auth";
+import {
+  hasAnyOfRoles,
+  isOrganisatieBeheerderFor,
+  Role,
+  SecurityInfo,
+} from "core/auth";
 import { Organisation } from "../organisations";
 
 export class OrganisationAuthorization {
@@ -9,10 +14,11 @@ export class OrganisationAuthorization {
   ) {
     if (!securityInfo.isLoggedIn) return false;
 
-    if (securityInfo.hasAnyOfRoles(Role.AlgemeenBeheerder, Role.CjmBeheerder))
-      return true;
-
-    return false;
+    return hasAnyOfRoles(
+      securityInfo,
+      Role.AlgemeenBeheerder,
+      Role.CjmBeheerder
+    );
   }
 
   public static canViewVlimpersManagement(
@@ -21,10 +27,11 @@ export class OrganisationAuthorization {
   ) {
     if (!securityInfo.isLoggedIn) return false;
 
-    if (securityInfo.hasAnyOfRoles(Role.AlgemeenBeheerder, Role.CjmBeheerder))
-      return true;
-
-    return false;
+    return hasAnyOfRoles(
+      securityInfo,
+      Role.AlgemeenBeheerder,
+      Role.CjmBeheerder
+    );
   }
 
   public static allowedOrganisationFields(
@@ -33,10 +40,10 @@ export class OrganisationAuthorization {
   ) {
     if (!securityInfo.isLoggedIn) return AllowedOrganisationFields.None;
 
-    if (securityInfo.hasAnyOfRoles(Role.AlgemeenBeheerder, Role.CjmBeheerder))
+    if (hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder, Role.CjmBeheerder))
       return AllowedOrganisationFields.All;
 
-    if (securityInfo.hasAnyOfRoles(Role.VlimpersBeheerder)) {
+    if (hasAnyOfRoles(securityInfo, Role.VlimpersBeheerder)) {
       return organisation.underVlimpersManagement
         ? AllowedOrganisationFields.OnlyVlimpers
         : AllowedOrganisationFields.None;
@@ -44,7 +51,7 @@ export class OrganisationAuthorization {
 
     if (organisation.isTerminated) return AllowedOrganisationFields.None;
 
-    if (securityInfo.isOrganisatieBeheerderFor(organisation.id)) {
+    if (isOrganisatieBeheerderFor(securityInfo, organisation.id)) {
       return organisation.underVlimpersManagement
         ? AllowedOrganisationFields.AllButVlimpers
         : AllowedOrganisationFields.All;
@@ -59,20 +66,18 @@ export class OrganisationAuthorization {
   ) {
     if (!securityInfo.isLoggedIn) return false;
 
-    if (securityInfo.hasAnyOfRoles(Role.AlgemeenBeheerder, Role.CjmBeheerder))
+    if (hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder, Role.CjmBeheerder))
       return true;
 
     if (
       organisation.underVlimpersManagement &&
-      securityInfo.hasAnyOfRoles(Role.VlimpersBeheerder)
+      hasAnyOfRoles(securityInfo, Role.VlimpersBeheerder)
     )
       return true;
 
     if (organisation.isTerminated) return false;
 
-    if (securityInfo.isOrganisatieBeheerderFor(organisation.id)) return true;
-
-    return false;
+    return isOrganisatieBeheerderFor(securityInfo, organisation.id);
   }
 
   public static canTerminateOrganisation(
@@ -85,14 +90,15 @@ export class OrganisationAuthorization {
 
     if (
       organisation.underVlimpersManagement &&
-      securityInfo.hasAnyOfRoles(Role.VlimpersBeheerder)
+      hasAnyOfRoles(securityInfo, Role.VlimpersBeheerder)
     )
       return true;
 
-    if (securityInfo.hasAnyOfRoles(Role.AlgemeenBeheerder, Role.CjmBeheerder))
-      return true;
-
-    return false;
+    return hasAnyOfRoles(
+      securityInfo,
+      Role.AlgemeenBeheerder,
+      Role.CjmBeheerder
+    );
   }
 
   public static canCancelCouplingWithKbo(
@@ -103,7 +109,7 @@ export class OrganisationAuthorization {
 
     return (
       organisation.kboNumber &&
-      securityInfo.hasAnyOfRoles(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+      hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder, Role.CjmBeheerder)
     );
   }
 
@@ -115,7 +121,7 @@ export class OrganisationAuthorization {
 
     return (
       !organisation.kboNumber &&
-      securityInfo.hasAnyOfRoles(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+      hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder, Role.CjmBeheerder)
     );
   }
 
@@ -125,24 +131,21 @@ export class OrganisationAuthorization {
   ) {
     if (!securityInfo.isLoggedIn) return false;
 
-    if (securityInfo.hasAnyOfRoles(Role.AlgemeenBeheerder, Role.CjmBeheerder))
+    if (hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder, Role.CjmBeheerder))
       return true;
 
     if (
       organisation.underVlimpersManagement &&
-      securityInfo.hasAnyOfRoles(Role.VlimpersBeheerder)
+      hasAnyOfRoles(securityInfo, Role.VlimpersBeheerder)
     )
       return true;
 
     if (organisation.isTerminated) return false;
 
-    if (
+    return (
       !organisation.underVlimpersManagement &&
-      securityInfo.isOrganisatieBeheerderFor(organisation.id)
-    )
-      return true;
-
-    return false;
+      isOrganisatieBeheerderFor(securityInfo, organisation.id)
+    );
   }
 
   public static canAddAndUpdateRegulations(
@@ -151,12 +154,10 @@ export class OrganisationAuthorization {
   ) {
     if (!securityInfo.isLoggedIn) return false;
 
-    if (securityInfo.hasAnyOfRoles(Role.AlgemeenBeheerder, Role.CjmBeheerder))
+    if (hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder, Role.CjmBeheerder))
       return true;
 
-    if (securityInfo.hasAnyOfRoles(Role.RegelgevingBeheerder)) return true;
-
-    return false;
+    return hasAnyOfRoles(securityInfo, Role.RegelgevingBeheerder);
   }
 
   public static canAddAndUpdateBankAccounts(
@@ -165,14 +166,12 @@ export class OrganisationAuthorization {
   ) {
     if (!securityInfo.isLoggedIn) return false;
 
-    if (securityInfo.hasAnyOfRoles(Role.AlgemeenBeheerder, Role.CjmBeheerder))
+    if (hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder, Role.CjmBeheerder))
       return true;
 
     if (organisation.isTerminated) return false;
 
-    if (securityInfo.isOrganisatieBeheerderFor(organisation.id)) return true;
-
-    return false;
+    return isOrganisatieBeheerderFor(securityInfo, organisation.id);
   }
 
   public static canAddAndUpdateBuildings(
@@ -181,14 +180,12 @@ export class OrganisationAuthorization {
   ) {
     if (!securityInfo.isLoggedIn) return false;
 
-    if (securityInfo.hasAnyOfRoles(Role.AlgemeenBeheerder, Role.CjmBeheerder))
+    if (hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder, Role.CjmBeheerder))
       return true;
 
     if (organisation.isTerminated) return false;
 
-    if (securityInfo.isOrganisatieBeheerderFor(organisation.id)) return true;
-
-    return false;
+    return isOrganisatieBeheerderFor(securityInfo, organisation.id);
   }
 
   public static canAddAndUpdateCapacities(
@@ -197,16 +194,14 @@ export class OrganisationAuthorization {
   ) {
     if (!securityInfo.isLoggedIn) return false;
 
-    if (securityInfo.hasAnyOfRoles(Role.AlgemeenBeheerder, Role.CjmBeheerder))
+    if (hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder, Role.CjmBeheerder))
       return true;
 
-    if (securityInfo.hasAnyOfRoles(Role.RegelgevingBeheerder)) return true;
+    if (hasAnyOfRoles(securityInfo, Role.RegelgevingBeheerder)) return true;
 
     if (organisation.isTerminated) return false;
 
-    if (securityInfo.isOrganisatieBeheerderFor(organisation.id)) return true;
-
-    return false;
+    return isOrganisatieBeheerderFor(securityInfo, organisation.id);
   }
 
   public static canAddAndUpdateClassifications(
@@ -215,16 +210,14 @@ export class OrganisationAuthorization {
   ) {
     if (!securityInfo.isLoggedIn) return false;
 
-    if (securityInfo.hasAnyOfRoles(Role.AlgemeenBeheerder, Role.CjmBeheerder))
+    if (hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder, Role.CjmBeheerder))
       return true;
 
-    if (securityInfo.hasAnyOfRoles(Role.RegelgevingBeheerder)) return true;
+    if (hasAnyOfRoles(securityInfo, Role.RegelgevingBeheerder)) return true;
 
     if (organisation.isTerminated) return false;
 
-    if (securityInfo.isOrganisatieBeheerderFor(organisation.id)) return true;
-
-    return false;
+    return isOrganisatieBeheerderFor(securityInfo, organisation.id);
   }
 
   public static canAddAndUpdateContacts(
@@ -233,14 +226,12 @@ export class OrganisationAuthorization {
   ) {
     if (!securityInfo.isLoggedIn) return false;
 
-    if (securityInfo.hasAnyOfRoles(Role.AlgemeenBeheerder, Role.CjmBeheerder))
+    if (hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder, Role.CjmBeheerder))
       return true;
 
     if (organisation.isTerminated) return false;
 
-    if (securityInfo.isOrganisatieBeheerderFor(organisation.id)) return true;
-
-    return false;
+    return isOrganisatieBeheerderFor(securityInfo, organisation.id);
   }
 
   public static canAddAndUpdateFunctions(
@@ -249,14 +240,12 @@ export class OrganisationAuthorization {
   ) {
     if (!securityInfo.isLoggedIn) return false;
 
-    if (securityInfo.hasAnyOfRoles(Role.AlgemeenBeheerder, Role.CjmBeheerder))
+    if (hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder, Role.CjmBeheerder))
       return true;
 
     if (organisation.isTerminated) return false;
 
-    if (securityInfo.isOrganisatieBeheerderFor(organisation.id)) return true;
-
-    return false;
+    return isOrganisatieBeheerderFor(securityInfo, organisation.id);
   }
 
   public static canAddAndUpdateLocations(
@@ -265,14 +254,12 @@ export class OrganisationAuthorization {
   ) {
     if (!securityInfo.isLoggedIn) return false;
 
-    if (securityInfo.hasAnyOfRoles(Role.AlgemeenBeheerder, Role.CjmBeheerder))
+    if (hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder, Role.CjmBeheerder))
       return true;
 
     if (organisation.isTerminated) return false;
 
-    if (securityInfo.isOrganisatieBeheerderFor(organisation.id)) return true;
-
-    return false;
+    return isOrganisatieBeheerderFor(securityInfo, organisation.id);
   }
 
   public static canAddAndUpdateRelations(
@@ -281,14 +268,12 @@ export class OrganisationAuthorization {
   ) {
     if (!securityInfo.isLoggedIn) return false;
 
-    if (securityInfo.hasAnyOfRoles(Role.AlgemeenBeheerder, Role.CjmBeheerder))
+    if (hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder, Role.CjmBeheerder))
       return true;
 
     if (organisation.isTerminated) return false;
 
-    if (securityInfo.isOrganisatieBeheerderFor(organisation.id)) return true;
-
-    return false;
+    return isOrganisatieBeheerderFor(securityInfo, organisation.id);
   }
 
   public static canAddAndUpdateOpeningHours(
@@ -297,14 +282,12 @@ export class OrganisationAuthorization {
   ) {
     if (!securityInfo.isLoggedIn) return false;
 
-    if (securityInfo.hasAnyOfRoles(Role.AlgemeenBeheerder, Role.CjmBeheerder))
+    if (hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder, Role.CjmBeheerder))
       return true;
 
     if (organisation.isTerminated) return false;
 
-    if (securityInfo.isOrganisatieBeheerderFor(organisation.id)) return true;
-
-    return false;
+    return isOrganisatieBeheerderFor(securityInfo, organisation.id);
   }
 
   public static canAddBodies(
@@ -314,7 +297,8 @@ export class OrganisationAuthorization {
     if (!securityInfo.isLoggedIn) return false;
 
     if (
-      securityInfo.hasAnyOfRoles(
+      hasAnyOfRoles(
+        securityInfo,
         Role.AlgemeenBeheerder,
         Role.CjmBeheerder,
         Role.OrgaanBeheerder
@@ -322,9 +306,7 @@ export class OrganisationAuthorization {
     )
       return true;
 
-    if (securityInfo.isOrganisatieBeheerderFor(organisation.id)) return true;
-
-    return false;
+    return isOrganisatieBeheerderFor(securityInfo, organisation.id);
   }
 
   public static canAddAndUpdateParents(
@@ -333,24 +315,21 @@ export class OrganisationAuthorization {
   ) {
     if (!securityInfo.isLoggedIn) return false;
 
-    if (securityInfo.hasAnyOfRoles(Role.AlgemeenBeheerder, Role.CjmBeheerder))
+    if (hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder, Role.CjmBeheerder))
       return true;
 
     if (
       organisation.underVlimpersManagement &&
-      securityInfo.hasAnyOfRoles(Role.VlimpersBeheerder)
+      hasAnyOfRoles(securityInfo, Role.VlimpersBeheerder)
     )
       return true;
 
     if (organisation.isTerminated) return false;
 
-    if (
+    return (
       !organisation.underVlimpersManagement &&
-      securityInfo.isOrganisatieBeheerderFor(organisation.id)
-    )
-      return true;
-
-    return false;
+      isOrganisatieBeheerderFor(securityInfo, organisation.id)
+    );
   }
 
   public static canAddAndUpdateFormalFrameworks(
@@ -359,11 +338,12 @@ export class OrganisationAuthorization {
   ) {
     if (!securityInfo.isLoggedIn) return false;
 
-    if (securityInfo.hasAnyOfRoles(Role.AlgemeenBeheerder, Role.CjmBeheerder))
+    if (hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder, Role.CjmBeheerder))
       return true;
 
     if (
-      securityInfo.hasAnyOfRoles(
+      hasAnyOfRoles(
+        securityInfo,
         Role.VlimpersBeheerder,
         Role.RegelgevingBeheerder
       )
@@ -372,9 +352,7 @@ export class OrganisationAuthorization {
 
     if (organisation.isTerminated) return false;
 
-    if (securityInfo.isOrganisatieBeheerderFor(organisation.id)) return true;
-
-    return false;
+    return isOrganisatieBeheerderFor(securityInfo, organisation.id);
   }
 
   public static canAddAndUpdateKeys(
@@ -383,20 +361,18 @@ export class OrganisationAuthorization {
   ) {
     if (!securityInfo.isLoggedIn) return false;
 
-    if (securityInfo.hasAnyOfRoles(Role.AlgemeenBeheerder, Role.CjmBeheerder))
+    if (hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder, Role.CjmBeheerder))
       return true;
 
     if (
       organisation.underVlimpersManagement &&
-      securityInfo.hasAnyOfRoles(Role.VlimpersBeheerder)
+      hasAnyOfRoles(securityInfo, Role.VlimpersBeheerder)
     )
       return true;
 
     if (organisation.isTerminated) return false;
 
-    if (securityInfo.isOrganisatieBeheerderFor(organisation.id)) return true;
-
-    return false;
+    return isOrganisatieBeheerderFor(securityInfo, organisation.id);
   }
 
   public static canAddAndUpdateLabels(
@@ -405,20 +381,18 @@ export class OrganisationAuthorization {
   ) {
     if (!securityInfo.isLoggedIn) return false;
 
-    if (securityInfo.hasAnyOfRoles(Role.AlgemeenBeheerder, Role.CjmBeheerder))
+    if (hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder, Role.CjmBeheerder))
       return true;
 
     if (
       organisation.underVlimpersManagement &&
-      securityInfo.hasAnyOfRoles(Role.VlimpersBeheerder)
+      hasAnyOfRoles(securityInfo, Role.VlimpersBeheerder)
     )
       return true;
 
     if (organisation.isTerminated) return false;
 
-    if (securityInfo.isOrganisatieBeheerderFor(organisation.id)) return true;
-
-    return false;
+    return isOrganisatieBeheerderFor(securityInfo, organisation.id);
   }
 
   public static canRemoveBankAccounts(
@@ -427,10 +401,11 @@ export class OrganisationAuthorization {
   ) {
     if (!securityInfo.isLoggedIn) return false;
 
-    if (securityInfo.hasAnyOfRoles(Role.AlgemeenBeheerder, Role.CjmBeheerder))
-      return true;
-
-    return false;
+    return hasAnyOfRoles(
+      securityInfo,
+      Role.AlgemeenBeheerder,
+      Role.CjmBeheerder
+    );
   }
 
   public static canRemoveFormalFrameworks(
@@ -439,10 +414,11 @@ export class OrganisationAuthorization {
   ) {
     if (!securityInfo.isLoggedIn) return false;
 
-    if (securityInfo.hasAnyOfRoles(Role.AlgemeenBeheerder, Role.CjmBeheerder))
-      return true;
-
-    return false;
+    return hasAnyOfRoles(
+      securityInfo,
+      Role.AlgemeenBeheerder,
+      Role.CjmBeheerder
+    );
   }
 
   public static canRemoveFunctions(
@@ -451,10 +427,11 @@ export class OrganisationAuthorization {
   ) {
     if (!securityInfo.isLoggedIn) return false;
 
-    if (securityInfo.hasAnyOfRoles(Role.AlgemeenBeheerder, Role.CjmBeheerder))
-      return true;
-
-    return false;
+    return hasAnyOfRoles(
+      securityInfo,
+      Role.AlgemeenBeheerder,
+      Role.CjmBeheerder
+    );
   }
 
   static requiresOneOfRole(securityInfo: SecurityInfo, roles: Role[]): boolean {

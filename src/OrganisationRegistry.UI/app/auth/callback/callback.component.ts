@@ -1,9 +1,9 @@
 import { Component, OnDestroy } from "@angular/core";
-import { ActivatedRoute, Params } from "@angular/router";
+import { ActivatedRoute, Params, Router } from "@angular/router";
 import { OidcService, Role, SecurityInfo } from "core/auth";
 import { ConfigurationService } from "core/configuration";
 import { Subscription } from "rxjs/Subscription";
-import { map, mergeMap } from "rxjs/operators";
+import { debounceTime, map, mergeMap, withLatestFrom } from "rxjs/operators";
 import { Observable } from "rxjs/Observable";
 import { of } from "rxjs/observable/of";
 import {
@@ -21,6 +21,7 @@ export class CallbackComponent implements OnDestroy {
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private configurationService: ConfigurationService,
     private organisationService: OrganisationService,
     private oidcService: OidcService
@@ -33,42 +34,28 @@ export class CallbackComponent implements OnDestroy {
           mergeMap((params: Params) =>
             this.oidcService.exchangeCode(params["code"])
           ),
-          mergeMap((token: string) =>
-            this.getRedirectUrl(this.oidcService, token)
-          )
+          mergeMap(([token, securityInfo]: [string, SecurityInfo]) => {
+            if (
+              securityInfo.isLoggedIn &&
+              securityInfo.roles.some((r) => r === Role.DecentraalBeheerder)
+            )
+              return this.organisationService.get(
+                jwt_decode(token)["urn:be:vlaanderen:wegwijs:organisation"]
+              );
+            return of(null);
+          })
         )
-        .subscribe((url) => {
-          window.location.href = url;
+        .subscribe((organisation: Organisation) => {
+          if (organisation) {
+            this.router.navigate(["/", "organisations", organisation.id]);
+          } else {
+            this.router.navigate(["/"]);
+          }
         })
     );
   }
 
   ngOnDestroy(): void {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
-  }
-
-  private getRedirectUrl(
-    oidcService: OidcService,
-    token: string
-  ): Observable<string> {
-    return oidcService.loadFromServer().pipe(
-      mergeMap((si: SecurityInfo) => {
-        console.log(si);
-        if (
-          si.isLoggedIn &&
-          si.roles.some((r) => r === Role.DecentraalBeheerder)
-        ) {
-          return this.organisationService
-            .get(jwt_decode(token)["urn:be:vlaanderen:wegwijs:organisation"])
-            .pipe(
-              map(
-                (org: Organisation) =>
-                  `${this.configurationService.uiUrl}/#/organisations/${org.id}`
-              )
-            );
-        }
-        return of(this.configurationService.uiUrl);
-      })
-    );
   }
 }

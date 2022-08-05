@@ -31,13 +31,13 @@
             <li class="tab" [routerLinkActive]="['tab--active']">
               <a class="tab__link" [routerLink]="['/people']">Personen</a>
             </li>
-            <li *ngIf="(isLoggedIn | async) && ((isOrganisationRegistryBeheerder | async) || (isOrganisatieBeheerder | async))" class="tab" [routerLinkActive]="['tab--active']">
+            <li *ngIf="(isLoggedIn | async) && ((isOrganisationRegistryBeheerder | async) || (isOrganisatieBeheerder | async) || (isCjmBeheerder|async))" class="tab" [routerLinkActive]="['tab--active']">
               <a class="tab__link" [routerLink]="['./manage/delegations']">Delegaties</a>
             </li>
             <li class="tab" [routerLinkActive]="['tab--active']">
               <a class="tab__link" [routerLink]="['./report']">Rapportering</a>
             </li>
-            <li *ngIf="(isLoggedIn | async) && (isOrganisationRegistryBeheerder | async)" class="tab" [routerLinkActive]="['tab--active']">
+            <li *ngIf="(isLoggedIn | async) && ((isOrganisationRegistryBeheerder | async)|| (isCjmBeheerder|async))" class="tab" [routerLinkActive]="['tab--active']">
               <a class="tab__link" [routerLink]="['./administration']">Parameters</a>
             </li>
             <li *ngIf="(isLoggedIn | async) && ((isOrganisationRegistryBeheerder | async) || (isDeveloper | async))" class="tab" [routerLinkActive]="['tab--active']">
