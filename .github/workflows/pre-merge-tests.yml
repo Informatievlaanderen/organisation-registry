@@ -113,9 +113,9 @@ jobs:
         python -m pip install --upgrade pip
         pip install requests markdown argparse
 
-    - name: Run Semantic Release
+    - name: Run Pre-merge Tests
       shell: bash
-      run: build.sh Test_Soluttion
+      run: build.sh Test_Solution
       env:
         IGNORE_ES_TESTS: FALSE
 
