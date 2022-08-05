@@ -66,6 +66,11 @@ public static class OrganisationTerminationCalculator
         );
     }
 
+    public static void UnusedMethod()
+    {
+        throw new Exception("Testing Sonar");
+    }
+
     public static OrganisationTerminationKboSummary GetKboFieldsToForceTerminate(DateTime dateOfTermination, KboState kboState)
         => new()
         {
