@@ -14,9 +14,14 @@ using System.Threading.Tasks;
 using AutoFixture;
 using AutoFixture.Kernel;
 using Backoffice.Organisation.OrganisationClassification;
+using Backoffice.Parameters.Capacity.Requests;
 using Backoffice.Parameters.FormalFramework.Requests;
 using Backoffice.Parameters.FormalFrameworkCategory.Requests;
 using Backoffice.Parameters.FunctionType.Requests;
+using Backoffice.Parameters.KeyType.Requests;
+using Backoffice.Parameters.OrganisationRelationType.Requests;
+using Backoffice.Parameters.RegulationSubTheme.Requests;
+using Backoffice.Parameters.RegulationTheme.Requests;
 using Backoffice.Person.Detail;
 using FluentAssertions;
 using FluentAssertions.Execution;
@@ -322,6 +327,82 @@ public class ApiFixture : IDisposable, IAsyncLifetime
             {
                 Id = id,
                 Name = Fixture.Create<string>(),
+            });
+        return id;
+    }
+
+    public async Task<Guid> CreateCapacity()
+    {
+        var id = Fixture.Create<Guid>();
+        await Post(
+            HttpClient,
+            $"/v1/capacities",
+            new CreateCapacityRequest
+            {
+                Id = id,
+                Name = Fixture.Create<string>(),
+            });
+        return id;
+    }
+
+    public async Task<Guid> CreateKeyType()
+    {
+        var id = Fixture.Create<Guid>();
+        await Post(
+            HttpClient,
+            $"/v1/keytypes",
+            new CreateKeyTypeRequest
+            {
+                Id = id,
+                Name = Fixture.Create<string>(),
+            });
+        return id;
+    }
+
+    public async Task<Guid> CreateRegulationTheme()
+    {
+        var id = Fixture.Create<Guid>();
+        await Post(
+            HttpClient,
+            $"/v1/regulationthemes",
+            new CreateRegulationThemeRequest
+            {
+                Id = id,
+                Name = Fixture.Create<string>(),
+            });
+        return id;
+    }
+
+    /// <summary>
+    /// OrganisationRelationType, really ??
+    /// </summary>
+    /// <returns></returns>
+    public async Task<Guid> CreateOrganisationRelationType()
+    {
+        var id = Fixture.Create<Guid>();
+        await Post(
+            HttpClient,
+            $"/v1/organisationrelationtypes",
+            new CreateOrganisationRelationTypeRequest
+            {
+                Id = id,
+                Name = Fixture.Create<string>(),
+                InverseName = Fixture.Create<string>(),
+            });
+        return id;
+    }
+
+    public async Task<Guid> CreateRegulationSubTheme(Guid regulationThemeId)
+    {
+        var id = Fixture.Create<Guid>();
+        await Post(
+            HttpClient,
+            $"/v1/regulationsubthemes",
+            new CreateRegulationSubThemeRequest
+            {
+                Id = id,
+                Name = Fixture.Create<string>(),
+                RegulationThemeId = regulationThemeId,
             });
         return id;
     }
