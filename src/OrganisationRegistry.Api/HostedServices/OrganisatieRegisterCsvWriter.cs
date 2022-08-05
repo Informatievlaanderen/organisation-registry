@@ -23,7 +23,7 @@ public class OrganisatieRegisterCsvWriter
         foreach (var item in items)
         {
             var record = createRecord(item);
-            csvWriter.WriteRecord(record); BREAKING THE BUILD
+            csvWriter.WriteRecord(record);
 
             csvWriter.NextRecord();
         }
