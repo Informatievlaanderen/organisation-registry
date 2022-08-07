@@ -131,7 +131,6 @@ public class ApiFixture : IDisposable, IAsyncLifetime
             .UseContentRoot(Directory.GetCurrentDirectory())
             .UseConfiguration(_configurationRoot)
             .UseStartup<Startup>()
-            .ConfigureLogging(loggingBuilder => loggingBuilder.AddConsole())
             .Build();
 
         _webHost.Start();
