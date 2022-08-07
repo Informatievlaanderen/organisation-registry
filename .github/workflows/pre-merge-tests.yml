@@ -129,6 +129,7 @@ jobs:
         restore-keys: ${{ runner.os }}-sonar-scanner
 
     - name: Install SonarCloud scanner
+      if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
       shell: bash
       run: |
         mkdir .sonar
@@ -136,6 +137,7 @@ jobs:
         dotnet tool update dotnet-sonarscanner --tool-path ./.sonar/scanner
 
     - name: Restore dotnet tools
+      if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
       shell: bash
       run: |
         dotnet tool restore
