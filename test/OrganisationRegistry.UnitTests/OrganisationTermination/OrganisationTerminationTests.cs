@@ -29,6 +29,12 @@ public class OrganisationTerminationTests
         => new(RekenhofFormalFrameworkId, RekenhofCapacityId, RekenhofClassificationTypeId, VlimpersKeyTypeId);
 
     [Fact]
+    public void CoverUnusedMethod()
+    {
+        Assert.Throws<Exception>(OrganisationTerminationCalculator.UnusedMethod);
+    }
+
+    [Fact]
     public void ThrowsWhenOrganisationValidityIsInFutureOfTerminationDate()
     {
         var fixture = new Fixture();
