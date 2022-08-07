@@ -149,6 +149,10 @@ jobs:
       run: |
         ./.sonar/scanner/dotnet-sonarscanner begin /k:"Informatievlaanderen_organisation-registry" /o:"informatievlaanderen" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
 
+    - name: Build Solution
+      shell: bash
+      run: ./build.sh Build_Solution
+
     - name: Run Pre-merge Tests
       shell: bash
       run: dotnet dotnet-coverage collect 'dotnet test' -f xml  -o 'coverage.xml'
