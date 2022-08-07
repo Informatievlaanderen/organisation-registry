@@ -1,3 +1,10 @@
+# [1.260.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.259.0...v1.260.0) (2022-08-07)
+
+
+### Features
+
+* use test solution again ([ffeae2b](https://github.com/informatievlaanderen/organisation-registry/commit/ffeae2bfbf06189b29001037f4d2a1b324c1d9be))
+
 # [1.259.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.258.0...v1.259.0) (2022-08-07)
 
 
