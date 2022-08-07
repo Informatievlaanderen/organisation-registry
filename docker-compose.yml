@@ -20,7 +20,7 @@ services:
     volumes:
       - opensearch-data:/usr/share/opensearch/data
   acm:
-    build: tools/IdentityServer/src/IdentityServer/
+    image: ghcr.io/informatievlaanderen/acmidm:1.258.0
     ports:
       - "5050:80"
   wiremock:
