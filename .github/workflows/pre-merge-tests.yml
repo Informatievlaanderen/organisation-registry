@@ -120,6 +120,11 @@ jobs:
         key: ${{ runner.os }}-sonar
         restore-keys: ${{ runner.os }}-sonar
 
+    - name: Restore dotnet tools
+      shell: bash
+      run: |
+        dotnet tool restore
+
     - name: Cache SonarCloud scanner
       id: cache-sonar-scanner
       uses: actions/cache@v1
@@ -135,12 +140,6 @@ jobs:
         mkdir .sonar
         mkdir .sonar/scanner
         dotnet tool update dotnet-sonarscanner --tool-path ./.sonar/scanner
-
-    - name: Restore dotnet tools
-      if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
-      shell: bash
-      run: |
-        dotnet tool restore
 
     - name: Build and analyze
       env:
