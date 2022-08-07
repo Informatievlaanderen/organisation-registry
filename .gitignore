@@ -15,6 +15,7 @@ wwwroot/
 .paket/
 coverage/
 coverage.xml
+dotCover*
 
 **/*/mono_crash.*
 

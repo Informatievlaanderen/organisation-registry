@@ -12,6 +12,7 @@ open Fake.IO
 open Fake.IO.FileSystemOperators
 open Fake.IO.Globbing.Operators
 open Fake.JavaScript
+open Fake.DotNet
 open ``Build-generic``
 open System
 open System.IO
@@ -35,6 +36,20 @@ let containerize = containerize dockerRepository
 let push = push dockerRepository
 
 supportedRuntimeIdentifiers <- [ "linux-x64" ]
+
+let testWithDotNet path =
+  let fxVersion = getDotNetClrVersionFromGlobalJson()
+
+  let cmd = sprintf "test --no-build --no-restore --logger trx --configuration Release --no-build --no-restore /p:RuntimeFrameworkVersion=%s --dcReportType=HTML" fxVersion
+
+  let result = DotNet.exec (id) "dotcover" cmd
+  if result.ExitCode <> 0 then failwith "Test Failure"
+
+let test project =
+  testWithDotNet ("test" @@ project @@ (sprintf "%s.csproj" project))
+
+let testSolution sln =
+  testWithDotNet (sprintf "%s.sln" sln)
 
 Target.create "CleanAll" (fun _ ->
   Shell.cleanDir buildDir
