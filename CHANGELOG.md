@@ -1,3 +1,30 @@
+# [1.258.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.257.0...v1.258.0) (2022-08-07)
+
+
+### Features
+
+* add coverage with dotnet-coverage ([324af22](https://github.com/informatievlaanderen/organisation-registry/commit/324af221be8e813f7070a0243b92addefe80e770))
+* add ng and vue build to pre-merge checks ([2dc76b0](https://github.com/informatievlaanderen/organisation-registry/commit/2dc76b0d5e216efbe8764bfde743872a9434efeb))
+* add workflow for pr's ([1fe7e04](https://github.com/informatievlaanderen/organisation-registry/commit/1fe7e0429b48fb9144bc06e49b8f855191f946a1))
+* build sln using build script first ([07a4f29](https://github.com/informatievlaanderen/organisation-registry/commit/07a4f29dc7326e3a8a3ae59ccc9dca64606f815f))
+* fix name and stuff ([82f9972](https://github.com/informatievlaanderen/organisation-registry/commit/82f99728a376d753c7d20f22856b4bf74a7ec53d))
+* move dotnet tool restore ([04abaee](https://github.com/informatievlaanderen/organisation-registry/commit/04abaeecc46e10c60d1ca14d9309d9454ab44ef1))
+* or-1126 remove logging ([e86db4a](https://github.com/informatievlaanderen/organisation-registry/commit/e86db4a92c6824848a587894969f299307d144ab))
+* re-add condition for sonar ([6583aa3](https://github.com/informatievlaanderen/organisation-registry/commit/6583aa305a03cafb9d6e9a071729416e42b614f1))
+* remove condition for dotnet tool restore ([891b729](https://github.com/informatievlaanderen/organisation-registry/commit/891b7296991114cb325a18802fa25dcb2d3e55f0))
+* remove condition for sonar ([a112806](https://github.com/informatievlaanderen/organisation-registry/commit/a11280600c670cbf3a0965ef00d71bab01fa86f5))
+* remove duplicate build step ([adc963e](https://github.com/informatievlaanderen/organisation-registry/commit/adc963ee96441fc352a3470ec14671c8748a2762))
+* rename actions ([f361866](https://github.com/informatievlaanderen/organisation-registry/commit/f361866a5c62eba0a278e9d02e1c13699efce145))
+* rename steps ([3230b5c](https://github.com/informatievlaanderen/organisation-registry/commit/3230b5ccd14d853b9aaad57a39b56b037b8ff561))
+* rename workflow ([0d7c129](https://github.com/informatievlaanderen/organisation-registry/commit/0d7c12950c70e28898a4e9bbf350b2de877958b7))
+* rename workflow step & fix typo ([6ec6bba](https://github.com/informatievlaanderen/organisation-registry/commit/6ec6bba65c496ab4529508735b65db99848d20b6))
+* restore dotnet tools ([02e22cd](https://github.com/informatievlaanderen/organisation-registry/commit/02e22cde426bff23708626160b894d694f764510))
+* run code analysis without caching ([a027022](https://github.com/informatievlaanderen/organisation-registry/commit/a027022062a4c03c10d2bab701f4933fa58f3dd4))
+* run dotnet-coverage through local tools ([655d35c](https://github.com/informatievlaanderen/organisation-registry/commit/655d35c874fe4da2a45a6de4d9f258bd118a1ae0))
+* try sonarcloud on PR ([b63fd9e](https://github.com/informatievlaanderen/organisation-registry/commit/b63fd9e3cd463090fdd197866483a4ef3569240b))
+* update workflow name ([c8b8938](https://github.com/informatievlaanderen/organisation-registry/commit/c8b8938e41d9707a5d818a0f83467f527bb9c72f))
+* use ./ syntax ([bf68db6](https://github.com/informatievlaanderen/organisation-registry/commit/bf68db68bd3dedccce4c1e0b8c836b100c94fc6a))
+
 # [1.257.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.256.0...v1.257.0) (2022-08-05)
 
 
