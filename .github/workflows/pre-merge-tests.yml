@@ -113,12 +113,6 @@ jobs:
         python -m pip install --upgrade pip
         pip install requests markdown argparse
 
-    - name:
-      shell: bash
-      run: ./build.sh Test_Solution
-      env:
-        IGNORE_ES_TESTS: FALSE
-
     - name: Cache SonarCloud packages
       uses: actions/cache@v1
       with:
