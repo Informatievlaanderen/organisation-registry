@@ -19,6 +19,12 @@
       "commands": [
         "dotnet-ef"
       ]
+    },
+    "dotnet-coverage": {
+      "version": "17.4.3",
+      "commands": [
+        "dotnet-coverage"
+      ]
     }
   }
 }

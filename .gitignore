@@ -14,6 +14,7 @@ wwwroot/
 .ionide/
 .paket/
 coverage/
+coverage.xml
 
 **/*/mono_crash.*
 
