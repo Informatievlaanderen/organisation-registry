@@ -85,7 +85,7 @@
     "increase-memory-limit": "^1.0.7",
     "jwt-decode": "2.2.0",
     "moment": "2.27.0",
-    "oidc-client": "1.8.2",
+    "oidc-client": "1.11.5",
     "rxjs": "5.5.12",
     "showdown": "^1.9.1",
     "zone.js": "0.10.3"
