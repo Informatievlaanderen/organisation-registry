@@ -135,7 +135,7 @@
     "karma-jasmine": "1.1.2",
     "karma-mocha-reporter": "2.2.5",
     "karma-remap-coverage": "0.1.5",
-    "karma-sourcemap-loader": "0.3.7",
+    "karma-sourcemap-loader": "0.3.8",
     "karma-webpack": "1.8.1",
     "lodash": "4.17.19",
     "merge": "1.2.1",
