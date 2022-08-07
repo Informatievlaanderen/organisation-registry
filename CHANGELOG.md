@@ -1,3 +1,11 @@
+# [1.259.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.258.0...v1.259.0) (2022-08-07)
+
+
+### Features
+
+* use dotCover for coverage ([3abbb32](https://github.com/informatievlaanderen/organisation-registry/commit/3abbb32bc96403a8b3940897b73f6801794f8027))
+* use prebuilt image for acm ([c2bcd78](https://github.com/informatievlaanderen/organisation-registry/commit/c2bcd781789dbf7eaf836a215ed188d2d489ce22))
+
 # [1.258.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.257.0...v1.258.0) (2022-08-07)
 
 
