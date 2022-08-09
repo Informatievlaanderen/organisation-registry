@@ -1,7 +1,9 @@
 namespace OrganisationRegistry.UnitTests.Magda;
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -9,6 +11,7 @@ using OrganisationRegistry.Api.Infrastructure.Magda;
 using Autofac.Features.OwnedInstances;
 using Autofac.Util;
 using FluentAssertions;
+using global::Magda.RegistreerInschrijving;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -18,14 +21,21 @@ using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Configuration;
 using OrganisationRegistry.Magda;
 using SqlServer.Infrastructure;
+using Tests.Shared;
 using Xunit;
+using Xunit.Abstractions;
 
 public class MagdaOrganisationResponseHelpers
 {
+    private readonly ITestOutputHelper _logger;
+
+    private record MagdaSetup(MagdaConfiguration MagdaConfiguration, IHttpClientFactory HttpClientFactory, Func<Owned<OrganisationRegistryContext>> ContextFactory);
+
     private readonly ApiConfigurationSection _apiConfiguration;
 
-    public MagdaOrganisationResponseHelpers()
+    public MagdaOrganisationResponseHelpers(ITestOutputHelper logger)
     {
+        _logger = logger;
         var configurationBuilder = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
@@ -36,7 +46,7 @@ public class MagdaOrganisationResponseHelpers
         _apiConfiguration = configurationRoot.GetSection(ApiConfigurationSection.Name).Get<ApiConfigurationSection>();
     }
 
-    private GeefOndernemingQuery CreateGeefOndernemingQuery()
+    private MagdaSetup CreateMagdaSetup()
     {
         var magdaClientCertificate = MagdaClientCertificate.Create(
             _apiConfiguration.KboCertificate,
@@ -56,17 +66,16 @@ public class MagdaOrganisationResponseHelpers
             kboMagdaEndPoint: _apiConfiguration.KboMagdaEndpoint,
             repertoriumMagdaEndpoint: _apiConfiguration.RepertoriumMagdaEndpoint,
             repertoriumCapacity: _apiConfiguration.RepertoriumCapacity);
-        return new GeefOndernemingQuery(
-            configuration: magdaConfiguration,
-            contextFactory: () => new Owned<OrganisationRegistryContext>(
-                new OrganisationRegistryContext(
-                    new DbContextOptionsBuilder<OrganisationRegistryContext>()
-                        .UseInMemoryDatabase(
-                            "org-magda-test",
-                            _ => { })
-                        .Options), new Disposable()),
-            httpClientFactory: httpClientFactoryMock.Object,
-            new NullLogger<GeefOndernemingQuery>());
+
+        var contextFactory = () => new Owned<OrganisationRegistryContext>(
+            new OrganisationRegistryContext(
+                new DbContextOptionsBuilder<OrganisationRegistryContext>()
+                    .UseInMemoryDatabase(
+                        "org-magda-test",
+                        _ => { })
+                    .Options), new Disposable());
+
+        return new MagdaSetup(magdaConfiguration, httpClientFactoryMock.Object, contextFactory);
     }
 
     // [Theory]
@@ -94,7 +103,50 @@ public class MagdaOrganisationResponseHelpers
                 Directory.GetParent(Assembly.GetExecutingAssembly().Location)!.Parent!.Parent!.Parent!.FullName,
                 "MagdaResponses");
 
-        var envelope = await CreateGeefOndernemingQuery()
+        var magdaSetup = CreateMagdaSetup();
+
+        var maybeRegistration = await new RegistreerInschrijvingCommand(
+                magdaSetup.ContextFactory,
+                magdaSetup.MagdaConfiguration,
+                magdaSetup.HttpClientFactory,
+                new NullLogger<RegistreerInschrijvingCommand>())
+            .Execute(TestUser.AlgemeenBeheerder, kboNumber);
+
+        if (maybeRegistration is not {} registration)
+            throw new Exception("Geen antwoord van magda gekregen.");
+
+        var maybeReply = registration.Body?.RegistreerInschrijvingResponse?.Repliek?.Antwoorden?.Antwoord;
+        if (maybeReply is not {} reply)
+            throw new Exception("Geen antwoord van magda gekregen.");
+
+        reply.Uitzonderingen?
+            .Where(type => type.Type == UitzonderingTypeType.INFORMATIE)
+            .ToList()
+            .ForEach(type => _logger.WriteLine($"{type.Diagnose}"));
+
+        reply.Uitzonderingen?
+            .Where(type => type.Type == UitzonderingTypeType.WAARSCHUWING)
+            .ToList()
+            .ForEach(type => _logger.WriteLine($"{type.Diagnose}"));
+
+        var errors = reply.Uitzonderingen?
+            .Where(type => type.Type == UitzonderingTypeType.FOUT)
+            ?.ToList() ?? new List<UitzonderingType>();
+
+        errors.ForEach(type => _logger.WriteLine($"{type.Diagnose}"));
+
+        if (errors.Any())
+            throw new Exception(
+                $"Fout in magda response:\n" +
+                $"{string.Join('\n', errors.Select(type => type.Diagnose))}");
+
+        var query = new GeefOndernemingQuery(
+            magdaSetup.MagdaConfiguration,
+            magdaSetup.ContextFactory,
+            magdaSetup.HttpClientFactory,
+            new NullLogger<GeefOndernemingQuery>());
+
+        var envelope = await query
             .Execute(
                 Mock.Of<IUser>(),
                 kboNumber);

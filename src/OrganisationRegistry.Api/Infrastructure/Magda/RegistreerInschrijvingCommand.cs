@@ -150,11 +150,6 @@ public class RegistreerInschrijvingCommand : IRegistreerInschrijvingCommand
                                     Type = "OND",
                                 } },
                             },
-                            Periode = new PeriodeVerplichtBeginType
-                            {
-                                Begin = DateTime.Now.ToString("yyyy-MM-dd"),
-                                Einde = null,
-                            },
                         },
                     },
                 },
