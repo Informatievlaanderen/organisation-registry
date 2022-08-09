@@ -31,7 +31,6 @@ export class RoleGuard implements CanActivate, CanActivateChild {
 
   private checkPermissions(route: ActivatedRouteSnapshot): Observable<boolean> {
     let desiredRoles = route.data["roles"] as Array<Role>;
-
     return this.oidcService.hasAnyOfRoles(...desiredRoles).map((hasRole) => {
       if (hasRole) return true;
 

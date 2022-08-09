@@ -13,13 +13,10 @@ import { OidcClient } from "oidc-client";
 import { Subscription } from "rxjs/Subscription";
 import {
   catchError,
-  combineLatest,
-  concatMap,
   distinctUntilChanged,
   map,
   mergeMap,
   tap,
-  withLatestFrom,
 } from "rxjs/operators";
 
 export function hasAnyOfRoles(
@@ -29,6 +26,7 @@ export function hasAnyOfRoles(
   for (let userRole of securityInfo.roles) {
     if (desiredRoles.findIndex((x) => x === userRole) > -1) return true;
   }
+
   return securityInfo.roles.findIndex((x) => x === Role.Developer) > -1;
 }
 
@@ -190,39 +188,27 @@ export class OidcService implements OnDestroy {
   }
 
   public canEditBody(bodyId): Observable<boolean> {
-    let wegwijsBeheerderCheck = this.hasAnyOfRoles(Role.AlgemeenBeheerder);
-    let orgaanBeheerderCheck = this.hasAnyOfRoles(Role.OrgaanBeheerder);
-    let organisatieBeheerderCheck = this.hasAnyOfRoles(
-      Role.DecentraalBeheerder
-    );
-
-    return Observable.zip(
-      wegwijsBeheerderCheck,
-      orgaanBeheerderCheck,
-      organisatieBeheerderCheck,
-      this.bodyIds
-    )
-      .map((zipped) => {
-        let isOrganisationRegistryBeheerder = zipped[0];
-        let isOrgaanBeheerder = zipped[1];
-        let isOrganisatieBeheerder = zipped[2];
-        let bodyIds = zipped[3];
-
-        if (isOrganisationRegistryBeheerder) return true;
-
-        if (isOrgaanBeheerder) return true;
-
+    return this.securityInfo$.pipe(
+      map((securityInfo: SecurityInfo) => {
+        console.log(securityInfo);
         if (
-          isOrganisatieBeheerder &&
-          bodyIds.findIndex((x) => x === bodyId) > -1
+          hasAnyOfRoles(
+            securityInfo,
+            Role.AlgemeenBeheerder,
+            Role.CjmBeheerder,
+            Role.OrgaanBeheerder
+          )
+        )
+          return true;
+        if (
+          hasAnyOfRoles(securityInfo, Role.DecentraalBeheerder) &&
+          securityInfo.bodyIds.some((x) => bodyId === x)
         )
           return true;
 
         return false;
       })
-      .catch((err) => {
-        return Observable.of(false);
-      });
+    );
   }
 
   public hasAnyOfRoles(...desiredRoles: Array<Role>): Observable<boolean> {
