@@ -1,3 +1,10 @@
+## [1.261.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.261.0...v1.261.1) (2022-08-09)
+
+
+### Bug Fixes
+
+* or-1125 don't use period anymore ([9b18079](https://github.com/informatievlaanderen/organisation-registry/commit/9b180797a5066599e7ff17b7f593153c7522c60d))
+
 # [1.261.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.260.1...v1.261.0) (2022-08-09)
 
 
