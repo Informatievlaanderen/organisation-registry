@@ -1,3 +1,11 @@
+# [1.261.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.260.1...v1.261.0) (2022-08-09)
+
+
+### Features
+
+* or-1136 remove cjm rights ([57c60b9](https://github.com/informatievlaanderen/organisation-registry/commit/57c60b9baeceac3f75a115c39087da4669f5a36f))
+* or-1140 cleanup ([5ac08c0](https://github.com/informatievlaanderen/organisation-registry/commit/5ac08c074e420a891c5ed08034ac134505922a67))
+
 ## [1.260.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.260.0...v1.260.1) (2022-08-09)
 
 
