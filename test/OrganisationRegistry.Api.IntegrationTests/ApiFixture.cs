@@ -32,7 +32,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using OrganisationRegistry.Infrastructure;
 using OrganisationRegistry.Infrastructure.Authorization;
@@ -313,10 +312,6 @@ public class ApiFixture : IDisposable, IAsyncLifetime
         return id;
     }
 
-    /// <summary>
-    /// Function or FunctionType, make up your f***ing mind
-    /// </summary>
-    /// <returns></returns>
     public async Task<Guid> CreateFunction()
     {
         var id = Fixture.Create<Guid>();
@@ -372,11 +367,7 @@ public class ApiFixture : IDisposable, IAsyncLifetime
             });
         return id;
     }
-
-    /// <summary>
-    /// OrganisationRelationType, really ??
-    /// </summary>
-    /// <returns></returns>
+    
     public async Task<Guid> CreateOrganisationRelationType()
     {
         var id = Fixture.Create<Guid>();
