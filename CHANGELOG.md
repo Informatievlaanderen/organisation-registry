@@ -1,3 +1,10 @@
+## [1.260.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.260.0...v1.260.1) (2022-08-09)
+
+
+### Bug Fixes
+
+* or-1139 show username and role on login ([888a73d](https://github.com/informatievlaanderen/organisation-registry/commit/888a73d0460161aa2a66ac6f9f308855efaf7492))
+
 # [1.260.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.259.0...v1.260.0) (2022-08-07)
 
 
