@@ -1,3 +1,11 @@
+## [1.261.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.261.1...v1.261.2) (2022-08-09)
+
+
+### Bug Fixes
+
+* or-1136 organisation guard ([4a54d94](https://github.com/informatievlaanderen/organisation-registry/commit/4a54d9438a2954767f6e7175986050a042b452f6))
+* or-1136 show buttons if logged in ([f4fabd3](https://github.com/informatievlaanderen/organisation-registry/commit/f4fabd3270d25b50254d4a668ba110f8b7144261))
+
 ## [1.261.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.261.0...v1.261.1) (2022-08-09)
 
 
