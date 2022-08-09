@@ -12,7 +12,7 @@ const routes: Routes = [
     canActivate: [RoleGuard],
     data: {
       title: "Systeem - Stopgezet in de KBO",
-      roles: [Role.AlgemeenBeheerder, Role.CjmBeheerder, Role.Developer],
+      roles: [Role.AlgemeenBeheerder, Role.Developer],
     },
   },
 ];

@@ -12,17 +12,13 @@ const routes: Routes = [
     canActivate: [RoleGuard],
     data: {
       title: "Systeem",
-      roles: [Role.AlgemeenBeheerder, Role.CjmBeheerder, Role.Developer],
+      roles: [Role.AlgemeenBeheerder, Role.Developer],
     },
   },
 ];
 
 @NgModule({
-  imports: [
-    RouterModule.forChild(routes)
-  ],
-  exports: [
-    RouterModule
-  ]
+  imports: [RouterModule.forChild(routes)],
+  exports: [RouterModule],
 })
-export class DashboardRoutingModule { }
+export class DashboardRoutingModule {}
