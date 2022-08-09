@@ -17,7 +17,7 @@ import {
 import { Subscription } from "rxjs/Subscription";
 import { AllowedOrganisationFields } from "./allowed-organisation-fields";
 import { OrganisationAuthorization } from "./organisation-authorization";
-import { filter, flatMap, map, mergeMap } from "rxjs/operators";
+import { filter, flatMap, map, mergeMap, shareReplay } from "rxjs/operators";
 
 @Injectable()
 export class OrganisationInfoService {
@@ -35,7 +35,7 @@ export class OrganisationInfoService {
   private onSecurityChanged = combineLatest(
     this.organisationChanged$,
     this.oidcService.getOrUpdateValue()
-  );
+  ).pipe(shareReplay(1));
 
   public readonly canViewKboManagementChanged$: Observable<boolean> =
     this.onSecurityChanged.pipe(
