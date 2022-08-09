@@ -5,6 +5,7 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+concurrency: CI
 jobs:
   build:
     if: github.repository_owner == 'Informatievlaanderen'
