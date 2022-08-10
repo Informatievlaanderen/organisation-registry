@@ -1,3 +1,10 @@
+# [1.262.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.261.2...v1.262.0) (2022-08-10)
+
+
+### Features
+
+* or-1111 add support for cjmBeheerder role claim ([24a920b](https://github.com/informatievlaanderen/organisation-registry/commit/24a920b672425cb2f5ebb2e72d26a0fc28b79870))
+
 ## [1.261.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.261.1...v1.261.2) (2022-08-09)
 
 
