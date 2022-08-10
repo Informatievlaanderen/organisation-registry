@@ -1,3 +1,10 @@
+## [1.263.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.263.0...v1.263.1) (2022-08-10)
+
+
+### Bug Fixes
+
+* or-1111 prevent crashes on body ([77742df](https://github.com/informatievlaanderen/organisation-registry/commit/77742df64a7958c635671be74c8cc9b45f8e775e))
+
 # [1.263.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.262.0...v1.263.0) (2022-08-10)
 
 
