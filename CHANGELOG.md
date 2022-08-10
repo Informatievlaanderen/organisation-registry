@@ -1,3 +1,10 @@
+# [1.263.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.262.0...v1.263.0) (2022-08-10)
+
+
+### Features
+
+* or-1111 add tests for role parsing ([70f13dc](https://github.com/informatievlaanderen/organisation-registry/commit/70f13dc3c779112bcad78ec04d1ea57010290d7f))
+
 # [1.262.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.261.2...v1.262.0) (2022-08-10)
 
 
