@@ -244,6 +244,20 @@ public static class Config
                     new Claim("iv_wegwijs_rol_3D", "WegwijsBeheerder-regelgevingbeheerder:OVO001833"),
                 },
                 SubjectId = "regelgeving",
+            },
+            new TestUser
+            {
+                Username = "cjmbeheerder",
+                Password = "cjmbeheerder",
+                IsActive = true,
+                Claims = new List<Claim>
+                {
+                    new Claim("vo_id", "A5C5BFCD-266C-4CC7-9869-5B95E34C090E"),
+                    new Claim(JwtClaimTypes.FamilyName, "Persona"),
+                    new Claim(JwtClaimTypes.GivenName, "CJM Beheerder"),
+                    new Claim("iv_wegwijs_rol_3D", "WegwijsBeheerder-cjmbeheerder:OVO002949"),
+                },
+                SubjectId = "cjmbeheerder",
             }
         };
 }

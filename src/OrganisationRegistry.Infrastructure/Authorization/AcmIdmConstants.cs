@@ -26,6 +26,7 @@ public static class AcmIdmConstants
 
         public const string DecentraalBeheerder = "decentraalbeheerder";
         public const string OrgaanBeheerder = "orgaanbeheerder";
+        public const string CjmBeheerder = "cjmbeheerder";
     }
 
     public static class Scopes
