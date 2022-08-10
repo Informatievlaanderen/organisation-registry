@@ -18,7 +18,7 @@ using Newtonsoft.Json;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("powerbi/search")]
 [ApiController]
-[ApiExplorerSettings(GroupName = "Zoeken")]
+[ApiExplorerSettings(GroupName = "PowerBI")]
 public class PBISearchController : OrganisationRegistryController
 {
     private readonly ILogger<PBISearchController> _logger;
@@ -28,10 +28,10 @@ public class PBISearchController : OrganisationRegistryController
         _logger = logger;
     }
 
-    /// <summary>Entiteiten opzoeken (als bestand).</summary>
-    /// <remarks>Dit endpoint laat toe entiteiten op te vragen op de ElasticSearch indexes.
+    /// <summary>Entiteiten exporteren (als bestand).</summary>
+    /// <remarks>Dit endpoint laat toe een export bestand te maken van alle entiteiten op een ElasticSearch index.
     /// <br />
-    /// De volgende indexes zijn beschikbaar: <br />
+    /// De volgende indices zijn beschikbaar: <br />
     ///     - `organisations` <br />
     ///     - `people` <br />
     ///     - `bodies`
