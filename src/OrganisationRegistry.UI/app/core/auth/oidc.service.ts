@@ -16,6 +16,7 @@ import {
   distinctUntilChanged,
   map,
   mergeMap,
+  shareReplay,
   tap,
 } from "rxjs/operators";
 
@@ -190,7 +191,6 @@ export class OidcService implements OnDestroy {
   public canEditBody(bodyId): Observable<boolean> {
     return this.securityInfo$.pipe(
       map((securityInfo: SecurityInfo) => {
-        console.log(securityInfo);
         if (
           hasAnyOfRoles(
             securityInfo,
@@ -231,8 +231,7 @@ export class OidcService implements OnDestroy {
         if (securityInfo.expires > new Date().getTime()) {
           this.updateFromServer().subscribe();
         }
-      }),
-      distinctUntilChanged()
+      })
     );
   }
 
