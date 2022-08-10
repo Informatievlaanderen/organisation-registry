@@ -111,7 +111,7 @@
     "@types/webpack": "2.0.0",
     "angular2-router-loader": "0.3.5",
     "angular2-template-loader": "0.6.2",
-    "awesome-typescript-loader": "3.5.0",
+    "awesome-typescript-loader": "5.2.1",
     "codelyzer": "0.0.28",
     "commitizen": "4.2.5",
     "compression-webpack-plugin": "0.4.0",
