@@ -85,7 +85,7 @@ public class OrganisationRegistryTokenBuilder : IOrganisationRegistryTokenBuilde
         {
             AddVlimpersBeheerderClaim(roles, identity);
             AddOrgaanBeheerderClaim(roles, identity);
-            AddOrganisatieBeheerderClaim(roles, identity);
+            AddDecentraalBeheerderClaim(roles, identity);
             AddRegelgevingBeheerderClaim(roles, identity);
             AddCjmBeheerderClaim(roles, identity);
         }
@@ -132,18 +132,16 @@ public class OrganisationRegistryTokenBuilder : IOrganisationRegistryTokenBuilde
                 string.Empty);
     }
 
-    private static void AddOrganisatieBeheerderClaim(IReadOnlyCollection<string> roles, ClaimsIdentity identity)
+    private static void AddDecentraalBeheerderClaim(IReadOnlyCollection<string> roles, ClaimsIdentity identity)
     {
         if (!roles.Any(IsDecentraalBeheerder))
             return;
 
-        // If any of the roles is admin, you are an admin and we add the organisations separatly
         AddRoleClaim(identity, Role.DecentraalBeheerder);
 
-        var adminRoles = roles.Where(IsDecentraalBeheerder);
-        foreach (var role in adminRoles)
+        var decentraalBeheerderRoles = roles.Where(IsDecentraalBeheerder);
+        foreach (var role in decentraalBeheerderRoles)
         {
-            // OrganisationRegistryBeheerder-algemeenbeheerder,beheerder:OVO002949
             var organisation = role.Replace(
                 AcmIdmConstants.RolePrefix,
                 string.Empty).Split(':')[1];
