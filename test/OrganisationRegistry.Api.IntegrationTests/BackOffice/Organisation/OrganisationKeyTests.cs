@@ -13,10 +13,12 @@ using Xunit;
 public class OrganisationKeyTests
 {
     private readonly ApiFixture _apiFixture;
+    private readonly OrganisationHelpers _helpers;
 
     public OrganisationKeyTests(ApiFixture apiFixture)
     {
         _apiFixture = apiFixture;
+        _helpers = new OrganisationHelpers(_apiFixture);
     }
 
     [Fact]
@@ -24,7 +26,7 @@ public class OrganisationKeyTests
     {
         var organisationId = _apiFixture.Fixture.Create<Guid>();
         var route = $"/v1/organisations/{organisationId}/keys";
-        await _apiFixture.CreateOrganisation(organisationId, _apiFixture.Fixture.Create<string>());
+        await _helpers.CreateOrganisation(organisationId, _apiFixture.Fixture.Create<string>());
 
         var getResponse = await ApiFixture.Get(_apiFixture.HttpClient, $"{route}/{_apiFixture.Fixture.Create<Guid>()}");
         getResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -45,7 +47,7 @@ public class OrganisationKeyTests
 
     private async Task<Guid> CreateAndVerify(string baseRoute)
     {
-        var keyTypeId = await _apiFixture.CreateKeyType();
+        var keyTypeId = await _helpers.CreateKeyType();
         var today = _apiFixture.Fixture.Create<DateTime>();
 
         var id = _apiFixture.Fixture.Create<Guid>();
@@ -65,7 +67,7 @@ public class OrganisationKeyTests
 
     private async Task UpdateAndVerify(string baseRoute, Guid id)
     {
-        var keyTypeId = await _apiFixture.CreateKeyType();
+        var keyTypeId = await _helpers.CreateKeyType();
         var today = _apiFixture.Fixture.Create<DateTime>();
 
         var body = new UpdateOrganisationKeyRequest

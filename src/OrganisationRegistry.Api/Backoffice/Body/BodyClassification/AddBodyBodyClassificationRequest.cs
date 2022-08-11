@@ -43,18 +43,10 @@ public class AddBodyBodyClassificationInternalRequestValidator : AbstractValidat
             .NotEmpty()
             .WithMessage("Body Classification Id is required.");
 
-        // TODO: Validate if BodyClassificationTypeId is valid
-
         RuleFor(x => x.Body.ValidTo)
             .GreaterThanOrEqualTo(x => x.Body.ValidFrom)
             .When(x => x.Body.ValidFrom.HasValue)
             .WithMessage("Valid To must be greater than or equal to Valid From.");
-
-        RuleFor(x => x.BodyId)
-            .NotEmpty()
-            .WithMessage("Body Id is required.");
-
-        // TODO: Validate if body id is valid
     }
 }
 

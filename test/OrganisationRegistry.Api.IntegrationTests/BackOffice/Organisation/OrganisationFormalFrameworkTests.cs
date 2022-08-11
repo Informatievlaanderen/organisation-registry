@@ -13,10 +13,12 @@ using Xunit;
 public class OrganisationFormalFrameworkTests
 {
     private readonly ApiFixture _apiFixture;
+    private readonly OrganisationHelpers _helpers;
 
     public OrganisationFormalFrameworkTests(ApiFixture apiFixture)
     {
         _apiFixture = apiFixture;
+        _helpers = new OrganisationHelpers(_apiFixture);
     }
 
     [Fact]
@@ -24,9 +26,9 @@ public class OrganisationFormalFrameworkTests
     {
         var organisationId = _apiFixture.Fixture.Create<Guid>();
         var route = $"/v1/organisations/{organisationId}/formalframeworks";
-        await _apiFixture.CreateOrganisation(organisationId, _apiFixture.Fixture.Create<string>());
+        await _helpers.CreateOrganisation(organisationId, _apiFixture.Fixture.Create<string>());
         var parentOrganisationId = _apiFixture.Fixture.Create<Guid>();
-        await _apiFixture.CreateOrganisation(parentOrganisationId, _apiFixture.Fixture.Create<string>());
+        await _helpers.CreateOrganisation(parentOrganisationId, _apiFixture.Fixture.Create<string>());
 
         var getResponse = await ApiFixture.Get(_apiFixture.HttpClient, $"{route}/{_apiFixture.Fixture.Create<Guid>()}");
         getResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -50,8 +52,8 @@ public class OrganisationFormalFrameworkTests
 
     private async Task<(Guid creationId, Guid formalFrameworkId)> CreateAndVerify(string baseRoute, Guid parentOrganisationId)
     {
-        var formalFrameworkCategoryId = await _apiFixture.CreateFormalFrameworkCategory();
-        var formalFrameworkId = await _apiFixture.CreateFormalFramework(formalFrameworkCategoryId);
+        var formalFrameworkCategoryId = await _helpers.CreateFormalFrameworkCategory();
+        var formalFrameworkId = await _helpers.CreateFormalFramework(formalFrameworkCategoryId);
 
         var creationId = _apiFixture.Fixture.Create<Guid>();
         var body = new AddOrganisationFormalFrameworkRequest

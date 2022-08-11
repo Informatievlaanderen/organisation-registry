@@ -12,10 +12,12 @@ using Xunit;
 public class OrganisationBankAccountTests
 {
     private readonly ApiFixture _apiFixture;
+    private readonly OrganisationHelpers _helpers;
 
     public OrganisationBankAccountTests(ApiFixture apiFixture)
     {
         _apiFixture = apiFixture;
+        _helpers = new OrganisationHelpers(_apiFixture);
     }
 
     [Fact]
@@ -23,7 +25,7 @@ public class OrganisationBankAccountTests
     {
         var organisationId = _apiFixture.Fixture.Create<Guid>();
         var route = $"/v1/organisations/{organisationId}/bankaccounts";
-        await _apiFixture.CreateOrganisation(organisationId, _apiFixture.Fixture.Create<string>());
+        await _helpers.CreateOrganisation(organisationId, _apiFixture.Fixture.Create<string>());
 
         var getResponse = await ApiFixture.Get(_apiFixture.HttpClient, $"{route}/{_apiFixture.Fixture.Create<Guid>()}");
         getResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);

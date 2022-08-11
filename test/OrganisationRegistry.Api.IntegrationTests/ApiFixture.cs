@@ -8,21 +8,12 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
+using System.Runtime.Serialization;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using AutoFixture;
 using AutoFixture.Kernel;
-using Backoffice.Organisation.OrganisationClassification;
-using Backoffice.Parameters.Capacity.Requests;
-using Backoffice.Parameters.FormalFramework.Requests;
-using Backoffice.Parameters.FormalFrameworkCategory.Requests;
-using Backoffice.Parameters.FunctionType.Requests;
-using Backoffice.Parameters.KeyType.Requests;
-using Backoffice.Parameters.OrganisationRelationType.Requests;
-using Backoffice.Parameters.RegulationSubTheme.Requests;
-using Backoffice.Parameters.RegulationTheme.Requests;
-using Backoffice.Person.Detail;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using IdentityModel;
@@ -36,13 +27,10 @@ using Newtonsoft.Json;
 using OrganisationRegistry.Infrastructure;
 using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Configuration;
-using Person;
 using SqlServer.Configuration;
 using SqlServer.Infrastructure;
 using Wiremock;
 using Xunit;
-using CreateOrganisationClassificationRequest = Backoffice.Parameters.OrganisationClassification.Requests.CreateOrganisationClassificationRequest;
-using CreateOrganisationClassificationTypeRequest = Backoffice.Parameters.OrganisationClassificationType.Requests.CreateOrganisationClassificationTypeRequest;
 
 public class ApiFixture : IDisposable, IAsyncLifetime
 {
@@ -204,205 +192,23 @@ public class ApiFixture : IDisposable, IAsyncLifetime
         return httpClientFor;
     }
 
-    public Task CreateOrganisation(Guid organisationId, string organisationName)
-        => Post(HttpClient, "/v1/organisations", new { id = organisationId, name = organisationName });
-
-    public async Task<Guid> CreateOrganisationClassificationType(bool allowDifferentClassificationsToOverlap)
-    {
-        var id = Fixture.Create<Guid>();
-        await Post(
-            HttpClient,
-            "/v1/organisationclassificationtypes",
-            new CreateOrganisationClassificationTypeRequest
-            {
-                Id = id,
-                Name = Fixture.Create<string>(),
-                AllowDifferentClassificationsToOverlap = allowDifferentClassificationsToOverlap,
-            });
-        return id;
-    }
-
-    public async Task<Guid> CreateOrganisationClassification(Guid organisationClassificationTypeId)
-    {
-        var id = Fixture.Create<Guid>();
-        await Post(
-            HttpClient,
-            "/v1/organisationclassifications",
-            new CreateOrganisationClassificationRequest
-            {
-                Id = id,
-                Name = Fixture.Create<string>(),
-                Order = Fixture.Create<int>(),
-                OrganisationClassificationTypeId = organisationClassificationTypeId,
-                Active = true,
-                ExternalKey = null,
-            });
-        return id;
-    }
-
-    public async Task<Guid> CreateOrganisationOrganisationClassification(Guid organisationId, Guid organisationClassificationTypeId, Guid organisationClassificationId)
-    {
-        var id = Fixture.Create<Guid>();
-        await Post(
-            HttpClient,
-            $"/v1/organisation/{organisationId}/classifications",
-            new AddOrganisationOrganisationClassificationRequest
-            {
-                OrganisationOrganisationClassificationId = id,
-                OrganisationClassificationTypeId = organisationClassificationTypeId,
-                OrganisationClassificationId = organisationClassificationId,
-                ValidFrom = null,
-                ValidTo = null,
-            });
-        return id;
-    }
-
-    public async Task CreateContactType(Guid contactTypeId, string? contactTypeName = null)
-    {
-        await Post(
-            HttpClient,
-            $"/v1/contacttypes",
-            new { Id = contactTypeId, Name = contactTypeName ?? Fixture.Create<string>() });
-    }
-
-    public async Task<Guid> CreateFormalFramework(Guid formalFrameworkCategoryId)
-    {
-        var id = Fixture.Create<Guid>();
-        await Post(
-            HttpClient,
-            $"/v1/formalframeworks",
-            new CreateFormalFrameworkRequest
-            {
-                Id = id,
-                Name = Fixture.Create<string>(),
-                Code = Fixture.Create<string>(),
-                FormalFrameworkCategoryId = formalFrameworkCategoryId,
-            });
-        return id;
-    }
-
-    public async Task<Guid> CreateFormalFrameworkCategory()
-    {
-        var id = Fixture.Create<Guid>();
-        await Post(
-            HttpClient,
-            $"/v1/formalframeworkcategories",
-            new CreateFormalFrameworkCategoryRequest()
-            {
-                Id = id,
-                Name = Fixture.Create<string>(),
-            });
-        return id;
-    }
-
-    public async Task<Guid> CreatePerson()
-    {
-        var id = Fixture.Create<Guid>();
-        await Post(
-            HttpClient,
-            $"/v1/people",
-            new CreatePersonRequest
-            {
-                Id = id,
-                Name = Fixture.Create<string>(),
-                FirstName = Fixture.Create<string>(),
-                Sex = Fixture.Create<bool>() ? Sex.Male : Sex.Female,
-                DateOfBirth = Fixture.Create<DateTime>(),
-            });
-        return id;
-    }
-
-    public async Task<Guid> CreateFunction()
-    {
-        var id = Fixture.Create<Guid>();
-        await Post(
-            HttpClient,
-            $"/v1/functiontypes",
-            new CreateFunctionTypeRequest()
-            {
-                Id = id,
-                Name = Fixture.Create<string>(),
-            });
-        return id;
-    }
-
-    public async Task<Guid> CreateCapacity()
-    {
-        var id = Fixture.Create<Guid>();
-        await Post(
-            HttpClient,
-            $"/v1/capacities",
-            new CreateCapacityRequest
-            {
-                Id = id,
-                Name = Fixture.Create<string>(),
-            });
-        return id;
-    }
-
-    public async Task<Guid> CreateKeyType()
-    {
-        var id = Fixture.Create<Guid>();
-        await Post(
-            HttpClient,
-            $"/v1/keytypes",
-            new CreateKeyTypeRequest
-            {
-                Id = id,
-                Name = Fixture.Create<string>(),
-            });
-        return id;
-    }
-
-    public async Task<Guid> CreateRegulationTheme()
-    {
-        var id = Fixture.Create<Guid>();
-        await Post(
-            HttpClient,
-            $"/v1/regulationthemes",
-            new CreateRegulationThemeRequest
-            {
-                Id = id,
-                Name = Fixture.Create<string>(),
-            });
-        return id;
-    }
-    
-    public async Task<Guid> CreateOrganisationRelationType()
-    {
-        var id = Fixture.Create<Guid>();
-        await Post(
-            HttpClient,
-            $"/v1/organisationrelationtypes",
-            new CreateOrganisationRelationTypeRequest
-            {
-                Id = id,
-                Name = Fixture.Create<string>(),
-                InverseName = Fixture.Create<string>(),
-            });
-        return id;
-    }
-
-    public async Task<Guid> CreateRegulationSubTheme(Guid regulationThemeId)
-    {
-        var id = Fixture.Create<Guid>();
-        await Post(
-            HttpClient,
-            $"/v1/regulationsubthemes",
-            new CreateRegulationSubThemeRequest
-            {
-                Id = id,
-                Name = Fixture.Create<string>(),
-                RegulationThemeId = regulationThemeId,
-            });
-        return id;
-    }
 
     public async Task<HttpResponseMessage> Create(string baseRoute, object body)
         => await Post(HttpClient, $"{baseRoute}", body);
 
     public async Task<HttpResponseMessage> Update(string baseRoute, Guid id, object updateRequest)
         => await Put(HttpClient, $"{baseRoute}/{id}", updateRequest);
+
+    public async Task<TId> Create<TId>(string route, dynamic body)
+        where TId : notnull
+    {
+        if (body.GetType().GetProperty("Id") is not { })
+            throw new InvalidDataContractException("Object to create should have an 'Id' property.");
+
+        body.Id = Fixture.Create<TId>();
+        await Post(HttpClient, route, body);
+        return body.Id;
+    }
 
     public static async Task<HttpResponseMessage> Post(HttpClient httpClient, string route, object body)
         => await httpClient.PostAsync(route, ToJson(body));

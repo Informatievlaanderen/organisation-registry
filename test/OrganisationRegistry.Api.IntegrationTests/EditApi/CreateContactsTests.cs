@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using AutoFixture;
+using BackOffice.Organisation;
 using FluentAssertions;
 using Tests.Shared;
 using Xunit;
@@ -17,13 +18,13 @@ public class CreateContactsTests
     private const string ContactTypeName = "contactTypeName";
     private readonly ApiFixture _apiFixture;
     private readonly Guid _organisationId;
-    private readonly Guid _conactTypeId;
+    private readonly OrganisationHelpers _helpers;
 
     public CreateContactsTests(ApiFixture apiFixture)
     {
         _apiFixture = apiFixture;
+        _helpers = new OrganisationHelpers(_apiFixture);
         _organisationId = _apiFixture.Fixture.Create<Guid>();
-        _conactTypeId = _apiFixture.Fixture.Create<Guid>();
     }
 
     [EnvVarIgnoreFact]
@@ -52,16 +53,16 @@ public class CreateContactsTests
     [EnvVarIgnoreFact]
     public async Task AsCJM_CanAddAndUpdate()
     {
-        await _apiFixture.CreateOrganisation(_organisationId, TestOrganisationForCreateContacts);
-        await _apiFixture.CreateContactType(_conactTypeId, ContactTypeName);
+        await _helpers.CreateOrganisation(_organisationId, TestOrganisationForCreateContacts);
+        var contactTypeId = await _helpers.CreateContactType(ContactTypeName);
 
         var httpClient = await _apiFixture.CreateMachine2MachineClientFor(ApiFixture.CJM.Client, ApiFixture.CJM.Scope);
-        var organisationContactId = await CreatAndVerify(httpClient);
+        var organisationContactId = await CreatAndVerify(httpClient, contactTypeId);
 
-        await UpdateAndVerify(httpClient, organisationContactId);
+        await UpdateAndVerify(httpClient, contactTypeId, organisationContactId);
     }
 
-    private async Task UpdateAndVerify(HttpClient httpClient, Guid organisationContactId)
+    private async Task UpdateAndVerify(HttpClient httpClient, Guid contactTypeId, Guid organisationContactId)
     {
         var value = _apiFixture.Fixture.Create<string>();
 
@@ -69,30 +70,30 @@ public class CreateContactsTests
             httpClient,
             _organisationId,
             organisationContactId,
-            _conactTypeId,
+            contactTypeId,
             value);
         await ApiFixture.VerifyStatusCode(response, HttpStatusCode.OK);
 
         var getResponse = await ApiFixture.Get(httpClient, $"/v1/organisations/{_organisationId}/contacts/{organisationContactId}");
         await ApiFixture.VerifyStatusCode(getResponse, HttpStatusCode.OK);
-        VerifyResponse(await ApiFixture.Deserialize(getResponse), _conactTypeId, value);
+        VerifyResponse(await ApiFixture.Deserialize(getResponse), contactTypeId, value);
     }
 
-    private async Task<Guid> CreatAndVerify(HttpClient httpClient)
+    private async Task<Guid> CreatAndVerify(HttpClient httpClient, Guid contactTypeId)
     {
         var value = _apiFixture.Fixture.Create<string>();
 
         var response = await CreateContacts(
             httpClient,
             _organisationId,
-            _conactTypeId,
+            contactTypeId,
             value);
         await ApiFixture.VerifyStatusCode(response, HttpStatusCode.Created);
         var organisationContactId = ApiFixture.GetIdFrom(response.Headers);
 
         var getResponse = await ApiFixture.Get(httpClient, $"/v1/organisations/{_organisationId}/contacts/{organisationContactId}");
         await ApiFixture.VerifyStatusCode(getResponse, HttpStatusCode.OK);
-        VerifyResponse(await ApiFixture.Deserialize(getResponse), _conactTypeId, value);
+        VerifyResponse(await ApiFixture.Deserialize(getResponse), contactTypeId, value);
 
         return organisationContactId;
     }

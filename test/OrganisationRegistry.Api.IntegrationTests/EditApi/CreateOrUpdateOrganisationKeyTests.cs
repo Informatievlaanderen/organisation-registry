@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using BackOffice.Organisation;
 using Edit.Organisation.Key;
 using Tests.Shared;
 using Xunit;
@@ -15,10 +16,12 @@ public class CreateOrUpdateOrganisationKeyTests
     private const string TestOrganisationName = "test for keys";
     private readonly ApiFixture _apiFixture;
     private readonly Guid _orafinKeyType;
+    private readonly OrganisationHelpers _helpers;
 
     public CreateOrUpdateOrganisationKeyTests(ApiFixture apiFixture)
     {
         _apiFixture = apiFixture;
+        _helpers = new OrganisationHelpers(_apiFixture);
         _orafinKeyType = _apiFixture.Configuration.Authorization.KeyIdsAllowedOnlyForOrafin.First();
     }
 
@@ -26,7 +29,7 @@ public class CreateOrUpdateOrganisationKeyTests
     public async Task WithoutBearer_ReturnsUnauthorized()
     {
         var organisationId = Guid.NewGuid();
-        await _apiFixture.CreateOrganisation(organisationId, TestOrganisationName);
+        await _helpers.CreateOrganisation(organisationId, TestOrganisationName);
 
         var response = await CreateKey(
             organisationId,
@@ -42,7 +45,7 @@ public class CreateOrUpdateOrganisationKeyTests
     public async Task CanCreateAndUpdateAs(string client, string scope)
     {
         var organisationId = Guid.NewGuid();
-        await _apiFixture.CreateOrganisation(organisationId, TestOrganisationName);
+        await _helpers.CreateOrganisation(organisationId, TestOrganisationName);
 
         var httpClient = await _apiFixture.CreateMachine2MachineClientFor(client, scope);
 
