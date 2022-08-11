@@ -7,7 +7,6 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using AutoFixture;
-using BackOffice.Organisation;
 using Edit.Organisation.Classification;
 using FluentAssertions;
 using Tests.Shared;
@@ -18,21 +17,19 @@ public class CreateOrganisationOrganisationClassificationTests
 {
     private readonly ApiFixture _apiFixture;
     private readonly Guid _organisationId;
-    private readonly OrganisationHelpers _helpers;
 
     public CreateOrganisationOrganisationClassificationTests(ApiFixture apiApiFixture)
     {
         _apiFixture = apiApiFixture;
-        _helpers = new OrganisationHelpers(_apiFixture);
         _organisationId = _apiFixture.Fixture.Create<Guid>();
     }
 
     [EnvVarIgnoreFact]
     public async Task WithoutBearer_ReturnsUnauthorized()
     {
-        await _helpers.CreateOrganisation(_organisationId, _apiFixture.Fixture.Create<string>());
-        var organisationClassificationTypeId = await _helpers.CreateOrganisationClassificationType(true);
-        var organisationClassificationId = await _helpers.CreateOrganisationClassification(organisationClassificationTypeId);
+        await _apiFixture.Create.Organisation(_organisationId, _apiFixture.Fixture.Create<string>());
+        var organisationClassificationTypeId = await _apiFixture.Create.CreateOrganisationClassificationType(true);
+        var organisationClassificationId = await _apiFixture.Create.OrganisationClassification(organisationClassificationTypeId);
 
         var response = await AddOrganisationOrganisationClassification(
             _apiFixture.HttpClient,
@@ -48,12 +45,12 @@ public class CreateOrganisationOrganisationClassificationTests
     [InlineData(ApiFixture.Test.Client, ApiFixture.Test.Scope)]
     public async Task CanCreateAndUpdateAs(string client, string scope)
     {
-        await _helpers.CreateOrganisation(_organisationId, _apiFixture.Fixture.Create<string>());
+        await _apiFixture.Create.Organisation(_organisationId, _apiFixture.Fixture.Create<string>());
 
         var organisationClassificationType1Id = _apiFixture.Configuration.Authorization.OrganisationClassificationTypeIdsOwnedByCjm.First();
-        var organisationClassification1Id = await _helpers.CreateOrganisationClassification(organisationClassificationType1Id);
+        var organisationClassification1Id = await _apiFixture.Create.OrganisationClassification(organisationClassificationType1Id);
         var organisationClassificationType2Id = _apiFixture.Configuration.Authorization.OrganisationClassificationTypeIdsOwnedByCjm.First();
-        var organisationClassification2Id = await _helpers.CreateOrganisationClassification(organisationClassificationType2Id);
+        var organisationClassification2Id = await _apiFixture.Create.OrganisationClassification(organisationClassificationType2Id);
 
         var httpClient = await _apiFixture.CreateMachine2MachineClientFor(client, scope);
 
@@ -66,10 +63,10 @@ public class CreateOrganisationOrganisationClassificationTests
     [InlineData(ApiFixture.Orafin.Client, ApiFixture.Orafin.Scope)]
     public async Task CannotCreateAs(string client, string scope)
     {
-        await _helpers.CreateOrganisation(_organisationId, _apiFixture.Fixture.Create<string>());
+        await _apiFixture.Create.Organisation(_organisationId, _apiFixture.Fixture.Create<string>());
 
-        var organisationClassificationTypeId = await _helpers.CreateOrganisationClassificationType(false);
-        var organisationClassificationId = await _helpers.CreateOrganisationClassification(organisationClassificationTypeId);
+        var organisationClassificationTypeId = await _apiFixture.Create.CreateOrganisationClassificationType(false);
+        var organisationClassificationId = await _apiFixture.Create.OrganisationClassification(organisationClassificationTypeId);
 
         var httpClient = await _apiFixture.CreateMachine2MachineClientFor(client, scope);
 
@@ -80,10 +77,10 @@ public class CreateOrganisationOrganisationClassificationTests
     [EnvVarIgnoreFact]
     public async Task CannotCreateAsCjm()
     {
-        await _helpers.CreateOrganisation(_organisationId, _apiFixture.Fixture.Create<string>());
+        await _apiFixture.Create.Organisation(_organisationId, _apiFixture.Fixture.Create<string>());
 
-        var organisationClassificationTypeId = await _helpers.CreateOrganisationClassificationType(false);
-        var organisationClassificationId = await _helpers.CreateOrganisationClassification(organisationClassificationTypeId);
+        var organisationClassificationTypeId = await _apiFixture.Create.CreateOrganisationClassificationType(false);
+        var organisationClassificationId = await _apiFixture.Create.OrganisationClassification(organisationClassificationTypeId);
 
         var response = await Create(await _apiFixture.CreateCjmClient(), organisationClassificationTypeId, organisationClassificationId);
         await ApiFixture.VerifyStatusCode(response, HttpStatusCode.BadRequest);
@@ -92,11 +89,11 @@ public class CreateOrganisationOrganisationClassificationTests
     [EnvVarIgnoreFact]
     public async Task CannotUpdateAsCjm()
     {
-        await _helpers.CreateOrganisation(_organisationId, _apiFixture.Fixture.Create<string>());
+        await _apiFixture.Create.Organisation(_organisationId, _apiFixture.Fixture.Create<string>());
 
-        var organisationClassificationTypeId = await _helpers.CreateOrganisationClassificationType(false);
-        var organisationClassificationId = await _helpers.CreateOrganisationClassification(organisationClassificationTypeId);
-        var organisationOrganisationClassificationId = await _helpers.CreateOrganisationOrganisationClassification(_organisationId, organisationClassificationTypeId, organisationClassificationId);
+        var organisationClassificationTypeId = await _apiFixture.Create.CreateOrganisationClassificationType(false);
+        var organisationClassificationId = await _apiFixture.Create.OrganisationClassification(organisationClassificationTypeId);
+        var organisationOrganisationClassificationId = await _apiFixture.Create.OrganisationOrganisationClassification(_organisationId, organisationClassificationTypeId, organisationClassificationId);
 
         var response = await Update(await _apiFixture.CreateCjmClient(), organisationOrganisationClassificationId, organisationClassificationTypeId, organisationClassificationId);
         await ApiFixture.VerifyStatusCode(response, HttpStatusCode.BadRequest);

@@ -41,14 +41,10 @@ public class RegisterBodyCommandHandler
                             : null;
 
                     var activeLifecyclePhaseType =
-                        envelope.Command.ActiveLifecyclePhaseTypeId is { } activeLifecyclePhaseTypeId
-                            ? session.Get<LifecyclePhaseType>(activeLifecyclePhaseTypeId)
-                            : null;
+                        session.Get<LifecyclePhaseType>(envelope.Command.ActiveLifecyclePhaseTypeId);
 
                     var inActiveLifecyclePhaseType =
-                        envelope.Command.InactiveLifecyclePhaseTypeId is { } inactiveLifecyclePhaseTypeId
-                            ? session.Get<LifecyclePhaseType>(inactiveLifecyclePhaseTypeId)
-                            : null;
+                        session.Get<LifecyclePhaseType>(envelope.Command.InactiveLifecyclePhaseTypeId);
 
                     var body = new Body(
                         envelope.Command.BodyId,

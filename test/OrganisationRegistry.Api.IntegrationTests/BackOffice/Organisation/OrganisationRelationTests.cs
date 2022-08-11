@@ -13,12 +13,10 @@ using Xunit;
 public class OrganisationRelationTests
 {
     private readonly ApiFixture _apiFixture;
-    private readonly OrganisationHelpers _helpers;
 
     public OrganisationRelationTests(ApiFixture apiFixture)
     {
         _apiFixture = apiFixture;
-        _helpers = new OrganisationHelpers(_apiFixture);
     }
 
     [Fact]
@@ -26,7 +24,7 @@ public class OrganisationRelationTests
     {
         var organisationId = _apiFixture.Fixture.Create<Guid>();
         var route = $"/v1/organisations/{organisationId}/relations";
-        await _helpers.CreateOrganisation(organisationId, _apiFixture.Fixture.Create<string>());
+        await _apiFixture.Create.Organisation(organisationId, _apiFixture.Fixture.Create<string>());
 
         var getResponse = await ApiFixture.Get(_apiFixture.HttpClient, $"{route}/{_apiFixture.Fixture.Create<Guid>()}");
         getResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -47,10 +45,10 @@ public class OrganisationRelationTests
 
     private async Task<Guid> CreateAndVerify(string baseRoute)
     {
-        var relationTypeId = await _helpers.CreateOrganisationRelationType();
+        var relationTypeId = await _apiFixture.Create.OrganisationRelationType();
 
         var relatedOrganisationId = _apiFixture.Fixture.Create<Guid>();
-        await _helpers.CreateOrganisation(relatedOrganisationId, _apiFixture.Fixture.Create<string>());
+        await _apiFixture.Create.Organisation(relatedOrganisationId, _apiFixture.Fixture.Create<string>());
 
         var today = _apiFixture.Fixture.Create<DateTime>();
 
@@ -71,10 +69,10 @@ public class OrganisationRelationTests
 
     private async Task UpdateAndVerify(string baseRoute, Guid id)
     {
-        var relationTypeId = await _helpers.CreateOrganisationRelationType();
+        var relationTypeId = await _apiFixture.Create.OrganisationRelationType();
 
         var relatedOrganisationId = _apiFixture.Fixture.Create<Guid>();
-        await _helpers.CreateOrganisation(relatedOrganisationId, _apiFixture.Fixture.Create<string>());
+        await _apiFixture.Create.Organisation(relatedOrganisationId, _apiFixture.Fixture.Create<string>());
 
         var today = _apiFixture.Fixture.Create<DateTime>();
 

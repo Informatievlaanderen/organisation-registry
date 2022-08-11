@@ -8,12 +8,12 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
-using System.Runtime.Serialization;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using AutoFixture;
 using AutoFixture.Kernel;
+using BackOffice;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using IdentityModel;
@@ -130,6 +130,8 @@ public class ApiFixture : IDisposable, IAsyncLifetime
         Configuration = _webHost.Services.GetRequiredService<IOrganisationRegistryConfiguration>();
     }
 
+    public CreationHelpers Create
+        => new(this);
 
     public dynamic CreateInstanceOf(Type requestType)
         => new SpecimenContext(Fixture).Resolve(requestType);
@@ -190,24 +192,6 @@ public class ApiFixture : IDisposable, IAsyncLifetime
         httpClientFor.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         httpClientFor.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         return httpClientFor;
-    }
-
-
-    public async Task<HttpResponseMessage> Create(string baseRoute, object body)
-        => await Post(HttpClient, $"{baseRoute}", body);
-
-    public async Task<HttpResponseMessage> Update(string baseRoute, Guid id, object updateRequest)
-        => await Put(HttpClient, $"{baseRoute}/{id}", updateRequest);
-
-    public async Task<TId> Create<TId>(string route, dynamic body)
-        where TId : notnull
-    {
-        if (body.GetType().GetProperty("Id") is not { })
-            throw new InvalidDataContractException("Object to create should have an 'Id' property.");
-
-        body.Id = Fixture.Create<TId>();
-        await Post(HttpClient, route, body);
-        return body.Id;
     }
 
     public static async Task<HttpResponseMessage> Post(HttpClient httpClient, string route, object body)

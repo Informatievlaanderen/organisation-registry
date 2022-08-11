@@ -13,12 +13,10 @@ using Xunit;
 public class OrganisationRegulationTests
 {
     private readonly ApiFixture _apiFixture;
-    private readonly OrganisationHelpers _helpers;
 
     public OrganisationRegulationTests(ApiFixture apiFixture)
     {
         _apiFixture = apiFixture;
-        _helpers = new OrganisationHelpers(_apiFixture);
     }
 
     [Fact]
@@ -26,7 +24,7 @@ public class OrganisationRegulationTests
     {
         var organisationId = _apiFixture.Fixture.Create<Guid>();
         var route = $"/v1/organisations/{organisationId}/regulations";
-        await _helpers.CreateOrganisation(organisationId, _apiFixture.Fixture.Create<string>());
+        await _apiFixture.Create.Organisation(organisationId, _apiFixture.Fixture.Create<string>());
 
         var getResponse = await ApiFixture.Get(_apiFixture.HttpClient, $"{route}/{_apiFixture.Fixture.Create<Guid>()}");
         getResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -47,8 +45,8 @@ public class OrganisationRegulationTests
 
     private async Task<Guid> CreateAndVerify(string baseRoute)
     {
-        var regulationThemeId = await _helpers.CreateRegulationTheme();
-        var regulationSubThemeId = await _helpers.CreateRegulationSubTheme(regulationThemeId);
+        var regulationThemeId = await _apiFixture.Create.RegulationTheme();
+        var regulationSubThemeId = await _apiFixture.Create.RegulationSubTheme(regulationThemeId);
         var today = _apiFixture.Fixture.Create<DateTime>();
 
         var id = _apiFixture.Fixture.Create<Guid>();
@@ -74,8 +72,8 @@ public class OrganisationRegulationTests
 
     private async Task UpdateAndVerify(string baseRoute, Guid id)
     {
-        var regulationThemeId = await _helpers.CreateRegulationTheme();
-        var regulationSubThemeId = await _helpers.CreateRegulationSubTheme(regulationThemeId);
+        var regulationThemeId = await _apiFixture.Create.RegulationTheme();
+        var regulationSubThemeId = await _apiFixture.Create.RegulationSubTheme(regulationThemeId);
         var today = _apiFixture.Fixture.Create<DateTime>();
 
         var body = new UpdateOrganisationRegulationRequest

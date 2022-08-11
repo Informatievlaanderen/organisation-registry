@@ -17,8 +17,8 @@ public class RegisterBody : BaseCommand<BodyId>
     public Period Validity { get; }
     public Period FormalValidity { get; }
 
-    public LifecyclePhaseTypeId? ActiveLifecyclePhaseTypeId { get; }
-    public LifecyclePhaseTypeId? InactiveLifecyclePhaseTypeId { get; }
+    public LifecyclePhaseTypeId ActiveLifecyclePhaseTypeId { get; }
+    public LifecyclePhaseTypeId InactiveLifecyclePhaseTypeId { get; }
 
     public RegisterBody(
         BodyId bodyId,
@@ -29,8 +29,8 @@ public class RegisterBody : BaseCommand<BodyId>
         string? description,
         Period validity,
         Period formalValidity,
-        LifecyclePhaseTypeId? activeLifecyclePhaseTypeId,
-        LifecyclePhaseTypeId? inactiveLifecyclePhaseTypeId)
+        LifecyclePhaseTypeId activeLifecyclePhaseTypeId,
+        LifecyclePhaseTypeId inactiveLifecyclePhaseTypeId)
     {
         Id = bodyId;
 

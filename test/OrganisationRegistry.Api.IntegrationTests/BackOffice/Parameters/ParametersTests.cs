@@ -105,7 +105,7 @@ public class ParametersTests
         updatedInstance.Id = id;
 
         // update
-        var updateResponse = await _apiFixture.Update(baseRoute, id, updatedInstance);
+        var updateResponse = await Update(baseRoute, id, updatedInstance);
         await ApiFixture.VerifyStatusCode(updateResponse, HttpStatusCode.OK);
 
         // get
@@ -158,7 +158,7 @@ public class ParametersTests
     {
         var request = await CreateInstanceWithDependencies(requestType, dependencyRoutes);
 
-        var response = await _apiFixture.Create(requestRoute, request);
+        var response = await Create(requestRoute, request);
 
         return (request, response);
     }
@@ -182,7 +182,7 @@ public class ParametersTests
     private async Task<object> AddDependency(Type requestType, string dependencyRoute, string dependencyProperty, Type dependencyRequestType, object request)
     {
         var dependencyRequest = _apiFixture.CreateInstanceOf(dependencyRequestType);
-        var dependencyResponse = await _apiFixture.Create(dependencyRoute, dependencyRequest);
+        var dependencyResponse = await Create(dependencyRoute, dependencyRequest);
 
         requestType.InvokeMember(
             dependencyProperty,
@@ -193,4 +193,10 @@ public class ParametersTests
 
         return request;
     }
+
+    public async Task<HttpResponseMessage> Create(string baseRoute, object body)
+        => await ApiFixture.Post(_apiFixture.HttpClient, $"{baseRoute}", body);
+
+    public async Task<HttpResponseMessage> Update(string baseRoute, Guid id, object updateRequest)
+        => await ApiFixture.Put(_apiFixture.HttpClient, $"{baseRoute}/{id}", updateRequest);
 }

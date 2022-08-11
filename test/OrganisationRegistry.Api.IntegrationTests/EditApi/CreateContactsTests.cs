@@ -6,7 +6,6 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using AutoFixture;
-using BackOffice.Organisation;
 using FluentAssertions;
 using Tests.Shared;
 using Xunit;
@@ -18,12 +17,10 @@ public class CreateContactsTests
     private const string ContactTypeName = "contactTypeName";
     private readonly ApiFixture _apiFixture;
     private readonly Guid _organisationId;
-    private readonly OrganisationHelpers _helpers;
 
     public CreateContactsTests(ApiFixture apiFixture)
     {
         _apiFixture = apiFixture;
-        _helpers = new OrganisationHelpers(_apiFixture);
         _organisationId = _apiFixture.Fixture.Create<Guid>();
     }
 
@@ -53,8 +50,8 @@ public class CreateContactsTests
     [EnvVarIgnoreFact]
     public async Task AsCJM_CanAddAndUpdate()
     {
-        await _helpers.CreateOrganisation(_organisationId, TestOrganisationForCreateContacts);
-        var contactTypeId = await _helpers.CreateContactType(ContactTypeName);
+        await _apiFixture.Create.Organisation(_organisationId, TestOrganisationForCreateContacts);
+        var contactTypeId = await _apiFixture.Create.ContactType(ContactTypeName);
 
         var httpClient = await _apiFixture.CreateMachine2MachineClientFor(ApiFixture.CJM.Client, ApiFixture.CJM.Scope);
         var organisationContactId = await CreatAndVerify(httpClient, contactTypeId);

@@ -43,8 +43,8 @@ public class BodyDetailCommandController : OrganisationRegistryCommandController
         await CommandSender.Send(
             RegisterBodyRequestMapping.Map(
                 message,
-                context.LifecyclePhaseTypeList.SingleOrDefault(x => x.RepresentsActivePhase && x.IsDefaultPhase),
-                context.LifecyclePhaseTypeList.SingleOrDefault(x => !x.RepresentsActivePhase && x.IsDefaultPhase)));
+                context.LifecyclePhaseTypeList.Single(x => x.RepresentsActivePhase && x.IsDefaultPhase),
+                context.LifecyclePhaseTypeList.Single(x => !x.RepresentsActivePhase && x.IsDefaultPhase)));
 
         return CreatedWithLocation(nameof(BodyDetailController),nameof(BodyDetailController.Get), new { id = message.Id });
     }

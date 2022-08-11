@@ -2,6 +2,7 @@
 
 using System;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using AutoFixture;
 using Backoffice.Parameters.LifecyclePhaseType.Requests;
@@ -27,10 +28,10 @@ public class LifecyclePhaseTypeTests
         const string baseRoute = ParametersTestData.LifecyclephasetypesRoute;
 
         var request1 = new CreateLifecyclePhaseTypeRequest { Id = _apiFixture.Fixture.Create<Guid>(), Name = _apiFixture.Fixture.Create<string>() };
-        await ApiFixture.VerifyStatusCode(await _apiFixture.Create(baseRoute, request1), HttpStatusCode.Created);
+        await ApiFixture.VerifyStatusCode(await Create(baseRoute, request1), HttpStatusCode.Created);
 
         var request2 = new CreateLifecyclePhaseTypeRequest { Id = _apiFixture.Fixture.Create<Guid>(), Name = _apiFixture.Fixture.Create<string>() };
-        await ApiFixture.VerifyStatusCode(await _apiFixture.Create(baseRoute, request2), HttpStatusCode.Created);
+        await ApiFixture.VerifyStatusCode(await Create(baseRoute, request2), HttpStatusCode.Created);
 
         var getResponse = await ApiFixture.Get(_apiFixture.HttpClient, $"{baseRoute}");
         getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -40,4 +41,7 @@ public class LifecyclePhaseTypeTests
 
         deserializedResponse.Should().HaveCountGreaterThanOrEqualTo(2);
     }
+
+    public async Task<HttpResponseMessage> Create(string baseRoute, object body)
+        => await ApiFixture.Post(_apiFixture.HttpClient, $"{baseRoute}", body);
 }

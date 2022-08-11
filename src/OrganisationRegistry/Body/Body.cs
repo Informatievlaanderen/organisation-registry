@@ -70,8 +70,8 @@ public class Body : AggregateRoot
         string? description,
         Period validity,
         Period formalValidity,
-        LifecyclePhaseType? maybeActiveLifecyclePhaseType,
-        LifecyclePhaseType? maybeInactiveLifecyclePhaseType) : this(name, bodyNumber)
+        LifecyclePhaseType activeLifecyclePhaseType,
+        LifecyclePhaseType inactiveLifecyclePhaseType) : this(name, bodyNumber)
     {
         ApplyChange(new BodyRegistered(
             id,
@@ -82,14 +82,8 @@ public class Body : AggregateRoot
             formalValidity.Start,
             formalValidity.End));
 
-        if (maybeActiveLifecyclePhaseType is not { } activeLifecyclePhaseType)
-            throw new IncorrectActiveLifecyclePhaseTypeDefinedInConfiguration();
-
         if (IsNotTheDefaultActiveLifecyclePhaseType(activeLifecyclePhaseType))
             throw new IncorrectActiveLifecyclePhaseTypeDefinedInConfiguration();
-
-        if (maybeInactiveLifecyclePhaseType is not { } inactiveLifecyclePhaseType)
-            throw new IncorrectInactiveLifecyclePhaseTypeDefinedInConfiguration();
 
         if (IsNotTheDefaultInactiveLifecyclePhaseType(inactiveLifecyclePhaseType))
             throw new IncorrectInactiveLifecyclePhaseTypeDefinedInConfiguration();
