@@ -40,7 +40,7 @@ export class OrganisationInfoService {
   public readonly canViewKboManagementChanged$: Observable<boolean> =
     this.onSecurityChanged.pipe(
       map(([organisation, securityInfo]) =>
-        OrganisationAuthorization.canViewVlimpersManagement(
+        OrganisationAuthorization.canViewKboManagement(
           organisation,
           securityInfo
         )
