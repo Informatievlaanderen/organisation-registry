@@ -4,7 +4,6 @@ using System;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using BackOffice.Organisation;
 using FluentAssertions;
 using Tests.Shared;
 using Xunit;
@@ -17,12 +16,10 @@ public class CreateBankAccountNumberTests
     private readonly ApiFixture _apiFixture;
     private readonly ITestOutputHelper _testOutputHelper;
     private readonly Guid _organisationId;
-    private readonly OrganisationHelpers _helpers;
 
     public CreateBankAccountNumberTests(ApiFixture apiFixture, ITestOutputHelper testOutputHelper)
     {
         _apiFixture = apiFixture;
-        _helpers = new OrganisationHelpers(_apiFixture);
         _testOutputHelper = testOutputHelper;
         _organisationId = Guid.NewGuid();
     }
@@ -31,7 +28,7 @@ public class CreateBankAccountNumberTests
     public async Task WithoutBearer_ReturnsUnauthorized()
     {
         var organisationId = Guid.NewGuid();
-        await _helpers.CreateOrganisation(_organisationId, TestOrganisationForCreatebankaccountnumbers);
+        await _apiFixture.Create.Organisation(_organisationId, TestOrganisationForCreatebankaccountnumbers);
 
         var response = await CreateBankAccountNumber(_apiFixture.HttpClient, organisationId, "BE86001197741650", "GEBABEBB");
 
@@ -43,7 +40,7 @@ public class CreateBankAccountNumberTests
     [InlineData(ApiFixture.Test.Client, ApiFixture.Test.Scope)]
     public async Task CanCreateAndUpdateAs(string client, string scope)
     {
-        await _helpers.CreateOrganisation(_organisationId, TestOrganisationForCreatebankaccountnumbers);
+        await _apiFixture.Create.Organisation(_organisationId, TestOrganisationForCreatebankaccountnumbers);
 
         var httpClient = await _apiFixture.CreateMachine2MachineClientFor(client, scope);
 
@@ -61,7 +58,7 @@ public class CreateBankAccountNumberTests
     [EnvVarIgnoreFact]
     public async Task AsCjmBeheerder_CannotCreateWithInvalidBic()
     {
-        await _helpers.CreateOrganisation(_organisationId, TestOrganisationForCreatebankaccountnumbers);
+        await _apiFixture.Create.Organisation(_organisationId, TestOrganisationForCreatebankaccountnumbers);
 
         var client = await _apiFixture.CreateMachine2MachineClientFor(ApiFixture.CJM.Client, ApiFixture.CJM.Scope);
 
@@ -73,7 +70,7 @@ public class CreateBankAccountNumberTests
     [EnvVarIgnoreFact]
     public async Task AsCjmBeheerder_CannotCreateWithInvalidFrom_InvalidTo()
     {
-        await _helpers.CreateOrganisation(_organisationId, TestOrganisationForCreatebankaccountnumbers);
+        await _apiFixture.Create.Organisation(_organisationId, TestOrganisationForCreatebankaccountnumbers);
 
         var response = await CreateBankAccountNumber(await _apiFixture.CreateCjmClient(), _organisationId, "BE86001197741650", "NOT_A_BIC", invalidValidFrom: "XX", invalidValidTo: "YY");
 
@@ -85,7 +82,7 @@ public class CreateBankAccountNumberTests
     [EnvVarIgnoreFact]
     public async Task AsCjmBeheerder_CannotCreateWithEmptyOrganisationId()
     {
-        await _helpers.CreateOrganisation(_organisationId, TestOrganisationForCreatebankaccountnumbers);
+        await _apiFixture.Create.Organisation(_organisationId, TestOrganisationForCreatebankaccountnumbers);
 
         var response = await CreateBankAccountNumber(await _apiFixture.CreateCjmClient(), Guid.Empty, "BE86001197741650", "NOT_A_BIC");
 
@@ -97,7 +94,7 @@ public class CreateBankAccountNumberTests
     [EnvVarIgnoreFact]
     public async Task AsCjmBeheerder_CannotCreateWithInvalidOrganisationId()
     {
-        await _helpers.CreateOrganisation(_organisationId, TestOrganisationForCreatebankaccountnumbers);
+        await _apiFixture.Create.Organisation(_organisationId, TestOrganisationForCreatebankaccountnumbers);
 
         var response = await CreateBankAccountNumber(await _apiFixture.CreateCjmClient(), Guid.Empty, "BE86001197741650", "NOT_A_BIC", invalidOrganisationId: "XX");
 
@@ -109,7 +106,7 @@ public class CreateBankAccountNumberTests
     [EnvVarIgnoreFact]
     public async Task AsCjmBeheerder_CannotUpdateWithInvalidFrom_InvalidTo()
     {
-        await _helpers.CreateOrganisation(_organisationId, TestOrganisationForCreatebankaccountnumbers);
+        await _apiFixture.Create.Organisation(_organisationId, TestOrganisationForCreatebankaccountnumbers);
 
         var httpClient = await _apiFixture.CreateCjmClient();
 
@@ -126,7 +123,7 @@ public class CreateBankAccountNumberTests
     [EnvVarIgnoreFact]
     public async Task AsOrafinBeheerder_ReturnsForbidden()
     {
-        await _helpers.CreateOrganisation(_organisationId, TestOrganisationForCreatebankaccountnumbers);
+        await _apiFixture.Create.Organisation(_organisationId, TestOrganisationForCreatebankaccountnumbers);
 
         var client = await _apiFixture.CreateMachine2MachineClientFor(ApiFixture.Orafin.Client, ApiFixture.Orafin.Scope);
 

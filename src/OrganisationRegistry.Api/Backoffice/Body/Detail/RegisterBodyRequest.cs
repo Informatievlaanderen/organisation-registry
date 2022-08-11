@@ -74,8 +74,8 @@ public static class RegisterBodyRequestMapping
 {
     public static RegisterBody Map(
         RegisterBodyRequest message,
-        LifecyclePhaseTypeListItem? activeLifecyclePhaseTypeListItem,
-        LifecyclePhaseTypeListItem? inactiveLifecyclePhaseTypeListItem)
+        LifecyclePhaseTypeListItem activeLifecyclePhaseTypeListItem,
+        LifecyclePhaseTypeListItem inactiveLifecyclePhaseTypeListItem)
         => new(
             new BodyId(message.Id),
             message.Name,
@@ -89,6 +89,6 @@ public static class RegisterBodyRequestMapping
             new Period(
                 new ValidFrom(message.FormalValidFrom),
                 new ValidTo(message.FormalValidTo)),
-            activeLifecyclePhaseTypeListItem != null ? new LifecyclePhaseTypeId(activeLifecyclePhaseTypeListItem.Id) : null,
-            inactiveLifecyclePhaseTypeListItem != null ? new LifecyclePhaseTypeId(inactiveLifecyclePhaseTypeListItem.Id) : null);
+            new LifecyclePhaseTypeId(activeLifecyclePhaseTypeListItem.Id),
+            new LifecyclePhaseTypeId(inactiveLifecyclePhaseTypeListItem.Id));
 }
