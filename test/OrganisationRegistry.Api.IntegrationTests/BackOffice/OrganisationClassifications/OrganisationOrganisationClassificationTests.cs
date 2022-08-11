@@ -6,16 +6,19 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using AutoFixture;
 using Backoffice.Organisation.OrganisationClassification;
+using Organisation;
 using Xunit;
 
 [Collection(ApiTestsCollection.Name)]
 public class OrganisationOrganisationClassificationTests
 {
     private readonly ApiFixture _apiFixture;
+    private readonly OrganisationHelpers _helpers;
 
     public OrganisationOrganisationClassificationTests(ApiFixture apiFixture)
     {
         _apiFixture = apiFixture;
+        _helpers = new OrganisationHelpers(_apiFixture);
     }
 
     [Fact]
@@ -23,11 +26,11 @@ public class OrganisationOrganisationClassificationTests
     {
         var organisationId = _apiFixture.Fixture.Create<Guid>();
         var organisationName = _apiFixture.Fixture.Create<string>();
-        await _apiFixture.CreateOrganisation(organisationId, organisationName);
+        await _helpers.CreateOrganisation(organisationId, organisationName);
 
-        var organisationClassificationTypeId = await _apiFixture.CreateOrganisationClassificationType(allowDifferentClassificationsToOverlap: true);
-        var organisationClassification1Id = await _apiFixture.CreateOrganisationClassification(organisationClassificationTypeId);
-        var organisationClassification2Id = await _apiFixture.CreateOrganisationClassification(organisationClassificationTypeId);
+        var organisationClassificationTypeId = await _helpers.CreateOrganisationClassificationType(allowDifferentClassificationsToOverlap: true);
+        var organisationClassification1Id = await _helpers.CreateOrganisationClassification(organisationClassificationTypeId);
+        var organisationClassification2Id = await _helpers.CreateOrganisationClassification(organisationClassificationTypeId);
 
         var response1 = await AddOrganisationOrganisationClassification(organisationId, organisationClassificationTypeId, organisationClassification1Id);
         await ApiFixture.VerifyStatusCode(response1, HttpStatusCode.Created);
@@ -41,11 +44,11 @@ public class OrganisationOrganisationClassificationTests
     {
         var organisationId = _apiFixture.Fixture.Create<Guid>();
         var organisationName = _apiFixture.Fixture.Create<string>();
-        await _apiFixture.CreateOrganisation(organisationId, organisationName);
+        await _helpers.CreateOrganisation(organisationId, organisationName);
 
-        var organisationClassificationTypeId = await _apiFixture.CreateOrganisationClassificationType(allowDifferentClassificationsToOverlap: false);
-        var organisationClassification1Id = await _apiFixture.CreateOrganisationClassification(organisationClassificationTypeId);
-        var organisationClassification2Id = await _apiFixture.CreateOrganisationClassification(organisationClassificationTypeId);
+        var organisationClassificationTypeId = await _helpers.CreateOrganisationClassificationType(allowDifferentClassificationsToOverlap: false);
+        var organisationClassification1Id = await _helpers.CreateOrganisationClassification(organisationClassificationTypeId);
+        var organisationClassification2Id = await _helpers.CreateOrganisationClassification(organisationClassificationTypeId);
 
         var response1 = await AddOrganisationOrganisationClassification(organisationId, organisationClassificationTypeId, organisationClassification1Id);
         await ApiFixture.VerifyStatusCode(response1, HttpStatusCode.Created);
@@ -59,11 +62,11 @@ public class OrganisationOrganisationClassificationTests
     {
         var organisationId = _apiFixture.Fixture.Create<Guid>();
         var organisationName = _apiFixture.Fixture.Create<string>();
-        await _apiFixture.CreateOrganisation(organisationId, organisationName);
+        await _helpers.CreateOrganisation(organisationId, organisationName);
 
-        var organisationClassificationTypeId = await _apiFixture.CreateOrganisationClassificationType(allowDifferentClassificationsToOverlap: false);
-        var organisationClassification1Id = await _apiFixture.CreateOrganisationClassification(organisationClassificationTypeId);
-        var organisationClassification2Id = await _apiFixture.CreateOrganisationClassification(organisationClassificationTypeId);
+        var organisationClassificationTypeId = await _helpers.CreateOrganisationClassificationType(allowDifferentClassificationsToOverlap: false);
+        var organisationClassification1Id = await _helpers.CreateOrganisationClassification(organisationClassificationTypeId);
+        var organisationClassification2Id = await _helpers.CreateOrganisationClassification(organisationClassificationTypeId);
 
         var response1 = await AddOrganisationOrganisationClassification(organisationId, organisationClassificationTypeId, organisationClassification1Id, validTo: DateTime.Today);
         await ApiFixture.VerifyStatusCode(response1, HttpStatusCode.Created);

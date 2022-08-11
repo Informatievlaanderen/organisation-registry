@@ -13,10 +13,12 @@ using Xunit;
 public class OrganisationCapacityTests
 {
     private readonly ApiFixture _apiFixture;
+    private readonly OrganisationHelpers _helpers;
 
     public OrganisationCapacityTests(ApiFixture apiFixture)
     {
         _apiFixture = apiFixture;
+        _helpers = new OrganisationHelpers(_apiFixture);
     }
 
     [Fact]
@@ -24,7 +26,7 @@ public class OrganisationCapacityTests
     {
         var organisationId = _apiFixture.Fixture.Create<Guid>();
         var route = $"/v1/organisations/{organisationId}/capacities";
-        await _apiFixture.CreateOrganisation(organisationId, _apiFixture.Fixture.Create<string>());
+        await _helpers.CreateOrganisation(organisationId, _apiFixture.Fixture.Create<string>());
 
         var getResponse = await ApiFixture.Get(_apiFixture.HttpClient, $"{route}/{_apiFixture.Fixture.Create<Guid>()}");
         getResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -48,9 +50,9 @@ public class OrganisationCapacityTests
 
     private async Task<Guid> CreateAndVerify(string baseRoute)
     {
-        var personId = await _apiFixture.CreatePerson();
-        var functionId = await _apiFixture.CreateFunction();
-        var capacityId = await _apiFixture.CreateCapacity();
+        var personId = await _helpers.CreatePerson();
+        var functionId = await _helpers.CreateFunction();
+        var capacityId = await _helpers.CreateCapacity();
         var today = _apiFixture.Fixture.Create<DateTime>();
 
         var id = _apiFixture.Fixture.Create<Guid>();
@@ -73,9 +75,9 @@ public class OrganisationCapacityTests
 
     private async Task UpdateAndVerify(string baseRoute, Guid id)
     {
-        var personId = await _apiFixture.CreatePerson();
-        var functionId = await _apiFixture.CreateFunction();
-        var capacityId = await _apiFixture.CreateCapacity();
+        var personId = await _helpers.CreatePerson();
+        var functionId = await _helpers.CreateFunction();
+        var capacityId = await _helpers.CreateCapacity();
         var today = _apiFixture.Fixture.Create<DateTime>();
 
         var body = new UpdateOrganisationCapacityRequest

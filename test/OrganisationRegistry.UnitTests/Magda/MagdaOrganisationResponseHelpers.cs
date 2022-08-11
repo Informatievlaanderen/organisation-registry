@@ -131,7 +131,7 @@ public class MagdaOrganisationResponseHelpers
 
         var errors = reply.Uitzonderingen?
             .Where(type => type.Type == UitzonderingTypeType.FOUT)
-            ?.ToList() ?? new List<UitzonderingType>();
+            .ToList() ?? new List<UitzonderingType>();
 
         errors.ForEach(type => _logger.WriteLine($"{type.Diagnose}"));
 
