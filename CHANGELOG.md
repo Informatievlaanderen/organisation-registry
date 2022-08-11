@@ -1,3 +1,11 @@
+# [1.266.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.265.0...v1.266.0) (2022-08-11)
+
+
+### Features
+
+* or-1139 add unit tests ([9ec21e8](https://github.com/informatievlaanderen/organisation-registry/commit/9ec21e80b1ccc573e5cb244904663ec29aeab38f))
+* or-1160 expose parameters via public api ([efdf1c4](https://github.com/informatievlaanderen/organisation-registry/commit/efdf1c4c396d68796d354e438220221312d46b1b))
+
 # [1.265.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.264.0...v1.265.0) (2022-08-11)
 
 
