@@ -37,9 +37,5 @@
     <Content Include="..\..\organisationregistry-api.pfx" Link="organisationregistry-api.pfx" CopyToOutputDirectory="Always" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Backoffice\Admin" />
-  </ItemGroup>
-
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

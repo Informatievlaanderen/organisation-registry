@@ -129,6 +129,12 @@ public class ParametersTests
         await CreateWithDependencies(route, testData.CreateParameterRequestType, testData.DependencyRoutes);
         await CreateWithDependencies(route, testData.CreateParameterRequestType, testData.DependencyRoutes);
 
+        await VerifyGetList(route);
+        await VerifyGetList(route.Replace("/v1/", "/v1/parameters/"));
+    }
+
+    private async Task VerifyGetList(string route)
+    {
         var getResponse = await ApiFixture.Get(_apiFixture.HttpClient, $"{route}");
         await ApiFixture.VerifyStatusCode(getResponse, HttpStatusCode.OK);
 
