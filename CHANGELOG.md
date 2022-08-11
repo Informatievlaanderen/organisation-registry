@@ -1,3 +1,10 @@
+# [1.264.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.263.1...v1.264.0) (2022-08-11)
+
+
+### Features
+
+* separate powerbi export docs ([1b56222](https://github.com/informatievlaanderen/organisation-registry/commit/1b56222c85e492ced0be477473a0784890200408))
+
 ## [1.263.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.263.0...v1.263.1) (2022-08-10)
 
 
