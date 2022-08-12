@@ -289,7 +289,7 @@ jobs:
         run: ./build.sh Vue_Build
 
   notify:
-    if: github.repository_owner == 'Informatievlaanderen'
+    if: ${{ always() }}
     name: Notify slack
     runs-on: ubuntu-latest
 
