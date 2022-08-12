@@ -1,3 +1,11 @@
+# [1.267.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.266.0...v1.267.0) (2022-08-12)
+
+
+### Features
+
+* or-1139 add more unit tests ([e581f49](https://github.com/informatievlaanderen/organisation-registry/commit/e581f4930305dfeec99b751e2afeafe4f21b1fce))
+* or-1154 create tests for bodycontacts and bodyformalframeworks (coverage) ([e1bc1ec](https://github.com/informatievlaanderen/organisation-registry/commit/e1bc1eca274050b80c8a97d71f9bf3e509996e74))
+
 # [1.266.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.265.0...v1.266.0) (2022-08-11)
 
 
