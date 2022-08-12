@@ -20,6 +20,7 @@ using Backoffice.Parameters.OrganisationRelationType.Requests;
 using Backoffice.Parameters.RegulationSubTheme.Requests;
 using Backoffice.Parameters.RegulationTheme.Requests;
 using Backoffice.Person.Detail;
+using FluentAssertions.Equivalency.Steps;
 using OrganisationRegistry.Api.Backoffice.Parameters.KeyType.Requests;
 using Person;
 
@@ -36,7 +37,7 @@ public class CreationHelpers
     public async Task Organisation(Guid organisationId, string organisationName)
         => await ApiFixture.Post(_fixture.HttpClient, "/v1/organisations", new { id = organisationId, name = organisationName });
 
-      public async Task<Guid> CreateOrganisationClassificationType(bool allowDifferentClassificationsToOverlap)
+    public async Task<Guid> CreateOrganisationClassificationType(bool allowDifferentClassificationsToOverlap)
         => await Create<Guid>(
             "/v1/organisationclassificationtypes",
             new CreateOrganisationClassificationTypeRequest
@@ -120,23 +121,19 @@ public class CreationHelpers
 
     private async Task DefaultLifecyclePhaseTypes()
     {
-        await Create<Guid>(
-            "/v1/lifecyclephasetypes",
-            new CreateLifecyclePhaseTypeRequest()
-            {
-                Name = _fixture.Fixture.Create<string>(),
-                IsDefaultPhase = true,
-                RepresentsActivePhase = true,
-            });
-        await Create<Guid>(
-            "/v1/lifecyclephasetypes",
-            new CreateLifecyclePhaseTypeRequest()
-            {
-                Name = _fixture.Fixture.Create<string>(),
-                IsDefaultPhase = true,
-                RepresentsActivePhase = false,
-            });
+        await LifecyclePhaseType(isDefaultPhase: true, representsActivePhase: true);
+        await LifecyclePhaseType(isDefaultPhase: true, representsActivePhase: false);
     }
+
+    public async Task<Guid> LifecyclePhaseType(bool? isDefaultPhase = null, bool? representsActivePhase = null)
+        => await Create<Guid>(
+            "/v1/lifecyclephasetypes",
+            new CreateLifecyclePhaseTypeRequest()
+            {
+                Name = _fixture.Fixture.Create<string>(),
+                IsDefaultPhase = isDefaultPhase ?? false,
+                RepresentsActivePhase = representsActivePhase ?? false,
+            });
 
     // Common
     public async Task<Guid> KeyType()
