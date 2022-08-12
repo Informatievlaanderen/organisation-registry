@@ -7,6 +7,7 @@ using FormalFramework;
 using Infrastructure.Tests.Extensions.TestHelpers;
 using Microsoft.Extensions.Logging;
 using Moq;
+using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Configuration;
 using OrganisationRegistry.Infrastructure.Domain;
 using Tests.Shared;
@@ -94,11 +95,13 @@ public class WhenAddingAnOrganisationFormalFramework : Specification<AddOrganisa
             .ThenItPublishesTheCorrectNumberOfEvents(2);
     }
 
-    [Fact]
-    public async Task AddsAnOrganisationParent()
+    [Theory]
+    [InlineData(Role.AlgemeenBeheerder)]
+    [InlineData(Role.CjmBeheerder)]
+    public async Task AddsAnOrganisationParent(Role role)
     {
         await Given(Events)
-            .When(AddOrganisationFormalFrameworkCommand, TestUser.AlgemeenBeheerder)
+            .When(AddOrganisationFormalFrameworkCommand, new UserBuilder().AddRoles(role).Build())
             .Then();
 
         PublishedEvents[0]

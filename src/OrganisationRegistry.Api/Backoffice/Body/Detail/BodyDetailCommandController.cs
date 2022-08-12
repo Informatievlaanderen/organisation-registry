@@ -28,11 +28,8 @@ public class BodyDetailCommandController : OrganisationRegistryCommandController
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Post([FromServices] ISecurityService securityService, [FromServices] OrganisationRegistryContext context, [FromBody] RegisterBodyRequest message)
+    public async Task<IActionResult> Post([FromServices] OrganisationRegistryContext context, [FromBody] RegisterBodyRequest message)
     {
-        if (message.OrganisationId.HasValue && !await securityService.CanAddBody(User, message.OrganisationId))
-            ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor deze organisatie.");
-
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 

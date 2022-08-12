@@ -7,6 +7,9 @@ public static class TestUser
     public static User AlgemeenBeheerder
         => new UserBuilder().AddRoles(Role.AlgemeenBeheerder).Build();
 
+    public static User CjmBeheerder
+        => new UserBuilder().AddRoles(Role.CjmBeheerder).Build();
+
     public static User DecentraalBeheerder
         => new UserBuilder().AsDecentraalBeheerder().Build();
 

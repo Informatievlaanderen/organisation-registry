@@ -1,134 +1,133 @@
-import { NgModule } from "@angular/core";
-import { RouterModule, Routes } from "@angular/router";
+import {NgModule} from "@angular/core";
+import {RouterModule, Routes} from "@angular/router";
 
-import { RoleGuard, Role, FeatureGuard } from "core/auth";
+import {FeatureGuard, Role, RoleGuard} from "core/auth";
 
-import { OrganisationDetailComponent } from "./detail.component";
+import {OrganisationDetailComponent} from "./detail.component";
 
-import { ContactTypeResolver } from "services/contacttypes";
-import { LocationTypeResolver } from "services/locationtypes";
+import {ContactTypeResolver} from "services/contacttypes";
+import {LocationTypeResolver} from "services/locationtypes";
 
 import {
-  OrganisationInfoComponent,
-  OrganisationInfoOverviewComponent,
-  OrganisationInfoEditComponent,
-  OrganisationInfoAddChildOrganisationComponent,
-  OrganisationCoupleWithKboComponent,
   OrganisationCancelCouplingWithKboComponent,
+  OrganisationCoupleWithKboComponent,
+  OrganisationInfoAddChildOrganisationComponent,
+  OrganisationInfoComponent,
+  OrganisationInfoEditComponent,
+  OrganisationInfoOverviewComponent,
   OrganisationTerminateComponent,
 } from "organisation/info";
 
 import {
   OrganisationBuildingsComponent,
-  OrganisationBuildingsOverviewComponent,
   OrganisationBuildingsCreateOrganisationBuildingComponent,
+  OrganisationBuildingsOverviewComponent,
   OrganisationBuildingsUpdateOrganisationBuildingComponent,
 } from "organisation/buildings";
 
 import {
   OrganisationCapacitiesComponent,
-  OrganisationCapacitiesOverviewComponent,
   OrganisationCapacitiesCreateOrganisationCapacityComponent,
+  OrganisationCapacitiesOverviewComponent,
   OrganisationCapacitiesUpdateOrganisationCapacityComponent,
 } from "organisation/capacities";
 
 import {
   OrganisationOrganisationClassificationsComponent,
-  OrganisationOrganisationClassificationsOverviewComponent,
   OrganisationOrganisationClassificationsCreateOrganisationOrganisationClassificationComponent,
+  OrganisationOrganisationClassificationsOverviewComponent,
   OrganisationOrganisationClassificationsUpdateOrganisationOrganisationClassificationComponent,
 } from "organisation/classifications";
 
 import {
   OrganisationContactsComponent,
-  OrganisationContactsOverviewComponent,
   OrganisationContactsCreateOrganisationContactComponent,
+  OrganisationContactsOverviewComponent,
   OrganisationContactsUpdateOrganisationContactComponent,
 } from "organisation/contacts";
 
 import {
   OrganisationFunctionsComponent,
-  OrganisationFunctionsOverviewComponent,
   OrganisationFunctionsCreateOrganisationFunctionComponent,
+  OrganisationFunctionsOverviewComponent,
   OrganisationFunctionsUpdateOrganisationFunctionComponent,
 } from "organisation/functions";
 
 import {
   OrganisationKeysComponent,
-  OrganisationKeysOverviewComponent,
   OrganisationKeysCreateOrganisationKeyComponent,
+  OrganisationKeysOverviewComponent,
   OrganisationKeysUpdateOrganisationKeyComponent,
 } from "organisation/keys";
 
 import {
   OrganisationRegulationsComponent,
-  OrganisationRegulationsOverviewComponent,
   OrganisationRegulationsCreateOrganisationRegulationComponent,
+  OrganisationRegulationsOverviewComponent,
   OrganisationRegulationsUpdateOrganisationRegulationComponent,
 } from "organisation/regulations";
 
 import {
   OrganisationLabelsComponent,
-  OrganisationLabelsOverviewComponent,
   OrganisationLabelsCreateOrganisationLabelComponent,
+  OrganisationLabelsOverviewComponent,
   OrganisationLabelsUpdateOrganisationLabelComponent,
 } from "organisation/labels";
 
 import {
   OrganisationLocationsComponent,
-  OrganisationLocationsOverviewComponent,
   OrganisationLocationsCreateOrganisationLocationComponent,
+  OrganisationLocationsOverviewComponent,
   OrganisationLocationsUpdateOrganisationLocationComponent,
 } from "organisation/locations";
 
 import {
   OrganisationParentsComponent,
-  OrganisationParentsOverviewComponent,
   OrganisationParentsCreateOrganisationParentComponent,
+  OrganisationParentsOverviewComponent,
   OrganisationParentsUpdateOrganisationParentComponent,
 } from "organisation/parents";
 
 import {
   OrganisationFormalFrameworksComponent,
-  OrganisationFormalFrameworksOverviewComponent,
   OrganisationFormalFrameworksCreateOrganisationFormalFrameworkComponent,
+  OrganisationFormalFrameworksOverviewComponent,
   OrganisationFormalFrameworksUpdateOrganisationFormalFrameworkComponent,
 } from "organisation/formalframeworks";
 
 import {
   OrganisationBankAccountsComponent,
-  OrganisationBankAccountsOverviewComponent,
   OrganisationBankAccountsCreateOrganisationBankAccountComponent,
+  OrganisationBankAccountsOverviewComponent,
   OrganisationBankAccountsUpdateOrganisationBankAccountComponent,
 } from "organisation/bankaccounts";
 
-import {
-  OrganisationBodiesComponent,
-  OrganisationBodiesOverviewComponent,
-} from "organisation/bodies";
+import {OrganisationBodiesComponent, OrganisationBodiesOverviewComponent,} from "organisation/bodies";
 
 import {
   OrganisationRelationsComponent,
-  OrganisationRelationsOverviewComponent,
   OrganisationRelationsCreateOrganisationRelationComponent,
+  OrganisationRelationsOverviewComponent,
   OrganisationRelationsUpdateOrganisationRelationComponent,
 } from "organisation/relations";
 
 import {
   OrganisationOpeningHoursComponent,
-  OrganisationOpeningHoursOverviewComponent,
   OrganisationOpeningHoursCreateOrganisationOpeningHourComponent,
+  OrganisationOpeningHoursOverviewComponent,
   OrganisationOpeningHoursUpdateOrganisationOpeningHourComponent,
 } from "organisation/openinghours";
 
-import { OrganisationManagementOverviewComponent } from "organisation/management";
+import {OrganisationManagementOverviewComponent} from "organisation/management";
 
-import { OrganisationVlimpersOverviewComponent } from "organisation/vlimpers";
-import { OrganisationGuard } from "../guards/organisation.guard";
-import { CanAddAndUpdateFormalFrameworksGuard } from "../guards/can-add-update-formal-frameworks.guard";
-import { CanAddAndUpdateOrganisationClassificationTypeGuard } from "../guards/can-add-update-organisation-classification-type.guard";
-import { CanAddAndUpdateCapacityGuard } from "../guards/can-add-update-capacity.guard";
-import { CanAddAndUpdateRegulationGuard } from "../guards/can-add-update-regulation.guard";
+import {OrganisationVlimpersOverviewComponent} from "organisation/vlimpers";
+import {OrganisationGuard} from "../guards/organisation.guard";
+import {CanAddAndUpdateFormalFrameworksGuard} from "../guards/can-add-update-formal-frameworks.guard";
+import {
+  CanAddAndUpdateOrganisationClassificationTypeGuard
+} from "../guards/can-add-update-organisation-classification-type.guard";
+import {CanAddAndUpdateCapacityGuard} from "../guards/can-add-update-capacity.guard";
+import {CanAddAndUpdateRegulationGuard} from "../guards/can-add-update-regulation.guard";
 
 const routes: Routes = [
   {
@@ -169,7 +168,7 @@ const routes: Routes = [
             canActivate: [RoleGuard],
             data: {
               title: "Organisatie - Algemeen - Koppelen KBO",
-              roles: [Role.AlgemeenBeheerder],
+              roles: [Role.AlgemeenBeheerder, Role.CjmBeheerder],
             },
           },
           {
@@ -178,7 +177,7 @@ const routes: Routes = [
             canActivate: [RoleGuard],
             data: {
               title: "Organisatie - Algemeen - Koppelen KBO ongedaan maken",
-              roles: [Role.AlgemeenBeheerder],
+              roles: [Role.AlgemeenBeheerder, Role.CjmBeheerder],
             },
           },
           {

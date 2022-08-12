@@ -11,18 +11,6 @@ using OrganisationRegistry.Location;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Person;
 
-public class UpdateOrganisationCapacityInternalRequest
-{
-    public Guid OrganisationId { get; set; }
-    public UpdateOrganisationCapacityRequest Body { get; }
-
-    public UpdateOrganisationCapacityInternalRequest(Guid organisationId, UpdateOrganisationCapacityRequest message)
-    {
-        OrganisationId = organisationId;
-        Body = message;
-    }
-}
-
 public class UpdateOrganisationCapacityRequest
 {
     public Guid OrganisationCapacityId { get; set; }
@@ -35,36 +23,32 @@ public class UpdateOrganisationCapacityRequest
     public DateTime? ValidTo { get; set; }
 }
 
-public class UpdateOrganisationCapacityInternalRequestValidator : AbstractValidator<UpdateOrganisationCapacityInternalRequest>
+public class UpdateOrganisationCapacityInternalRequestValidator : AbstractValidator<UpdateOrganisationCapacityRequest>
 {
     public UpdateOrganisationCapacityInternalRequestValidator()
     {
-        RuleFor(x => x.OrganisationId)
-            .NotEmpty()
-            .WithMessage("Organisation Id is required.");
-
-        RuleFor(x => x.Body.CapacityId)
+        RuleFor(x => x.CapacityId)
             .NotEmpty()
             .WithMessage("Capacity Id is required.");
 
-        RuleFor(x => x.Body.ValidTo)
-            .GreaterThanOrEqualTo(x => x.Body.ValidFrom)
-            .When(x => x.Body.ValidFrom.HasValue)
+        RuleFor(x => x.ValidTo)
+            .GreaterThanOrEqualTo(x => x.ValidFrom)
+            .When(x => x.ValidFrom.HasValue)
             .WithMessage("Valid To must be greater than or equal to Valid From.");
     }
 }
 
 public static class UpdateOrganisationCapacityRequestMapping
 {
-    public static UpdateOrganisationCapacity Map(UpdateOrganisationCapacityInternalRequest message)
+    public static UpdateOrganisationCapacity Map(Guid organisationId, UpdateOrganisationCapacityRequest message)
         => new(
-            message.Body.OrganisationCapacityId,
-            new OrganisationId(message.OrganisationId),
-            new CapacityId(message.Body.CapacityId),
-            message.Body.PersonId.HasValue ? new PersonId(message.Body.PersonId.Value) : null,
-            message.Body.FunctionId.HasValue ? new FunctionTypeId(message.Body.FunctionId.Value) : null,
-            message.Body.LocationId.HasValue ? new LocationId(message.Body.LocationId.Value) : null,
-            message.Body.Contacts?.ToDictionary(x => new ContactTypeId(x.Key), x => x.Value),
-            new ValidFrom(message.Body.ValidFrom),
-            new ValidTo(message.Body.ValidTo));
+            message.OrganisationCapacityId,
+            new OrganisationId(organisationId),
+            new CapacityId(message.CapacityId),
+            message.PersonId.HasValue ? new PersonId(message.PersonId.Value) : null,
+            message.FunctionId.HasValue ? new FunctionTypeId(message.FunctionId.Value) : null,
+            message.LocationId.HasValue ? new LocationId(message.LocationId.Value) : null,
+            message.Contacts?.ToDictionary(x => new ContactTypeId(x.Key), x => x.Value),
+            new ValidFrom(message.ValidFrom),
+            new ValidTo(message.ValidTo));
 }

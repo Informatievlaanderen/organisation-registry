@@ -16,6 +16,7 @@ using Location;
 using Location.Events;
 using Microsoft.Extensions.Logging;
 using Moq;
+using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Domain;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Events;
@@ -77,8 +78,10 @@ public class WhenAddingAnOrganisationCapacity
             new ValidTo(_dateTimeProviderStub.Today.AddDays(value: 1))
         );
 
-    [Fact]
-    public async Task PublishesTwoEvent()
+    [Theory]
+    [InlineData(Role.AlgemeenBeheerder)]
+    [InlineData(Role.CjmBeheerder)]
+    public async Task PublishesTwoEvent(Role role)
     {
         await Given(
                 OrganisationCreated,
@@ -87,7 +90,7 @@ public class WhenAddingAnOrganisationCapacity
                 FunctionCreated,
                 LocationCreated,
                 ContactTypeCreated)
-            .When(AddOrganisationCapacityCommand, TestUser.AlgemeenBeheerder)
+            .When(AddOrganisationCapacityCommand, new UserBuilder().AddRoles(role).Build())
             .ThenItPublishesTheCorrectNumberOfEvents(2);
 
         var organisationCapacityAdded = PublishedEvents[0].UnwrapBody<OrganisationCapacityAdded>();

@@ -12,6 +12,7 @@ using Infrastructure.Search.Filtering;
 using Infrastructure.Search.Sorting;
 using OrganisationRegistry.Infrastructure;
 using OrganisationRegistry.Infrastructure.Authorization;
+using Security;
 using SqlServer.Infrastructure;
 using SqlServer.Organisation;
 
@@ -126,7 +127,7 @@ public class OrganisationListQuery : Query<OrganisationListItem, OrganisationLis
 
         if (filter.AuthorizedOnly)
         {
-            if (!_securityInformation.Roles.Contains(Role.AlgemeenBeheerder))
+            if (!_securityInformation.Roles.Any(role => role is Role.AlgemeenBeheerder or Role.CjmBeheerder))
                 organisations = organisations.Where(x => _securityInformation.OvoNumbers.Contains(x.OvoNumber));
         }
 

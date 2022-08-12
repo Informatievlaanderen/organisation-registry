@@ -27,12 +27,10 @@ public class OrganisationCapacityCommandController : OrganisationRegistryCommand
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Post([FromRoute] Guid organisationId, [FromBody] AddOrganisationCapacityRequest message)
     {
-        var internalMessage = new AddOrganisationCapacityInternalRequest(organisationId, message);
-
-        if (!TryValidateModel(internalMessage))
+        if (!TryValidateModel(message))
             return BadRequest(ModelState);
 
-        await CommandSender.Send(AddOrganisationCapacityRequestMapping.Map(internalMessage));
+        await CommandSender.Send(AddOrganisationCapacityRequestMapping.Map(organisationId, message));
 
         return CreatedWithLocation(nameof(OrganisationCapacityController), nameof(OrganisationCapacityController.Get), new { id = message.OrganisationCapacityId });
     }
@@ -45,12 +43,10 @@ public class OrganisationCapacityCommandController : OrganisationRegistryCommand
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Put([FromRoute] Guid organisationId, [FromBody] UpdateOrganisationCapacityRequest message)
     {
-        var internalMessage = new UpdateOrganisationCapacityInternalRequest(organisationId, message);
-
-        if (!TryValidateModel(internalMessage))
+        if (!TryValidateModel(message))
             return BadRequest(ModelState);
 
-        await CommandSender.Send(UpdateOrganisationCapacityRequestMapping.Map(internalMessage));
+        await CommandSender.Send(UpdateOrganisationCapacityRequestMapping.Map(organisationId, message));
 
         return Ok();
     }

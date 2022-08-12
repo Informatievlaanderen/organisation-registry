@@ -2,6 +2,7 @@ namespace OrganisationRegistry.SqlServer.Organisation;
 
 using System;
 using System.Data.Common;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Infrastructure;
@@ -153,6 +154,7 @@ public class OrganisationRegulationListView :
         await context.SaveChangesAsync();
     }
 
+    [SuppressMessage("Performance", "CA1841:Prefer Dictionary.Contains methods")] // don't use ContainsKey in Db query.
     public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminatedV2> message)
     {
         if (!message.Body.FieldsToTerminate.Regulations.Any())
@@ -160,7 +162,7 @@ public class OrganisationRegulationListView :
 
         await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
         var regulations = context.OrganisationRegulationList.Where(item =>
-            message.Body.FieldsToTerminate.Regulations.ContainsKey(item.OrganisationRegulationId));
+            message.Body.FieldsToTerminate.Regulations.Keys.Contains(item.OrganisationRegulationId));
 
         foreach (var regulation in regulations)
             regulation.ValidTo = message.Body.FieldsToTerminate.Regulations[regulation.OrganisationRegulationId];
