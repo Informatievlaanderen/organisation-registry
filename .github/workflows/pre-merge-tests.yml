@@ -290,7 +290,7 @@ jobs:
 
   notify:
     if: github.repository_owner == 'Informatievlaanderen'
-    name: Build Vue Site
+    name: Notify slack
     runs-on: ubuntu-latest
 
     needs: [build-vue, build-angular, build]
