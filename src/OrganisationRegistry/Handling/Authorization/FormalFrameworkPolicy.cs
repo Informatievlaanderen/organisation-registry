@@ -24,7 +24,7 @@ public class FormalFrameworkPolicy : ISecurityPolicy
 
     public AuthorizationResult Check(IUser user)
     {
-        if(user.IsInAnyOf(Role.AlgemeenBeheerder))
+        if(user.IsInAnyOf(Role.AlgemeenBeheerder, Role.CjmBeheerder))
             return AuthorizationResult.Success();
 
         var formalFrameworkIdsOwnedByVlimpers = _configuration.Authorization.FormalFrameworkIdsOwnedByVlimpers;

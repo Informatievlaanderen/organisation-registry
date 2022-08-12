@@ -18,8 +18,10 @@ using Xunit;
 //TODO rewrite as specification !
 public class GivenTheCommandContainsABodyNumberThatIsAnEmptyString
 {
-    [Fact]
-    public async Task ThenANewBodyNumberIsGenerated()
+    [Theory]
+    [InlineData(Role.AlgemeenBeheerder)]
+    [InlineData(Role.CjmBeheerder)]
+    public async Task ThenANewBodyNumberIsGenerated(Role role)
     {
         var fixture = new Fixture();
         var activeLifecyclePhaseTypeId = new LifecyclePhaseTypeId(fixture.Create<Guid>());
@@ -56,7 +58,7 @@ public class GivenTheCommandContainsABodyNumberThatIsAnEmptyString
             fixedBodyNumberGenerator,
             new FakeUniqueBodyNumberValidator());
 
-        await handler.Handle(new CommandEnvelope<RegisterBody>(command, TestUser.AlgemeenBeheerder));
+        await handler.Handle(new CommandEnvelope<RegisterBody>(command, new UserBuilder().AddRoles(role).Build()));
 
         mockSession.AddedAggregate.Should().NotBeNull();
         var aggregate = mockSession.AddedAggregate!;

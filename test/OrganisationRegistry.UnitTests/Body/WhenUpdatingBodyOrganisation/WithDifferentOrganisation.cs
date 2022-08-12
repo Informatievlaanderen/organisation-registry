@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using OrganisationRegistry.Body;
 using OrganisationRegistry.Body.Events;
+using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Domain;
 using OrganisationRegistry.Infrastructure.Events;
 using OrganisationRegistry.Organisation;
@@ -39,7 +40,9 @@ public class WhenUpdatingBodyOrganisationWithDifferentOrganisation : Specificati
             Mock.Of<IDateTimeProvider>());
 
     private IEvent[] Events
-        => new IEvent[] { new BodyRegistered(_bodyId, "Body", "1", "bod", "some body", DateTime.Now, DateTime.Now), new OrganisationCreated(
+        => new IEvent[]
+        {
+            new BodyRegistered(_bodyId, "Body", "1", "bod", "some body", DateTime.Now, DateTime.Now), new OrganisationCreated(
                 _previousOrganisationId,
                 "orgName",
                 "ovoNumber",
@@ -51,7 +54,8 @@ public class WhenUpdatingBodyOrganisationWithDifferentOrganisation : Specificati
                 null,
                 null,
                 null,
-                null), new OrganisationCreated(
+                null),
+            new OrganisationCreated(
                 _newOrganisationId,
                 "orgName",
                 "ovoNumber",
@@ -63,14 +67,16 @@ public class WhenUpdatingBodyOrganisationWithDifferentOrganisation : Specificati
                 null,
                 null,
                 null,
-                null), new BodyOrganisationAdded(
+                null),
+            new BodyOrganisationAdded(
                 _bodyId,
                 _bodyOrganisationId,
                 "bodyName",
                 _previousOrganisationId,
                 "orgName",
                 null,
-                null), new BodyAssignedToOrganisation(_bodyId, "Body", _previousOrganisationId, "orgName", _bodyOrganisationId),
+                null),
+            new BodyAssignedToOrganisation(_bodyId, "Body", _previousOrganisationId, "orgName", _bodyOrganisationId),
         };
 
     private UpdateBodyOrganisation UpdateBodyOrganisationCommand
@@ -86,10 +92,14 @@ public class WhenUpdatingBodyOrganisationWithDifferentOrganisation : Specificati
         await Given(Events).When(UpdateBodyOrganisationCommand, TestUser.OrgaanBeheerder).ThenItPublishesTheCorrectNumberOfEvents(1);
     }
 
-    [Fact]
-    public async Task UpdatesTheBodyOrganisation()
+    [Theory]
+    [InlineData(Role.AlgemeenBeheerder)]
+    [InlineData(Role.CjmBeheerder)]
+    public async Task UpdatesTheBodyOrganisation(Role role)
     {
-        await Given(Events).When(UpdateBodyOrganisationCommand, TestUser.OrgaanBeheerder).Then();
+        await Given(Events)
+            .When(UpdateBodyOrganisationCommand, new UserBuilder().AddRoles(role).Build())
+            .Then();
         var bodyBalancedParticipationChanged = PublishedEvents[0].UnwrapBody<BodyOrganisationUpdated>();
         bodyBalancedParticipationChanged.BodyId.Should().Be(_bodyId);
 

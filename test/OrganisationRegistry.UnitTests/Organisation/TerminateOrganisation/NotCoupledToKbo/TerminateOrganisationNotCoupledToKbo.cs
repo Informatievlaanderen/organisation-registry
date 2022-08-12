@@ -8,6 +8,7 @@ using FluentAssertions;
 using Infrastructure.Tests.Extensions.TestHelpers;
 using Microsoft.Extensions.Logging;
 using Moq;
+using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Domain;
 using OrganisationRegistry.Infrastructure.Events;
 using OrganisationRegistry.Organisation;
@@ -99,10 +100,12 @@ public class
             .ThenItPublishesTheCorrectNumberOfEvents(1);
     }
 
-    [Fact]
-    public async Task TerminatesTheOrganisation()
+    [Theory]
+    [InlineData(Role.AlgemeenBeheerder)]
+    [InlineData(Role.CjmBeheerder)]
+    public async Task TerminatesTheOrganisation(Role role)
     {
-        await Given(Events).When(TerminateOrganisationCommand, TestUser.AlgemeenBeheerder).Then();
+        await Given(Events).When(TerminateOrganisationCommand, new UserBuilder().AddRoles(role).Build()).Then();
 
         var organisationTerminated = PublishedEvents[0].UnwrapBody<OrganisationTerminatedV2>();
         organisationTerminated.Should().NotBeNull();
