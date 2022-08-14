@@ -1,3 +1,10 @@
+## [1.267.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.267.0...v1.267.1) (2022-08-14)
+
+
+### Bug Fixes
+
+* or-1111 various fixes to cjmBeheerder ([fa9f5ff](https://github.com/informatievlaanderen/organisation-registry/commit/fa9f5ffdf4c980df9da77ad9be3df75a8a28c585))
+
 # [1.267.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.266.0...v1.267.0) (2022-08-12)
 
 
