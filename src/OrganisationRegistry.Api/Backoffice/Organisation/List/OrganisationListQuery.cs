@@ -12,7 +12,6 @@ using Infrastructure.Search.Filtering;
 using Infrastructure.Search.Sorting;
 using OrganisationRegistry.Infrastructure;
 using OrganisationRegistry.Infrastructure.Authorization;
-using Security;
 using SqlServer.Infrastructure;
 using SqlServer.Organisation;
 
