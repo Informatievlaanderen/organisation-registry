@@ -1,3 +1,10 @@
+# [1.268.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.267.1...v1.268.0) (2022-08-16)
+
+
+### Features
+
+* or-1154 add bodylifecyclephase tests ([c2147e8](https://github.com/informatievlaanderen/organisation-registry/commit/c2147e8afb57af252309dfdb349c26f54ccecb43))
+
 ## [1.267.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.267.0...v1.267.1) (2022-08-14)
 
 
