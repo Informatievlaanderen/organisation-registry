@@ -20,7 +20,6 @@ using Backoffice.Parameters.OrganisationRelationType.Requests;
 using Backoffice.Parameters.RegulationSubTheme.Requests;
 using Backoffice.Parameters.RegulationTheme.Requests;
 using Backoffice.Person.Detail;
-using FluentAssertions.Equivalency.Steps;
 using OrganisationRegistry.Api.Backoffice.Parameters.KeyType.Requests;
 using Person;
 
