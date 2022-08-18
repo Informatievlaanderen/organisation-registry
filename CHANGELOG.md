@@ -1,3 +1,11 @@
+## [1.268.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.268.0...v1.268.1) (2022-08-18)
+
+
+### Bug Fixes
+
+* or-1155 clear spaces (to force build) ([a84d383](https://github.com/informatievlaanderen/organisation-registry/commit/a84d38354b86253c75585f8b68d6d7a830691c75))
+* or-1155 use correct name now repo has changed ([e6dd8f1](https://github.com/informatievlaanderen/organisation-registry/commit/e6dd8f1619343f08d34f1ec24b1b1139031724a9))
+
 # [1.268.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.267.1...v1.268.0) (2022-08-16)
 
 
