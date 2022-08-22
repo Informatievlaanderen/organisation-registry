@@ -288,15 +288,32 @@ jobs:
         shell: bash
         run: ./build.sh Vue_Build
 
-  notify:
-    if: ${{ always() }}
-    name: Notify slack
+  notify-success:
+    if: ${{ success() }}
+    name: Notify Slack of Success
     runs-on: ubuntu-latest
 
     needs: [build-vue, build-angular, build]
 
     steps:
-      - name: Post to a Slack channel
+      - name: Post to Slack
+        id: slack
+        uses: slackapi/slack-github-action@v1.21.0
+        with:
+          channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
+          slack-message: ":white_check_mark: Pull request is ready to merge:\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+
+  notify:
+    if: ${{ failure() }}
+    name: Notify Slack of Failure
+    runs-on: ubuntu-latest
+
+    needs: [build-vue, build-angular, build]
+
+    steps:
+      - name: Post to Slack
         id: slack
         uses: slackapi/slack-github-action@v1.21.0
         with:
@@ -304,6 +321,10 @@ jobs:
           # See also: https://api.slack.com/methods/chat.postMessage#channels
           channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
           # For posting a simple plain text message
-          slack-message: "GitHub build result: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+          slack-message: ":x: Pull request failed some checks: \n
+          ${{format('{0}: {1}', jobs.build-vue.name, jobs.build-vue.status }}\n
+          ${{format('{0}: {1}', jobs.build-angular.name, jobs.build-angular.status }}\n
+          ${{format('{0}: {1}', jobs.build.name, jobs.build.status }}\n
+          ${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
