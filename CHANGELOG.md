@@ -1,3 +1,19 @@
+# [1.269.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.268.1...v1.269.0) (2022-08-22)
+
+
+### Bug Fixes
+
+* properly end expression ([8d9a479](https://github.com/informatievlaanderen/organisation-registry/commit/8d9a479cb54201556ba3909fb8406cd456ec0dc2))
+* use job's needs ([0283fed](https://github.com/informatievlaanderen/organisation-registry/commit/0283fed503b2969bd644c48ce0fa3eaf45909328))
+* use job's needs with proper syntax ([def5028](https://github.com/informatievlaanderen/organisation-registry/commit/def5028844fb78df719ef714543fb8afdaa0e135))
+* use result io status, and hard-coded name ([ffd3f46](https://github.com/informatievlaanderen/organisation-registry/commit/ffd3f464ebfdd32d3cc03025400b38ebfc8cb271))
+
+
+### Features
+
+* provide more useful slack notification ([5140114](https://github.com/informatievlaanderen/organisation-registry/commit/514011426f7cc963c7332690f3201cfc5dd8c9fa))
+* use needs io jobs ([436a427](https://github.com/informatievlaanderen/organisation-registry/commit/436a4276c5e51fa043adae6b1a355c25a3f71fc9))
+
 ## [1.268.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.268.0...v1.268.1) (2022-08-18)
 
 
