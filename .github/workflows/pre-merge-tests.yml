@@ -322,9 +322,9 @@ jobs:
           channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
           # For posting a simple plain text message
           slack-message: ":x: Pull request failed some checks: \n
-          ${{format('{0}: {1}', jobs.notify.needs.build-vue.name, jobs.notify.needs.build-vue.status) }}\n
-          ${{format('{0}: {1}', jobs.notify.needs.build-angular.name, jobs.notify.needs.build-angular.status) }}\n
-          ${{format('{0}: {1}', jobs.notify.needs.build.name, jobs.notify.needs.build.status) }}\n
+          ${{format('{0}: {1}', needs.notify.build-vue.name, needs.notify.build-vue.status) }}\n
+          ${{format('{0}: {1}', needs.notify.build-angular.name, needs.notify.build-angular.status) }}\n
+          ${{format('{0}: {1}', needs.notify.build.name, needs.notify.build.status) }}\n
           ${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
