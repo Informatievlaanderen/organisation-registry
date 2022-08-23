@@ -1,3 +1,15 @@
+# [1.270.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.269.0...v1.270.0) (2022-08-23)
+
+
+### Bug Fixes
+
+* or-1070 guard remove capacities in UI ([93d0d19](https://github.com/informatievlaanderen/organisation-registry/commit/93d0d19cc89ba62efd6740240b41d23e1ffbe69d))
+
+
+### Features
+
+* or-1140 add final unit tests ([7321898](https://github.com/informatievlaanderen/organisation-registry/commit/7321898a86f9de619dec48b85a8552e7eb11d99a))
+
 # [1.269.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.268.1...v1.269.0) (2022-08-22)
 
 
