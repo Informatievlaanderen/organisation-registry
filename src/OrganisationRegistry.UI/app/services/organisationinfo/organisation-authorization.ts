@@ -421,6 +421,19 @@ export class OrganisationAuthorization {
     );
   }
 
+  static canRemoveCapacities(
+    organisation: Organisation,
+    securityInfo: SecurityInfo
+  ) {
+    if (!securityInfo.isLoggedIn) return false;
+
+    return hasAnyOfRoles(
+      securityInfo,
+      Role.AlgemeenBeheerder,
+      Role.CjmBeheerder
+    );
+  }
+
   public static canRemoveFunctions(
     organisation: Organisation,
     securityInfo: SecurityInfo

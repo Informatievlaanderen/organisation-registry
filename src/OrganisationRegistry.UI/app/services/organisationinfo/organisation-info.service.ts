@@ -304,6 +304,12 @@ export class OrganisationInfoService {
     )
   );
 
+  public readonly canRemoveCapacitiesChanged$ = this.onSecurityChanged.pipe(
+    map(([organisation, securityInfo]) =>
+      OrganisationAuthorization.canRemoveCapacities(organisation, securityInfo)
+    )
+  );
+
   private currentSortBy: string = "name";
   private currentSortOrder: SortOrder = SortOrder.Ascending;
 

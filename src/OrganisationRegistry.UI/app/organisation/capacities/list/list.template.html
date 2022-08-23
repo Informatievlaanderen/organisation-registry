@@ -2,92 +2,97 @@
   <div class="u-table-overflow">
     <table id="addressTable" class="data-table">
       <thead>
-        <tr class="data-table__header">
-          <th class="data-table__header-title" style="width: 25%">
-            <a class="data-table__header-title--sortable"
-               [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('capacityName')}"
-               (click)="sortBy('capacityName')">
-              Hoedanigheid
-              <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
-                 [ngClass]="{'vi-u-180deg': isSortedByDescending('capacityName')}"></i>
-              </a>
-          </th>
-          <th class="data-table__header-title" style="width: 25%">
-            <a class="data-table__header-title--sortable"
-               [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('personName')}"
-               (click)="sortBy('personName')">
-              Persoon
-              <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
-                 [ngClass]="{'vi-u-180deg': isSortedByDescending('personName')}"></i>
-              </a>
-          </th>
-          <th class="data-table__header-title" style="width: 25%">
-            <a class="data-table__header-title--sortable"
-               [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('functionName')}"
-               (click)="sortBy('functionName')">
-              Functie
-              <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
-                 [ngClass]="{'vi-u-180deg': isSortedByDescending('functionName')}"></i>
-              </a>
-          </th>
-          <th class="data-table__header-title" style="width: 12%">
-            <a class="data-table__header-title--sortable"
-               [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('validFrom')}"
-               (click)="sortBy('validFrom')">
-              Geldig vanaf
-              <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
-                 [ngClass]="{'vi-u-180deg': isSortedByDescending('validFrom')}"></i>
-              </a>
-          </th>
-          <th class="data-table__header-title" style="width: 12%">
-            <a class="data-table__header-title--sortable"
-               [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('validTo')}"
-               (click)="sortBy('validTo')">
-              Geldig tot
-              <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
-                 [ngClass]="{'vi-u-180deg': isSortedByDescending('validTo')}"></i>
-              </a>
-          </th>
-          <th *ngIf="(canEdit | async)" class="data-table__last-header"></th>
-        </tr>
+      <tr class="data-table__header">
+        <th class="data-table__header-title" style="width: 25%">
+          <a class="data-table__header-title--sortable"
+             [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('capacityName')}"
+             (click)="sortBy('capacityName')">
+            Hoedanigheid
+            <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
+               [ngClass]="{'vi-u-180deg': isSortedByDescending('capacityName')}"></i>
+          </a>
+        </th>
+        <th class="data-table__header-title" style="width: 25%">
+          <a class="data-table__header-title--sortable"
+             [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('personName')}"
+             (click)="sortBy('personName')">
+            Persoon
+            <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
+               [ngClass]="{'vi-u-180deg': isSortedByDescending('personName')}"></i>
+          </a>
+        </th>
+        <th class="data-table__header-title" style="width: 25%">
+          <a class="data-table__header-title--sortable"
+             [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('functionName')}"
+             (click)="sortBy('functionName')">
+            Functie
+            <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
+               [ngClass]="{'vi-u-180deg': isSortedByDescending('functionName')}"></i>
+          </a>
+        </th>
+        <th class="data-table__header-title" style="width: 12%">
+          <a class="data-table__header-title--sortable"
+             [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('validFrom')}"
+             (click)="sortBy('validFrom')">
+            Geldig vanaf
+            <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
+               [ngClass]="{'vi-u-180deg': isSortedByDescending('validFrom')}"></i>
+          </a>
+        </th>
+        <th class="data-table__header-title" style="width: 12%">
+          <a class="data-table__header-title--sortable"
+             [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('validTo')}"
+             (click)="sortBy('validTo')">
+            Geldig tot
+            <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
+               [ngClass]="{'vi-u-180deg': isSortedByDescending('validTo')}"></i>
+          </a>
+        </th>
+        <th *ngIf="(canEdit | async)" class="data-table__last-header"></th>
+      </tr>
       </thead>
       <tbody>
-        <template [ngIf]="isBusy">
-          <tr><td colspan="6">Bezig met laden...</td></tr>
-        </template>
+      <template [ngIf]="isBusy">
+        <tr>
+          <td colspan="6">Bezig met laden...</td>
+        </tr>
+      </template>
 
-        <template [ngIf]="!isBusy">
-          <tr *ngIf="!hasData(data)">
-            <td colspan="6">Geen data beschikbaar...</td>
-          </tr>
-          <tr *ngFor="let capacity of data" [ngClass]="{'data-table__body-history': !capacity.isActive}">
-            <td class="data-table__body-title">{{capacity.capacityName}}</td>
-            <td *ngIf="!capacity.personId" class="data-table__body-title"></td>
-            <td *ngIf="capacity.personId" class="data-table__body-title"><a [routerLink]="['/people', capacity.personId, 'capacities']" title="{{capacity.personName}}">{{capacity.personName}}</a></td>
-            <td class="data-table__body-title">{{capacity.functionName}}</td>
-            <td class="data-table__body-title">
-              <span *ngIf="capacity.validFrom">{{capacity.validFrom}}</span>
-              <span class="data-table__cell--disabled" *ngIf="!capacity.validFrom">Niet bekend</span>
-            </td>
-            <td class="data-table__body-title">
-              <span *ngIf="capacity.validTo">{{capacity.validTo}}</span>
-              <span class="data-table__cell--disabled" *ngIf="!capacity.validTo">Niet bekend</span>
-            </td>
-            <td *ngIf="(canEdit | async)" class="u-align-right">
-              <a [routerLink]="['edit', capacity.organisationCapacityId]"
-                 *ngIf="capacity.isEditable"
-                 class="vi vi-u-badge vi-u-badge--grey vi-u-badge--small vi-edit"
-                 title="Bewerken"
-                 aria-label="Bewerken"></a>
-            </td>
-            <td class="data-table__body-title">
-              <a aria-label="Verwijderen"
-                 class="vi vi-u-badge vi-u-badge--grey vi-u-badge--small vi-trash"
-                 title="Verwijderen"
-                 (click)="remove(capacity)"></a>
-            </td>
-          </tr>
-        </template>
+      <template [ngIf]="!isBusy">
+        <tr *ngIf="!hasData(data)">
+          <td colspan="6">Geen data beschikbaar...</td>
+        </tr>
+        <tr *ngFor="let capacity of data" [ngClass]="{'data-table__body-history': !capacity.isActive}">
+          <td class="data-table__body-title">{{capacity.capacityName}}</td>
+          <td *ngIf="!capacity.personId" class="data-table__body-title"></td>
+          <td *ngIf="capacity.personId" class="data-table__body-title"><a
+            [routerLink]="['/people', capacity.personId, 'capacities']"
+            title="{{capacity.personName}}">{{capacity.personName}}</a></td>
+          <td class="data-table__body-title">{{capacity.functionName}}</td>
+          <td class="data-table__body-title">
+            <span *ngIf="capacity.validFrom">{{capacity.validFrom}}</span>
+            <span class="data-table__cell--disabled" *ngIf="!capacity.validFrom">Niet bekend</span>
+          </td>
+          <td class="data-table__body-title">
+            <span *ngIf="capacity.validTo">{{capacity.validTo}}</span>
+            <span class="data-table__cell--disabled" *ngIf="!capacity.validTo">Niet bekend</span>
+          </td>
+          <td *ngIf="(canEdit | async)" class="u-align-right">
+            <a [routerLink]="['edit', capacity.organisationCapacityId]"
+               *ngIf="capacity.isEditable"
+               class="vi vi-u-badge vi-u-badge--grey vi-u-badge--small vi-edit"
+               title="Bewerken"
+               aria-label="Bewerken"></a>
+          </td>
+          <td class="data-table__body-title">
+            <a *ngIf="(canDelete | async)"
+               aria-label="Verwijderen"
+               class="vi vi-u-badge vi-u-badge--grey vi-u-badge--small vi-trash"
+               title="Verwijderen"
+               (click)="remove(capacity)"></a>
+          </td>
+        </tr>
+      </template>
       </tbody>
     </table>
   </div>
