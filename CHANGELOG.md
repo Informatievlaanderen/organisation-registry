@@ -1,3 +1,10 @@
+# [1.271.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.270.0...v1.271.0) (2022-08-25)
+
+
+### Features
+
+* or-1159 add get aggregate endpoint ([9b1590f](https://github.com/informatievlaanderen/organisation-registry/commit/9b1590feed135af28482a28fc912bf765aa1af10))
+
 # [1.270.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.269.0...v1.270.0) (2022-08-23)
 
 
