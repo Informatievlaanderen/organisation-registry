@@ -1,3 +1,10 @@
+# [1.273.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.272.0...v1.273.0) (2022-08-29)
+
+
+### Features
+
+* or-1142 public search api returns bodyclassifications ([28ca88e](https://github.com/informatievlaanderen/organisation-registry/commit/28ca88e8e2060e7913a350ad97451ff27a7c5a93))
+
 # [1.272.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.271.0...v1.272.0) (2022-08-29)
 
 
