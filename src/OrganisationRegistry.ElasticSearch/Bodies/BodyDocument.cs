@@ -15,6 +15,7 @@ public class BodyDocument : IDocument
         Organisations = new List<BodyOrganisation>();
         FormalFrameworks = new List<BodyFormalFramework>();
         Participations = new List<BodyParticipation>();
+        Classifications = new List<BodyClassification>();
         FormalValidity = Period.Infinite();
     }
 
@@ -33,6 +34,18 @@ public class BodyDocument : IDocument
     public string? Description { get; set; }
 
     public Period FormalValidity { get; set; }
+
+    public IList<BodySeat> Seats { get; set; }
+
+    public IList<BodyLifecyclePhase> LifecyclePhases { get; set; }
+
+    public IList<BodyOrganisation> Organisations { get; set; }
+
+    public IList<BodyFormalFramework> FormalFrameworks { get; set; }
+
+    public IList<BodyParticipation> Participations { get; set; }
+
+    public IList<BodyClassification> Classifications { get; set; }
 
     public static TypeMappingDescriptor<BodyDocument> Mapping(TypeMappingDescriptor<BodyDocument> map)
         => map
@@ -91,9 +104,12 @@ public class BodyDocument : IDocument
                             .Name(p => p.Participations)
                             .IncludeInRoot()
                             .Properties(BodyParticipation.Mapping))
+                    .Nested<BodyClassification>(
+                        n => n
+                            .Name(p => p.Classifications)
+                            .IncludeInRoot()
+                            .Properties(BodyClassification.Mapping))
             );
-
-    public IList<BodySeat> Seats { get; set; }
 
     public class BodySeat
     {
@@ -303,8 +319,6 @@ public class BodyDocument : IDocument
                         .Properties(Period.Mapping));
     }
 
-    public IList<BodyLifecyclePhase> LifecyclePhases { get; set; }
-
     public class BodyLifecyclePhase
     {
         public Guid BodyLifecyclePhaseId { get; set; }
@@ -344,8 +358,6 @@ public class BodyDocument : IDocument
                         .Name(p => p.Validity)
                         .Properties(Period.Mapping));
     }
-
-    public IList<BodyOrganisation> Organisations { get; set; }
 
     public class BodyOrganisation
     {
@@ -387,18 +399,8 @@ public class BodyDocument : IDocument
                         .Properties(Period.Mapping));
     }
 
-    public IList<BodyFormalFramework> FormalFrameworks { get; set; }
-
     public class BodyFormalFramework
     {
-        public Guid BodyFormalFrameworkId { get; set; }
-
-        public Guid FormalFrameworkId { get; set; }
-
-        public string FormalFrameworkName { get; set; }
-
-        public Period Validity { get; set; }
-
         public BodyFormalFramework(
             Guid bodyFormalFrameworkId,
             Guid formalFrameworkId,
@@ -413,14 +415,18 @@ public class BodyDocument : IDocument
             Validity = validity;
         }
 
+        public Guid BodyFormalFrameworkId { get; set; }
+
+        public Guid FormalFrameworkId { get; set; }
+
+        public string FormalFrameworkName { get; set; }
+
+        public Period Validity { get; set; }
+
         public static IPromise<IProperties> Mapping(PropertiesDescriptor<BodyFormalFramework> map)
             => map
-                .Keyword(
-                    k => k
-                        .Name(p => p.BodyFormalFrameworkId))
-                .Keyword(
-                    k => k
-                        .Name(p => p.FormalFrameworkId))
+                .Keyword(k => k.Name(p => p.BodyFormalFrameworkId))
+                .Keyword(k => k.Name(p => p.FormalFrameworkId))
                 .Text(
                     t => t
                         .Name(p => p.FormalFrameworkName)
@@ -431,16 +437,61 @@ public class BodyDocument : IDocument
                         .Properties(Period.Mapping));
     }
 
-    public IList<BodyParticipation> Participations { get; set; }
-
     public class BodyParticipation
     {
         public Guid BodyParticipationId { get; set; }
 
         public static IPromise<IProperties> Mapping(PropertiesDescriptor<BodyParticipation> map)
             => map
-                .Keyword(
-                    k => k
-                        .Name(p => p.BodyParticipationId));
+                .Keyword(k => k.Name(p => p.BodyParticipationId));
+    }
+
+    public class BodyClassification
+    {
+        public BodyClassification(
+            Guid bodyClassificationId,
+            Guid classificationId,
+            string classificationName,
+            Guid classificationTypeId,
+            string classificationTypeName,
+            Period validity)
+        {
+            BodyClassificationId = bodyClassificationId;
+            ClassificationId = classificationId;
+            ClassificationName = classificationName;
+            ClassificationTypeId = classificationTypeId;
+            ClassificationTypeName = classificationTypeName;
+            Validity = validity;
+        }
+
+        public Guid BodyClassificationId { get; set; }
+
+        public Guid ClassificationId { get; set; }
+
+        public string ClassificationName { get; set; }
+
+        public Guid ClassificationTypeId { get; set; }
+
+        public string ClassificationTypeName { get; set; }
+
+        public Period Validity { get; set; }
+
+        public static IPromise<IProperties> Mapping(PropertiesDescriptor<BodyClassification> map)
+            => map
+                .Keyword(k => k.Name(c => c.BodyClassificationId))
+                .Keyword(k => k.Name(c => c.ClassificationId))
+                .Keyword(k => k.Name(c => c.ClassificationTypeId))
+                .Text(
+                    t => t
+                        .Name(p => p.ClassificationName)
+                        .Fields(x => x.Keyword(y => y.Name("keyword"))))
+                .Text(
+                    t => t
+                        .Name(p => p.ClassificationTypeName)
+                        .Fields(x => x.Keyword(y => y.Name("keyword"))))
+                .Object<Period>(
+                    o => o
+                        .Name(p => p.Validity)
+                        .Properties(Period.Mapping));
     }
 }

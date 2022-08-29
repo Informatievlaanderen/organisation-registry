@@ -85,7 +85,7 @@ public class WhenUpdatingAnOrganisationRegulation : Specification<UpdateOrganisa
             null,
             null,
             null,
-            null,
+            _fixture.Create<string>(),
             null,
             null,
             null,

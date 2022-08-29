@@ -13,6 +13,8 @@ using Xunit;
 using System;
 using System.Collections.Generic;
 using App.Metrics;
+using BodyClassification.Events;
+using BodyClassificationType.Events;
 using Scenario.Specimen;
 using Function.Events;
 using Microsoft.Extensions.DependencyInjection;
@@ -763,5 +765,131 @@ public class BodyHandlerTests
             .Single();
 
         delegation.PersonName.Should().Be($"{personUpdated.FirstName} {personUpdated.Name}");
+    }
+
+
+    [Fact]
+    public async void BodyBodyClassificationsAdded_AddsBodyClassification()
+    {
+        var bodyId = Guid.NewGuid();
+        var scenario = new ScenarioBase<BodyHandler>(
+            new ParameterNameArg<Guid>("bodyId", bodyId));
+
+        var bodyBodyClassificationAdded = scenario.Create<BodyBodyClassificationAdded>();
+
+        await _eventProcessor.Handle<BodyDocument>(
+            new List<IEnvelope>
+            {
+                scenario.Create<InitialiseProjection>().ToEnvelope(),
+                scenario.Create<BodyRegistered>().ToEnvelope(),
+                bodyBodyClassificationAdded.ToEnvelope(),
+            }
+        );
+
+        var bodyClassifications = _fixture.Elastic.ReadClient
+            .Get<BodyDocument>(bodyId)
+            .Source
+            .Classifications;
+        bodyClassifications.Count.Should().Be(1);
+        bodyClassifications[0].BodyClassificationId.Should().Be(bodyBodyClassificationAdded.BodyBodyClassificationId);
+        bodyClassifications[0].ClassificationId.Should().Be(bodyBodyClassificationAdded.BodyClassificationId);
+        bodyClassifications[0].ClassificationName.Should().Be(bodyBodyClassificationAdded.BodyClassificationName);
+        bodyClassifications[0].ClassificationTypeId.Should().Be(bodyBodyClassificationAdded.BodyClassificationTypeId);
+        bodyClassifications[0].ClassificationTypeName.Should().Be(bodyBodyClassificationAdded.BodyClassificationTypeName);
+    }
+
+    [Fact]
+    public async void BodyBodyClassificationUpdated_UpdatesBodyClassification()
+    {
+        var bodyId = Guid.NewGuid();
+        var scenario = new ScenarioBase<BodyHandler>(
+            new ParameterNameArg<Guid>("bodyId", bodyId),
+            new ParameterNameArg<Guid>("bodyBodyClassificationId", Guid.NewGuid())
+        );
+
+        var bodyBodyClassificationUpdated = scenario.Create<BodyBodyClassificationUpdated>();
+
+        await _eventProcessor.Handle<BodyDocument>(
+            new List<IEnvelope>
+            {
+                scenario.Create<InitialiseProjection>().ToEnvelope(),
+                scenario.Create<BodyRegistered>().ToEnvelope(),
+                scenario.Create<BodyBodyClassificationAdded>().ToEnvelope(),
+                bodyBodyClassificationUpdated.ToEnvelope(),
+            }
+        );
+
+        var bodyClassifications = _fixture.Elastic.ReadClient
+            .Get<BodyDocument>(bodyId)
+            .Source
+            .Classifications;
+        bodyClassifications.Count.Should().Be(1);
+        bodyClassifications[0].BodyClassificationId.Should().Be(bodyBodyClassificationUpdated.BodyBodyClassificationId);
+        bodyClassifications[0].ClassificationId.Should().Be(bodyBodyClassificationUpdated.BodyClassificationId);
+        bodyClassifications[0].ClassificationName.Should().Be(bodyBodyClassificationUpdated.BodyClassificationName);
+        bodyClassifications[0].ClassificationTypeId.Should().Be(bodyBodyClassificationUpdated.BodyClassificationTypeId);
+        bodyClassifications[0].ClassificationTypeName.Should().Be(bodyBodyClassificationUpdated.BodyClassificationTypeName);
+    }
+
+    [Fact]
+    public async void BodyClassificationTypeUpdated_UpdatesBodyClassification()
+    {
+        var bodyId = Guid.NewGuid();
+        var scenario = new ScenarioBase<BodyHandler>(
+            new ParameterNameArg<Guid>("bodyId", bodyId),
+            new ParameterNameArg<Guid>("bodyBodyClassificationId", Guid.NewGuid()),
+            new ParameterNameArg<Guid>("bodyClassificationTypeId", Guid.NewGuid())
+        );
+
+        var bodyClassificationTypeUpdated = scenario.Create<BodyClassificationTypeUpdated>();
+
+        await _eventProcessor.Handle<BodyDocument>(
+            new List<IEnvelope>
+            {
+                scenario.Create<InitialiseProjection>().ToEnvelope(),
+                scenario.Create<BodyRegistered>().ToEnvelope(),
+                scenario.Create<BodyBodyClassificationAdded>().ToEnvelope(),
+                bodyClassificationTypeUpdated.ToEnvelope(),
+            }
+        );
+
+        var bodyClassifications = _fixture.Elastic.ReadClient
+            .Get<BodyDocument>(bodyId)
+            .Source
+            .Classifications;
+        bodyClassifications.Count.Should().Be(1);
+        bodyClassifications[0].ClassificationTypeId.Should().Be(bodyClassificationTypeUpdated.BodyClassificationTypeId);
+        bodyClassifications[0].ClassificationTypeName.Should().Be(bodyClassificationTypeUpdated.Name);
+    }
+
+    [Fact]
+    public async void BodyBodyClassificationUpdated_BodyClassificationUpdated()
+    {
+        var bodyId = Guid.NewGuid();
+        var scenario = new ScenarioBase<BodyHandler>(
+            new ParameterNameArg<Guid>("bodyId", bodyId),
+            new ParameterNameArg<Guid>("bodyBodyClassificationId", Guid.NewGuid()),
+            new ParameterNameArg<Guid>("bodyClassificationId", Guid.NewGuid())
+        );
+
+        var bodyClassificationUpdated = scenario.Create<BodyClassificationUpdated>();
+
+        await _eventProcessor.Handle<BodyDocument>(
+            new List<IEnvelope>
+            {
+                scenario.Create<InitialiseProjection>().ToEnvelope(),
+                scenario.Create<BodyRegistered>().ToEnvelope(),
+                scenario.Create<BodyBodyClassificationAdded>().ToEnvelope(),
+                bodyClassificationUpdated.ToEnvelope(),
+            }
+        );
+
+        var bodyClassifications = _fixture.Elastic.ReadClient
+            .Get<BodyDocument>(bodyId)
+            .Source
+            .Classifications;
+        bodyClassifications.Count.Should().Be(1);
+        bodyClassifications[0].ClassificationId.Should().Be(bodyClassificationUpdated.BodyClassificationId);
+        bodyClassifications[0].ClassificationName.Should().Be(bodyClassificationUpdated.Name);
     }
 }

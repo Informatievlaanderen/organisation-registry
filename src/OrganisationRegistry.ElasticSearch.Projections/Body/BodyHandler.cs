@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using App.Metrics;
 using App.Metrics.Timer;
 using Bodies;
+using BodyClassification.Events;
+using BodyClassificationType.Events;
 using Client;
 using Common;
 using Configuration;
@@ -57,7 +59,11 @@ public class BodyHandler :
     IElasticEventHandler<OrganisationInfoUpdatedFromKbo>,
     IElasticEventHandler<OrganisationCouplingWithKboCancelled>,
     IElasticEventHandler<FunctionUpdated>,
-    IElasticEventHandler<SeatTypeUpdated>
+    IElasticEventHandler<SeatTypeUpdated>,
+    IElasticEventHandler<BodyBodyClassificationAdded>,
+    IElasticEventHandler<BodyBodyClassificationUpdated>,
+    IElasticEventHandler<BodyClassificationTypeUpdated>,
+    IElasticEventHandler<BodyClassificationUpdated>
 {
     private readonly Elastic _elastic;
     private readonly IContextFactory _contextFactory;
@@ -67,7 +73,8 @@ public class BodyHandler :
     private static readonly TimeSpan ScrollTimeout = TimeSpan.FromMinutes(5);
     private readonly TimerOptions _indexTimer;
 
-    private static string[] ProjectionTableNames => Array.Empty<string>();
+    private static string[] ProjectionTableNames
+        => Array.Empty<string>();
 
     public BodyHandler(
         ILogger<BodyHandler> logger,
@@ -96,7 +103,7 @@ public class BodyHandler :
         if (deleteIndex && await client.DoesIndexExist(indexName))
         {
             var deleteResult = await client.Indices.DeleteAsync(
-                new DeleteIndexRequest(Indices.Index(new List<IndexName> {indexName})));
+                new DeleteIndexRequest(Indices.Index(new List<IndexName> { indexName })));
 
             if (!deleteResult.IsValid)
                 throw new Exception($"Could not delete body index '{indexName}'.");
@@ -108,9 +115,10 @@ public class BodyHandler :
                 indexName,
                 index => index
                     .Map<BodyDocument>(BodyDocument.Mapping)
-                    .Settings(descriptor => descriptor
-                        .NumberOfShards(_elasticSearchOptions.NumberOfShards)
-                        .NumberOfReplicas(_elasticSearchOptions.NumberOfReplicas)));
+                    .Settings(
+                        descriptor => descriptor
+                            .NumberOfShards(_elasticSearchOptions.NumberOfShards)
+                            .NumberOfReplicas(_elasticSearchOptions.NumberOfReplicas)));
 
             if (!indexResult.IsValid)
                 throw new Exception($"Could not create body index '{indexName}'.");
@@ -120,7 +128,9 @@ public class BodyHandler :
     private static string FormatPersonName(string firstName, string name)
         => $"{firstName} {name}";
 
-    public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+    public async Task<IElasticChange> Handle(
+        DbConnection dbConnection,
+        DbTransaction dbTransaction,
         IEnvelope<InitialiseProjection> message)
     {
         if (message.Body.ProjectionName != typeof(BodyHandler).FullName)
@@ -139,7 +149,9 @@ public class BodyHandler :
         return new ElasticNoChange();
     }
 
-    public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+    public async Task<IElasticChange> Handle(
+        DbConnection dbConnection,
+        DbTransaction dbTransaction,
         IEnvelope<BodyRegistered> message)
     {
         return await new ElasticDocumentCreation<BodyDocument>(
@@ -159,11 +171,12 @@ public class BodyHandler :
             }).ToAsyncResult();
     }
 
-    public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+    public async Task<IElasticChange> Handle(
+        DbConnection dbConnection,
+        DbTransaction dbTransaction,
         IEnvelope<BodyInfoChanged> message)
     {
-        return await new ElasticPerDocumentChange<BodyDocument>
-        (
+        return await new ElasticPerDocumentChange<BodyDocument>(
             message.Body.BodyId,
             document =>
             {
@@ -178,8 +191,7 @@ public class BodyHandler :
 
     public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyNumberAssigned> message)
     {
-        return await new ElasticPerDocumentChange<BodyDocument>
-        (
+        return await new ElasticPerDocumentChange<BodyDocument>(
             message.Body.BodyId,
             document =>
             {
@@ -190,11 +202,12 @@ public class BodyHandler :
         ).ToAsyncResult();
     }
 
-    public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+    public async Task<IElasticChange> Handle(
+        DbConnection dbConnection,
+        DbTransaction dbTransaction,
         IEnvelope<BodyLifecyclePhaseAdded> message)
     {
-        return await new ElasticPerDocumentChange<BodyDocument>
-        (
+        return await new ElasticPerDocumentChange<BodyDocument>(
             message.Body.BodyId,
             document =>
             {
@@ -211,11 +224,12 @@ public class BodyHandler :
         ).ToAsyncResult();
     }
 
-    public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+    public async Task<IElasticChange> Handle(
+        DbConnection dbConnection,
+        DbTransaction dbTransaction,
         IEnvelope<BodyLifecyclePhaseUpdated> message)
     {
-        return await new ElasticPerDocumentChange<BodyDocument>
-        (
+        return await new ElasticPerDocumentChange<BodyDocument>(
             message.Body.BodyId,
             document =>
             {
@@ -232,26 +246,32 @@ public class BodyHandler :
         ).ToAsyncResult();
     }
 
-    public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+    public async Task<IElasticChange> Handle(
+        DbConnection dbConnection,
+        DbTransaction dbTransaction,
         IEnvelope<LifecyclePhaseTypeUpdated> message)
     {
         return await new ElasticMassChange
         (
-            elastic => elastic.TryAsync(() => elastic
-                .MassUpdateBodyAsync(
-                    x => x.LifecyclePhases.Single().LifecyclePhaseTypeId, message.Body.LifecyclePhaseTypeId,
-                    "lifecyclePhases", "lifecyclePhaseTypeId",
-                    "lifecyclePhaseTypeName", message.Body.Name,
-                    message.Number,
-                    message.Timestamp))
+            elastic => elastic.TryAsync(
+                () => elastic
+                    .MassUpdateBodyAsync(
+                        x => x.LifecyclePhases.Single().LifecyclePhaseTypeId,
+                        message.Body.LifecyclePhaseTypeId,
+                        "lifecyclePhases",
+                        "lifecyclePhaseTypeId",
+                        "lifecyclePhaseTypeName",
+                        message.Body.Name,
+                        message.Number,
+                        message.Timestamp))
         ).ToAsyncResult();
     }
 
-    public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+    public async Task<IElasticChange> Handle(
+        DbConnection dbConnection,
+        DbTransaction dbTransaction,
         IEnvelope<BodyFormalFrameworkAdded> message)
-    {
-        return await new ElasticPerDocumentChange<BodyDocument>
-        (
+        => await new ElasticPerDocumentChange<BodyDocument>(
             message.Body.BodyId,
             document =>
             {
@@ -266,13 +286,12 @@ public class BodyHandler :
                         Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
             }
         ).ToAsyncResult();
-    }
 
-    public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+    public async Task<IElasticChange> Handle(
+        DbConnection dbConnection,
+        DbTransaction dbTransaction,
         IEnvelope<BodyFormalFrameworkUpdated> message)
-    {
-        return await new ElasticPerDocumentChange<BodyDocument>
-        (
+        => await new ElasticPerDocumentChange<BodyDocument>(
             message.Body.BodyId,
             document =>
             {
@@ -287,13 +306,13 @@ public class BodyHandler :
                         Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
             }
         ).ToAsyncResult();
-    }
 
-    public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+    public async Task<IElasticChange> Handle(
+        DbConnection dbConnection,
+        DbTransaction dbTransaction,
         IEnvelope<BodyOrganisationAdded> message)
     {
-        return await new ElasticPerDocumentChange<BodyDocument>
-        (
+        return await new ElasticPerDocumentChange<BodyDocument>(
             message.Body.BodyId,
             document =>
             {
@@ -310,7 +329,9 @@ public class BodyHandler :
         ).ToAsyncResult();
     }
 
-    public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+    public async Task<IElasticChange> Handle(
+        DbConnection dbConnection,
+        DbTransaction dbTransaction,
         IEnvelope<BodyOrganisationUpdated> message)
     {
         return await new ElasticPerDocumentChange<BodyDocument>(
@@ -330,11 +351,12 @@ public class BodyHandler :
         ).ToAsyncResult();
     }
 
-    public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+    public async Task<IElasticChange> Handle(
+        DbConnection dbConnection,
+        DbTransaction dbTransaction,
         IEnvelope<BodySeatAdded> message)
     {
-        return await new ElasticPerDocumentChange<BodyDocument>
-        (
+        return await new ElasticPerDocumentChange<BodyDocument>(
             message.Body.BodyId,
             document =>
             {
@@ -355,11 +377,12 @@ public class BodyHandler :
         ).ToAsyncResult();
     }
 
-    public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+    public async Task<IElasticChange> Handle(
+        DbConnection dbConnection,
+        DbTransaction dbTransaction,
         IEnvelope<BodySeatUpdated> message)
     {
-        return await new ElasticPerDocumentChange<BodyDocument>
-        (
+        return await new ElasticPerDocumentChange<BodyDocument>(
             message.Body.BodyId,
             document =>
             {
@@ -378,11 +401,12 @@ public class BodyHandler :
         ).ToAsyncResult();
     }
 
-    public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+    public async Task<IElasticChange> Handle(
+        DbConnection dbConnection,
+        DbTransaction dbTransaction,
         IEnvelope<AssignedPersonToBodySeat> message)
     {
-        return await new ElasticPerDocumentChange<BodyDocument>
-        (
+        return await new ElasticPerDocumentChange<BodyDocument>(
             message.Body.BodyId,
             document =>
             {
@@ -407,11 +431,12 @@ public class BodyHandler :
         ).ToAsyncResult();
     }
 
-    public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+    public async Task<IElasticChange> Handle(
+        DbConnection dbConnection,
+        DbTransaction dbTransaction,
         IEnvelope<ReassignedPersonToBodySeat> message)
     {
-        return await new ElasticPerDocumentChange<BodyDocument>
-        (
+        return await new ElasticPerDocumentChange<BodyDocument>(
             message.Body.BodyId,
             document =>
             {
@@ -435,11 +460,12 @@ public class BodyHandler :
         ).ToAsyncResult();
     }
 
-    public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+    public async Task<IElasticChange> Handle(
+        DbConnection dbConnection,
+        DbTransaction dbTransaction,
         IEnvelope<AssignedOrganisationToBodySeat> message)
     {
-        return await new ElasticPerDocumentChange<BodyDocument>
-        (
+        return await new ElasticPerDocumentChange<BodyDocument>(
             message.Body.BodyId,
             document =>
             {
@@ -463,11 +489,12 @@ public class BodyHandler :
         ).ToAsyncResult();
     }
 
-    public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+    public async Task<IElasticChange> Handle(
+        DbConnection dbConnection,
+        DbTransaction dbTransaction,
         IEnvelope<ReassignedOrganisationToBodySeat> message)
     {
-        return await new ElasticPerDocumentChange<BodyDocument>
-        (
+        return await new ElasticPerDocumentChange<BodyDocument>(
             message.Body.BodyId,
             document =>
             {
@@ -491,11 +518,12 @@ public class BodyHandler :
         ).ToAsyncResult();
     }
 
-    public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+    public async Task<IElasticChange> Handle(
+        DbConnection dbConnection,
+        DbTransaction dbTransaction,
         IEnvelope<AssignedFunctionTypeToBodySeat> message)
     {
-        return await new ElasticPerDocumentChange<BodyDocument>
-        (
+        return await new ElasticPerDocumentChange<BodyDocument>(
             message.Body.BodyId,
             document =>
             {
@@ -519,11 +547,12 @@ public class BodyHandler :
         ).ToAsyncResult();
     }
 
-    public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+    public async Task<IElasticChange> Handle(
+        DbConnection dbConnection,
+        DbTransaction dbTransaction,
         IEnvelope<ReassignedFunctionTypeToBodySeat> message)
     {
-        return await new ElasticPerDocumentChange<BodyDocument>
-        (
+        return await new ElasticPerDocumentChange<BodyDocument>(
             message.Body.BodyId,
             document =>
             {
@@ -547,16 +576,17 @@ public class BodyHandler :
         ).ToAsyncResult();
     }
 
-    public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+    public async Task<IElasticChange> Handle(
+        DbConnection dbConnection,
+        DbTransaction dbTransaction,
         IEnvelope<PersonAssignedToDelegation> message)
     {
         await using var organisationRegistryContext = _contextFactory.Create();
         var contactTypeNames = await organisationRegistryContext.ContactTypeCache
-            .Select(x => new {x.Id, x.Name})
+            .Select(x => new { x.Id, x.Name })
             .ToDictionaryAsync(x => x.Id, x => x.Name);
 
-        return new ElasticPerDocumentChange<BodyDocument>
-        (
+        return new ElasticPerDocumentChange<BodyDocument>(
             message.Body.BodyId,
             document =>
             {
@@ -574,25 +604,28 @@ public class BodyHandler :
                         message.Body.DelegationAssignmentId,
                         message.Body.PersonId,
                         message.Body.PersonFullName,
-                        message.Body.Contacts.Select(x =>
-                            new Contact(
-                                x.Key,
-                                contactTypeNames[x.Key], x.Value)).ToList(),
+                        message.Body.Contacts.Select(
+                            x =>
+                                new Contact(
+                                    x.Key,
+                                    contactTypeNames[x.Key],
+                                    x.Value)).ToList(),
                         Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
             }
         );
     }
 
-    public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+    public async Task<IElasticChange> Handle(
+        DbConnection dbConnection,
+        DbTransaction dbTransaction,
         IEnvelope<PersonAssignedToDelegationUpdated> message)
     {
         await using var organisationRegistryContext = _contextFactory.Create();
         var contactTypeNames = await organisationRegistryContext.ContactTypeCache
-            .Select(x => new {x.Id, x.Name})
+            .Select(x => new { x.Id, x.Name })
             .ToDictionaryAsync(x => x.Id, x => x.Name);
 
-        return new ElasticPerDocumentChange<BodyDocument>
-        (
+        return new ElasticPerDocumentChange<BodyDocument>(
             message.Body.BodyId,
             document =>
             {
@@ -610,20 +643,23 @@ public class BodyHandler :
                         message.Body.DelegationAssignmentId,
                         message.Body.PersonId,
                         message.Body.PersonFullName,
-                        message.Body.Contacts.Select(x =>
-                            new Contact(
-                                x.Key,
-                                contactTypeNames[x.Key], x.Value)).ToList(),
+                        message.Body.Contacts.Select(
+                            x =>
+                                new Contact(
+                                    x.Key,
+                                    contactTypeNames[x.Key],
+                                    x.Value)).ToList(),
                         Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
             }
         );
     }
 
-    public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+    public async Task<IElasticChange> Handle(
+        DbConnection dbConnection,
+        DbTransaction dbTransaction,
         IEnvelope<PersonAssignedToDelegationRemoved> message)
     {
-        return await new ElasticPerDocumentChange<BodyDocument>
-        (
+        return await new ElasticPerDocumentChange<BodyDocument>(
             message.Body.BodyId,
             document =>
             {
@@ -641,7 +677,9 @@ public class BodyHandler :
         ).ToAsyncResult();
     }
 
-    public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+    public async Task<IElasticChange> Handle(
+        DbConnection dbConnection,
+        DbTransaction dbTransaction,
         IEnvelope<PersonUpdated> message)
     {
         return await new ElasticMassChange(
@@ -655,17 +693,18 @@ public class BodyHandler :
 
     private async Task UpdatePersonForDelegations(IEnvelope<PersonUpdated> message, Elastic elastic)
     {
+        await elastic.TryGetAsync(
+            async () =>
+                (await elastic.WriteClient.Indices.RefreshAsync(Indices.Index<BodyDocument>())).ThrowOnFailure());
 
-        await elastic.TryGetAsync(async () =>
-            (await elastic.WriteClient.Indices.RefreshAsync(Indices.Index<BodyDocument>())).ThrowOnFailure());
-
-        var searchResponse = (await elastic.TryGetAsync(() => elastic.WriteClient.SearchAsync<BodyDocument>(
-            s => s.Query(
-                q => q.Term(
-                    t => t
-                        .Field(f => f.Seats.First().Mandates.First().Delegations.First().PersonId)
-                        .Value(message.Body.PersonId))
-            ).Scroll(new Time(ScrollTimeout))))).ThrowOnFailure();
+        var searchResponse = (await elastic.TryGetAsync(
+            () => elastic.WriteClient.SearchAsync<BodyDocument>(
+                s => s.Query(
+                    q => q.Term(
+                        t => t
+                            .Field(f => f.Seats.First().Mandates.First().Delegations.First().PersonId)
+                            .Value(message.Body.PersonId))
+                ).Scroll(new Time(ScrollTimeout))))).ThrowOnFailure();
 
         var bodyDocuments = new List<BodyDocument>();
 
@@ -677,46 +716,51 @@ public class BodyHandler :
                 .SelectMany(seat => seat.Delegations)
                 .Where(delegation => delegation.PersonId == message.Body.PersonId)
                 .ToList()
-                .ForEach(delegation =>
-                    delegation.PersonName = FormatPersonName(message.Body.FirstName, message.Body.Name));
+                .ForEach(
+                    delegation =>
+                        delegation.PersonName = FormatPersonName(message.Body.FirstName, message.Body.Name));
 
             bodyDocuments.AddRange(searchResponse.Documents);
 
             var response = searchResponse;
-            searchResponse = (await elastic.TryGetAsync(() =>
-                elastic.WriteClient.ScrollAsync<BodyDocument>(new Time(ScrollTimeout),
-                    response.ScrollId))).ThrowOnFailure();
+            searchResponse = (await elastic.TryGetAsync(
+                () =>
+                    elastic.WriteClient.ScrollAsync<BodyDocument>(
+                        new Time(ScrollTimeout),
+                        response.ScrollId))).ThrowOnFailure();
         }
+
         (await elastic.TryGetAsync(() => elastic.WriteClient.ClearScrollAsync(new ClearScrollRequest(searchResponse.ScrollId)))).ThrowOnFailure();
 
         if (!bodyDocuments.Any())
             return;
 
-        elastic.WriteClient.BulkAll(bodyDocuments, b => b
-                .BackOffTime("30s")
-                .BackOffRetries(5)
-                .RefreshOnCompleted(false)
-                .MaxDegreeOfParallelism(Environment.ProcessorCount)
-                .Size(1000)
+        elastic.WriteClient.BulkAll(
+                bodyDocuments,
+                b => b
+                    .BackOffTime("30s")
+                    .BackOffRetries(5)
+                    .RefreshOnCompleted(false)
+                    .MaxDegreeOfParallelism(Environment.ProcessorCount)
+                    .Size(1000)
             )
-            .Wait(TimeSpan.FromMinutes(15), next =>
-            {
-                Logger.LogInformation("Writing page {PageNumber}", next.Page);
-            });
+            .Wait(TimeSpan.FromMinutes(15), next => { Logger.LogInformation("Writing page {PageNumber}", next.Page); });
     }
 
     private async Task UpdatePersonForMandates(IEnvelope<PersonUpdated> message, Elastic elastic)
     {
-        await elastic.TryGetAsync(async () =>
-            (await elastic.WriteClient.Indices.RefreshAsync(Indices.Index<BodyDocument>())).ThrowOnFailure());
+        await elastic.TryGetAsync(
+            async () =>
+                (await elastic.WriteClient.Indices.RefreshAsync(Indices.Index<BodyDocument>())).ThrowOnFailure());
 
-        var searchResponse = (await elastic.TryGetAsync(() => elastic.WriteClient.SearchAsync<BodyDocument>(
-            s => s.Query(
-                q => q.Term(
-                    t => t
-                        .Field(f => f.Seats.Single().Mandates.Single().PersonId)
-                        .Value(message.Body.PersonId))
-            ).Scroll(new Time(ScrollTimeout))))).ThrowOnFailure();
+        var searchResponse = (await elastic.TryGetAsync(
+            () => elastic.WriteClient.SearchAsync<BodyDocument>(
+                s => s.Query(
+                    q => q.Term(
+                        t => t
+                            .Field(f => f.Seats.Single().Mandates.Single().PersonId)
+                            .Value(message.Body.PersonId))
+                ).Scroll(new Time(ScrollTimeout))))).ThrowOnFailure();
 
         var bodyDocuments = new List<BodyDocument>();
 
@@ -733,41 +777,51 @@ public class BodyHandler :
             bodyDocuments.AddRange(searchResponse.Documents);
 
             var response = searchResponse;
-            searchResponse = (await elastic.TryGetAsync(() =>
-                elastic.WriteClient.ScrollAsync<BodyDocument>(new Time(ScrollTimeout),
-                    response.ScrollId))).ThrowOnFailure();
+            searchResponse = (await elastic.TryGetAsync(
+                () =>
+                    elastic.WriteClient.ScrollAsync<BodyDocument>(
+                        new Time(ScrollTimeout),
+                        response.ScrollId))).ThrowOnFailure();
         }
+
         (await elastic.TryGetAsync(() => elastic.WriteClient.ClearScrollAsync(new ClearScrollRequest(searchResponse.ScrollId)))).ThrowOnFailure();
 
         if (!bodyDocuments.Any())
             return;
 
-        elastic.WriteClient.BulkAll(bodyDocuments, b => b
-                .BackOffTime("30s")
-                .BackOffRetries(5)
-                .RefreshOnCompleted(false)
-                .MaxDegreeOfParallelism(Environment.ProcessorCount)
-                .Size(1000)
+        elastic.WriteClient.BulkAll(
+                bodyDocuments,
+                b => b
+                    .BackOffTime("30s")
+                    .BackOffRetries(5)
+                    .RefreshOnCompleted(false)
+                    .MaxDegreeOfParallelism(Environment.ProcessorCount)
+                    .Size(1000)
             )
-            .Wait(TimeSpan.FromMinutes(15), next =>
-            {
-                Logger.LogInformation("Writing page {PageNumber}", next.Page);
-            });
+            .Wait(TimeSpan.FromMinutes(15), next => { Logger.LogInformation("Writing page {PageNumber}", next.Page); });
     }
 
-    public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+    public async Task<IElasticChange> Handle(
+        DbConnection dbConnection,
+        DbTransaction dbTransaction,
         IEnvelope<OrganisationInfoUpdated> message)
         => await UpdateMandateOrganisationName(message.Body.OrganisationId, message.Body.Name).ToAsyncResult();
 
-    public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+    public async Task<IElasticChange> Handle(
+        DbConnection dbConnection,
+        DbTransaction dbTransaction,
         IEnvelope<OrganisationNameUpdated> message)
         => await UpdateMandateOrganisationName(message.Body.OrganisationId, message.Body.Name).ToAsyncResult();
 
-    public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+    public async Task<IElasticChange> Handle(
+        DbConnection dbConnection,
+        DbTransaction dbTransaction,
         IEnvelope<OrganisationInfoUpdatedFromKbo> message)
         => await UpdateMandateOrganisationName(message.Body.OrganisationId, message.Body.Name).ToAsyncResult();
 
-    public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+    public async Task<IElasticChange> Handle(
+        DbConnection dbConnection,
+        DbTransaction dbTransaction,
         IEnvelope<OrganisationCouplingWithKboCancelled> message)
         => await UpdateMandateOrganisationName(message.Body.OrganisationId, message.Body.NameBeforeKboCoupling).ToAsyncResult();
 
@@ -779,17 +833,19 @@ public class BodyHandler :
             {
                 using (_metrics.Measure.Timer.Time(_indexTimer))
                 {
-                    await elastic.TryGetAsync(async () =>
-                        (await elastic.WriteClient.Indices.RefreshAsync(Indices.Index<BodyDocument>())).ThrowOnFailure());
+                    await elastic.TryGetAsync(
+                        async () =>
+                            (await elastic.WriteClient.Indices.RefreshAsync(Indices.Index<BodyDocument>())).ThrowOnFailure());
                 }
 
-                var searchResponse = (await elastic.TryGetAsync(() => elastic.WriteClient.SearchAsync<BodyDocument>(
-                    s => s.Query(
-                        q => q.Term(
-                            t => t
-                                .Field(f => f.Seats.Single().Mandates.Single().OrganisationId)
-                                .Value(organisationId))
-                    ).Scroll(new Time(ScrollTimeout))))).ThrowOnFailure();
+                var searchResponse = (await elastic.TryGetAsync(
+                    () => elastic.WriteClient.SearchAsync<BodyDocument>(
+                        s => s.Query(
+                            q => q.Term(
+                                t => t
+                                    .Field(f => f.Seats.Single().Mandates.Single().OrganisationId)
+                                    .Value(organisationId))
+                        ).Scroll(new Time(ScrollTimeout))))).ThrowOnFailure();
 
                 var bodyDocuments = new List<BodyDocument>();
 
@@ -805,31 +861,35 @@ public class BodyHandler :
                     bodyDocuments.AddRange(searchResponse.Documents);
 
                     var response = searchResponse;
-                    searchResponse = (await elastic.TryGetAsync(() =>
-                        elastic.WriteClient.ScrollAsync<BodyDocument>(new Time(ScrollTimeout),
-                            response.ScrollId))).ThrowOnFailure();
+                    searchResponse = (await elastic.TryGetAsync(
+                        () =>
+                            elastic.WriteClient.ScrollAsync<BodyDocument>(
+                                new Time(ScrollTimeout),
+                                response.ScrollId))).ThrowOnFailure();
                 }
+
                 (await elastic.TryGetAsync(() => elastic.WriteClient.ClearScrollAsync(new ClearScrollRequest(searchResponse.ScrollId)))).ThrowOnFailure();
 
                 if (!bodyDocuments.Any())
                     return;
 
-                elastic.WriteClient.BulkAll(bodyDocuments, b => b
-                        .BackOffTime("30s")
-                        .BackOffRetries(5)
-                        .RefreshOnCompleted(false)
-                        .MaxDegreeOfParallelism(Environment.ProcessorCount)
-                        .Size(1000)
+                elastic.WriteClient.BulkAll(
+                        bodyDocuments,
+                        b => b
+                            .BackOffTime("30s")
+                            .BackOffRetries(5)
+                            .RefreshOnCompleted(false)
+                            .MaxDegreeOfParallelism(Environment.ProcessorCount)
+                            .Size(1000)
                     )
-                    .Wait(TimeSpan.FromMinutes(15), next =>
-                    {
-                        Logger.LogInformation("Writing page {PageNumber}", next.Page);
-                    });
+                    .Wait(TimeSpan.FromMinutes(15), next => { Logger.LogInformation("Writing page {PageNumber}", next.Page); });
             }
         );
     }
 
-    public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+    public async Task<IElasticChange> Handle(
+        DbConnection dbConnection,
+        DbTransaction dbTransaction,
         IEnvelope<FunctionUpdated> message)
     {
         return await new ElasticMassChange
@@ -838,18 +898,20 @@ public class BodyHandler :
             {
                 using (_metrics.Measure.Timer.Time(_indexTimer))
                 {
-                    await elastic.TryGetAsync(async () =>
-                        (await elastic.WriteClient.Indices.RefreshAsync(Indices.Index<BodyDocument>()))
-                        .ThrowOnFailure());
+                    await elastic.TryGetAsync(
+                        async () =>
+                            (await elastic.WriteClient.Indices.RefreshAsync(Indices.Index<BodyDocument>()))
+                            .ThrowOnFailure());
                 }
 
-                var searchResponse = (await elastic.TryGetAsync(() => elastic.WriteClient.SearchAsync<BodyDocument>(
-                    s => s.Query(
-                        q => q.Term(
-                            t => t
-                                .Field(f => f.Seats.Single().Mandates.Single().FunctionTypeId)
-                                .Value(message.Body.FunctionId))
-                    ).Scroll(new Time(ScrollTimeout))))).ThrowOnFailure();
+                var searchResponse = (await elastic.TryGetAsync(
+                    () => elastic.WriteClient.SearchAsync<BodyDocument>(
+                        s => s.Query(
+                            q => q.Term(
+                                t => t
+                                    .Field(f => f.Seats.Single().Mandates.Single().FunctionTypeId)
+                                    .Value(message.Body.FunctionId))
+                        ).Scroll(new Time(ScrollTimeout))))).ThrowOnFailure();
 
                 var bodyDocuments = new List<BodyDocument>();
 
@@ -865,45 +927,121 @@ public class BodyHandler :
                     bodyDocuments.AddRange(searchResponse.Documents);
 
                     var response = searchResponse;
-                    searchResponse = (await elastic.TryGetAsync(() =>
-                        elastic.WriteClient.ScrollAsync<BodyDocument>(new Time(ScrollTimeout),
-                            response.ScrollId))).ThrowOnFailure();
+                    searchResponse = (await elastic.TryGetAsync(
+                        () =>
+                            elastic.WriteClient.ScrollAsync<BodyDocument>(
+                                new Time(ScrollTimeout),
+                                response.ScrollId))).ThrowOnFailure();
                 }
 
-                (await elastic.TryGetAsync(() =>
-                        elastic.WriteClient.ClearScrollAsync(new ClearScrollRequest(searchResponse.ScrollId))))
+                (await elastic.TryGetAsync(
+                        () =>
+                            elastic.WriteClient.ClearScrollAsync(new ClearScrollRequest(searchResponse.ScrollId))))
                     .ThrowOnFailure();
 
                 if (!bodyDocuments.Any())
                     return;
 
-                elastic.WriteClient.BulkAll(bodyDocuments, b => b
-                        .BackOffTime("30s")
-                        .BackOffRetries(5)
-                        .RefreshOnCompleted(false)
-                        .MaxDegreeOfParallelism(Environment.ProcessorCount)
-                        .Size(1000)
+                elastic.WriteClient.BulkAll(
+                        bodyDocuments,
+                        b => b
+                            .BackOffTime("30s")
+                            .BackOffRetries(5)
+                            .RefreshOnCompleted(false)
+                            .MaxDegreeOfParallelism(Environment.ProcessorCount)
+                            .Size(1000)
                     )
-                    .Wait(TimeSpan.FromMinutes(15),
-                        next =>
-                        {
-                            Logger.LogInformation("Writing page {PageNumber}", next.Page);
-                        });
+                    .Wait(
+                        TimeSpan.FromMinutes(15),
+                        next => { Logger.LogInformation("Writing page {PageNumber}", next.Page); });
             }).ToAsyncResult();
     }
 
-    public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+    public async Task<IElasticChange> Handle(
+        DbConnection dbConnection,
+        DbTransaction dbTransaction,
         IEnvelope<SeatTypeUpdated> message)
-    {
-        return await new ElasticMassChange
+        => await new ElasticMassChange
         (
             async elastic => await elastic
                 .MassUpdateBodyAsync(
-                    x => x.Seats.Single().SeatTypeId, message.Body.SeatTypeId,
-                    "seats", "seatTypeId",
-                    "seatTypeName", message.Body.Name,
+                    x => x.Seats.Single().SeatTypeId,
+                    message.Body.SeatTypeId,
+                    "seats",
+                    "seatTypeId",
+                    "seatTypeName",
+                    message.Body.Name,
                     message.Number,
                     message.Timestamp)
         ).ToAsyncResult();
-    }
+
+    public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyBodyClassificationAdded> message)
+        => await new ElasticPerDocumentChange<BodyDocument>(
+            message.Body.BodyId,
+            document =>
+            {
+                document.ChangeId = message.Number;
+                document.ChangeTime = message.Timestamp;
+                document.Classifications.RemoveAndAdd(
+                    x => x.BodyClassificationId == message.Body.BodyClassificationId,
+                    new BodyDocument.BodyClassification(
+                        message.Body.BodyBodyClassificationId,
+                        message.Body.BodyClassificationId,
+                        message.Body.BodyClassificationName,
+                        message.Body.BodyClassificationTypeId,
+                        message.Body.BodyClassificationTypeName,
+                        Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)
+                    ));
+            }
+        ).ToAsyncResult();
+
+    public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyBodyClassificationUpdated> message)
+        => await new ElasticPerDocumentChange<BodyDocument>(
+            message.Body.BodyId,
+            document =>
+            {
+                document.ChangeId = message.Number;
+                document.ChangeTime = message.Timestamp;
+                document.Classifications.RemoveAndAdd(
+                    x => x.BodyClassificationId == message.Body.BodyBodyClassificationId,
+                    new BodyDocument.BodyClassification(
+                        message.Body.BodyBodyClassificationId,
+                        message.Body.BodyClassificationId,
+                        message.Body.BodyClassificationName,
+                        message.Body.BodyClassificationTypeId,
+                        message.Body.BodyClassificationTypeName,
+                        Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)
+                    ));
+            }
+        ).ToAsyncResult();
+
+    public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyClassificationTypeUpdated> message)
+        => await new ElasticMassChange
+        (
+            async elastic => await elastic
+                .MassUpdateBodyAsync(
+                    x => x.Classifications.Single().ClassificationTypeId,
+                    message.Body.BodyClassificationTypeId,
+                    "classifications",
+                    "classificationTypeId",
+                    "classificationTypeName",
+                    message.Body.Name,
+                    message.Number,
+                    message.Timestamp)
+        ).ToAsyncResult();
+
+    public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyClassificationUpdated> message)
+        => await new ElasticMassChange
+        (
+            async elastic => await elastic
+                .MassUpdateBodyAsync(
+                    x => x.Classifications.Single().ClassificationId,
+                    message.Body.BodyClassificationId,
+                    "classifications",
+                    "classificationId",
+                    "classificationName",
+                    message.Body.Name,
+                    message.Number,
+                    message.Timestamp)
+        ).ToAsyncResult();
 }
