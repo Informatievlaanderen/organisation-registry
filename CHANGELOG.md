@@ -1,3 +1,10 @@
+# [1.272.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.271.0...v1.272.0) (2022-08-29)
+
+
+### Features
+
+* or-1154 minor additions for automated tests ([2ed8dff](https://github.com/informatievlaanderen/organisation-registry/commit/2ed8dff80657ca52da3e96aaecab31e452b88917))
+
 # [1.271.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.270.0...v1.271.0) (2022-08-25)
 
 
