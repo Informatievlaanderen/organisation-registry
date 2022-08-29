@@ -1,10 +1,9 @@
-﻿namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationRegulation;
+﻿namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationRelation;
 
 using System;
 using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
-using Infrastructure.Tests.Extensions.TestHelpers;
 using Microsoft.Extensions.Logging;
 using Moq;
 using OrganisationRegistry.Infrastructure.Domain;
@@ -14,6 +13,7 @@ using OrganisationRelationType;
 using OrganisationRelationType.Events;
 using Tests.Shared;
 using Tests.Shared.TestDataBuilders;
+using OrganisationRegistry.UnitTests.Infrastructure.Tests.Extensions.TestHelpers;
 using Xunit;
 using Xunit.Abstractions;
 
