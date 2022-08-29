@@ -20,7 +20,7 @@ public class BodyFormalFrameworkTests
     }
 
     [Fact]
-    public async Task TestBodyFormalFramework()
+    public async Task TestBodyFormalFrameworks()
     {
         var bodyId = _apiFixture.Fixture.Create<Guid>();
         var route = $"/v1/bodies/{bodyId}/formalframeworks";

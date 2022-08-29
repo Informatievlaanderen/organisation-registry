@@ -5,6 +5,7 @@ using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using AutoFixture;
 using Backoffice.Body.Detail;
+using Backoffice.Body.Seat;
 using Backoffice.Organisation.OrganisationClassification;
 using Backoffice.Parameters.BodyClassification.Requests;
 using Backoffice.Parameters.BodyClassificationType.Requests;
@@ -214,6 +215,22 @@ public class CreationHelpers
                 Name = _fixture.Fixture.Create<string>(),
                 RegulationThemeId = regulationThemeId,
             });
+
+    public async Task<Guid> BodySeat(Guid bodyId, Guid seatTypeId)
+    {
+        var id = _fixture.Fixture.Create<Guid>();
+        return await Create<Guid>(
+            $"/v1/bodies/{bodyId}/seats",
+            new AddBodySeatRequest
+            {
+                // cannot use _fixture.Create<> because no 'Id' property
+                BodySeatId = id,
+                Name = _fixture.Fixture.Create<string>(),
+                PaidSeat = _fixture.Fixture.Create<bool>(),
+                EntitledToVote = _fixture.Fixture.Create<bool>(),
+                SeatTypeId = seatTypeId,
+            });
+    }
 
     private async Task<TId> Create<TId>(string route, dynamic body)
         where TId : notnull
