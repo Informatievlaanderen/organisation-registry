@@ -27,7 +27,7 @@ public class OrganisationFormalFrameworkUpdated : BaseEvent<OrganisationFormalFr
         Guid organisationId,
         Guid organisationFormalFrameworkId,
         Guid formalFrameworkId,
-        string formalFrameworkName,
+        string? formalFrameworkName,
         Guid parentOrganisationId,
         string parentOrganisationName,
         DateTime? validFrom,
@@ -49,7 +49,7 @@ public class OrganisationFormalFrameworkUpdated : BaseEvent<OrganisationFormalFr
         PreviousParentOrganisationName = previousParentOrganisationName;
         PreviouslyValidFrom = previouslyValidFrom;
         PreviouslyValidTo = previouslyValidTo;
-        FormalFrameworkName = formalFrameworkName;
+        FormalFrameworkName = formalFrameworkName ?? string.Empty;
         PreviousParentOrganisationId = previousParentOrganisationId;
     }
 }
