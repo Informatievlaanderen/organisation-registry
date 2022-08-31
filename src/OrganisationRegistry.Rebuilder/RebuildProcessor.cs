@@ -35,6 +35,7 @@ public class RebuildProcessor
 
     public async Task Run()
     {
+        var number = -1;
         try{
             if (!await _projectionStates.Exists(ProjectionName).ConfigureAwait(false))
             {
@@ -45,7 +46,7 @@ public class RebuildProcessor
 
             _logger.LogInformation("Found desired projection state");
 
-            var number = await _projectionStates.GetLastProcessedEventNumber(ProjectionName)
+            number = await _projectionStates.GetLastProcessedEventNumber(ProjectionName)
                 .ConfigureAwait(false);
             var lastNumber = _store.GetLastEvent();
 
@@ -78,7 +79,7 @@ public class RebuildProcessor
         catch (Exception ex)
         {
             _logger.LogCritical(0, ex,
-                "An exception occurred while handling envelopes");
+                "An exception occurred while handling envelope number {Number}", number);
         }
     }
 }
