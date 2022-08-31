@@ -22,6 +22,7 @@ jobs:
             'organisation-registry-ui',
             'organisation-registry-vlaanderenbe',
             'organisation-registry-zorgengezondheid',
+            'organisation-registry-rebuilder',
           ]
     steps:
       - name: CD
