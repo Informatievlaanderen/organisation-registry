@@ -125,9 +125,12 @@ bcp OrganisationRegistry.Events in ./events-prd.bcp -S<server> -d organisation-r
 
 ### Clear the projection states.
 ```
-TODO
-
 Don't reset vlaanderenbenotifier!
+
+UPDATE   [organisation-registry].[Backoffice].[ProjectionStateList]
+SET EventNumber = -1
+WHERE not Name in ('VlaanderenBeNotifier')
+
 ```
 
 
