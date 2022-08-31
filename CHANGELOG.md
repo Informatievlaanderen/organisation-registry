@@ -1,3 +1,15 @@
+# [1.275.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.274.0...v1.275.0) (2022-08-31)
+
+
+### Bug Fixes
+
+* add null check in organisationformalframeworkupdated event ([e6659cc](https://github.com/informatievlaanderen/organisation-registry/commit/e6659cc0190a158c930e0b016583393f4763a67b))
+
+
+### Features
+
+* or-1158 add rebuilder to deployment ([2b15192](https://github.com/informatievlaanderen/organisation-registry/commit/2b15192f52967d1a7f910866655a293840a593a1))
+
 # [1.274.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.273.0...v1.274.0) (2022-08-31)
 
 
