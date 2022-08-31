@@ -1,3 +1,10 @@
+# [1.274.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.273.0...v1.274.0) (2022-08-31)
+
+
+### Features
+
+* or-1158 rebuild events on staging ([77ef733](https://github.com/informatievlaanderen/organisation-registry/commit/77ef7334c0efd5a51e599d1d88897c491986792f))
+
 # [1.273.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.272.0...v1.273.0) (2022-08-29)
 
 
