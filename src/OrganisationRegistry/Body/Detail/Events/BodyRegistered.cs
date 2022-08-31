@@ -16,7 +16,7 @@ public class BodyRegistered : BaseEvent<BodyRegistered>
     public BodyRegistered(
         Guid bodyId,
         string name,
-        string bodyNumber,
+        string? bodyNumber,
         string? shortName,
         string? description,
         DateTime? formalValidFrom,
@@ -24,7 +24,7 @@ public class BodyRegistered : BaseEvent<BodyRegistered>
     {
         Id = bodyId;
         Name = name;
-        BodyNumber = bodyNumber;
+        BodyNumber = bodyNumber ?? string.Empty;
         ShortName = shortName;
         Description = description;
         FormalValidFrom = formalValidFrom;
