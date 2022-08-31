@@ -62,8 +62,8 @@ public class RebuildProcessor
                 await using var __ = tx.ConfigureAwait(false);
                 foreach (var @event in events)
                 {
-                    await _publisher.Publish(connection, tx, (dynamic)@event);
                     number = @event.Number;
+                    await _publisher.Publish(connection, tx, (dynamic)@event);
                 }
 
                 await _projectionStates.UpdateProjectionState(ProjectionName, number, connection, tx)
