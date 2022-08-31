@@ -1,3 +1,10 @@
+## [1.275.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.275.0...v1.275.1) (2022-08-31)
+
+
+### Bug Fixes
+
+* or-1153 resolve nullreference for bodyregistered event ([a7b507b](https://github.com/informatievlaanderen/organisation-registry/commit/a7b507bc26a7f87eba384067b95fd6b5a183c016))
+
 # [1.275.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.274.0...v1.275.0) (2022-08-31)
 
 
