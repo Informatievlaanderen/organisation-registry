@@ -1,3 +1,10 @@
+# [1.276.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.275.1...v1.276.0) (2022-10-07)
+
+
+### Features
+
+* or-1243 enable ImportApi and PowerBIApi Features in prd ([fead58a](https://github.com/informatievlaanderen/organisation-registry/commit/fead58a02a94095fc45261f200938f461e2c88bc))
+
 ## [1.275.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.275.0...v1.275.1) (2022-08-31)
 
 
