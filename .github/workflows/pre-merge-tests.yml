@@ -40,7 +40,7 @@ jobs:
 
     outputs:
       version: ${{ steps.set-version.outputs.version }}
-      test: "test"
+      test: "test123"
 
     steps:
     - name: Checkout Code
