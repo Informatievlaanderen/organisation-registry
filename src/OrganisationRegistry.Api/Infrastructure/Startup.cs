@@ -64,6 +64,7 @@ public class Startup
         JsonConvert.DefaultSettings =
             () => JsonSerializerSettingsProvider.CreateSerializerSettings().ConfigureForOrganisationRegistry();
 
+
         Migrations.Run(_configuration.GetSection(SqlServerConfiguration.Section).Get<SqlServerConfiguration>());
         var openIdConfiguration = _configuration.GetSection(OpenIdConnectConfigurationSection.Name)
             .Get<OpenIdConnectConfigurationSection>();

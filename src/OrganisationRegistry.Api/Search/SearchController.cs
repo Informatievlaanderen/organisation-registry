@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
 using ElasticSearch.Bodies;
 using ElasticSearch.Client;
+using ElasticSearch.Configuration;
 using ElasticSearch.Organisations;
 using ElasticSearch.People;
 using Infrastructure;
@@ -16,6 +17,7 @@ using Infrastructure.Search.Sorting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SortOrder = Infrastructure.Search.Sorting.SortOrder;
@@ -57,6 +59,7 @@ public class SearchController : OrganisationRegistryController
     /// <param name="indexName">ElasticSearch index naam.
     /// Keuze tussen `organisations`, `people`, and `bodies`.</param>
     /// <param name="elastic"></param>
+    /// <param name="elasticSearchConfiguration"></param>
     /// <param name="q">ElasticSearch querystring.</param>
     /// <param name="offset">Startpunt van de zoekresultaten (voor paginering).</param>
     /// <param name="limit">Aantal resultaten, 100 indien niet meegegeven (voor paginering).</param>
@@ -68,6 +71,7 @@ public class SearchController : OrganisationRegistryController
     public async Task<IActionResult> GetApiSearch(
         string indexName,
         [FromServices] Elastic elastic,
+        [FromServices] IOptions<ElasticSearchConfiguration> elasticSearchConfiguration,
         [FromQuery] string q,
         [FromQuery] int? offset,
         [FromQuery] int? limit,
@@ -88,7 +92,7 @@ public class SearchController : OrganisationRegistryController
             sort,
             scroll);
 
-        var esFacade = new ElasticSearchFacade(HttpContext, _log);
+        var esFacade = new ElasticSearchFacade(HttpContext, _log, elasticSearchConfiguration.Value);
 
         return await esFacade.Search(indexName, elastic, q, offset, limit, fields, sort, scroll) is { } searchResult
             ? esFacade.BuildApiSearchResult(searchResult)
@@ -98,6 +102,7 @@ public class SearchController : OrganisationRegistryController
     /// <summary>Search all organisations.</summary>
     /// <param name="indexName">Elasticsearch index name</param>
     /// <param name="elastic"></param>
+    /// <param name="elasticSearchConfiguration"></param>
     /// <param name="q">Elasticsearch querystring search.</param>
     /// <param name="offset">Elasticsearch starting index position.</param>
     /// <param name="limit">Elasticsearch number of hits to return.</param>
@@ -109,6 +114,7 @@ public class SearchController : OrganisationRegistryController
     public async Task<IActionResult> GetSearch(
         string indexName,
         [FromServices] Elastic elastic,
+        [FromServices] IOptions<ElasticSearchConfiguration> elasticSearchConfiguration,
         [FromQuery] string q,
         [FromQuery] int offset,
         [FromQuery] int limit,
@@ -130,13 +136,12 @@ public class SearchController : OrganisationRegistryController
             scroll);
 
         var jsonSerializerSettings = ElasticSearchFacade.GetJsonSerializerSettings();
+        var esFacade = new ElasticSearchFacade(HttpContext, _log, elasticSearchConfiguration.Value);
 
         switch (indexName.ToLower())
         {
             case ElasticSearchFacade.OrganisationsIndexName:
             {
-                var esFacade = new ElasticSearchFacade(HttpContext, _log);
-
                 var response = await esFacade.SearchOrganisations(elastic, q, offset, limit, fields, sort, scroll);
 
                 Response.AddElasticsearchMetaDataResponse(
@@ -182,7 +187,7 @@ public class SearchController : OrganisationRegistryController
 
             case ElasticSearchFacade.PeopleIndexName: // Possibly not used
             {
-                var response = await ElasticSearchFacade.GetSearch<PersonDocument>(elastic, q, offset - 1, limit, fields, sort, scroll);
+                var response = await esFacade.GetSearch<PersonDocument>(elastic, q, offset - 1, limit, fields, sort, scroll);
 
                 Response.AddElasticsearchMetaDataResponse(new ElasticsearchMetaData<PersonDocument>(response));
                 Response.AddPaginationResponse(
@@ -207,7 +212,7 @@ public class SearchController : OrganisationRegistryController
 
             case ElasticSearchFacade.BodiesIndexName: // Possibly not used
             {
-                var response = await ElasticSearchFacade.GetSearch<BodyDocument>(elastic, q, offset - 1, limit, fields, sort, scroll);
+                var response = await esFacade.GetSearch<BodyDocument>(elastic, q, offset - 1, limit, fields, sort, scroll);
 
                 Response.AddElasticsearchMetaDataResponse(new ElasticsearchMetaData<BodyDocument>(response));
                 Response.AddPaginationResponse(
@@ -246,6 +251,7 @@ public class SearchController : OrganisationRegistryController
     public async Task<IActionResult> PostApiSearch(
         string indexName,
         [FromServices] Elastic elastic,
+        [FromServices] IOptions<ElasticSearchConfiguration> elasticSearchConfiguration,
         [FromBody] JObject q,
         [FromQuery] int? offset,
         [FromQuery] int? limit,
@@ -267,7 +273,7 @@ public class SearchController : OrganisationRegistryController
             sort,
             scroll);
 
-        var esFacade = new ElasticSearchFacade(HttpContext, _log);
+        var esFacade = new ElasticSearchFacade(HttpContext, _log, elasticSearchConfiguration.Value);
 
         return indexName.ToLower() switch
         {
@@ -281,12 +287,14 @@ public class SearchController : OrganisationRegistryController
     /// <summary>Search all organisations.</summary>
     /// <param name="indexName">Elasticsearch index name</param>
     /// <param name="elastic"></param>
+    /// <param name="elasticSearchConfiguration"></param>
     /// <param name="id">Elasticsearch scroll id.</param>
     [HttpGet("{indexName}/scroll")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> ScrollApiSearch(
         string indexName,
         [FromServices] Elastic elastic,
+        [FromServices] IOptions<ElasticSearchConfiguration> elasticSearchConfiguration,
         [FromQuery] string id)
     {
         if (string.IsNullOrWhiteSpace(id))
@@ -294,7 +302,7 @@ public class SearchController : OrganisationRegistryController
 
         _log.LogDebug("[{IndexName}] Scrolling for '{ScrollId}'", indexName, id);
 
-        var esFacade = new ElasticSearchFacade(HttpContext, _log);
+        var esFacade = new ElasticSearchFacade(HttpContext, _log, elasticSearchConfiguration.Value);
 
         return indexName.ToLower() switch
         {

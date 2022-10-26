@@ -10,6 +10,7 @@ using ElasticSearch;
 using ElasticSearch.Bodies;
 using ElasticSearch.Client;
 using ElasticSearch.Common;
+using ElasticSearch.Configuration;
 using ElasticSearch.Organisations;
 using ElasticSearch.People;
 using Infrastructure;
@@ -36,16 +37,18 @@ public class ElasticSearchFacade
 
     private const int DefaultResponseLimit = 100;
 
-    private const string ScrollTimeout = "30s";
+   // private const string ScrollTimeoutDefault = "60s";
     private const int ScrollSize = 500;
 
     private readonly HttpContext _httpContext;
     private readonly ILogger _logger;
+    private readonly ElasticSearchConfiguration _configuration;
 
-    public ElasticSearchFacade(HttpContext httpContext, ILogger logger)
+    public ElasticSearchFacade(HttpContext httpContext, ILogger logger, ElasticSearchConfiguration configuration)
     {
         _httpContext = httpContext;
         _logger = logger;
+        _configuration = configuration;
     }
 
     public async Task<ISearchResponse<IDocument>?> Search(string indexName, Elastic elastic, string q, int? offset, int? limit, string fields, string sort, bool? scroll)
@@ -116,7 +119,7 @@ public class ElasticSearchFacade
         return BuildApiSearchResult(searchResults);
     }
 
-    public static async Task<ISearchResponse<T>> GetSearch<T>(
+    public async Task<ISearchResponse<T>> GetSearch<T>(
         Elastic elastic,
         string q,
         int? offset,
@@ -146,7 +149,8 @@ public class ElasticSearchFacade
                     query => query
                         .Bool(
                             b => b
-                                .Must(m => m.QueryString(qs => qs.Query(q))))));
+                                .Must(m => m.QueryString(qs => qs.Query(q)))),
+                    _configuration.ScrollTimeout));
 
         return searchResponse;
     }
@@ -178,7 +182,8 @@ public class ElasticSearchFacade
                         defaultField => defaultField.ChangeTime,
                     },
                     defaultSort => defaultSort.Name.Suffix(KeywordSuffix),
-                    query => query.Raw(q.ToString())));
+                    query => query.Raw(q.ToString()),
+                    _configuration.ScrollTimeout));
 
         return BuildApiSearchResult(searchResults);
     }
@@ -197,20 +202,20 @@ public class ElasticSearchFacade
         Elastic elastic,
         string id) where T : class
     {
-        var searchResults = await ScrollSearch<T>(elastic, id);
+        var searchResults = await ScrollSearch<T>(elastic, id, _configuration.ScrollTimeout);
 
         return BuildApiSearchResult(searchResults);
     }
 
-    public static async Task<ISearchResponse<T>> ScrollSearch<T>(Elastic elastic, string id) where T : class
-        => await elastic.ReadClient.ScrollAsync<T>(ScrollTimeout, id);
+    private static async Task<ISearchResponse<T>> ScrollSearch<T>(Elastic elastic, string id, string scrollTimeout) where T : class
+        => await elastic.ReadClient.ScrollAsync<T>(scrollTimeout, id);
 
-    public static async Task<ISearchResponse<IDocument>> ScrollSearch(Elastic elastic, string indexName, string id)
+    public async Task<ISearchResponse<IDocument>> ScrollSearch(Elastic elastic, string indexName, string id)
         => indexName.ToLower() switch
         {
-            OrganisationsIndexName => await elastic.ReadClient.ScrollAsync<OrganisationDocument>(ScrollTimeout, id),
-            PeopleIndexName => await elastic.ReadClient.ScrollAsync<PersonDocument>(ScrollTimeout, id),
-            BodiesIndexName => await elastic.ReadClient.ScrollAsync<BodyDocument>(ScrollTimeout, id),
+            OrganisationsIndexName => await elastic.ReadClient.ScrollAsync<OrganisationDocument>(_configuration.ScrollTimeout, id),
+            PeopleIndexName => await elastic.ReadClient.ScrollAsync<PersonDocument>(_configuration.ScrollTimeout, id),
+            BodiesIndexName => await elastic.ReadClient.ScrollAsync<BodyDocument>(_configuration.ScrollTimeout, id),
             _ => throw new IndexOutOfRangeException(indexName),
         };
 
@@ -223,7 +228,8 @@ public class ElasticSearchFacade
         bool? scroll,
         Expression<Func<T, object>>[] defaultFieldsFunc,
         Expression<Func<T, object>> defaultSort,
-        Func<QueryContainerDescriptor<T>, QueryContainer> queryFunc) where T : class
+        Func<QueryContainerDescriptor<T>, QueryContainer> queryFunc,
+        string scrollTimeout) where T : class
     {
         if (!offset.HasValue) offset = 0;
         if (!limit.HasValue) limit = DefaultResponseLimit;
@@ -271,7 +277,7 @@ public class ElasticSearchFacade
                                     .Distinct().ToArray())));
 
         if (scroll.HasValue && scroll.Value)
-            search = search.Scroll(ScrollTimeout);
+            search = search.Scroll(scrollTimeout);
 
         return search.Query(queryFunc);
     }

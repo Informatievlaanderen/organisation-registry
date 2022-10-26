@@ -6,10 +6,12 @@ using System.Linq;
 using System.Net.Http.Headers;
 using ElasticSearch;
 using ElasticSearch.Client;
+using ElasticSearch.Configuration;
 using Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.FeatureManagement.Mvc;
 using Newtonsoft.Json;
 
@@ -42,6 +44,7 @@ public class PBISearchController : OrganisationRegistryController
     /// <param name="indexName">ElasticSearch index naam.
     /// Keuze tussen `organisations`, `people`, and `bodies`.</param>
     /// <param name="elastic"></param>
+    /// <param name="elasticSearchConfiguration"></param>
     /// <param name="q">ElasticSearch querystring. (optioneel, indien niet voorzien wordt alles teruggegeven)</param>
     /// <param name="fields">Veldnamen die in respons zullen zitten. (optioneel, indien niet voorzien wordt alles teruggegeven)</param>
     /// <param name="sort">Sortering van de resultaten. (optioneel, indien niet voorzien wordt standaard sortering toegepast)</param>
@@ -50,6 +53,7 @@ public class PBISearchController : OrganisationRegistryController
     public IActionResult GetApiSearch(
         [FromRoute] string indexName,
         [FromServices] Elastic elastic,
+        [FromServices] IOptions<ElasticSearchConfiguration> elasticSearchConfiguration,
         [FromQuery] string q,
         [FromQuery] string fields,
         [FromQuery] string sort)
@@ -64,7 +68,7 @@ public class PBISearchController : OrganisationRegistryController
 
                 await streamWriter.WriteLineAsync("["); // write start of json to stream
 
-                var esFacade = new ElasticSearchFacade(HttpContext, _logger);
+                var esFacade = new ElasticSearchFacade(HttpContext, _logger,elasticSearchConfiguration.Value);
 
                 await foreach (var (document, index) in Search(esFacade, indexName, elastic, q, fields, sort).Select((value, index) => (value, index)))
                 {
@@ -100,14 +104,14 @@ public class PBISearchController : OrganisationRegistryController
         {
             if (!scrollResult.IsValid)
             {
-                scrollResult = await ElasticSearchFacade.ScrollSearch(elastic, indexName, maybeScrollResult.ScrollId);
+                scrollResult = await esFacade.ScrollSearch(elastic, indexName, maybeScrollResult.ScrollId);
                 continue;
             }
 
             foreach (var document in scrollResult.Documents)
                 yield return document;
 
-            scrollResult = await ElasticSearchFacade.ScrollSearch(elastic, indexName, maybeScrollResult.ScrollId);
+            scrollResult = await esFacade.ScrollSearch(elastic, indexName, maybeScrollResult.ScrollId);
         }
     }
 }
