@@ -45,19 +45,14 @@ public class PBISearchController : OrganisationRegistryController
     /// Keuze tussen `organisations`, `people`, and `bodies`.</param>
     /// <param name="elastic"></param>
     /// <param name="elasticSearchConfiguration"></param>
-    /// <param name="q">ElasticSearch querystring. (optioneel, indien niet voorzien wordt alles teruggegeven)</param>
-    /// <param name="fields">Veldnamen die in respons zullen zitten. (optioneel, indien niet voorzien wordt alles teruggegeven)</param>
-    /// <param name="sort">Sortering van de resultaten. (optioneel, indien niet voorzien wordt standaard sortering toegepast)</param>
     [HttpGet("{indexName}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public IActionResult GetApiSearch(
         [FromRoute] string indexName,
         [FromServices] Elastic elastic,
-        [FromServices] IOptions<ElasticSearchConfiguration> elasticSearchConfiguration,
-        [FromQuery] string q,
-        [FromQuery] string fields,
-        [FromQuery] string sort)
-        => new FileCallbackResult(new MediaTypeHeaderValue("application/json"),
+        [FromServices] IOptions<ElasticSearchConfiguration> elasticSearchConfiguration)
+        => new FileCallbackResult(
+            new MediaTypeHeaderValue("application/json"),
             async (outputStream, _) =>
             {
                 _logger.LogDebug("Start streaming");
@@ -68,9 +63,9 @@ public class PBISearchController : OrganisationRegistryController
 
                 await streamWriter.WriteLineAsync("["); // write start of json to stream
 
-                var esFacade = new ElasticSearchFacade(HttpContext, _logger,elasticSearchConfiguration.Value);
+                var esFacade = new ElasticSearchFacade(HttpContext, _logger, elasticSearchConfiguration.Value);
 
-                await foreach (var (document, index) in Search(esFacade, indexName, elastic, q, fields, sort).Select((value, index) => (value, index)))
+                await foreach (var (document, index) in Search(esFacade, indexName, elastic).Select((value, index) => (value, index)))
                 {
                     if (index > 0)
                         await streamWriter.WriteLineAsync(",");
@@ -90,12 +85,9 @@ public class PBISearchController : OrganisationRegistryController
     private static async IAsyncEnumerable<IDocument> Search(
         ElasticSearchFacade esFacade,
         string indexName,
-        Elastic elastic,
-        string q,
-        string fields,
-        string sort)
+        Elastic elastic)
     {
-        var maybeScrollResult = await esFacade.SearchWithDefaultScrolling(indexName, elastic, q, fields, sort);
+        var maybeScrollResult = await esFacade.SearchWithDefaultScrolling(indexName, elastic, null!, null!, "ovoNumber");
 
         if (maybeScrollResult is not { } scrollResult)
             yield break;
