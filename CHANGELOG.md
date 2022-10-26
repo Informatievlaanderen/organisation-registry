@@ -1,3 +1,12 @@
+# [1.277.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.276.0...v1.277.0) (2022-10-26)
+
+
+### Features
+
+* or-1269 add scrolltimeout to configuration ([7822473](https://github.com/informatievlaanderen/organisation-registry/commit/78224730f45ef900161cbec89b5e226d953d6d8f))
+* or-1269 remove query parameters from api + default sort ([6ec309e](https://github.com/informatievlaanderen/organisation-registry/commit/6ec309e2107a0f9b53a3e0a7601815b8d135c743))
+* or-1269 start with fresh search when scroll timed out ([6658808](https://github.com/informatievlaanderen/organisation-registry/commit/665880896810d3ec05004536c4293bd7e195e821))
+
 # [1.276.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.275.1...v1.276.0) (2022-10-07)
 
 
