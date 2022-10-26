@@ -64,7 +64,6 @@ public class Startup
         JsonConvert.DefaultSettings =
             () => JsonSerializerSettingsProvider.CreateSerializerSettings().ConfigureForOrganisationRegistry();
 
-
         Migrations.Run(_configuration.GetSection(SqlServerConfiguration.Section).Get<SqlServerConfiguration>());
         var openIdConfiguration = _configuration.GetSection(OpenIdConnectConfigurationSection.Name)
             .Get<OpenIdConnectConfigurationSection>();
@@ -232,7 +231,7 @@ public class Startup
                                     AcmIdmConstants.Scopes.CjmBeheerder,
                                     AcmIdmConstants.Scopes.OrafinBeheerder,
                                     AcmIdmConstants.Scopes.TestClient)
-                                );
+                            );
                         },
                         ConfigureJsonOptions = options => { options.SerializerSettings.ConfigureForOrganisationRegistry(); },
                         ConfigureMvcCore = cfg =>

@@ -7,6 +7,7 @@ using System.Net.Http.Headers;
 using ElasticSearch;
 using ElasticSearch.Client;
 using ElasticSearch.Configuration;
+using ElasticSearch.Organisations;
 using Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -92,18 +93,22 @@ public class PBISearchController : OrganisationRegistryController
         if (maybeScrollResult is not { } scrollResult)
             yield break;
 
+        var lastOvoNumber = "";
         while (scrollResult.Documents.Any())
         {
-            if (!scrollResult.IsValid)
+            foreach (var document in scrollResult.Documents)
             {
-                scrollResult = await esFacade.ScrollSearch(elastic, indexName, maybeScrollResult.ScrollId);
-                continue;
+                yield return document;
+                lastOvoNumber = ((OrganisationDocument)document).OvoNumber;
             }
 
-            foreach (var document in scrollResult.Documents)
-                yield return document;
+            scrollResult = await esFacade.ScrollSearch(elastic, indexName, scrollResult.ScrollId);
 
-            scrollResult = await esFacade.ScrollSearch(elastic, indexName, maybeScrollResult.ScrollId);
+            if (scrollResult.IsValid) continue;
+
+            maybeScrollResult = await esFacade.SearchWithDefaultScrolling(indexName, elastic, $"ovoNumber:{{{lastOvoNumber} TO *]", null!, "ovoNumber");
+            if (maybeScrollResult is { } newScrollResult)
+                scrollResult = newScrollResult;
         }
     }
 }

@@ -37,7 +37,6 @@ public class ElasticSearchFacade
 
     private const int DefaultResponseLimit = 100;
 
-   // private const string ScrollTimeoutDefault = "60s";
     private const int ScrollSize = 500;
 
     private readonly HttpContext _httpContext;
