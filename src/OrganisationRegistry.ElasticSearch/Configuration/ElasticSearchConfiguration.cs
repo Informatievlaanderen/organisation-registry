@@ -51,6 +51,7 @@ public class ElasticSearchConfiguration
     public int NumberOfShards { get; set; }
     public int NumberOfReplicas { get; set; }
 
+    public string ScrollTimeout { get; set; } = "60s";
     public ElasticSearchConfiguration Obfuscate()
         => new()
         {
