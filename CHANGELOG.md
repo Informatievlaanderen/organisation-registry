@@ -1,3 +1,10 @@
+# [1.278.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.277.0...v1.278.0) (2022-10-27)
+
+
+### Features
+
+* or-1269 fix power bi again ([b041b4f](https://github.com/informatievlaanderen/organisation-registry/commit/b041b4f51c3a54246cc0c430b1056bfaf2f0e8f8))
+
 # [1.277.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.276.0...v1.277.0) (2022-10-26)
 
 
