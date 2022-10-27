@@ -59,8 +59,14 @@ public class ElasticSearchFacade
             _ => default,
         };
 
-    public async Task<ISearchResponse<IDocument>?> SearchWithDefaultScrolling(string indexName, Elastic elastic, string q, string fields, string sort)
-        => await Search(indexName, elastic, q, ScrollSize, DefaultResponseLimit, fields, sort, true);
+    public async Task<ISearchResponse<OrganisationDocument>?> SearchOrganisationsWithDefaultScrolling(Elastic elastic, string q, string fields, string sort)
+        => await SearchOrganisations(elastic, q, ScrollSize, DefaultResponseLimit, fields, sort, true);
+
+    public async Task<ISearchResponse<PersonDocument>?> SearchPeopleWithDefaultScrolling(Elastic elastic, string q, string fields, string sort)
+        => await GetSearch<PersonDocument>(elastic, q, ScrollSize, DefaultResponseLimit, fields, sort, true);
+
+    public async Task<ISearchResponse<BodyDocument>?> SearchBodiesWithDefaultScrolling(Elastic elastic, string q, string fields, string sort)
+        => await GetSearch<BodyDocument>(elastic, q, ScrollSize, DefaultResponseLimit, fields, sort, true);
 
     public async Task<ISearchResponse<OrganisationDocument>> SearchOrganisations(Elastic elastic, string q, int? offset, int? limit, string fields, string sort, bool? scroll)
         => await GetSearch<OrganisationDocument>(
@@ -209,14 +215,8 @@ public class ElasticSearchFacade
     private static async Task<ISearchResponse<T>> ScrollSearch<T>(Elastic elastic, string id, string scrollTimeout) where T : class
         => await elastic.ReadClient.ScrollAsync<T>(scrollTimeout, id);
 
-    public async Task<ISearchResponse<IDocument>> ScrollSearch(Elastic elastic, string indexName, string id)
-        => indexName.ToLower() switch
-        {
-            OrganisationsIndexName => await elastic.ReadClient.ScrollAsync<OrganisationDocument>(_configuration.ScrollTimeout, id),
-            PeopleIndexName => await elastic.ReadClient.ScrollAsync<PersonDocument>(_configuration.ScrollTimeout, id),
-            BodiesIndexName => await elastic.ReadClient.ScrollAsync<BodyDocument>(_configuration.ScrollTimeout, id),
-            _ => throw new IndexOutOfRangeException(indexName),
-        };
+    public async Task<ISearchResponse<TDocument>> ScrollSearch<TDocument>(Elastic elastic, string id) where TDocument : class, IDocument
+        => await elastic.ReadClient.ScrollAsync<TDocument>(_configuration.ScrollTimeout, id);
 
     private static ISearchRequest BuildApiSearch<T>(
         SearchDescriptor<T> search,

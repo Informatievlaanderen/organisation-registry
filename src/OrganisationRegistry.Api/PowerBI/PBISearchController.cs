@@ -1,13 +1,16 @@
 ﻿namespace OrganisationRegistry.Api.PowerBI;
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http.Headers;
 using ElasticSearch;
+using ElasticSearch.Bodies;
 using ElasticSearch.Client;
 using ElasticSearch.Configuration;
 using ElasticSearch.Organisations;
+using ElasticSearch.People;
 using Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -31,32 +34,66 @@ public class PBISearchController : OrganisationRegistryController
         _logger = logger;
     }
 
-    /// <summary>Entiteiten exporteren (als bestand).</summary>
-    /// <remarks>Dit endpoint laat toe een export bestand te maken van alle entiteiten op een ElasticSearch index.
+    /// <summary>Organisaties exporteren (als bestand).</summary>
+    /// <remarks>Dit endpoint laat toe een export bestand te maken van alle organisaties op een ElasticSearch index.
     /// <br />
-    /// De volgende indices zijn beschikbaar: <br />
-    ///     - `organisations` <br />
-    ///     - `people` <br />
-    ///     - `bodies`
-    /// <br /><br />
     /// Het resultaat is een json-bestand.
     /// <br /><br />
     /// </remarks>
-    /// <param name="indexName">ElasticSearch index naam.
-    /// Keuze tussen `organisations`, `people`, and `bodies`.</param>
     /// <param name="elastic"></param>
     /// <param name="elasticSearchConfiguration"></param>
-    [HttpGet("{indexName}")]
+    [HttpGet("organisations")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public IActionResult GetApiSearch(
-        [FromRoute] string indexName,
+    public IActionResult StreamOrganisations(
         [FromServices] Elastic elastic,
         [FromServices] IOptions<ElasticSearchConfiguration> elasticSearchConfiguration)
-        => new FileCallbackResult(
+    {
+        var esFacade = new ElasticSearchFacade(HttpContext, _logger, elasticSearchConfiguration.Value);
+        return ToFile(SearchOrganisations(esFacade, elastic), $"organisations_zoekresultaten.json", _logger);
+    }
+
+    /// <summary>Personen exporteren (als bestand).</summary>
+    /// <remarks>Dit endpoint laat toe een export bestand te maken van alle personen op een ElasticSearch index.
+    /// <br />
+    /// Het resultaat is een json-bestand.
+    /// <br /><br />
+    /// </remarks>
+    /// <param name="elastic"></param>
+    /// <param name="elasticSearchConfiguration"></param>
+    [HttpGet("people")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public IActionResult StreamPeople(
+        [FromServices] Elastic elastic,
+        [FromServices] IOptions<ElasticSearchConfiguration> elasticSearchConfiguration)
+    {
+        var esFacade = new ElasticSearchFacade(HttpContext, _logger, elasticSearchConfiguration.Value);
+        return ToFile(SearchPeople(esFacade, elastic), "people_zoekresultaten.json", _logger);
+    }
+
+    /// <summary>Organen exporteren (als bestand).</summary>
+    /// <remarks>Dit endpoint laat toe een export bestand te maken van alle organen op een ElasticSearch index.
+    /// <br />
+    /// Het resultaat is een json-bestand.
+    /// <br /><br />
+    /// </remarks>
+    /// <param name="elastic"></param>
+    /// <param name="elasticSearchConfiguration"></param>
+    [HttpGet("bodies")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public IActionResult StreamBodies(
+        [FromServices] Elastic elastic,
+        [FromServices] IOptions<ElasticSearchConfiguration> elasticSearchConfiguration)
+    {
+        var esFacade = new ElasticSearchFacade(HttpContext, _logger, elasticSearchConfiguration.Value);
+        return ToFile(SearchBodies(esFacade, elastic), "bodies_zoekresultaten.json", _logger);
+    }
+
+    private static FileCallbackResult ToFile(IAsyncEnumerable<IDocument> searchResult, string fileName, ILogger logger)
+        => new(
             new MediaTypeHeaderValue("application/json"),
             async (outputStream, _) =>
             {
-                _logger.LogDebug("Start streaming");
+                logger.LogDebug("Start streaming");
                 var streamWriter = new StreamWriter(outputStream)
                 {
                     AutoFlush = true,
@@ -64,9 +101,8 @@ public class PBISearchController : OrganisationRegistryController
 
                 await streamWriter.WriteLineAsync("["); // write start of json to stream
 
-                var esFacade = new ElasticSearchFacade(HttpContext, _logger, elasticSearchConfiguration.Value);
 
-                await foreach (var (document, index) in Search(esFacade, indexName, elastic).Select((value, index) => (value, index)))
+                await foreach (var (document, index) in searchResult.Select((value, index) => (value, index)))
                 {
                     if (index > 0)
                         await streamWriter.WriteLineAsync(",");
@@ -77,18 +113,73 @@ public class PBISearchController : OrganisationRegistryController
 
                 await streamWriter.WriteLineAsync("]"); // write end of json to stream
 
-                _logger.LogDebug("Finished streaming");
+                logger.LogDebug("Finished streaming");
             })
         {
-            FileDownloadName = $"{indexName}_zoekresultaten.json",
+            FileDownloadName = fileName,
         };
 
-    private static async IAsyncEnumerable<IDocument> Search(
+    private static async IAsyncEnumerable<IDocument> SearchBodies(
         ElasticSearchFacade esFacade,
-        string indexName,
         Elastic elastic)
     {
-        var maybeScrollResult = await esFacade.SearchWithDefaultScrolling(indexName, elastic, null!, null!, "ovoNumber");
+        var maybeScrollResult = await esFacade.SearchBodiesWithDefaultScrolling(elastic, null!, null!, "id");
+
+        if (maybeScrollResult is not { } scrollResult)
+            yield break;
+
+        var lastOvoNumber = Guid.Empty;
+        while (scrollResult.Documents.Any())
+        {
+            foreach (var document in scrollResult.Documents)
+            {
+                yield return document;
+                lastOvoNumber = document.Id;
+            }
+
+            scrollResult = await esFacade.ScrollSearch<BodyDocument>(elastic, scrollResult.ScrollId);
+
+            if (scrollResult.IsValid) continue;
+
+            maybeScrollResult = await esFacade.SearchBodiesWithDefaultScrolling(elastic, $"id:{{{lastOvoNumber} TO *]", null!, "id");
+            if (maybeScrollResult is { } newScrollResult)
+                scrollResult = newScrollResult;
+        }
+    }
+
+    private static async IAsyncEnumerable<IDocument> SearchPeople(
+        ElasticSearchFacade esFacade,
+        Elastic elastic)
+    {
+        var maybeScrollResult = await esFacade.SearchPeopleWithDefaultScrolling(elastic, null!, null!, "id");
+
+        if (maybeScrollResult is not { } scrollResult)
+            yield break;
+
+        while (scrollResult.Documents.Any())
+        {
+            var lastid = Guid.Empty;
+            foreach (var document in scrollResult.Documents)
+            {
+                yield return document;
+                lastid = document.Id;
+            }
+
+            scrollResult = await esFacade.ScrollSearch<PersonDocument>(elastic, scrollResult.ScrollId);
+
+            if (scrollResult.IsValid) continue;
+
+            maybeScrollResult = await esFacade.SearchPeopleWithDefaultScrolling(elastic, $"id:{{{lastid.ToString()} TO *]", null!, "id");
+            if (maybeScrollResult is { } newScrollResult)
+                scrollResult = newScrollResult;
+        }
+    }
+
+    private static async IAsyncEnumerable<IDocument> SearchOrganisations(
+        ElasticSearchFacade esFacade,
+        Elastic elastic)
+    {
+        var maybeScrollResult = await esFacade.SearchOrganisationsWithDefaultScrolling(elastic, null!, null!, "ovoNumber");
 
         if (maybeScrollResult is not { } scrollResult)
             yield break;
@@ -99,14 +190,14 @@ public class PBISearchController : OrganisationRegistryController
             foreach (var document in scrollResult.Documents)
             {
                 yield return document;
-                lastOvoNumber = ((OrganisationDocument)document).OvoNumber;
+                lastOvoNumber = document.OvoNumber;
             }
 
-            scrollResult = await esFacade.ScrollSearch(elastic, indexName, scrollResult.ScrollId);
+            scrollResult = await esFacade.ScrollSearch<OrganisationDocument>(elastic, scrollResult.ScrollId);
 
             if (scrollResult.IsValid) continue;
 
-            maybeScrollResult = await esFacade.SearchWithDefaultScrolling(indexName, elastic, $"ovoNumber:{{{lastOvoNumber} TO *]", null!, "ovoNumber");
+            maybeScrollResult = await esFacade.SearchOrganisationsWithDefaultScrolling(elastic, $"ovoNumber:{{{lastOvoNumber} TO *]", null!, "ovoNumber");
             if (maybeScrollResult is { } newScrollResult)
                 scrollResult = newScrollResult;
         }
