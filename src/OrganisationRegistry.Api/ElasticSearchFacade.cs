@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using ElasticSearch;
 using ElasticSearch.Bodies;
@@ -37,7 +38,7 @@ public class ElasticSearchFacade
 
     private const int DefaultResponseLimit = 100;
 
-    private const int ScrollSize = 500;
+    private const int ScrollSize = 100;
 
     private readonly HttpContext _httpContext;
     private readonly ILogger _logger;
@@ -59,16 +60,16 @@ public class ElasticSearchFacade
             _ => default,
         };
 
-    public async Task<ISearchResponse<OrganisationDocument>?> SearchOrganisationsWithDefaultScrolling(Elastic elastic, string q, string fields, string sort)
-        => await SearchOrganisations(elastic, q, ScrollSize, DefaultResponseLimit, fields, sort, true);
+    public async Task<ISearchResponse<OrganisationDocument>?> SearchOrganisationsWithDefaultScrolling(Elastic elastic, string q, string fields, string sort, CancellationToken cancellationToken)
+        => await SearchOrganisations(elastic, q, ScrollSize, DefaultResponseLimit, fields, sort, true, cancellationToken);
 
-    public async Task<ISearchResponse<PersonDocument>?> SearchPeopleWithDefaultScrolling(Elastic elastic, string q, string fields, string sort)
-        => await GetSearch<PersonDocument>(elastic, q, ScrollSize, DefaultResponseLimit, fields, sort, true);
+    public async Task<ISearchResponse<PersonDocument>?> SearchPeopleWithDefaultScrolling(Elastic elastic, string q, string fields, string sort, CancellationToken cancellationToken)
+        => await GetSearch<PersonDocument>(elastic, q, ScrollSize, DefaultResponseLimit, fields, sort, true, cancellationToken);
 
-    public async Task<ISearchResponse<BodyDocument>?> SearchBodiesWithDefaultScrolling(Elastic elastic, string q, string fields, string sort)
-        => await GetSearch<BodyDocument>(elastic, q, ScrollSize, DefaultResponseLimit, fields, sort, true);
+    public async Task<ISearchResponse<BodyDocument>?> SearchBodiesWithDefaultScrolling(Elastic elastic, string q, string fields, string sort, CancellationToken cancellationToken)
+        => await GetSearch<BodyDocument>(elastic, q, ScrollSize, DefaultResponseLimit, fields, sort, true, cancellationToken);
 
-    public async Task<ISearchResponse<OrganisationDocument>> SearchOrganisations(Elastic elastic, string q, int? offset, int? limit, string fields, string sort, bool? scroll)
+    public async Task<ISearchResponse<OrganisationDocument>> SearchOrganisations(Elastic elastic, string q, int? offset, int? limit, string fields, string sort, bool? scroll, CancellationToken cancellationToken = default)
         => await GetSearch<OrganisationDocument>(
             elastic,
             q,
@@ -76,7 +77,8 @@ public class ElasticSearchFacade
             limit,
             FilterOrganisationFields(fields, (await _httpContext.GetAuthenticateInfoAsync())?.Succeeded ?? false),
             sort,
-            scroll);
+            scroll,
+            cancellationToken);
 
     private static string FilterOrganisationFields(string fields, bool isAuthenticated)
     {
@@ -131,7 +133,8 @@ public class ElasticSearchFacade
         int? limit,
         string fields,
         string sort,
-        bool? scroll)
+        bool? scroll,
+        CancellationToken cancellationToken = default)
         where T : class, IDocument
     {
         var searchResponse = await elastic
@@ -155,7 +158,8 @@ public class ElasticSearchFacade
                         .Bool(
                             b => b
                                 .Must(m => m.QueryString(qs => qs.Query(q)))),
-                    _configuration.ScrollTimeout));
+                    _configuration.ScrollTimeout),
+                cancellationToken);
 
         return searchResponse;
     }
@@ -205,18 +209,15 @@ public class ElasticSearchFacade
 
     public async Task<IActionResult> ScrollApiSearch<T>(
         Elastic elastic,
-        string id) where T : class
+        string id) where T : class, IDocument
     {
-        var searchResults = await ScrollSearch<T>(elastic, id, _configuration.ScrollTimeout);
+        var searchResults = await ScrollSearch<T>(elastic, id);
 
         return BuildApiSearchResult(searchResults);
     }
 
-    private static async Task<ISearchResponse<T>> ScrollSearch<T>(Elastic elastic, string id, string scrollTimeout) where T : class
-        => await elastic.ReadClient.ScrollAsync<T>(scrollTimeout, id);
-
-    public async Task<ISearchResponse<TDocument>> ScrollSearch<TDocument>(Elastic elastic, string id) where TDocument : class, IDocument
-        => await elastic.ReadClient.ScrollAsync<TDocument>(_configuration.ScrollTimeout, id);
+    public async Task<ISearchResponse<TDocument>> ScrollSearch<TDocument>(Elastic elastic, string id, CancellationToken cancellationToken = default) where TDocument : class, IDocument
+        => await elastic.ReadClient.ScrollAsync<TDocument>(_configuration.ScrollTimeout, id, ct: cancellationToken);
 
     private static ISearchRequest BuildApiSearch<T>(
         SearchDescriptor<T> search,
