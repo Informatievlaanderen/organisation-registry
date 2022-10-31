@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http.Headers;
+using System.Runtime.CompilerServices;
+using System.Threading;
 using ElasticSearch;
 using ElasticSearch.Bodies;
 using ElasticSearch.Client;
@@ -42,14 +44,16 @@ public class PBISearchController : OrganisationRegistryController
     /// </remarks>
     /// <param name="elastic"></param>
     /// <param name="elasticSearchConfiguration"></param>
+    /// <param name="cancellationToken"></param>
     [HttpGet("organisations")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public IActionResult StreamOrganisations(
         [FromServices] Elastic elastic,
-        [FromServices] IOptions<ElasticSearchConfiguration> elasticSearchConfiguration)
+        [FromServices] IOptions<ElasticSearchConfiguration> elasticSearchConfiguration,
+        CancellationToken cancellationToken)
     {
         var esFacade = new ElasticSearchFacade(HttpContext, _logger, elasticSearchConfiguration.Value);
-        return ToFile(SearchOrganisations(esFacade, elastic), $"organisations_zoekresultaten.json", _logger);
+        return ToFile(SearchOrganisations(esFacade, elastic, cancellationToken), "organisations_zoekresultaten.json", _logger);
     }
 
     /// <summary>Personen exporteren (als bestand).</summary>
@@ -60,14 +64,16 @@ public class PBISearchController : OrganisationRegistryController
     /// </remarks>
     /// <param name="elastic"></param>
     /// <param name="elasticSearchConfiguration"></param>
+    /// <param name="cancellationToken"></param>
     [HttpGet("people")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public IActionResult StreamPeople(
         [FromServices] Elastic elastic,
-        [FromServices] IOptions<ElasticSearchConfiguration> elasticSearchConfiguration)
+        [FromServices] IOptions<ElasticSearchConfiguration> elasticSearchConfiguration,
+        CancellationToken cancellationToken)
     {
         var esFacade = new ElasticSearchFacade(HttpContext, _logger, elasticSearchConfiguration.Value);
-        return ToFile(SearchPeople(esFacade, elastic), "people_zoekresultaten.json", _logger);
+        return ToFile(SearchPeople(esFacade, elastic, cancellationToken), "people_zoekresultaten.json", _logger);
     }
 
     /// <summary>Organen exporteren (als bestand).</summary>
@@ -78,14 +84,16 @@ public class PBISearchController : OrganisationRegistryController
     /// </remarks>
     /// <param name="elastic"></param>
     /// <param name="elasticSearchConfiguration"></param>
+    /// <param name="cancellationToken"></param>
     [HttpGet("bodies")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public IActionResult StreamBodies(
         [FromServices] Elastic elastic,
-        [FromServices] IOptions<ElasticSearchConfiguration> elasticSearchConfiguration)
+        [FromServices] IOptions<ElasticSearchConfiguration> elasticSearchConfiguration,
+        CancellationToken cancellationToken)
     {
         var esFacade = new ElasticSearchFacade(HttpContext, _logger, elasticSearchConfiguration.Value);
-        return ToFile(SearchBodies(esFacade, elastic), "bodies_zoekresultaten.json", _logger);
+        return ToFile(SearchBodies(esFacade, elastic, cancellationToken), "bodies_zoekresultaten.json", _logger);
     }
 
     private static FileCallbackResult ToFile(IAsyncEnumerable<IDocument> searchResult, string fileName, ILogger logger)
@@ -109,6 +117,7 @@ public class PBISearchController : OrganisationRegistryController
 
                     var serializedDocument = JsonConvert.SerializeObject(document);
                     await streamWriter.WriteAsync(serializedDocument);
+                    await streamWriter.FlushAsync();
                 }
 
                 await streamWriter.WriteLineAsync("]"); // write end of json to stream
@@ -121,9 +130,10 @@ public class PBISearchController : OrganisationRegistryController
 
     private static async IAsyncEnumerable<IDocument> SearchBodies(
         ElasticSearchFacade esFacade,
-        Elastic elastic)
+        Elastic elastic,
+       [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        var maybeScrollResult = await esFacade.SearchBodiesWithDefaultScrolling(elastic, null!, null!, "id");
+        var maybeScrollResult = await esFacade.SearchBodiesWithDefaultScrolling(elastic, null!, null!, "id", cancellationToken);
 
         if (maybeScrollResult is not { } scrollResult)
             yield break;
@@ -137,11 +147,11 @@ public class PBISearchController : OrganisationRegistryController
                 lastOvoNumber = document.Id;
             }
 
-            scrollResult = await esFacade.ScrollSearch<BodyDocument>(elastic, scrollResult.ScrollId);
+            scrollResult = await esFacade.ScrollSearch<BodyDocument>(elastic, scrollResult.ScrollId, cancellationToken);
 
             if (scrollResult.IsValid) continue;
 
-            maybeScrollResult = await esFacade.SearchBodiesWithDefaultScrolling(elastic, $"id:{{{lastOvoNumber} TO *]", null!, "id");
+            maybeScrollResult = await esFacade.SearchBodiesWithDefaultScrolling(elastic, $"id:{{{lastOvoNumber} TO *]", null!, "id", cancellationToken);
             if (maybeScrollResult is { } newScrollResult)
                 scrollResult = newScrollResult;
         }
@@ -149,9 +159,10 @@ public class PBISearchController : OrganisationRegistryController
 
     private static async IAsyncEnumerable<IDocument> SearchPeople(
         ElasticSearchFacade esFacade,
-        Elastic elastic)
+        Elastic elastic,
+        [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        var maybeScrollResult = await esFacade.SearchPeopleWithDefaultScrolling(elastic, null!, null!, "id");
+        var maybeScrollResult = await esFacade.SearchPeopleWithDefaultScrolling(elastic, null!, null!, "id", cancellationToken);
 
         if (maybeScrollResult is not { } scrollResult)
             yield break;
@@ -165,11 +176,11 @@ public class PBISearchController : OrganisationRegistryController
                 lastid = document.Id;
             }
 
-            scrollResult = await esFacade.ScrollSearch<PersonDocument>(elastic, scrollResult.ScrollId);
+            scrollResult = await esFacade.ScrollSearch<PersonDocument>(elastic, scrollResult.ScrollId, cancellationToken);
 
             if (scrollResult.IsValid) continue;
 
-            maybeScrollResult = await esFacade.SearchPeopleWithDefaultScrolling(elastic, $"id:{{{lastid.ToString()} TO *]", null!, "id");
+            maybeScrollResult = await esFacade.SearchPeopleWithDefaultScrolling(elastic, $"id:{{{lastid.ToString()} TO *]", null!, "id", cancellationToken);
             if (maybeScrollResult is { } newScrollResult)
                 scrollResult = newScrollResult;
         }
@@ -177,9 +188,10 @@ public class PBISearchController : OrganisationRegistryController
 
     private static async IAsyncEnumerable<IDocument> SearchOrganisations(
         ElasticSearchFacade esFacade,
-        Elastic elastic)
+        Elastic elastic,
+        [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        var maybeScrollResult = await esFacade.SearchOrganisationsWithDefaultScrolling(elastic, null!, null!, "ovoNumber");
+        var maybeScrollResult = await esFacade.SearchOrganisationsWithDefaultScrolling(elastic, null!, null!, "ovoNumber", cancellationToken);
 
         if (maybeScrollResult is not { } scrollResult)
             yield break;
@@ -193,11 +205,11 @@ public class PBISearchController : OrganisationRegistryController
                 lastOvoNumber = document.OvoNumber;
             }
 
-            scrollResult = await esFacade.ScrollSearch<OrganisationDocument>(elastic, scrollResult.ScrollId);
+            scrollResult = await esFacade.ScrollSearch<OrganisationDocument>(elastic, scrollResult.ScrollId, cancellationToken);
 
             if (scrollResult.IsValid) continue;
 
-            maybeScrollResult = await esFacade.SearchOrganisationsWithDefaultScrolling(elastic, $"ovoNumber:{{{lastOvoNumber} TO *]", null!, "ovoNumber");
+            maybeScrollResult = await esFacade.SearchOrganisationsWithDefaultScrolling(elastic, $"ovoNumber:{{{lastOvoNumber} TO *]", null!, "ovoNumber", cancellationToken);
             if (maybeScrollResult is { } newScrollResult)
                 scrollResult = newScrollResult;
         }
