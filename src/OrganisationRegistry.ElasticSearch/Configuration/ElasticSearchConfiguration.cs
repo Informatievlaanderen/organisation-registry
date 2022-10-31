@@ -50,8 +50,8 @@ public class ElasticSearchConfiguration
     public int BatchSize { get; set; }
     public int NumberOfShards { get; set; }
     public int NumberOfReplicas { get; set; }
-
     public string ScrollTimeout { get; set; } = "60s";
+    public int ScrollSize { get; set; } = 100;
     public ElasticSearchConfiguration Obfuscate()
         => new()
         {
