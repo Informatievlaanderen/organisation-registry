@@ -48,7 +48,7 @@
               itemprop="url"
               target="_self"
             >
-              <span itemprop="name">het Agentschap Digitaal Vlaanderen</span>
+              <span itemprop="name">het agentschap Digitaal Vlaanderen</span>
             </a>
             <span id="dvrVersion">Developer versie</span>
           </span>
