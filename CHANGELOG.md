@@ -1,3 +1,10 @@
+# [1.280.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.279.0...v1.280.0) (2022-10-31)
+
+
+### Features
+
+* or-1284 change Agentschap -> agentschap ([11e4f07](https://github.com/informatievlaanderen/organisation-registry/commit/11e4f071b7304158174311aa54d8bc68351768e0))
+
 # [1.279.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.278.0...v1.279.0) (2022-10-31)
 
 
