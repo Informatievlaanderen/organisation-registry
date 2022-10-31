@@ -1,3 +1,10 @@
+# [1.279.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.278.0...v1.279.0) (2022-10-31)
+
+
+### Features
+
+* or-1284 change informatie -> digitaal vlaanderen ([cb110db](https://github.com/informatievlaanderen/organisation-registry/commit/cb110db0fedf4091091539dbffc89bda3477f5bd))
+
 # [1.278.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.277.0...v1.278.0) (2022-10-27)
 
 
