@@ -1,3 +1,11 @@
+# [1.281.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.280.0...v1.281.0) (2022-11-02)
+
+
+### Features
+
+* or-1283 add cancellation to powerbi ([e237ed5](https://github.com/informatievlaanderen/organisation-registry/commit/e237ed5131c37241112cb4c0070286db98a1f3b7))
+* or-1283-add-scrollsize-to-config ([05cd50c](https://github.com/informatievlaanderen/organisation-registry/commit/05cd50c6c17c90315e52c29446b0aad9e643ef21))
+
 # [1.280.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.279.0...v1.280.0) (2022-10-31)
 
 
