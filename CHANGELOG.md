@@ -1,3 +1,10 @@
+## [1.281.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.281.0...v1.281.1) (2022-11-02)
+
+
+### Bug Fixes
+
+* or-1284 update footer text ([d81284b](https://github.com/informatievlaanderen/organisation-registry/commit/d81284b4b3f6be80cf290c217bdcf0e49893d160))
+
 # [1.281.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.280.0...v1.281.0) (2022-11-02)
 
 
