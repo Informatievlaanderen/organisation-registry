@@ -1,3 +1,10 @@
+# [1.282.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.281.1...v1.282.0) (2022-11-03)
+
+
+### Features
+
+* or-1284 change footer ([6ad66a1](https://github.com/informatievlaanderen/organisation-registry/commit/6ad66a1d5bea5f1fff5f342ea83989e65dc12599))
+
 ## [1.281.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.281.0...v1.281.1) (2022-11-02)
 
 
