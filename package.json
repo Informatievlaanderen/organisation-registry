@@ -140,7 +140,7 @@
     "lodash": "4.17.19",
     "merge": "1.2.1",
     "parse5": "2.2.3",
-    "protractor": "4.0.14",
+    "protractor": "7.0.0",
     "raw-loader": "0.5.1",
     "rimraf": "3.0.2",
     "semantic-release": "17.3.1",
