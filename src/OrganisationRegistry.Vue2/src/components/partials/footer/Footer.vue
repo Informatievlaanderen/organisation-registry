@@ -44,7 +44,7 @@
             itemtype="http://schema.org/Organization"
           >
             <a
-              href="https://www.vlaanderen.be/nl/contact/adressengids/diensten-van-de-vlaamse-overheid/administratieve-diensten-van-de-vlaamse-overheid/beleidsdomein-kanselarij-en-bestuur/agentschap-informatie-vlaanderen"
+              href="https://www.vlaanderen.be/digitaal-vlaanderen"
               itemprop="url"
               target="_self"
             >
