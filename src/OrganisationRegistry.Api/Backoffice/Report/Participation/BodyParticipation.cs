@@ -159,28 +159,31 @@ public class BodyParticipation
 
         foreach (var result in results)
         {
-            if (result.AssignedCount > 0)
-            {
-                result.MalePercentage = ParticipationCalculator.CalculatePercentage(result.MaleCount, result.AssignedCount);
-                result.FemalePercentage = ParticipationCalculator.CalculatePercentage(result.FemaleCount, result.AssignedCount);
-                result.UnknownPercentage = ParticipationCalculator.CalculatePercentage(result.UnknownCount, result.AssignedCount);
-
-                result.MaleCompliance = ParticipationCalculator.CalculateCompliance(result.TotalCount, result.MalePercentage);
-                result.FemaleCompliance = ParticipationCalculator.CalculateCompliance(result.TotalCount, result.FemalePercentage);
-
-                result.TotalCompliance =
-                    result.TotalCount <= 1
-                        ? BodyParticipationCompliance.Unknown
-                        : result.FemaleCompliance == BodyParticipationCompliance.Compliant &&
-                          result.MaleCompliance == BodyParticipationCompliance.Compliant
-                            ? BodyParticipationCompliance.Compliant
-                            : BodyParticipationCompliance.NonCompliant;
-            }
-
-            participations.Add(result);
+            participations.Add(Map(result));
         }
 
         return participations;
+    }
+
+    public static BodyParticipation Map(BodyParticipation bodyParticipation)
+    {
+        if (bodyParticipation.AssignedCount <= 0) return bodyParticipation;
+        bodyParticipation.MalePercentage = ParticipationCalculator.CalculatePercentage(bodyParticipation.MaleCount, bodyParticipation.AssignedCount);
+        bodyParticipation.FemalePercentage = ParticipationCalculator.CalculatePercentage(bodyParticipation.FemaleCount, bodyParticipation.AssignedCount);
+        bodyParticipation.UnknownPercentage = ParticipationCalculator.CalculatePercentage(bodyParticipation.UnknownCount, bodyParticipation.AssignedCount);
+
+        bodyParticipation.MaleCompliance = ParticipationCalculator.CalculateCompliance(bodyParticipation.TotalCount, bodyParticipation.MalePercentage);
+        bodyParticipation.FemaleCompliance = ParticipationCalculator.CalculateCompliance(bodyParticipation.TotalCount, bodyParticipation.FemalePercentage);
+
+        bodyParticipation.TotalCompliance =
+            bodyParticipation.TotalCount <= 1
+                ? BodyParticipationCompliance.Unknown
+                : bodyParticipation.FemaleCompliance == BodyParticipationCompliance.Compliant &&
+                  bodyParticipation.MaleCompliance == BodyParticipationCompliance.Compliant
+                    ? BodyParticipationCompliance.Compliant
+                    : BodyParticipationCompliance.NonCompliant;
+
+        return bodyParticipation;
     }
 
     ///  <summary>
