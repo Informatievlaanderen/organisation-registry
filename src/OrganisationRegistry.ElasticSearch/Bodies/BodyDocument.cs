@@ -559,9 +559,9 @@ public class BodyMEPEffectiviteit
     public int AantalMannen { get; set; }
     public int AantalVrouwen { get; set; }
     public int AantalOnbekend { get; set; }
-    public int ProcentMannen { get; set; }
-    public int ProcentVrouwen { get; set; }
-    public int ProcentOnbekend { get; set; }
+    public decimal ProcentMannen { get; set; }
+    public decimal ProcentVrouwen { get; set; }
+    public decimal ProcentOnbekend { get; set; }
     public bool MEPCompliant { get; set; }
 
     public static IPromise<IProperties> Mapping(PropertiesDescriptor<BodyMEPEffectiviteit> map)
