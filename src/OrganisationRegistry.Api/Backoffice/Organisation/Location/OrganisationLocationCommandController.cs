@@ -7,6 +7,7 @@ using Infrastructure.Security;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OrganisationRegistry.Infrastructure.Commands;
+using OrganisationRegistry.Organisation;
 
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
@@ -51,6 +52,19 @@ public class OrganisationLocationCommandController : OrganisationRegistryCommand
             return BadRequest(ModelState);
 
         await CommandSender.Send(UpdateOrganisationLocationRequestMapping.Map(internalMessage));
+
+        return Ok();
+    }
+
+    /// <summary>Remove a location for an organisation.</summary>
+    /// <response code="204">If the location is removed.</response>
+    /// <response code="400">If the location information does not pass validation.</response>
+    [HttpDelete("{organisationLocationId}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Delete([FromRoute] Guid organisationId, [FromRoute] Guid organisationLocationId)
+    {
+        await CommandSender.Send(new DeleteOrganisationLocation(new OrganisationId(organisationId), organisationLocationId));
 
         return Ok();
     }
