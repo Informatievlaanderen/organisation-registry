@@ -1,9 +1,9 @@
-namespace OrganisationRegistry.ElasticSearch.Tests;
+namespace OrganisationRegistry.Tests.Shared;
 
 using System.Data.Common;
 using Microsoft.EntityFrameworkCore;
 using SqlServer;
-using SqlServer.Infrastructure;
+using OrganisationRegistry.SqlServer.Infrastructure;
 
 public class TestContextFactory : IContextFactory
 {

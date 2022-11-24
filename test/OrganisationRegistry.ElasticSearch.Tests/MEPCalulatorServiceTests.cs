@@ -4,18 +4,13 @@ using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Api;
-using Api.HostedServices;
 using App.Metrics;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Bodies;
-using Client;
 using FluentAssertions;
-using Infrastructure;
 using Infrastructure.Authorization;
 using Infrastructure.Authorization.Cache;
 using Infrastructure.Bus;
@@ -25,15 +20,14 @@ using Infrastructure.Events;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using OrganisationRegistry.Projections.Reporting;
+using OrganisationRegistry.Tests.Shared;
 using OrganisationRegistry.Tests.Shared.Stubs;
 using Projections.Body;
 using Projections.Infrastructure;
 using Scenario;
-using SqlServer;
 using SqlServer.Infrastructure;
 using Xunit;
 
@@ -174,60 +168,5 @@ public class MEPCalulationServiceTests
 
         mepInfo.Totaal.Totaal.AantalToegewezenPosten.Should().Be(1);
         mepInfo.Totaal.Totaal.AantalPosten.Should().Be(1);
-    }
-}
-
-public class TestableMEPCalculatorService : MEPCalculatorService
-{
-    public TestableMEPCalculatorService(ILogger<TestableMEPCalculatorService> logger, Elastic elastic, IContextFactory contextFactory, IDateTimeProvider clock)
-        : base(logger, new OrganisationRegistryConfigurationStub(), elastic, contextFactory, clock)
-    {
-    }
-
-    public Task TestableProcessBodies(CancellationToken cancellationToken)
-        => ProcessBodies(cancellationToken);
-}
-
-public class TestRunnerModule<T> : Autofac.Module
-{
-    private readonly IConfiguration _configuration;
-    private readonly IServiceCollection _services;
-    private readonly ILoggerFactory _loggerFactory;
-    private readonly DbContextOptions<OrganisationRegistryContext> _dbContextOptions;
-
-    public TestRunnerModule(
-        IConfiguration configuration,
-        IServiceCollection services,
-        ILoggerFactory loggerFactory,
-        DbContextOptions<OrganisationRegistryContext> dbContextOptions)
-    {
-        _configuration = configuration;
-        _services = services;
-        _loggerFactory = loggerFactory;
-        _dbContextOptions = dbContextOptions;
-    }
-
-    protected override void Load(ContainerBuilder builder)
-    {
-        builder.RegisterModule(new ApiModule(_configuration, _services, _loggerFactory));
-        builder.RegisterModule(new InfrastructureModule(_configuration, ProvideScopedServiceProvider, _services));
-        builder.RegisterModule(new OrganisationRegistryModule());
-        builder.RegisterModule(new SqlServerModule(_configuration, _services, _loggerFactory));
-
-        builder.RegisterAssemblyTypes(typeof(T).GetTypeInfo().Assembly)
-            .AsClosedTypesOf(typeof(IEventHandler<>))
-            .SingleInstance();
-
-        builder.RegisterInstance<IContextFactory>(
-                new TestContextFactory(_dbContextOptions))
-            .SingleInstance();
-
-        builder.Populate(_services);
-    }
-
-    private static Func<IServiceProvider> ProvideScopedServiceProvider(IComponentContext context)
-    {
-        var defaultServiceProvider = context.Resolve<IServiceProvider>();
-        return () => defaultServiceProvider.CreateScope().ServiceProvider;
     }
 }

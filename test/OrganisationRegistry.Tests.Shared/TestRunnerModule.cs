@@ -1,17 +1,18 @@
-namespace OrganisationRegistry.SqlServer.IntegrationTests.TestBases;
+namespace OrganisationRegistry.Tests.Shared;
 
 using System;
 using System.Reflection;
-using Api;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
-using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using OrganisationRegistry.Infrastructure;
-using OrganisationRegistry.Infrastructure.Events;
+using Api;
+using Infrastructure;
+using Infrastructure.Events;
+using OrganisationRegistry.SqlServer.Infrastructure;
+using SqlServer;
 
 public class TestRunnerModule<T> : Autofac.Module
 {

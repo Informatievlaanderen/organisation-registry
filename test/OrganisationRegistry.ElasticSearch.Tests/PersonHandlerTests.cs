@@ -8,6 +8,7 @@ using Infrastructure.Events;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
+using OrganisationRegistry.Tests.Shared;
 using People;
 using Person.Events;
 using Projections.Infrastructure;

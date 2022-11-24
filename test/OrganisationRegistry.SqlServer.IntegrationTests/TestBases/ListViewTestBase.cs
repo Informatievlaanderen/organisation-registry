@@ -20,6 +20,7 @@ using OrganisationRegistry.Infrastructure.Bus;
 using OrganisationRegistry.Infrastructure.Config;
 using OrganisationRegistry.Infrastructure.Configuration;
 using OrganisationRegistry.Infrastructure.Events;
+using Tests.Shared;
 using Tests.Shared.Stubs;
 
 public abstract class ListViewTestBase
