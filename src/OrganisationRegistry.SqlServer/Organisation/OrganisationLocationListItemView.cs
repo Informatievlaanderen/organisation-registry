@@ -32,7 +32,9 @@ public class OrganisationLocationListItem
     public bool IsKbo
         => Source == OrganisationRegistry.Organisation.LocationSource.Kbo;
 
-    public OrganisationLocationListItem() { }
+    public OrganisationLocationListItem()
+    {
+    }
 
     public OrganisationLocationListItem(
         Guid organisationLocationId,
@@ -97,14 +99,18 @@ public class OrganisationLocationListView :
     IEventHandler<OrganisationCouplingWithKboCancelled>,
     IEventHandler<OrganisationTerminationSyncedWithKbo>,
     IEventHandler<OrganisationLocationUpdated>,
+    IEventHandler<OrganisationLocationRemoved>,
     IEventHandler<LocationTypeUpdated>,
     IEventHandler<OrganisationTerminated>,
     IEventHandler<OrganisationTerminatedV2>
 {
     private readonly IEventStore _eventStore;
 
-    protected override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
-    public override string Schema => WellknownSchemas.BackofficeSchema;
+    protected override string[] ProjectionTableNames
+        => Enum.GetNames(typeof(ProjectionTables));
+
+    public override string Schema
+        => WellknownSchemas.BackofficeSchema;
 
     public enum ProjectionTables
     {
@@ -197,8 +203,9 @@ public class OrganisationLocationListView :
     public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboRegisteredOfficeOrganisationLocationRemoved> message)
     {
         await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-        var organisationLocationListItem = context.OrganisationLocationList.Single(b =>
-            b.OrganisationLocationId == message.Body.OrganisationLocationId);
+        var organisationLocationListItem = context.OrganisationLocationList.Single(
+            b =>
+                b.OrganisationLocationId == message.Body.OrganisationLocationId);
 
         context.OrganisationLocationList.Remove(organisationLocationListItem);
 
@@ -211,8 +218,9 @@ public class OrganisationLocationListView :
             return;
 
         await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-        var organisationLocationListItem = context.OrganisationLocationList.Single(b =>
-            b.OrganisationLocationId == message.Body.RegisteredOfficeOrganisationLocationIdToCancel);
+        var organisationLocationListItem = context.OrganisationLocationList.Single(
+            b =>
+                b.OrganisationLocationId == message.Body.RegisteredOfficeOrganisationLocationIdToCancel);
 
         context.OrganisationLocationList.Remove(organisationLocationListItem);
 
@@ -225,8 +233,9 @@ public class OrganisationLocationListView :
             return;
 
         await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-        var registeredOfficeLocation = context.OrganisationLocationList.Single(b =>
-            b.OrganisationLocationId == message.Body.RegisteredOfficeOrganisationLocationIdToTerminate);
+        var registeredOfficeLocation = context.OrganisationLocationList.Single(
+            b =>
+                b.OrganisationLocationId == message.Body.RegisteredOfficeOrganisationLocationIdToTerminate);
 
         registeredOfficeLocation.ValidTo = message.Body.DateOfTermination;
 
@@ -252,8 +261,9 @@ public class OrganisationLocationListView :
     public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
     {
         await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-        var locations = context.OrganisationLocationList.Where(item =>
-            message.Body.FieldsToTerminate.Locations.Keys.Contains(item.OrganisationLocationId));
+        var locations = context.OrganisationLocationList.Where(
+            item =>
+                message.Body.FieldsToTerminate.Locations.Keys.Contains(item.OrganisationLocationId));
 
         foreach (var location in locations)
             location.ValidTo = message.Body.FieldsToTerminate.Locations[location.OrganisationLocationId];
@@ -261,8 +271,9 @@ public class OrganisationLocationListView :
         if (message.Body.KboFieldsToTerminate.RegisteredOffice.HasValue)
         {
             var kboOrganisationRegisteredOffice =
-                await context.OrganisationLocationList.SingleAsync(item =>
-                    message.Body.KboFieldsToTerminate.RegisteredOffice.Value.Key == item.OrganisationLocationId);
+                await context.OrganisationLocationList.SingleAsync(
+                    item =>
+                        message.Body.KboFieldsToTerminate.RegisteredOffice.Value.Key == item.OrganisationLocationId);
 
             kboOrganisationRegisteredOffice.ValidTo = message.Body.KboFieldsToTerminate.RegisteredOffice.Value.Value;
         }
@@ -274,8 +285,9 @@ public class OrganisationLocationListView :
     public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminatedV2> message)
     {
         await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-        var locations = context.OrganisationLocationList.Where(item =>
-            message.Body.FieldsToTerminate.Locations.Keys.Contains(item.OrganisationLocationId));
+        var locations = context.OrganisationLocationList.Where(
+            item =>
+                message.Body.FieldsToTerminate.Locations.Keys.Contains(item.OrganisationLocationId));
 
         foreach (var location in locations)
             location.ValidTo = message.Body.FieldsToTerminate.Locations[location.OrganisationLocationId];
@@ -283,8 +295,9 @@ public class OrganisationLocationListView :
         if (message.Body.KboFieldsToTerminate.RegisteredOffice.HasValue)
         {
             var kboOrganisationRegisteredOffice =
-                await context.OrganisationLocationList.SingleAsync(item =>
-                    message.Body.KboFieldsToTerminate.RegisteredOffice.Value.Key == item.OrganisationLocationId);
+                await context.OrganisationLocationList.SingleAsync(
+                    item =>
+                        message.Body.KboFieldsToTerminate.RegisteredOffice.Value.Key == item.OrganisationLocationId);
 
             kboOrganisationRegisteredOffice.ValidTo = message.Body.KboFieldsToTerminate.RegisteredOffice.Value.Value;
         }
@@ -296,5 +309,15 @@ public class OrganisationLocationListView :
     public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
     {
         await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+    }
+
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationLocationRemoved> message)
+    {
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+        var organisationLocationListItem = context.OrganisationLocationList.Single(b => b.OrganisationLocationId == message.Body.OrganisationLocationId);
+
+        context.Remove(organisationLocationListItem);
+
+        await context.SaveChangesAsync();
     }
 }
