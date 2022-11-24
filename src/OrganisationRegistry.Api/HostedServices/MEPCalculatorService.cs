@@ -48,9 +48,9 @@ public class MEPCalculatorService : BackgroundService
     protected async Task ProcessBodies(CancellationToken cancellationToken)
     {
         await using var context = _contextFactory.Create();
-        var bodies = await _elastic.ReadClient.SearchAsync<BodyDocument>(ct: cancellationToken);
+        var bodies = await _elastic.ReadClient.SearchAsync<BodyDocument>(descriptor => descriptor.Size(10000), cancellationToken);
 
-        Logger.LogInformation("Found {NumberOfBodies} to process", bodies.Documents.Count);
+        Logger.LogInformation("Found {NumberOfBodies} bodies to process", bodies.Documents.Count);
 
         foreach (var body in bodies.Documents)
         {
