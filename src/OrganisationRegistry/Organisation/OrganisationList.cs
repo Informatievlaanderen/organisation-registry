@@ -19,8 +19,8 @@ public class OrganisationList<TItem> : List<TItem>
     {
     }
 
-    public OrganisationList<TItem> Except(Guid organisationBankAccountId)
-        => new(this.Where(item => item.Id != organisationBankAccountId));
+    public OrganisationList<TItem> Except(Guid itemId)
+        => new(this.Where(item => item.Id != itemId));
 
     public OrganisationList<TItem> OverlappingWith(Period validity)
         => new(this.Where(item => item.Validity.OverlapsWith(validity)));

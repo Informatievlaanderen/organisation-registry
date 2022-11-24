@@ -32,7 +32,7 @@ public class OrganisationLocations : OrganisationList<OrganisationLocation>
             .Any();
     }
 
-    public OrganisationLocations Except(Guid organisationLocationId)
+    public new OrganisationLocations Except(Guid organisationLocationId)
         => new(
             this.Where(ob => ob.OrganisationLocationId != organisationLocationId));
 
@@ -40,7 +40,7 @@ public class OrganisationLocations : OrganisationList<OrganisationLocation>
         => new(
             this.Where(ob => ob.LocationId == locationId));
 
-    public OrganisationLocations OverlappingWith(Period validity)
+    public new OrganisationLocations OverlappingWith(Period validity)
         => new(
             this.Where(ob => ob.Validity.OverlapsWith(validity)));
 

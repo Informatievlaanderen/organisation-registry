@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using AutoFixture;
-using Backoffice.Organisation.Function;
 using Backoffice.Organisation.Location;
 using FluentAssertions;
 using Xunit;
