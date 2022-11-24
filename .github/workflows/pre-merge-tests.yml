@@ -10,7 +10,7 @@ jobs:
   build:
     if: github.repository_owner == 'Informatievlaanderen'
     name: Run Tests
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
 
     services:
       sqlserver:
