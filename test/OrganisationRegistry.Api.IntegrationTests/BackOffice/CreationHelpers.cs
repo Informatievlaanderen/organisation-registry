@@ -15,6 +15,7 @@ using Backoffice.Parameters.FormalFramework.Requests;
 using Backoffice.Parameters.FormalFrameworkCategory.Requests;
 using Backoffice.Parameters.FunctionType.Requests;
 using Backoffice.Parameters.LifecyclePhaseType.Requests;
+using Backoffice.Parameters.Location.Requests;
 using Backoffice.Parameters.OrganisationClassification.Requests;
 using Backoffice.Parameters.OrganisationClassificationType.Requests;
 using Backoffice.Parameters.OrganisationRelationType.Requests;
@@ -118,6 +119,19 @@ public class CreationHelpers
                 Order = _fixture.Fixture.Create<int>(),
                 BodyClassificationTypeId = bodyClassificationTypeId,
             });
+
+    public async Task<Guid> Location()
+    {
+        return await Create<Guid>(
+            "/v1/locations",
+            new CreateLocationRequest
+            {
+                City = _fixture.Fixture.Create<string>(),
+                Country = _fixture.Fixture.Create<string>(),
+                Street = _fixture.Fixture.Create<string>(),
+                ZipCode = _fixture.Fixture.Create<string>(),
+            });
+    }
 
     private async Task DefaultLifecyclePhaseTypes()
     {

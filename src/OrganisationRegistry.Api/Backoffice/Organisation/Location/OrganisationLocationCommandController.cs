@@ -66,6 +66,6 @@ public class OrganisationLocationCommandController : OrganisationRegistryCommand
     {
         await CommandSender.Send(new DeleteOrganisationLocation(new OrganisationId(organisationId), organisationLocationId));
 
-        return Ok();
+        return NoContent();
     }
 }
