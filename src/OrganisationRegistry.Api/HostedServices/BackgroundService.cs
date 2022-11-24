@@ -8,13 +8,13 @@ using Microsoft.Extensions.Logging;
 
 public abstract class BackgroundService : IHostedService, IDisposable
 {
-    private readonly ILogger _logger;
+    protected ILogger Logger { get; }
     private Task? _executingTask;
     private readonly CancellationTokenSource _stoppingCts = new();
 
     protected BackgroundService(ILogger logger)
     {
-        _logger = logger;
+        Logger = logger;
     }
 
     public virtual Task StartAsync(CancellationToken cancellationToken)
@@ -42,8 +42,11 @@ public abstract class BackgroundService : IHostedService, IDisposable
         finally
         {
             // Wait until the task completes or the stop token triggers
-            await Task.WhenAny(_executingTask, Task.Delay(Timeout.Infinite,
-                cancellationToken));
+            await Task.WhenAny(
+                _executingTask,
+                Task.Delay(
+                    Timeout.Infinite,
+                    cancellationToken));
         }
     }
 
@@ -55,7 +58,7 @@ public abstract class BackgroundService : IHostedService, IDisposable
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error occured while processing scheduled commands");
+            Logger.LogError(ex, "An error occured while processing scheduled commands");
         }
     }
 

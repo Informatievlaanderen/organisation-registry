@@ -102,10 +102,12 @@ public class BodyParticipation
             .Select(item => item.BodyMandateId)
             .ToList();
 
+        var bodySeatGenderRatioBodyMandateItems = context.BodySeatGenderRatioBodyMandateList
+            .Include(mandate => mandate.Assignments)
+            .AsAsyncQueryable();
+
         var activeAssignmentsPerIsEffective =
-            context.BodySeatGenderRatioBodyMandateList
-                .Include(mandate => mandate.Assignments)
-                .AsAsyncQueryable()
+            bodySeatGenderRatioBodyMandateItems
                 .Where(mandate => mandate.BodyId == bodyId)
                 .Where(mandate =>
                     (!mandate.BodyMandateValidFrom.HasValue || mandate.BodyMandateValidFrom <= today) &&

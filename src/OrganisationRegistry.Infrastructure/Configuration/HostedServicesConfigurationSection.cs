@@ -15,4 +15,5 @@ public class HostedServicesConfigurationSection
     public HostedServiceConfigurationSection? ScheduledCommandsService { get; set; }
     public HostedServiceConfigurationSection? SyncRemovedItemsService { get; set; }
     public HostedServiceConfigurationSection? ProcessImportedFileService { get; set; }
+    public HostedServiceConfigurationSection? MEPCalculatorService { get; set; }
 }

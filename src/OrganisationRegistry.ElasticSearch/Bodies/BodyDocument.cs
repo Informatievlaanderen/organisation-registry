@@ -17,7 +17,7 @@ public class BodyDocument : IDocument
         Participations = new List<BodyParticipation>();
         Classifications = new List<BodyClassification>();
         FormalValidity = Period.Infinite();
-        BodyMEP = new BodyMEP();
+        MEP = new BodyMEP();
     }
 
     public int ChangeId { get; set; }
@@ -36,7 +36,7 @@ public class BodyDocument : IDocument
 
     public Period FormalValidity { get; set; }
 
-    public BodyMEP BodyMEP { get; set; }
+    public BodyMEP MEP { get; set; }
 
     public IList<BodySeat> Seats { get; set; }
 
@@ -84,7 +84,7 @@ public class BodyDocument : IDocument
                             .Properties(Period.Mapping))
                     .Nested<BodyMEP>(
                         n => n
-                            .Name(p => p.BodyMEP)
+                            .Name(p => p.MEP)
                             .IncludeInRoot()
                             .Properties(BodyMEP.Mapping))
                     .Nested<BodySeat>(

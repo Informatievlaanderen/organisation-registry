@@ -19,9 +19,14 @@ public class HostedServicesConfiguration : IHostedServicesConfiguration
         ProcessImportedFileService = new HostedServiceConfiguration(
             configuration?.ProcessImportedFileService?.DelayInSeconds ?? 15,
             configuration?.ProcessImportedFileService?.Enabled ?? true);
+
+        MEPCalculatorService = new HostedServiceConfiguration(
+            configuration?.MEPCalculatorService?.DelayInSeconds ?? 3600,
+            configuration?.MEPCalculatorService?.Enabled ?? true);
     }
     public HostedServiceConfiguration SyncFromKboService { get; }
     public HostedServiceConfiguration ScheduledCommandsService { get; }
     public HostedServiceConfiguration SyncRemovedItemsService { get; }
     public HostedServiceConfiguration ProcessImportedFileService { get; }
+    public HostedServiceConfiguration MEPCalculatorService { get; }
 }

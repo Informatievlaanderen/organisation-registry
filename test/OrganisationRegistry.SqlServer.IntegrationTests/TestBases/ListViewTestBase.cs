@@ -1,13 +1,10 @@
-﻿using Microsoft.Extensions.Logging;
-
-namespace OrganisationRegistry.SqlServer.IntegrationTests.TestBases;
+﻿namespace OrganisationRegistry.SqlServer.IntegrationTests.TestBases;
 
 using System;
 using System.Data.Common;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
-using Api;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Infrastructure;
@@ -17,7 +14,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using OnProjections;
-using OrganisationRegistry.Infrastructure;
 using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Authorization.Cache;
 using OrganisationRegistry.Infrastructure.Bus;
@@ -66,7 +62,7 @@ public abstract class ListViewTestBase
                 new OrganisationRegistryConfigurationStub());
 
         var builder = new ContainerBuilder();
-        builder.RegisterModule(new TestRunnerModule(configuration, services, new NullLoggerFactory(), dbContextOptions));
+        builder.RegisterModule(new TestRunnerModule<OrganisationRegistrySqlServerAssemblyTokenClass>(configuration, services, new NullLoggerFactory(), dbContextOptions));
 
         return new AutofacServiceProvider(builder.Build());
     }
@@ -86,48 +82,5 @@ public abstract class ListViewTestBase
         {
             await _inProcessBus.Publish(Mock.Of<DbConnection>(), Mock.Of<DbTransaction>(), (dynamic)envelope.ToEnvelope());
         }
-    }
-}
-
-public class TestRunnerModule : Autofac.Module
-{
-    private readonly IConfiguration _configuration;
-    private readonly IServiceCollection _services;
-    private readonly ILoggerFactory _loggerFactory;
-    private readonly DbContextOptions<OrganisationRegistryContext> _dbContextOptions;
-
-    public TestRunnerModule(IConfiguration configuration,
-        IServiceCollection services,
-        ILoggerFactory loggerFactory,
-        DbContextOptions<OrganisationRegistryContext> dbContextOptions)
-    {
-        _configuration = configuration;
-        _services = services;
-        _loggerFactory = loggerFactory;
-        _dbContextOptions = dbContextOptions;
-    }
-
-    protected override void Load(ContainerBuilder builder)
-    {
-        builder.RegisterModule(new ApiModule(_configuration, _services, _loggerFactory));
-        builder.RegisterModule(new InfrastructureModule(_configuration, ProvideScopedServiceProvider, _services));
-        builder.RegisterModule(new OrganisationRegistryModule());
-        builder.RegisterModule(new SqlServerModule(_configuration, _services, _loggerFactory));
-
-        builder.RegisterAssemblyTypes(typeof(OrganisationRegistrySqlServerAssemblyTokenClass).GetTypeInfo().Assembly)
-            .AsClosedTypesOf(typeof(IEventHandler<>))
-            .SingleInstance();
-
-        builder.RegisterInstance<IContextFactory>(
-                new TestContextFactory(_dbContextOptions))
-            .SingleInstance();
-
-        builder.Populate(_services);
-    }
-
-    private static Func<IServiceProvider> ProvideScopedServiceProvider(IComponentContext context)
-    {
-        var defaultServiceProvider = context.Resolve<IServiceProvider>();
-        return () => defaultServiceProvider.CreateScope().ServiceProvider;
     }
 }

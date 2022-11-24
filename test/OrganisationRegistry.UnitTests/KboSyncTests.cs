@@ -19,6 +19,7 @@ using OrganisationRegistry.Organisation.Commands;
 using SqlServer.Infrastructure;
 using SqlServer.KboSyncQueue;
 using SqlServer.Organisation;
+using Tests.Shared.Stubs;
 using Xunit;
 
 public class KboSyncTests

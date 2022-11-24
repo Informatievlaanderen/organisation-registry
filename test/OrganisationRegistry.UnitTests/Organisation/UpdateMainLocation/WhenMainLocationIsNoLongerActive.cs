@@ -14,6 +14,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using OrganisationRegistry.Infrastructure.Domain;
 using Tests.Shared;
+using Tests.Shared.Stubs;
 using Xunit.Abstractions;
 
 public class WhenMainLocationIsNoLongerActive : Specification<UpdateMainLocationCommandHandler, UpdateMainLocation>

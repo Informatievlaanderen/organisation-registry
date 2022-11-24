@@ -11,6 +11,7 @@ using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Magda.Common;
 using OrganisationRegistry.Magda.Responses;
 using OrganisationRegistry.Organisation;
+using Tests.Shared.Stubs;
 using Xunit;
 
 public class KboOrganisationRetrieverTests
