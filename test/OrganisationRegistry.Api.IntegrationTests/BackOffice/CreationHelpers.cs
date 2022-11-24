@@ -121,8 +121,7 @@ public class CreationHelpers
             });
 
     public async Task<Guid> Location()
-    {
-        return await Create<Guid>(
+        => await Create<Guid>(
             "/v1/locations",
             new CreateLocationRequest
             {
@@ -131,7 +130,6 @@ public class CreationHelpers
                 Street = _fixture.Fixture.Create<string>(),
                 ZipCode = _fixture.Fixture.Create<string>(),
             });
-    }
 
     private async Task DefaultLifecyclePhaseTypes()
     {
