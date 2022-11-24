@@ -1,5 +1,4 @@
 name: CI/CD
-runs-on: self-hosted
 on:
   push:
     branches: [ main ]
@@ -10,7 +9,7 @@ jobs:
   build:
     if: github.repository_owner == 'Informatievlaanderen'
     name: Build
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, ubuntu-latest]
 
     services:
       sqlserver:
