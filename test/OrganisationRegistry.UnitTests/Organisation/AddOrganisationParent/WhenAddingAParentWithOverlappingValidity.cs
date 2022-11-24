@@ -13,6 +13,7 @@ using OrganisationRegistry.Infrastructure.Events;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Events;
 using OrganisationRegistry.Organisation.Exceptions;
+using Tests.Shared.Stubs;
 using Tests.Shared.TestDataBuilders;
 using Xunit;
 using Xunit.Abstractions;

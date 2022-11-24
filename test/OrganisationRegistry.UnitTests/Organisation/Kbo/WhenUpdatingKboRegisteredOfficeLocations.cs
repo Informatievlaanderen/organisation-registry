@@ -8,6 +8,7 @@ using Location;
 using Location.Commands;
 using LocationType;
 using OrganisationRegistry.Organisation;
+using Tests.Shared.Stubs;
 using Tests.Shared.TestDataBuilders;
 using Xunit;
 

@@ -1,4 +1,4 @@
-namespace OrganisationRegistry.UnitTests;
+namespace OrganisationRegistry.Tests.Shared.Stubs;
 
 using System;
 

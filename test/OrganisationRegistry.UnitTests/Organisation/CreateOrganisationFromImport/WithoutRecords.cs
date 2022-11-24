@@ -10,6 +10,7 @@ using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Import;
 using Tests.Shared;
 using OrganisationRegistry.UnitTests.Infrastructure.Tests.Extensions.TestHelpers;
+using Tests.Shared.Stubs;
 using Xunit;
 using Xunit.Abstractions;
 

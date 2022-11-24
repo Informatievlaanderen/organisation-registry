@@ -12,6 +12,7 @@ using Tests.Shared;
 using OrganisationRegistry.Infrastructure.Events;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Events;
+using Tests.Shared.Stubs;
 using Tests.Shared.TestDataBuilders;
 using Xunit;
 using Xunit.Abstractions;

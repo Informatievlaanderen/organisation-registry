@@ -10,7 +10,6 @@ using Moq;
 using OrganisationRegistry.Infrastructure.Commands;
 using TestBases;
 using Tests.Shared.Stubs;
-using UnitTests;
 
 public class ScheduledCommandsScenario
 {

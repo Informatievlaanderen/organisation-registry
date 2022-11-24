@@ -10,10 +10,12 @@ public class HostedServicesConfigurationStub : IHostedServicesConfiguration
         ScheduledCommandsService = new HostedServiceConfiguration(60, false);
         SyncRemovedItemsService = new HostedServiceConfiguration(60, false);
         ProcessImportedFileService = new HostedServiceConfiguration(60, false);
+        MEPCalculatorService = new HostedServiceConfiguration(60, false);
     }
 
     public HostedServiceConfiguration SyncFromKboService { get; }
     public HostedServiceConfiguration ScheduledCommandsService { get; }
     public HostedServiceConfiguration SyncRemovedItemsService { get; }
     public HostedServiceConfiguration ProcessImportedFileService { get; }
+    public HostedServiceConfiguration MEPCalculatorService { get; }
 }

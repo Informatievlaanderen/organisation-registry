@@ -19,6 +19,7 @@ using OrganisationRegistry.SqlServer.Import.Organisations;
 using SqlServer.Infrastructure;
 using SqlServer.Organisation;
 using Tests.Shared;
+using Tests.Shared.Stubs;
 using Xunit;
 
 public class WhenImportingACorrectCsvFile

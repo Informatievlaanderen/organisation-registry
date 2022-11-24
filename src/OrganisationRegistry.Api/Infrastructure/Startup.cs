@@ -97,6 +97,7 @@ public class Startup
             .AddHostedService<SyncFromKboService>()
             .AddHostedService<SyncRemovedItemsService>()
             .AddHostedService<ProcessImportedFilesService>()
+            .AddHostedService<MEPCalculatorService>()
             .AddAuthentication(
                 options =>
                 {

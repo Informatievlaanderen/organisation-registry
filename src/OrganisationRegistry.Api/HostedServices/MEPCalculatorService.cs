@@ -1,8 +1,8 @@
 ﻿namespace OrganisationRegistry.Api.HostedServices;
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Backoffice.Report.Participation;
@@ -10,66 +10,103 @@ using ElasticSearch.Bodies;
 using ElasticSearch.Client;
 using Infrastructure.Search.Filtering;
 using Microsoft.Extensions.Logging;
-using SqlServer.Infrastructure;
+using OrganisationRegistry.Infrastructure.Configuration;
+using SqlServer;
 
 public class MEPCalculatorService : BackgroundService
 {
     private readonly Elastic _elastic;
-    private readonly OrganisationRegistryContext _context;
+    private readonly IContextFactory _contextFactory;
     private readonly IDateTimeProvider _clock;
+    private readonly HostedServiceConfiguration _configuration;
 
     public MEPCalculatorService(
-        ILogger logger,
+        ILogger<MEPCalculatorService> logger,
+        IOrganisationRegistryConfiguration configuration,
         Elastic elastic,
-        OrganisationRegistryContext context,
+        IContextFactory contextFactory,
         IDateTimeProvider clock) : base(logger)
     {
+        _configuration = configuration.HostedServices.MEPCalculatorService;
         _elastic = elastic;
-        _context = context;
+        _contextFactory = contextFactory;
         _clock = clock;
     }
 
     protected override async Task Process(CancellationToken cancellationToken)
     {
-        // 1 Get All Bodies
+        while (!cancellationToken.IsCancellationRequested)
+        {
+            await ProcessBodies(cancellationToken);
+
+            await _configuration.Delay(cancellationToken);
+        }
+    }
+
+    protected async Task ProcessBodies(CancellationToken cancellationToken)
+    {
+        await using var context = _contextFactory.Create();
         var bodies = await _elastic.ReadClient.SearchAsync<BodyDocument>(ct: cancellationToken);
 
-        // 2 Foreach Body
         foreach (var body in bodies.Documents)
         {
-            // 2.1 Get MEP
-            var entitledToVoteResult = BodyParticipation.Search(_context, body.Id, CreateFilteringHeader(true, false), _clock.Today).ToList();
-            var notEntitledToVoteResult = BodyParticipation.Search(_context, body.Id, CreateFilteringHeader(false, true), _clock.Today).ToList();
-            var totalEntitledToVoteResult = BodyParticipation.Search(_context, body.Id, CreateFilteringHeader(true, true), _clock.Today).ToList();
-
-
-            // 2.2 Save MEP bij Body
-            var effectiveEntitledToVote = entitledToVoteResult.SingleOrDefault(r => r.IsEffective!.Value);
-            if (effectiveEntitledToVote is { })
+            try
             {
-                body.BodyMEP.Stemgerechtigd.Effectief = MapToMEP(effectiveEntitledToVote);
+                var entitledToVoteResult = BodyParticipation.Search(context, body.Id, CreateFilteringHeader(true, false), _clock.Today).ToList();
+                var notEntitledToVoteResult = BodyParticipation.Search(context, body.Id, CreateFilteringHeader(false, true), _clock.Today).ToList();
+                var totalEntitledToVoteResult = BodyParticipation.Search(context, body.Id, CreateFilteringHeader(true, true), _clock.Today).ToList();
+
+                body.MEP.Stemgerechtigd = MapMaybeEntitledToVoteResult(entitledToVoteResult);
+                body.MEP.NietStemgerechtigd = MapMaybeEntitledToVoteResult(notEntitledToVoteResult);
+                body.MEP.Totaal = MapMaybeEntitledToVoteResult(totalEntitledToVoteResult);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Something went wrong processing bodies for MEP calculation.");
+
+                body.MEP.Stemgerechtigd = new BodyMEPStemgerechtigdheid();
+                body.MEP.NietStemgerechtigd = new BodyMEPStemgerechtigdheid();
+                body.MEP.Totaal = new BodyMEPStemgerechtigdheid();
             }
 
-            var notEffectiveEntitledToVote = entitledToVoteResult.SingleOrDefault(r => !r.IsEffective!.Value || r.IsEffective == null);
-            if (notEffectiveEntitledToVote is { })
-            {
-                body.BodyMEP.Stemgerechtigd.NietEffectief = MapToMEP(notEffectiveEntitledToVote);
-            }
-
-            var totalEntitledToVote = CombineBodyParticipations(entitledToVoteResult);
-            if (totalEntitledToVote is { })
-            {
-                body.BodyMEP.Stemgerechtigd.Totaal = MapToMEP(totalEntitledToVote);
-            }
+            await _elastic.ReadClient.IndexDocumentAsync(body, cancellationToken);
         }
-
-        // 3 Rebuild index
     }
 
-    private BodyMEPEffectiviteit CombineBodyParticipations(List<BodyParticipation> entitledToVoteResult)
+    private static BodyMEPStemgerechtigdheid MapMaybeEntitledToVoteResult(IList<BodyParticipation> entitledToVoteResult)
     {
-        throw new System.NotImplementedException();
+        var result = new BodyMEPStemgerechtigdheid();
+
+        var effectiveEntitledToVote = entitledToVoteResult.SingleOrDefault(r => r.IsEffective!.Value);
+        result.Effectief = effectiveEntitledToVote is { }
+            ? MapToMEP(effectiveEntitledToVote)
+            : new BodyMEPEffectiviteit();
+
+        var notEffectiveEntitledToVote = entitledToVoteResult.SingleOrDefault(r => !r.IsEffective!.Value || r.IsEffective == null);
+        result.NietEffectief = notEffectiveEntitledToVote is { }
+            ? MapToMEP(notEffectiveEntitledToVote)
+            : new BodyMEPEffectiviteit();
+
+        var totalEntitledToVote = CombineBodyParticipations(entitledToVoteResult);
+        result.Totaal = MapToMEP(totalEntitledToVote);
+
+        return result;
     }
+
+    private static BodyParticipation CombineBodyParticipations(IEnumerable<BodyParticipation> list)
+        => list
+            .Aggregate(
+                new BodyParticipation(),
+                (total, current) =>
+                {
+                    total.AssignedCount += current.AssignedCount;
+                    total.FemaleCount += current.FemaleCount;
+                    total.MaleCount += current.MaleCount;
+                    total.UnknownCount += current.UnknownCount;
+                    total.TotalCount += current.TotalCount;
+
+                    return total;
+                });
 
     private static BodyMEPEffectiviteit MapToMEP(BodyParticipation effectiveEntitledToVote)
     {

@@ -20,13 +20,13 @@ public class ElasticSearchFixture : IDisposable
 {
     public ElasticSearchFixture()
     {
-        var dbContextOptions = new DbContextOptionsBuilder<OrganisationRegistryContext>()
+        ContextOptions = new DbContextOptionsBuilder<OrganisationRegistryContext>()
             .UseInMemoryDatabase(
                 $"org-es-test-{Guid.NewGuid()}",
                 _ => { }).Options;
 
         LoggerFactory = new LoggerFactory();
-        ContextFactory = new TestContextFactory(dbContextOptions);
+        ContextFactory = new TestContextFactory(ContextOptions);
         var maybeConfigurationBasePath = Directory.GetParent(GetType().GetTypeInfo().Assembly.Location)?.FullName;
         if (maybeConfigurationBasePath is not { } configurationBasePath)
             throw new NullReferenceException("Configuration base path cannot be null");
@@ -36,10 +36,10 @@ public class ElasticSearchFixture : IDisposable
             .AddJsonFile("appsettings.json", optional: false)
             .AddJsonFile($"appsettings.{Environment.MachineName}.json", optional: true);
 
-        var configurationRoot = builder.Build();
+        Configuration = builder.Build();
 
         var elasticSearchConfiguration =
-            configurationRoot
+            builder.Build()
                 .GetSection(ElasticSearchConfiguration.Section)
                 .Get<ElasticSearchConfiguration>();
 
@@ -66,6 +66,8 @@ public class ElasticSearchFixture : IDisposable
     public IContextFactory ContextFactory { get; set; }
     public Elastic Elastic { get; }
     public IOptions<ElasticSearchConfiguration> ElasticSearchOptions { get; set; }
+    public IConfiguration Configuration { get; }
+    public DbContextOptions<OrganisationRegistryContext> ContextOptions { get; }
 
     public void Dispose()
     {

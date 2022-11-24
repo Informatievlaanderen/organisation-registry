@@ -6,4 +6,5 @@ public interface IHostedServicesConfiguration
     public HostedServiceConfiguration ScheduledCommandsService { get; }
     public HostedServiceConfiguration SyncRemovedItemsService { get; }
     public HostedServiceConfiguration ProcessImportedFileService { get; }
+    public HostedServiceConfiguration MEPCalculatorService { get; }
 }
