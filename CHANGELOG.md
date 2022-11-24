@@ -1,3 +1,18 @@
+# [1.286.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.285.0...v1.286.0) (2022-11-24)
+
+
+### Bug Fixes
+
+* or-1143 increase limit for body processing ([c1d4aae](https://github.com/informatievlaanderen/organisation-registry/commit/c1d4aae9a56d7b6480abd017a39d457a27ef04c2))
+
+
+### Features
+
+* or-1138 add  domain unit tests ([b2de335](https://github.com/informatievlaanderen/organisation-registry/commit/b2de335f48a9c76bf3596609b80aa887d4fe5dec))
+* or-1138 cleanup ([9b8f7b0](https://github.com/informatievlaanderen/organisation-registry/commit/9b8f7b005395bdf9bf351c39e0226cf52056d1d2))
+* or-1138 create delete endpoint in admin api for organisationlocations ([c115180](https://github.com/informatievlaanderen/organisation-registry/commit/c11518007422105bac3587b5e717b60727c4e513))
+* or-1138 create endpoint in backoffice api for removing organisationlocations ([45e30c5](https://github.com/informatievlaanderen/organisation-registry/commit/45e30c569bc6f9d9541c6a1411d94d3fe98f363f))
+
 # [1.285.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.284.0...v1.285.0) (2022-11-24)
 
 
