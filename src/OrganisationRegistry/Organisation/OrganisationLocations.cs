@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-public class OrganisationLocations : List<OrganisationLocation>
+public class OrganisationLocations : OrganisationList<OrganisationLocation>
 {
     public OrganisationLocations() { }
 

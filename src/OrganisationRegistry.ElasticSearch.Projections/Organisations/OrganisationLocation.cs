@@ -22,6 +22,7 @@ public class OrganisationLocation :
     IElasticEventHandler<OrganisationCouplingWithKboCancelled>,
     IElasticEventHandler<OrganisationTerminationSyncedWithKbo>,
     IElasticEventHandler<OrganisationLocationUpdated>,
+    IElasticEventHandler<OrganisationLocationRemoved>,
     IElasticEventHandler<LocationUpdated>,
     IElasticEventHandler<OrganisationTerminated>,
     IElasticEventHandler<OrganisationTerminatedV2>
@@ -31,18 +32,24 @@ public class OrganisationLocation :
     {
     }
 
-    public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+    public async Task<IElasticChange> Handle(
+        DbConnection dbConnection,
+        DbTransaction dbTransaction,
         IEnvelope<LocationUpdated> message)
     {
         return await new ElasticMassChange
         (
-            elastic => elastic.TryAsync(() => elastic
-                .MassUpdateOrganisationAsync(
-                    x => x.Locations.Single().LocationId, message.Body.LocationId,
-                    "locations", "locationId",
-                    "formattedAddress", message.Body.FormattedAddress,
-                    message.Number,
-                    message.Timestamp))
+            elastic => elastic.TryAsync(
+                () => elastic
+                    .MassUpdateOrganisationAsync(
+                        x => x.Locations.Single().LocationId,
+                        message.Body.LocationId,
+                        "locations",
+                        "locationId",
+                        "formattedAddress",
+                        message.Body.FormattedAddress,
+                        message.Number,
+                        message.Timestamp))
         ).ToAsyncResult();
     }
 
@@ -68,16 +75,16 @@ public class OrganisationLocation :
         if (message.Body.RegisteredOfficeOrganisationLocationIdToTerminate == null)
             return await new ElasticNoChange().ToAsyncResult();
 
-        return await new ElasticPerDocumentChange<OrganisationDocument>
-        (
+        return await new ElasticPerDocumentChange<OrganisationDocument>(
             message.Body.OrganisationId,
             document =>
             {
                 document.ChangeId = message.Number;
                 document.ChangeTime = message.Timestamp;
 
-                var registeredOfficeLocation = document.Locations.Single(label =>
-                    label.OrganisationLocationId == message.Body.RegisteredOfficeOrganisationLocationIdToTerminate);
+                var registeredOfficeLocation = document.Locations.Single(
+                    label =>
+                        label.OrganisationLocationId == message.Body.RegisteredOfficeOrganisationLocationIdToTerminate);
 
                 registeredOfficeLocation.Validity.End = message.Body.DateOfTermination;
             }
@@ -86,16 +93,16 @@ public class OrganisationLocation :
 
     public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboRegisteredOfficeLocationIsMainLocationChanged> message)
     {
-        return await new ElasticPerDocumentChange<OrganisationDocument>
-        (
+        return await new ElasticPerDocumentChange<OrganisationDocument>(
             message.Body.OrganisationId,
             document =>
             {
                 document.ChangeId = message.Number;
                 document.ChangeTime = message.Timestamp;
 
-                var registeredOfficeLocation = document.Locations.Single(label =>
-                    label.OrganisationLocationId == message.Body.OrganisationLocationId);
+                var registeredOfficeLocation = document.Locations.Single(
+                    label =>
+                        label.OrganisationLocationId == message.Body.OrganisationLocationId);
 
                 registeredOfficeLocation.IsMainLocation = message.Body.IsMainLocation;
             }
@@ -118,16 +125,16 @@ public class OrganisationLocation :
 
     private static async Task<IElasticChange> AddOrganisationLocation(Guid organisationId, Guid locationId, string locationFormattedAddress, bool isMainLocation, Guid? locationTypeId, string? locationTypeName, DateTime? validFrom, DateTime? validTo, int documentChangeId, DateTimeOffset timestamp, Guid organisationLocationId)
     {
-        return await new ElasticPerDocumentChange<OrganisationDocument>
-        (
+        return await new ElasticPerDocumentChange<OrganisationDocument>(
             organisationId,
             document =>
             {
                 document.ChangeId = documentChangeId;
                 document.ChangeTime = timestamp;
 
-                document.Locations.RemoveExistingListItems(x =>
-                    x.OrganisationLocationId == organisationLocationId);
+                document.Locations.RemoveExistingListItems(
+                    x =>
+                        x.OrganisationLocationId == organisationLocationId);
 
                 document.Locations.Add(
                     new OrganisationDocument.OrganisationLocation(
@@ -155,16 +162,16 @@ public class OrganisationLocation :
         DateTime? bodyValidFrom,
         DateTime? bodyValidTo)
     {
-        return await new ElasticPerDocumentChange<OrganisationDocument>
-        (
+        return await new ElasticPerDocumentChange<OrganisationDocument>(
             bodyOrganisationId,
             document =>
             {
                 document.ChangeId = organisationDocumentChangeId;
                 document.ChangeTime = organisationDocumentChangeTime;
 
-                document.Locations.RemoveExistingListItems(x =>
-                    x.OrganisationLocationId == bodyOrganisationLocationId);
+                document.Locations.RemoveExistingListItems(
+                    x =>
+                        x.OrganisationLocationId == bodyOrganisationLocationId);
 
                 document.Locations.Add(
                     new OrganisationDocument.OrganisationLocation(
@@ -175,31 +182,29 @@ public class OrganisationLocation :
                         bodyLocationTypeId,
                         bodyLocationTypeName,
                         Period.FromDates(bodyValidFrom, bodyValidTo)));
-
             }
         ).ToAsyncResult();
     }
 
     private static async Task<IElasticChange> RemoveOrganisationLocation(Guid bodyOrganisationId, int organisationDocumentChangeId, DateTimeOffset organisationDocumentChangeTime, Guid bodyOrganisationLocationId)
     {
-        return await new ElasticPerDocumentChange<OrganisationDocument>
-        (
+        return await new ElasticPerDocumentChange<OrganisationDocument>(
             bodyOrganisationId,
             document =>
             {
                 document.ChangeId = organisationDocumentChangeId;
                 document.ChangeTime = organisationDocumentChangeTime;
 
-                document.Locations.RemoveExistingListItems(x =>
-                    x.OrganisationLocationId == bodyOrganisationLocationId);
+                document.Locations.RemoveExistingListItems(
+                    x =>
+                        x.OrganisationLocationId == bodyOrganisationLocationId);
             }
         ).ToAsyncResult();
     }
 
     public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
     {
-        return await new ElasticPerDocumentChange<OrganisationDocument>
-        (
+        return await new ElasticPerDocumentChange<OrganisationDocument>(
             message.Body.OrganisationId,
             document =>
             {
@@ -227,8 +232,7 @@ public class OrganisationLocation :
 
     public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminatedV2> message)
     {
-        return await new ElasticPerDocumentChange<OrganisationDocument>
-        (
+        return await new ElasticPerDocumentChange<OrganisationDocument>(
             message.Body.OrganisationId,
             document =>
             {
@@ -252,5 +256,20 @@ public class OrganisationLocation :
                 }
             }
         ).ToAsyncResult();
+    }
+
+    public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationLocationRemoved> message)
+    {
+        return await new ElasticPerDocumentChange<OrganisationDocument>(
+            message.Body.OrganisationId,
+            document =>
+            {
+                document.ChangeId = message.Number;
+                document.ChangeTime = message.Timestamp;
+
+                document.Locations.RemoveExistingListItems(
+                    x =>
+                        x.OrganisationLocationId == message.Body.OrganisationLocationId);
+            }).ToAsyncResult();
     }
 }

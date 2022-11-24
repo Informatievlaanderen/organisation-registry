@@ -3079,6 +3079,15 @@ public partial class Organisation : AggregateRoot
         ApplyChange(new OrganisationFunctionRemoved(Id, organisationFunctionId, function.PersonId));
     }
 
+    public void RemoveLocation(Guid organisationLocationId)
+    {
+        if (!State.OrganisationLocations.Any(ol => ol.OrganisationLocationId == organisationLocationId))
+            throw new OrganisationLocationNotFound();
+
+
+        ApplyChange(new OrganisationLocationRemoved(Id, organisationLocationId));
+    }
+
     public void Apply(OrganisationBankAccountRemoved evnt)
     {
         State.OrganisationBankAccounts.Remove(State.OrganisationBankAccounts[evnt.OrganisationBankAccountId]);
@@ -3092,5 +3101,10 @@ public partial class Organisation : AggregateRoot
     public void Apply(OrganisationFunctionRemoved evnt)
     {
         State.OrganisationFunctionTypes.Remove(State.OrganisationFunctionTypes[evnt.OrganisationFunctionId]);
+    }
+
+    public void Apply(OrganisationLocationRemoved evnt)
+    {
+        State.OrganisationLocations.Remove(State.OrganisationLocations[evnt.OrganisationLocationId]);
     }
 }
