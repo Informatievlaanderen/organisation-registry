@@ -1,3 +1,14 @@
+# [1.284.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.283.0...v1.284.0) (2022-11-24)
+
+
+### Features
+
+* or-1143 clean up & refactoring ([2c64d0d](https://github.com/informatievlaanderen/organisation-registry/commit/2c64d0dded6b0724569b20f39cfca58539e1507f))
+* or-1143 run on selfhosted ([5c5aab3](https://github.com/informatievlaanderen/organisation-registry/commit/5c5aab31a631cb7be340bbf98e8cd1c632cf9f37))
+* or-1143 run on selfhosted and ubuntu ([faf0021](https://github.com/informatievlaanderen/organisation-registry/commit/faf00217f7ef866f88b4142b8d60d04579dd75ff))
+* or-1143 run on ubuntu ([408276c](https://github.com/informatievlaanderen/organisation-registry/commit/408276cb515fc9139526bb78b97c949bf8f1e27d))
+* or-1143 try self-hosted runner ([e0c10e0](https://github.com/informatievlaanderen/organisation-registry/commit/e0c10e0440d97f0bb95900975f0de965d6fd0749))
+
 # [1.283.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.282.0...v1.283.0) (2022-11-24)
 
 
