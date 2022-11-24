@@ -1,5 +1,5 @@
 name: CI/CD
-
+runs-on: self-hosted
 on:
   push:
     branches: [ main ]
