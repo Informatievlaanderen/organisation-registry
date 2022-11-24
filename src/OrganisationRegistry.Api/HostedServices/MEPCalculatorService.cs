@@ -35,6 +35,8 @@ public class MEPCalculatorService : BackgroundService
 
     protected override async Task Process(CancellationToken cancellationToken)
     {
+        Logger.LogInformation("Starting MEP Calculator service");
+
         while (!cancellationToken.IsCancellationRequested)
         {
             await ProcessBodies(cancellationToken);
@@ -47,6 +49,8 @@ public class MEPCalculatorService : BackgroundService
     {
         await using var context = _contextFactory.Create();
         var bodies = await _elastic.ReadClient.SearchAsync<BodyDocument>(ct: cancellationToken);
+
+        Logger.LogInformation("Found {NumberOfBodies} to process", bodies.Documents.Count);
 
         foreach (var body in bodies.Documents)
         {
@@ -62,7 +66,7 @@ public class MEPCalculatorService : BackgroundService
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, "Something went wrong processing bodies for MEP calculation.");
+                Logger.LogError(ex, "Something went wrong processing bodies for MEP calculation");
 
                 body.MEP.Stemgerechtigd = new BodyMEPStemgerechtigdheid();
                 body.MEP.NietStemgerechtigd = new BodyMEPStemgerechtigdheid();
@@ -71,6 +75,7 @@ public class MEPCalculatorService : BackgroundService
 
             await _elastic.ReadClient.IndexDocumentAsync(body, cancellationToken);
         }
+        Logger.LogInformation("Done processing bodies");
     }
 
     private static BodyMEPStemgerechtigdheid MapMaybeEntitledToVoteResult(IList<BodyParticipation> entitledToVoteResult)
