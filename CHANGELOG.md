@@ -1,3 +1,14 @@
+# [1.283.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.282.0...v1.283.0) (2022-11-24)
+
+
+### Features
+
+* or-1134 mob ([5b0ac62](https://github.com/informatievlaanderen/organisation-registry/commit/5b0ac62a279e7c13de89fb2cb3484f647f4b1a30))
+* or-1143 add MEP background service ([e7bdef6](https://github.com/informatievlaanderen/organisation-registry/commit/e7bdef6b3d44b0b5c77107153ee100979f4f461a))
+* or-1143 add MEP fields to document ([cde4f08](https://github.com/informatievlaanderen/organisation-registry/commit/cde4f08137a47620f1c7593e835811d1b239b83b))
+* or-1143 search for entitledtovote ([a2a9b18](https://github.com/informatievlaanderen/organisation-registry/commit/a2a9b1844a0fa19aafaa93427b8567058fafdd76))
+* or-1143 temp ([d7bd43e](https://github.com/informatievlaanderen/organisation-registry/commit/d7bd43e4403d698de7687c3221e4eb883387ccec))
+
 # [1.282.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.281.1...v1.282.0) (2022-11-03)
 
 
