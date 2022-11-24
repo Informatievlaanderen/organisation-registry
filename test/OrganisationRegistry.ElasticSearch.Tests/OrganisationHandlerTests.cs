@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using Organisation.Events;
+using OrganisationRegistry.Tests.Shared;
 using OrganisationRegistry.Tests.Shared.Stubs;
 using Organisations;
 using Osc;
