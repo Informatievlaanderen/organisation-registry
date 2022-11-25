@@ -554,14 +554,23 @@ public class BodyMEPStemgerechtigdheid
 
 public class BodyMEPEffectiviteit
 {
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Include)]
     public int AantalPosten { get; set; }
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Include)]
     public int AantalToegewezenPosten { get; set; }
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Include)]
     public int AantalMannen { get; set; }
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Include)]
     public int AantalVrouwen { get; set; }
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Include)]
     public int AantalOnbekend { get; set; }
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Include)]
     public decimal ProcentMannen { get; set; }
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Include)]
     public decimal ProcentVrouwen { get; set; }
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Include)]
     public decimal ProcentOnbekend { get; set; }
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Include)]
     public bool MEPCompliant { get; set; }
 
     public static IPromise<IProperties> Mapping(PropertiesDescriptor<BodyMEPEffectiviteit> map)
