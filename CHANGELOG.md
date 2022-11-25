@@ -1,3 +1,10 @@
+# [1.287.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.286.0...v1.287.0) (2022-11-25)
+
+
+### Features
+
+* or-1143 include default values ([31e2bb8](https://github.com/informatievlaanderen/organisation-registry/commit/31e2bb83de733ce0ff54bc0eb34ac0f4adf30e82))
+
 # [1.286.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.285.0...v1.286.0) (2022-11-24)
 
 
