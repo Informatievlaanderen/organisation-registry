@@ -506,100 +506,100 @@ public class BodyDocument : IDocument
 
 public class BodyMEP
 {
-    public BodyMEPStemgerechtigdheid Stemgerechtigd { get; set; } = new();
-    public BodyMEPStemgerechtigdheid NietStemgerechtigd { get; set; } = new();
-    public BodyMEPStemgerechtigdheid Totaal { get; set; } = new();
+    public BodyMEPVotingEligibility EntitledToVote { get; set; } = new();
+    public BodyMEPVotingEligibility NotEntitledToVote { get; set; } = new();
+    public BodyMEPVotingEligibility Total { get; set; } = new();
 
     public static IPromise<IProperties> Mapping(PropertiesDescriptor<BodyMEP> map)
-        => map.Nested<BodyMEPStemgerechtigdheid>(
+        => map.Nested<BodyMEPVotingEligibility>(
                 n => n
-                    .Name(p => p.Stemgerechtigd)
+                    .Name(p => p.EntitledToVote)
                     .IncludeInParent()
-                    .Properties(BodyMEPStemgerechtigdheid.Mapping))
-            .Nested<BodyMEPStemgerechtigdheid>(
+                    .Properties(BodyMEPVotingEligibility.Mapping))
+            .Nested<BodyMEPVotingEligibility>(
                 n => n
-                    .Name(p => p.NietStemgerechtigd)
+                    .Name(p => p.NotEntitledToVote)
                     .IncludeInParent()
-                    .Properties(BodyMEPStemgerechtigdheid.Mapping))
-            .Nested<BodyMEPStemgerechtigdheid>(
+                    .Properties(BodyMEPVotingEligibility.Mapping))
+            .Nested<BodyMEPVotingEligibility>(
                 n => n
-                    .Name(p => p.Totaal)
+                    .Name(p => p.Total)
                     .IncludeInParent()
-                    .Properties(BodyMEPStemgerechtigdheid.Mapping));
+                    .Properties(BodyMEPVotingEligibility.Mapping));
 }
 
-public class BodyMEPStemgerechtigdheid
+public class BodyMEPVotingEligibility
 {
-    public BodyMEPEffectiviteit Effectief { get; set; } = new();
-    public BodyMEPEffectiviteit NietEffectief { get; set; } = new();
-    public BodyMEPEffectiviteit Totaal { get; set; } = new();
+    public BodyMEPEffectivity Effective { get; set; } = new();
+    public BodyMEPEffectivity NotEffective { get; set; } = new();
+    public BodyMEPEffectivity Total { get; set; } = new();
 
-    public static IPromise<IProperties> Mapping(PropertiesDescriptor<BodyMEPStemgerechtigdheid> map)
-        => map.Nested<BodyMEPEffectiviteit>(
+    public static IPromise<IProperties> Mapping(PropertiesDescriptor<BodyMEPVotingEligibility> map)
+        => map.Nested<BodyMEPEffectivity>(
                 n => n
-                    .Name(p => p.Effectief)
+                    .Name(p => p.Effective)
                     .IncludeInParent()
-                    .Properties(BodyMEPEffectiviteit.Mapping))
-            .Nested<BodyMEPEffectiviteit>(
+                    .Properties(BodyMEPEffectivity.Mapping))
+            .Nested<BodyMEPEffectivity>(
                 n => n
-                    .Name(p => p.NietEffectief)
+                    .Name(p => p.NotEffective)
                     .IncludeInParent()
-                    .Properties(BodyMEPEffectiviteit.Mapping))
-            .Nested<BodyMEPEffectiviteit>(
+                    .Properties(BodyMEPEffectivity.Mapping))
+            .Nested<BodyMEPEffectivity>(
                 n => n
-                    .Name(p => p.Totaal)
+                    .Name(p => p.Total)
                     .IncludeInParent()
-                    .Properties(BodyMEPEffectiviteit.Mapping));
+                    .Properties(BodyMEPEffectivity.Mapping));
 }
 
-public class BodyMEPEffectiviteit
+public class BodyMEPEffectivity
 {
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Include)]
-    public int AantalPosten { get; set; }
+    public int TotalSeatCount { get; set; }
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Include)]
-    public int AantalToegewezenPosten { get; set; }
+    public int AssignedSeatCount { get; set; }
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Include)]
-    public int AantalMannen { get; set; }
+    public int MaleCount { get; set; }
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Include)]
-    public int AantalVrouwen { get; set; }
+    public int FemaleCount { get; set; }
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Include)]
-    public int AantalOnbekend { get; set; }
+    public int UnknownCount { get; set; }
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Include)]
-    public decimal ProcentMannen { get; set; }
+    public decimal MalePercentage { get; set; }
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Include)]
-    public decimal ProcentVrouwen { get; set; }
+    public decimal FemalePercentage { get; set; }
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Include)]
-    public decimal ProcentOnbekend { get; set; }
+    public decimal UnknownPercentage { get; set; }
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Include)]
-    public bool MEPCompliant { get; set; }
+    public bool MEPCompliance { get; set; }
 
-    public static IPromise<IProperties> Mapping(PropertiesDescriptor<BodyMEPEffectiviteit> map)
+    public static IPromise<IProperties> Mapping(PropertiesDescriptor<BodyMEPEffectivity> map)
         => map.Text(
                 t => t
-                    .Name(p => p.AantalPosten))
+                    .Name(p => p.TotalSeatCount))
             .Text(
                 t => t
-                    .Name(p => p.AantalToegewezenPosten))
+                    .Name(p => p.AssignedSeatCount))
             .Text(
                 t => t
-                    .Name(p => p.AantalMannen))
+                    .Name(p => p.MaleCount))
             .Text(
                 t => t
-                    .Name(p => p.AantalVrouwen))
+                    .Name(p => p.FemaleCount))
             .Text(
                 t => t
-                    .Name(p => p.AantalOnbekend))
+                    .Name(p => p.UnknownCount))
             .Text(
                 t => t
-                    .Name(p => p.ProcentMannen))
+                    .Name(p => p.MalePercentage))
             .Text(
                 t => t
-                    .Name(p => p.ProcentVrouwen))
+                    .Name(p => p.FemalePercentage))
             .Text(
                 t => t
-                    .Name(p => p.ProcentOnbekend))
+                    .Name(p => p.UnknownPercentage))
             .Text(
                 t => t
-                    .Name(p => p.MEPCompliant)
+                    .Name(p => p.MEPCompliance)
                     .Fields(f => f.Keyword(y => y.Name("keyword"))));
 }

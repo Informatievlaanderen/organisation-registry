@@ -60,17 +60,17 @@ public class MEPCalculatorService : BackgroundService
                 var notEntitledToVoteResult = BodyParticipation.Search(context, body.Id, CreateFilteringHeader(false, true), _clock.Today).ToList();
                 var totalEntitledToVoteResult = BodyParticipation.Search(context, body.Id, CreateFilteringHeader(true, true), _clock.Today).ToList();
 
-                body.MEP.Stemgerechtigd = MapMaybeEntitledToVoteResult(entitledToVoteResult);
-                body.MEP.NietStemgerechtigd = MapMaybeEntitledToVoteResult(notEntitledToVoteResult);
-                body.MEP.Totaal = MapMaybeEntitledToVoteResult(totalEntitledToVoteResult);
+                body.MEP.EntitledToVote = MapMaybeEntitledToVoteResult(entitledToVoteResult);
+                body.MEP.NotEntitledToVote = MapMaybeEntitledToVoteResult(notEntitledToVoteResult);
+                body.MEP.Total = MapMaybeEntitledToVoteResult(totalEntitledToVoteResult);
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, "Something went wrong processing bodies for MEP calculation");
 
-                body.MEP.Stemgerechtigd = new BodyMEPStemgerechtigdheid();
-                body.MEP.NietStemgerechtigd = new BodyMEPStemgerechtigdheid();
-                body.MEP.Totaal = new BodyMEPStemgerechtigdheid();
+                body.MEP.EntitledToVote = new BodyMEPVotingEligibility();
+                body.MEP.NotEntitledToVote = new BodyMEPVotingEligibility();
+                body.MEP.Total = new BodyMEPVotingEligibility();
             }
 
             await _elastic.ReadClient.IndexDocumentAsync(body, cancellationToken);
@@ -78,22 +78,22 @@ public class MEPCalculatorService : BackgroundService
         Logger.LogInformation("Done processing bodies");
     }
 
-    private static BodyMEPStemgerechtigdheid MapMaybeEntitledToVoteResult(IList<BodyParticipation> entitledToVoteResult)
+    private static BodyMEPVotingEligibility MapMaybeEntitledToVoteResult(IList<BodyParticipation> entitledToVoteResult)
     {
-        var result = new BodyMEPStemgerechtigdheid();
+        var result = new BodyMEPVotingEligibility();
 
         var effectiveEntitledToVote = entitledToVoteResult.SingleOrDefault(r => r.IsEffective!.Value);
-        result.Effectief = effectiveEntitledToVote is { }
+        result.Effective = effectiveEntitledToVote is { }
             ? MapToMEP(effectiveEntitledToVote)
-            : new BodyMEPEffectiviteit();
+            : new BodyMEPEffectivity();
 
         var notEffectiveEntitledToVote = entitledToVoteResult.SingleOrDefault(r => !r.IsEffective!.Value || r.IsEffective == null);
-        result.NietEffectief = notEffectiveEntitledToVote is { }
+        result.NotEffective = notEffectiveEntitledToVote is { }
             ? MapToMEP(notEffectiveEntitledToVote)
-            : new BodyMEPEffectiviteit();
+            : new BodyMEPEffectivity();
 
         var totalEntitledToVote = CombineBodyParticipations(entitledToVoteResult);
-        result.Totaal = MapToMEP(totalEntitledToVote);
+        result.Total = MapToMEP(totalEntitledToVote);
 
         return result;
     }
@@ -113,20 +113,20 @@ public class MEPCalculatorService : BackgroundService
                     return total;
                 });
 
-    private static BodyMEPEffectiviteit MapToMEP(BodyParticipation effectiveEntitledToVote)
+    private static BodyMEPEffectivity MapToMEP(BodyParticipation effectiveEntitledToVote)
     {
         effectiveEntitledToVote = BodyParticipation.Map(effectiveEntitledToVote);
-        return new BodyMEPEffectiviteit
+        return new BodyMEPEffectivity
         {
-            AantalMannen = effectiveEntitledToVote.MaleCount,
-            AantalOnbekend = effectiveEntitledToVote.UnknownCount,
-            AantalPosten = effectiveEntitledToVote.TotalCount,
-            AantalVrouwen = effectiveEntitledToVote.FemaleCount,
-            ProcentMannen = effectiveEntitledToVote.MalePercentage,
-            ProcentOnbekend = effectiveEntitledToVote.UnknownPercentage,
-            ProcentVrouwen = effectiveEntitledToVote.FemalePercentage,
-            AantalToegewezenPosten = effectiveEntitledToVote.AssignedCount,
-            MEPCompliant = effectiveEntitledToVote.TotalCompliance == BodyParticipationCompliance.Compliant,
+            MaleCount = effectiveEntitledToVote.MaleCount,
+            UnknownCount = effectiveEntitledToVote.UnknownCount,
+            TotalSeatCount = effectiveEntitledToVote.TotalCount,
+            FemaleCount = effectiveEntitledToVote.FemaleCount,
+            MalePercentage = effectiveEntitledToVote.MalePercentage,
+            UnknownPercentage = effectiveEntitledToVote.UnknownPercentage,
+            FemalePercentage = effectiveEntitledToVote.FemalePercentage,
+            AssignedSeatCount = effectiveEntitledToVote.AssignedCount,
+            MEPCompliance = effectiveEntitledToVote.TotalCompliance == BodyParticipationCompliance.Compliant,
         };
     }
 
