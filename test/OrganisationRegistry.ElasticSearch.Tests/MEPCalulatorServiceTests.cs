@@ -142,31 +142,31 @@ public class MEPCalulationServiceTests
             .Source
             .MEP;
 
-        mepInfo.Stemgerechtigd.Effectief.AantalToegewezenPosten.Should().Be(entitledToVote && isEffective ? 1 : 0);
-        mepInfo.Stemgerechtigd.Effectief.AantalPosten.Should().Be(entitledToVote && isEffective ? 1 : 0);
+        mepInfo.EntitledToVote.Effective.AssignedSeatCount.Should().Be(entitledToVote && isEffective ? 1 : 0);
+        mepInfo.EntitledToVote.Effective.TotalSeatCount.Should().Be(entitledToVote && isEffective ? 1 : 0);
 
-        mepInfo.Stemgerechtigd.NietEffectief.AantalToegewezenPosten.Should().Be(entitledToVote && !isEffective ? 1 : 0);
-        mepInfo.Stemgerechtigd.NietEffectief.AantalPosten.Should().Be(entitledToVote && !isEffective ? 1 : 0);
+        mepInfo.EntitledToVote.NotEffective.AssignedSeatCount.Should().Be(entitledToVote && !isEffective ? 1 : 0);
+        mepInfo.EntitledToVote.NotEffective.TotalSeatCount.Should().Be(entitledToVote && !isEffective ? 1 : 0);
 
-        mepInfo.Stemgerechtigd.Totaal.AantalToegewezenPosten.Should().Be(entitledToVote ? 1 : 0);
-        mepInfo.Stemgerechtigd.Totaal.AantalPosten.Should().Be(entitledToVote ? 1 : 0);
+        mepInfo.EntitledToVote.Total.AssignedSeatCount.Should().Be(entitledToVote ? 1 : 0);
+        mepInfo.EntitledToVote.Total.TotalSeatCount.Should().Be(entitledToVote ? 1 : 0);
 
-        mepInfo.NietStemgerechtigd.Effectief.AantalToegewezenPosten.Should().Be(!entitledToVote && isEffective ? 1 : 0);
-        mepInfo.NietStemgerechtigd.Effectief.AantalPosten.Should().Be(!entitledToVote && isEffective ? 1 : 0);
+        mepInfo.NotEntitledToVote.Effective.AssignedSeatCount.Should().Be(!entitledToVote && isEffective ? 1 : 0);
+        mepInfo.NotEntitledToVote.Effective.TotalSeatCount.Should().Be(!entitledToVote && isEffective ? 1 : 0);
 
-        mepInfo.NietStemgerechtigd.NietEffectief.AantalToegewezenPosten.Should().Be(!entitledToVote && !isEffective ? 1 : 0);
-        mepInfo.NietStemgerechtigd.NietEffectief.AantalPosten.Should().Be(!entitledToVote && !isEffective ? 1 : 0);
+        mepInfo.NotEntitledToVote.NotEffective.AssignedSeatCount.Should().Be(!entitledToVote && !isEffective ? 1 : 0);
+        mepInfo.NotEntitledToVote.NotEffective.TotalSeatCount.Should().Be(!entitledToVote && !isEffective ? 1 : 0);
 
-        mepInfo.NietStemgerechtigd.Totaal.AantalToegewezenPosten.Should().Be(!entitledToVote ? 1 : 0);
-        mepInfo.NietStemgerechtigd.Totaal.AantalPosten.Should().Be(!entitledToVote ? 1 : 0);
+        mepInfo.NotEntitledToVote.Total.AssignedSeatCount.Should().Be(!entitledToVote ? 1 : 0);
+        mepInfo.NotEntitledToVote.Total.TotalSeatCount.Should().Be(!entitledToVote ? 1 : 0);
 
-        mepInfo.Totaal.Effectief.AantalToegewezenPosten.Should().Be(isEffective ? 1 : 0);
-        mepInfo.Totaal.Effectief.AantalPosten.Should().Be(isEffective ? 1 : 0);
+        mepInfo.Total.Effective.AssignedSeatCount.Should().Be(isEffective ? 1 : 0);
+        mepInfo.Total.Effective.TotalSeatCount.Should().Be(isEffective ? 1 : 0);
 
-        mepInfo.Totaal.NietEffectief.AantalToegewezenPosten.Should().Be(!isEffective ? 1 : 0);
-        mepInfo.Totaal.NietEffectief.AantalPosten.Should().Be(!isEffective ? 1 : 0);
+        mepInfo.Total.NotEffective.AssignedSeatCount.Should().Be(!isEffective ? 1 : 0);
+        mepInfo.Total.NotEffective.TotalSeatCount.Should().Be(!isEffective ? 1 : 0);
 
-        mepInfo.Totaal.Totaal.AantalToegewezenPosten.Should().Be(1);
-        mepInfo.Totaal.Totaal.AantalPosten.Should().Be(1);
+        mepInfo.Total.Total.AssignedSeatCount.Should().Be(1);
+        mepInfo.Total.Total.TotalSeatCount.Should().Be(1);
     }
 }
