@@ -23,8 +23,6 @@ public class DeleteOrganisationLocationCommandHandler : BaseCommandHandler<Delet
                 session =>
                 {
                     var organisation = session.Get<Organisation>(envelope.Command.OrganisationId);
-                    //ToDo check with buisiness
-                    //organisation.ThrowIfTerminated(envelope.User);
 
                     organisation.RemoveLocation(envelope.Command.OrganisationLocationId);
                 });

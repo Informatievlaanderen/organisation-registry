@@ -3031,6 +3031,12 @@ public partial class Organisation : AggregateRoot
             .Where(parent => parent.FormalFrameworkId == formalFramework.Id);
     }
 
+    public void ThrowIfKboLocation(Guid organisationLocationId)
+    {
+        if (KboState.KboRegisteredOffice?.Id == organisationLocationId)
+            throw new LocationIsKboLocation();
+    }
+
     public void ThrowIfTerminated(IUser user)
     {
         if (!UserCanPerformActionWhenOrganisationIsTerminated(user) && IsTerminated)
@@ -3081,9 +3087,10 @@ public partial class Organisation : AggregateRoot
 
     public void RemoveLocation(Guid organisationLocationId)
     {
+        ThrowIfKboLocation(organisationLocationId);
+
         if (!State.OrganisationLocations.Any(ol => ol.OrganisationLocationId == organisationLocationId))
             throw new OrganisationLocationNotFound();
-
 
         ApplyChange(new OrganisationLocationRemoved(Id, organisationLocationId));
     }

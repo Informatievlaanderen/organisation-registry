@@ -17,6 +17,7 @@ public class OrganisationLocationListQueryResult
 {
     public Guid OrganisationLocationId { get; }
     public bool IsMainLocation { get; }
+    public bool IsKboLocation { get; }
     public string LocationName { get; }
     public string? LocationTypeName { get; }
     public DateTime? ValidFrom { get; }
@@ -29,6 +30,7 @@ public class OrganisationLocationListQueryResult
     public OrganisationLocationListQueryResult(
         Guid organisationLocationId,
         bool isMainLocation,
+        bool isKboLocation,
         string locationName,
         string? locationTypeName,
         DateTime? validFrom,
@@ -38,6 +40,7 @@ public class OrganisationLocationListQueryResult
     {
         OrganisationLocationId = organisationLocationId;
         IsMainLocation = isMainLocation;
+        IsKboLocation = isKboLocation;
         LocationName = locationName;
         LocationTypeName = locationTypeName;
         ValidFrom = validFrom;
@@ -64,6 +67,7 @@ public class OrganisationLocationListQuery : Query<OrganisationLocationListItem,
         x => new OrganisationLocationListQueryResult(
             x.OrganisationLocationId,
             x.IsMainLocation,
+            x.IsKbo,
             x.LocationName,
             x.LocationTypeName,
             x.ValidFrom,

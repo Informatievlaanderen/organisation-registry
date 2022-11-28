@@ -304,6 +304,12 @@ export class OrganisationInfoService {
     )
   );
 
+  public readonly canRemoveLocationsChanged$ = this.onSecurityChanged.pipe(
+    map(([organisation, securityInfo]) =>
+      OrganisationAuthorization.canRemoveLocations(organisation, securityInfo)
+    )
+  );
+
   public readonly canRemoveCapacitiesChanged$ = this.onSecurityChanged.pipe(
     map(([organisation, securityInfo]) =>
       OrganisationAuthorization.canRemoveCapacities(organisation, securityInfo)

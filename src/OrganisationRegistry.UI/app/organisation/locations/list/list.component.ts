@@ -12,5 +12,8 @@ import { OrganisationLocationListItem } from 'services/organisationlocations';
   outputs: ['changePage']
 })
 export class OrganisationLocationsListComponent extends BaseListComponent<OrganisationLocationListItem> {
-  @Input('canEdit') canEdit: Observable<boolean>;
+  @Input("canEdit") canEdit: Observable<boolean>;
+  @Input("canDelete") canDelete: Observable<boolean>;
+  @Output()
+  removeClicked: EventEmitter<OrganisationLocationListItem> = new EventEmitter<OrganisationLocationListItem>();
 }

@@ -76,6 +76,15 @@ export class OrganisationLocationService {
       .map(response => response.ok);
   }
 
+  delete(organisationId: string, organisationLocationId: string) {
+    const url = `${this.getOrganisationLocationsUrl(
+      organisationId
+    )}/${organisationLocationId}`;
+    let headers = new HeadersBuilder().json().build();
+
+    return this.http.delete(url, { headers: headers });
+  }
+
   private getOrganisationLocationsUrl(organisationId) {
     return `${this.configurationService.apiUrl}/v1/organisations/${organisationId}/locations`;
   }
