@@ -2,93 +2,99 @@
   <div class="u-table-overflow">
     <table id="addressTable" class="data-table">
       <thead>
-        <tr class="data-table__header">
-          <th class="data-table__header-title" style="width: 55%">
-            <a class="data-table__header-title--sortable"
-               [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('locationName')}"
-               (click)="sortBy('locationName')">
-              Locatie
-              <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
-                 [ngClass]="{'vi-u-180deg': isSortedByDescending('locationName')}"></i>
-              </a>
-          </th>
-          <th class="data-table__header-title" style="width: 10%">
-            <a class="data-table__header-title--sortable"
-               [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('locationTypeName')}"
-               (click)="sortBy('locationTypeName')">
-              Locatietype
-              <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
-                 [ngClass]="{'vi-u-180deg': isSortedByDescending('locationTypeName')}"></i>
-              </a>
-          </th>
-          <th class="data-table__header-title" style="width: 10%">
-            <a class="data-table__header-title--sortable"
-               [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('validFrom')}"
-               (click)="sortBy('validFrom')">
-              Geldig vanaf
-              <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
-                 [ngClass]="{'vi-u-180deg': isSortedByDescending('validFrom')}"></i>
-              </a>
-          </th>
-          <th class="data-table__header-title" style="width: 10%">
-            <a class="data-table__header-title--sortable"
-               [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('validTo')}"
-               (click)="sortBy('validTo')">
-              Geldig tot
-              <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
-                 [ngClass]="{'vi-u-180deg': isSortedByDescending('validTo')}"></i>
-              </a>
-          </th>
-          <th class="data-table__header-title" style="width: 10%">
-            <a class="data-table__header-title--sortable"
-               [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('isMainLocation')}"
-               (click)="sortBy('isMainLocation')">
-              Hoofdlocatie
-              <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
-                 [ngClass]="{'vi-u-180deg': isSortedByDescending('isMainLocation')}"></i>
-              </a>
-          </th>
-          <th *ngIf="(canEdit | async)" class="data-table__last-header"></th>
-        </tr>
+      <tr class="data-table__header">
+        <th class="data-table__header-title" style="width: 55%">
+          <a class="data-table__header-title--sortable"
+             [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('locationName')}"
+             (click)="sortBy('locationName')">
+            Locatie
+            <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
+               [ngClass]="{'vi-u-180deg': isSortedByDescending('locationName')}"></i>
+          </a>
+        </th>
+        <th class="data-table__header-title" style="width: 10%">
+          <a class="data-table__header-title--sortable"
+             [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('locationTypeName')}"
+             (click)="sortBy('locationTypeName')">
+            Locatietype
+            <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
+               [ngClass]="{'vi-u-180deg': isSortedByDescending('locationTypeName')}"></i>
+          </a>
+        </th>
+        <th class="data-table__header-title" style="width: 10%">
+          <a class="data-table__header-title--sortable"
+             [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('validFrom')}"
+             (click)="sortBy('validFrom')">
+            Geldig vanaf
+            <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
+               [ngClass]="{'vi-u-180deg': isSortedByDescending('validFrom')}"></i>
+          </a>
+        </th>
+        <th class="data-table__header-title" style="width: 10%">
+          <a class="data-table__header-title--sortable"
+             [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('validTo')}"
+             (click)="sortBy('validTo')">
+            Geldig tot
+            <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
+               [ngClass]="{'vi-u-180deg': isSortedByDescending('validTo')}"></i>
+          </a>
+        </th>
+        <th class="data-table__header-title" style="width: 10%">
+          <a class="data-table__header-title--sortable"
+             [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('isMainLocation')}"
+             (click)="sortBy('isMainLocation')">
+            Hoofdlocatie
+            <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
+               [ngClass]="{'vi-u-180deg': isSortedByDescending('isMainLocation')}"></i>
+          </a>
+        </th>
+        <th *ngIf="(canEdit | async)" class="data-table__last-header"></th>
+      </tr>
       </thead>
       <tbody>
-        <template [ngIf]="isBusy">
-          <tr><td colspan="6">Bezig met laden...</td></tr>
-        </template>
+      <template [ngIf]="isBusy">
+        <tr>
+          <td colspan="6">Bezig met laden...</td>
+        </tr>
+      </template>
 
-        <template [ngIf]="!isBusy">
-          <tr *ngIf="!hasData(data)">
-            <td colspan="6">Geen data beschikbaar...</td>
-          </tr>
-          <tr *ngFor="let location of data" [ngClass]="{'data-table__body-history': !location.isActive}">
-            <td class="data-table__body-title">{{location.locationName}}</td>
-            <td class="data-table__body-title">
-              <span *ngIf="location.locationTypeName">{{location.locationTypeName}}</span>
-              <span class="data-table__cell--disabled" *ngIf="!location.locationTypeName">Niet bekend</span>
-            </td>
-            <td class="data-table__body-title">
-              <span *ngIf="location.validFrom">{{location.validFrom}}</span>
-              <span class="data-table__cell--disabled" *ngIf="!location.validFrom">Niet bekend</span>
-            </td>
-            <td class="data-table__body-title">
-              <span *ngIf="location.validTo">{{location.validTo}}</span>
-              <span class="data-table__cell--disabled" *ngIf="!location.validTo">Niet bekend</span>
-            </td>
-            <td class="data-table__body-title">
-              <i aria-label="Hoofdlocatie"
-                [ngClass]="{'vi vi-u-badge vi-u-badge--green vi-u-badge--xxsmall vi-check': location.isMainLocation}">
-              </i>
-            </td>
-            <td *ngIf="(canEdit | async)" class="u-align-right">
-              <a [routerLink]="['edit', location.organisationLocationId]"
-                *ngIf="location.isEditable"
-                class="vi vi-u-badge vi-u-badge--grey vi-u-badge--small vi-edit"
-                title="Bewerken"
-                aria-label="Bewerken"></a>
-              <span>&nbsp;</span>
-            </td>
-          </tr>
-        </template>
+      <template [ngIf]="!isBusy">
+        <tr *ngIf="!hasData(data)">
+          <td colspan="6">Geen data beschikbaar...</td>
+        </tr>
+        <tr *ngFor="let location of data" [ngClass]="{'data-table__body-history': !location.isActive}">
+          <td class="data-table__body-title">{{location.locationName}}</td>
+          <td class="data-table__body-title">
+            <span *ngIf="location.locationTypeName">{{location.locationTypeName}}</span>
+            <span class="data-table__cell--disabled" *ngIf="!location.locationTypeName">Niet bekend</span>
+          </td>
+          <td class="data-table__body-title">
+            <span *ngIf="location.validFrom">{{location.validFrom}}</span>
+            <span class="data-table__cell--disabled" *ngIf="!location.validFrom">Niet bekend</span>
+          </td>
+          <td class="data-table__body-title">
+            <span *ngIf="location.validTo">{{location.validTo}}</span>
+            <span class="data-table__cell--disabled" *ngIf="!location.validTo">Niet bekend</span>
+          </td>
+          <td class="data-table__body-title">
+            <i aria-label="Hoofdlocatie"
+               [ngClass]="{'vi vi-u-badge vi-u-badge--green vi-u-badge--xxsmall vi-check': location.isMainLocation}">
+            </i>
+          </td>
+          <td *ngIf="(canEdit | async)" class="u-align-right">
+            <a [routerLink]="['edit', location.organisationLocationId]"
+               *ngIf="location.isEditable"
+               class="vi vi-u-badge vi-u-badge--grey vi-u-badge--small vi-edit"
+               title="Bewerken"
+               aria-label="Bewerken"></a>
+            <a *ngIf="!location.isKboLocation && (canDelete | async)"
+               aria-label="Verwijderen"
+               class="vi vi-u-badge vi-u-badge--grey vi-u-badge--small vi-trash"
+               title="Verwijderen"
+               (click)="removeClicked.emit(location)"></a>
+          </td>
+        </tr>
+      </template>
       </tbody>
     </table>
   </div>

@@ -6,6 +6,7 @@ export class OrganisationLocationListItem {
     public validFrom: Date,
     public validTo: Date,
     public isActive: boolean,
+    public isKboLocation: boolean,
     public isEditable: boolean,
   ) { }
 }

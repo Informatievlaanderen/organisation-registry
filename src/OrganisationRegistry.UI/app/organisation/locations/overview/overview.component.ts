@@ -1,20 +1,20 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute, Params, Router } from '@angular/router';
+import {Component, OnInit, OnDestroy} from '@angular/core';
+import {ActivatedRoute, Params, Router} from '@angular/router';
 
-import { Subscription } from 'rxjs/Subscription';
+import {Subscription} from 'rxjs/Subscription';
 
-import { OidcService } from 'core/auth';
-import { AlertBuilder, AlertService } from 'core/alert';
-import { BaseAlertMessages } from 'core/alertmessages';
-import { PagedResult, PagedEvent, SortOrder } from 'core/pagination';
-import { SearchEvent } from 'core/search';
+import {OidcService} from 'core/auth';
+import {AlertBuilder, AlertService} from 'core/alert';
+import {BaseAlertMessages} from 'core/alertmessages';
+import {PagedResult, PagedEvent, SortOrder} from 'core/pagination';
+import {SearchEvent} from 'core/search';
 
 import {
   OrganisationLocationListItem,
   OrganisationLocationService,
   OrganisationLocationFilter
 } from 'services/organisationlocations';
-import { OrganisationInfoService } from 'services';
+import {OrganisationInfoService} from 'services';
 
 @Component({
   templateUrl: 'overview.template.html',
@@ -63,6 +63,21 @@ export class OrganisationLocationsOverviewComponent implements OnInit, OnDestroy
     this.currentSortBy = event.sortBy;
     this.currentSortOrder = event.sortOrder;
     this.loadLocations(event);
+  }
+
+  removeLocation($event: OrganisationLocationListItem) {
+    if (!confirm("Bent u zeker? Deze actie kan niet ongedaan gemaakt worden."))
+      return;
+
+    this.subscriptions.push(
+      this.organisationLocationService
+        .delete(this.organisationId, $event.organisationLocationId)
+        .subscribe(
+          () => this.loadLocations(),
+          (error) =>
+            this.alertService.setAlert(new AlertBuilder().error(error).build())
+        )
+    );
   }
 
   private loadLocations(event?: PagedEvent) {

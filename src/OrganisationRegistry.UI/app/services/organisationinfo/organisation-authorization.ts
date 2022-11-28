@@ -447,6 +447,19 @@ export class OrganisationAuthorization {
     );
   }
 
+  public static canRemoveLocations(
+    organisation: Organisation,
+    securityInfo: SecurityInfo
+  ) {
+    if (!securityInfo.isLoggedIn) return false;
+
+    return hasAnyOfRoles(
+      securityInfo,
+      Role.AlgemeenBeheerder,
+      Role.CjmBeheerder
+    );
+  }
+
   static requiresOneOfRole(securityInfo: SecurityInfo, roles: Role[]): boolean {
     return securityInfo.roles.some((r) => !!roles.find((rr) => rr == r));
   }
