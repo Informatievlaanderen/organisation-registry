@@ -37,7 +37,7 @@ public class MEPCalculatorService : BackgroundService
     {
         if (!_configuration.Enabled)
         {
-            Logger.LogInformation($"{nameof(SyncRemovedItemsService)} disabled, skipping execution");
+            Logger.LogInformation($"{nameof(MEPCalculatorService)} disabled, skipping execution");
             return;
         }
 
