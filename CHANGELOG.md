@@ -1,3 +1,11 @@
+# [1.290.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.289.0...v1.290.0) (2022-11-28)
+
+
+### Features
+
+* or-1195 add remove for organisation locations ([65e0890](https://github.com/informatievlaanderen/organisation-registry/commit/65e0890544a12f4cd0c813bc141562dc438f4524))
+* or-1195 add roles permition to command handler ([1771b74](https://github.com/informatievlaanderen/organisation-registry/commit/1771b741ad31af10ae35f1b4814735ec2357f0e4))
+
 # [1.289.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.288.0...v1.289.0) (2022-11-28)
 
 
