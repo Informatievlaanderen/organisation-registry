@@ -52,7 +52,7 @@ public class SearchController : OrganisationRegistryController
     /// <br />
     /// Dit geeft 500 resultaten die je gewoon kan verwerken. In aanvulling krijg je hierdoor ook een `http-header x-search-metadata` die een <b>scrollId</b> bevat, samen met nog wat andere info. (deze header is een json-string).
     /// <br /><br />
-    /// Na deze request heb je 30 seconden de tijd om een call te doen naar `v1/search/people/scroll?id={SCROLLID}`
+    /// Na deze request heb je 30 seconden de tijd om een call te doen naar `v1/search/{INDEXNAME}/scroll?id={SCROLLID}`
     /// Deze zal je de volgende pagina geven (opnieuw 500 items), samen met de `x-search-metadata` header en een nieuwe <b>scrollId</b>.
     /// Herhaal dit proces tot je geen nieuwe items meer krijgt.
     /// </remarks>
@@ -99,16 +99,17 @@ public class SearchController : OrganisationRegistryController
             : NotFound();
     }
 
-    /// <summary>Search all organisations.</summary>
-    /// <param name="indexName">Elasticsearch index name</param>
+    /// <summary>Entiteiten opzoeken (zoekbalk).</summary>
+    /// <param name="indexName">ElasticSearch index naam.
+    /// Keuze tussen `organisations`, `people`, and `bodies`.</param>
     /// <param name="elastic"></param>
     /// <param name="elasticSearchConfiguration"></param>
-    /// <param name="q">Elasticsearch querystring search.</param>
-    /// <param name="offset">Elasticsearch starting index position.</param>
-    /// <param name="limit">Elasticsearch number of hits to return.</param>
-    /// <param name="fields">Elasticsearch source filter.</param>
-    /// <param name="sort">Elasticsearch sorting.</param>
-    /// <param name="scroll">Enable Elasticsearch scrolling.</param>
+    /// <param name="q">ElasticSearch querystring.</param>
+    /// <param name="offset">Startpunt van de zoekresultaten (voor paginering).</param>
+    /// <param name="limit">Aantal resultaten, 100 indien niet meegegeven (voor paginering).</param>
+    /// <param name="fields">Veldnamen die in respons zullen zitten.</param>
+    /// <param name="sort">Sortering van de resultaten.</param>
+    /// <param name="scroll">Maak gebruik van de scrolling functionaliteit.</param>
     [HttpGet("box/{indexName}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetSearch(
@@ -245,7 +246,7 @@ public class SearchController : OrganisationRegistryController
             ? (sortPart[1..], SortOrder.Descending)
             : (sortPart, SortOrder.Ascending);
 
-    /// <summary>Search all organisations.</summary>
+    /// <summary>Entiteiten opzoeken.</summary>
     [HttpPost("{indexName}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> PostApiSearch(
@@ -284,8 +285,16 @@ public class SearchController : OrganisationRegistryController
         };
     }
 
-    /// <summary>Search all organisations.</summary>
-    /// <param name="indexName">Elasticsearch index name</param>
+    /// <summary>Entiteiten opzoeken (scrolling).</summary>
+    /// <remarks>Dit endpoint laat toe om volgende resultaten op te halen met behulp van de scroll api.
+    /// Hiervoor moet de vorige call uitgevoerd zijn met `scroll=true`.
+    /// <br /><br />
+    /// Na deze request heb je 30 seconden de tijd om een call te doen naar `v1/search/{INDEXNAME}/scroll?id={SCROLLID}`
+    /// Deze zal je de volgende pagina geven (opnieuw 500 items), samen met de `x-search-metadata` header en een nieuwe <b>scrollId</b>.
+    /// Herhaal dit proces tot je geen nieuwe items meer krijgt.
+    /// </remarks>
+    /// <param name="indexName">ElasticSearch index naam.
+    /// Keuze tussen `organisations`, `people`, and `bodies`.</param>
     /// <param name="elastic"></param>
     /// <param name="elasticSearchConfiguration"></param>
     /// <param name="id">Elasticsearch scroll id.</param>
