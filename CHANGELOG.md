@@ -1,3 +1,17 @@
+# [1.289.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.288.0...v1.289.0) (2022-11-28)
+
+
+### Bug Fixes
+
+* or-1143 fix name in logging ([2b8f5ca](https://github.com/informatievlaanderen/organisation-registry/commit/2b8f5ca33f512860faa203f260855df8dc3a6bab))
+
+
+### Features
+
+* or-1143 disable service in dev ([9aea983](https://github.com/informatievlaanderen/organisation-registry/commit/9aea98392a2a0400249363adcea70e88447c542f))
+* or-1143 don't run service when not enabled ([7599497](https://github.com/informatievlaanderen/organisation-registry/commit/75994979cab3a8f1355524b806e1f60e56781152))
+* or-1143 use Dutch docs ([310de7c](https://github.com/informatievlaanderen/organisation-registry/commit/310de7c2ddb85d5e00c5940f9c668d8c60f68047))
+
 # [1.288.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.287.0...v1.288.0) (2022-11-28)
 
 
