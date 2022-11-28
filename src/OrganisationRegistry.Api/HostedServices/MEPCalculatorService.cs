@@ -35,6 +35,12 @@ public class MEPCalculatorService : BackgroundService
 
     protected override async Task Process(CancellationToken cancellationToken)
     {
+        if (!_configuration.Enabled)
+        {
+            Logger.LogInformation($"{nameof(SyncRemovedItemsService)} disabled, skipping execution");
+            return;
+        }
+
         Logger.LogInformation("Starting MEP Calculator service");
 
         while (!cancellationToken.IsCancellationRequested)
