@@ -1,3 +1,10 @@
+# [1.288.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.287.0...v1.288.0) (2022-11-28)
+
+
+### Features
+
+* or-1143 use english names ([689666c](https://github.com/informatievlaanderen/organisation-registry/commit/689666c02ffe36c9ae7bffbe9cda34636b9245e7))
+
 # [1.287.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.286.0...v1.287.0) (2022-11-25)
 
 
