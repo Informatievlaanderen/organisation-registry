@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Backoffice.Report.BodyParticipationReport;
 using Backoffice.Report.Participation;
 using ElasticSearch.Bodies;
 using ElasticSearch.Client;
@@ -98,26 +99,11 @@ public class MEPCalculatorService : BackgroundService
             ? MapToMEP(notEffectiveEntitledToVote)
             : new BodyMEPEffectivity();
 
-        var totalEntitledToVote = CombineBodyParticipations(entitledToVoteResult);
-        result.Total = MapToMEP(totalEntitledToVote);
+        var totalEntitledToVote = BodyParticipationTotals.Map(entitledToVoteResult);
+        result.Total = MapToMEPTotals(totalEntitledToVote);
 
         return result;
     }
-
-    private static BodyParticipation CombineBodyParticipations(IEnumerable<BodyParticipation> list)
-        => list
-            .Aggregate(
-                new BodyParticipation(),
-                (total, current) =>
-                {
-                    total.AssignedCount += current.AssignedCount;
-                    total.FemaleCount += current.FemaleCount;
-                    total.MaleCount += current.MaleCount;
-                    total.UnknownCount += current.UnknownCount;
-                    total.TotalCount += current.TotalCount;
-
-                    return total;
-                });
 
     private static BodyMEPEffectivity MapToMEP(BodyParticipation effectiveEntitledToVote)
     {
@@ -132,9 +118,23 @@ public class MEPCalculatorService : BackgroundService
             UnknownPercentage = effectiveEntitledToVote.UnknownPercentage,
             FemalePercentage = effectiveEntitledToVote.FemalePercentage,
             AssignedSeatCount = effectiveEntitledToVote.AssignedCount,
-            MEPCompliance = effectiveEntitledToVote.TotalCompliance == BodyParticipationCompliance.Compliant,
+            IsMEPCompliant = effectiveEntitledToVote.TotalCompliance == BodyParticipationCompliance.Compliant,
         };
     }
+
+    private static BodyMEPEffectivity MapToMEPTotals(BodyParticipationTotals effectiveEntitledToVote)
+        => new()
+        {
+            MaleCount = effectiveEntitledToVote.MaleCount,
+            UnknownCount = effectiveEntitledToVote.UnknownCount,
+            TotalSeatCount = effectiveEntitledToVote.TotalCount,
+            FemaleCount = effectiveEntitledToVote.FemaleCount,
+            MalePercentage = effectiveEntitledToVote.MalePercentage,
+            UnknownPercentage = effectiveEntitledToVote.UnknownPercentage,
+            FemalePercentage = effectiveEntitledToVote.FemalePercentage,
+            AssignedSeatCount = effectiveEntitledToVote.AssignedCount,
+            IsMEPCompliant = effectiveEntitledToVote.Compliance == BodyParticipationCompliance.Compliant,
+        };
 
     private static FilteringHeader<BodyParticipationFilter> CreateFilteringHeader(bool entitledToVote, bool notEntitledToVote)
         => new(
