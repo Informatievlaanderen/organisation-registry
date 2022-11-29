@@ -28,10 +28,10 @@ public class BodyScenario : ScenarioBase<BodyHandler>
         AddCustomization(new ParameterNameArg<Guid>("functionTypeId", functionTypeId));
     }
 
-    public BodySeatAdded CreateBodySeatAdded(Guid bodyId, bool entitledToVote, bool isEffective)
+    public BodySeatAdded CreateBodySeatAdded(Guid bodyId, Guid bodySeatId, bool entitledToVote, bool isEffective)
         => new(
             bodyId: bodyId,
-            bodySeatId: BodySeatId,
+            bodySeatId: bodySeatId,
             name: Create<string>(),
             bodySeatNumber: Create<string>(),
             seatTypeId: Create<Guid>(),

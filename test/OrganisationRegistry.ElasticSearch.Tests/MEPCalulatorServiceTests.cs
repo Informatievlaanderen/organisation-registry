@@ -110,8 +110,8 @@ public class MEPCalulationServiceTests
 
         var initialiseProjection = scenario.Create<InitialiseProjection>();
         var bodyRegistered = scenario.CreateBodyRegistered(bodyId);
-        var bodySeatAdded = scenario.CreateBodySeatAdded(bodyId, entitledToVote, isEffective);
-        var assignedPersonToBodySeat = scenario.CreateAssignedPersonToBodySeat(bodyId);
+        var bodySeatAdded = scenario.CreateBodySeatAdded(bodyId, scenario.Create<Guid>(), entitledToVote, isEffective);
+        var assignedPersonToBodySeat = scenario.CreateAssignedPersonToBodySeat(bodyId, bodySeatAdded.BodySeatId, scenario.Create<Guid>());
 
         var eventEnvelopes = new List<IEnvelope>
         {
@@ -180,14 +180,14 @@ public class MEPCalulationServiceTests
         var bodyRegistered = scenario.CreateBodyRegistered(bodyId);
 
         var malePerson = new PersonCreated(Guid.NewGuid(), string.Empty, string.Empty, Sex.Male, DateTime.Now);
-        var bodySeatAdded = scenario.CreateBodySeatAdded(bodyId, entitledToVote: true, isEffective: true);
-        var bodySeat2Added = scenario.CreateBodySeatAdded(bodyId, entitledToVote: true, isEffective: true);
+        var bodySeatAdded = scenario.CreateBodySeatAdded(bodyId, scenario.Create<Guid>(),entitledToVote: true, isEffective: true);
+        var bodySeat2Added = scenario.CreateBodySeatAdded(bodyId, scenario.Create<Guid>(), entitledToVote: true, isEffective: true);
         var assignedMalePersonToBodySeat = scenario.CreateAssignedPersonToBodySeat(bodyId, bodySeatAdded.BodySeatId, malePerson.PersonId);
         var assignedMalePersonToBodySeat2 = scenario.CreateAssignedPersonToBodySeat(bodyId, bodySeat2Added.BodySeatId, malePerson.PersonId);
 
         var femalePerson = new PersonCreated(Guid.NewGuid(), string.Empty, string.Empty, Sex.Female, DateTime.Now);
-        var bodySeat3Added = scenario.CreateBodySeatAdded(bodyId, entitledToVote: true, isEffective: false);
-        var bodySeat4Added = scenario.CreateBodySeatAdded(bodyId, entitledToVote: true, isEffective: false);
+        var bodySeat3Added = scenario.CreateBodySeatAdded(bodyId, scenario.Create<Guid>(), entitledToVote: true, isEffective: false);
+        var bodySeat4Added = scenario.CreateBodySeatAdded(bodyId, scenario.Create<Guid>(), entitledToVote: true, isEffective: false);
         var assignedFemalePersonToBodySeat3 = scenario.CreateAssignedPersonToBodySeat(bodyId, bodySeat3Added.BodySeatId, femalePerson.PersonId);
         var assignedFemalePersonToBodySeat4 = scenario.CreateAssignedPersonToBodySeat(bodyId, bodySeat4Added.BodySeatId, femalePerson.PersonId);
 
