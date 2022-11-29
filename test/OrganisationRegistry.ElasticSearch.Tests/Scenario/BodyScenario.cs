@@ -55,14 +55,17 @@ public class BodyScenario : ScenarioBase<BodyHandler>
             formalValidTo: null);
 
     public AssignedPersonToBodySeat CreateAssignedPersonToBodySeat(Guid bodyId)
+        => CreateAssignedPersonToBodySeat(bodyId, BodySeatId, Create<Guid>());
+
+    public AssignedPersonToBodySeat CreateAssignedPersonToBodySeat(Guid bodyId, Guid bodySeatId, Guid personId)
         => new(
             bodyId: bodyId,
             bodyMandateId: Create<Guid>(),
-            bodySeatId: BodySeatId,
+            bodySeatId: bodySeatId,
             bodySeatNumber: Create<string>(),
             bodySeatName: Create<string>(),
             bodySeatTypeOrder: null,
-            personId: Create<Guid>(),
+            personId: personId,
             personFirstName: Create<string>(),
             personName: Create<string>(),
             contacts: new Dictionary<Guid, string>(),

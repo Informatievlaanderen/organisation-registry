@@ -571,7 +571,7 @@ public class BodyMEPEffectivity
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Include)]
     public decimal UnknownPercentage { get; set; }
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Include)]
-    public bool MEPCompliance { get; set; }
+    public bool IsMEPCompliant { get; set; }
 
     public static IPromise<IProperties> Mapping(PropertiesDescriptor<BodyMEPEffectivity> map)
         => map.Text(
@@ -600,6 +600,6 @@ public class BodyMEPEffectivity
                     .Name(p => p.UnknownPercentage))
             .Text(
                 t => t
-                    .Name(p => p.MEPCompliance)
+                    .Name(p => p.IsMEPCompliant)
                     .Fields(f => f.Keyword(y => y.Name("keyword"))));
 }
