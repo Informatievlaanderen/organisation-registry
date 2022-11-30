@@ -1,3 +1,10 @@
+## [1.290.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.290.0...v1.290.1) (2022-11-30)
+
+
+### Bug Fixes
+
+* or-1356 add eventhandler for BodyFormalValidityChanged ([579726a](https://github.com/informatievlaanderen/organisation-registry/commit/579726a412852f9e64ab6295cf941bd7023eff78))
+
 # [1.290.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.289.0...v1.290.0) (2022-11-28)
 
 
