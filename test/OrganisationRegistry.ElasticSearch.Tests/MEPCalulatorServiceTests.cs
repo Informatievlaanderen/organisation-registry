@@ -289,6 +289,64 @@ public class MEPCalulationServiceTests
         mepInfo.Total.Total.MEPCompliance.Should().Be(expectedTotalCompliance);
     }
 
+    [Theory]
+    [InlineData(MEPCompliance.NoSeats, MEPCompliance.NoSeats, MEPCompliance.NoSeats)]
+    [InlineData(MEPCompliance.NoSeats, MEPCompliance.NotAllSeatsAssigned, MEPCompliance.NotAllSeatsAssigned)]
+    [InlineData(MEPCompliance.NoSeats, MEPCompliance.NotCompliant, MEPCompliance.NotCompliant)]
+    [InlineData(MEPCompliance.NoSeats, MEPCompliance.Compliant, MEPCompliance.Compliant)]
+    [InlineData(MEPCompliance.NotAllSeatsAssigned, MEPCompliance.NoSeats, MEPCompliance.NotAllSeatsAssigned)]
+    [InlineData(MEPCompliance.NotAllSeatsAssigned, MEPCompliance.NotAllSeatsAssigned, MEPCompliance.NotAllSeatsAssigned)]
+    [InlineData(MEPCompliance.NotAllSeatsAssigned, MEPCompliance.NotCompliant, MEPCompliance.NotAllSeatsAssigned)]
+    [InlineData(MEPCompliance.NotAllSeatsAssigned, MEPCompliance.Compliant, MEPCompliance.NotAllSeatsAssigned)]
+    [InlineData(MEPCompliance.NotCompliant, MEPCompliance.NoSeats, MEPCompliance.NotCompliant)]
+    [InlineData(MEPCompliance.NotCompliant, MEPCompliance.NotAllSeatsAssigned, MEPCompliance.NotAllSeatsAssigned)]
+    [InlineData(MEPCompliance.NotCompliant, MEPCompliance.NotCompliant, MEPCompliance.NotCompliant)]
+    [InlineData(MEPCompliance.NotCompliant, MEPCompliance.Compliant, MEPCompliance.NotCompliant)]
+    [InlineData(MEPCompliance.Compliant, MEPCompliance.NoSeats, MEPCompliance.Compliant)]
+    [InlineData(MEPCompliance.Compliant, MEPCompliance.NotAllSeatsAssigned, MEPCompliance.NotAllSeatsAssigned)]
+    [InlineData(MEPCompliance.Compliant, MEPCompliance.NotCompliant, MEPCompliance.NotCompliant)]
+    [InlineData(MEPCompliance.Compliant, MEPCompliance.Compliant, MEPCompliance.Compliant)]
+    public async void MEPComplianceTotalTheory(
+        MEPCompliance totalEffectiveMEPCompliance,
+        MEPCompliance totalNotEffectiveMEPCompliance,
+        MEPCompliance expectedTotalCompliance)
+    {
+        var bodyId = Guid.NewGuid();
+        var scenario = new BodyScenario(bodyId);
+        var today = scenario.Create<DateTime>();
+
+        var eventEnvelopes = new List<IEnvelope>
+        {
+            scenario.Create<InitialiseProjection>().ToEnvelope(),
+            scenario.CreateBodyRegistered(bodyId).ToEnvelope(),
+        };
+
+        eventEnvelopes.AddRange(CreateEventsForMEPCompliance(scenario, bodyId, entitledToVote: scenario.Create<bool>(), isEffective: true, totalEffectiveMEPCompliance));
+        eventEnvelopes.AddRange(CreateEventsForMEPCompliance(scenario, bodyId, entitledToVote: scenario.Create<bool>(), isEffective: false, totalNotEffectiveMEPCompliance));
+
+        await HandleEvents(eventEnvelopes.Select(ee => ee.Body).ToArray());
+        await _eventProcessor.Handle<BodyDocument>(eventEnvelopes);
+
+        await _fixture.Elastic.ReadClient.Indices.RefreshAsync();
+
+        var mepCalculatorService = new TestableMEPCalculatorService(
+            new NullLogger<TestableMEPCalculatorService>(),
+            _fixture.Elastic,
+            _fixture.ContextFactory,
+            new DateTimeProviderStub(today));
+
+        await mepCalculatorService.TestableProcessBodies(CancellationToken.None);
+
+        await _fixture.Elastic.ReadClient.Indices.RefreshAsync();
+
+        var mepInfo = _fixture.Elastic.ReadClient
+            .Get<BodyDocument>(bodyId)
+            .Source
+            .MEP;
+
+        mepInfo.Total.Total.MEPCompliance.Should().Be(expectedTotalCompliance);
+    }
+
     private static List<IEnvelope> CreateEventsForMEPCompliance(BodyScenario scenario, Guid bodyId, bool entitledToVote, bool isEffective, MEPCompliance mepCompliance)
     {
         var eventEnvelopes = new List<IEnvelope>();
