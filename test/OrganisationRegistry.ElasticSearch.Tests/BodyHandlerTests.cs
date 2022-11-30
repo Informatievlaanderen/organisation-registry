@@ -892,4 +892,29 @@ public class BodyHandlerTests
         bodyClassifications[0].ClassificationId.Should().Be(bodyClassificationUpdated.BodyClassificationId);
         bodyClassifications[0].ClassificationName.Should().Be(bodyClassificationUpdated.Name);
     }
+
+    [Fact]
+    public async void BodyFormalValidityChanged_UpdatesBodyFormalValidity()
+    {
+        var bodyId = Guid.NewGuid();
+        var scenario = new BodyScenario(bodyId);
+
+        var initialiseProjection = scenario.Create<InitialiseProjection>();
+        var bodyRegistered = scenario.Create<BodyRegistered>();
+        var bodyFormalValidityChanged = scenario.Create<BodyFormalValidityChanged>();
+
+        await _eventProcessor.Handle<BodyDocument>(
+            new List<IEnvelope>
+            {
+                initialiseProjection.ToEnvelope(),
+                bodyRegistered.ToEnvelope(),
+                bodyFormalValidityChanged.ToEnvelope(),
+            }
+        );
+
+        var bodyDocument = _fixture.Elastic.ReadClient.Get<BodyDocument>(bodyRegistered.BodyId);
+
+        bodyDocument.Source.FormalValidity.Start.Should().Be(bodyFormalValidityChanged.FormalValidFrom);
+        bodyDocument.Source.FormalValidity.End.Should().Be(bodyFormalValidityChanged.FormalValidTo);
+    }
 }

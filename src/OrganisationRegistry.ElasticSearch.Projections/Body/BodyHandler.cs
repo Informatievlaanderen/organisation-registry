@@ -63,7 +63,8 @@ public class BodyHandler :
     IElasticEventHandler<BodyBodyClassificationAdded>,
     IElasticEventHandler<BodyBodyClassificationUpdated>,
     IElasticEventHandler<BodyClassificationTypeUpdated>,
-    IElasticEventHandler<BodyClassificationUpdated>
+    IElasticEventHandler<BodyClassificationUpdated>,
+    IElasticEventHandler<BodyFormalValidityChanged>
 {
     private readonly Elastic _elastic;
     private readonly IContextFactory _contextFactory;
@@ -1043,5 +1044,16 @@ public class BodyHandler :
                     message.Body.Name,
                     message.Number,
                     message.Timestamp)
+        ).ToAsyncResult();
+
+    public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyFormalValidityChanged> message)
+        => await new ElasticPerDocumentChange<BodyDocument>(
+            message.Body.BodyId,
+            document =>
+            {
+                document.ChangeId = message.Number;
+                document.ChangeTime = message.Timestamp;
+                document.FormalValidity = Period.FromDates(message.Body.FormalValidFrom, message.Body.FormalValidTo);
+            }
         ).ToAsyncResult();
 }
