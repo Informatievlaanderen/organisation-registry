@@ -67,9 +67,9 @@ public class MEPCalculatorService : BackgroundService
                 var notEntitledToVoteResult = BodyParticipation.Search(context, body.Id, CreateFilteringHeader(false, true), _clock.Today).ToList();
                 var totalEntitledToVoteResult = BodyParticipation.Search(context, body.Id, CreateFilteringHeader(true, true), _clock.Today).ToList();
 
-                body.MEP.EntitledToVote = MapMaybeEntitledToVoteResult(entitledToVoteResult);
-                body.MEP.NotEntitledToVote = MapMaybeEntitledToVoteResult(notEntitledToVoteResult);
-                body.MEP.Total = MapMaybeEntitledToVoteResult(totalEntitledToVoteResult);
+                body.MEP.EntitledToVote = MapMaybeBodyParticipations(entitledToVoteResult);
+                body.MEP.NotEntitledToVote = MapMaybeBodyParticipations(notEntitledToVoteResult);
+                body.MEP.Total = MapMaybeBodyParticipations(totalEntitledToVoteResult);
             }
             catch (Exception ex)
             {
@@ -85,56 +85,83 @@ public class MEPCalculatorService : BackgroundService
         Logger.LogInformation("Done processing bodies");
     }
 
-    private static BodyMEPVotingEligibility MapMaybeEntitledToVoteResult(IList<BodyParticipation> entitledToVoteResult)
+    private static BodyMEPVotingEligibility MapMaybeBodyParticipations(IList<BodyParticipation> bodyParticipations)
     {
         var result = new BodyMEPVotingEligibility();
 
-        var effectiveEntitledToVote = entitledToVoteResult.SingleOrDefault(r => r.IsEffective!.Value);
+        var effectiveEntitledToVote = bodyParticipations.SingleOrDefault(r => r.IsEffective!.Value);
         result.Effective = effectiveEntitledToVote is { }
             ? MapToMEP(effectiveEntitledToVote)
             : new BodyMEPEffectivity();
 
-        var notEffectiveEntitledToVote = entitledToVoteResult.SingleOrDefault(r => !r.IsEffective!.Value || r.IsEffective == null);
+        var notEffectiveEntitledToVote = bodyParticipations.SingleOrDefault(r => !r.IsEffective!.Value || r.IsEffective == null);
         result.NotEffective = notEffectiveEntitledToVote is { }
             ? MapToMEP(notEffectiveEntitledToVote)
             : new BodyMEPEffectivity();
 
-        var totalEntitledToVote = BodyParticipationTotals.Map(entitledToVoteResult);
+        var totalEntitledToVote = BodyParticipationTotals.Map(bodyParticipations);
         result.Total = MapToMEPTotals(totalEntitledToVote);
 
         return result;
     }
 
-    private static BodyMEPEffectivity MapToMEP(BodyParticipation effectiveEntitledToVote)
+    private static BodyMEPEffectivity MapToMEP(BodyParticipation bodyParticipation)
     {
-        effectiveEntitledToVote = BodyParticipation.Map(effectiveEntitledToVote);
+        bodyParticipation = BodyParticipation.Map(bodyParticipation);
         return new BodyMEPEffectivity
         {
-            MaleCount = effectiveEntitledToVote.MaleCount,
-            UnknownCount = effectiveEntitledToVote.UnknownCount,
-            TotalSeatCount = effectiveEntitledToVote.TotalCount,
-            FemaleCount = effectiveEntitledToVote.FemaleCount,
-            MalePercentage = effectiveEntitledToVote.MalePercentage,
-            UnknownPercentage = effectiveEntitledToVote.UnknownPercentage,
-            FemalePercentage = effectiveEntitledToVote.FemalePercentage,
-            AssignedSeatCount = effectiveEntitledToVote.AssignedCount,
-            IsMEPCompliant = effectiveEntitledToVote.TotalCompliance == BodyParticipationCompliance.Compliant,
+            MaleCount = bodyParticipation.MaleCount,
+            UnknownCount = bodyParticipation.UnknownCount,
+            TotalSeatCount = bodyParticipation.TotalCount,
+            FemaleCount = bodyParticipation.FemaleCount,
+            MalePercentage = bodyParticipation.MalePercentage,
+            UnknownPercentage = bodyParticipation.UnknownPercentage,
+            FemalePercentage = bodyParticipation.FemalePercentage,
+            AssignedSeatCount = bodyParticipation.AssignedCount,
+            MEPCompliance = CalculateMEPCompliance(bodyParticipation.TotalCompliance, bodyParticipation.TotalCount, bodyParticipation.AssignedCount),
         };
     }
 
-    private static BodyMEPEffectivity MapToMEPTotals(BodyParticipationTotals effectiveEntitledToVote)
+    private static MEPCompliance CalculateMEPCompliance(BodyParticipationCompliance complianceToCheck, int seatCount, int assignedSeats)
+        => complianceToCheck switch
+        {
+            BodyParticipationCompliance.Unknown when seatCount == 0 => MEPCompliance.NoSeats,
+            BodyParticipationCompliance.Unknown when seatCount != assignedSeats => MEPCompliance.NotAllSeatsAssigned,
+            BodyParticipationCompliance.Unknown => MEPCompliance.NotCompliant,
+            BodyParticipationCompliance.NonCompliant => MEPCompliance.NotCompliant,
+            BodyParticipationCompliance.Compliant => MEPCompliance.Compliant,
+            _ => throw new ArgumentOutOfRangeException(nameof(complianceToCheck), complianceToCheck, null),
+        };
+
+    private static BodyMEPEffectivity MapToMEPTotals(BodyParticipationTotals bodyParticipationTotals)
         => new()
         {
-            MaleCount = effectiveEntitledToVote.MaleCount,
-            UnknownCount = effectiveEntitledToVote.UnknownCount,
-            TotalSeatCount = effectiveEntitledToVote.TotalCount,
-            FemaleCount = effectiveEntitledToVote.FemaleCount,
-            MalePercentage = effectiveEntitledToVote.MalePercentage,
-            UnknownPercentage = effectiveEntitledToVote.UnknownPercentage,
-            FemalePercentage = effectiveEntitledToVote.FemalePercentage,
-            AssignedSeatCount = effectiveEntitledToVote.AssignedCount,
-            IsMEPCompliant = effectiveEntitledToVote.Compliance == BodyParticipationCompliance.Compliant,
+            MaleCount = bodyParticipationTotals.MaleCount,
+            UnknownCount = bodyParticipationTotals.UnknownCount,
+            TotalSeatCount = bodyParticipationTotals.TotalCount,
+            FemaleCount = bodyParticipationTotals.FemaleCount,
+            MalePercentage = bodyParticipationTotals.MalePercentage,
+            UnknownPercentage = bodyParticipationTotals.UnknownPercentage,
+            FemalePercentage = bodyParticipationTotals.FemalePercentage,
+            AssignedSeatCount = bodyParticipationTotals.AssignedCount,
+            MEPCompliance = CalculateTotalMEPCompliance(bodyParticipationTotals.Compliance, bodyParticipationTotals.TotalCount, bodyParticipationTotals.AssignedCount),
         };
+
+    private static MEPCompliance CalculateTotalMEPCompliance(BodyParticipationCompliance complianceToCheck, int seatCount, int assignedSeats)
+    {
+        if (seatCount == 0)
+            return MEPCompliance.NoSeats;
+        if (seatCount != assignedSeats)
+            return MEPCompliance.NotAllSeatsAssigned;
+
+        return complianceToCheck switch
+        {
+            BodyParticipationCompliance.NonCompliant => MEPCompliance.NotCompliant,
+            BodyParticipationCompliance.Compliant => MEPCompliance.Compliant,
+            BodyParticipationCompliance.Unknown => throw new ArgumentOutOfRangeException(nameof(complianceToCheck), complianceToCheck, null),
+            _ => throw new ArgumentOutOfRangeException(nameof(complianceToCheck), complianceToCheck, null),
+        };
+    }
 
     private static FilteringHeader<BodyParticipationFilter> CreateFilteringHeader(bool entitledToVote, bool notEntitledToVote)
         => new(
