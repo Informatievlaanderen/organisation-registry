@@ -1,3 +1,17 @@
+# [1.291.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.290.1...v1.291.0) (2022-12-01)
+
+
+### Bug Fixes
+
+* or-1143 fix mep calculation test setup ([a785c1e](https://github.com/informatievlaanderen/organisation-registry/commit/a785c1e70277021bb0dd121f00c05744ccf418ce))
+* or-1143 fix mep calculation total ([3831f7e](https://github.com/informatievlaanderen/organisation-registry/commit/3831f7efa14e99ad5af86c32acfb9b88bced4669))
+
+
+### Features
+
+* or-1134 add extra test case ([f703a3d](https://github.com/informatievlaanderen/organisation-registry/commit/f703a3dbf1eaaed060ee303cfe6a35f2119cf838))
+* or-1143 add unittests ([48a58d6](https://github.com/informatievlaanderen/organisation-registry/commit/48a58d636afe9889dea9344b4239c7c7baaf7e7a))
+
 ## [1.290.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.290.0...v1.290.1) (2022-11-30)
 
 
