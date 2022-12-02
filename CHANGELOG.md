@@ -1,3 +1,10 @@
+# [1.293.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.292.0...v1.293.0) (2022-12-02)
+
+
+### Features
+
+* or-1368 add version usage ([a45e3a1](https://github.com/informatievlaanderen/organisation-registry/commit/a45e3a128b701c3827251416180c04cc77f7f45d))
+
 # [1.292.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.291.0...v1.292.0) (2022-12-02)
 
 
