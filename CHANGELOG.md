@@ -1,3 +1,12 @@
+# [1.292.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.291.0...v1.292.0) (2022-12-02)
+
+
+### Features
+
+* or-1143 correct MEP logic to match logic used in FE ([a0e1d69](https://github.com/informatievlaanderen/organisation-registry/commit/a0e1d69bdab88070ea30366c7f2369223be39906))
+* or-1143 use NoSeats as default ([fd35784](https://github.com/informatievlaanderen/organisation-registry/commit/fd357848b257cca44437b116062fda3d16af1f3a))
+* or-1143 use NoSeats as default with correct numeric values ([405b1b6](https://github.com/informatievlaanderen/organisation-registry/commit/405b1b66f141e82f9a517a5472e52c04e1e01a77))
+
 # [1.291.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.290.1...v1.291.0) (2022-12-01)
 
 
