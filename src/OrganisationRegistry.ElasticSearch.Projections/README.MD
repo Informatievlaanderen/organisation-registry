@@ -16,7 +16,7 @@ WHERE [Key] LIKE N'Toggles:ElasticSearchProjectionsAvailable' ESCAPE '#';
 
 - Stop the OrganisationRegistry.ElasticSearch.Projections process in AWS, to make sure the above configuration setting is picked up.
 
-- Set the ElasticSearch:OrganisationsWriteIndex to a new version (don't use capitals in the index name), eg: `or-organisations-<unique identifier>`. We usually use today's date as the identifier (see example).
+- Set the ElasticSearch:OrganisationsWriteIndex to a new version (don't use capitals in the index name), eg: `or-organisations-<unique identifier>`. We usually use today's date as the identifier plus a version number in case of multiple changes in one day (see example).
 ```
 -- EXAMPLE, REPLACE DATE
 UPDATE [organisation-registry].OrganisationRegistry.Configuration
