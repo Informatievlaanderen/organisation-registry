@@ -225,6 +225,8 @@ public class MEPCalulationServiceTests
             .Source
             .MEP;
 
+        mepInfo.NotEntitledToVote.Effective.MEPCompliance.Should().Be(notEntitledToVoteEffectiveMEPCompliance);
+        mepInfo.NotEntitledToVote.NotEffective.MEPCompliance.Should().Be(notEntitledToVoteNotEffectiveMEPCompliance);
         mepInfo.NotEntitledToVote.Total.MEPCompliance.Should().Be(expectedNotEntitledToVoteMEPCompliance);
         mepInfo.Total.Total.MEPCompliance.Should().Be(expectedTotalCompliance);
     }
@@ -285,6 +287,8 @@ public class MEPCalulationServiceTests
             .Source
             .MEP;
 
+        mepInfo.EntitledToVote.Effective.MEPCompliance.Should().Be(entitledToVoteEffectiveMEPCompliance);
+        mepInfo.EntitledToVote.NotEffective.MEPCompliance.Should().Be(entitledToVoteNotEffectiveMEPCompliance);
         mepInfo.EntitledToVote.Total.MEPCompliance.Should().Be(expectedEntitledToVoteMEPCompliance);
         mepInfo.Total.Total.MEPCompliance.Should().Be(expectedTotalCompliance);
     }
@@ -344,6 +348,8 @@ public class MEPCalulationServiceTests
             .Source
             .MEP;
 
+        mepInfo.Total.Effective.MEPCompliance.Should().Be(totalEffectiveMEPCompliance);
+        mepInfo.Total.NotEffective.MEPCompliance.Should().Be(totalNotEffectiveMEPCompliance);
         mepInfo.Total.Total.MEPCompliance.Should().Be(expectedTotalCompliance);
     }
 
