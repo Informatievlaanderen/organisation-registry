@@ -16,12 +16,12 @@ WHERE [Key] LIKE N'Toggles:ElasticSearchProjectionsAvailable' ESCAPE '#';
 
 - Stop the OrganisationRegistry.ElasticSearch.Projections process in AWS, to make sure the above configuration setting is picked up.
 
-- Set the ElasticSearch:OrganisationsWriteIndex to a new version, eg: `or-organisations-<unique identifier>`. We usually use today's date as the identifier (see example).
+- Set the ElasticSearch:OrganisationsWriteIndex to a new version (don't use capitals in the index name), eg: `or-organisations-<unique identifier>`. We usually use today's date as the identifier (see example).
 ```
 -- EXAMPLE, REPLACE DATE
 UPDATE [organisation-registry].OrganisationRegistry.Configuration
-SET Value = N'or-beta-organisations-2022-03-14'
-WHERE [Key] LIKE N'ElasticSearch:OrganisationsWriteIndex' ESCAPE '#';
+SET Value = N'or-beta-<projection type>-2022-03-14-v2'
+WHERE [Key] LIKE N'ElasticSearch:<projection type>WriteIndex' ESCAPE '#';
 ```
 - Set the projection states to `-1` of the projections you want to rebuild.
 ```
@@ -50,8 +50,8 @@ WHERE [Key] LIKE N'Toggles:ElasticSearchProjectionsAvailable' ESCAPE '#';
 -- EXAMPLE, REPLACE DATE --
 
 UPDATE [organisation-registry].OrganisationRegistry.Configuration
-SET Value = N'or-beta-organisations-2022-03-14'
-WHERE [Key] LIKE N'ElasticSearch:OrganisationsWriteIndex' ESCAPE '#';
+SET Value = N'or-beta-<projection type>-2022-03-14-v2'
+WHERE [Key] LIKE N'ElasticSearch:<projection type>ReadIndex' ESCAPE '#';
 ```
 
 - Restart OrganisationRegistry.Api, to make sure the read index setting is picked up.
