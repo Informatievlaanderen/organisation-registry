@@ -570,8 +570,9 @@ public class BodyMEPEffectivity
     public decimal FemalePercentage { get; set; }
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Include)]
     public decimal UnknownPercentage { get; set; }
+
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Include)]
-    public MEPCompliance MEPCompliance { get; set; }
+    public MEPCompliance MEPCompliance { get; set; } = MEPCompliance.NoSeats;
 
     public static IPromise<IProperties> Mapping(PropertiesDescriptor<BodyMEPEffectivity> map)
         => map.Text(
