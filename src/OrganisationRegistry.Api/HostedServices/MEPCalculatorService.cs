@@ -82,6 +82,7 @@ public class MEPCalculatorService : BackgroundService
 
             await _elastic.ReadClient.IndexDocumentAsync(body, cancellationToken);
         }
+
         Logger.LogInformation("Done processing bodies");
     }
 
@@ -122,17 +123,6 @@ public class MEPCalculatorService : BackgroundService
         };
     }
 
-    private static MEPCompliance CalculateMEPCompliance(BodyParticipationCompliance complianceToCheck, int seatCount, int assignedSeats)
-        => complianceToCheck switch
-        {
-            BodyParticipationCompliance.Unknown when seatCount == 0 => MEPCompliance.NoSeats,
-            BodyParticipationCompliance.Unknown when seatCount != assignedSeats => MEPCompliance.NotAllSeatsAssigned,
-            BodyParticipationCompliance.Unknown => MEPCompliance.NotCompliant,
-            BodyParticipationCompliance.NonCompliant => MEPCompliance.NotCompliant,
-            BodyParticipationCompliance.Compliant => MEPCompliance.Compliant,
-            _ => throw new ArgumentOutOfRangeException(nameof(complianceToCheck), complianceToCheck, null),
-        };
-
     private static BodyMEPEffectivity MapToMEPTotals(BodyParticipationTotals bodyParticipationTotals)
         => new()
         {
@@ -144,10 +134,10 @@ public class MEPCalculatorService : BackgroundService
             UnknownPercentage = bodyParticipationTotals.UnknownPercentage,
             FemalePercentage = bodyParticipationTotals.FemalePercentage,
             AssignedSeatCount = bodyParticipationTotals.AssignedCount,
-            MEPCompliance = CalculateTotalMEPCompliance(bodyParticipationTotals.Compliance, bodyParticipationTotals.TotalCount, bodyParticipationTotals.AssignedCount),
+            MEPCompliance = CalculateMEPCompliance(bodyParticipationTotals.Compliance, bodyParticipationTotals.TotalCount, bodyParticipationTotals.AssignedCount),
         };
 
-    private static MEPCompliance CalculateTotalMEPCompliance(BodyParticipationCompliance complianceToCheck, int seatCount, int assignedSeats)
+    private static MEPCompliance CalculateMEPCompliance(BodyParticipationCompliance complianceToCheck, int seatCount, int assignedSeats)
     {
         if (seatCount == 0)
             return MEPCompliance.NoSeats;
@@ -156,9 +146,9 @@ public class MEPCalculatorService : BackgroundService
 
         return complianceToCheck switch
         {
+            BodyParticipationCompliance.Unknown => MEPCompliance.NotCompliant,
             BodyParticipationCompliance.NonCompliant => MEPCompliance.NotCompliant,
             BodyParticipationCompliance.Compliant => MEPCompliance.Compliant,
-            BodyParticipationCompliance.Unknown => throw new ArgumentOutOfRangeException(nameof(complianceToCheck), complianceToCheck, null),
             _ => throw new ArgumentOutOfRangeException(nameof(complianceToCheck), complianceToCheck, null),
         };
     }
