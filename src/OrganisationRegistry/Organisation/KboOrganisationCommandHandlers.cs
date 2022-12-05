@@ -361,7 +361,7 @@ public class KboOrganisationCommandHandlers :
 
     public async Task Handle(ICommandEnvelope<SyncOrganisationWithKbo> envelope)
     {
-        new RequiresRolesPolicy(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+        new RequiresRolesPolicy(Role.AlgemeenBeheerder, Role.CjmBeheerder, Role.AutomatedTask)
             .ThrowOnViolation(envelope.User);
 
         await SyncWithKbo(envelope.Command.OrganisationId, envelope.User, envelope.Command.KboSyncItemId);
