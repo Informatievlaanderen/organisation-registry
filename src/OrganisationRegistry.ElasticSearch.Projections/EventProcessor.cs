@@ -119,8 +119,9 @@ public class EventProcessor : IHostedService
     {
         logger.LogInformation("[{Context}] Resuming ...", "body");
 
-        using (var context = contextFactory.Create())
+        try
         {
+            await using var context = contextFactory.Create();
             var toggle = await context.Configuration.SingleOrDefaultAsync(
                 item =>
                     item.Key == $"{TogglesConfigurationSection.Name}:{nameof(TogglesConfigurationSection.ElasticSearchProjectionsAvailable)}");
@@ -134,6 +135,11 @@ public class EventProcessor : IHostedService
             {
                 await ScheduleResume(scheduler, WhenNotEnabledResumeAfter);
             }
+        }
+        catch(Exception exception)
+        {
+            _logger.LogCritical(0, exception, "An exception occurred while resuming, rescheduling Resume");
+            await ScheduleResume(scheduler, WhenNotEnabledResumeAfter);
         }
     }
 
