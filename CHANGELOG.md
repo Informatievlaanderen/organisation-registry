@@ -1,3 +1,10 @@
+## [1.293.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.293.1...v1.293.2) (2022-12-05)
+
+
+### Bug Fixes
+
+* or-1366 allow automatedTask to sync organisation with kbo ([7889853](https://github.com/informatievlaanderen/organisation-registry/commit/7889853af02b42bdabfe82e245a1dd69821e310e))
+
 ## [1.293.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.293.0...v1.293.1) (2022-12-05)
 
 
