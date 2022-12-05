@@ -1,3 +1,10 @@
+## [1.293.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.293.0...v1.293.1) (2022-12-05)
+
+
+### Bug Fixes
+
+* or-1375 resume after event processor crash ([#980](https://github.com/informatievlaanderen/organisation-registry/issues/980)) ([df7b93d](https://github.com/informatievlaanderen/organisation-registry/commit/df7b93d5e3dee0c8af0cf04a28857e207d7033cd))
+
 # [1.293.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.292.0...v1.293.0) (2022-12-02)
 
 
