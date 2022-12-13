@@ -1,3 +1,10 @@
+## [1.293.3](https://github.com/informatievlaanderen/organisation-registry/compare/v1.293.2...v1.293.3) (2022-12-13)
+
+
+### Bug Fixes
+
+* or-1381 retry if ProcessImportedFilesService crashes ([92adbbb](https://github.com/informatievlaanderen/organisation-registry/commit/92adbbb2b8773ffd2abf9568851ff9db8633ff01))
+
 ## [1.293.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.293.1...v1.293.2) (2022-12-05)
 
 
