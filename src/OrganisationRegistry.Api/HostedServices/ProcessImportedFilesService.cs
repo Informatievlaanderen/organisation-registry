@@ -1,5 +1,6 @@
 ﻿namespace OrganisationRegistry.Api.HostedServices;
 
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -38,15 +39,30 @@ public class ProcessImportedFilesService : BackgroundService
             return;
         }
 
+        _logger.LogInformation($"Starting {nameof(ProcessImportedFilesService)}");
+
         while (!cancellationToken.IsCancellationRequested)
         {
-            await ImportNextFileProcessor.ProcessNextFile(
-                _contextFactory,
-                _dateTimeProvider,
-                _logger,
-                _commandSender,
-                _configuration,
-                cancellationToken);
+            try
+            {
+                await ImportNextFileProcessor.ProcessNextFile(
+                    _contextFactory,
+                    _dateTimeProvider,
+                    _logger,
+                    _commandSender,
+                    _configuration,
+                    cancellationToken);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(
+                    exception,
+                    "An exception occurred while processing next file. " +
+                    "Will retry in {DelayInSeconds} seconds.",
+                    _configuration.DelayInSeconds);
+
+                await Task.Delay(_configuration.DelayInSeconds, cancellationToken);
+            }
         }
     }
 }
