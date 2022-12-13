@@ -35,11 +35,11 @@ public class ProcessImportedFilesService : BackgroundService
     {
         if (!_configuration.Enabled)
         {
-            _logger.LogInformation($"{nameof(ProcessImportedFilesService)} disabled, skipping execution");
+            _logger.LogInformation("{ServiceName} disabled, skipping execution", nameof(ProcessImportedFilesService));
             return;
         }
 
-        _logger.LogInformation($"Starting {nameof(ProcessImportedFilesService)}");
+        _logger.LogInformation("Starting {ServiceName}", nameof(ProcessImportedFilesService));
 
         while (!cancellationToken.IsCancellationRequested)
         {
