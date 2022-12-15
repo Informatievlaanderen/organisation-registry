@@ -1,3 +1,10 @@
+## [1.293.4](https://github.com/informatievlaanderen/organisation-registry/compare/v1.293.3...v1.293.4) (2022-12-15)
+
+
+### Bug Fixes
+
+* or-1384 add id to logging MEP ([0fa0eae](https://github.com/informatievlaanderen/organisation-registry/commit/0fa0eae9b69d563901979f2851b0487eac1d03d2))
+
 ## [1.293.3](https://github.com/informatievlaanderen/organisation-registry/compare/v1.293.2...v1.293.3) (2022-12-13)
 
 
