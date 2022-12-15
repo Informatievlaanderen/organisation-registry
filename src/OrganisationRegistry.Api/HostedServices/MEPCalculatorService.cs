@@ -73,7 +73,7 @@ public class MEPCalculatorService : BackgroundService
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, "Something went wrong processing bodies for MEP calculation");
+                Logger.LogError(ex, "Something went wrong processing bodies for MEP calculation (bodyId: {BodyId})", body.Id);
 
                 body.MEP.EntitledToVote = new BodyMEPVotingEligibility();
                 body.MEP.NotEntitledToVote = new BodyMEPVotingEligibility();
