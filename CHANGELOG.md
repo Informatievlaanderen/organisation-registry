@@ -1,3 +1,10 @@
+## [1.293.5](https://github.com/informatievlaanderen/organisation-registry/compare/v1.293.4...v1.293.5) (2023-01-03)
+
+
+### Bug Fixes
+
+* or-1411 possible fix for 33 organen ([7003cff](https://github.com/informatievlaanderen/organisation-registry/commit/7003cff7885a99dc2ae0faab3677352870685ab8))
+
 ## [1.293.4](https://github.com/informatievlaanderen/organisation-registry/compare/v1.293.3...v1.293.4) (2022-12-15)
 
 
