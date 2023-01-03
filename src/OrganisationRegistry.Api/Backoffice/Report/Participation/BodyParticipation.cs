@@ -11,6 +11,7 @@ using OrganisationRegistry.Api.Infrastructure.Search.Filtering;
 using OrganisationRegistry.Api.Infrastructure.Search.Sorting;
 using OrganisationRegistry.Person;
 using OrganisationRegistry.SqlServer.Infrastructure;
+using SqlServer.Reporting;
 
 public class BodyParticipation
 {
@@ -35,8 +36,11 @@ public class BodyParticipation
 
     [DisplayName("Is Mep-conform")] public BodyParticipationCompliance TotalCompliance { get; set; }
 
-    [DisplayName("Is Mep-conform Voor Vrouwen")] public BodyParticipationCompliance FemaleCompliance { get; set; }
-    [DisplayName("Is Mep-conform Voor Mannen")] public BodyParticipationCompliance MaleCompliance { get; set; }
+    [DisplayName("Is Mep-conform Voor Vrouwen")]
+    public BodyParticipationCompliance FemaleCompliance { get; set; }
+
+    [DisplayName("Is Mep-conform Voor Mannen")]
+    public BodyParticipationCompliance MaleCompliance { get; set; }
 
     ///  <summary>
     ///
@@ -65,9 +69,10 @@ public class BodyParticipation
 
         var activeSeatsPerType = body
             .PostsPerType
-            .Where(post =>
-                (!post.BodySeatValidFrom.HasValue || post.BodySeatValidFrom <= today) &&
-                (!post.BodySeatValidTo.HasValue || post.BodySeatValidTo >= today));
+            .Where(
+                post =>
+                    (!post.BodySeatValidFrom.HasValue || post.BodySeatValidFrom <= today) &&
+                    (!post.BodySeatValidTo.HasValue || post.BodySeatValidTo >= today));
 
         // One of the checkboxes is checked
         if (filter.EntitledToVote ^ filter.NotEntitledToVote)
@@ -92,9 +97,10 @@ public class BodyParticipation
         var activeMandates = context.BodySeatGenderRatioBodyMandateList
             .AsAsyncQueryable()
             .Where(mandate => mandate.BodyId == bodyId)
-            .Where(mandate =>
-                (!mandate.BodyMandateValidFrom.HasValue || mandate.BodyMandateValidFrom <= today) &&
-                (!mandate.BodyMandateValidTo.HasValue || mandate.BodyMandateValidTo >= today))
+            .Where(
+                mandate =>
+                    (!mandate.BodyMandateValidFrom.HasValue || mandate.BodyMandateValidFrom <= today) &&
+                    (!mandate.BodyMandateValidTo.HasValue || mandate.BodyMandateValidTo >= today))
             .Where(mandate => activeSeatIds.Contains(mandate.BodySeatId))
             .ToList();
 
@@ -109,9 +115,10 @@ public class BodyParticipation
         var activeAssignmentsPerIsEffective =
             bodySeatGenderRatioBodyMandateItems
                 .Where(mandate => mandate.BodyId == bodyId)
-                .Where(mandate =>
-                    (!mandate.BodyMandateValidFrom.HasValue || mandate.BodyMandateValidFrom <= today) &&
-                    (!mandate.BodyMandateValidTo.HasValue || mandate.BodyMandateValidTo >= today))
+                .Where(
+                    mandate =>
+                        (!mandate.BodyMandateValidFrom.HasValue || mandate.BodyMandateValidFrom <= today) &&
+                        (!mandate.BodyMandateValidTo.HasValue || mandate.BodyMandateValidTo >= today))
                 .Where(mandate => activeMandateIds.Contains(mandate.BodyMandateId))
                 .ToList()
                 .GroupBy(mandate => mandate.BodySeatTypeIsEffective)
@@ -119,36 +126,45 @@ public class BodyParticipation
                     x => x.Key,
                     x => x
                         .SelectMany(y => y.Assignments)
-                        .Where(a =>
-                            (!a.AssignmentValidFrom.HasValue || a.AssignmentValidFrom <= today) &&
-                            (!a.AssignmentValidTo.HasValue || a.AssignmentValidTo >= today)));
+                        .Where(
+                            a =>
+                                (!a.AssignmentValidFrom.HasValue || a.AssignmentValidFrom <= today) &&
+                                (!a.AssignmentValidTo.HasValue || a.AssignmentValidTo >= today)));
 
         var groupedResults = activeSeatsPerIsEffective
-            .Select(seatPerIsEffective =>
-            {
-                var totalCount = seatPerIsEffective.Value.Count();
-                var activeAssignments = activeAssignmentsPerIsEffective[seatPerIsEffective.Key].ToList();
-                var assignedCount = activeAssignments.Count;
-                return new BodyParticipation
+            .Select(
+                seatPerIsEffective =>
                 {
-                    BodyId = bodyId,
-                    BodyName = body.BodyName,
-                    IsEffective = seatPerIsEffective.Key,
-                    IsEffectiveTranslation = seatPerIsEffective.Key ? "Effectief" : "Plaatsvervangend",
+                    var totalCount = seatPerIsEffective.Value.Count();
+                    var activeAssignments = GetKeyOrEmpty(activeAssignmentsPerIsEffective, seatPerIsEffective.Key).ToList();
+                    var assignedCount = activeAssignments.Count;
+                    return new BodyParticipation
+                    {
+                        BodyId = bodyId,
+                        BodyName = body.BodyName,
+                        IsEffective = seatPerIsEffective.Key,
+                        IsEffectiveTranslation = seatPerIsEffective.Key ? "Effectief" : "Plaatsvervangend",
 
-                    MaleCount = activeAssignments.Count(x => x.Sex == Sex.Male),
-                    FemaleCount = activeAssignments.Count(x => x.Sex == Sex.Female),
-                    UnknownCount = activeAssignments.Count(x => !x.Sex.HasValue),
+                        MaleCount = activeAssignments.Count(x => x.Sex == Sex.Male),
+                        FemaleCount = activeAssignments.Count(x => x.Sex == Sex.Female),
+                        UnknownCount = activeAssignments.Count(x => !x.Sex.HasValue),
 
-                    AssignedCount = assignedCount,
-                    UnassignedCount = totalCount - assignedCount,
+                        AssignedCount = assignedCount,
+                        UnassignedCount = totalCount - assignedCount,
 
-                    TotalCount = totalCount,
-                };
-            });
+                        TotalCount = totalCount,
+                    };
+                });
 
         return groupedResults;
     }
+
+    private static IEnumerable<BodySeatGenderRatioAssignmentItem> GetKeyOrEmpty(
+        IReadOnlyDictionary<bool, IEnumerable<BodySeatGenderRatioAssignmentItem>> activeAssignmentsPerIsEffective,
+        bool key)
+        => activeAssignmentsPerIsEffective.ContainsKey(key)
+            ? activeAssignmentsPerIsEffective[key]
+            : Array.Empty<BodySeatGenderRatioAssignmentItem>();
 
     /// <summary>
     /// </summary>
@@ -156,16 +172,7 @@ public class BodyParticipation
     /// <returns></returns>
     public static IEnumerable<BodyParticipation> Map(
         IEnumerable<BodyParticipation> results)
-    {
-        var participations = new List<BodyParticipation>();
-
-        foreach (var result in results)
-        {
-            participations.Add(Map(result));
-        }
-
-        return participations;
-    }
+        => results.Select(Map).ToList();
 
     public static BodyParticipation Map(BodyParticipation bodyParticipation)
     {
@@ -200,28 +207,18 @@ public class BodyParticipation
         if (!sortingHeader.ShouldSort)
             return results.OrderBy(x => x.BodyName).ThenBy(x => x.IsEffectiveTranslation);
 
-        switch (sortingHeader.SortBy.ToLowerInvariant())
+        return sortingHeader.SortBy.ToLowerInvariant() switch
         {
-            case "malepercentage":
-                return sortingHeader.SortOrder == SortOrder.Ascending
-                    ? results.OrderBy(x => x.MalePercentage)
-                    : results.OrderByDescending(x => x.MalePercentage);
-            case "femalepercentage":
-                return sortingHeader.SortOrder == SortOrder.Ascending
-                    ? results.OrderBy(x => x.FemalePercentage)
-                    : results.OrderByDescending(x => x.FemalePercentage);
-            case "unknownpercentage":
-                return sortingHeader.SortOrder == SortOrder.Ascending
-                    ? results.OrderBy(x => x.UnknownPercentage)
-                    : results.OrderByDescending(x => x.UnknownPercentage);
-            case "iseffectivetranslation":
-                return sortingHeader.SortOrder == SortOrder.Ascending
-                    ? results.OrderBy(x => x.IsEffectiveTranslation)
-                    : results.OrderByDescending(x => x.IsEffectiveTranslation);
-            default:
-                return results.OrderBy(x => x.BodyName).ThenBy(x => x.IsEffectiveTranslation);
-        }
+            "malepercentage" => OrderBy(results, x => x.MalePercentage, sortingHeader.SortOrder),
+            "femalepercentage" => OrderBy(results, x => x.FemalePercentage, sortingHeader.SortOrder),
+            "unknownpercentage" => OrderBy(results, x => x.UnknownPercentage, sortingHeader.SortOrder),
+            "iseffectivetranslation" => OrderBy(results, x => x.IsEffectiveTranslation, sortingHeader.SortOrder),
+            _ => results.OrderBy(x => x.BodyName).ThenBy(x => x.IsEffectiveTranslation)
+        };
     }
+
+    private static IOrderedEnumerable<BodyParticipation> OrderBy<TKey>(IEnumerable<BodyParticipation> results, Func<BodyParticipation, TKey> keySelector, SortOrder sortOrder)
+        => sortOrder == SortOrder.Ascending ? results.OrderBy(keySelector) : results.OrderByDescending(keySelector);
 }
 
 public class BodyParticipationFilter
