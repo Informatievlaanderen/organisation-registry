@@ -1,24 +1,21 @@
-import { Injectable, OnDestroy } from "@angular/core";
-import { Http, Response } from "@angular/http";
-import { Observable } from "rxjs/Observable";
-import { BehaviorSubject } from "rxjs/BehaviorSubject";
+import {Injectable} from "@angular/core";
+import {Http, Response} from "@angular/http";
+import {Observable} from "rxjs/Observable";
 
-import { ConfigurationService } from "../configuration";
-import { HeadersBuilder } from "../http";
+import {ConfigurationService} from "../configuration";
+import {HeadersBuilder} from "../http";
 
-import { User } from "./user.model";
+import {User} from "./user.model";
 
-import { Role } from "./role.model";
-import { OidcClient } from "oidc-client";
-import { Subscription } from "rxjs/Subscription";
+import {Role} from "./role.model";
+import {OidcClient} from "oidc-client";
 import {
   catchError,
-  distinctUntilChanged,
   map,
   mergeMap,
-  shareReplay,
-  tap,
+
 } from "rxjs/operators";
+import {BehaviorSubject} from "rxjs/BehaviorSubject";
 
 export function hasAnyOfRoles(
   securityInfo: SecurityInfo,
@@ -69,26 +66,21 @@ function createSecurityInfo(
 }
 
 @Injectable()
-export class OidcService implements OnDestroy {
+export class OidcService {
   private securityUrl = `${this.configurationService.apiUrl}/v1/security`;
   private securityInfoUrl = `${this.configurationService.apiUrl}/v1/security/info`;
 
-  private securityInfoSubject = new BehaviorSubject<SecurityInfo>(
-    createSecurityInfo()
-  );
-  private securityInfo$ = this.securityInfoSubject.asObservable();
-
-  private client: OidcClient;
-
-  private readonly subscriptions: Subscription[] = new Array<Subscription>();
+  private lastSecurityInfo: SecurityInfo;
 
   constructor(
     private http: Http,
     private configurationService: ConfigurationService
   ) {
-    this.updateFromServer().subscribe();
-    this.subscriptions.push(
-      this.http.get(this.securityInfoUrl).subscribe((r) => {
+  }
+
+  private GetClient(): Promise<OidcClient> {
+    return this.http.get(this.securityInfoUrl).toPromise()
+      .then((r) => {
         const data = r.json();
         const settings = {
           authority: data.authority,
@@ -109,13 +101,8 @@ export class OidcService implements OnDestroy {
           loadUserInfo: true,
           query_status_response_type: "code",
         };
-        this.client = new OidcClient(settings);
-      })
-    );
-  }
-
-  ngOnDestroy() {
-    this.subscriptions.forEach((sub) => sub.unsubscribe());
+        return new OidcClient(settings)
+      });
   }
 
   exchangeCode(code: string): Observable<[string, SecurityInfo]> {
@@ -125,7 +112,7 @@ export class OidcService implements OnDestroy {
 
     let headers = new HeadersBuilder().json().build();
 
-    return this.http.get(url, { headers: headers }).pipe(
+    return this.http.get(url, {headers: headers}).pipe(
       catchError(OidcService.handleError),
       map((res: Response) => {
         localStorage.setItem("token", res.json());
@@ -140,28 +127,31 @@ export class OidcService implements OnDestroy {
   }
 
   public signIn() {
-    this.client
-      .createSigninRequest()
-      .then((req) => {
-        localStorage.setItem("verifier", req.state.code_verifier);
-        window.location.href = req.url;
-      })
-      .catch((err) => {
-        console.error("Could not create signin request!", err, err.request);
-      });
+    this.GetClient().then(
+      client => client
+        .createSigninRequest()
+        .then((req) => {
+          localStorage.setItem("verifier", req.state.code_verifier);
+          window.location.href = req.url;
+        })
+        .catch((err) => {
+          console.error("Could not create signin request!", err, err.request);
+        })
+    )
   }
 
   public signOut() {
     localStorage.removeItem("token");
     localStorage.removeItem("verifier");
-    this.client
-      .createSignoutRequest()
-      .then((req) => {
-        window.location.href = req.url;
-      })
-      .catch((err) => {
-        console.error("Could not create signout request!", err, err.request);
-      });
+    this.GetClient().then(
+      client => client
+        .createSignoutRequest()
+        .then((req) => {
+          window.location.href = req.url;
+        })
+        .catch((err) => {
+          console.error("Could not create signout request!", err, err.request);
+        }));
   }
 
   public get isLoggedIn(): Observable<boolean> {
@@ -189,7 +179,8 @@ export class OidcService implements OnDestroy {
   }
 
   public canEditBody(bodyId): Observable<boolean> {
-    return this.securityInfo$.pipe(
+
+    return this.getOrUpdateValue().pipe(
       map((securityInfo: SecurityInfo) => {
         if (
           hasAnyOfRoles(
@@ -226,13 +217,10 @@ export class OidcService implements OnDestroy {
   }
 
   public getOrUpdateValue(): Observable<SecurityInfo> {
-    return this.securityInfo$.pipe(
-      tap((securityInfo: SecurityInfo) => {
-        if (securityInfo.expires > new Date().getTime()) {
-          this.updateFromServer().subscribe();
-        }
-      })
-    );
+    if (!this.lastSecurityInfo || this.lastSecurityInfo.expires > new Date().getTime()) {
+      return this.updateFromServer();
+    }
+    return Observable.of(this.lastSecurityInfo);
   }
 
   public updateFromServer(): Observable<SecurityInfo> {
@@ -240,12 +228,9 @@ export class OidcService implements OnDestroy {
       map((user: User) =>
         createSecurityInfo(
           user,
-          this.securityInfoSubject.getValue().refreshtoken + 1
+          (this.lastSecurityInfo ? this.lastSecurityInfo.refreshtoken : 1000) + 1
         )
       ),
-      tap((securityInfo: SecurityInfo) => {
-        this.securityInfoSubject.next(securityInfo);
-      })
     );
   }
 
@@ -255,7 +240,7 @@ export class OidcService implements OnDestroy {
     let headers = new HeadersBuilder().json().build();
 
     return this.http
-      .get(url, { headers: headers })
+      .get(url, {headers: headers})
       .pipe(map(OidcService.toUser), catchError(OidcService.handleError));
   }
 
@@ -278,8 +263,8 @@ export class OidcService implements OnDestroy {
     let errMsg = error.message
       ? error.message
       : error.status
-      ? `${error.status} - ${error.statusText}`
-      : "Server error";
+        ? `${error.status} - ${error.statusText}`
+        : "Server error";
 
     console.error("An error occurred", errMsg); // log to console instead
     return Observable.throw(errMsg);
