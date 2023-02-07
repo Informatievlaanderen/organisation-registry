@@ -1,3 +1,16 @@
+# [1.294.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.293.5...v1.294.0) (2023-02-07)
+
+
+### Bug Fixes
+
+* or-1573 make oidc client on request ([b570dcb](https://github.com/informatievlaanderen/organisation-registry/commit/b570dcbf97fd7457cf08aa9aa180f5a3c6cda373))
+* or-1573 replace get by update ([55cf077](https://github.com/informatievlaanderen/organisation-registry/commit/55cf0779eec091a057c14608e75937847e20fc49))
+
+
+### Features
+
+* or-1573 update login info ([249b7af](https://github.com/informatievlaanderen/organisation-registry/commit/249b7af939d865dec9cf273d5525c73e11bd0c41))
+
 ## [1.293.5](https://github.com/informatievlaanderen/organisation-registry/compare/v1.293.4...v1.293.5) (2023-01-03)
 
 
