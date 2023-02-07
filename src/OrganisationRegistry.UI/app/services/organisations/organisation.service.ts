@@ -1,12 +1,12 @@
-import { Injectable } from "@angular/core";
-import { Response, Http } from "@angular/http";
+import {Injectable} from "@angular/core";
+import {Response, Http} from "@angular/http";
 
-import { Observable } from "rxjs/Observable";
+import {Observable} from "rxjs/Observable";
 
-import { ConfigurationService } from "core/configuration";
-import { HeadersBuilder } from "core/http";
-import { PagedResult, PagedResultFactory, SortOrder } from "core/pagination";
-import { ICrudService } from "core/crud";
+import {ConfigurationService} from "core/configuration";
+import {HeadersBuilder} from "core/http";
+import {PagedResult, PagedResultFactory, SortOrder} from "core/pagination";
+import {ICrudService} from "core/crud";
 
 import {
   OrganisationFilter,
@@ -15,7 +15,8 @@ import {
   OrganisationListItem,
   ICreateOrganisation,
 } from "./";
-import { KboOrganisation } from "./organisation.model";
+import {KboOrganisation} from "./organisation.model";
+import {catchError, map} from "rxjs/operators";
 
 @Injectable()
 export class OrganisationService implements ICrudService<Organisation> {
@@ -25,7 +26,8 @@ export class OrganisationService implements ICrudService<Organisation> {
   constructor(
     private http: Http,
     private configurationService: ConfigurationService
-  ) {}
+  ) {
+  }
 
   public getOrganisations(
     filter: OrganisationFilter,
@@ -42,7 +44,7 @@ export class OrganisationService implements ICrudService<Organisation> {
       .build();
 
     return this.http
-      .get(this.organisationsUrl, { headers: headers })
+      .get(this.organisationsUrl, {headers: headers})
       .map(this.toOrganisations);
   }
 
@@ -59,7 +61,7 @@ export class OrganisationService implements ICrudService<Organisation> {
       .build();
 
     return this.http
-      .get(this.organisationsUrl, { headers: headers })
+      .get(this.organisationsUrl, {headers: headers})
       .map((r) => r.text());
   }
 
@@ -73,7 +75,7 @@ export class OrganisationService implements ICrudService<Organisation> {
       .build();
 
     return this.http
-      .get(this.organisationsUrl, { headers: headers })
+      .get(this.organisationsUrl, {headers: headers})
       .map(this.toOrganisations);
   }
 
@@ -82,7 +84,7 @@ export class OrganisationService implements ICrudService<Organisation> {
 
     let headers = new HeadersBuilder().json().build();
 
-    return this.http.get(url, { headers: headers }).map(this.toOrganisation);
+    return this.http.get(url, {headers: headers}).map(this.toOrganisation);
   }
 
   public getChildren(
@@ -101,7 +103,7 @@ export class OrganisationService implements ICrudService<Organisation> {
       .build();
 
     return this.http
-      .get(url, { headers: headers })
+      .get(url, {headers: headers})
       .map(this.toOrganisationChildren);
   }
 
@@ -121,7 +123,7 @@ export class OrganisationService implements ICrudService<Organisation> {
     let headers = new HeadersBuilder().json().build();
 
     return this.http
-      .put(url, JSON.stringify(organisation), { headers: headers })
+      .put(url, JSON.stringify(organisation), {headers: headers})
       .map(this.getLocationHeader);
   }
 
@@ -131,7 +133,11 @@ export class OrganisationService implements ICrudService<Organisation> {
     let result = this.http.get(`${this.kboUrl}/${kbo}?noRedirect=1`, {
       headers: headers,
     });
-    return result.map(this.toKboOrganisation);
+    return result.pipe(
+      map(this.toKboOrganisation),
+      catchError(error => {
+        throw(error.json())
+      }));
   }
 
   public putKboNumber(organisationId: string, kboNumber: string) {
@@ -139,7 +145,7 @@ export class OrganisationService implements ICrudService<Organisation> {
 
     let headers = new HeadersBuilder().build();
 
-    return this.http.put(url, "", { headers: headers });
+    return this.http.put(url, "", {headers: headers});
   }
 
   public terminate(
@@ -157,7 +163,7 @@ export class OrganisationService implements ICrudService<Organisation> {
         dateOfTermination: dateOfTermination,
         forceKboTermination: forceKboTermination,
       },
-      { headers: headers }
+      {headers: headers}
     );
   }
 
@@ -191,5 +197,6 @@ export class OrganisationService implements ICrudService<Organisation> {
     );
   }
 
-  getByOvoNumber(ovoNumber: string) {}
+  getByOvoNumber(ovoNumber: string) {
+  }
 }

@@ -158,8 +158,14 @@ export class OrganisationCoupleWithKboComponent implements OnInit, OnDestroy {
             new AlertBuilder()
               .alert()
               .withTitle('KBO nummer')
-              .withMessage('Het opgegeven KBO nummer werd niet gevonden.')
+              .withMessage(this.getErrorMessage(error))
               .build());
         }));
   }
-}
+
+  private getErrorMessage(error : any) {
+    if(error.Duplicate)
+      return error.Duplicate[0];
+
+    return 'Het opgegeven KBO nummer werd niet gevonden.';
+  }}
