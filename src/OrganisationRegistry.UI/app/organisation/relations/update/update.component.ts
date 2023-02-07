@@ -25,7 +25,7 @@ import {Subscription} from "rxjs/Subscription";
 export class OrganisationRelationsUpdateOrganisationRelationComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public relations: SelectItem[];
-  public organisation: SearchResult;
+  public relatedOrganisation: SearchResult;
   private relationId: string;
 
   private readonly subscriptions: Subscription[] = new Array<Subscription>();
@@ -94,7 +94,7 @@ export class OrganisationRelationsUpdateOrganisationRelationComponent implements
   private setForm(organisationRelation, allRelations) {
     if (organisationRelation) {
       this.form.setValue(organisationRelation);
-      this.organisation = new SearchResult(organisationRelation.relatedOrganisationId, organisationRelation.relatedOrganisationName);
+      this.relatedOrganisation = new SearchResult(organisationRelation.relatedOrganisationId, organisationRelation.relatedOrganisationName);
     }
 
     this.relations = allRelations.map(k => new SelectItem(k.id, k.name));
