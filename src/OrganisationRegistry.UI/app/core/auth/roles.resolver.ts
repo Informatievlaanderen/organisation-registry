@@ -10,7 +10,7 @@ export class RolesResolver implements Resolve<Role[]> {
   constructor(private oidcService: OidcService) {}
 
   resolve(route: ActivatedRouteSnapshot) {
-    return this.oidcService.getOrUpdateValue().pipe(
+    return this.oidcService.updateSecurityInfo().pipe(
       map((securityInfo: SecurityInfo) => securityInfo.roles),
       take(1)
     );

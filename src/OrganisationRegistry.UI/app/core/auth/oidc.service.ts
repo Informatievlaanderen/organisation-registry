@@ -10,9 +10,9 @@ import {User} from "./user.model";
 import {Role} from "./role.model";
 import {OidcClient} from "oidc-client";
 import {
-  catchError,
+  catchError, concatMap,
   map,
-  mergeMap,
+  mergeMap, switchMap, tap,
 
 } from "rxjs/operators";
 import {BehaviorSubject} from "rxjs/BehaviorSubject";
@@ -69,8 +69,7 @@ function createSecurityInfo(
 export class OidcService {
   private securityUrl = `${this.configurationService.apiUrl}/v1/security`;
   private securityInfoUrl = `${this.configurationService.apiUrl}/v1/security/info`;
-
-  private lastSecurityInfo: SecurityInfo;
+  private securityInfoSubject = new BehaviorSubject<SecurityInfo>(null);
 
   constructor(
     private http: Http,
@@ -119,7 +118,7 @@ export class OidcService {
         return localStorage.getItem("token");
       }),
       mergeMap((token) =>
-        this.updateFromServer().pipe(
+        this.updateSecurityInfo(true).pipe(
           map((securityInfo: SecurityInfo) => [token, securityInfo])
         )
       )
@@ -155,32 +154,32 @@ export class OidcService {
   }
 
   public get isLoggedIn(): Observable<boolean> {
-    return this.getOrUpdateValue().map((user) => user.isLoggedIn);
+    return this.getSecurityInfo().map((user) => user.isLoggedIn);
   }
 
   public get userName(): Observable<string> {
-    return this.getOrUpdateValue().map((user) => user.userName);
+    return this.getSecurityInfo().map((user) => user.userName);
   }
 
   public get roles(): Observable<Array<Role>> {
-    return this.getOrUpdateValue().map((user) => user.roles);
+    return this.getSecurityInfo().map((user) => user.roles);
   }
 
   public get ovoNumbers(): Observable<Array<string>> {
-    return this.getOrUpdateValue().map((user) => user.ovoNumbers);
+    return this.getSecurityInfo().map((user) => user.ovoNumbers);
   }
 
   public get organisationIds(): Observable<Array<string>> {
-    return this.getOrUpdateValue().map((user) => user.organisationIds);
+    return this.getSecurityInfo().map((user) => user.organisationIds);
   }
 
   public get bodyIds(): Observable<Array<string>> {
-    return this.getOrUpdateValue().map((user) => user.bodyIds);
+    return this.getSecurityInfo().map((user) => user.bodyIds);
   }
 
   public canEditBody(bodyId): Observable<boolean> {
 
-    return this.getOrUpdateValue().pipe(
+    return this.getSecurityInfo().pipe(
       map((securityInfo: SecurityInfo) => {
         if (
           hasAnyOfRoles(
@@ -216,21 +215,31 @@ export class OidcService {
       });
   }
 
-  public getOrUpdateValue(): Observable<SecurityInfo> {
-    if (!this.lastSecurityInfo || this.lastSecurityInfo.expires > new Date().getTime()) {
-      return this.updateFromServer();
-    }
-    return Observable.of(this.lastSecurityInfo);
+  public getSecurityInfo(): Observable<SecurityInfo> {
+    return this.securityInfoSubject.filter(v => !!v);
   }
 
-  public updateFromServer(): Observable<SecurityInfo> {
+  public updateSecurityInfo(withForce: boolean = false): Observable<SecurityInfo> {
+    if (withForce || !this.securityInfoSubject.getValue() || this.securityInfoSubject.getValue().expires > new Date().getTime()) {
+      return this.getFromServer().pipe(
+        tap((si: SecurityInfo) => {
+          this.securityInfoSubject.next(si);
+        }),
+        concatMap(_ => this.securityInfoSubject));
+    }
+    return this.securityInfoSubject
+  }
+
+  public getFromServer(): Observable<SecurityInfo> {
     return this.getUser().pipe(
       map((user: User) =>
         createSecurityInfo(
           user,
-          (this.lastSecurityInfo ? this.lastSecurityInfo.refreshtoken : 1000) + 1
+          (this.securityInfoSubject.getValue() ? this.securityInfoSubject.getValue().refreshtoken : 1000) + 1
         )
       ),
+      catchError(() =>
+        Observable.of(createSecurityInfo()))
     );
   }
 

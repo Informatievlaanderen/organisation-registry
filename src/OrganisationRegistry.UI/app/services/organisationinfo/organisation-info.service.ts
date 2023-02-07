@@ -34,7 +34,7 @@ export class OrganisationInfoService {
 
   private onSecurityChanged = combineLatest(
     this.organisationChanged$,
-    this.oidcService.getOrUpdateValue()
+    this.oidcService.updateSecurityInfo()
   ).pipe(shareReplay(1));
 
   public readonly canViewKboManagementChanged$: Observable<boolean> =
