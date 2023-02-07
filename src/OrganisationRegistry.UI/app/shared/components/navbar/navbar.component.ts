@@ -9,7 +9,7 @@ import { Observable } from "rxjs/Observable";
 
 import { OidcService, Role } from "core/auth";
 import { Environments } from "../../../environments";
-import { map } from "rxjs/operators";
+import {finalize, map} from "rxjs/operators";
 
 @Component({
   selector: "ww-navbar",
@@ -34,6 +34,9 @@ export class NavbarComponent implements OnInit {
   constructor(private oidcService: OidcService) {}
 
   ngOnInit() {
+    const sub = this.oidcService.updateSecurityInfo().pipe(
+      finalize(() => sub.unsubscribe())).subscribe();
+
     this.isLoggedIn = this.oidcService.isLoggedIn;
 
     this.isOrganisationRegistryBeheerder = this.oidcService.hasAnyOfRoles(

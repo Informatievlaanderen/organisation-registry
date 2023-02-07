@@ -94,7 +94,7 @@ export class OrganisationInfoAddChildOrganisationComponent
 
   private onCreateSuccess(result, organisation) {
     if (result) {
-      this.oidcService.updateFromServer().subscribe();
+      this.oidcService.getFromServer().subscribe();
       this.router.navigate(["./../"], { relativeTo: this.route });
 
       let organisationUrl = this.router.serializeUrl(
