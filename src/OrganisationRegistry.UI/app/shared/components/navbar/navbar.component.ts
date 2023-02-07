@@ -5,11 +5,11 @@
   OnInit,
 } from "@angular/core";
 
-import { Observable } from "rxjs/Observable";
+import {Observable} from "rxjs/Observable";
 
-import { OidcService, Role } from "core/auth";
-import { Environments } from "../../../environments";
-import {finalize, map} from "rxjs/operators";
+import {OidcService, Role} from "core/auth";
+import {Environments} from "../../../environments";
+import {finalize, map, take} from "rxjs/operators";
 
 @Component({
   selector: "ww-navbar",
@@ -31,11 +31,14 @@ export class NavbarComponent implements OnInit {
   public roleName$: Observable<string>;
   public showEnvironment: boolean = this.environment != Environments.production;
 
-  constructor(private oidcService: OidcService) {}
+  constructor(private oidcService: OidcService) {
+  }
 
   ngOnInit() {
     const sub = this.oidcService.updateSecurityInfo().pipe(
-      finalize(() => sub.unsubscribe())).subscribe();
+      take(1),
+      finalize(() => sub.unsubscribe()))
+      .subscribe();
 
     this.isLoggedIn = this.oidcService.isLoggedIn;
 
