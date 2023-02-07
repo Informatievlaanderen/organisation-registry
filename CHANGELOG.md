@@ -1,3 +1,11 @@
+## [1.294.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.294.0...v1.294.1) (2023-02-07)
+
+
+### Bug Fixes
+
+* or-1568 pass error message if duplicate ([5299197](https://github.com/informatievlaanderen/organisation-registry/commit/52991973fecfebada8dc89dc2e585c698efc3f12))
+* or-1578 send relatedOrganisationId to update ([acd156b](https://github.com/informatievlaanderen/organisation-registry/commit/acd156b1b8a4ed0df8463b81b2ee18f9c7763a67))
+
 # [1.294.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.293.5...v1.294.0) (2023-02-07)
 
 
