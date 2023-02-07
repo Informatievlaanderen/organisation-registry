@@ -1,19 +1,20 @@
-import { Component, OnInit, OnDestroy } from "@angular/core";
-import { ActivatedRoute, Router } from "@angular/router";
+import {Component, OnInit, OnDestroy} from "@angular/core";
+import {ActivatedRoute, Router} from "@angular/router";
 
-import { Subscription } from "rxjs/Subscription";
+import {Subscription} from "rxjs/Subscription";
 
-import { OidcService } from "core/auth";
-import { AlertService } from "core/alert";
+import {OidcService} from "core/auth";
+import {AlertService} from "core/alert";
 
-import { BodyService } from "services/bodies";
-import { OrganisationService } from "services/organisations";
+import {BodyService} from "services/bodies";
+import {OrganisationService} from "services/organisations";
 
-import { SearchResult } from "shared/components/form/form-group-autocomplete";
+import {SearchResult} from "shared/components/form/form-group-autocomplete";
 
-import { CreateChildAlerts } from "./create.alerts";
+import {CreateChildAlerts} from "./create.alerts";
 
-import { CreateBodyFormValues } from "./create-body-form";
+import {CreateBodyFormValues} from "./create-body-form";
+import {finalize, take} from "rxjs/operators";
 
 @Component({
   templateUrl: "create.template.html",
@@ -34,7 +35,8 @@ export class CreateBodyComponent implements OnInit, OnDestroy {
     private organisationService: OrganisationService,
     private alertService: AlertService,
     private oidcService: OidcService
-  ) {}
+  ) {
+  }
 
   ngOnInit() {
     this.body = new CreateBodyFormValues();
@@ -77,9 +79,12 @@ export class CreateBodyComponent implements OnInit, OnDestroy {
 
   private onCreateSuccess(result, value) {
     if (result) {
-      this.oidcService.getFromServer().subscribe();
+      const sub = this.oidcService.updateSecurityInfo().pipe(
+        take(1),
+        finalize(() => sub.unsubscribe()))
+        .subscribe();
 
-      this.router.navigate(["./../", value.id], { relativeTo: this.route });
+      this.router.navigate(["./../", value.id], {relativeTo: this.route});
 
       let bodyUrl = this.router.serializeUrl(
         this.router.createUrlTree(["./../", value.id], {

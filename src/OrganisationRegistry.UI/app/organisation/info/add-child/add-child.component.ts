@@ -13,6 +13,7 @@ import { OrganisationService } from "services/organisations";
 import { PurposeService } from "services/purposes";
 import { Subscription } from "rxjs/Subscription";
 import { OidcService } from "core/auth";
+import {finalize, take} from "rxjs/operators";
 
 @Component({
   templateUrl: "add-child.template.html",
@@ -94,7 +95,10 @@ export class OrganisationInfoAddChildOrganisationComponent
 
   private onCreateSuccess(result, organisation) {
     if (result) {
-      this.oidcService.getFromServer().subscribe();
+      const sub = this.oidcService.updateSecurityInfo().pipe(
+        take(1),
+        finalize(() => sub.unsubscribe()))
+        .subscribe();
       this.router.navigate(["./../"], { relativeTo: this.route });
 
       let organisationUrl = this.router.serializeUrl(
