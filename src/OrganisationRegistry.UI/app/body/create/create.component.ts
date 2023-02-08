@@ -79,10 +79,7 @@ export class CreateBodyComponent implements OnInit, OnDestroy {
 
   private onCreateSuccess(result, value) {
     if (result) {
-      const sub = this.oidcService.updateSecurityInfo().pipe(
-        take(1),
-        finalize(() => sub.unsubscribe()))
-        .subscribe();
+this.oidcService.updateSecurityInfo().subscribe();
 
       this.router.navigate(["./../", value.id], {relativeTo: this.route});
 

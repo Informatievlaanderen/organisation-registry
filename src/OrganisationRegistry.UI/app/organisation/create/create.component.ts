@@ -1,18 +1,18 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
-import { ActivatedRoute, Router } from "@angular/router";
+import {Component, OnDestroy, OnInit} from "@angular/core";
+import {ActivatedRoute, Router} from "@angular/router";
 
-import { OidcService } from "core/auth";
-import { AlertService, AlertBuilder } from "core/alert";
+import {OidcService} from "core/auth";
+import {AlertService, AlertBuilder} from "core/alert";
 
-import { OrganisationService } from "services/organisations";
-import { PurposeService } from "services/purposes";
+import {OrganisationService} from "services/organisations";
+import {PurposeService} from "services/purposes";
 
-import { SelectItem } from "shared/components/form/form-group-select";
+import {SelectItem} from "shared/components/form/form-group-select";
 
-import { CreateChildAlerts } from "./create.alerts";
+import {CreateChildAlerts} from "./create.alerts";
 
-import { CreateOrganisationFormValues } from "./create-organisation-form";
-import { Subscription } from "rxjs/Subscription";
+import {CreateOrganisationFormValues} from "./create-organisation-form";
+import {Subscription} from "rxjs/Subscription";
 import {finalize, take} from "rxjs/operators";
 
 @Component({
@@ -35,7 +35,8 @@ export class CreateOrganisationComponent implements OnInit, OnDestroy {
     private purposeService: PurposeService,
     private alertService: AlertService,
     private oidcService: OidcService
-  ) {}
+  ) {
+  }
 
   ngOnInit() {
     this.organisation = new CreateOrganisationFormValues();
@@ -85,12 +86,10 @@ export class CreateOrganisationComponent implements OnInit, OnDestroy {
 
   private onCreateSuccess(result, value) {
     if (result) {
-      const sub = this.oidcService.updateSecurityInfo().pipe(
-        take(1),
-        finalize(() => sub.unsubscribe()))
+      const sub = this.oidcService.updateSecurityInfo()
         .subscribe();
 
-      this.router.navigate(["./../", value.id], { relativeTo: this.route });
+      this.router.navigate(["./../", value.id], {relativeTo: this.route});
 
       let organisationUrl = this.router.serializeUrl(
         this.router.createUrlTree(["./../", value.id], {
