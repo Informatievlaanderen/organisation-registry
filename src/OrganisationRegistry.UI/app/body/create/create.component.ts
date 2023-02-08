@@ -14,7 +14,7 @@ import {SearchResult} from "shared/components/form/form-group-autocomplete";
 import {CreateChildAlerts} from "./create.alerts";
 
 import {CreateBodyFormValues} from "./create-body-form";
-import {finalize, take} from "rxjs/operators";
+import {finalize, first, take} from "rxjs/operators";
 
 @Component({
   templateUrl: "create.template.html",
@@ -79,7 +79,9 @@ export class CreateBodyComponent implements OnInit, OnDestroy {
 
   private onCreateSuccess(result, value) {
     if (result) {
-this.oidcService.updateSecurityInfo().subscribe();
+      this.oidcService.updateSecurityInfo()
+        .pipe(first())
+        .subscribe();
 
       this.router.navigate(["./../", value.id], {relativeTo: this.route});
 

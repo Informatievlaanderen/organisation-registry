@@ -13,7 +13,7 @@ import {CreateChildAlerts} from "./create.alerts";
 
 import {CreateOrganisationFormValues} from "./create-organisation-form";
 import {Subscription} from "rxjs/Subscription";
-import {finalize, take} from "rxjs/operators";
+import {finalize, first, take} from "rxjs/operators";
 
 @Component({
   templateUrl: "create.template.html",
@@ -87,6 +87,7 @@ export class CreateOrganisationComponent implements OnInit, OnDestroy {
   private onCreateSuccess(result, value) {
     if (result) {
       const sub = this.oidcService.updateSecurityInfo()
+        .pipe(first())
         .subscribe();
 
       this.router.navigate(["./../", value.id], {relativeTo: this.route});
