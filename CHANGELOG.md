@@ -1,3 +1,11 @@
+## [1.294.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.294.1...v1.294.2) (2023-02-08)
+
+
+### Bug Fixes
+
+* or-1568 fix create flow ([34ddc51](https://github.com/informatievlaanderen/organisation-registry/commit/34ddc518f43fa62141b6175d9eb34a1607eeb32f))
+* or-1568 unsub after first result ([c3aced4](https://github.com/informatievlaanderen/organisation-registry/commit/c3aced41e199cfb4272541c08a53300e291c817e))
+
 ## [1.294.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.294.0...v1.294.1) (2023-02-07)
 
 
