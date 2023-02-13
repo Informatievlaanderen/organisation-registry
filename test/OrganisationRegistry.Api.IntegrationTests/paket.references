@@ -19,3 +19,4 @@ xunit.categories
 AutoFixture
 FluentAssertions
 Moq
+System.Diagnostics.DiagnosticSource

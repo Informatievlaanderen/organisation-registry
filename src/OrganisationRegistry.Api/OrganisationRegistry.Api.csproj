@@ -17,6 +17,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\OrganisationRegistry.OpenTelemetry\OrganisationRegistry.OpenTelemetry.csproj" />
     <ProjectReference Include="..\OrganisationRegistry\OrganisationRegistry.csproj" />
     <ProjectReference Include="..\OrganisationRegistry.Configuration.Database\OrganisationRegistry.Configuration.Database.csproj" />
     <ProjectReference Include="..\OrganisationRegistry.SqlServer\OrganisationRegistry.SqlServer.csproj" />

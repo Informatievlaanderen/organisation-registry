@@ -23,6 +23,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		SEMVER.md = SEMVER.md
 		webpack.config.js = webpack.config.js
 		run_frontend.sh = run_frontend.sh
+		otel-collector-config.yaml = otel-collector-config.yaml
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrganisationRegistry.Infrastructure", "src\OrganisationRegistry.Infrastructure\OrganisationRegistry.Infrastructure.csproj", "{B981FD48-3AD3-4613-BA8D-74E1EF7304A2}"
@@ -94,6 +95,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenSearch.Net", "src\OpenSearch.Net\OpenSearch.Net.csproj", "{CD38186E-B8EB-4BAF-A75F-D6FA4DE1C1A0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OpenSearch", "OpenSearch", "{0F034590-1298-4E13-BF5B-35F79506AB16}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "infra", "infra", "{01C5AB4B-0A8F-4ADD-809E-54FCC148B8BF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrganisationRegistry.OpenTelemetry", "src\OrganisationRegistry.OpenTelemetry\OrganisationRegistry.OpenTelemetry.csproj", "{55759034-DCC0-4752-8B9B-9714644D47CB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -209,6 +214,10 @@ Global
 		{CD38186E-B8EB-4BAF-A75F-D6FA4DE1C1A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CD38186E-B8EB-4BAF-A75F-D6FA4DE1C1A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CD38186E-B8EB-4BAF-A75F-D6FA4DE1C1A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{55759034-DCC0-4752-8B9B-9714644D47CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55759034-DCC0-4752-8B9B-9714644D47CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55759034-DCC0-4752-8B9B-9714644D47CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55759034-DCC0-4752-8B9B-9714644D47CB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -246,5 +255,6 @@ Global
 		{533CA4CC-7F88-47B7-8215-648EAD5EABE0} = {694835F2-9FEE-41C0-8989-44A574C6AF2E}
 		{CD38186E-B8EB-4BAF-A75F-D6FA4DE1C1A0} = {0F034590-1298-4E13-BF5B-35F79506AB16}
 		{96A2158F-8BBD-40FE-93D1-5006C3F74AA0} = {0F034590-1298-4E13-BF5B-35F79506AB16}
+		{55759034-DCC0-4752-8B9B-9714644D47CB} = {01C5AB4B-0A8F-4ADD-809E-54FCC148B8BF}
 	EndGlobalSection
 EndGlobal

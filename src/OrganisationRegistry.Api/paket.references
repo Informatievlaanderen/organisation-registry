@@ -39,6 +39,7 @@ Autofac.Extensions.DependencyInjection
 Newtonsoft.Json
 
 CsvHelper
+System.Diagnostics.DiagnosticSource
 
 Serilog
 Serilog.Extensions.Logging

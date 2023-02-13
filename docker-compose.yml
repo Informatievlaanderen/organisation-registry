@@ -31,6 +31,15 @@ services:
     command:
       - -verbose
       - -global-response-templating
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib
+    command: ["--config=/etc/otel-collector-config.yaml"]
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
+    ports:
+      - "4317:4317"   # OTLP gRPC receiver
+
 volumes:
   mssql-data:
   opensearch-data:

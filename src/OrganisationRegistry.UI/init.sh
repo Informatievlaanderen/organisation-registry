@@ -5,8 +5,7 @@ echo "window.organisationRegistryApiEndpoint=\"$API_ENDPOINT\";" >> /usr/share/n
 echo "window.organisationRegistryUiEndpoint=\"$UI_ENDPOINT\";" >> /usr/share/nginx/html/config.js
 echo "window.organisationRegistryInformatieVlaanderenLink=\"$AIV_URI\";" >> /usr/share/nginx/html/config.js
 
-sed -i 's/__MATOMO_SITE_ID__/'"$MATOMO_SITE_ID"'/' /usr/share/nginx/html/index.html
-sed -i 's/__MATOMO_URL__/'"$MATOMO_URL"'/' /usr/share/nginx/html/index.html
-sed -i 's/__MATOMO_CDN__/'"$MATOMO_CDN"'/' /usr/share/nginx/html/index.html
+echo "window.otelServerUri=\"$OTEL_SERVER_URI\";" >> /usr/share/nginx/html/config.js
+echo "window.otelDistributedTracingOrigins=\"$OTEL_DISTRIBUTED_TRACING_ORIGINS\";" >> /usr/share/nginx/html/config.js
 
 nginx -g 'daemon off;'

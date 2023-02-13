@@ -1,0 +1,34 @@
+diff --git a/node_modules/@elastic/apm-rum/src/index.d.ts b/node_modules/@elastic/apm-rum/src/index.d.ts
+index f700a33..48d1f10 100644
+--- a/node_modules/@elastic/apm-rum/src/index.d.ts
++++ b/node_modules/@elastic/apm-rum/src/index.d.ts
+@@ -120,7 +120,7 @@ declare module '@elastic/apm-rum' {
+     observe(name: TransactionEvents, callback: (tr: Transaction) => void): void
+     config(config: AgentConfigOptions): void
+     setUserContext(user: UserObject): void
+-    setCustomContext(custom: object): void
++    setCustomContext(custom: any): void
+     addLabels(labels: Labels): void
+     setInitialPageLoadName(name: string): void
+     startTransaction(
+@@ -150,7 +150,7 @@ declare class BaseSpan {
+   /**
+    * undocumented, might be removed in future versions
+    */
+-  addContext(context: object): void
++  addContext(context: any): void
+   end(endTime?: number): void
+   duration(): number | null
+ }
+@@ -181,10 +181,4 @@ type TaskId = string | number
+ type LabelValue = string | number | boolean
+ type LogLevel = 'trace' | 'debug' | 'info' | 'warn' | 'error'
+ type TransactionEvents = 'transaction:start' | 'transaction:end'
+-type InstrumentationTypes =
+-  | 'page-load'
+-  | 'eventtarget'
+-  | 'error'
+-  | 'history'
+-  | 'fetch'
+-  | 'xmlhttprequest'
++type InstrumentationTypes = 'page-load'| 'eventtarget'| 'error'| 'history'| 'fetch'| 'xmlhttprequest'
