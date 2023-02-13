@@ -1,3 +1,10 @@
+# [1.295.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.294.2...v1.295.0) (2023-02-13)
+
+
+### Features
+
+* or-1593 add otel ([f34d215](https://github.com/informatievlaanderen/organisation-registry/commit/f34d2156cd327874222fa19d34eb32374261af5f))
+
 ## [1.294.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.294.1...v1.294.2) (2023-02-08)
 
 
