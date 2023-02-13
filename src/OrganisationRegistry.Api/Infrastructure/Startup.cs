@@ -8,6 +8,9 @@ using Api.Security;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Be.Vlaanderen.Basisregisters.Api;
+using Be.Vlaanderen.Basisregisters.Api.Search.Filtering;
+using Be.Vlaanderen.Basisregisters.Api.Search.Pagination;
+using Be.Vlaanderen.Basisregisters.Api.Search.Sorting;
 using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
 using Configuration;
 using HostedServices;
@@ -26,6 +29,7 @@ using Microsoft.FeatureManagement;
 using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
+using OpenTelemetry.Extensions;
 using OrganisationRegistry.Infrastructure;
 using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Authorization.Cache;
@@ -155,6 +159,20 @@ public class Startup
                             .Select(c => c.Value)
                             .ToArray(),
                         ExposedHeaders = new[] { SearchConstants.SearchMetaDataHeaderName },
+                        Headers =
+                            new []
+                            {
+                                HeaderNames.Accept,
+                                HeaderNames.ContentType,
+                                HeaderNames.Origin,
+                                HeaderNames.Authorization,
+                                HeaderNames.IfMatch,
+                                ExtractFilteringRequestExtension.HeaderName,
+                                AddSortingExtension.HeaderName,
+                                AddPaginationExtension.HeaderName,
+                                "traceparent",
+                                "tracestate"
+                            },
                     },
                     Localization =
                     {
@@ -265,6 +283,8 @@ public class Startup
                         },
                     },
                 });
+
+        services.AddOpenTelemetry();
 
         var containerBuilder = new ContainerBuilder();
         containerBuilder.RegisterModule(new MagdaModule(_configuration));

@@ -24,4 +24,14 @@ export class ConfigurationService {
   public get uiUrl() {
     return (<any>window).organisationRegistryUiEndpoint || 'https://organisatie.dev-vlaanderen.local';
   }
+
+  public get otelServerUri() {
+    return (<any>window).otelServerUri;
+  }
+  public get otelDistributedTracingOrigins() {
+    return (<any>window).otelDistributedTracingOrigins;
+  }
+  public get environment() {
+    return (<any>window).environment || 'development';
+  }
 }
