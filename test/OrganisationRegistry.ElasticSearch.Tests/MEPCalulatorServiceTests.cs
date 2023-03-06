@@ -6,7 +6,6 @@ using System.Data.Common;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using App.Metrics;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Bodies;
@@ -47,8 +46,7 @@ public class MEPCalulationServiceTests
             new NullLogger<BodyHandler>(),
             _fixture.Elastic,
             _fixture.ContextFactory,
-            _fixture.ElasticSearchOptions,
-            new MetricsBuilder().Build());
+            _fixture.ElasticSearchOptions);
 
         var serviceProvider = new ServiceCollection()
             .AddSingleton(bodyHandler)

@@ -5,8 +5,6 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
-using App.Metrics;
-using App.Metrics.Timer;
 using Bodies;
 using BodyClassification.Events;
 using BodyClassificationType.Events;
@@ -27,7 +25,6 @@ using SeatType.Events;
 using OrganisationRegistry.Body.Events;
 using OrganisationRegistry.Infrastructure.Events;
 using SqlServer;
-using TimeUnit = App.Metrics.TimeUnit;
 
 public class BodyHandler :
     BaseProjection<BodyHandler>,
@@ -68,11 +65,9 @@ public class BodyHandler :
 {
     private readonly Elastic _elastic;
     private readonly IContextFactory _contextFactory;
-    private readonly IMetricsRoot _metrics;
     private readonly ElasticSearchConfiguration _elasticSearchOptions;
 
     private static readonly TimeSpan ScrollTimeout = TimeSpan.FromMinutes(5);
-    private readonly TimerOptions _indexTimer;
 
     private static string[] ProjectionTableNames
         => Array.Empty<string>();
@@ -81,19 +76,10 @@ public class BodyHandler :
         ILogger<BodyHandler> logger,
         Elastic elastic,
         IContextFactory contextFactory,
-        IOptions<ElasticSearchConfiguration> elasticSearchOptions,
-        IMetricsRoot metrics) : base(logger)
+        IOptions<ElasticSearchConfiguration> elasticSearchOptions) : base(logger)
     {
         _elastic = elastic;
         _contextFactory = contextFactory;
-        _metrics = metrics;
-        _indexTimer = new TimerOptions
-        {
-            Name = "Index Refresh Timer",
-            MeasurementUnit = Unit.Requests,
-            DurationUnit = TimeUnit.Milliseconds,
-            RateUnit = TimeUnit.Milliseconds,
-        };
         _elasticSearchOptions = elasticSearchOptions.Value;
     }
 
@@ -832,12 +818,9 @@ public class BodyHandler :
         (
             async elastic =>
             {
-                using (_metrics.Measure.Timer.Time(_indexTimer))
-                {
-                    await elastic.TryGetAsync(
-                        async () =>
-                            (await elastic.WriteClient.Indices.RefreshAsync(Indices.Index<BodyDocument>())).ThrowOnFailure());
-                }
+                await elastic.TryGetAsync(
+                    async () =>
+                        (await elastic.WriteClient.Indices.RefreshAsync(Indices.Index<BodyDocument>())).ThrowOnFailure());
 
                 var searchResponse = (await elastic.TryGetAsync(
                     () => elastic.WriteClient.SearchAsync<BodyDocument>(
@@ -897,15 +880,12 @@ public class BodyHandler :
         (
             async elastic =>
             {
-                using (_metrics.Measure.Timer.Time(_indexTimer))
-                {
-                    await elastic.TryGetAsync(
-                        async () =>
-                            (await elastic.WriteClient.Indices.RefreshAsync(Indices.Index<BodyDocument>()))
-                            .ThrowOnFailure());
-                }
+                await elastic.TryGetAsync(
+                    async () =>
+                        (await elastic.WriteClient.Indices.RefreshAsync(Indices.Index<BodyDocument>()))
+                        .ThrowOnFailure());
 
-                var searchResponse = (await elastic.TryGetAsync(
+                    var searchResponse = (await elastic.TryGetAsync(
                     () => elastic.WriteClient.SearchAsync<BodyDocument>(
                         s => s.Query(
                             q => q.Term(
