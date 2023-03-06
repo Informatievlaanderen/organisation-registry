@@ -7,7 +7,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using App.Metrics;
 using Autofac.Features.OwnedInstances;
 using Autofac.Util;
 using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
@@ -179,11 +178,8 @@ public class Program
 
                 builder
                     .AddTransient<ISecurityService, NotImplementedSecurityService>()
-                    .AddSingleton(new MetricsBuilder()
-                        .Report.ToConsole().Build())
 
                     .AddSingleton<IDateTimeProvider, DateTimeProvider>()
-
 
                     .AddSingleton<IProjectionStates, ProjectionStates>()
                     .AddSingleton<IContextFactory, ContextFactory>()
