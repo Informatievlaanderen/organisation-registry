@@ -4,7 +4,6 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using App.Metrics;
 using Infrastructure;
 using Microsoft.Extensions.Logging;
 using OrganisationRegistry.Infrastructure.Config;
@@ -34,8 +33,7 @@ public class CacheRunner
         IEventStore store,
         IContextFactory contextFactory,
         IProjectionStates projectionStates,
-        IEventPublisher bus, BusRegistrar busRegistrar,
-        IMetricsRoot metrics)
+        IEventPublisher bus, BusRegistrar busRegistrar)
     {
         _logger = logger;
         _store = store;

@@ -7,8 +7,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using App.Metrics;
-using App.Metrics.Scheduling;
 using Autofac.Features.OwnedInstances;
 using Autofac.Util;
 using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql.EntityFrameworkCore;
@@ -188,8 +186,7 @@ public class Program
                             inProcessBus,
                             new BusRegistrar(provider.GetRequiredService<ILogger<BusRegistrar>>(),
                                 inProcessBus,
-                                provider.GetRequiredService<Func<IServiceProvider>>()),
-                            provider.GetRequiredService<IMetricsRoot>()
+                                provider.GetRequiredService<Func<IServiceProvider>>())
                         );
                     })
                     .AddSingleton(provider =>
@@ -256,8 +253,6 @@ public class Program
                         );
                     })
                     .AddSingleton<ElasticBus>()
-                    .AddSingleton(new MetricsBuilder()
-                        .Report.ToConsole().Build())
                     .AddSingleton<IDateTimeProvider, DateTimeProvider>()
                     .AddSingleton<Elastic>()
                     .AddSingleton<IProjectionStates, ProjectionStates>()

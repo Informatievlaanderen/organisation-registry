@@ -1,7 +1,6 @@
 namespace OrganisationRegistry.ElasticSearch.Projections.Organisations;
 
 using System;
-using App.Metrics;
 using Client;
 using Configuration;
 using ElasticSearch.Organisations;

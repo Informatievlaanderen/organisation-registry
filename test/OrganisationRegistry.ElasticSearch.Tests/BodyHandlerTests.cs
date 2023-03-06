@@ -12,7 +12,6 @@ using Scenario;
 using Xunit;
 using System;
 using System.Collections.Generic;
-using App.Metrics;
 using BodyClassification.Events;
 using BodyClassificationType.Events;
 using Scenario.Specimen;
@@ -37,8 +36,7 @@ public class BodyHandlerTests
             new NullLogger<BodyHandler>(),
             _fixture.Elastic,
             _fixture.ContextFactory,
-            _fixture.ElasticSearchOptions,
-            new MetricsBuilder().Build());
+            _fixture.ElasticSearchOptions);
         var serviceProvider = new ServiceCollection()
             .AddSingleton(bodyHandler)
             .BuildServiceProvider();

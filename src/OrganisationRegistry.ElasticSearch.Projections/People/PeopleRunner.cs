@@ -1,7 +1,6 @@
 namespace OrganisationRegistry.ElasticSearch.Projections.People;
 
 using System;
-using App.Metrics;
 using Cache;
 using Client;
 using Configuration;
