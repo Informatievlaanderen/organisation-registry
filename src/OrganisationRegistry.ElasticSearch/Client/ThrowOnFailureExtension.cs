@@ -1,5 +1,7 @@
 ﻿namespace OrganisationRegistry.ElasticSearch.Client;
 
+using System;
+using Organisations;
 using Osc;
 
 public static class ThrowOnFailureExtension
@@ -18,10 +20,12 @@ public static class ThrowOnFailureExtension
 
     public static IGetResponse<T> ThrowOnFailure<T>(this IGetResponse<T> response) where T : class
     {
-        if (!response.IsValid)
-            throw new ElasticsearchException(response.DebugInformation, response.OriginalException);
+        if (response.IsValid) return response;
 
-        return response;
+        if (response.ApiCall.HttpStatusCode == 404 && typeof(T) == typeof(OrganisationDocument))
+            throw new ElasticsearchOrganisationNotFoundException(((GetResponse<OrganisationDocument>)response).Id);
+
+        throw new ElasticsearchException(response.DebugInformation, response.OriginalException);
     }
 
     public static ExistsResponse ThrowOnFailure(this ExistsResponse response)
@@ -69,5 +73,15 @@ public static class ThrowOnFailureExtension
     {
         if (!response.IsValid)
             throw new ElasticsearchException(response.DebugInformation, response.OriginalException);
+    }
+}
+
+public class ElasticsearchOrganisationNotFoundException : ElasticsearchException
+{
+    public string OrganisationId { get; }
+
+    public ElasticsearchOrganisationNotFoundException(string organisationId)
+    {
+        OrganisationId = organisationId;
     }
 }

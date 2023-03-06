@@ -17,7 +17,6 @@ using Cache;
 using Client;
 using Configuration;
 using Infrastructure;
-using Metrics;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -175,6 +174,7 @@ public class Program
                     hostContext.Configuration.GetSection(InfrastructureConfigurationSection.Name));
 
                 builder
+                    .AddSingleton<IContextFactory, ContextFactory>()
                     .AddTransient<ISecurityService, NotImplementedSecurityService>()
                     .AddSingleton(provider =>
                     {
@@ -217,10 +217,10 @@ public class Program
                             provider.GetRequiredService<IProjectionStates>(),
                             provider.GetRequiredService<Elastic>(),
                             bus,
-                            provider.GetRequiredService<IMetricsRoot>(),
                             new ElasticBusRegistrar(provider.GetRequiredService<ILogger<ElasticBusRegistrar>>(),
                                 bus,
-                                provider.GetRequiredService<Func<IServiceProvider>>())
+                                provider.GetRequiredService<Func<IServiceProvider>>()),
+                            provider.GetRequiredService<IContextFactory>()
                         );
                     })
                     .AddSingleton(provider =>
@@ -236,7 +236,7 @@ public class Program
                             new ElasticBusRegistrar(provider.GetRequiredService<ILogger<ElasticBusRegistrar>>(),
                                 bus,
                                 provider.GetRequiredService<Func<IServiceProvider>>()),
-                            provider.GetRequiredService<IMetricsRoot>()
+                            provider.GetRequiredService<IContextFactory>()
                         );
                     })
                     .AddSingleton(provider =>
@@ -252,7 +252,7 @@ public class Program
                             new ElasticBusRegistrar(provider.GetRequiredService<ILogger<ElasticBusRegistrar>>(),
                                 bus,
                                 provider.GetRequiredService<Func<IServiceProvider>>()),
-                            provider.GetRequiredService<IMetricsRoot>()
+                            provider.GetRequiredService<IContextFactory>()
                         );
                     })
                     .AddSingleton<ElasticBus>()
@@ -261,7 +261,6 @@ public class Program
                     .AddSingleton<IDateTimeProvider, DateTimeProvider>()
                     .AddSingleton<Elastic>()
                     .AddSingleton<IProjectionStates, ProjectionStates>()
-                    .AddSingleton<IContextFactory, ContextFactory>()
                     .AddSingleton<IPersonHandlerCache, PersonHandlerCache>()
                     .AddSingleton<IExternalIpFetcher, ExternalIpFetcher>()
                     .AddSingleton<IRepository, Repository>()
@@ -303,19 +302,10 @@ public class Program
                                     .MigrationsHistoryTable(MigrationTables.Default,
                                         WellknownSchemas.OrganisationRegistrySchema);
                             }));
-
-                builder.Configure<AppMetricsConfiguration>
-                    (hostContext.Configuration.GetSection(AppMetricsConfiguration.Section));
-
-                builder.AddSingleton<IMetricsRoot>(_ => new MetricsBuilder()
-                    .Report.ToSerilog(LogEventLevel.Information)
-                    .Build());
             })
             .Build();
 
         var configuration = host.Services.GetRequiredService<IConfiguration>();
-
-        ConfigureAppMetrics(host, configuration);
 
         var logger = host.Services.GetRequiredService<ILogger<Program>>();
 
@@ -331,18 +321,5 @@ public class Program
         {
             Log.CloseAndFlush();
         }
-    }
-
-    private static void ConfigureAppMetrics(IHost host, IConfiguration configuration)
-    {
-        var appMetricsConfiguration = configuration
-            .GetSection("AppMetrics").Get<AppMetricsConfiguration>();
-
-        var metrics = host.Services.GetRequiredService<IMetricsRoot>();
-
-        var scheduler = new AppMetricsTaskScheduler(
-            TimeSpan.FromSeconds(appMetricsConfiguration.FlushInterval),
-            () => Task.WhenAll(metrics.ReportRunner.RunAllAsync()));
-        scheduler.Start();
     }
 }
