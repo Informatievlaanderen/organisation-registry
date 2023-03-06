@@ -6,7 +6,6 @@ using System.Reflection;
 using System.Threading.Tasks;
 using App.Metrics;
 using Infrastructure;
-using Metrics;
 using Microsoft.Extensions.Logging;
 using OrganisationRegistry.Infrastructure.Config;
 using OrganisationRegistry.Infrastructure.Events;
@@ -31,8 +30,6 @@ public class CacheRunner
     private readonly IProjectionStates _projectionStates;
     private readonly IEventPublisher _bus;
 
-    private readonly EnvelopeMetrics _metrics;
-
     public CacheRunner(ILogger<CacheRunner> logger,
         IEventStore store,
         IContextFactory contextFactory,
@@ -46,8 +43,6 @@ public class CacheRunner
         _projectionStates = projectionStates;
         _bus = bus;
         busRegistrar.RegisterEventHandlers(EventHandlers);
-
-        _metrics = new EnvelopeMetrics(metrics, ProjectionName);
     }
 
     public async Task Run()
@@ -73,9 +68,6 @@ public class CacheRunner
         {
             previousLastProcessedEventNumber = lastProcessedEventNumber;
             var envelopes = _store.GetEventEnvelopesAfter(lastProcessedEventNumber, 2500, eventsBeingListenedTo.ToArray()).ToList();
-
-            _metrics.CountEnvelopes(envelopes);
-            _metrics.MeterEnvelopes(envelopes);
 
             var newLastProcessedEventNumber = new int?();
             try

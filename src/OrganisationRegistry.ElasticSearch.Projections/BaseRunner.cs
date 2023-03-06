@@ -5,16 +5,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using App.Metrics;
 using Client;
 using Configuration;
 using Infrastructure;
 using Infrastructure.Change;
-using Metrics;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Osc;
 using OrganisationRegistry.Infrastructure.Events;
+using SqlServer;
+using SqlServer.ElasticSearchProjections;
 using SqlServer.ProjectionState;
 
 public abstract class BaseRunner<T> where T: class, IDocument, new()
@@ -31,7 +31,7 @@ public abstract class BaseRunner<T> where T: class, IDocument, new()
     private readonly IEventStore _store;
     private readonly IProjectionStates _projectionStates;
     private readonly ElasticBus _bus;
-    private readonly EnvelopeMetrics _metrics;
+    private readonly IContextFactory _contextFactory;
 
     protected BaseRunner(
         ILogger<BaseRunner<T>> logger,
@@ -44,12 +44,13 @@ public abstract class BaseRunner<T> where T: class, IDocument, new()
         Type[] eventHandlers,
         Elastic elastic,
         ElasticBus bus,
-        IMetricsRoot metrics)
+        IContextFactory contextFactory)
     {
         _logger = logger;
         _store = store;
         _projectionStates = projectionStates;
         _bus = bus;
+        _contextFactory = contextFactory;
 
         _batchSize = configuration.Value.BatchSize;
         _elasticSearchProjectionsProjectionName = elasticSearchProjectionsProjectionName;
@@ -58,8 +59,6 @@ public abstract class BaseRunner<T> where T: class, IDocument, new()
 
         ProjectionName = projectionName;
         EventHandlers = eventHandlers;
-
-        _metrics = new EnvelopeMetrics(metrics, ProjectionName);
     }
 
     public async Task Run()
@@ -79,9 +78,6 @@ public abstract class BaseRunner<T> where T: class, IDocument, new()
         var envelopes = _store
             .GetEventEnvelopesAfter(lastProcessedEventNumber, _batchSize, eventsBeingListenedTo.ToArray())
             .ToList();
-
-        _metrics.CountEnvelopes(envelopes);
-        _metrics.MeterEnvelopes(envelopes);
 
         int? newLastProcessedEventNumber = null;
         try
@@ -103,8 +99,26 @@ public abstract class BaseRunner<T> where T: class, IDocument, new()
                     await ProcessChange(changeSetChange, documentCache, newLastProcessedEventNumber);
                 }
             }
+
             await FlushDocuments(documentCache);
             await UpdateProjectionState(newLastProcessedEventNumber);
+        }
+        catch (ElasticsearchOrganisationNotFoundException organisationNotFoundException)
+        {
+            await using var organisationRegistryContext = _contextFactory.Create();
+            organisationRegistryContext.OrganisationsToRebuild.Add(new OrganisationToRebuild()
+            {
+                OrganisationId = Guid.Parse(organisationNotFoundException.OrganisationId)
+            });
+            await organisationRegistryContext.SaveChangesAsync();
+            _logger.LogWarning(
+                0,
+                organisationNotFoundException,
+                "[{ProjectionName}] Could not find {OrganisationId} in ES while processing envelope #{EnvelopeNumber}, adding it to organisations to rebuild",
+                ProjectionName,
+                organisationNotFoundException.OrganisationId,
+                newLastProcessedEventNumber);
+            throw;
         }
         catch (Exception ex)
         {

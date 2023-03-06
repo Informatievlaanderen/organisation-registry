@@ -9,6 +9,7 @@ using Infrastructure;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrganisationRegistry.Infrastructure.Events;
+using SqlServer;
 using SqlServer.ProjectionState;
 
 public class OrganisationsRunner : BaseRunner<OrganisationDocument>
@@ -45,7 +46,7 @@ public class OrganisationsRunner : BaseRunner<OrganisationDocument>
         Elastic elastic,
         ElasticBus bus,
         ElasticBusRegistrar busRegistrar,
-        IMetricsRoot metrics) :
+        IContextFactory contextFactory) :
         base(
             logger,
             configuration,
@@ -57,7 +58,7 @@ public class OrganisationsRunner : BaseRunner<OrganisationDocument>
             EventHandlers,
             elastic,
             bus,
-            metrics)
+            contextFactory)
     {
         busRegistrar.RegisterEventHandlers(EventHandlers);
     }

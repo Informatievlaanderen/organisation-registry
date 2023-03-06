@@ -11,6 +11,7 @@ using Infrastructure;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrganisationRegistry.Infrastructure.Events;
+using SqlServer;
 using SqlServer.ProjectionState;
 
 public class PeopleRunner : BaseRunner<PersonDocument>
@@ -35,8 +36,8 @@ public class PeopleRunner : BaseRunner<PersonDocument>
         IProjectionStates projectionStates,
         Elastic elastic,
         ElasticBus bus,
-        IMetricsRoot metrics,
-        ElasticBusRegistrar busRegistrar) :
+        ElasticBusRegistrar busRegistrar,
+        IContextFactory contextFactory) :
         base(
             logger,
             configuration,
@@ -48,7 +49,7 @@ public class PeopleRunner : BaseRunner<PersonDocument>
             EventHandlers,
             elastic,
             bus,
-            metrics)
+            contextFactory)
     {
         busRegistrar.RegisterEventHandlers(EventHandlers);
     }

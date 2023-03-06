@@ -36,9 +36,5 @@
     <PackageReference Update="App.Metrics.Reporting.Console" Version="4.3.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Metrics\SerilogReporter" />
-  </ItemGroup>
-
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
