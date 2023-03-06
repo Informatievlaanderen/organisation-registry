@@ -1,3 +1,17 @@
+# [1.296.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.295.0...v1.296.0) (2023-03-06)
+
+
+### Bug Fixes
+
+* or-1613 fix npmrc ([047ee98](https://github.com/informatievlaanderen/organisation-registry/commit/047ee98558d06da49b1d80f7c58d2f9937dedf5e))
+
+
+### Features
+
+* or-1613 clean up appmetrics ([214da55](https://github.com/informatievlaanderen/organisation-registry/commit/214da55e2ef6cb7e1631ca11504ebde674da469d))
+* or-1613 clean up some more appmetrics ([cc06eb5](https://github.com/informatievlaanderen/organisation-registry/commit/cc06eb5f1ec9c9445dc0ef25be9330c8644cbe88))
+* or-1613 throw and add to individual rebuild when 404; remove appmetrics ([b8241c5](https://github.com/informatievlaanderen/organisation-registry/commit/b8241c5e8432764e5fae840d0569a140c1f125a9))
+
 # [1.295.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.294.2...v1.295.0) (2023-02-13)
 
 
