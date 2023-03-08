@@ -103,8 +103,9 @@ public class Program
                     .Enrich.WithEnvironmentUserName();
 
                 Log.Logger = loggerConfiguration.CreateLogger();
-
-                builder.AddSerilog(Log.Logger);
+                builder.ClearProviders()
+                    .AddOpenTelemetry()
+                    .AddSerilog(Log.Logger);
             })
             .ConfigureServices((hostContext, builder) =>
             {
