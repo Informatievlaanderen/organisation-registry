@@ -19,6 +19,7 @@ using System.Threading.Tasks;
 using Amazon;
 using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
 using Configuration;
+using OpenTelemetry.Extensions;
 using OrganisationRegistry.Configuration.Database;
 using OrganisationRegistry.Configuration.Database.Configuration;
 using OrganisationRegistry.Infrastructure;
@@ -73,6 +74,8 @@ internal class Program
 
             loggingBuilder.AddSerilog();
         });
+        services.AddOpenTelemetry();
+
         var app = ConfigureServices(services, configuration);
 
         var logger = app.GetRequiredService<ILogger<Program>>();

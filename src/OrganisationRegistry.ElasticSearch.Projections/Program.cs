@@ -23,6 +23,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NodaTime;
+using OpenTelemetry.Extensions;
 using Serilog;
 using OrganisationRegistry.Configuration.Database;
 using OrganisationRegistry.Configuration.Database.Configuration;
@@ -296,7 +297,8 @@ public class Program
                                     .MigrationsAssembly("OrganisationRegistry.SqlServer")
                                     .MigrationsHistoryTable(MigrationTables.Default,
                                         WellknownSchemas.OrganisationRegistrySchema);
-                            }));
+                            }))
+                    .AddOpenTelemetry();
             })
             .Build();
 
@@ -318,3 +320,5 @@ public class Program
         }
     }
 }
+
+

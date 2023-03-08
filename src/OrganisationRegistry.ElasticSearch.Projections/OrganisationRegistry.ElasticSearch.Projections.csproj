@@ -12,6 +12,7 @@
     <ProjectReference Include="..\OrganisationRegistry.ElasticSearch\OrganisationRegistry.ElasticSearch.csproj" />
     <ProjectReference Include="..\OrganisationRegistry.Configuration.Database\OrganisationRegistry.Configuration.Database.csproj" />
     <ProjectReference Include="..\OrganisationRegistry.Infrastructure\OrganisationRegistry.Infrastructure.csproj" />
+    <ProjectReference Include="..\OrganisationRegistry.OpenTelemetry\OrganisationRegistry.OpenTelemetry.csproj" />
     <ProjectReference Include="..\OrganisationRegistry.SqlServer\OrganisationRegistry.SqlServer.csproj" />
     <ProjectReference Include="..\OrganisationRegistry\OrganisationRegistry.csproj" />
   </ItemGroup>
