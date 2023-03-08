@@ -47,9 +47,10 @@ internal class Program
 
         var sqlConfiguration = builder.Build().GetSection(ConfigurationDatabaseConfiguration.Section).Get<ConfigurationDatabaseConfiguration>();
         var configuration = builder
-            .AddEntityFramework(x => x.UseSqlServer(
-                sqlConfiguration.ConnectionString,
-                y => y.MigrationsHistoryTable("__EFMigrationsHistory", WellknownSchemas.BackofficeSchema)))
+            .AddEntityFramework(
+                x => x.UseSqlServer(
+                    sqlConfiguration.ConnectionString,
+                    y => y.MigrationsHistoryTable("__EFMigrationsHistory", WellknownSchemas.BackofficeSchema)))
             .Build();
 
         await RunProgram<GenderRatioRunner>(configuration);
@@ -58,22 +59,25 @@ internal class Program
     private static async Task RunProgram<T>(IConfiguration configuration) where T : BaseRunner
     {
         var services = new ServiceCollection();
-        services.AddLogging(loggingBuilder =>
-        {
-            var loggerConfiguration = new LoggerConfiguration()
-                .ReadFrom.Configuration(configuration)
-                .Enrich.FromLogContext()
-                .Enrich.WithMachineName()
-                .Enrich.WithThreadId()
-                .Enrich.WithEnvironmentUserName()
-                .Destructure.JsonNetTypes();
+        services.AddLogging(
+            loggingBuilder =>
+            {
+                var loggerConfiguration = new LoggerConfiguration()
+                    .ReadFrom.Configuration(configuration)
+                    .Enrich.FromLogContext()
+                    .Enrich.WithMachineName()
+                    .Enrich.WithThreadId()
+                    .Enrich.WithEnvironmentUserName()
+                    .Destructure.JsonNetTypes();
 
-            Serilog.Debugging.SelfLog.Enable(Console.WriteLine);
+                Serilog.Debugging.SelfLog.Enable(Console.WriteLine);
 
-            Log.Logger = loggerConfiguration.CreateLogger();
+                Log.Logger = loggerConfiguration.CreateLogger();
 
-            loggingBuilder.AddSerilog();
-        });
+                loggingBuilder.ClearProviders()
+                    .AddOpenTelemetry()
+                    .AddSerilog();
+            });
         services.AddOpenTelemetry();
 
         var app = ConfigureServices(services, configuration);
@@ -100,7 +104,8 @@ internal class Program
                 ThrowOnFailedRenew = true,
                 TerminateApplicationOnFailedRenew = true,
                 Enabled = reportingRunnerOptions.LockEnabled,
-            }, logger);
+            },
+            logger);
 
         bool acquiredLock = false;
         try

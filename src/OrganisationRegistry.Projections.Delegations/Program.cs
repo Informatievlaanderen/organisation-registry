@@ -67,7 +67,9 @@ internal class Program
 
             Log.Logger = loggerConfiguration.CreateLogger();
 
-            loggingBuilder.AddSerilog();
+            loggingBuilder.ClearProviders()
+                .AddOpenTelemetry()
+                .AddSerilog();
         });
         services.AddOpenTelemetry();
 
