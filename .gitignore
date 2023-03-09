@@ -63,6 +63,8 @@ src/OrganisationRegistry.UI/**/*.js.map
 !src/OrganisationRegistry.UI/config.js
 src/**/logs/*
 
+otel-collector-config.yaml
+
 aot/
 angulardoc.json
 
