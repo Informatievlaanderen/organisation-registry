@@ -30,6 +30,7 @@ using Infrastructure.Domain;
 using Infrastructure.Events;
 using Infrastructure.EventStore;
 using NodaTime;
+using OpenTelemetry.Extensions;
 using Serilog;
 using SqlServer;
 using SqlServer.Configuration;
@@ -94,10 +95,15 @@ public class Program
 
                 Log.Logger = loggerConfiguration.CreateLogger();
 
-                builder.AddSerilog(Log.Logger);
+                builder
+                    .ClearProviders()
+                    .AddOpenTelemetry()
+                    .AddSerilog(Log.Logger);
             })
             .ConfigureServices((hostContext, builder) =>
             {
+                builder.AddOpenTelemetry();
+
                 builder
                     .Configure<InfrastructureConfigurationSection>(hostContext.Configuration.GetSection(InfrastructureConfigurationSection.Name))
                     .Configure<TogglesConfigurationSection>(hostContext.Configuration.GetSection(TogglesConfigurationSection.Name))

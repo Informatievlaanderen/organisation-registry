@@ -19,18 +19,7 @@ public static class ServiceCollectionExtensions
         var assemblyVersion = executingAssembly.GetName().Version?.ToString() ?? "unknown";
         var collectorUrl = Environment.GetEnvironmentVariable("COLLECTOR_URL") ?? "http://localhost:4317";
 
-        Action<ResourceBuilder> configureResource = r => r
-            .AddService(
-                serviceName,
-                serviceVersion: assemblyVersion,
-                serviceInstanceId: Environment.MachineName)
-            .AddAttributes(
-                new Dictionary<string, object>
-                {
-                    ["deployment.environment"] =
-                        Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")?.ToLowerInvariant()
-                        ?? "unknown",
-                });
+        var configureResource = BuildConfigureResource(serviceName, assemblyVersion);
 
         services.AddOpenTelemetryTracing(
             builder =>
@@ -88,7 +77,48 @@ public static class ServiceCollectionExtensions
                             exporter.Protocol = OtlpExportProtocol.Grpc;
                             exporter.Endpoint = new Uri(collectorUrl);
                         }));
-
         return services;
+    }
+
+    private static Action<ResourceBuilder> BuildConfigureResource(string serviceName, string assemblyVersion)
+    {
+        return r => r
+            .AddService(
+                serviceName,
+                serviceVersion: assemblyVersion,
+                serviceInstanceId: Environment.MachineName)
+            .AddAttributes(
+                new Dictionary<string, object>
+                {
+                    ["deployment.environment"] =
+                        Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")?.ToLowerInvariant()
+                        ?? "unknown",
+                });
+    }
+
+    public static ILoggingBuilder ConfigureLogging(ILoggingBuilder builder)
+    {
+        var executingAssembly = Assembly.GetEntryAssembly()!;
+        var serviceName = executingAssembly.GetName().Name!;
+        var assemblyVersion = executingAssembly.GetName().Version?.ToString() ?? "unknown";
+        var configureResource = BuildConfigureResource(serviceName, assemblyVersion);
+
+        builder.AddOpenTelemetry(options =>
+        {
+            options.ConfigureResource(configureResource);
+
+            options.IncludeScopes = true;
+            options.IncludeFormattedMessage = true;
+            options.ParseStateValues = true;
+
+            options.AddOtlpExporter(exporter =>
+            {
+                exporter.Protocol = OtlpExportProtocol.Grpc;
+                exporter.Endpoint = new Uri("http://localhost:4319");
+            });
+
+            // .AddConsoleExporter();
+        }).AddSimpleConsole();
+        return builder;
     }
 }

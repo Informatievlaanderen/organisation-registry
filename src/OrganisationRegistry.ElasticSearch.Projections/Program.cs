@@ -23,6 +23,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NodaTime;
+using OpenTelemetry.Extensions;
 using Serilog;
 using OrganisationRegistry.Configuration.Database;
 using OrganisationRegistry.Configuration.Database.Configuration;
@@ -102,8 +103,9 @@ public class Program
                     .Enrich.WithEnvironmentUserName();
 
                 Log.Logger = loggerConfiguration.CreateLogger();
-
-                builder.AddSerilog(Log.Logger);
+                builder.ClearProviders()
+                    .AddOpenTelemetry()
+                    .AddSerilog(Log.Logger);
             })
             .ConfigureServices((hostContext, builder) =>
             {
@@ -296,7 +298,8 @@ public class Program
                                     .MigrationsAssembly("OrganisationRegistry.SqlServer")
                                     .MigrationsHistoryTable(MigrationTables.Default,
                                         WellknownSchemas.OrganisationRegistrySchema);
-                            }));
+                            }))
+                    .AddOpenTelemetry();
             })
             .Build();
 
@@ -318,3 +321,5 @@ public class Program
         }
     }
 }
+
+

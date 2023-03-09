@@ -19,6 +19,7 @@ using System.Threading.Tasks;
 using Amazon;
 using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
 using Configuration;
+using OpenTelemetry.Extensions;
 using OrganisationRegistry.Configuration.Database;
 using OrganisationRegistry.Configuration.Database.Configuration;
 using OrganisationRegistry.Infrastructure;
@@ -46,9 +47,10 @@ internal class Program
 
         var sqlConfiguration = builder.Build().GetSection(ConfigurationDatabaseConfiguration.Section).Get<ConfigurationDatabaseConfiguration>();
         var configuration = builder
-            .AddEntityFramework(x => x.UseSqlServer(
-                sqlConfiguration.ConnectionString,
-                y => y.MigrationsHistoryTable("__EFMigrationsHistory", WellknownSchemas.BackofficeSchema)))
+            .AddEntityFramework(
+                x => x.UseSqlServer(
+                    sqlConfiguration.ConnectionString,
+                    y => y.MigrationsHistoryTable("__EFMigrationsHistory", WellknownSchemas.BackofficeSchema)))
             .Build();
 
         await RunProgram<GenderRatioRunner>(configuration);
@@ -57,22 +59,27 @@ internal class Program
     private static async Task RunProgram<T>(IConfiguration configuration) where T : BaseRunner
     {
         var services = new ServiceCollection();
-        services.AddLogging(loggingBuilder =>
-        {
-            var loggerConfiguration = new LoggerConfiguration()
-                .ReadFrom.Configuration(configuration)
-                .Enrich.FromLogContext()
-                .Enrich.WithMachineName()
-                .Enrich.WithThreadId()
-                .Enrich.WithEnvironmentUserName()
-                .Destructure.JsonNetTypes();
+        services.AddLogging(
+            loggingBuilder =>
+            {
+                var loggerConfiguration = new LoggerConfiguration()
+                    .ReadFrom.Configuration(configuration)
+                    .Enrich.FromLogContext()
+                    .Enrich.WithMachineName()
+                    .Enrich.WithThreadId()
+                    .Enrich.WithEnvironmentUserName()
+                    .Destructure.JsonNetTypes();
 
-            Serilog.Debugging.SelfLog.Enable(Console.WriteLine);
+                Serilog.Debugging.SelfLog.Enable(Console.WriteLine);
 
-            Log.Logger = loggerConfiguration.CreateLogger();
+                Log.Logger = loggerConfiguration.CreateLogger();
 
-            loggingBuilder.AddSerilog();
-        });
+                loggingBuilder
+                    .ClearProviders()
+                    .AddOpenTelemetry()
+                    .AddSerilog();
+            });
+
         var app = ConfigureServices(services, configuration);
 
         var logger = app.GetRequiredService<ILogger<Program>>();
@@ -97,7 +104,8 @@ internal class Program
                 ThrowOnFailedRenew = true,
                 TerminateApplicationOnFailedRenew = true,
                 Enabled = reportingRunnerOptions.LockEnabled,
-            }, logger);
+            },
+            logger);
 
         bool acquiredLock = false;
         try
@@ -160,7 +168,9 @@ internal class Program
         IServiceCollection services,
         IConfiguration configuration)
     {
-        services.AddOptions();
+        services
+            .AddOpenTelemetry()
+            .AddOptions();
 
         var serviceProvider = services.BuildServiceProvider();
 

@@ -20,6 +20,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using OpenTelemetry.Extensions;
 using Serilog;
 using SqlServer.Infrastructure;
 using OrganisationRegistry.Configuration.Database;
@@ -73,7 +74,10 @@ internal class Program
 
             Log.Logger = loggerConfiguration.CreateLogger();
 
-            loggingBuilder.AddSerilog();
+            loggingBuilder
+                .ClearProviders()
+                .AddOpenTelemetry()
+                .AddSerilog();
         });
 
         var app = ConfigureServices(services, configuration);
@@ -164,7 +168,9 @@ internal class Program
         IServiceCollection services,
         IConfiguration configuration)
     {
-        services.AddOptions();
+        services
+            .AddOpenTelemetry()
+            .AddOptions();
 
         var serviceProvider = services.BuildServiceProvider();
 

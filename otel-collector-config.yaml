@@ -2,9 +2,18 @@ receivers:
   otlp:
     protocols:
       grpc:
+      http:
+        include_metadata: true
+        cors:
+          max_age: 7200
 
 exporters:
   logging:
+
+  otlp/elastic:
+    endpoint: https://c761e7ca88ee45119a091f137b73fcad.es.ops.vl.be:9243
+    headers:
+      Authorization: "Bearer ktMYK66vnu6B8129ABSRNBWKJWgAy"
 
 processors:
   batch:
@@ -14,12 +23,12 @@ service:
     traces:
       receivers: [otlp]
       processors: [batch]
-      exporters: [logging]
+      exporters: [logging, otlp/elastic]
     metrics:
       receivers: [otlp]
       processors: [batch]
-      exporters: [logging]
+      exporters: [logging, otlp/elastic]
     logs:
       receivers: [otlp]
       processors: [batch]
-      exporters: [logging]
+      exporters: [logging, otlp/elastic]
