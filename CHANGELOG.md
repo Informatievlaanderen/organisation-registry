@@ -1,3 +1,10 @@
+# [1.297.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.296.0...v1.297.0) (2023-03-09)
+
+
+### Features
+
+* or-1618 add OTLP to all projects ([#1057](https://github.com/informatievlaanderen/organisation-registry/issues/1057)) ([35f851f](https://github.com/informatievlaanderen/organisation-registry/commit/35f851f4ad9abd26d89cf2bb7ceb35b93454115b))
+
 # [1.296.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.295.0...v1.296.0) (2023-03-06)
 
 
