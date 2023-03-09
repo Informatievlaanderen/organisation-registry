@@ -24,6 +24,7 @@ namespace OrganisationRegistry.MagdaReRegistration
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using Newtonsoft.Json;
+    using OpenTelemetry.Extensions;
     using Serilog;
     using SqlServer.Infrastructure;
     using ILogger = Microsoft.Extensions.Logging.ILogger;
@@ -180,7 +181,10 @@ namespace OrganisationRegistry.MagdaReRegistration
 
                 Log.Logger = loggerConfiguration.CreateLogger();
 
-                loggingBuilder.AddSerilog();
+                loggingBuilder
+                    .ClearProviders()
+                    .AddOpenTelemetry()
+                    .AddSerilog();
             });
 
             var apiConfiguration = configuration.GetSection(ApiConfigurationSection.Name).Get<ApiConfigurationSection>();
@@ -190,6 +194,7 @@ namespace OrganisationRegistry.MagdaReRegistration
                 apiConfiguration.RijksRegisterCertificatePwd);
 
             services
+                .AddOpenTelemetry()
                 .AddOptions()
                 .AddHttpClient()
                 .AddHttpClient(MagdaModule.HttpClientName)

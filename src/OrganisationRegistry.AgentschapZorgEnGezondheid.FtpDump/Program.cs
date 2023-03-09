@@ -18,6 +18,7 @@ namespace OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using Newtonsoft.Json;
+    using OpenTelemetry.Extensions;
     using Serilog;
     using OrganisationRegistry.Configuration.Database;
     using OrganisationRegistry.Configuration.Database.Configuration;
@@ -65,7 +66,10 @@ namespace OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump
 
                 Log.Logger = loggerConfiguration.CreateLogger();
 
-                loggingBuilder.AddSerilog();
+                loggingBuilder
+                    .ClearProviders()
+                    .AddOpenTelemetry()
+                    .AddSerilog();
             });
 
             var app = ConfigureServices(services, configuration);
@@ -145,7 +149,9 @@ namespace OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump
             IServiceCollection services,
             IConfiguration configuration)
         {
-            services.AddOptions();
+            services
+                .AddOpenTelemetry()
+                .AddOptions();
 
             var serviceProvider = services.BuildServiceProvider();
 

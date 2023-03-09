@@ -67,11 +67,11 @@ internal class Program
 
             Log.Logger = loggerConfiguration.CreateLogger();
 
-            loggingBuilder.ClearProviders()
+            loggingBuilder
+                .ClearProviders()
                 .AddOpenTelemetry()
                 .AddSerilog();
         });
-        services.AddOpenTelemetry();
 
         var app = ConfigureServices(services, configuration);
 
@@ -151,6 +151,7 @@ internal class Program
         IServiceCollection services,
         IConfiguration configuration)
     {
+        services.AddOpenTelemetry();
         var serviceProvider = services.BuildServiceProvider();
 
         var builder = new ContainerBuilder();
