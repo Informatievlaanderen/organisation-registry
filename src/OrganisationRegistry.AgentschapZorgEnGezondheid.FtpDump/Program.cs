@@ -18,6 +18,7 @@ namespace OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using Newtonsoft.Json;
+    using global::OpenTelemetry.Trace;
     using OpenTelemetry.Extensions;
     using Serilog;
     using OrganisationRegistry.Configuration.Database;
@@ -149,8 +150,8 @@ namespace OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump
             IServiceCollection services,
             IConfiguration configuration)
         {
-            services
-                .AddOpenTelemetry()
+            services.AddOpenTelemetry(builder => builder
+                .AddSqlClientInstrumentation())
                 .AddOptions();
 
             var serviceProvider = services.BuildServiceProvider();

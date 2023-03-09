@@ -14,6 +14,8 @@ using Body;
 using Cache;
 using Client;
 using Configuration;
+using global::OpenTelemetry.Trace;
+using OpenTelemetry.Extensions;
 using Infrastructure;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -23,7 +25,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NodaTime;
-using OpenTelemetry.Extensions;
 using Serilog;
 using OrganisationRegistry.Configuration.Database;
 using OrganisationRegistry.Configuration.Database.Configuration;
@@ -299,7 +300,10 @@ public class Program
                                     .MigrationsHistoryTable(MigrationTables.Default,
                                         WellknownSchemas.OrganisationRegistrySchema);
                             }))
-                    .AddOpenTelemetry();
+                    .AddOpenTelemetry(builder => builder
+                        .AddSqlClientInstrumentation()
+                        .AddHttpClientInstrumentation()
+                        .AddAspNetCoreWithDistributedTracing());
             })
             .Build();
 

@@ -9,6 +9,7 @@ using Autofac.Extensions.DependencyInjection;
 using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
 using Configuration;
 using Destructurama;
+using global::OpenTelemetry.Trace;
 using Infrastructure;
 using Infrastructure.Configuration;
 using Infrastructure.Infrastructure.Json;
@@ -141,8 +142,8 @@ internal class Program
 
     private static IServiceProvider ConfigureServices(IServiceCollection services, IConfiguration configuration)
     {
-        services
-            .AddOpenTelemetry()
+        services.AddOpenTelemetry(builder => builder
+            .AddSqlClientInstrumentation())
             .AddOptions()
             .AddHttpClient();
 

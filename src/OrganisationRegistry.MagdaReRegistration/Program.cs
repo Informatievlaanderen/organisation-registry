@@ -24,6 +24,7 @@ namespace OrganisationRegistry.MagdaReRegistration
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using Newtonsoft.Json;
+    using global::OpenTelemetry.Trace;
     using OpenTelemetry.Extensions;
     using Serilog;
     using SqlServer.Infrastructure;
@@ -193,8 +194,8 @@ namespace OrganisationRegistry.MagdaReRegistration
                 apiConfiguration.KboCertificate,
                 apiConfiguration.RijksRegisterCertificatePwd);
 
-            services
-                .AddOpenTelemetry()
+            services.AddOpenTelemetry(builder => builder
+                .AddSqlClientInstrumentation())
                 .AddOptions()
                 .AddHttpClient()
                 .AddHttpClient(MagdaModule.HttpClientName)
