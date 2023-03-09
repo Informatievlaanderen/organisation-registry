@@ -13,6 +13,7 @@ using Be.Vlaanderen.Basisregisters.Api.Search.Pagination;
 using Be.Vlaanderen.Basisregisters.Api.Search.Sorting;
 using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
 using Configuration;
+using global::OpenTelemetry.Trace;
 using HostedServices;
 using Magda;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -284,7 +285,10 @@ public class Startup
                     },
                 });
 
-        services.AddOpenTelemetry();
+        services.AddOpenTelemetry(
+            builder => builder
+                .AddHttpClientInstrumentation()
+                .AddAspNetCoreWithDistributedTracing());
 
         var containerBuilder = new ContainerBuilder();
         containerBuilder.RegisterModule(new MagdaModule(_configuration));
@@ -323,6 +327,8 @@ public class Startup
                     },
                     Tracing =
                     {
+                        TraceIdHeaderName = "traceid",
+                        ParentSpanIdHeaderName = "traceparent",
                         ServiceName = _configuration["DataDog:ServiceName"],
                         LogForwardedForEnabled = true,
                     },

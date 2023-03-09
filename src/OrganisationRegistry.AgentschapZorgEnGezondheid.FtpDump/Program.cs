@@ -149,8 +149,8 @@ namespace OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump
             IServiceCollection services,
             IConfiguration configuration)
         {
-            services
-                .AddOpenTelemetry()
+            services.AddOpenTelemetry(builder => builder
+                .AddSqlClientInstrumentation())
                 .AddOptions();
 
             var serviceProvider = services.BuildServiceProvider();

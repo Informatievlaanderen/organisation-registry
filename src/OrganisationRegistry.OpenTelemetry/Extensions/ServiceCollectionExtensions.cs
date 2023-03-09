@@ -12,7 +12,18 @@ using Microsoft.Extensions.Logging;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddOpenTelemetry(this IServiceCollection services)
+    public static TracerProviderBuilder AddAspNetCoreWithDistributedTracing(this TracerProviderBuilder builder, string headerName = "traceparent")
+    {
+        builder.AddAspNetCoreInstrumentation(
+            options =>
+            {
+                options.EnrichWithHttpRequest =
+                    (activity, request) => activity.SetParentId(request.Headers[headerName]);
+                options.Filter = context => context.Request.Method != HttpMethods.Options;
+            });
+        return builder;
+    }
+    public static IServiceCollection AddOpenTelemetry(this IServiceCollection services, Action<TracerProviderBuilder> customize)
     {
         var executingAssembly = Assembly.GetEntryAssembly()!;
         var serviceName = executingAssembly.GetName().Name!;
@@ -23,26 +34,19 @@ public static class ServiceCollectionExtensions
 
         services.AddOpenTelemetryTracing(
             builder =>
+            {
                 builder
                     .AddSource(serviceName)
                     .ConfigureResource(configureResource)
-                    .AddHttpClientInstrumentation()
-                    // .AddSqlClientInstrumentation()
-                    // does not work well together with custom TraceSqlConnection,
-                    // because that changes the trace id.
-                    .AddAspNetCoreInstrumentation(
-                        options =>
-                        {
-                            options.EnrichWithHttpRequest =
-                                (activity, request) => activity.SetParentId(request.Headers["traceparent"]);
-                            options.Filter = context => context.Request.Method != HttpMethods.Options;
-                        })
                     .AddOtlpExporter(
                         options =>
                         {
                             options.Protocol = OtlpExportProtocol.Grpc;
                             options.Endpoint = new Uri(collectorUrl);
-                        }));
+                        });
+
+                customize(builder);
+            });
 
         services.AddLogging(
             builder =>

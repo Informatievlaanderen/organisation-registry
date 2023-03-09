@@ -193,8 +193,8 @@ namespace OrganisationRegistry.MagdaReRegistration
                 apiConfiguration.KboCertificate,
                 apiConfiguration.RijksRegisterCertificatePwd);
 
-            services
-                .AddOpenTelemetry()
+            services.AddOpenTelemetry(builder => builder
+                .AddSqlClientInstrumentation())
                 .AddOptions()
                 .AddHttpClient()
                 .AddHttpClient(MagdaModule.HttpClientName)

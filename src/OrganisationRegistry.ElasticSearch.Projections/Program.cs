@@ -14,6 +14,7 @@ using Body;
 using Cache;
 using Client;
 using Configuration;
+using global::OpenTelemetry.Trace;
 using Infrastructure;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -299,7 +300,10 @@ public class Program
                                     .MigrationsHistoryTable(MigrationTables.Default,
                                         WellknownSchemas.OrganisationRegistrySchema);
                             }))
-                    .AddOpenTelemetry();
+                    .AddOpenTelemetry(builder => builder
+                        .AddSqlClientInstrumentation()
+                        .AddHttpClientInstrumentation()
+                        .AddAspNetCoreWithDistributedTracing());
             })
             .Build();
 

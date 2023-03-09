@@ -12,6 +12,7 @@ using Autofac.Util;
 using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
 using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql.EntityFrameworkCore;
 using Configuration.Database;
+using global::OpenTelemetry.Trace;
 using Infrastructure;
 using Infrastructure.AppSpecific;
 using Microsoft.Data.SqlClient;
@@ -102,7 +103,9 @@ public class Program
             })
             .ConfigureServices((hostContext, builder) =>
             {
-                builder.AddOpenTelemetry();
+                builder.AddOpenTelemetry(
+                    builder =>
+                        builder.AddSqlClientInstrumentation());
 
                 builder
                     .Configure<InfrastructureConfigurationSection>(hostContext.Configuration.GetSection(InfrastructureConfigurationSection.Name))

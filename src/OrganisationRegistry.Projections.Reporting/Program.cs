@@ -19,6 +19,7 @@ using System.Threading.Tasks;
 using Amazon;
 using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
 using Configuration;
+using global::OpenTelemetry.Trace;
 using OpenTelemetry.Extensions;
 using OrganisationRegistry.Configuration.Database;
 using OrganisationRegistry.Configuration.Database.Configuration;
@@ -168,8 +169,11 @@ internal class Program
         IServiceCollection services,
         IConfiguration configuration)
     {
-        services
-            .AddOpenTelemetry()
+        services.AddOpenTelemetry(
+                builder => builder
+                    .AddSqlClientInstrumentation()
+                    .AddHttpClientInstrumentation()
+                    .AddAspNetCoreWithDistributedTracing())
             .AddOptions();
 
         var serviceProvider = services.BuildServiceProvider();
