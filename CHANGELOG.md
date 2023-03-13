@@ -1,3 +1,10 @@
+# [1.298.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.297.0...v1.298.0) (2023-03-13)
+
+
+### Features
+
+* or-1634 add aws-cli image workflow ([ce75d81](https://github.com/informatievlaanderen/organisation-registry/commit/ce75d81f6aeccc39e355b5b6d95c1f0b79c573b3))
+
 # [1.297.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.296.0...v1.297.0) (2023-03-09)
 
 
