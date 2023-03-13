@@ -32,6 +32,6 @@ jobs:
         run: |
           docker pull otel/opentelemetry-collector:${{github.event.inputs.version}}
           docker tag otel/opentelemetry-collector:${{github.event.inputs.version}} $BUILD_DOCKER_REGISTRY_PRD/otel/opentelemetry-collector:${{github.event.inputs.version}}
-          docker push $BUILD_DOCKER_REGISTRY_PRD/opentelemetry-collector:${{github.event.inputs.version}}
+          docker push $BUILD_DOCKER_REGISTRY_PRD/otel/opentelemetry-collector:${{github.event.inputs.version}}
         env:
           BUILD_DOCKER_REGISTRY_PRD: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_PRD }}
