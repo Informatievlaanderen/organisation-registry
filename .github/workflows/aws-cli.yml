@@ -14,27 +14,27 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-#      - name: Configure AWS credentials (Production)
-#        if: env.RELEASE_VERSION != 'none'
-#        uses: aws-actions/configure-aws-credentials@v1
-#        with:
-#          aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_PRD }}
-#          aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_PRD }}
-#          aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
-#
-#      - name: Login to Amazon ECR (Production)
-#        if: env.RELEASE_VERSION != 'none'
-#        uses: aws-actions/amazon-ecr-login@v1
-#
-#      - name: Push AWS-CLI to Production
-#        if: env.RELEASE_VERSION != 'none'
-#        shell: bash
-#        run: |
-#          docker pull amazon/aws-cli:${{github.event.inputs.version}}
-#          docker tag amazon/aws-cli:${{github.event.inputs.version}} $BUILD_DOCKER_REGISTRY_PRD/amazon/aws-cli:${{github.event.inputs.version}}
-#          docker push $BUILD_DOCKER_REGISTRY_PRD/amazon/aws-cli:${{github.event.inputs.version}}
-#        env:
-#          BUILD_DOCKER_REGISTRY_PRD: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_PRD }}
+      - name: Configure AWS credentials (Production)
+        if: env.RELEASE_VERSION != 'none'
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_PRD }}
+          aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_PRD }}
+          aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
+
+      - name: Login to Amazon ECR (Production)
+        if: env.RELEASE_VERSION != 'none'
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Push AWS-CLI to Production
+        if: env.RELEASE_VERSION != 'none'
+        shell: bash
+        run: |
+          docker pull amazon/aws-cli:${{github.event.inputs.version}}
+          docker tag amazon/aws-cli:${{github.event.inputs.version}} $BUILD_DOCKER_REGISTRY_PRD/amazon/aws-cli:${{github.event.inputs.version}}
+          docker push $BUILD_DOCKER_REGISTRY_PRD/amazon/aws-cli:${{github.event.inputs.version}}
+        env:
+          BUILD_DOCKER_REGISTRY_PRD: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_PRD }}
 
       - name: Configure AWS credentials (Staging)
         if: env.RELEASE_VERSION != 'none'
