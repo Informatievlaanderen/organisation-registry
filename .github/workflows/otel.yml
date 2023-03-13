@@ -26,10 +26,12 @@ jobs:
         if: env.RELEASE_VERSION != 'none'
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Push to Production
+      - name: Push Otel to Production
         if: env.RELEASE_VERSION != 'none'
         shell: bash
         run: |
           docker pull otel/opentelemetry-collector:${{github.event.inputs.version}}
           docker tag otel/opentelemetry-collector:${{github.event.inputs.version}} $BUILD_DOCKER_REGISTRY_PRD/otel/opentelemetry-collector:${{github.event.inputs.version}}
           docker push $BUILD_DOCKER_REGISTRY_PRD/opentelemetry-collector:${{github.event.inputs.version}}
+        env:
+          BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY }}
