@@ -7,11 +7,10 @@ on:
         description: 'Version'
         required: true
 
-concurrency: CI
 jobs:
   push:
     if: github.repository_owner == 'Informatievlaanderen'
-    name: Build
+    name: Push image
     runs-on: ubuntu-latest
 
     steps:
