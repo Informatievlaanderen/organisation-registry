@@ -82,6 +82,7 @@ ProjectSection(SolutionItems) = preProject
 	.github\workflows\staging-manual.yml = .github\workflows\staging-manual.yml
 	.github\workflows\production-manual.yml = .github\workflows\production-manual.yml
 	.github\workflows\pre-merge-tests.yml = .github\workflows\pre-merge-tests.yml
+	.github\workflows\otel.yml = .github\workflows\otel.yml
 EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrganisationRegistry.Rebuilder", "src\OrganisationRegistry.Rebuilder\OrganisationRegistry.Rebuilder.csproj", "{9AAC8AB4-6540-4513-8DC4-597C2E54CAF0}"

@@ -1,0 +1,34 @@
+name: Otel image push
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+concurrency: CI
+jobs:
+  push:
+    if: github.repository_owner == 'Informatievlaanderen'
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Configure AWS credentials (Production)
+        if: env.RELEASE_VERSION != 'none'
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_PRD }}
+          aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_PRD }}
+          aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
+
+      - name: Login to Amazon ECR (Production)
+        if: env.RELEASE_VERSION != 'none'
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Push to Production
+        if: env.RELEASE_VERSION != 'none'
+        shell: bash
+        run: |
+          docker pull otel/opentelemetry-collector:latest
+          docker tag otel/opentelemetry-collector:latest $BUILD_DOCKER_REGISTRY_PRD/otel/opentelemetry-collector:latest
+          docker push $BUILD_DOCKER_REGISTRY_PRD/opentelemetry-collector:latest
