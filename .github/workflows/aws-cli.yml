@@ -1,4 +1,4 @@
-name: Otel image push
+name: AWS-CLI image push
 
 on:
   workflow_dispatch:
