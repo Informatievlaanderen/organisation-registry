@@ -1,3 +1,5 @@
+using Duende.IdentityServer;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Serilog;
 
 namespace IdentityServer;
@@ -24,6 +26,13 @@ internal static class HostingExtensions
             .AddInMemoryApiResources(Config.ApiResources)
             .AddInMemoryClients(Config.Clients)
             .AddTestUsers(Config.Users);
+
+        builder.Services.Configure<CookieAuthenticationOptions>(IdentityServerConstants.DefaultCookieAuthenticationScheme, options =>
+        {
+            options.Cookie.SameSite = SameSiteMode.None;
+            options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+            options.Cookie.IsEssential = true;
+        });
 
         return builder.Build();
     }
