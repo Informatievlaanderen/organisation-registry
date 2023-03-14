@@ -1,3 +1,11 @@
+## [1.298.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.298.0...v1.298.1) (2023-03-14)
+
+
+### Bug Fixes
+
+* or-1637 don't try to end span when there is none ([bc87041](https://github.com/informatievlaanderen/organisation-registry/commit/bc8704120e3896e5691532fb1935b47465b286c3))
+* or-1637 fix cookie error in chrome ([426dcb4](https://github.com/informatievlaanderen/organisation-registry/commit/426dcb485d71f9d7d5fdccff6e5d1f189f2f36fd))
+
 # [1.298.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.297.0...v1.298.0) (2023-03-13)
 
 
