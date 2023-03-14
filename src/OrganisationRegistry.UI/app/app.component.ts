@@ -114,12 +114,12 @@ export class App implements OnInit, OnDestroy {
     this.subscriptions.push(router.events
       .filter(event => event instanceof NavigationEnd)
       .subscribe(navigationEnd => {
-        let currentTransaction = apm.getCurrentTransaction();
-        if (!currentTransaction) {
-          return;
-        }
         apm.setInitialPageLoadName(navigationEnd.url);
-        spans[navigationEnd.id].end();
+        let span = spans[navigationEnd.id];
+        if(!span)
+          return;
+
+        span.end();
         delete spans[navigationEnd.id];
       }));
   }
