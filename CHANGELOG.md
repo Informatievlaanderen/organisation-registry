@@ -1,3 +1,10 @@
+## [1.298.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.298.1...v1.298.2) (2023-03-16)
+
+
+### Bug Fixes
+
+* remove unnecessary using ([b32b271](https://github.com/informatievlaanderen/organisation-registry/commit/b32b271a664e74de66600b43f73d44064173463c))
+
 ## [1.298.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.298.0...v1.298.1) (2023-03-14)
 
 
