@@ -39,7 +39,6 @@ using OrganisationRegistry.Infrastructure.EventStore;
 using Organisations;
 using People;
 using People.Cache;
-using Serilog.Events;
 using SqlServer;
 using SqlServer.Configuration;
 using SqlServer.Infrastructure;
