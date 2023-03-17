@@ -1,3 +1,10 @@
+# [1.300.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.299.0...v1.300.0) (2023-03-17)
+
+
+### Features
+
+* or-1642 use histogram again; remove unused fields ([b666369](https://github.com/informatievlaanderen/organisation-registry/commit/b666369c74971220d2848b0185980f99c14e6214))
+
 # [1.299.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.298.2...v1.299.0) (2023-03-17)
 
 
