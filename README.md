@@ -1,4 +1,4 @@
-# Organisation Registry [![Build Status](https://github.com/Informatievlaanderen/organisation-registry/workflows/CI/badge.svg)](https://github.com/Informatievlaanderen/organisation-registry/actions)
+# Organisation Registry [![CI/CD](https://github.com/Informatievlaanderen/organisation-registry/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/Informatievlaanderen/organisation-registry/actions/workflows/main.yml)
 
 ## Goal
 
