@@ -34,11 +34,6 @@ public abstract class BaseRunner<T> where T: class, IDocument, new()
     private readonly IProjectionStates _projectionStates;
     private readonly ElasticBus _bus;
     private readonly IContextFactory _contextFactory;
-    private readonly Meter _meter;
-    private int _numberOfEnvelopesHandled;
-    private int _lastProcessedEventNumber;
-    private Histogram<int> _numberOfEnvelopesHandledGauge;
-    private readonly ObservableCounter<int> _lastProcessedEventNumberCounter;
     private readonly OpenTelemetryMetrics.ElasticSearchProjections _metrics;
 
     protected BaseRunner(
@@ -113,7 +108,7 @@ public abstract class BaseRunner<T> where T: class, IDocument, new()
             }
             await FlushDocuments(documentCache);
             await UpdateProjectionState(newLastProcessedEventNumber);
-            _metrics.NumberOfEnvelopesHandled = envelopes.Count;
+            _metrics.NumberOfEnvelopesHandled.Record(envelopes.Count);
         }
         catch (ElasticsearchOrganisationNotFoundException organisationNotFoundException)
         {
