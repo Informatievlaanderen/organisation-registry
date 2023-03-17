@@ -10,6 +10,7 @@ using Infrastructure;
 using Infrastructure.Change;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using OpenTelemetry;
 using Osc;
 using OrganisationRegistry.Infrastructure.Events;
 using SqlServer;
@@ -25,6 +26,7 @@ public class IndividualRebuildRunner
     private readonly IProjectionStates _projectionStates;
     private readonly ElasticBus _bus;
     private readonly Elastic _elastic;
+    private readonly OpenTelemetryMetrics.ElasticSearchProjections _metrics;
 
     public IndividualRebuildRunner(
         ILogger<IndividualRebuildRunner> logger,
@@ -43,6 +45,7 @@ public class IndividualRebuildRunner
         _elastic = elastic;
 
         busRegistrar.RegisterEventHandlers(OrganisationsRunner.EventHandlers);
+        _metrics = new OpenTelemetryMetrics.ElasticSearchProjections(ProjectionName);
     }
 
     public async Task Run()
@@ -54,13 +57,10 @@ public class IndividualRebuildRunner
 
         var organisationToRebuilds = await context.OrganisationsToRebuild.ToListAsync();
 
-        if (organisationToRebuilds.Count == 0)
-        {
-            _logger.LogInformation("[{ProjectionName}] No organisations to rebuild", ProjectionName);
-            return;
-        }
+        if (organisationToRebuilds.Count < 0)
+            _logger.LogInformation("[{ProjectionName}] Found {NumberOfOrganisations} organisations to rebuild", ProjectionName, organisationToRebuilds.Count);
 
-        _logger.LogInformation("[{ProjectionName}] Found {NumberOfOrganisations} organisations to rebuild", ProjectionName, organisationToRebuilds.Count);
+        _metrics.NumberOfOrganisationsToRebuild = organisationToRebuilds.Count;
 
         try
         {
@@ -72,7 +72,7 @@ public class IndividualRebuildRunner
                         lastProcessedEventNumber)
                     .ToList();
 
-                _logger.LogInformation("[{ProjectionName}] Found {NumberOfEnvelopes} envelopes (until #{MaxEventNumber}) to process for Organisation {OrgId}",
+                _logger.LogDebug("[{ProjectionName}] Found {NumberOfEnvelopes} envelopes (until #{MaxEventNumber}) to process for Organisation {OrgId}",
                     ProjectionName, envelopes.Count, envelopes.Last().Number, organisation.OrganisationId);
 
                 var allChanges = new List<ElasticChanges>();
@@ -95,6 +95,8 @@ public class IndividualRebuildRunner
 
                 context.OrganisationsToRebuild.Remove(organisation);
                 await context.SaveChangesAsync();
+
+                _metrics.NumberOfEnvelopesHandledGauge.Record(envelopes.Count);
             }
         }
         catch (Exception ex)
@@ -147,7 +149,7 @@ public class IndividualRebuildRunner
                 await FlushDocuments(documentCache);
                 await massChange.Change(_elastic);
                 await _elastic.TryGetAsync(async () =>
-                    (await _elastic.WriteClient.Indices.RefreshAsync(Indices.Index<Organisation>())).ThrowOnFailure());
+                    (await _elastic.WriteClient.Indices.RefreshAsync(Indices.Index<OrganisationDocument>())).ThrowOnFailure());
                 break;
             }
         }
