@@ -2,6 +2,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ using Infrastructure;
 using Infrastructure.Change;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OpenTelemetry;
 using Osc;
 using OrganisationRegistry.Infrastructure.Events;
 using SqlServer;
@@ -32,6 +34,12 @@ public abstract class BaseRunner<T> where T: class, IDocument, new()
     private readonly IProjectionStates _projectionStates;
     private readonly ElasticBus _bus;
     private readonly IContextFactory _contextFactory;
+    private readonly Meter _meter;
+    private int _numberOfEnvelopesHandled;
+    private int _lastProcessedEventNumber;
+    private Histogram<int> _numberOfEnvelopesHandledGauge;
+    private readonly ObservableCounter<int> _lastProcessedEventNumberCounter;
+    private readonly OpenTelemetryMetrics.ElasticSearchProjections _metrics;
 
     protected BaseRunner(
         ILogger<BaseRunner<T>> logger,
@@ -59,10 +67,14 @@ public abstract class BaseRunner<T> where T: class, IDocument, new()
 
         ProjectionName = projectionName;
         EventHandlers = eventHandlers;
+
+        _metrics = new OpenTelemetryMetrics.ElasticSearchProjections(projectionName);
     }
 
     public async Task Run()
     {
+        _metrics.MaxEventNumberToProcess = _store.GetLastEvent();
+
         var lastProcessedEventNumber = await _projectionStates.GetLastProcessedEventNumber(_elasticSearchProjectionsProjectionName);
         await InitialiseProjection(lastProcessedEventNumber);
 
@@ -99,14 +111,14 @@ public abstract class BaseRunner<T> where T: class, IDocument, new()
                     await ProcessChange(changeSetChange, documentCache, newLastProcessedEventNumber);
                 }
             }
-
             await FlushDocuments(documentCache);
             await UpdateProjectionState(newLastProcessedEventNumber);
+            _metrics.NumberOfEnvelopesHandledGauge.Record(envelopes.Count);
         }
         catch (ElasticsearchOrganisationNotFoundException organisationNotFoundException)
         {
             await using var organisationRegistryContext = _contextFactory.Create();
-            organisationRegistryContext.OrganisationsToRebuild.Add(new OrganisationToRebuild()
+            organisationRegistryContext.OrganisationsToRebuild.Add(new OrganisationToRebuild
             {
                 OrganisationId = Guid.Parse(organisationNotFoundException.OrganisationId)
             });
@@ -222,6 +234,8 @@ public abstract class BaseRunner<T> where T: class, IDocument, new()
 
         _logger.LogInformation("[{ProjectionName}] Processed up until envelope #{LastProcessedEnvelopeNumber}", ProjectionName, newLastProcessedEventNumber);
         await _projectionStates.UpdateProjectionState(_elasticSearchProjectionsProjectionName, newLastProcessedEventNumber.Value);
+
+        _metrics.LastProcessedEventNumber = new Measurement<int>(newLastProcessedEventNumber.Value);
     }
 
     private async Task<ElasticChanges> ProcessEnvelope(IEnvelope envelope)

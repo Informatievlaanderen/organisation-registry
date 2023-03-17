@@ -80,7 +80,7 @@ public static class ServiceCollectionExtensions
                         {
                             exporter.Protocol = OtlpExportProtocol.Grpc;
                             exporter.Endpoint = new Uri(collectorUrl);
-                        }));
+                        }).AddMeter(OpenTelemetryMetrics.ElasticSearchProjections.MeterName));
         return services;
     }
 
