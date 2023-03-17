@@ -96,7 +96,7 @@ public class IndividualRebuildRunner
                 context.OrganisationsToRebuild.Remove(organisation);
                 await context.SaveChangesAsync();
 
-                _metrics.NumberOfEnvelopesHandledGauge.Record(envelopes.Count);
+                _metrics.NumberOfEnvelopesHandled = envelopes.Count;
             }
         }
         catch (Exception ex)
