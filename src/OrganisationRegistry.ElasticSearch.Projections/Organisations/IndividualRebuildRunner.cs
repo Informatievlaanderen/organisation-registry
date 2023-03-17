@@ -57,7 +57,7 @@ public class IndividualRebuildRunner
 
         var organisationToRebuilds = await context.OrganisationsToRebuild.ToListAsync();
 
-        if (organisationToRebuilds.Count < 0)
+        if (organisationToRebuilds.Count > 0)
             _logger.LogInformation("[{ProjectionName}] Found {NumberOfOrganisations} organisations to rebuild", ProjectionName, organisationToRebuilds.Count);
 
         _metrics.NumberOfOrganisationsToRebuild = organisationToRebuilds.Count;
