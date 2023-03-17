@@ -1,3 +1,16 @@
+# [1.299.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.298.2...v1.299.0) (2023-03-17)
+
+
+### Bug Fixes
+
+* or-1642 fix if ([52e3c31](https://github.com/informatievlaanderen/organisation-registry/commit/52e3c31d5b85105d8c9d1f322f1efae5f389d537))
+
+
+### Features
+
+* or-1642 add elasticsearch projections  metrics ([bef507d](https://github.com/informatievlaanderen/organisation-registry/commit/bef507dc5c77e1743d6a58e6d2f24e0b94801eaf))
+* or-1642 use gauge io histogram ([e3b28b4](https://github.com/informatievlaanderen/organisation-registry/commit/e3b28b41d7e3f986919d6e7610d35dfa8a6198ae))
+
 ## [1.298.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.298.1...v1.298.2) (2023-03-16)
 
 
