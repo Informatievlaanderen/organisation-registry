@@ -1,3 +1,10 @@
+## [1.301.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.301.0...v1.301.1) (2023-03-18)
+
+
+### Bug Fixes
+
+* or-1636 reduce logging; make meter non-static ([3c06263](https://github.com/informatievlaanderen/organisation-registry/commit/3c06263b80f9740cf6dd4c718ba2cf22fb558756))
+
 # [1.301.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.300.0...v1.301.0) (2023-03-18)
 
 
