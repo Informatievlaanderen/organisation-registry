@@ -68,9 +68,12 @@ public abstract class BaseRunner<T> where T: class, IDocument, new()
 
     public async Task Run()
     {
-        _metrics.MaxEventNumberToProcess = _store.GetLastEvent();
+        var maxEventNumberToProcess = _store.GetLastEvent();
+        _metrics.MaxEventNumberToProcess = maxEventNumberToProcess;
 
         var lastProcessedEventNumber = await _projectionStates.GetLastProcessedEventNumber(_elasticSearchProjectionsProjectionName);
+        _metrics.NumberOfEnvelopesBehind = maxEventNumberToProcess - lastProcessedEventNumber;
+
         await InitialiseProjection(lastProcessedEventNumber);
 
         var eventsBeingListenedTo =
