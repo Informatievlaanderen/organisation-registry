@@ -1,3 +1,10 @@
+# [1.301.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.300.0...v1.301.0) (2023-03-18)
+
+
+### Features
+
+* or-1642 add number of envelopes behind ([3947757](https://github.com/informatievlaanderen/organisation-registry/commit/3947757a445957d53a04dde114acb068c3c3a8d9))
+
 # [1.300.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.299.0...v1.300.0) (2023-03-17)
 
 
