@@ -112,6 +112,8 @@ public abstract class BaseRunner<T> where T: class, IDocument, new()
             await FlushDocuments(documentCache);
             await UpdateProjectionState(newLastProcessedEventNumber);
             _metrics.NumberOfEnvelopesHandled.Record(envelopes.Count);
+            if (envelopes.Any())
+                _logger.LogInformation("[{ProjectionName}] Succesfully handled {NumberOfEnvelopesHandled}", ProjectionName, envelopes.Count);
         }
         catch (ElasticsearchOrganisationNotFoundException organisationNotFoundException)
         {

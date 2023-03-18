@@ -731,7 +731,7 @@ public class BodyHandler :
                     .MaxDegreeOfParallelism(Environment.ProcessorCount)
                     .Size(1000)
             )
-            .Wait(TimeSpan.FromMinutes(15), next => { Logger.LogInformation("Writing page {PageNumber}", next.Page); });
+            .Wait(TimeSpan.FromMinutes(15), next => { Logger.LogDebug("Writing page {PageNumber}", next.Page); });
     }
 
     private async Task UpdatePersonForMandates(IEnvelope<PersonUpdated> message, Elastic elastic)
@@ -785,7 +785,7 @@ public class BodyHandler :
                     .MaxDegreeOfParallelism(Environment.ProcessorCount)
                     .Size(1000)
             )
-            .Wait(TimeSpan.FromMinutes(15), next => { Logger.LogInformation("Writing page {PageNumber}", next.Page); });
+            .Wait(TimeSpan.FromMinutes(15), next => { Logger.LogDebug("Writing page {PageNumber}", next.Page); });
     }
 
     public async Task<IElasticChange> Handle(
@@ -866,7 +866,7 @@ public class BodyHandler :
                             .MaxDegreeOfParallelism(Environment.ProcessorCount)
                             .Size(1000)
                     )
-                    .Wait(TimeSpan.FromMinutes(15), next => { Logger.LogInformation("Writing page {PageNumber}", next.Page); });
+                    .Wait(TimeSpan.FromMinutes(15), next => { Logger.LogDebug("Writing page {PageNumber}", next.Page); });
             }
         );
     }
@@ -934,7 +934,7 @@ public class BodyHandler :
                     )
                     .Wait(
                         TimeSpan.FromMinutes(15),
-                        next => { Logger.LogInformation("Writing page {PageNumber}", next.Page); });
+                        next => { Logger.LogDebug("Writing page {PageNumber}", next.Page); });
             }).ToAsyncResult();
     }
 

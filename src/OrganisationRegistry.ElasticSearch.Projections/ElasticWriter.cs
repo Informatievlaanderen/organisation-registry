@@ -63,7 +63,7 @@ public static class ElasticWriter
                 )
                 .Wait(TimeSpan.FromMinutes(15), next =>
                 {
-                    logger.LogInformation("Writing page {PageNumber}", next.Page);
+                    logger.LogDebug("Writing page {PageNumber}", next.Page);
                 });
 
             await Task.CompletedTask;

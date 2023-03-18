@@ -7,7 +7,7 @@ public static class OpenTelemetryMetrics
     public class ElasticSearchProjections
     {
         public const string MeterName = nameof(ElasticSearchProjections);
-        private static readonly Meter Meter = new(MeterName);
+        private readonly Meter _meter = new(MeterName);
 
         // public metrics
         public Histogram<int> NumberOfEnvelopesHandled { get; set; }
@@ -27,11 +27,11 @@ public static class OpenTelemetryMetrics
 
         public ElasticSearchProjections(string runnerName)
         {
-            NumberOfEnvelopesHandled = Meter.CreateHistogram<int>(MeterNames.NumberOfEnvelopesHandled(runnerName), "envelopes", "number of envelopes handled");
-            Meter.CreateObservableCounter(MeterNames.LastProcessedEventNumber(runnerName), () => LastProcessedEventNumber);
-            Meter.CreateObservableGauge(MeterNames.MaxEventNumberToProcess, () => MaxEventNumberToProcess);
-            Meter.CreateObservableGauge(MeterNames.NumberOfEnvelopesBehind(runnerName), () => NumberOfEnvelopesBehind);
-            Meter.CreateObservableGauge(MeterNames.OrganisationsToRebuildCounter(runnerName), () => NumberOfOrganisationsToRebuild);
+            NumberOfEnvelopesHandled = _meter.CreateHistogram<int>(MeterNames.NumberOfEnvelopesHandled(runnerName), "envelopes", "number of envelopes handled");
+            _meter.CreateObservableCounter(MeterNames.LastProcessedEventNumber(runnerName), () => LastProcessedEventNumber);
+            _meter.CreateObservableGauge(MeterNames.MaxEventNumberToProcess, () => MaxEventNumberToProcess);
+            _meter.CreateObservableGauge(MeterNames.NumberOfEnvelopesBehind(runnerName), () => NumberOfEnvelopesBehind);
+            _meter.CreateObservableGauge(MeterNames.OrganisationsToRebuildCounter(runnerName), () => NumberOfOrganisationsToRebuild);
         }
     }
 }

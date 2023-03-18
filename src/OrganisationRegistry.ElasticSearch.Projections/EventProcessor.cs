@@ -117,8 +117,6 @@ public class EventProcessor : IHostedService
 
     private async Task ResumeAction(Scheduler scheduler, ILogger<EventProcessor> logger, IContextFactory contextFactory)
     {
-        logger.LogInformation("[{Context}] Resuming ...", "body");
-
         try
         {
             await using var context = contextFactory.Create();
