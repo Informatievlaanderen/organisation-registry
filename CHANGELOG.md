@@ -1,3 +1,10 @@
+# [1.304.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.303.0...v1.304.0) (2023-03-19)
+
+
+### Features
+
+* or-1642 Add console exporter; fix meter name ([c05804e](https://github.com/informatievlaanderen/organisation-registry/commit/c05804e31e422cdd83380f2b1f31a549e3413aef))
+
 # [1.303.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.302.0...v1.303.0) (2023-03-19)
 
 
