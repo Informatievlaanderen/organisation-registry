@@ -1,3 +1,10 @@
+# [1.303.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.302.0...v1.303.0) (2023-03-19)
+
+
+### Features
+
+* or-1642 add counter for envelopes handled ([a7cf6c0](https://github.com/informatievlaanderen/organisation-registry/commit/a7cf6c067b3466bdeb58e2ac3dc53ca75ff2b151))
+
 # [1.302.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.301.1...v1.302.0) (2023-03-19)
 
 
