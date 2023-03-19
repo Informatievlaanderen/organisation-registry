@@ -116,7 +116,7 @@ public abstract class BaseRunner<T> where T: class, IDocument, new()
             _metrics.NumberOfEnvelopesHandledGauge = _metrics.NumberOfEnvelopesBehindCounter = envelopes.Count;
 
             if (envelopes.Any())
-                _logger.LogInformation("[{ProjectionName}] Succesfully handled {NumberOfEnvelopesHandled}", ProjectionName, envelopes.Count);
+                _logger.LogDebug("[{ProjectionName}] Succesfully handled {NumberOfEnvelopesHandled}", ProjectionName, envelopes.Count);
         }
         catch (ElasticsearchOrganisationNotFoundException organisationNotFoundException)
         {

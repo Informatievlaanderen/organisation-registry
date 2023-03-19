@@ -80,10 +80,17 @@ public static class ServiceCollectionExtensions
                         {
                             exporter.Protocol = OtlpExportProtocol.Grpc;
                             exporter.Endpoint = new Uri(collectorUrl);
-                        }).AddConsoleExporter()
-                    .AddMeter($"{OpenTelemetryMetrics.ElasticSearchProjections.MeterName}.Organisation")
-                    .AddMeter($"{OpenTelemetryMetrics.ElasticSearchProjections.MeterName}.Body")
-                    .AddMeter($"{OpenTelemetryMetrics.ElasticSearchProjections.MeterName}.Person")
+                        }).AddConsoleExporter(
+                        (exporterOptions, readerOptions) =>
+                        {
+                            readerOptions.PeriodicExportingMetricReaderOptions = new PeriodicExportingMetricReaderOptions()
+                            {
+                                ExportIntervalMilliseconds = (int)TimeSpan.FromMinutes(10).TotalMilliseconds
+                            };
+                        })
+                    .AddMeter(OpenTelemetryMetrics.ElasticSearchProjections.MeterNameFunc("Organisation"))
+                    .AddMeter(OpenTelemetryMetrics.ElasticSearchProjections.MeterNameFunc("Body"))
+                    .AddMeter(OpenTelemetryMetrics.ElasticSearchProjections.MeterNameFunc("Person"))
                 );
         return services;
     }
