@@ -1,3 +1,10 @@
+# [1.306.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.305.0...v1.306.0) (2023-03-19)
+
+
+### Features
+
+* or-1642 return when no envelopes ([ee3471a](https://github.com/informatievlaanderen/organisation-registry/commit/ee3471a7ee3df9548399aad0aa7314e8a730ace1))
+
 # [1.305.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.304.0...v1.305.0) (2023-03-19)
 
 
