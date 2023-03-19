@@ -1,3 +1,10 @@
+## [1.306.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.306.0...v1.306.1) (2023-03-19)
+
+
+### Bug Fixes
+
+* or-1642 don't update projection state if not last change in set ([951e991](https://github.com/informatievlaanderen/organisation-registry/commit/951e991052ade57cfa0e189c2c76537604c56deb))
+
 # [1.306.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.305.0...v1.306.0) (2023-03-19)
 
 
