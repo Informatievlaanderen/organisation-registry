@@ -1,3 +1,10 @@
+# [1.302.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.301.1...v1.302.0) (2023-03-19)
+
+
+### Features
+
+* or-1636 try all sorts of metrics ([87eae15](https://github.com/informatievlaanderen/organisation-registry/commit/87eae152d37317de8af6577497b81af6d288ef9a))
+
 ## [1.301.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.301.0...v1.301.1) (2023-03-18)
 
 
