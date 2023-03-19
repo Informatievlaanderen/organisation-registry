@@ -89,6 +89,9 @@ public abstract class BaseRunner<T> where T: class, IDocument, new()
             .GetEventEnvelopesAfter(lastProcessedEventNumber, _batchSize, eventsBeingListenedTo.ToArray())
             .ToList();
 
+        if (!envelopes.Any())
+            return;
+
         int? newLastProcessedEventNumber = null;
         try
         {
