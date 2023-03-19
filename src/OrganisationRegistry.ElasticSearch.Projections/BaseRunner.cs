@@ -113,7 +113,7 @@ public abstract class BaseRunner<T> where T: class, IDocument, new()
             await UpdateProjectionState(newLastProcessedEventNumber);
 
             _metrics.NumberOfEnvelopesHandledHistogram.Record(envelopes.Count);
-            _metrics.NumberOfEnvelopesHandledGauge = _metrics.NumberOfEnvelopesBehindCounter = envelopes.Count;
+            _metrics.NumberOfEnvelopesHandledGauge = _metrics.NumberOfEnvelopesHandledCounter = envelopes.Count;
 
             if (envelopes.Any())
                 _logger.LogDebug("[{ProjectionName}] Succesfully handled {NumberOfEnvelopesHandled}", ProjectionName, envelopes.Count);
