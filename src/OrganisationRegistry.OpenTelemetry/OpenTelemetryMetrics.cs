@@ -45,6 +45,7 @@ public class OpenTelemetryMetrics
 
             NumberOfEnvelopesHandledHistogram = _meter.CreateHistogram<int>(MeterNames.EnvelopesHandled(histogram), "envelopes", "number of envelopes handled");
             _meter.CreateObservableGauge(MeterNames.EnvelopesHandled(gauge), () => NumberOfEnvelopesHandledGauge, "envelopes", "number of envelopes handled");
+            _meter.CreateObservableCounter(MeterNames.EnvelopesHandled(counter), () => NumberOfEnvelopesHandledCounter, "envelopes", "number of envelopes handled");
 
             _meter.CreateObservableCounter(MeterNames.LastProcessedEvent(counter), () => LastProcessedEventNumberCounter);
             _meter.CreateObservableGauge(MeterNames.LastProcessedEvent(gauge), () => LastProcessedEventNumberGauge);
