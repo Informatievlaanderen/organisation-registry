@@ -1,3 +1,10 @@
+# [1.305.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.304.0...v1.305.0) (2023-03-19)
+
+
+### Features
+
+* or-1642 use counter ([dc81d0a](https://github.com/informatievlaanderen/organisation-registry/commit/dc81d0a4a2e1fed4210a14e6ef721f65cd6c7c3f))
+
 # [1.304.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.303.0...v1.304.0) (2023-03-19)
 
 
