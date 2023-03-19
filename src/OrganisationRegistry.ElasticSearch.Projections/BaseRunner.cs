@@ -107,9 +107,9 @@ public abstract class BaseRunner<T> where T: class, IDocument, new()
             foreach (var changeSet in allChanges)
             {
                 newLastProcessedEventNumber = changeSet.EnvelopeNumber;
-                foreach (var changeSetChange in changeSet.Changes)
+                foreach (var changeSetChange in changeSet.Changes.Select((value, i) => new { i, value }))
                 {
-                    await ProcessChange(changeSetChange, documentCache, newLastProcessedEventNumber);
+                    await ProcessChange(changeSetChange.value, documentCache, newLastProcessedEventNumber, changeSetChange.i == changeSet.Changes.Count());
                 }
             }
             await FlushDocuments(documentCache);
@@ -145,7 +145,7 @@ public abstract class BaseRunner<T> where T: class, IDocument, new()
         }
     }
 
-    private async Task ProcessChange(IElasticChange? changeSetChange, Dictionary<Guid, T> documentCache, int? eventNumber)
+    private async Task ProcessChange(IElasticChange? changeSetChange, Dictionary<Guid, T> documentCache, int? eventNumber, bool isLastChangeInSet)
     {
         switch (changeSetChange)
         {
@@ -187,7 +187,10 @@ public abstract class BaseRunner<T> where T: class, IDocument, new()
             {
                 await FlushDocuments(documentCache);
                 await massChange.Change(_elastic);
-                await UpdateProjectionState(eventNumber);
+
+                if(isLastChangeInSet) // don't update  projection state if this is not the last change!
+                    await UpdateProjectionState(eventNumber);
+
                 await _elastic.TryGetAsync(async () =>
                     (await _elastic.WriteClient.Indices.RefreshAsync(Indices.Index<T>())).ThrowOnFailure());
                 break;

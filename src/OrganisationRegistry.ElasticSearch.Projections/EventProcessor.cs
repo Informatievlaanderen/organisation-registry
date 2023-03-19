@@ -23,8 +23,8 @@ public class EventProcessor : IHostedService
     private readonly Scheduler _scheduler;
     private readonly ILogger<EventProcessor> _logger;
 
-    private static readonly TimeSpan ResumeAfter = TimeSpan.FromSeconds(2);
-    private static readonly TimeSpan WhenNotEnabledResumeAfter = TimeSpan.FromMinutes(2);
+    private static readonly TimeSpan ResumeAfter = TimeSpan.FromSeconds(10);
+    private static readonly TimeSpan WhenNotEnabledResumeAfter = TimeSpan.FromMinutes(10);
 
     private const int CatchUpBatchSize = 2000;
 
