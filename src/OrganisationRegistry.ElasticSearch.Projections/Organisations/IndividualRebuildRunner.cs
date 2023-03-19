@@ -60,7 +60,7 @@ public class IndividualRebuildRunner
         if (organisationToRebuilds.Count > 0)
             _logger.LogInformation("[{ProjectionName}] Found {NumberOfOrganisations} organisations to rebuild", ProjectionName, organisationToRebuilds.Count);
 
-        _metrics.NumberOfOrganisationsToRebuild = organisationToRebuilds.Count;
+        _metrics.NumberOfOrganisationsToRebuildCounter = _metrics.NumberOfOrganisationsToRebuildGauge = organisationToRebuilds.Count;
 
         try
         {
@@ -96,7 +96,9 @@ public class IndividualRebuildRunner
                 context.OrganisationsToRebuild.Remove(organisation);
                 await context.SaveChangesAsync();
 
-                _metrics.NumberOfEnvelopesHandled.Record(envelopes.Count);
+                _metrics.NumberOfEnvelopesHandledHistogram.Record(envelopes.Count);
+                _metrics.NumberOfEnvelopesHandledGauge = _metrics.NumberOfEnvelopesBehindCounter = envelopes.Count;
+
             }
         }
         catch (Exception ex)

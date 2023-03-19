@@ -69,10 +69,10 @@ public abstract class BaseRunner<T> where T: class, IDocument, new()
     public async Task Run()
     {
         var maxEventNumberToProcess = _store.GetLastEvent();
-        _metrics.MaxEventNumberToProcess = maxEventNumberToProcess;
+        _metrics.MaxEventNumberToProcessGauge = _metrics.MaxEventNumberToProcessCounter = maxEventNumberToProcess;
 
         var lastProcessedEventNumber = await _projectionStates.GetLastProcessedEventNumber(_elasticSearchProjectionsProjectionName);
-        _metrics.NumberOfEnvelopesBehind = maxEventNumberToProcess - lastProcessedEventNumber;
+        _metrics.NumberOfEnvelopesBehindGauge = _metrics.NumberOfEnvelopesBehindCounter = maxEventNumberToProcess - lastProcessedEventNumber;
 
         await InitialiseProjection(lastProcessedEventNumber);
 
@@ -111,7 +111,10 @@ public abstract class BaseRunner<T> where T: class, IDocument, new()
             }
             await FlushDocuments(documentCache);
             await UpdateProjectionState(newLastProcessedEventNumber);
-            _metrics.NumberOfEnvelopesHandled.Record(envelopes.Count);
+
+            _metrics.NumberOfEnvelopesHandledHistogram.Record(envelopes.Count);
+            _metrics.NumberOfEnvelopesHandledGauge = _metrics.NumberOfEnvelopesBehindCounter = envelopes.Count;
+
             if (envelopes.Any())
                 _logger.LogInformation("[{ProjectionName}] Succesfully handled {NumberOfEnvelopesHandled}", ProjectionName, envelopes.Count);
         }
@@ -235,7 +238,7 @@ public abstract class BaseRunner<T> where T: class, IDocument, new()
         _logger.LogInformation("[{ProjectionName}] Processed up until envelope #{LastProcessedEnvelopeNumber}", ProjectionName, newLastProcessedEventNumber);
         await _projectionStates.UpdateProjectionState(_elasticSearchProjectionsProjectionName, newLastProcessedEventNumber.Value);
 
-        _metrics.LastProcessedEventNumber = new Measurement<int>(newLastProcessedEventNumber.Value);
+        _metrics.LastProcessedEventNumberGauge = _metrics.LastProcessedEventNumberCounter = newLastProcessedEventNumber.Value;
     }
 
     private async Task<ElasticChanges> ProcessEnvelope(IEnvelope envelope)

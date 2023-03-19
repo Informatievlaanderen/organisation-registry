@@ -2,36 +2,61 @@ namespace OrganisationRegistry.OpenTelemetry;
 
 using System.Diagnostics.Metrics;
 
-public static class OpenTelemetryMetrics
+public class OpenTelemetryMetrics
 {
     public class ElasticSearchProjections
     {
-        public const string MeterName = nameof(ElasticSearchProjections);
-        private readonly Meter _meter = new(MeterName);
+        public const string MeterName = "OR.ES";
+        private readonly Meter _meter;
 
         // public metrics
-        public Histogram<int> NumberOfEnvelopesHandled { get; set; }
-        public int NumberOfEnvelopesBehind { get; set; }
-        public Measurement<int> LastProcessedEventNumber { get; set; }
-        public int NumberOfOrganisationsToRebuild { get; set; }
-        public int MaxEventNumberToProcess { get; set; }
+        public Histogram<int> NumberOfEnvelopesHandledHistogram { get; }
+
+        public int NumberOfEnvelopesHandledGauge { get; set; }
+        public int NumberOfEnvelopesHandledCounter { get; set; }
+
+        public int NumberOfEnvelopesBehindGauge { get; set; }
+        public int NumberOfEnvelopesBehindCounter { get; set; }
+
+        public int LastProcessedEventNumberGauge { get; set; }
+        public int LastProcessedEventNumberCounter { get; set; }
+        public int NumberOfOrganisationsToRebuildGauge { get; set; }
+        public int NumberOfOrganisationsToRebuildCounter { get; set; }
+
+        public int MaxEventNumberToProcessGauge { get; set; }
+        public int MaxEventNumberToProcessCounter { get; set; }
 
         private static class MeterNames
         {
-            public static Func<string, string> NumberOfEnvelopesHandled = runnerName => $"{MeterName}.{runnerName}.{nameof(NumberOfEnvelopesHandled)}";
-            public static Func<string, string> NumberOfEnvelopesBehind = runnerName => $"{MeterName}.{runnerName}.{nameof(NumberOfEnvelopesBehind)}";
-            public static Func<string, string> LastProcessedEventNumber = runnerName =>$"{MeterName}.{runnerName}.{nameof(LastProcessedEventNumber)}";
-            public static string MaxEventNumberToProcess = $"{MeterName}.{nameof(MaxEventNumberToProcess)}";
-            public static Func<string, string> OrganisationsToRebuildCounter = runnerName =>$"{MeterName}.{runnerName}.{nameof(OrganisationsToRebuildCounter)}";
+            public static Func<string, string> EnvelopesHandled = (meterType) => $"{MeterName}.{nameof(EnvelopesHandled)}.{meterType}";
+            public static Func<string, string> EnvelopesBehind = (meterType) => $"{MeterName}.{nameof(EnvelopesBehind)}.{meterType}";
+            public static Func<string, string> LastProcessedEvent = (meterType) =>$"{MeterName}.{nameof(LastProcessedEvent)}.{meterType}";
+            public static Func<string, string> MaxEventNumberToProcess = (meterType) =>$"{MeterName}.{nameof(MaxEventNumberToProcess)}.{meterType}";
+            public static Func<string, string> OrganisationsToRebuild = (meterType) =>$"{MeterName}.{nameof(OrganisationsToRebuild)}.{meterType}";
         }
 
         public ElasticSearchProjections(string runnerName)
         {
-            NumberOfEnvelopesHandled = _meter.CreateHistogram<int>(MeterNames.NumberOfEnvelopesHandled(runnerName), "envelopes", "number of envelopes handled");
-            _meter.CreateObservableCounter(MeterNames.LastProcessedEventNumber(runnerName), () => LastProcessedEventNumber);
-            _meter.CreateObservableGauge(MeterNames.MaxEventNumberToProcess, () => MaxEventNumberToProcess);
-            _meter.CreateObservableGauge(MeterNames.NumberOfEnvelopesBehind(runnerName), () => NumberOfEnvelopesBehind);
-            _meter.CreateObservableGauge(MeterNames.OrganisationsToRebuildCounter(runnerName), () => NumberOfOrganisationsToRebuild);
+            const string histogram = "Histogram";
+            const string counter = "Counter";
+            const string gauge = "Gauge";
+
+            _meter = new Meter($"{MeterName}.{runnerName}");
+
+            NumberOfEnvelopesHandledHistogram = _meter.CreateHistogram<int>(MeterNames.EnvelopesHandled(histogram), "envelopes", "number of envelopes handled");
+            _meter.CreateObservableGauge(MeterNames.EnvelopesHandled(gauge), () => NumberOfEnvelopesHandledGauge, "envelopes", "number of envelopes handled");
+
+            _meter.CreateObservableCounter(MeterNames.LastProcessedEvent(counter), () => LastProcessedEventNumberCounter);
+            _meter.CreateObservableGauge(MeterNames.LastProcessedEvent(gauge), () => LastProcessedEventNumberGauge);
+
+            _meter.CreateObservableCounter(MeterNames.MaxEventNumberToProcess(counter), () => MaxEventNumberToProcessCounter);
+            _meter.CreateObservableGauge(MeterNames.MaxEventNumberToProcess(gauge), () => MaxEventNumberToProcessGauge);
+
+            _meter.CreateObservableCounter(MeterNames.EnvelopesBehind(counter), () => NumberOfEnvelopesBehindCounter);
+            _meter.CreateObservableGauge(MeterNames.EnvelopesBehind(gauge), () => NumberOfEnvelopesBehindGauge);
+
+            _meter.CreateObservableCounter(MeterNames.OrganisationsToRebuild(counter), () => NumberOfOrganisationsToRebuildCounter);
+            _meter.CreateObservableGauge(MeterNames.OrganisationsToRebuild(gauge), () => NumberOfOrganisationsToRebuildGauge);
         }
     }
 }
