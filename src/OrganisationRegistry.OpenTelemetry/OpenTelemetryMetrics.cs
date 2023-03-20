@@ -21,8 +21,8 @@ public class OpenTelemetryMetrics
         public int LastProcessedEventNumberGauge { get; set; }
         public int LastProcessedEventNumberCounter { get; set; }
 
-        public int NumberOfOrganisationsToRebuildGauge { get; set; }
-        public int NumberOfOrganisationsToRebuildCounter { get; set; }
+        // public int NumberOfOrganisationsToRebuildGauge { get; set; }
+        // public int NumberOfOrganisationsToRebuildCounter { get; set; }
 
         public int MaxEventNumberToProcessGauge { get; set; }
         public int MaxEventNumberToProcessCounter { get; set; }
@@ -59,8 +59,8 @@ public class OpenTelemetryMetrics
             _meter.CreateObservableUpDownCounter(MeterNames.EnvelopesBehind(meterName, counter), () => NumberOfEnvelopesBehindCounter, "envelopes", "number of envelopes behind");
             _meter.CreateObservableGauge(MeterNames.EnvelopesBehind(meterName, gauge), () => NumberOfEnvelopesBehindGauge, "envelopes", "number of envelopes behind");
 
-            _meter.CreateObservableUpDownCounter(MeterNames.OrganisationsToRebuild(meterName, counter), () => NumberOfOrganisationsToRebuildCounter);
-            _meter.CreateObservableGauge(MeterNames.OrganisationsToRebuild(meterName, gauge), () => NumberOfOrganisationsToRebuildGauge);
+            // _meter.CreateObservableUpDownCounter(MeterNames.OrganisationsToRebuild(meterName, counter), () => NumberOfOrganisationsToRebuildCounter);
+            // _meter.CreateObservableGauge(MeterNames.OrganisationsToRebuild(meterName, gauge), () => NumberOfOrganisationsToRebuildGauge);
         }
     }
 }

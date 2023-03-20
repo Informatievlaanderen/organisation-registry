@@ -26,7 +26,6 @@ public class IndividualRebuildRunner
     private readonly IProjectionStates _projectionStates;
     private readonly ElasticBus _bus;
     private readonly Elastic _elastic;
-    private readonly OpenTelemetryMetrics.ElasticSearchProjections _metrics;
 
     public IndividualRebuildRunner(
         ILogger<IndividualRebuildRunner> logger,
@@ -45,7 +44,6 @@ public class IndividualRebuildRunner
         _elastic = elastic;
 
         busRegistrar.RegisterEventHandlers(OrganisationsRunner.EventHandlers);
-        _metrics = new OpenTelemetryMetrics.ElasticSearchProjections(ProjectionName);
     }
 
     public async Task Run()
@@ -59,8 +57,6 @@ public class IndividualRebuildRunner
 
         if (organisationToRebuilds.Count > 0)
             _logger.LogInformation("[{ProjectionName}] Found {NumberOfOrganisations} organisations to rebuild", ProjectionName, organisationToRebuilds.Count);
-
-        _metrics.NumberOfOrganisationsToRebuildCounter = _metrics.NumberOfOrganisationsToRebuildGauge = organisationToRebuilds.Count;
 
         try
         {
@@ -95,10 +91,6 @@ public class IndividualRebuildRunner
 
                 context.OrganisationsToRebuild.Remove(organisation);
                 await context.SaveChangesAsync();
-
-                _metrics.NumberOfEnvelopesHandledHistogram.Record(envelopes.Count);
-                _metrics.NumberOfEnvelopesHandledGauge = _metrics.NumberOfEnvelopesBehindCounter = envelopes.Count;
-
             }
         }
         catch (Exception ex)
