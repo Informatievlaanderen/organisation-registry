@@ -1,3 +1,10 @@
+# [1.307.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.306.1...v1.307.0) (2023-03-20)
+
+
+### Features
+
+* or-1642 use histogram for envelopes behind ([9041173](https://github.com/informatievlaanderen/organisation-registry/commit/904117352a359b24a4b066f90625e8e8d8dd44eb))
+
 ## [1.306.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.306.0...v1.306.1) (2023-03-19)
 
 
