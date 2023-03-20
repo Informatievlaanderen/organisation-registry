@@ -93,9 +93,9 @@ public abstract class BaseRunner<T> where T: class, IDocument, new()
 
         if (!envelopes.Any())
         {
-            _metrics.NumberOfEnvelopesHandledHistogram.Record(envelopes.Count);
-            _metrics.NumberOfEnvelopesHandledGauge = envelopes.Count;
-            _metrics.NumberOfEnvelopesHandledCounter = envelopes.Count;
+            _metrics.NumberOfEnvelopesHandledHistogram.Record(0);
+            _metrics.NumberOfEnvelopesHandledGauge = 0;
+            _metrics.NumberOfEnvelopesHandledCounter = 0;
             return;
         }
 
@@ -119,19 +119,23 @@ public abstract class BaseRunner<T> where T: class, IDocument, new()
                     await ProcessChange(changeSetChange.value, documentCache, newLastProcessedEventNumber, changeSetChange.i == changeSet.Changes.Count());
                 }
             }
+
             await FlushDocuments(documentCache);
             await UpdateProjectionState(newLastProcessedEventNumber);
 
-            if (envelopes.Any())
-                _logger.LogDebug("[{ProjectionName}] Succesfully handled {NumberOfEnvelopesHandled}", ProjectionName, envelopes.Count);
+            _logger.LogDebug("[{ProjectionName}] Succesfully handled {NumberOfEnvelopesHandled}", ProjectionName, envelopes.Count);
+            _metrics.NumberOfEnvelopesHandledHistogram.Record(envelopes.Count);
+            _metrics.NumberOfEnvelopesHandledGauge = envelopes.Count;
+            _metrics.NumberOfEnvelopesHandledCounter = envelopes.Count;
         }
         catch (ElasticsearchOrganisationNotFoundException organisationNotFoundException)
         {
             await using var organisationRegistryContext = _contextFactory.Create();
-            organisationRegistryContext.OrganisationsToRebuild.Add(new OrganisationToRebuild
-            {
-                OrganisationId = Guid.Parse(organisationNotFoundException.OrganisationId)
-            });
+            organisationRegistryContext.OrganisationsToRebuild.Add(
+                new OrganisationToRebuild
+                {
+                    OrganisationId = Guid.Parse(organisationNotFoundException.OrganisationId)
+                });
             await organisationRegistryContext.SaveChangesAsync();
             _logger.LogWarning(
                 0,
