@@ -72,7 +72,9 @@ public abstract class BaseRunner<T> where T: class, IDocument, new()
         _metrics.MaxEventNumberToProcessGauge = _metrics.MaxEventNumberToProcessCounter = maxEventNumberToProcess;
 
         var lastProcessedEventNumber = await _projectionStates.GetLastProcessedEventNumber(_elasticSearchProjectionsProjectionName);
-        _metrics.NumberOfEnvelopesBehindGauge = _metrics.NumberOfEnvelopesBehindCounter = maxEventNumberToProcess - lastProcessedEventNumber;
+        var envelopesBehind = maxEventNumberToProcess - lastProcessedEventNumber;
+        _metrics.NumberOfEnvelopesBehindGauge = _metrics.NumberOfEnvelopesBehindCounter = envelopesBehind;
+        _metrics.NumberOfEnvelopesBehindHistogram.Record(envelopesBehind);
 
         await InitialiseProjection(lastProcessedEventNumber);
 
@@ -90,7 +92,12 @@ public abstract class BaseRunner<T> where T: class, IDocument, new()
             .ToList();
 
         if (!envelopes.Any())
+        {
+            _metrics.NumberOfEnvelopesHandledHistogram.Record(envelopes.Count);
+            _metrics.NumberOfEnvelopesHandledGauge = envelopes.Count;
+            _metrics.NumberOfEnvelopesHandledCounter = envelopes.Count;
             return;
+        }
 
         int? newLastProcessedEventNumber = null;
         try
@@ -114,9 +121,6 @@ public abstract class BaseRunner<T> where T: class, IDocument, new()
             }
             await FlushDocuments(documentCache);
             await UpdateProjectionState(newLastProcessedEventNumber);
-
-            _metrics.NumberOfEnvelopesHandledHistogram.Record(envelopes.Count);
-            _metrics.NumberOfEnvelopesHandledGauge = _metrics.NumberOfEnvelopesHandledCounter = envelopes.Count;
 
             if (envelopes.Any())
                 _logger.LogDebug("[{ProjectionName}] Succesfully handled {NumberOfEnvelopesHandled}", ProjectionName, envelopes.Count);
