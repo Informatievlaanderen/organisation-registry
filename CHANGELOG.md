@@ -1,3 +1,11 @@
+# [1.308.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.307.0...v1.308.0) (2023-03-20)
+
+
+### Features
+
+* or-1617 record handled when any envelopes ([3b01a7f](https://github.com/informatievlaanderen/organisation-registry/commit/3b01a7fd47f9113093f7cb6989b68f9cb688eced))
+* or-1642 remove metrics from individualrebuild runner for now ([3e95b68](https://github.com/informatievlaanderen/organisation-registry/commit/3e95b68ca9ba8c9148a420050e30b0c59aaad23e))
+
 # [1.307.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.306.1...v1.307.0) (2023-03-20)
 
 
