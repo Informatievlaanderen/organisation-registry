@@ -141,7 +141,7 @@
     "karma-webpack": "1.8.1",
     "lodash": "4.17.19",
     "merge": "1.2.1",
-    "parse5": "2.2.3",
+    "parse5": "7.1.2",
     "patch-package": "^6.5.1",
     "protractor": "4.0.14",
     "raw-loader": "0.5.1",
