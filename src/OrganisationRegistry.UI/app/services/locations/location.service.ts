@@ -70,7 +70,7 @@ export class LocationService implements ICrudService<Location> {
 
   public getCrabLocations(searchTerm: string): Observable<any[]> {
     return this.jsonP
-      .request(`https://loc.geopunt.be/v3/Location?q=${searchTerm}&c=50&callback=JSONP_CALLBACK`, { method: 'Get' })
+      .request(`https://geo.api.vlaanderen.be/geolocation/v3/Location?q=${searchTerm}&c=50&callback=JSONP_CALLBACK`, { method: 'Get' })
       .map(r => r.json().LocationResult);
   }
 
