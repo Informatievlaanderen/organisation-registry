@@ -1,3 +1,10 @@
+# [1.309.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.308.0...v1.309.0) (2023-05-31)
+
+
+### Features
+
+* or-1651 change geo url ([05b773c](https://github.com/informatievlaanderen/organisation-registry/commit/05b773c84f03f1311058f54ff7a1c9a5fc4d55c8))
+
 # [1.308.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.307.0...v1.308.0) (2023-03-20)
 
 
