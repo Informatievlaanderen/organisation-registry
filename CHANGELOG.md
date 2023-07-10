@@ -1,3 +1,10 @@
+# [1.310.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.309.0...v1.310.0) (2023-07-10)
+
+
+### Features
+
+* or-1595 allow orgaanbeheerder to change MEP ([0e2eabb](https://github.com/informatievlaanderen/organisation-registry/commit/0e2eabb0893b209c97387d1c6708ace6c9c6232c))
+
 # [1.309.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.308.0...v1.309.0) (2023-05-31)
 
 
