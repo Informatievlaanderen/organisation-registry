@@ -17,7 +17,7 @@ public class UpdateBodyBalancedParticipationCommandHandler
 
     public async Task Handle(ICommandEnvelope<UpdateBodyBalancedParticipation> envelope)
         => await UpdateHandler<Body>.For(envelope.Command, envelope.User, Session)
-            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder, Role.OrgaanBeheerder)
             .Handle(
                 session =>
                 {
