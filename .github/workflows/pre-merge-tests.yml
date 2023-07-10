@@ -288,7 +288,7 @@ jobs:
         shell: bash
         run: ./build.sh Vue_Build
         env:
-          - NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   notify-success:
     if: ${{ success() }}
