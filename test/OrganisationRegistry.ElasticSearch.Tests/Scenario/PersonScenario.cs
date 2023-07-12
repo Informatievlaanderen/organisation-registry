@@ -34,4 +34,16 @@ public class PersonScenario : ScenarioBase<Person>
             Create<DateTime?>(),
             Create<DateTime?>()
         );
+
+    public OrganisationFunctionAdded CreateOrganisationFunctionAdded(Guid personId, Guid organistaionId)
+        => new(
+            organisationId: organistaionId,
+            organisationFunctionId: Create<Guid>(),
+            functionId: Create<Guid>(),
+            functionName: Create<string>(),
+            personId: personId,
+            personFullName: Create<string>(),
+            contacts: new Dictionary<Guid, string>(),
+            validFrom: Create<DateTime?>(),
+            validTo: Create<DateTime?>());
 }

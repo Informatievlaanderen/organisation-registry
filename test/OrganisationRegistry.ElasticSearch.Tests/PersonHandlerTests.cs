@@ -148,17 +148,22 @@ public class PersonHandlerTests
         var capacityAdded = scenario.CreateOrganisationCapacityAdded(
             personCreated.PersonId,
             organisationCacheItem.Id);
+        var functionAdded = scenario.CreateOrganisationFunctionAdded(personCreated.PersonId, organisationCacheItem.Id);
+
         var dateOfTermination = capacityAdded.ValidTo?.AddDays(-10) ??
                                 (scenario.Create<DateTime?>() ?? scenario.Create<DateTime>());
-        var organisationTerminationCapacities = new Dictionary<Guid, DateTime>
-        {
-            { capacityAdded.OrganisationCapacityId, dateOfTermination },
-        };
 
         var organisationTerminated = scenario.CreateOrganisationTerminated(
             capacityAdded.OrganisationId,
             dateOfTermination,
-            capacities: organisationTerminationCapacities);
+            capacities: new Dictionary<Guid, DateTime>
+            {
+                { capacityAdded.OrganisationCapacityId, dateOfTermination },
+            },
+            functions: new Dictionary<Guid, DateTime>
+            {
+                { functionAdded.OrganisationFunctionId, dateOfTermination },
+            });
 
         await _eventProcessor.Handle<PersonDocument>(
             new List<IEnvelope>
@@ -167,6 +172,7 @@ public class PersonHandlerTests
                 initialisePersonProjection.ToEnvelope(),
                 personCreated.ToEnvelope(),
                 capacityAdded.ToEnvelope(),
+                functionAdded.ToEnvelope(),
                 organisationTerminated.ToEnvelope(),
             }
         );
@@ -177,6 +183,9 @@ public class PersonHandlerTests
         person.Source.Capacities.Should().HaveCount(1);
         person.Source.Capacities.First().Validity.Start.Should().Be(capacityAdded.ValidFrom);
         person.Source.Capacities.First().Validity.End.Should().Be(dateOfTermination);
+        person.Source.Functions.Should().HaveCount(1);
+        person.Source.Functions.First().Validity.Start.Should().Be(functionAdded.ValidFrom);
+        person.Source.Functions.First().Validity.End.Should().Be(dateOfTermination);
     }
 
     [Fact]
@@ -207,17 +216,22 @@ public class PersonHandlerTests
         var capacityAdded = scenario.CreateOrganisationCapacityAdded(
             personCreated.PersonId,
             organisationCacheItem.Id);
+        var functionAdded = scenario.CreateOrganisationFunctionAdded(personCreated.PersonId, organisationCacheItem.Id);
+
         var dateOfTermination = capacityAdded.ValidTo?.AddDays(-10) ??
                                 (scenario.Create<DateTime?>() ?? scenario.Create<DateTime>());
-        var organisationTerminationCapacities = new Dictionary<Guid, DateTime>
-        {
-            { capacityAdded.OrganisationCapacityId, dateOfTermination },
-        };
 
         var organisationTerminatedV2 = scenario.CreateOrganisationTerminatedV2(
             capacityAdded.OrganisationId,
             dateOfTermination,
-            capacities: organisationTerminationCapacities);
+            capacities: new Dictionary<Guid, DateTime>
+            {
+                { capacityAdded.OrganisationCapacityId, dateOfTermination },
+            },
+            functions: new Dictionary<Guid, DateTime>
+            {
+                { functionAdded.OrganisationFunctionId, dateOfTermination },
+            });
 
         await _eventProcessor.Handle<PersonDocument>(
             new List<IEnvelope>
@@ -226,6 +240,7 @@ public class PersonHandlerTests
                 initialisePersonProjection.ToEnvelope(),
                 personCreated.ToEnvelope(),
                 capacityAdded.ToEnvelope(),
+                functionAdded.ToEnvelope(),
                 organisationTerminatedV2.ToEnvelope(),
             }
         );
@@ -236,5 +251,9 @@ public class PersonHandlerTests
         person.Source.Capacities.Should().HaveCount(1);
         person.Source.Capacities.First().Validity.Start.Should().Be(capacityAdded.ValidFrom);
         person.Source.Capacities.First().Validity.End.Should().Be(dateOfTermination);
+
+        person.Source.Functions.Should().HaveCount(1);
+        person.Source.Functions.First().Validity.Start.Should().Be(functionAdded.ValidFrom);
+        person.Source.Functions.First().Validity.End.Should().Be(dateOfTermination);
     }
 }

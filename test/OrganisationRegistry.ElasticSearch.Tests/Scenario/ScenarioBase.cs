@@ -35,7 +35,8 @@ public class ScenarioBase<T>
         DateTime dateOfTermination,
         bool? forcedKboTermination = null,
         DateTime? dateOfTerminationAccordingToKbo = null,
-        Dictionary<Guid, DateTime>? capacities = null)
+        Dictionary<Guid, DateTime>? capacities = null,
+        Dictionary<Guid, DateTime>? functions = null)
 #pragma warning disable CS0618
         => new(
 #pragma warning restore CS0618
@@ -50,7 +51,7 @@ public class ScenarioBase<T>
                 capacities ?? new Dictionary<Guid, DateTime>(),
                 new Dictionary<Guid, DateTime>(),
                 new Dictionary<Guid, DateTime>(),
-                new Dictionary<Guid, DateTime>(),
+                functions ?? new Dictionary<Guid, DateTime>(),
                 new Dictionary<Guid, DateTime>(),
                 new Dictionary<Guid, DateTime>(),
                 new Dictionary<Guid, DateTime>(),
@@ -77,7 +78,8 @@ public class ScenarioBase<T>
         DateTime dateOfTermination,
         bool? forcedKboTermination = null,
         DateTime? dateOfTerminationAccordingToKbo = null,
-        Dictionary<Guid, DateTime>? capacities = null)
+        Dictionary<Guid, DateTime>? capacities = null,
+        Dictionary<Guid, DateTime>? functions = null)
         => new(
             organisationId,
             Create<string>(),
@@ -90,7 +92,7 @@ public class ScenarioBase<T>
                 capacities ?? new Dictionary<Guid, DateTime>(),
                 new Dictionary<Guid, DateTime>(),
                 new Dictionary<Guid, DateTime>(),
-                new Dictionary<Guid, DateTime>(),
+                functions??new Dictionary<Guid, DateTime>(),
                 new Dictionary<Guid, DateTime>(),
                 new Dictionary<Guid, DateTime>(),
                 new Dictionary<Guid, DateTime>(),
