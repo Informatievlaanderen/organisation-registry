@@ -12,6 +12,7 @@ public partial class OrganisationDocument
         public Guid OrganisationLocationId { get; set; }
         public Guid LocationId { get; set; }
         public string FormattedAddress { get; set; }
+        public LocationComponents Components { get; set; }
 
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Include)]
         public bool IsMainLocation { get; set; }
@@ -29,6 +30,7 @@ public partial class OrganisationDocument
             Guid organisationLocationId,
             Guid locationId,
             string formattedAddress,
+            LocationComponents components,
             bool isMainLocation,
             Guid? locationTypeId,
             string? locationTypeName,
@@ -41,6 +43,7 @@ public partial class OrganisationDocument
             LocationTypeName = locationTypeName;
             Validity = validity;
             FormattedAddress = formattedAddress;
+            Components = components;
         }
 
         public static IPromise<IProperties> Mapping(PropertiesDescriptor<OrganisationLocation> map)
@@ -65,9 +68,45 @@ public partial class OrganisationDocument
                     t => t
                         .Name(p => p.LocationTypeName)
                         .Fields(x => x.Keyword(y => y.Name("keyword"))))
+                .Nested<LocationComponents>(
+                    n => n
+                        .Name(p => p.Components)
+                        .IncludeInRoot()
+                        .Properties(LocationComponents.Mapping))
                 .Object<Period>(
                     o => o
                         .Name(p => p.Validity)
                         .Properties(Period.Mapping));
+    }
+
+    public class LocationComponents
+    {
+        public LocationComponents(string street, string zipCode, string municipality, string country)
+        {
+            Street = street;
+            ZipCode = zipCode;
+            Municipality = municipality;
+            Country = country;
+        }
+
+        public string Street { get; set; }
+        public string ZipCode { get; set; }
+        public string Municipality { get; set; }
+        public string Country { get; set; }
+
+        public static IPromise<IProperties> Mapping(PropertiesDescriptor<LocationComponents> map)
+            => map
+                .Text(
+                    k => k
+                        .Name(p => p.Street))
+                .Keyword(
+                    k => k
+                        .Name(p => p.ZipCode))
+                .Text(
+                    k => k
+                        .Name(p => p.Municipality))
+                .Keyword(
+                    k => k
+                        .Name(p => p.Country));
     }
 }

@@ -12,6 +12,7 @@ using Infrastructure;
 using Microsoft.Extensions.Logging;
 using Common;
 using Infrastructure.Change;
+using Location;
 
 public class OrganisationLocation :
     BaseProjection<OrganisationLocation>,
@@ -27,9 +28,13 @@ public class OrganisationLocation :
     IElasticEventHandler<OrganisationTerminated>,
     IElasticEventHandler<OrganisationTerminatedV2>
 {
+    private readonly IEventStore _store;
+
     public OrganisationLocation(
+        IEventStore store,
         ILogger<OrganisationLocation> logger) : base(logger)
     {
+        _store = store;
     }
 
     public async Task<IElasticChange> Handle(
@@ -41,23 +46,20 @@ public class OrganisationLocation :
         (
             elastic => elastic.TryAsync(
                 () => elastic
-                    .MassUpdateOrganisationAsync(
+                    .MassUpdateOrganisationLocationAsync(
                         x => x.Locations.Single().LocationId,
                         message.Body.LocationId,
-                        "locations",
-                        "locationId",
-                        "formattedAddress",
-                        message.Body.FormattedAddress,
+                        message.Body,
                         message.Number,
                         message.Timestamp))
         ).ToAsyncResult();
     }
 
     public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationLocationAdded> message)
-        => await AddOrganisationLocation(message.Body.OrganisationId, message.Body.LocationId, message.Body.LocationFormattedAddress, message.Body.IsMainLocation, message.Body.LocationTypeId, message.Body.LocationTypeName, message.Body.ValidFrom, message.Body.ValidTo, message.Number, message.Timestamp, message.Body.OrganisationLocationId);
+        => await AddOrganisationLocation(message.Body.OrganisationId, message.Body.LocationId, message.Body.LocationFormattedAddress, message.Body.IsMainLocation, message.Body.LocationTypeId, message.Body.LocationTypeName, message.Body.ValidFrom, message.Body.ValidTo, message.Number, message.Timestamp, message.Body.OrganisationLocationId, _store);
 
     public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboRegisteredOfficeOrganisationLocationAdded> message)
-        => await AddOrganisationLocation(message.Body.OrganisationId, message.Body.LocationId, message.Body.LocationFormattedAddress, message.Body.IsMainLocation, message.Body.LocationTypeId, message.Body.LocationTypeName, message.Body.ValidFrom, message.Body.ValidTo, message.Number, message.Timestamp, message.Body.OrganisationLocationId);
+        => await AddOrganisationLocation(message.Body.OrganisationId, message.Body.LocationId, message.Body.LocationFormattedAddress, message.Body.IsMainLocation, message.Body.LocationTypeId, message.Body.LocationTypeName, message.Body.ValidFrom, message.Body.ValidTo, message.Number, message.Timestamp, message.Body.OrganisationLocationId, _store);
 
     public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboRegisteredOfficeOrganisationLocationRemoved> message)
         => await RemoveOrganisationLocation(message.Body.OrganisationId, message.Number, message.Timestamp, message.Body.OrganisationLocationId);
@@ -121,9 +123,10 @@ public class OrganisationLocation :
             message.Body.LocationTypeId,
             message.Body.LocationTypeName,
             message.Body.ValidFrom,
-            message.Body.ValidTo);
+            message.Body.ValidTo,
+            _store);
 
-    private static async Task<IElasticChange> AddOrganisationLocation(Guid organisationId, Guid locationId, string locationFormattedAddress, bool isMainLocation, Guid? locationTypeId, string? locationTypeName, DateTime? validFrom, DateTime? validTo, int documentChangeId, DateTimeOffset timestamp, Guid organisationLocationId)
+    private static async Task<IElasticChange> AddOrganisationLocation(Guid organisationId, Guid locationId, string locationFormattedAddress, bool isMainLocation, Guid? locationTypeId, string? locationTypeName, DateTime? validFrom, DateTime? validTo, int documentChangeId, DateTimeOffset timestamp, Guid organisationLocationId, IEventStore store)
     {
         return await new ElasticPerDocumentChange<OrganisationDocument>(
             organisationId,
@@ -131,6 +134,13 @@ public class OrganisationLocation :
             {
                 document.ChangeId = documentChangeId;
                 document.ChangeTime = timestamp;
+
+                var eventEnvelopes = store.GetEventEnvelopes<Location>(locationId);
+
+                var lastEvent = (IHasLocation)eventEnvelopes
+                    .OrderBy(x => x.Number)
+                    .Last()
+                    .Body;
 
                 document.Locations.RemoveExistingListItems(
                     x =>
@@ -141,6 +151,11 @@ public class OrganisationLocation :
                         organisationLocationId,
                         locationId,
                         locationFormattedAddress,
+                        new OrganisationDocument.LocationComponents(
+                            lastEvent.Street,
+                            lastEvent.ZipCode,
+                            lastEvent.City,
+                            lastEvent.Country),
                         isMainLocation,
                         locationTypeId,
                         locationTypeName,
@@ -150,20 +165,21 @@ public class OrganisationLocation :
     }
 
     private static async Task<IElasticChange> UpdateOrganisationLocation(
-        Guid bodyOrganisationId,
+        Guid organisationId,
         int organisationDocumentChangeId,
         DateTimeOffset organisationDocumentChangeTime,
-        Guid bodyOrganisationLocationId,
-        Guid bodyLocationId,
-        string bodyLocationFormattedAddress,
-        bool bodyIsMainLocation,
-        Guid? bodyLocationTypeId,
-        string? bodyLocationTypeName,
-        DateTime? bodyValidFrom,
-        DateTime? bodyValidTo)
+        Guid organisationLocationId,
+        Guid locationId,
+        string locationFormattedAddress,
+        bool isMainLocation,
+        Guid? locationTypeId,
+        string? locationTypeName,
+        DateTime? validFrom,
+        DateTime? validTo,
+        IEventStore store)
     {
         return await new ElasticPerDocumentChange<OrganisationDocument>(
-            bodyOrganisationId,
+            organisationId,
             document =>
             {
                 document.ChangeId = organisationDocumentChangeId;
@@ -171,17 +187,29 @@ public class OrganisationLocation :
 
                 document.Locations.RemoveExistingListItems(
                     x =>
-                        x.OrganisationLocationId == bodyOrganisationLocationId);
+                        x.OrganisationLocationId == organisationLocationId);
+
+                var eventEnvelopes = store.GetEventEnvelopes<Location>(locationId);
+
+                var lastEvent = (IHasLocation)eventEnvelopes
+                    .OrderBy(x => x.Number)
+                    .Last()
+                    .Body;
 
                 document.Locations.Add(
                     new OrganisationDocument.OrganisationLocation(
-                        bodyOrganisationLocationId,
-                        bodyLocationId,
-                        bodyLocationFormattedAddress,
-                        bodyIsMainLocation,
-                        bodyLocationTypeId,
-                        bodyLocationTypeName,
-                        Period.FromDates(bodyValidFrom, bodyValidTo)));
+                        organisationLocationId,
+                        locationId,
+                        locationFormattedAddress,
+                        new OrganisationDocument.LocationComponents(
+                            lastEvent.Street,
+                            lastEvent.ZipCode,
+                            lastEvent.City,
+                            lastEvent.Country),
+                        isMainLocation,
+                        locationTypeId,
+                        locationTypeName,
+                        Period.FromDates(validFrom, validTo)));
             }
         ).ToAsyncResult();
     }
