@@ -1,3 +1,10 @@
+# [1.311.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.310.0...v1.311.0) (2023-07-12)
+
+
+### Features
+
+* or-1312 show adres components in search API ([840087e](https://github.com/informatievlaanderen/organisation-registry/commit/840087e6b7e241f76f01154187bb8f7df3fd5c4c))
+
 # [1.310.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.309.0...v1.310.0) (2023-07-10)
 
 
