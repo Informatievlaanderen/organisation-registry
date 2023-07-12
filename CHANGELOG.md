@@ -1,3 +1,10 @@
+## [1.311.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.311.0...v1.311.1) (2023-07-12)
+
+
+### Bug Fixes
+
+* or-1805 terminate people function when organisation is terminated ([5809d9e](https://github.com/informatievlaanderen/organisation-registry/commit/5809d9ec9466be4f03dac5b635157176f9c6060c))
+
 # [1.311.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.310.0...v1.311.0) (2023-07-12)
 
 
