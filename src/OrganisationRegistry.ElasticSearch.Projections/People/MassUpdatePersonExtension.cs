@@ -1,6 +1,8 @@
 namespace OrganisationRegistry.ElasticSearch.Projections.People;
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Client;
@@ -84,5 +86,41 @@ public static class MassUpdatePersonExtension
                             .Add("newChangeId", changeId)
                             .Add("newChangeTime", changeTime)))))
             .ThrowOnFailure();
+    }
+
+    public static async Task MassTerminatePersonFunctionsAsync(
+        this Elastic client,
+        Expression<Func<PersonDocument, object?>> queryFieldSelector,
+        Guid organisationId,
+        IDictionary<Guid, DateTime> functionsToTerminate,
+        int changeId,
+        DateTimeOffset changeTime,
+        int scrollSize = 100)
+    {
+        await client.TryGetAsync(async () =>
+            (await client.WriteClient.Indices.RefreshAsync(Indices.Index<PersonDocument>())).ThrowOnFailure());
+
+        var updateByQueryResponse = await client.WriteClient
+            .UpdateByQueryAsync<PersonDocument>(x => x
+                .Query(q => q
+                    .Term(t => t
+                        .Field(queryFieldSelector)
+                        .Value(organisationId)))
+                .ScrollSize(scrollSize)
+                .Script(s => s
+                    .Source(
+                        @"for (int i = 0; i < ctx._source.functions.size(); i++) {
+                                 if (params.functionsToTerminate.containsKey(ctx._source.functions[i].personFunctionId)) {
+                                     ctx._source.functions[i].validity.end = params.functionsToTerminate[ctx._source.functions[i].personFunctionId];
+                                 }
+                             }
+                             ctx._source.changeId = params.newChangeId;
+                             ctx._source.changeTime = params.newChangeTime;")
+                    .Lang("painless")
+                    .Params(p => p
+                        .Add("functionsToTerminate", functionsToTerminate)
+                        .Add("newChangeId", changeId)
+                        .Add("newChangeTime", changeTime))));
+        updateByQueryResponse.ThrowOnFailure();
     }
 }

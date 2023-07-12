@@ -7,7 +7,6 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Infrastructure;
 using OrganisationRegistry.Infrastructure.Events;
 using OrganisationRegistry.Organisation.Events;
-
 using System.Linq;
 using System.Threading.Tasks;
 using FunctionType;
@@ -68,10 +67,15 @@ public class PersonFunctionListView :
     IEventHandler<OrganisationInfoUpdated>,
     IEventHandler<OrganisationNameUpdated>,
     IEventHandler<OrganisationInfoUpdatedFromKbo>,
-    IEventHandler<OrganisationCouplingWithKboCancelled>
+    IEventHandler<OrganisationCouplingWithKboCancelled>,
+    IEventHandler<OrganisationTerminated>,
+    IEventHandler<OrganisationTerminatedV2>
 {
-    protected override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
-    public override string Schema => WellknownSchemas.BackofficeSchema;
+    protected override string[] ProjectionTableNames
+        => Enum.GetNames(typeof(ProjectionTables));
+
+    public override string Schema
+        => WellknownSchemas.BackofficeSchema;
 
     public enum ProjectionTables
     {
@@ -195,5 +199,29 @@ public class PersonFunctionListView :
     public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
     {
         await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+    }
+
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+    {
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+        foreach (var (key, value) in message.Body.FieldsToTerminate.Functions)
+        {
+            var function = await context.PersonFunctionList.SingleAsync(item => item.OrganisationFunctionId == key);
+            function.ValidTo = value;
+        }
+
+        await context.SaveChangesAsync();
+    }
+
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminatedV2> message)
+    {
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+        foreach (var (key, value) in message.Body.FieldsToTerminate.Functions)
+        {
+            var function = await context.PersonFunctionList.SingleAsync(item => item.OrganisationFunctionId == key);
+            function.ValidTo = value;
+        }
+
+        await context.SaveChangesAsync();
     }
 }

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Cache;
 using Common;
+using ElasticSearch.Organisations;
 using ElasticSearch.People;
 using Function.Events;
 using Infrastructure;
@@ -25,7 +26,9 @@ public class PersonFunction :
     IElasticEventHandler<OrganisationInfoUpdated>,
     IElasticEventHandler<OrganisationNameUpdated>,
     IElasticEventHandler<OrganisationInfoUpdatedFromKbo>,
-    IElasticEventHandler<OrganisationCouplingWithKboCancelled>
+    IElasticEventHandler<OrganisationCouplingWithKboCancelled>,
+    IElasticEventHandler<OrganisationTerminated>,
+    IElasticEventHandler<OrganisationTerminatedV2>
 {
     private readonly IPersonHandlerCache _cache;
     private readonly IContextFactory _contextFactory;
@@ -223,4 +226,26 @@ public class PersonFunction :
                     messageNumber,
                     timestamp)
         );
+
+    public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+        => await new ElasticMassChange(
+            async elastic => await elastic
+                .MassTerminatePersonFunctionsAsync(
+                    x => x.Functions.Single().OrganisationId,
+                    message.Body.OrganisationId,
+                    message.Body.FieldsToTerminate.Functions,
+                    message.Number,
+                    message.Timestamp)
+        ).ToAsyncResult();
+
+    public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminatedV2> message)
+        => await new ElasticMassChange(
+            async elastic => await elastic
+                .MassTerminatePersonFunctionsAsync(
+                    x => x.Functions.Single().OrganisationId,
+                    message.Body.OrganisationId,
+                    message.Body.FieldsToTerminate.Functions,
+                    message.Number,
+                    message.Timestamp)
+        ).ToAsyncResult();
 }
