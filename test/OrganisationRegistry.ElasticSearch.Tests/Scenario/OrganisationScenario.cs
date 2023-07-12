@@ -1,6 +1,7 @@
 namespace OrganisationRegistry.ElasticSearch.Tests.Scenario;
 
 using System;
+using Location.Events;
 using Organisation.Events;
 using Projections.Organisations;
 using Specimen;
@@ -46,4 +47,39 @@ public class OrganisationScenario : ScenarioBase<Organisation>
             Create<DateTime?>(),
             Create<string>(),
             Create<string>());
+
+    public OrganisationLocationUpdated CreateOrganisationLocationUpdated(OrganisationLocationAdded added)
+        => new(
+            organisationId: added.OrganisationId,
+            organisationLocationId: added.OrganisationLocationId,
+            locationId: Create<Guid>(),
+            locationFormattedAddress: Create<string>(),
+            isMainLocation: Create<bool>(),
+            locationTypeId: Create<Guid>(),
+            locationTypeName: Create<string>(),
+            validFrom: Create<DateTime?>(),
+            validTo: Create<DateTime?>(),
+            previousLocationId: Create<Guid>(),
+            previousLocationFormattedAddress: Create<string>(),
+            previousIsMainLocation: Create<bool>(),
+            previousLocationTypeId: Create<Guid>(),
+            previousLocationTypeName: Create<string>(),
+            previouslyValidFrom: Create<DateTime?>(),
+            previouslyValidTo: Create<DateTime?>());
+
+    public LocationUpdated CreateLocationUpdated(OrganisationLocationUpdated added)
+        => new(
+            locationId: added.LocationId,
+            crabLocationId: Create<string>(),
+            formattedAddress: Create<string>(),
+            street: Create<string>(),
+            zipCode: Create<string>(),
+            city: Create<string>(),
+            country: Create<string>(),
+            previousCrabLocationId: Create<string>(),
+            previousFormattedAddress: Create<string>(),
+            previousStreet: Create<string>(),
+            previousZipCode: Create<string>(),
+            previousCity: Create<string>(),
+            previousCountry: Create<string>());
 }

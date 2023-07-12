@@ -2,7 +2,7 @@ namespace OrganisationRegistry.Location.Events;
 
 using System;
 
-public class LocationUpdated : BaseEvent<LocationUpdated>
+public class LocationUpdated : BaseEvent<LocationUpdated>, IHasLocation
 {
     public Guid LocationId => Id;
 

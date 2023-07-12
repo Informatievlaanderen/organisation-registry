@@ -9,9 +9,14 @@ using Xunit;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using AutoFixture;
+using Location;
+using Location.Events;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
+using Moq;
 using Organisation.Events;
 using OrganisationRegistry.Tests.Shared;
 using OrganisationRegistry.Tests.Shared.Stubs;
@@ -26,10 +31,30 @@ public class OrganisationHandlerTests
 {
     private readonly ElasticSearchFixture _fixture;
     private readonly TestEventProcessor _eventProcessor;
+    private readonly LocationUpdated? lastLocationEvent;
 
     public OrganisationHandlerTests(ElasticSearchFixture fixture)
     {
         _fixture = fixture;
+
+        var autofixture = new Fixture();
+        var secondToLastLocationEventEnvelope = autofixture.Create<LocationUpdated>().ToEnvelope();
+        secondToLastLocationEventEnvelope.Number = 1;
+
+        lastLocationEvent = autofixture.Create<LocationUpdated>();
+        var lastLocationEventEnvelope = lastLocationEvent.ToEnvelope();
+        lastLocationEventEnvelope.Number = 2;
+
+        var eventstore = new Mock<IEventStore>();
+        eventstore.Setup(x => x.GetEventEnvelopes<Location>(It.IsAny<Guid>()))
+            .Returns(() =>
+            {
+                return new[]
+                {
+                    secondToLastLocationEventEnvelope,
+                    lastLocationEventEnvelope,
+                };
+            });
 
         var dbContextOptions = new DbContextOptionsBuilder<OrganisationRegistryContext>()
             .UseInMemoryDatabase($"org-es-test-{Guid.NewGuid()}", _ => { }).Options;
@@ -51,7 +76,7 @@ public class OrganisationHandlerTests
         var organisationFunction = new OrganisationFunction(new NullLogger<OrganisationFunction>(), testContextFactory);
         var organisationKey = new OrganisationKey(new NullLogger<OrganisationKey>());
         var organisationLabel = new OrganisationLabel(new NullLogger<OrganisationLabel>());
-        var organisationLocation = new OrganisationLocation(new NullLogger<OrganisationLocation>());
+        var organisationLocation = new OrganisationLocation(eventstore.Object, new NullLogger<OrganisationLocation>());
         var organisationOpeningHoursSpecification = new OrganisationOpeningHoursSpecification(new NullLogger<OrganisationOpeningHoursSpecification>());
         var organisationOrganisationClassification = new OrganisationOrganisationClassification(new NullLogger<OrganisationOrganisationClassification>());
         var organisationParent = new OrganisationParent(new NullLogger<OrganisationParent>());
@@ -421,5 +446,83 @@ public class OrganisationHandlerTests
         var organisation = _fixture.Elastic.ReadClient.Get<OrganisationDocument>(organisationCreated.OrganisationId);
 
         organisation.Source.Regulations.First().Description.Should().Be(organisationRegulationUpdated.DescriptionRendered);
+    }
+
+    [Fact]
+    public async void OrganisationLocationAdded_CreatesLocation()
+    {
+        var scenario = new OrganisationScenario(Guid.NewGuid());
+
+        var initialiseProjection = scenario.Create<InitialiseProjection>();
+        var organisationCreated = scenario.Create<OrganisationCreated>();
+        var organisationLocationAdded = scenario.Create<OrganisationLocationAdded>();
+        var organisationLocationUpdated = scenario.CreateOrganisationLocationUpdated(organisationLocationAdded);
+
+        await _eventProcessor.Handle<OrganisationDocument>(
+            new List<IEnvelope>()
+            {
+                initialiseProjection.ToEnvelope(),
+                organisationCreated.ToEnvelope(),
+                organisationLocationAdded.ToEnvelope(),
+                organisationLocationUpdated.ToEnvelope(),
+            }
+        );
+
+        var organisation = _fixture.Elastic.ReadClient.Get<OrganisationDocument>(organisationCreated.OrganisationId);
+
+        var organisationLocation = organisation.Source.Locations.First();
+
+        organisationLocation.OrganisationLocationId.Should().Be(organisationLocationAdded.OrganisationLocationId);
+        organisationLocation.Validity.Start.Should().Be(organisationLocationUpdated.ValidFrom);
+        organisationLocation.Validity.End.Should().Be(organisationLocationUpdated.ValidTo);
+
+        organisationLocation.FormattedAddress.Should().Be(organisationLocationUpdated.LocationFormattedAddress);
+
+        organisationLocation.Components.Should().BeEquivalentTo(
+            new OrganisationDocument.LocationComponents(
+                lastLocationEvent.Street,
+                lastLocationEvent.ZipCode,
+                lastLocationEvent.City,
+                lastLocationEvent.Country));
+    }
+
+    [Fact]
+    public async void LocationUpdated_UpdatesOrganisationLocation()
+    {
+        var scenario = new OrganisationScenario(Guid.NewGuid());
+
+        var initialiseProjection = scenario.Create<InitialiseProjection>();
+        var organisationCreated = scenario.Create<OrganisationCreated>();
+        var organisationLocationAdded = scenario.Create<OrganisationLocationAdded>();
+        var organisationLocationUpdated = scenario.CreateOrganisationLocationUpdated(organisationLocationAdded);
+        var locationUpdated = scenario.CreateLocationUpdated(organisationLocationUpdated);
+
+        await _eventProcessor.Handle<OrganisationDocument>(
+            new List<IEnvelope>()
+            {
+                initialiseProjection.ToEnvelope(),
+                organisationCreated.ToEnvelope(),
+                organisationLocationAdded.ToEnvelope(),
+                organisationLocationUpdated.ToEnvelope(),
+                locationUpdated.ToEnvelope(),
+            }
+        );
+
+        var organisation = _fixture.Elastic.ReadClient.Get<OrganisationDocument>(organisationCreated.OrganisationId);
+
+        var organisationLocation = organisation.Source.Locations.First();
+
+        organisationLocation.OrganisationLocationId.Should().Be(organisationLocationAdded.OrganisationLocationId);
+        organisationLocation.Validity.Start.Should().Be(organisationLocationUpdated.ValidFrom);
+        organisationLocation.Validity.End.Should().Be(organisationLocationUpdated.ValidTo);
+
+        organisationLocation.FormattedAddress.Should().Be(locationUpdated.FormattedAddress);
+
+        organisationLocation.Components.Should().BeEquivalentTo(
+            new OrganisationDocument.LocationComponents(
+                locationUpdated.Street,
+                locationUpdated.ZipCode,
+                locationUpdated.City,
+                locationUpdated.Country));
     }
 }
