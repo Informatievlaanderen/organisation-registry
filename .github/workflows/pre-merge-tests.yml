@@ -300,7 +300,7 @@ jobs:
     steps:
       - name: Post to Slack
         id: slack
-        uses: slackapi/slack-github-action@v1.21.0
+        uses: slackapi/slack-github-action@v1.24.0
         with:
           channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
           slack-message: ":white_check_mark: Pull request is ready to merge:\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
@@ -317,7 +317,7 @@ jobs:
     steps:
       - name: Post to Slack
         id: slack
-        uses: slackapi/slack-github-action@v1.21.0
+        uses: slackapi/slack-github-action@v1.24.0
         with:
           # Slack channel id, channel name, or user id to post message.
           # See also: https://api.slack.com/methods/chat.postMessage#channels
