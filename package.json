@@ -96,7 +96,7 @@
     "@commitlint/cli": "11.0.0",
     "@commitlint/config-conventional": "11.0.0",
     "@commitlint/prompt": "11.0.0",
-    "@ngtools/webpack": "1.10.2",
+    "@ngtools/webpack": "16.1.6",
     "@semantic-release/changelog": "5.0.1",
     "@semantic-release/commit-analyzer": "8.0.1",
     "@semantic-release/exec": "5.0.0",
