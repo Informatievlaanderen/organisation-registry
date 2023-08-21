@@ -51,8 +51,7 @@ public class WhenUpdatingAnOrganisationKey : Specification<UpdateOrganisationKey
         return new UpdateOrganisationKeyCommandHandler(
             new Mock<ILogger<UpdateOrganisationKeyCommandHandler>>().Object,
             session,
-            Mock.Of<IOrganisationRegistryConfiguration>(),
-            securityServiceMock.Object);
+            Mock.Of<IOrganisationRegistryConfiguration>());
     }
 
     private IEvent[] Events

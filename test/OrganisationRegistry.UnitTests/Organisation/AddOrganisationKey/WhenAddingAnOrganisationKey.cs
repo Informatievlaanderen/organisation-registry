@@ -53,8 +53,7 @@ public class WhenAddingAnOrganisationKey : Specification<AddOrganisationKeyComma
         => new(
             new Mock<ILogger<AddOrganisationKeyCommandHandler>>().Object,
             session,
-            new OrganisationRegistryConfigurationStub(),
-            _securityServiceMock.Object);
+            new OrganisationRegistryConfigurationStub());
 
     private IEvent[] Events
         => new IEvent[]
