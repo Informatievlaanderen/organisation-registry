@@ -1,3 +1,10 @@
+## [1.311.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.311.1...v1.311.2) (2023-08-21)
+
+
+### Bug Fixes
+
+* or-1876 use key pollicy i.o. securityservice to verify if a user can create or edit a key ([032afe8](https://github.com/informatievlaanderen/organisation-registry/commit/032afe88e3f16be087cf0140ce7c314fda6dbc51))
+
 ## [1.311.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.311.0...v1.311.1) (2023-07-12)
 
 
