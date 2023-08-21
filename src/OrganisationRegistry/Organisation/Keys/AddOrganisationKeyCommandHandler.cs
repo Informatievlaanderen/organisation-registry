@@ -2,7 +2,7 @@
 
 using System.Threading.Tasks;
 using Handling;
-using Infrastructure.Authorization;
+using Handling.Authorization;
 using Infrastructure.Commands;
 using Infrastructure.Configuration;
 using Infrastructure.Domain;
@@ -14,16 +14,13 @@ public class AddOrganisationKeyCommandHandler :
     ICommandEnvelopeHandler<AddOrganisationKey>
 {
     private readonly IOrganisationRegistryConfiguration _organisationRegistryConfiguration;
-    private readonly ISecurityService _securityService;
 
     public AddOrganisationKeyCommandHandler(
         ILogger<AddOrganisationKeyCommandHandler> logger,
         ISession session,
-        IOrganisationRegistryConfiguration organisationRegistryConfiguration,
-        ISecurityService securityService) : base(logger, session)
+        IOrganisationRegistryConfiguration organisationRegistryConfiguration) : base(logger, session)
     {
         _organisationRegistryConfiguration = organisationRegistryConfiguration;
-        _securityService = securityService;
     }
 
     public Task Handle(ICommandEnvelope<AddOrganisationKey> envelope)
@@ -41,6 +38,9 @@ public class AddOrganisationKeyCommandHandler :
                         keyType,
                         envelope.Command.KeyValue,
                         new Period(new ValidFrom(envelope.Command.ValidFrom), new ValidTo(envelope.Command.ValidTo)),
-                        keyTypeId => _securityService.CanUseKeyType(envelope.User, keyTypeId));
+                        keyTypeId => new KeyPolicy(
+                            organisation.State.OvoNumber,
+                            _organisationRegistryConfiguration,
+                            keyTypeId).Check(envelope.User).IsSuccessful);
                 });
 }

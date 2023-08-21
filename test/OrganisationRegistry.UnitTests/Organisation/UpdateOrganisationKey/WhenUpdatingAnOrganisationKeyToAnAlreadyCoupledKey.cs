@@ -50,8 +50,7 @@ public class
         => new(
             new Mock<ILogger<UpdateOrganisationKeyCommandHandler>>().Object,
             session,
-            Mock.Of<IOrganisationRegistryConfiguration>(),
-            _securityServiceMock.Object);
+            Mock.Of<IOrganisationRegistryConfiguration>());
 
     private IEvent[] Events
         => new IEvent[]
