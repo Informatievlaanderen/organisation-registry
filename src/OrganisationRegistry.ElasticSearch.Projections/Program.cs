@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Autofac.Features.OwnedInstances;
 using Autofac.Util;
 using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql.EntityFrameworkCore;
+using Bodies;
 using Body;
 using Cache;
 using Client;
@@ -196,6 +197,21 @@ public class Program
                         var bus = new ElasticBus(provider.GetRequiredService<ILogger<ElasticBus>>());
                         return new IndividualRebuildRunner(
                             provider.GetRequiredService<ILogger<IndividualRebuildRunner>>(),
+                            provider.GetRequiredService<IEventStore>(),
+                            provider.GetRequiredService<IContextFactory>(),
+                            provider.GetRequiredService<IProjectionStates>(),
+                            bus,
+                            provider.GetRequiredService<Elastic>(),
+                            new ElasticBusRegistrar(provider.GetRequiredService<ILogger<ElasticBusRegistrar>>(),
+                                bus,
+                                provider.GetRequiredService<Func<IServiceProvider>>())
+                        );
+                    })
+                    .AddSingleton(provider =>
+                    {
+                        var bus = new ElasticBus(provider.GetRequiredService<ILogger<ElasticBus>>());
+                        return new IndividualBodyRebuildRunner(
+                            provider.GetRequiredService<ILogger<IndividualBodyRebuildRunner>>(),
                             provider.GetRequiredService<IEventStore>(),
                             provider.GetRequiredService<IContextFactory>(),
                             provider.GetRequiredService<IProjectionStates>(),

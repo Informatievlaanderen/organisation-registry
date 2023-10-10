@@ -1,9 +1,9 @@
 namespace OrganisationRegistry.ElasticSearch.Projections.Body;
 
 using System;
-using Bodies;
 using Client;
 using Configuration;
+using ElasticSearch.Bodies;
 using Infrastructure;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

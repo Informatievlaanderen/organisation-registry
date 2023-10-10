@@ -3,8 +3,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body;
 using System;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Bodies;
 using Client;
+using ElasticSearch.Bodies;
 using Osc;
 
 public static class MassUpdateBodyExtension
