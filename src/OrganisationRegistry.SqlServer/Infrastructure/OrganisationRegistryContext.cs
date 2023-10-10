@@ -143,6 +143,7 @@ public class OrganisationRegistryContext : DbContext
     public DbSet<IsActivePerOrganisationCapacity> IsActivePerOrganisationCapacityList { get; set; } = null!;
     public DbSet<ElasticSearchProjections.OrganisationPerBody> OrganisationPerBodyListForES { get; set; } = null!;
     public DbSet<OrganisationToRebuild> OrganisationsToRebuild { get; set; } = null!;
+    public DbSet<BodyToRebuild> BodiesToRebuild { get; set; } = null!;
 
     public DbSet<OrganisationCacheItem> OrganisationCache { get; set; } = null!;
     public DbSet<ContactTypeCacheItem> ContactTypeCache { get; set; } = null!;

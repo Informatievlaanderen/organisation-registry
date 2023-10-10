@@ -4,6 +4,7 @@ using System;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
+using Bodies;
 using Body;
 using Cache;
 using Microsoft.EntityFrameworkCore;
@@ -34,6 +35,7 @@ public class EventProcessor : IHostedService
         PeopleRunner peopleRunner,
         CacheRunner cacheRunner,
         IndividualRebuildRunner individualRebuildRunner,
+        IndividualBodyRebuildRunner individualBodyRebuildRunner,
         OrganisationsRunner organisationsRunner,
         IContextFactory contextFactory)
     {
@@ -51,7 +53,7 @@ public class EventProcessor : IHostedService
         _messagePump = Task.Factory.StartNew(
             async () =>
             {
-                var elasticRunners = new ElasticRunners(bodyRunner, peopleRunner, cacheRunner, individualRebuildRunner, organisationsRunner);
+                var elasticRunners = new ElasticRunners(bodyRunner, peopleRunner, cacheRunner, individualRebuildRunner, individualBodyRebuildRunner, organisationsRunner);
                 await PumpMessages(scheduler, logger, elasticRunners, contextFactory);
             },
             _messagePumpCancellation.Token,
@@ -101,6 +103,7 @@ public class EventProcessor : IHostedService
         {
             await runners.CacheRunner.Run();
             await runners.IndividualRebuildRunner.Run();
+            await runners.IndividualBodyRebuildRunner.Run();
             await runners.PeopleRunner.Run();
             await runners.BodyRunner.Run();
             await runners.OrganisationsRunner.Run();
@@ -168,7 +171,7 @@ public class EventProcessor : IHostedService
         public int BatchSize { get; }
     }
 
-    private record ElasticRunners(BodyRunner BodyRunner, PeopleRunner PeopleRunner, CacheRunner CacheRunner, IndividualRebuildRunner IndividualRebuildRunner, OrganisationsRunner OrganisationsRunner);
+    private record ElasticRunners(BodyRunner BodyRunner, PeopleRunner PeopleRunner, CacheRunner CacheRunner, IndividualRebuildRunner IndividualRebuildRunner, IndividualBodyRebuildRunner IndividualBodyRebuildRunner, OrganisationsRunner OrganisationsRunner);
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
