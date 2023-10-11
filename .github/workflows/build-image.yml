@@ -87,7 +87,7 @@ jobs:
         run: npm install --legacy-peer-deps
 
       - name: Setup .NET Core
-        uses: actions/setup-dotnet@v2
+        uses: actions/setup-dotnet@v3
         with:
           dotnet-version: ${{ secrets.VBR_DOTNET_VERSION }}
 
