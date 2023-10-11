@@ -170,7 +170,6 @@ jobs:
       build-target: Containerize_AcmApi
       image-file: api.tar
       image-name: api
-      build-project: OrganisationRegistry.Api/
       semver: ${{ needs.set-release-version.outputs.version }}
     secrets: inherit
 
@@ -183,7 +182,6 @@ jobs:
       build-target: Containerize_AgentschapZorgEnGezondheid
       image-file: batch-agentschapzorgengezondheidftpdump.tar
       image-name: batch-agentschapzorgengezondheidftpdump
-      build-project: OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump/
       semver: ${{ needs.set-release-version.outputs.version }}
     secrets: inherit
 
@@ -196,7 +194,6 @@ jobs:
       build-target: Containerize_VlaanderenBeNotifier
       image-file: batch-vlaanderenbe.tar
       image-name: batch-vlaanderenbe
-      build-project: OrganisationRegistry.VlaanderenBeNotifier/
       semver: ${{ needs.set-release-version.outputs.version }}
     secrets: inherit
 
@@ -209,7 +206,6 @@ jobs:
       build-target: Containerize_ElasticSearch
       image-file: projections-elasticsearch.tar
       image-name: projections-elasticsearch
-      build-project: OrganisationRegistry.ElasticSearch.Projections/
       semver: ${{ needs.set-release-version.outputs.version }}
     secrets: inherit
 
@@ -222,7 +218,6 @@ jobs:
       build-target: Containerize_Delegations
       image-file: projections-delegations.tar
       image-name: projections-delegations
-      build-project: OrganisationRegistry.Projections.Delegations/
       semver: ${{ needs.set-release-version.outputs.version }}
     secrets: inherit
 
@@ -235,7 +230,6 @@ jobs:
       build-target: Containerize_Reporting
       image-file: projections-reporting.tar
       image-name: projections-reporting
-      build-project: OrganisationRegistry.Projections.Reporting/
       semver: ${{ needs.set-release-version.outputs.version }}
     secrets: inherit
 
@@ -248,7 +242,6 @@ jobs:
       build-target: Containerize_KboMutations
       image-file: kbo-mutations.tar
       image-name: kbo-mutations
-      build-project: OrganisationRegistry.KboMutations/
       semver: ${{ needs.set-release-version.outputs.version }}
     secrets: inherit
 
@@ -261,7 +254,6 @@ jobs:
       build-target: Containerize_Rebuilder
       image-file: rebuilder.tar
       image-name: rebuilder
-      build-project: OrganisationRegistry.Rebuilder/
       semver: ${{ needs.set-release-version.outputs.version }}
     secrets: inherit
 
@@ -274,7 +266,18 @@ jobs:
       build-target: Containerize_Site
       image-file: ui.tar
       image-name: ui
-      build-project: OrganisationRegistry.UI/
+      semver: ${{ needs.set-release-version.outputs.version }}
+    secrets: inherit
+
+  build-acm-idm:
+    name: Build site
+    uses: ./.github/workflows/build-image.yml
+    if: github.repository_owner == 'Informatievlaanderen'
+    needs: [ set-release-version ]
+    with:
+      build-target: acmidm
+      image-file: acmidm.tar
+      image-name: ui
       semver: ${{ needs.set-release-version.outputs.version }}
     secrets: inherit
 

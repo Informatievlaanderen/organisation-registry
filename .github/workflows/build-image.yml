@@ -12,9 +12,6 @@ on:
       image-name: #acm-api
         required: true
         type: string
-      build-project: #AssociationRegistry.Acm.Api/
-        required: true
-        type: string
       semver:
         required: true
         type: string
@@ -72,26 +69,6 @@ jobs:
         shell: bash
         run: dotnet paket restore
 
-      - name: Dotnet restore
-        shell: bash
-        run: dotnet restore src/${{ inputs.build-project }} --runtime linux-x64
-
-      - name: Set solution info
-        shell: bash
-        if: inputs.semver != 'none'
-        run: CI_BUILD_NUMBER=$SEMVER ./build.sh SetSolutionInfo
-        env:
-          BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_TST }}
-          SEMVER: ${{ inputs.semver }}
-
-#      - name: Dotnet build
-#        shell: bash
-#        run: dotnet build --no-restore --runtime 'linux-x64' --self-contained -f net6.0 src/${{ inputs.build-project }}
-#
-#      - name: Dotnet publish
-#        shell: bash
-#        run: dotnet publish -o dist/${{ inputs.build-project }}/linux --no-build --no-restore --runtime 'linux-x64' --self-contained -f net6.0 src/${{ inputs.build-project }}
-
       - name: Containerize
         shell: bash
         run: CI_BUILD_NUMBER=$SEMVER ./build.sh ${{ inputs.build-target }}
@@ -103,7 +80,7 @@ jobs:
         shell: bash
         run: docker images
 
-      - name: Save Api Image
+      - name: Save Image
         if: inputs.semver != 'none'
         shell: bash
         run: docker image save $BUILD_DOCKER_REGISTRY/association-registry/${{ inputs.image-name }}:$SEMVER -o ~/${{ inputs.image-file}}
@@ -117,27 +94,3 @@ jobs:
         with:
           name: ${{ inputs.image-name }}
           path: ~/${{ inputs.image-file }}
-
-      - name: Shows logs ACM container
-        if: ${{ failure() }}
-        shell: bash
-        run: |
-          docker logs acm
-
-      - name: Shows logs elasticsearch container
-        if: ${{ failure() }}
-        shell: bash
-        run: |
-          docker logs elasticsearch
-
-      - name: Shows logs wiremock container
-        if: ${{ failure() }}
-        shell: bash
-        run: |
-          docker logs wiremock
-
-      - name: Shows logs db container
-        if: ${{ failure() }}
-        shell: bash
-        run: |
-          docker logs db
