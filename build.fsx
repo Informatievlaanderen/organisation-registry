@@ -115,6 +115,31 @@ Target.create "Publish_Solution" (fun _ ->
     |> Array.Parallel.iter publishSource
 )
 
+Target.create "Publish_Api" (fun _ ->
+  publishSource "OrganisationRegistry.Api"
+)
+Target.create "Publish_AgentschapZorgEnGezondheid" (fun _ ->
+  publishSource "OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump"
+)
+Target.create "Publish_VlaanderenBeNotifier" (fun _ ->
+  publishSource "OrganisationRegistry.VlaanderenBeNotifier"
+)
+Target.create "Publish_ElasticSearch" (fun _ ->
+  publishSource "OrganisationRegistry.ElasticSearch.Projections"
+)
+Target.create "Publish_Delegations" (fun _ ->
+  publishSource "OrganisationRegistry.Projections.Delegations"
+)
+Target.create "Publish_OrganisationRegistry.Reporting" (fun _ ->
+  publishSource "OrganisationRegistry.Projections.Reporting"
+)
+Target.create "Publish_KboMutions" (fun _ ->
+  publishSource "OrganisationRegistry.KboMutations"
+)
+Target.create "Publish_Rebuilder" (fun _ ->
+  publishSource "OrganisationRegistry.Rebuilder"
+)
+
 Target.create "Clean_Solution" (fun _ ->
   !! "src/**/obj/*" |> File.deleteAll
   !! "src/**/bin/*" |> File.deleteAll
@@ -197,8 +222,9 @@ Target.create "Push" ignore
 "Vue_Build"
   ==> "Default"
 
-"Build_AcmIdm"
-  ==> "Default"
+"Restore_Solution"
+  ==> "Build_AcmIdm"
+  ==> "Containerize_AcmIdm"
 
 "Default"
   ==> "Publish_Solution"
@@ -209,24 +235,37 @@ Target.create "Push" ignore
   ==> "Pack_Solution"
   ==> "Pack"
 
-"Pack"
-  ==> "Containerize_AgentschapZorgEnGezondheid"
-  ==> "Containerize_VlaanderenBeNotifier"
-  ==> "Containerize_ElasticSearch"
-  ==> "Containerize_Delegations"
-  ==> "Containerize_Reporting"
-  ==> "Containerize_KboMutations"
-  ==> "Containerize_Rebuilder"
+"Build_Solution"
+  ==> "Publish_Api"
   ==> "Containerize_Api"
-  ==> "Containerize"
 
-"Pack"
-  ==> "Containerize_AcmIdm"
-  ==> "Containerize"
+"Build_Solution"
+  ==> "Publish_AgentschapZorgEnGezondheid"
+  ==> "Containerize_AgentschapZorgEnGezondheid"
 
-"Pack"
-  ==> "Containerize_Site"
-  ==> "Containerize"
+"Build_Solution"
+  ==> "Publish_VlaanderenBeNotifier"
+  ==> "Containerize_VlaanderenBeNotifier"
+
+"Build_Solution"
+  ==> "Publish_ElasticSearch"
+  ==> "Containerize_ElasticSearch"
+
+"Build_Solution"
+  ==> "Publish_Delegations"
+  ==> "Containerize_Delegations"
+
+"Build_Solution"
+  ==> "Publish_OrganisationRegistry.Reporting"
+  ==> "Containerize_Reporting"
+
+"Build_Solution"
+  ==> "Publish_KboMutions"
+  ==> "Containerize_KboMutations"
+
+"Build_Solution"
+  ==> "Publish_Rebuilder"
+  ==> "Containerize_Rebuilder"
 
 "Containerize"
   ==> "DockerLogin"
@@ -241,6 +280,18 @@ Target.create "Push" ignore
   ==> "PushContainer_Site"
   ==> "PushContainer_AcmIdm"
   ==> "Push"
+
+Target.create "Containerize_All" ignore
+
+"Containerize_Api"
+  ==> "Containerize_AgentschapZorgEnGezondheid"
+  ==> "Containerize_VlaanderenBeNotifier"
+  ==> "Containerize_ElasticSearch"
+  ==> "Containerize_Delegations"
+  ==> "Containerize_Reporting"
+  ==> "Containerize_KboMutations"
+  ==> "Containerize_Rebuilder"
+  ==> "Containerize_All"
 
 // By default we build & test
 Target.runOrDefault "Default"
