@@ -185,8 +185,11 @@ Target.create "Push" ignore
 
 "Restore_Solution"
   ==> "Build_Solution"
-  ==> "Test_Solution"
   ==> "Default"
+
+"Restore_Solution"
+  ==> "Build_Solution"
+  ==> "Test_Solution"
 
 "Site_Build"
   ==> "Default"

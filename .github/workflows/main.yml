@@ -144,6 +144,10 @@ jobs:
       run: |
         ./.sonar/scanner/dotnet-sonarscanner begin /k:"Informatievlaanderen_organisation-registry" /o:"informatievlaanderen" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.dotcover.reportsPaths=dotCover.Output.html
 
+    - name: Test Solution
+      shell: bash
+      run: ./build.sh Test_Solution
+
     - name: Run Semantic Release
       shell: bash
       run: npx semantic-release
