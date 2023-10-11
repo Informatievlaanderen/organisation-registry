@@ -1,0 +1,143 @@
+name: Build image
+
+on:
+  workflow_call:
+    inputs:
+      build-target:
+        required: true
+        type: string
+      image-file: #ar-acm-api-image.tar
+        required: true
+        type: string
+      image-name: #acm-api
+        required: true
+        type: string
+      build-project: #AssociationRegistry.Acm.Api/
+        required: true
+        type: string
+      semver:
+        required: true
+        type: string
+
+jobs:
+  build-image:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check version
+        shell: bash
+        run: echo $SEMVER
+        env:
+          SEMVER: ${{ inputs.semver }}
+
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Cache Paket
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-paket
+        with:
+          path: packages
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('paket.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+
+      - name: Parse repository name
+        run: echo REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//") >> $GITHUB_ENV
+        shell: bash
+
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ secrets.VBR_DOTNET_VERSION }}
+
+      - name: .NET version
+        shell: bash
+        run: dotnet --info
+
+      - name: Clean
+        run: dotnet nuget locals all --clear
+
+      - name: Restore dotnet tools
+        shell: bash
+        run: |
+          dotnet tool restore
+
+      - name: Paket install
+        shell: bash
+        run: dotnet paket install
+
+      - name: Paket restore
+        shell: bash
+        run: dotnet paket restore
+
+      - name: Dotnet restore
+        shell: bash
+        run: dotnet restore src/${{ inputs.build-project }} --runtime linux-x64
+
+      - name: Set solution info
+        shell: bash
+        if: inputs.semver != 'none'
+        run: CI_BUILD_NUMBER=$SEMVER ./build.sh SetSolutionInfo
+        env:
+          BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_TST }}
+          SEMVER: ${{ inputs.semver }}
+
+#      - name: Dotnet build
+#        shell: bash
+#        run: dotnet build --no-restore --runtime 'linux-x64' --self-contained -f net6.0 src/${{ inputs.build-project }}
+#
+#      - name: Dotnet publish
+#        shell: bash
+#        run: dotnet publish -o dist/${{ inputs.build-project }}/linux --no-build --no-restore --runtime 'linux-x64' --self-contained -f net6.0 src/${{ inputs.build-project }}
+
+      - name: Containerize
+        shell: bash
+        run: CI_BUILD_NUMBER=$SEMVER ./build.sh ${{ inputs.build-target }}
+        env:
+          BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_TST }}
+          SEMVER: ${{ inputs.semver }}
+
+      - name: Show images
+        shell: bash
+        run: docker images
+
+      - name: Save Api Image
+        if: inputs.semver != 'none'
+        shell: bash
+        run: docker image save $BUILD_DOCKER_REGISTRY/association-registry/${{ inputs.image-name }}:$SEMVER -o ~/${{ inputs.image-file}}
+        env:
+          BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_TST }}
+          SEMVER: ${{ inputs.semver }}
+
+      - name: Upload artifact
+        if: inputs.semver != 'none'
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ inputs.image-name }}
+          path: ~/${{ inputs.image-file }}
+
+      - name: Shows logs ACM container
+        if: ${{ failure() }}
+        shell: bash
+        run: |
+          docker logs acm
+
+      - name: Shows logs elasticsearch container
+        if: ${{ failure() }}
+        shell: bash
+        run: |
+          docker logs elasticsearch
+
+      - name: Shows logs wiremock container
+        if: ${{ failure() }}
+        shell: bash
+        run: |
+          docker logs wiremock
+
+      - name: Shows logs db container
+        if: ${{ failure() }}
+        shell: bash
+        run: |
+          docker logs db

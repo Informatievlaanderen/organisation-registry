@@ -51,11 +51,11 @@ jobs:
           echo RELEASE_VERSION=$(cat semver) >> $GITHUB_ENV
         shell: bash
 
-  build:
+  test:
     if: github.repository_owner == 'Informatievlaanderen'
     name: Build
     runs-on: ubuntu-latest
-
+    needs: [ set-release-version ]
     services:
       sqlserver:
         image: mcr.microsoft.com/mssql/server:latest
@@ -81,6 +81,217 @@ jobs:
         ports:
           - 9200:9200
           - 9600:9600
+
+    outputs:
+      version: ${{ steps.set-version.outputs.version }}
+      test: "test"
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Cache NPM
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-npm
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+
+      - name: Cache Paket
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-paket
+        with:
+          path: packages
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('paket.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+
+      - name: Cache Python
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-pip
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-build-${{ env.cache-name }}
+
+      - name: Parse repository name
+        run: echo REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//") >> $GITHUB_ENV
+        shell: bash
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: ${{ secrets.VBR_DOTNET_VERSION }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.x'
+
+      - name: Node version
+        shell: bash
+        run: node --version
+
+      - name: .NET version
+        shell: bash
+        run: dotnet --info
+
+      - name: Python version
+        shell: bash
+        run: python --version
+
+      - name: Install NPM dependencies
+        shell: bash
+        run: npm install --legacy-peer-deps
+
+      - name: Install Python dependencies
+        shell: bash
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests markdown argparse
+
+      - name: Test Solution
+        shell: bash
+        run: ./build.sh Test_Solution
+
+  build-api:
+    name: Build api
+    uses: ./.github/workflows/build-image.yml
+    if: github.repository_owner == 'Informatievlaanderen'
+    needs: [ set-release-version ]
+    with:
+      build-target: Containerize_AcmApi
+      image-file: api.tar
+      image-name: api
+      build-project: OrganisationRegistry.Api/
+      semver: ${{ needs.set-release-version.outputs.version }}
+    secrets: inherit
+
+  build-X:
+    name: Build batch-agentschapzorgengezondheidftpdump
+    uses: ./.github/workflows/build-image.yml
+    if: github.repository_owner == 'Informatievlaanderen'
+    needs: [ set-release-version ]
+    with:
+      build-target: Containerize_AgentschapZorgEnGezondheid
+      image-file: batch-agentschapzorgengezondheidftpdump.tar
+      image-name: batch-agentschapzorgengezondheidftpdump
+      build-project: OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump/
+      semver: ${{ needs.set-release-version.outputs.version }}
+    secrets: inherit
+
+  build-vlaanderenbe:
+    name: Build batch-vlaanderenbe
+    uses: ./.github/workflows/build-image.yml
+    if: github.repository_owner == 'Informatievlaanderen'
+    needs: [ set-release-version ]
+    with:
+      build-target: Containerize_VlaanderenBeNotifier
+      image-file: batch-vlaanderenbe.tar
+      image-name: batch-vlaanderenbe
+      build-project: OrganisationRegistry.VlaanderenBeNotifier/
+      semver: ${{ needs.set-release-version.outputs.version }}
+    secrets: inherit
+
+  build-projections-elasticsearch:
+    name: Build elasticsearch projections
+    uses: ./.github/workflows/build-image.yml
+    if: github.repository_owner == 'Informatievlaanderen'
+    needs: [ set-release-version ]
+    with:
+      build-target: Containerize_ElasticSearch
+      image-file: projections-elasticsearch.tar
+      image-name: projections-elasticsearch
+      build-project: OrganisationRegistry.ElasticSearch.Projections/
+      semver: ${{ needs.set-release-version.outputs.version }}
+    secrets: inherit
+
+  build-projections-delegations:
+    name: Build delegations
+    uses: ./.github/workflows/build-image.yml
+    if: github.repository_owner == 'Informatievlaanderen'
+    needs: [ set-release-version ]
+    with:
+      build-target: Containerize_Delegations
+      image-file: projections-delegations.tar
+      image-name: projections-delegations
+      build-project: OrganisationRegistry.Projections.Delegations/
+      semver: ${{ needs.set-release-version.outputs.version }}
+    secrets: inherit
+
+  build-projections-reporting:
+    name: Build reporting
+    uses: ./.github/workflows/build-image.yml
+    if: github.repository_owner == 'Informatievlaanderen'
+    needs: [ set-release-version ]
+    with:
+      build-target: Containerize_Reporting
+      image-file: projections-reporting.tar
+      image-name: projections-reporting
+      build-project: OrganisationRegistry.Projections.Reporting/
+      semver: ${{ needs.set-release-version.outputs.version }}
+    secrets: inherit
+
+  build-kbo-mutations:
+    name: Build kbo-mutations
+    uses: ./.github/workflows/build-image.yml
+    if: github.repository_owner == 'Informatievlaanderen'
+    needs: [ set-release-version ]
+    with:
+      build-target: Containerize_KboMutations
+      image-file: kbo-mutations.tar
+      image-name: kbo-mutations
+      build-project: OrganisationRegistry.KboMutations/
+      semver: ${{ needs.set-release-version.outputs.version }}
+    secrets: inherit
+
+  build-rebuilder:
+    name: Build rebuilder
+    uses: ./.github/workflows/build-image.yml
+    if: github.repository_owner == 'Informatievlaanderen'
+    needs: [ set-release-version ]
+    with:
+      build-target: Containerize_Rebuilder
+      image-file: rebuilder.tar
+      image-name: rebuilder
+      build-project: OrganisationRegistry.Rebuilder/
+      semver: ${{ needs.set-release-version.outputs.version }}
+    secrets: inherit
+
+  build-ui:
+    name: Build site
+    uses: ./.github/workflows/build-image.yml
+    if: github.repository_owner == 'Informatievlaanderen'
+    needs: [ set-release-version ]
+    with:
+      build-target: Containerize_Site
+      image-file: ui.tar
+      image-name: ui
+      build-project: OrganisationRegistry.UI/
+      semver: ${{ needs.set-release-version.outputs.version }}
+    secrets: inherit
+
+  release:
+    if: github.repository_owner == 'Informatievlaanderen'
+    name: Build
+    runs-on: ubuntu-latest
+    needs:
+      - build-api
+      - build-agentschapzorgengezondheidftpdump
+      - build-vlaanderenbe
+      - build-projections-elasticsearch
+      - build-projections-delegations
+      - build-projections-reporting
+      - build-kbo-mutations
+      - build-rebuilder
+      - build-ui
 
     outputs:
       version: ${{ steps.set-version.outputs.version }}
@@ -157,47 +368,6 @@ jobs:
         python -m pip install --upgrade pip
         pip install requests markdown argparse
 
-    - name: Cache SonarCloud packages
-      uses: actions/cache@v1
-      with:
-        path: ~/sonar/cache
-        key: ${{ runner.os }}-sonar
-        restore-keys: ${{ runner.os }}-sonar
-
-    - name: Cache SonarCloud scanner
-      id: cache-sonar-scanner
-      uses: actions/cache@v1
-      with:
-        path: ./.sonar/scanner
-        key: ${{ runner.os }}-sonar-scanner
-        restore-keys: ${{ runner.os }}-sonar-scanner
-
-    - name: Install SonarCloud scanner
-      if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
-      shell: bash
-      run: |
-        mkdir .sonar
-        mkdir .sonar/scanner
-        dotnet tool update dotnet-sonarscanner --tool-path ./.sonar/scanner
-
-    - name: Build and analyze
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      shell: bash
-      run: |
-        ./.sonar/scanner/dotnet-sonarscanner begin /k:"Informatievlaanderen_organisation-registry" /o:"informatievlaanderen" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.dotcover.reportsPaths=dotCover.Output.html
-
-    - name: Test Solution
-      shell: bash
-      run: ./build.sh Test_Solution
-
-    - name: Build Solution
-      shell: bash
-      run: CI_BUILD_NUMBER=$SEMVER ./build.sh Containerize
-      env:
-        SEMVER: ${{ needs.set-release-version.outputs.version }}
-
     - name: Run Semantic Release
       shell: bash
       run: npx semantic-release
@@ -239,133 +409,231 @@ jobs:
       run: |
         ./.sonar/scanner/dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
 
-    - name: Log in to the Container registry
-      uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
-      with:
-        registry: ghcr.io
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+  push_images_to_staging:
+    if: needs.release.outputs.version != 'none'
+    needs: [ release ]
+    name: Push images to Staging
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure AWS credentials (Staging)
+        if: env.RELEASE_VERSION != 'none'
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.VBR_AWS_REGION }}
 
-    - name: Push acm image
-      if: env.RELEASE_VERSION != 'none'
-      shell: bash
-      run: |
-        docker tag $BUILD_DOCKER_REGISTRY/organisation-registry/acmidm:$SEMVER ghcr.io/informatievlaanderen/acmidm:$SEMVER
-        docker push ghcr.io/informatievlaanderen/acmidm:$SEMVER
-      env:
-        SEMVER: ${{ env.RELEASE_VERSION }}
-        WORKSPACE: ${{ github.workspace }}
-        BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY }}
+      - name: Login to Amazon ECR (Staging)
+        if: needs.release.outputs.version != 'none'
+        uses: aws-actions/amazon-ecr-login@v1.5.3
 
-    - name: Configure AWS credentials (Staging)
-      if: env.RELEASE_VERSION != 'none'
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ secrets.VBR_AWS_REGION }}
+      - name: Download api artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: api
+          path: ~/
 
-    - name: Login to Amazon ECR (Staging)
-      if: env.RELEASE_VERSION != 'none'
-      uses: aws-actions/amazon-ecr-login@v1
+      - name: Load Api image
+        shell: bash
+        run: docker image load -i ~/api.tar
 
-    - name: Push to Staging
-      if: env.RELEASE_VERSION != 'none'
-      shell: bash
-      run: |
-        docker push $BUILD_DOCKER_REGISTRY/organisation-registry/api:$SEMVER
-        docker push $BUILD_DOCKER_REGISTRY/organisation-registry/batch-agentschapzorgengezondheidftpdump:$SEMVER
-        docker push $BUILD_DOCKER_REGISTRY/organisation-registry/batch-vlaanderenbe:$SEMVER
-        docker push $BUILD_DOCKER_REGISTRY/organisation-registry/projections-elasticsearch:$SEMVER
-        docker push $BUILD_DOCKER_REGISTRY/organisation-registry/projections-delegations:$SEMVER
-        docker push $BUILD_DOCKER_REGISTRY/organisation-registry/projections-reporting:$SEMVER
-        docker push $BUILD_DOCKER_REGISTRY/organisation-registry/kbo-mutations:$SEMVER
-        docker push $BUILD_DOCKER_REGISTRY/organisation-registry/ui:$SEMVER
-        docker push $BUILD_DOCKER_REGISTRY/organisation-registry/rebuilder:$SEMVER
-      env:
-        BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY }}
-        SEMVER: ${{ env.RELEASE_VERSION }}
-        WORKSPACE: ${{ github.workspace }}
+      - name: Download batch-agentschapzorgengezondheidftpdump artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: batch-agentschapzorgengezondheidftpdump
+          path: ~/
 
-    - name: Configure AWS credentials (Production)
-      if: env.RELEASE_VERSION != 'none'
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_PRD }}
-        aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_PRD }}
-        aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
+      - name: Load batch-agentschapzorgengezondheidftpdump image
+        shell: bash
+        run: docker image load -i ~/agentschapzorgengezondheidftpdump.tar
 
-    - name: Login to Amazon ECR (Production)
-      if: env.RELEASE_VERSION != 'none'
-      uses: aws-actions/amazon-ecr-login@v1
+      - name: Download batch-vlaanderenbe artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: batch-vlaanderenbe
+          path: ~/
 
-    - name: Push to Production
-      if: env.RELEASE_VERSION != 'none'
-      shell: bash
-      run: |
-        docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/api:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/api:$SEMVER
-        docker push $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/api:$SEMVER
+      - name: Load batch-vlaanderenbe image
+        shell: bash
+        run: docker image load -i ~/vlaanderenbe.tar
 
-        docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/batch-agentschapzorgengezondheidftpdump:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/batch-agentschapzorgengezondheidftpdump:$SEMVER
-        docker push $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/batch-agentschapzorgengezondheidftpdump:$SEMVER
+      - name: Download projections-elasticsearch artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: projections-elasticsearch
+          path: ~/
 
-        docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/batch-vlaanderenbe:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/batch-vlaanderenbe:$SEMVER
-        docker push $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/batch-vlaanderenbe:$SEMVER
+      - name: Load projections-elasticsearch image
+        shell: bash
+        run: docker image load -i ~/projections-elasticsearch.tar
 
-        docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/projections-elasticsearch:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/projections-elasticsearch:$SEMVER
-        docker push $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/projections-elasticsearch:$SEMVER
+      - name: Download projections-delegations artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: projections-delegations
+          path: ~/
 
-        docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/projections-delegations:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/projections-delegations:$SEMVER
-        docker push $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/projections-delegations:$SEMVER
+      - name: Load projections-delegations image
+        shell: bash
+        run: docker image load -i ~/projections-delegations.tar
 
-        docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/projections-reporting:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/projections-reporting:$SEMVER
-        docker push $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/projections-reporting:$SEMVER
+      - name: Download projections-reporting artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: projections-reporting
+          path: ~/
 
-        docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/kbo-mutations:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/kbo-mutations:$SEMVER
-        docker push $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/kbo-mutations:$SEMVER
+      - name: Load projections-reporting image
+        shell: bash
+        run: docker image load -i ~/projections-reporting.tar
 
-        docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/ui:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/ui:$SEMVER
-        docker push $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/ui:$SEMVER
-      env:
-        BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY }}
-        BUILD_DOCKER_REGISTRY_PRD: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_PRD }}
-        SEMVER: ${{ env.RELEASE_VERSION }}
-        WORKSPACE: ${{ github.workspace }}
+      - name: Download kbo-mutations artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: kbo-mutations
+          path: ~/
 
-    - name: Publish to NuGet
-      if: env.RELEASE_VERSION != 'none'
-      shell: bash
-      run: |
-        node packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-nuget.js dist/nuget/$LIBNAME.Api.$SEMVER.nupkg
-      env:
-        LIBNAME: Be.Vlaanderen.Basisregisters.OrganisationRegistry
-        SEMVER: ${{ env.RELEASE_VERSION }}
-        NUGET_HOST: ${{ secrets.NUGET_HOST }}
-        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+      - name: Load kbo-mutations image
+        shell: bash
+        run: docker image load -i ~/kbo-mutations.tar
 
-    - name: Publish to Confluence
-      if: env.RELEASE_VERSION != 'none'
-      shell: bash
-      run: ./packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-confluence.sh
-      env:
-        CONFLUENCE_TITLE: ${{ env.REPOSITORY_NAME }}
-        CONFLUENCE_USERNAME: ${{ secrets.VBR_CONFLUENCE_USER }}
-        CONFLUENCE_PASSWORD: ${{ secrets.VBR_CONFLUENCE_PASSWORD }}
+      - name: Download ui artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: ui
+          path: ~/
 
-    - name: Create Jira Release
-      if: env.RELEASE_VERSION != 'none'
-      shell: bash
-      run: ./packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-jira.sh
-      env:
-        CONFLUENCE_TITLE: ${{ env.REPOSITORY_NAME }}
-        CONFLUENCE_USERNAME: ${{ secrets.VBR_CONFLUENCE_USER }}
-        CONFLUENCE_PASSWORD: ${{ secrets.VBR_CONFLUENCE_PASSWORD }}
-        JIRA_PREFIX: Organisation
-        JIRA_PROJECT: OR
-        JIRA_VERSION: ${{ env.RELEASE_VERSION }}
+      - name: Load ui image
+        shell: bash
+        run: docker image load -i ~/ui.tar
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push acm image
+        if: env.RELEASE_VERSION != 'none'
+        shell: bash
+        run: |
+          docker tag $BUILD_DOCKER_REGISTRY/organisation-registry/acmidm:$SEMVER ghcr.io/informatievlaanderen/acmidm:$SEMVER
+          docker push ghcr.io/informatievlaanderen/acmidm:$SEMVER
+        env:
+          SEMVER: ${{ env.RELEASE_VERSION }}
+          WORKSPACE: ${{ github.workspace }}
+          BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY }}
+
+      - name: Configure AWS credentials (Staging)
+        if: env.RELEASE_VERSION != 'none'
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.VBR_AWS_REGION }}
+
+      - name: Login to Amazon ECR (Staging)
+        if: env.RELEASE_VERSION != 'none'
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Push to Staging
+        if: env.RELEASE_VERSION != 'none'
+        shell: bash
+        run: |
+          docker push $BUILD_DOCKER_REGISTRY/organisation-registry/api:$SEMVER
+          docker push $BUILD_DOCKER_REGISTRY/organisation-registry/batch-agentschapzorgengezondheidftpdump:$SEMVER
+          docker push $BUILD_DOCKER_REGISTRY/organisation-registry/batch-vlaanderenbe:$SEMVER
+          docker push $BUILD_DOCKER_REGISTRY/organisation-registry/projections-elasticsearch:$SEMVER
+          docker push $BUILD_DOCKER_REGISTRY/organisation-registry/projections-delegations:$SEMVER
+          docker push $BUILD_DOCKER_REGISTRY/organisation-registry/projections-reporting:$SEMVER
+          docker push $BUILD_DOCKER_REGISTRY/organisation-registry/kbo-mutations:$SEMVER
+          docker push $BUILD_DOCKER_REGISTRY/organisation-registry/ui:$SEMVER
+          docker push $BUILD_DOCKER_REGISTRY/organisation-registry/rebuilder:$SEMVER
+        env:
+          BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY }}
+          SEMVER: ${{ env.RELEASE_VERSION }}
+          WORKSPACE: ${{ github.workspace }}
+
+      - name: Configure AWS credentials (Production)
+        if: env.RELEASE_VERSION != 'none'
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_PRD }}
+          aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_PRD }}
+          aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
+
+      - name: Login to Amazon ECR (Production)
+        if: env.RELEASE_VERSION != 'none'
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Push to Production
+        if: env.RELEASE_VERSION != 'none'
+        shell: bash
+        run: |
+          docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/api:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/api:$SEMVER
+          docker push $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/api:$SEMVER
+
+          docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/batch-agentschapzorgengezondheidftpdump:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/batch-agentschapzorgengezondheidftpdump:$SEMVER
+          docker push $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/batch-agentschapzorgengezondheidftpdump:$SEMVER
+
+          docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/batch-vlaanderenbe:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/batch-vlaanderenbe:$SEMVER
+          docker push $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/batch-vlaanderenbe:$SEMVER
+
+          docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/projections-elasticsearch:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/projections-elasticsearch:$SEMVER
+          docker push $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/projections-elasticsearch:$SEMVER
+
+          docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/projections-delegations:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/projections-delegations:$SEMVER
+          docker push $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/projections-delegations:$SEMVER
+
+          docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/projections-reporting:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/projections-reporting:$SEMVER
+          docker push $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/projections-reporting:$SEMVER
+
+          docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/kbo-mutations:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/kbo-mutations:$SEMVER
+          docker push $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/kbo-mutations:$SEMVER
+
+          docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/ui:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/ui:$SEMVER
+          docker push $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/ui:$SEMVER
+        env:
+          BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY }}
+          BUILD_DOCKER_REGISTRY_PRD: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_PRD }}
+          SEMVER: ${{ env.RELEASE_VERSION }}
+          WORKSPACE: ${{ github.workspace }}
+
+      - name: Publish to NuGet
+        if: env.RELEASE_VERSION != 'none'
+        shell: bash
+        run: |
+          node packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-nuget.js dist/nuget/$LIBNAME.Api.$SEMVER.nupkg
+        env:
+          LIBNAME: Be.Vlaanderen.Basisregisters.OrganisationRegistry
+          SEMVER: ${{ env.RELEASE_VERSION }}
+          NUGET_HOST: ${{ secrets.NUGET_HOST }}
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+
+      - name: Publish to Confluence
+        if: env.RELEASE_VERSION != 'none'
+        shell: bash
+        run: ./packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-confluence.sh
+        env:
+          CONFLUENCE_TITLE: ${{ env.REPOSITORY_NAME }}
+          CONFLUENCE_USERNAME: ${{ secrets.VBR_CONFLUENCE_USER }}
+          CONFLUENCE_PASSWORD: ${{ secrets.VBR_CONFLUENCE_PASSWORD }}
+
+      - name: Create Jira Release
+        if: env.RELEASE_VERSION != 'none'
+        shell: bash
+        run: ./packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-jira.sh
+        env:
+          CONFLUENCE_TITLE: ${{ env.REPOSITORY_NAME }}
+          CONFLUENCE_USERNAME: ${{ secrets.VBR_CONFLUENCE_USER }}
+          CONFLUENCE_PASSWORD: ${{ secrets.VBR_CONFLUENCE_PASSWORD }}
+          JIRA_PREFIX: Organisation
+          JIRA_PROJECT: OR
+          JIRA_VERSION: ${{ env.RELEASE_VERSION }}
 
   deploy_staging:
-    needs: build
+    needs: push_images_to_staging
     name: Deploy to Staging
     runs-on: ubuntu-latest
     strategy:
