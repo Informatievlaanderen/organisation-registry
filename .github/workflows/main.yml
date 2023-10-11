@@ -167,7 +167,7 @@ jobs:
     if: github.repository_owner == 'Informatievlaanderen'
     needs: [ test, set-release-version ]
     with:
-      build-target: Containerize_AcmApi
+      build-target: Containerize_Api
       image-file: api.tar
       image-name: api
       semver: ${{ needs.set-release-version.outputs.version }}
