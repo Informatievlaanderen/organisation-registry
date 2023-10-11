@@ -371,15 +371,31 @@ jobs:
         python -m pip install --upgrade pip
         pip install requests markdown argparse
 
+    - name: Generate Token
+      id: generate_token   # Add an ID to this step for reference
+      run: node .github/build-scripts/generate-token.js
+      env:
+        APP_ID: ${{ secrets.MYBOT_APP_ID }}
+        PRIVATE_KEY: ${{ secrets.MYBOT_PRIVATE_KEY }}
+
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      with:
+        token: ${{ steps.generate_token.outputs.installationToken  }}
+
+    - name: Install NPM dependencies
+      shell: bash
+      run: npm install --legacy-peer-deps
+      
     - name: Run Semantic Release
       shell: bash
       run: npx semantic-release
       env:
         NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY }}
-        GITHUB_TOKEN: ${{ secrets.VBR_ACTIONS_TOKEN }}
+        GITHUB_TOKEN: ${{ steps.generate_token.outputs.installationToken  }}
         GIT_COMMIT: ${{ github.sha }}
-        GIT_USERNAME: ${{ secrets.VBR_GIT_USER }}
+        GIT_USERNAME: ${{ steps.generate_token.outputs.installationToken  }}
         GIT_AUTHOR_NAME: ${{ secrets.VBR_GIT_USER }}
         GIT_COMMITTER_NAME: ${{ secrets.VBR_GIT_USER }}
         GIT_EMAIL: ${{ secrets.VBR_GIT_EMAIL }}
