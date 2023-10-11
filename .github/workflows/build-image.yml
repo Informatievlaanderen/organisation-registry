@@ -69,6 +69,28 @@ jobs:
         shell: bash
         run: dotnet paket restore
 
+      - name: Cache NPM
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-npm
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+
+      - name: Install NPM dependencies
+        shell: bash
+        run: npm install --legacy-peer-deps
+
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: ${{ secrets.VBR_DOTNET_VERSION }}
+
       - name: Containerize
         shell: bash
         run: CI_BUILD_NUMBER=$SEMVER ./build.sh ${{ inputs.build-target }}
