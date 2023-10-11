@@ -267,6 +267,11 @@ Target.create "Push" ignore
   ==> "Publish_Rebuilder"
   ==> "Containerize_Rebuilder"
 
+"Site_Build"
+  ==> "Vue_Build"
+  ==> "Containerize_Site"
+
+
 "Containerize"
   ==> "DockerLogin"
   ==> "PushContainer_Api"
@@ -291,6 +296,7 @@ Target.create "Containerize_All" ignore
   ==> "Containerize_Reporting"
   ==> "Containerize_KboMutations"
   ==> "Containerize_Rebuilder"
+  ==> "Containerize_Site"
   ==> "Containerize_All"
 
 // By default we build & test
