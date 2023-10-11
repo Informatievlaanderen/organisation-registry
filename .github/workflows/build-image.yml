@@ -75,6 +75,7 @@ jobs:
         env:
           BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_TST }}
           SEMVER: ${{ inputs.semver }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Show images
         shell: bash

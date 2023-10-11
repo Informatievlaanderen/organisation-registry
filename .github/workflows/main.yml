@@ -270,12 +270,12 @@ jobs:
     secrets: inherit
 
   build-acm-idm:
-    name: Build site
+    name: Build acm idm
     uses: ./.github/workflows/build-image.yml
     if: github.repository_owner == 'Informatievlaanderen'
     needs: [ set-release-version ]
     with:
-      build-target: acmidm
+      build-target: Containerize_AcmIdm
       image-file: acmidm.tar
       image-name: ui
       semver: ${{ needs.set-release-version.outputs.version }}
