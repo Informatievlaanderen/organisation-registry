@@ -93,6 +93,8 @@
     "zone.js": "0.10.3"
   },
   "devDependencies": {
+    "axios": "^1.5.1",
+    "jsonwebtoken": "^9.0.2",
     "@commitlint/cli": "11.0.0",
     "@commitlint/config-conventional": "11.0.0",
     "@commitlint/prompt": "11.0.0",
