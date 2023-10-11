@@ -1,3 +1,10 @@
+## [1.312.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.312.0...v1.312.1) (2023-10-11)
+
+
+### Bug Fixes
+
+* only build images if needed ([037a67c](https://github.com/informatievlaanderen/organisation-registry/commit/037a67c283e1efa9ab41c997cf0fe0af4e9edb32))
+
 # [1.312.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.311.2...v1.312.0) (2023-10-11)
 
 
