@@ -53,7 +53,7 @@ jobs:
 
   test:
     if: github.repository_owner == 'Informatievlaanderen'
-    name: Build
+    name: Test
     runs-on: ubuntu-latest
     needs: [ set-release-version ]
     services:
@@ -165,7 +165,7 @@ jobs:
     name: Build api
     uses: ./.github/workflows/build-image.yml
     if: github.repository_owner == 'Informatievlaanderen'
-    needs: [ set-release-version ]
+    needs: [ test ]
     with:
       build-target: Containerize_AcmApi
       image-file: api.tar
@@ -178,7 +178,7 @@ jobs:
     name: Build batch-agentschapzorgengezondheidftpdump
     uses: ./.github/workflows/build-image.yml
     if: github.repository_owner == 'Informatievlaanderen'
-    needs: [ set-release-version ]
+    needs: [ test ]
     with:
       build-target: Containerize_AgentschapZorgEnGezondheid
       image-file: batch-agentschapzorgengezondheidftpdump.tar
@@ -191,7 +191,7 @@ jobs:
     name: Build batch-vlaanderenbe
     uses: ./.github/workflows/build-image.yml
     if: github.repository_owner == 'Informatievlaanderen'
-    needs: [ set-release-version ]
+    needs: [ test ]
     with:
       build-target: Containerize_VlaanderenBeNotifier
       image-file: batch-vlaanderenbe.tar
@@ -204,7 +204,7 @@ jobs:
     name: Build elasticsearch projections
     uses: ./.github/workflows/build-image.yml
     if: github.repository_owner == 'Informatievlaanderen'
-    needs: [ set-release-version ]
+    needs: [ test ]
     with:
       build-target: Containerize_ElasticSearch
       image-file: projections-elasticsearch.tar
@@ -217,7 +217,7 @@ jobs:
     name: Build delegations
     uses: ./.github/workflows/build-image.yml
     if: github.repository_owner == 'Informatievlaanderen'
-    needs: [ set-release-version ]
+    needs: [ test ]
     with:
       build-target: Containerize_Delegations
       image-file: projections-delegations.tar
@@ -230,7 +230,7 @@ jobs:
     name: Build reporting
     uses: ./.github/workflows/build-image.yml
     if: github.repository_owner == 'Informatievlaanderen'
-    needs: [ set-release-version ]
+    needs: [ test ]
     with:
       build-target: Containerize_Reporting
       image-file: projections-reporting.tar
@@ -243,7 +243,7 @@ jobs:
     name: Build kbo-mutations
     uses: ./.github/workflows/build-image.yml
     if: github.repository_owner == 'Informatievlaanderen'
-    needs: [ set-release-version ]
+    needs: [ test ]
     with:
       build-target: Containerize_KboMutations
       image-file: kbo-mutations.tar
@@ -256,7 +256,7 @@ jobs:
     name: Build rebuilder
     uses: ./.github/workflows/build-image.yml
     if: github.repository_owner == 'Informatievlaanderen'
-    needs: [ set-release-version ]
+    needs: [ test ]
     with:
       build-target: Containerize_Rebuilder
       image-file: rebuilder.tar
@@ -280,7 +280,7 @@ jobs:
 
   release:
     if: github.repository_owner == 'Informatievlaanderen'
-    name: Build
+    name: Release
     runs-on: ubuntu-latest
     needs:
       - build-api
