@@ -1,3 +1,18 @@
+# [1.312.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.311.2...v1.312.0) (2023-10-11)
+
+
+### Bug Fixes
+
+* wait for tests ([a4c8a03](https://github.com/informatievlaanderen/organisation-registry/commit/a4c8a03d87d955484440a7a1f59790a69bf31f48))
+* wrong needs ([43176ed](https://github.com/informatievlaanderen/organisation-registry/commit/43176ed85625eca6e39f2363e9dea1eca61434da))
+
+
+### Features
+
+* build before semantic release ([d277abe](https://github.com/informatievlaanderen/organisation-registry/commit/d277abed42144f4813ca769ab1387123e2ba50da))
+* or-1951 allow individual rebuild of bodies ([88ca574](https://github.com/informatievlaanderen/organisation-registry/commit/88ca57448e49c83d1d3a8742aa62a7a20a7bb1f9))
+* split up test & release ([6a89d96](https://github.com/informatievlaanderen/organisation-registry/commit/6a89d966f0118f0177c22ddf5b6573b5df4db06a))
+
 ## [1.311.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.311.1...v1.311.2) (2023-08-21)
 
 
