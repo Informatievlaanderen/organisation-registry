@@ -374,7 +374,7 @@ jobs:
 
     - name: Generate Token
       id: generate_token   # Add an ID to this step for reference
-      run: node .github/build-scripts/generate-token.js
+      run: node .github/generate-token.js
       env:
         APP_ID: ${{ secrets.MYBOT_APP_ID }}
         PRIVATE_KEY: ${{ secrets.MYBOT_PRIVATE_KEY }}
