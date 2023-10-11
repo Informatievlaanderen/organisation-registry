@@ -277,7 +277,7 @@ jobs:
     with:
       build-target: Containerize_AcmIdm
       image-file: acmidm.tar
-      image-name: ui
+      image-name: acmidm
       semver: ${{ needs.set-release-version.outputs.version }}
     secrets: inherit
 
