@@ -174,7 +174,7 @@ jobs:
       semver: ${{ needs.set-release-version.outputs.version }}
     secrets: inherit
 
-  build-X:
+  build-agentschapzorgengezondheidftpdump:
     name: Build batch-agentschapzorgengezondheidftpdump
     uses: ./.github/workflows/build-image.yml
     if: github.repository_owner == 'Informatievlaanderen'
