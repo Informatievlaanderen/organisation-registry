@@ -106,7 +106,7 @@ jobs:
       - name: Save Image
         if: inputs.semver != 'none'
         shell: bash
-        run: docker image save $BUILD_DOCKER_REGISTRY/association-registry/${{ inputs.image-name }}:$SEMVER -o ~/${{ inputs.image-file}}
+        run: docker image save $BUILD_DOCKER_REGISTRY/organisation-registry/${{ inputs.image-name }}:$SEMVER -o ~/${{ inputs.image-file}}
         env:
           BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_TST }}
           SEMVER: ${{ inputs.semver }}
