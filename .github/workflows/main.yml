@@ -426,6 +426,11 @@ jobs:
     name: Push images to Staging
     runs-on: ubuntu-latest
     steps:
+      - name: debug_output
+        shell: bash
+        run: |
+          echo needs.build.outputs.version: ${{ needs.build.outputs.version }}
+    
       - name: Configure AWS credentials (Staging)
         if: needs.release.outputs.version != 'none'
         uses: aws-actions/configure-aws-credentials@v1
