@@ -427,7 +427,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Configure AWS credentials (Staging)
-        if: env.RELEASE_VERSION != 'none'
+        if: needs.release.outputs.version != 'none'
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID }}
@@ -526,18 +526,18 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       # - name: Push acm image
-      #   if: env.RELEASE_VERSION != 'none'
+      #   if: needs.release.outputs.version != 'none'
       #   shell: bash
       #   run: |
       #     docker tag $BUILD_DOCKER_REGISTRY/organisation-registry/acmidm:$SEMVER ghcr.io/informatievlaanderen/acmidm:$SEMVER
       #     docker push ghcr.io/informatievlaanderen/acmidm:$SEMVER
       #   env:
-      #     SEMVER: ${{ env.RELEASE_VERSION }}
+      #     SEMVER: ${{ needs.release.outputs.version }}
       #     WORKSPACE: ${{ github.workspace }}
       #     BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY }}
 
       - name: Configure AWS credentials (Staging)
-        if: env.RELEASE_VERSION != 'none'
+        if: needs.release.outputs.version != 'none'
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID }}
@@ -545,11 +545,11 @@ jobs:
           aws-region: ${{ secrets.VBR_AWS_REGION }}
 
       - name: Login to Amazon ECR (Staging)
-        if: env.RELEASE_VERSION != 'none'
+        if: needs.release.outputs.version != 'none'
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Push to Staging
-        if: env.RELEASE_VERSION != 'none'
+        if: needs.release.outputs.version != 'none'
         shell: bash
         run: |
           docker push $BUILD_DOCKER_REGISTRY/organisation-registry/api:$SEMVER
@@ -563,11 +563,11 @@ jobs:
           docker push $BUILD_DOCKER_REGISTRY/organisation-registry/rebuilder:$SEMVER
         env:
           BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY }}
-          SEMVER: ${{ env.RELEASE_VERSION }}
+          SEMVER: ${{ needs.release.outputs.version }}
           WORKSPACE: ${{ github.workspace }}
 
       - name: Configure AWS credentials (Production)
-        if: env.RELEASE_VERSION != 'none'
+        if: needs.release.outputs.version != 'none'
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_PRD }}
@@ -575,11 +575,11 @@ jobs:
           aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
 
       - name: Login to Amazon ECR (Production)
-        if: env.RELEASE_VERSION != 'none'
+        if: needs.release.outputs.version != 'none'
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Push to Production
-        if: env.RELEASE_VERSION != 'none'
+        if: needs.release.outputs.version != 'none'
         shell: bash
         run: |
           docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/api:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/api:$SEMVER
@@ -608,22 +608,22 @@ jobs:
         env:
           BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY }}
           BUILD_DOCKER_REGISTRY_PRD: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_PRD }}
-          SEMVER: ${{ env.RELEASE_VERSION }}
+          SEMVER: ${{ needs.release.outputs.version }}
           WORKSPACE: ${{ github.workspace }}
 
       - name: Publish to NuGet
-        if: env.RELEASE_VERSION != 'none'
+        if: needs.release.outputs.version != 'none'
         shell: bash
         run: |
           node packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-nuget.js dist/nuget/$LIBNAME.Api.$SEMVER.nupkg
         env:
           LIBNAME: Be.Vlaanderen.Basisregisters.OrganisationRegistry
-          SEMVER: ${{ env.RELEASE_VERSION }}
+          SEMVER: ${{ needs.release.outputs.version }}
           NUGET_HOST: ${{ secrets.NUGET_HOST }}
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
 
       - name: Publish to Confluence
-        if: env.RELEASE_VERSION != 'none'
+        if: needs.release.outputs.version != 'none'
         shell: bash
         run: ./packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-confluence.sh
         env:
@@ -632,7 +632,7 @@ jobs:
           CONFLUENCE_PASSWORD: ${{ secrets.VBR_CONFLUENCE_PASSWORD }}
 
       - name: Create Jira Release
-        if: env.RELEASE_VERSION != 'none'
+        if: needs.release.outputs.version != 'none'
         shell: bash
         run: ./packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-jira.sh
         env:
@@ -641,7 +641,7 @@ jobs:
           CONFLUENCE_PASSWORD: ${{ secrets.VBR_CONFLUENCE_PASSWORD }}
           JIRA_PREFIX: Organisation
           JIRA_PROJECT: OR
-          JIRA_VERSION: ${{ env.RELEASE_VERSION }}
+          JIRA_VERSION: ${{ needs.release.outputs.version }}
 
   deploy_staging:
     needs: push_images_to_staging
