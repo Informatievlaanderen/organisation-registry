@@ -429,7 +429,7 @@ jobs:
       - name: debug_output
         shell: bash
         run: |
-          echo needs.build.outputs.version: ${{ needs.build.outputs.version }}
+          echo needs.release.outputs.version: ${{ needs.release.outputs.version }}
     
       - name: Configure AWS credentials (Staging)
         if: needs.release.outputs.version != 'none'
