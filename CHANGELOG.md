@@ -1,3 +1,10 @@
+## [1.312.3](https://github.com/informatievlaanderen/organisation-registry/compare/v1.312.2...v1.312.3) (2023-10-12)
+
+
+### Bug Fixes
+
+* correct tar names ([30861d8](https://github.com/informatievlaanderen/organisation-registry/commit/30861d88969c537479c6046bd951dde22dd7b342))
+
 ## [1.312.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.312.1...v1.312.2) (2023-10-12)
 
 
