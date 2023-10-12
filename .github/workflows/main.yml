@@ -32,7 +32,7 @@ jobs:
         run: npx semantic-release --dry-run
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_TST }}
+          BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY }}
           GITHUB_TOKEN: ${{ secrets.VBR_ACTIONS_TOKEN }}
           GIT_COMMIT: ${{ github.sha }}
           GIT_USERNAME: ${{ secrets.VBR_GIT_USER }}
