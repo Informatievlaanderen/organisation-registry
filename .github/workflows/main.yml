@@ -420,15 +420,6 @@ jobs:
         echo ${{ steps.set-version.outputs.version }}
         echo 'END VERSION'
 
-    - name: Build and analyze
-      if: env.RELEASE_VERSION != 'none'
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      shell: bash
-      run: |
-        ./.sonar/scanner/dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
-
   push_images_to_staging:
     if: needs.release.outputs.version != 'none'
     needs: [ release ]
