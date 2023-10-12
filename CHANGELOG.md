@@ -1,3 +1,10 @@
+## [1.312.5](https://github.com/informatievlaanderen/organisation-registry/compare/v1.312.4...v1.312.5) (2023-10-12)
+
+
+### Bug Fixes
+
+* remove adm idm push for now ([7097c6b](https://github.com/informatievlaanderen/organisation-registry/commit/7097c6ba4c77a4ae7a0c9731349fd47bc2258ba0))
+
 ## [1.312.4](https://github.com/informatievlaanderen/organisation-registry/compare/v1.312.3...v1.312.4) (2023-10-12)
 
 
