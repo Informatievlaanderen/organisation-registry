@@ -456,7 +456,7 @@ jobs:
 
       - name: Load batch-agentschapzorgengezondheidftpdump image
         shell: bash
-        run: docker image load -i ~/batch-agentschapzorgengezondheidftpdump
+        run: docker image load -i ~/batch-agentschapzorgengezondheidftpdump.tar
 
       - name: Download batch-vlaanderenbe artifact
         uses: actions/download-artifact@v3
