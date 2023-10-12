@@ -456,7 +456,7 @@ jobs:
 
       - name: Load batch-agentschapzorgengezondheidftpdump image
         shell: bash
-        run: docker image load -i ~/agentschapzorgengezondheidftpdump.tar
+        run: docker image load -i ~/batch-agentschapzorgengezondheidftpdump
 
       - name: Download batch-vlaanderenbe artifact
         uses: actions/download-artifact@v3
@@ -466,7 +466,7 @@ jobs:
 
       - name: Load batch-vlaanderenbe image
         shell: bash
-        run: docker image load -i ~/vlaanderenbe.tar
+        run: docker image load -i ~/batch-vlaanderenbe.tar
 
       - name: Download projections-elasticsearch artifact
         uses: actions/download-artifact@v3
