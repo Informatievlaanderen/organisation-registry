@@ -95,7 +95,7 @@ jobs:
         shell: bash
         run: CI_BUILD_NUMBER=$SEMVER ./build.sh ${{ inputs.build-target }}
         env:
-          BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_TST }}
+          BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY }}
           SEMVER: ${{ inputs.semver }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
@@ -108,7 +108,7 @@ jobs:
         shell: bash
         run: docker image save $BUILD_DOCKER_REGISTRY/organisation-registry/${{ inputs.image-name }}:$SEMVER -o ~/${{ inputs.image-file}}
         env:
-          BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_TST }}
+          BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY }}
           SEMVER: ${{ inputs.semver }}
 
       - name: Upload artifact
