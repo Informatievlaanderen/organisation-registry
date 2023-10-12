@@ -1,3 +1,11 @@
+## [1.312.9](https://github.com/informatievlaanderen/organisation-registry/compare/v1.312.8...v1.312.9) (2023-10-12)
+
+
+### Bug Fixes
+
+* don't use test registry ([f33cd8a](https://github.com/informatievlaanderen/organisation-registry/commit/f33cd8abe89498766a5c79704929390d33aeed5d))
+* don't use test registry ([d5000a6](https://github.com/informatievlaanderen/organisation-registry/commit/d5000a68dcb852d3a66138cd5c1f6172584d7d14))
+
 ## [1.312.8](https://github.com/informatievlaanderen/organisation-registry/compare/v1.312.7...v1.312.8) (2023-10-12)
 
 
