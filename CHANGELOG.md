@@ -1,3 +1,10 @@
+## [1.312.4](https://github.com/informatievlaanderen/organisation-registry/compare/v1.312.3...v1.312.4) (2023-10-12)
+
+
+### Bug Fixes
+
+* add .tar ([78e3322](https://github.com/informatievlaanderen/organisation-registry/commit/78e332284ec99fe9a79575f2aaa9bb9cc7ee3df6))
+
 ## [1.312.3](https://github.com/informatievlaanderen/organisation-registry/compare/v1.312.2...v1.312.3) (2023-10-12)
 
 
