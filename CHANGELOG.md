@@ -1,3 +1,10 @@
+## [1.312.7](https://github.com/informatievlaanderen/organisation-registry/compare/v1.312.6...v1.312.7) (2023-10-12)
+
+
+### Bug Fixes
+
+* debug output ([a5f763c](https://github.com/informatievlaanderen/organisation-registry/commit/a5f763c09fa598ed5a05989115fd6bba110f5d36))
+
 ## [1.312.6](https://github.com/informatievlaanderen/organisation-registry/compare/v1.312.5...v1.312.6) (2023-10-12)
 
 
