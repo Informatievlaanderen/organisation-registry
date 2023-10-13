@@ -523,6 +523,17 @@ jobs:
         shell: bash
         run: docker image load -i ~/ui.tar
 
+
+      - name: Download rebuilder artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: rebuilder
+          path: ~/
+
+      - name: Load rebuilder image
+        shell: bash
+        run: docker image load -i ~/rebuilder.tar
+
       - name: Log in to the Container registry
         uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
         with:
@@ -565,7 +576,7 @@ jobs:
           docker push $BUILD_DOCKER_REGISTRY/organisation-registry/projections-reporting:$SEMVER
           docker push $BUILD_DOCKER_REGISTRY/organisation-registry/kbo-mutations:$SEMVER
           docker push $BUILD_DOCKER_REGISTRY/organisation-registry/ui:$SEMVER
-#          docker push $BUILD_DOCKER_REGISTRY/organisation-registry/rebuilder:$SEMVER
+          docker push $BUILD_DOCKER_REGISTRY/organisation-registry/rebuilder:$SEMVER
         env:
           BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY }}
           SEMVER: ${{ needs.release.outputs.version }}
