@@ -431,6 +431,19 @@ jobs:
         run: |
           echo needs.release.outputs.version: ${{ needs.release.outputs.version }}
 
+      - name: Checkout Code
+        uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+
+      - name: Node version
+        shell: bash
+        run: node --version
+
+      - name: Install NPM dependencies
+        shell: bash
+        run: npm install --legacy-peer-deps
+
       - name: Configure AWS credentials (Staging)
         if: needs.release.outputs.version != 'none'
         uses: aws-actions/configure-aws-credentials@v1
