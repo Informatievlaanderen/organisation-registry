@@ -1,3 +1,10 @@
+## [1.312.11](https://github.com/informatievlaanderen/organisation-registry/compare/v1.312.10...v1.312.11) (2023-10-13)
+
+
+### Bug Fixes
+
+* don't publish to nuget for now ([b43ecbd](https://github.com/informatievlaanderen/organisation-registry/commit/b43ecbdbe9c715b7e3eb675cfa09c8660464e36a))
+
 ## [1.312.10](https://github.com/informatievlaanderen/organisation-registry/compare/v1.312.9...v1.312.10) (2023-10-13)
 
 
