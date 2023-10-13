@@ -1,3 +1,11 @@
+## [1.312.10](https://github.com/informatievlaanderen/organisation-registry/compare/v1.312.9...v1.312.10) (2023-10-13)
+
+
+### Bug Fixes
+
+* re-enable rebuilder ([79da0ab](https://github.com/informatievlaanderen/organisation-registry/commit/79da0ab11e1f357247c4c5618e48b692c1e7dc9e))
+* temp disable pushing rebuilder ([e4329c6](https://github.com/informatievlaanderen/organisation-registry/commit/e4329c61648c54af0d3c1215605f86d9152e4180))
+
 ## [1.312.9](https://github.com/informatievlaanderen/organisation-registry/compare/v1.312.8...v1.312.9) (2023-10-12)
 
 
