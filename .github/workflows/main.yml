@@ -387,7 +387,7 @@ jobs:
     - name: Install NPM dependencies
       shell: bash
       run: npm install --legacy-peer-deps
-      
+
     - name: Run Semantic Release
       shell: bash
       run: npx semantic-release
@@ -430,7 +430,7 @@ jobs:
         shell: bash
         run: |
           echo needs.release.outputs.version: ${{ needs.release.outputs.version }}
-    
+
       - name: Configure AWS credentials (Staging)
         if: needs.release.outputs.version != 'none'
         uses: aws-actions/configure-aws-credentials@v1
@@ -565,7 +565,7 @@ jobs:
           docker push $BUILD_DOCKER_REGISTRY/organisation-registry/projections-reporting:$SEMVER
           docker push $BUILD_DOCKER_REGISTRY/organisation-registry/kbo-mutations:$SEMVER
           docker push $BUILD_DOCKER_REGISTRY/organisation-registry/ui:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY/organisation-registry/rebuilder:$SEMVER
+#          docker push $BUILD_DOCKER_REGISTRY/organisation-registry/rebuilder:$SEMVER
         env:
           BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY }}
           SEMVER: ${{ needs.release.outputs.version }}
@@ -691,4 +691,3 @@ jobs:
           echo build-uuid: ${{ steps.awscurl-polling-action.outputs.build-uuid }}
           echo Status: ${{ steps.awscurl-polling-action.outputs.status }}
           echo ${{ steps.awscurl-polling-action.outputs.final-message }}
-
