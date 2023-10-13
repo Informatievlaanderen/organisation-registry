@@ -1,3 +1,10 @@
+## [1.312.12](https://github.com/informatievlaanderen/organisation-registry/compare/v1.312.11...v1.312.12) (2023-10-13)
+
+
+### Bug Fixes
+
+* install dependencies ([0e390b8](https://github.com/informatievlaanderen/organisation-registry/commit/0e390b8be62d2a033e92d1b598562ce3fe935f77))
+
 ## [1.312.11](https://github.com/informatievlaanderen/organisation-registry/compare/v1.312.10...v1.312.11) (2023-10-13)
 
 
