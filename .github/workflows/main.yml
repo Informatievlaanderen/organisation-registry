@@ -429,12 +429,76 @@ jobs:
         echo ${{ steps.set-version.outputs.version }}
         echo 'END VERSION'
 
+  publish_to_atlassian:
+    if: needs.release.outputs.version != 'none'
+    needs: [ release ]
+    name: Publish to Atlassian
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Parse repository name
+        run: echo REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//") >> $GITHUB_ENV
+        shell: bash
+
+      - name: Cache Paket
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-paket
+        with:
+          path: packages
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('paket.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+
+      - name: Cache Python
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-pip
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-build-${{ env.cache-name }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install Python dependencies
+        shell: bash
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests markdown argparse
+
+      - name: Publish to Confluence
+        if: needs.release.outputs.version != 'none'
+        shell: bash
+        run: ./packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-confluence.sh
+        env:
+          CONFLUENCE_TITLE: ${{ env.REPOSITORY_NAME }}
+          CONFLUENCE_USERNAME: ${{ secrets.VBR_CONFLUENCE_USER }}
+          CONFLUENCE_PASSWORD: ${{ secrets.VBR_CONFLUENCE_PASSWORD }}
+
+      - name: Create Jira Release
+        if: needs.release.outputs.version != 'none'
+        shell: bash
+        run: ./packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-jira.sh
+        env:
+          CONFLUENCE_TITLE: ${{ env.REPOSITORY_NAME }}
+          CONFLUENCE_USERNAME: ${{ secrets.VBR_CONFLUENCE_USER }}
+          CONFLUENCE_PASSWORD: ${{ secrets.VBR_CONFLUENCE_PASSWORD }}
+          JIRA_PREFIX: Association
+          JIRA_PROJECT: OR
+          JIRA_VERSION: ${{ needs.release.outputs.version }}
+
   push_images_to_staging:
     if: needs.release.outputs.version != 'none'
     needs: [ release ]
     name: Push images to Staging
     runs-on: ubuntu-latest
     steps:
+
       - name: debug_output
         shell: bash
         run: |
@@ -442,6 +506,7 @@ jobs:
 
       - name: Checkout Code
         uses: actions/checkout@v3
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
 
@@ -618,6 +683,136 @@ jobs:
           SEMVER: ${{ needs.release.outputs.version }}
           WORKSPACE: ${{ github.workspace }}
 
+  push_images_to_production:
+    if: needs.release.outputs.version != 'none'
+    needs: [ release ]
+    name: Push images to Production
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: debug_output
+        shell: bash
+        run: |
+          echo needs.release.outputs.version: ${{ needs.release.outputs.version }}
+
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+
+      - name: Cache Paket
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-paket
+        with:
+          path: packages
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('paket.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+
+      - name: Paket restore
+        shell: bash
+        run: dotnet paket restore
+
+      - name: Node version
+        shell: bash
+        run: node --version
+
+      - name: Install NPM dependencies
+        shell: bash
+        run: npm install --legacy-peer-deps
+
+      - name: Download api artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: api
+          path: ~/
+
+      - name: Load Api image
+        shell: bash
+        run: docker image load -i ~/api.tar
+
+      - name: Download batch-agentschapzorgengezondheidftpdump artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: batch-agentschapzorgengezondheidftpdump
+          path: ~/
+
+      - name: Load batch-agentschapzorgengezondheidftpdump image
+        shell: bash
+        run: docker image load -i ~/batch-agentschapzorgengezondheidftpdump.tar
+
+      - name: Download batch-vlaanderenbe artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: batch-vlaanderenbe
+          path: ~/
+
+      - name: Load batch-vlaanderenbe image
+        shell: bash
+        run: docker image load -i ~/batch-vlaanderenbe.tar
+
+      - name: Download projections-elasticsearch artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: projections-elasticsearch
+          path: ~/
+
+      - name: Load projections-elasticsearch image
+        shell: bash
+        run: docker image load -i ~/projections-elasticsearch.tar
+
+      - name: Download projections-delegations artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: projections-delegations
+          path: ~/
+
+      - name: Load projections-delegations image
+        shell: bash
+        run: docker image load -i ~/projections-delegations.tar
+
+      - name: Download projections-reporting artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: projections-reporting
+          path: ~/
+
+      - name: Load projections-reporting image
+        shell: bash
+        run: docker image load -i ~/projections-reporting.tar
+
+      - name: Download kbo-mutations artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: kbo-mutations
+          path: ~/
+
+      - name: Load kbo-mutations image
+        shell: bash
+        run: docker image load -i ~/kbo-mutations.tar
+
+      - name: Download ui artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: ui
+          path: ~/
+
+      - name: Load ui image
+        shell: bash
+        run: docker image load -i ~/ui.tar
+
+      - name: Download rebuilder artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: rebuilder
+          path: ~/
+
+      - name: Load rebuilder image
+        shell: bash
+        run: docker image load -i ~/rebuilder.tar
+
       - name: Configure AWS credentials (Production)
         if: needs.release.outputs.version != 'none'
         uses: aws-actions/configure-aws-credentials@v1
@@ -662,6 +857,7 @@ jobs:
           BUILD_DOCKER_REGISTRY_PRD: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_PRD }}
           SEMVER: ${{ needs.release.outputs.version }}
           WORKSPACE: ${{ github.workspace }}
+
 #
 #      - name: Publish to NuGet
 #        if: needs.release.outputs.version != 'none'
@@ -673,27 +869,27 @@ jobs:
 #          SEMVER: ${{ needs.release.outputs.version }}
 #          NUGET_HOST: ${{ secrets.NUGET_HOST }}
 #          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-
-      - name: Publish to Confluence
-        if: needs.release.outputs.version != 'none'
-        shell: bash
-        run: ./packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-confluence.sh
-        env:
-          CONFLUENCE_TITLE: ${{ env.REPOSITORY_NAME }}
-          CONFLUENCE_USERNAME: ${{ secrets.VBR_CONFLUENCE_USER }}
-          CONFLUENCE_PASSWORD: ${{ secrets.VBR_CONFLUENCE_PASSWORD }}
-
-      - name: Create Jira Release
-        if: needs.release.outputs.version != 'none'
-        shell: bash
-        run: ./packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-jira.sh
-        env:
-          CONFLUENCE_TITLE: ${{ env.REPOSITORY_NAME }}
-          CONFLUENCE_USERNAME: ${{ secrets.VBR_CONFLUENCE_USER }}
-          CONFLUENCE_PASSWORD: ${{ secrets.VBR_CONFLUENCE_PASSWORD }}
-          JIRA_PREFIX: Organisation
-          JIRA_PROJECT: OR
-          JIRA_VERSION: ${{ needs.release.outputs.version }}
+#
+#      - name: Publish to Confluence
+#        if: needs.release.outputs.version != 'none'
+#        shell: bash
+#        run: ./packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-confluence.sh
+#        env:
+#          CONFLUENCE_TITLE: ${{ env.REPOSITORY_NAME }}
+#          CONFLUENCE_USERNAME: ${{ secrets.VBR_CONFLUENCE_USER }}
+#          CONFLUENCE_PASSWORD: ${{ secrets.VBR_CONFLUENCE_PASSWORD }}
+#
+#      - name: Create Jira Release
+#        if: needs.release.outputs.version != 'none'
+#        shell: bash
+#        run: ./packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-jira.sh
+#        env:
+#          CONFLUENCE_TITLE: ${{ env.REPOSITORY_NAME }}
+#          CONFLUENCE_USERNAME: ${{ secrets.VBR_CONFLUENCE_USER }}
+#          CONFLUENCE_PASSWORD: ${{ secrets.VBR_CONFLUENCE_PASSWORD }}
+#          JIRA_PREFIX: Organisation
+#          JIRA_PROJECT: OR
+#          JIRA_VERSION: ${{ needs.release.outputs.version }}
 
   deploy_staging:
     needs: push_images_to_staging
