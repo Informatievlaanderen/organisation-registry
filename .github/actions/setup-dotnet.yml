@@ -1,0 +1,30 @@
+name: setup-dotnet
+description: Setup .NET Core
+
+inputs:
+  version:
+    required: true
+    type: string
+
+runs:
+  using: 'composite'
+  steps:
+
+  - name: Cache Paket
+    uses: actions/cache@v3
+    env:
+      cache-name: cache-paket
+    with:
+      path: packages
+      key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('paket.lock') }}
+      restore-keys: |
+        ${{ runner.os }}-build-${{ env.cache-name }}-
+
+  - name: Setup .NET Core
+    uses: actions/setup-dotnet@v3
+    with:
+      dotnet-version: ${{ inputs.version }}
+
+  - name: .NET version
+    shell: bash
+    run: dotnet --info
