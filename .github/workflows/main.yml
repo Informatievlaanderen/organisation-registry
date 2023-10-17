@@ -318,116 +318,70 @@ jobs:
 
     steps:
 
-    - name: Delete huge unnecessary tools folder
-      run: rm -rf /opt/hostedtoolcache
+      - name: Delete huge unnecessary tools folder
+        run: rm -rf /opt/hostedtoolcache
 
-    - name: Checkout Code
-      uses: actions/checkout@v4
-      with:
-        token: ${{ steps.set-release-version.outputs.installationToken  }}
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ steps.set-release-version.outputs.installationToken  }}
 
-    - name: Cache NPM
-      uses: actions/cache@v3
-      env:
-        cache-name: cache-npm
-      with:
-        path: ~/.npm
-        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-build-${{ env.cache-name }}-
+      - name: Parse repository name
+        run: echo REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//") >> $GITHUB_ENV
+        shell: bash
 
-    - name: Cache Paket
-      uses: actions/cache@v3
-      env:
-        cache-name: cache-paket
-      with:
-        path: packages
-        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('paket.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-build-${{ env.cache-name }}-
+      - name: Cache NPM
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-npm
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
 
-    - name: Cache Python
-      uses: actions/cache@v3
-      env:
-        cache-name: cache-pip
-      with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-build-${{ env.cache-name }}
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
 
-    - name: Parse repository name
-      run: echo REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//") >> $GITHUB_ENV
-      shell: bash
+      - name: Node version
+        shell: bash
+        run: node --version
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
+      - name: Install NPM dependencies
+        shell: bash
+        run: npm install --legacy-peer-deps
 
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: ${{ secrets.VBR_DOTNET_VERSION }}
+      - name: Run Semantic Release
+        shell: bash
+        run: npx semantic-release
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY }}
+          GITHUB_TOKEN: ${{ steps.set-release-version.outputs.installationToken  }}
+          GIT_COMMIT: ${{ github.sha }}
+          GIT_USERNAME: ${{ steps.set-release-version.outputs.installationToken  }}
+          GIT_AUTHOR_NAME: ${{ secrets.VBR_GIT_USER }}
+          GIT_COMMITTER_NAME: ${{ secrets.VBR_GIT_USER }}
+          GIT_EMAIL: ${{ secrets.VBR_GIT_EMAIL }}
+          GIT_AUTHOR_EMAIL: ${{ secrets.VBR_GIT_EMAIL }}
+          GIT_COMMITTER_EMAIL: ${{ secrets.VBR_GIT_EMAIL }}
+          IGNORE_ES_TESTS: FALSE
 
-    - name: Set up Python
-      uses: actions/setup-python@v3
-      with:
-        python-version: '3.x'
+      - name: Set Release Version
+        id: set-version
+        run: |
+          [ ! -f semver ] && echo none > semver
+          echo $(cat semver)
+          echo ::set-output name=version::$(cat semver)
+          echo RELEASE_VERSION=$(cat semver) >> $GITHUB_ENV
+        shell: bash
 
-    - name: Node version
-      shell: bash
-      run: node --version
-
-    - name: .NET version
-      shell: bash
-      run: dotnet --info
-
-    - name: Python version
-      shell: bash
-      run: python --version
-
-    - name: Install NPM dependencies
-      shell: bash
-      run: npm install --legacy-peer-deps
-
-    - name: Install Python dependencies
-      shell: bash
-      run: |
-        python -m pip install --upgrade pip
-        pip install requests markdown argparse
-
-    - name: Install NPM dependencies
-      shell: bash
-      run: npm install --legacy-peer-deps
-
-    - name: Run Semantic Release
-      shell: bash
-      run: npx semantic-release
-      env:
-        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY }}
-        GITHUB_TOKEN: ${{ steps.set-release-version.outputs.installationToken  }}
-        GIT_COMMIT: ${{ github.sha }}
-        GIT_USERNAME: ${{ steps.set-release-version.outputs.installationToken  }}
-        GIT_AUTHOR_NAME: ${{ secrets.VBR_GIT_USER }}
-        GIT_COMMITTER_NAME: ${{ secrets.VBR_GIT_USER }}
-        GIT_EMAIL: ${{ secrets.VBR_GIT_EMAIL }}
-        GIT_AUTHOR_EMAIL: ${{ secrets.VBR_GIT_EMAIL }}
-        GIT_COMMITTER_EMAIL: ${{ secrets.VBR_GIT_EMAIL }}
-        IGNORE_ES_TESTS: FALSE
-
-    - name: Set Release Version
-      id: set-version
-      run: |
-        [ ! -f semver ] && echo none > semver
-        echo $(cat semver)
-        echo ::set-output name=version::$(cat semver)
-        echo RELEASE_VERSION=$(cat semver) >> $GITHUB_ENV
-      shell: bash
-
-    - name: debug_output
-      shell: bash
-      run: |
-        echo 'BEGIN VERSION'
-        echo ${{ steps.set-version.outputs.version }}
-        echo 'END VERSION'
+      - name: debug_output
+        shell: bash
+        run: |
+          echo 'BEGIN VERSION'
+          echo ${{ steps.set-version.outputs.version }}
+          echo 'END VERSION'
 
   publish_to_atlassian:
     if: needs.release.outputs.version != 'none'
@@ -442,16 +396,6 @@ jobs:
         run: echo REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//") >> $GITHUB_ENV
         shell: bash
 
-      - name: Cache Paket
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-paket
-        with:
-          path: packages
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('paket.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-
       - name: Cache Python
         uses: actions/cache@v3
         env:
@@ -461,15 +405,29 @@ jobs:
           key: ${{ runner.os }}-build-${{ env.cache-name }}
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v3
         with:
           python-version: '3.x'
+
+      - name: Python version
+        shell: bash
+        run: python --version
 
       - name: Install Python dependencies
         shell: bash
         run: |
           python -m pip install --upgrade pip
           pip install requests markdown argparse
+
+      - name: Cache Paket
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-paket
+        with:
+          path: packages
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('paket.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
 
       - name: Publish to Confluence
         if: needs.release.outputs.version != 'none'
@@ -510,20 +468,6 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
 
-      - name: Cache Paket
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-paket
-        with:
-          path: packages
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('paket.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-
-      - name: Paket restore
-        shell: bash
-        run: dotnet paket restore
-
       - name: Node version
         shell: bash
         run: node --version
@@ -531,6 +475,20 @@ jobs:
       - name: Install NPM dependencies
         shell: bash
         run: npm install --legacy-peer-deps
+
+      #      - name: Cache Paket
+      #        uses: actions/cache@v3
+      #        env:
+      #          cache-name: cache-paket
+      #        with:
+      #          path: packages
+      #          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('paket.lock') }}
+      #          restore-keys: |
+      #            ${{ runner.os }}-build-${{ env.cache-name }}-
+
+      #      - name: Paket restore
+      #        shell: bash
+      #        run: dotnet paket restore
 
       - name: Configure AWS credentials (Staging)
         if: needs.release.outputs.version != 'none'
@@ -624,7 +582,6 @@ jobs:
         shell: bash
         run: docker image load -i ~/ui.tar
 
-
       - name: Download rebuilder artifact
         uses: actions/download-artifact@v3
         with:
@@ -641,29 +598,6 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
-      # - name: Push acm image
-      #   if: needs.release.outputs.version != 'none'
-      #   shell: bash
-      #   run: |
-      #     docker tag $BUILD_DOCKER_REGISTRY/organisation-registry/acmidm:$SEMVER ghcr.io/informatievlaanderen/acmidm:$SEMVER
-      #     docker push ghcr.io/informatievlaanderen/acmidm:$SEMVER
-      #   env:
-      #     SEMVER: ${{ needs.release.outputs.version }}
-      #     WORKSPACE: ${{ github.workspace }}
-      #     BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY }}
-
-      - name: Configure AWS credentials (Staging)
-        if: needs.release.outputs.version != 'none'
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.VBR_AWS_REGION }}
-
-      - name: Login to Amazon ECR (Staging)
-        if: needs.release.outputs.version != 'none'
-        uses: aws-actions/amazon-ecr-login@v1
 
       - name: Push to Staging
         if: needs.release.outputs.version != 'none'
@@ -858,38 +792,38 @@ jobs:
           SEMVER: ${{ needs.release.outputs.version }}
           WORKSPACE: ${{ github.workspace }}
 
-#
-#      - name: Publish to NuGet
-#        if: needs.release.outputs.version != 'none'
-#        shell: bash
-#        run: |
-#          node packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-nuget.js dist/nuget/$LIBNAME.Api.$SEMVER.nupkg
-#        env:
-#          LIBNAME: Be.Vlaanderen.Basisregisters.OrganisationRegistry
-#          SEMVER: ${{ needs.release.outputs.version }}
-#          NUGET_HOST: ${{ secrets.NUGET_HOST }}
-#          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-#
-#      - name: Publish to Confluence
-#        if: needs.release.outputs.version != 'none'
-#        shell: bash
-#        run: ./packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-confluence.sh
-#        env:
-#          CONFLUENCE_TITLE: ${{ env.REPOSITORY_NAME }}
-#          CONFLUENCE_USERNAME: ${{ secrets.VBR_CONFLUENCE_USER }}
-#          CONFLUENCE_PASSWORD: ${{ secrets.VBR_CONFLUENCE_PASSWORD }}
-#
-#      - name: Create Jira Release
-#        if: needs.release.outputs.version != 'none'
-#        shell: bash
-#        run: ./packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-jira.sh
-#        env:
-#          CONFLUENCE_TITLE: ${{ env.REPOSITORY_NAME }}
-#          CONFLUENCE_USERNAME: ${{ secrets.VBR_CONFLUENCE_USER }}
-#          CONFLUENCE_PASSWORD: ${{ secrets.VBR_CONFLUENCE_PASSWORD }}
-#          JIRA_PREFIX: Organisation
-#          JIRA_PROJECT: OR
-#          JIRA_VERSION: ${{ needs.release.outputs.version }}
+  #
+  #      - name: Publish to NuGet
+  #        if: needs.release.outputs.version != 'none'
+  #        shell: bash
+  #        run: |
+  #          node packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-nuget.js dist/nuget/$LIBNAME.Api.$SEMVER.nupkg
+  #        env:
+  #          LIBNAME: Be.Vlaanderen.Basisregisters.OrganisationRegistry
+  #          SEMVER: ${{ needs.release.outputs.version }}
+  #          NUGET_HOST: ${{ secrets.NUGET_HOST }}
+  #          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+  #
+  #      - name: Publish to Confluence
+  #        if: needs.release.outputs.version != 'none'
+  #        shell: bash
+  #        run: ./packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-confluence.sh
+  #        env:
+  #          CONFLUENCE_TITLE: ${{ env.REPOSITORY_NAME }}
+  #          CONFLUENCE_USERNAME: ${{ secrets.VBR_CONFLUENCE_USER }}
+  #          CONFLUENCE_PASSWORD: ${{ secrets.VBR_CONFLUENCE_PASSWORD }}
+  #
+  #      - name: Create Jira Release
+  #        if: needs.release.outputs.version != 'none'
+  #        shell: bash
+  #        run: ./packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-jira.sh
+  #        env:
+  #          CONFLUENCE_TITLE: ${{ env.REPOSITORY_NAME }}
+  #          CONFLUENCE_USERNAME: ${{ secrets.VBR_CONFLUENCE_USER }}
+  #          CONFLUENCE_PASSWORD: ${{ secrets.VBR_CONFLUENCE_PASSWORD }}
+  #          JIRA_PREFIX: Organisation
+  #          JIRA_PROJECT: OR
+  #          JIRA_VERSION: ${{ needs.release.outputs.version }}
 
   deploy_staging:
     needs: push_images_to_staging
@@ -899,15 +833,15 @@ jobs:
       matrix:
         services:
           [
-              'organisation-registry-api',
-              'organisation-registry-delegations',
-              'organisation-registry-elasticsearch',
-              'organisation-registry-kbomutations',
-              'organisation-registry-reporting',
-              'organisation-registry-ui',
-              'organisation-registry-vlaanderenbe',
-              'organisation-registry-zorgengezondheid',
-              'organisation-registry-rebuilder',
+            'organisation-registry-api',
+            'organisation-registry-delegations',
+            'organisation-registry-elasticsearch',
+            'organisation-registry-kbomutations',
+            'organisation-registry-reporting',
+            'organisation-registry-ui',
+            'organisation-registry-vlaanderenbe',
+            'organisation-registry-zorgengezondheid',
+            'organisation-registry-rebuilder',
           ]
     steps:
       - name: debug_output
