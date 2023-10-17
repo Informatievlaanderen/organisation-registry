@@ -12,15 +12,11 @@ runs:
 
   - name: Cache Paket
     uses: actions/cache@v3
-    env:
-      cache-name: cache-paket
     with:
       path: |
         .paket/
         packages/
       key: ${{ runner.os }}-paket-${{ hashFiles('**/paket.lock') }}
-      restore-keys: |
-        ${{ runner.os }}-paket-
 
   - name: Setup .NET Core
     uses: actions/setup-dotnet@v3
