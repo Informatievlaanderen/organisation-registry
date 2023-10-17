@@ -3,8 +3,8 @@ description: Setup .NET Core
 
 inputs:
   version:
+    description: 'Required dotnet version'
     required: true
-    type: string
 
 runs:
   using: 'composite'
@@ -28,3 +28,15 @@ runs:
   - name: .NET version
     shell: bash
     run: dotnet --info
+
+  - name: Clean
+    shell: bash
+    run: dotnet nuget locals all --clear
+
+  - name: Restore dotnet tools
+    shell: bash
+    run: dotnet tool restore
+
+  - name: Paket restore
+    shell: bash
+    run: dotnet paket restore

@@ -30,44 +30,14 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Cache Paket
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-paket
-        with:
-          path: packages
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('paket.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-
       - name: Parse repository name
         run: echo REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//") >> $GITHUB_ENV
         shell: bash
 
       - name: Setup .NET Core
-        uses: actions/setup-dotnet@v3
+        uses: ./.github/actions/setup-dotnet
         with:
-          dotnet-version: ${{ secrets.VBR_DOTNET_VERSION }}
-
-      - name: .NET version
-        shell: bash
-        run: dotnet --info
-
-      - name: Clean
-        run: dotnet nuget locals all --clear
-
-      - name: Restore dotnet tools
-        shell: bash
-        run: |
-          dotnet tool restore
-
-      - name: Paket install
-        shell: bash
-        run: dotnet paket install
-
-      - name: Paket restore
-        shell: bash
-        run: dotnet paket restore
+          version: ${{ secrets.VBR_DOTNET_VERSION }}
 
       - name: Cache NPM
         uses: actions/cache@v3
@@ -85,11 +55,6 @@ jobs:
       - name: Install NPM dependencies
         shell: bash
         run: npm install --legacy-peer-deps
-
-      - name: Setup .NET Core
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: ${{ secrets.VBR_DOTNET_VERSION }}
 
       - name: Containerize
         shell: bash
