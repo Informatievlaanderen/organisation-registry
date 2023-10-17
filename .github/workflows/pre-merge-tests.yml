@@ -46,15 +46,10 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v3
 
-    - name: Cache Paket
-      uses: actions/cache@v3
-      env:
-        cache-name: cache-paket
+    - name: Setup .NET Core
+      uses: ./.github/actions/setup-dotnet
       with:
-        path: packages
-        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('paket.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-build-${{ env.cache-name }}-
+        version: ${{ secrets.VBR_DOTNET_VERSION }}
 
     - name: Cache Python
       uses: actions/cache@v3
@@ -71,10 +66,6 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v3
 
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: ${{ secrets.VBR_DOTNET_VERSION }}
 
     - name: Set up Python
       uses: actions/setup-python@v3
@@ -84,10 +75,6 @@ jobs:
     - name: Node version
       shell: bash
       run: node --version
-
-    - name: .NET version
-      shell: bash
-      run: dotnet --info
 
     - name: Python version
       shell: bash
@@ -110,10 +97,6 @@ jobs:
         key: ${{ runner.os }}-sonar
         restore-keys: ${{ runner.os }}-sonar
 
-    - name: Restore dotnet tools
-      shell: bash
-      run: |
-        dotnet tool restore
 
     - name: Cache SonarCloud scanner
       id: cache-sonar-scanner
