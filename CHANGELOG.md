@@ -1,3 +1,10 @@
+## [1.312.14](https://github.com/informatievlaanderen/organisation-registry/compare/v1.312.13...v1.312.14) (2023-10-17)
+
+
+### Bug Fixes
+
+* or-1955 check if version is != none ([02bffa6](https://github.com/informatievlaanderen/organisation-registry/commit/02bffa62beb20980de31efa1fdb1a66e2fc1c6ad))
+
 ## [1.312.13](https://github.com/informatievlaanderen/organisation-registry/compare/v1.312.12...v1.312.13) (2023-10-17)
 
 
