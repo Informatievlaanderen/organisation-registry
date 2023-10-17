@@ -15,6 +15,7 @@ runs:
     with:
       path: |
         .paket/
+        paket-files/
         packages/
       key: ${{ runner.os }}-paket-${{ hashFiles('**/paket.lock') }}
 
