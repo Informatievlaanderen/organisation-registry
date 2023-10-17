@@ -438,6 +438,11 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
 
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ secrets.VBR_DOTNET_VERSION }}
+
       - name: Cache Paket
         uses: actions/cache@v3
         env:
