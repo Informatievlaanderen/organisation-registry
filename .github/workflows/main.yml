@@ -239,7 +239,7 @@ jobs:
   build-kbo-mutations:
     name: Build kbo-mutations
     uses: ./.github/workflows/build-image.yml
-    if: github.repository_owner == 'Informatievlaanderen'
+    if: github.repository_owner == 'Informatievlaanderen' && needs.set-release-version.outputs.version != 'none'
     needs: [ test, set-release-version ]
     with:
       build-target: Containerize_KboMutations
