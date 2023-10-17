@@ -327,14 +327,6 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-build-${{ env.cache-name }}-
 
-    - name: Cache Python
-      uses: actions/cache@v3
-      env:
-        cache-name: cache-pip
-      with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-build-${{ env.cache-name }}
-
     - name: Parse repository name
       run: echo REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//") >> $GITHUB_ENV
       shell: bash
@@ -347,11 +339,6 @@ jobs:
       with:
         dotnet-version: ${{ secrets.VBR_DOTNET_VERSION }}
 
-    - name: Set up Python
-      uses: actions/setup-python@v3
-      with:
-        python-version: '3.x'
-
     - name: Node version
       shell: bash
       run: node --version
@@ -360,19 +347,33 @@ jobs:
       shell: bash
       run: dotnet --info
 
+    - name: Cache Python
+      uses: actions/cache@v3
+      env:
+        cache-name: cache-pip
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-build-${{ env.cache-name }}
+        
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.x'
+
     - name: Python version
       shell: bash
       run: python --version
-
-    - name: Install NPM dependencies
-      shell: bash
-      run: npm install --legacy-peer-deps
 
     - name: Install Python dependencies
       shell: bash
       run: |
         python -m pip install --upgrade pip
         pip install requests markdown argparse
+        
+    - name: Install NPM dependencies
+      shell: bash
+      run: npm install --legacy-peer-deps
+
 
     - name: Generate Token
       id: generate_token   # Add an ID to this step for reference
@@ -681,6 +682,29 @@ jobs:
 #          NUGET_HOST: ${{ secrets.NUGET_HOST }}
 #          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
 
+      - name: Cache Python
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-pip
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-build-${{ env.cache-name }}
+          
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.x'
+  
+      - name: Python version
+        shell: bash
+        run: python --version
+  
+      - name: Install Python dependencies
+        shell: bash
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests markdown argparse
+
       - name: Publish to Confluence
         if: needs.release.outputs.version != 'none'
         shell: bash
@@ -689,6 +713,7 @@ jobs:
           CONFLUENCE_TITLE: ${{ env.REPOSITORY_NAME }}
           CONFLUENCE_USERNAME: ${{ secrets.VBR_CONFLUENCE_USER }}
           CONFLUENCE_PASSWORD: ${{ secrets.VBR_CONFLUENCE_PASSWORD }}
+  
 
       - name: Create Jira Release
         if: needs.release.outputs.version != 'none'
