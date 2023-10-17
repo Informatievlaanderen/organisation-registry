@@ -28,10 +28,6 @@ runs:
     shell: bash
     run: dotnet --info
 
-  - name: Clean
-    shell: bash
-    run: dotnet nuget locals all --clear
-
   - name: Restore dotnet tools
     shell: bash
     run: dotnet tool restore
