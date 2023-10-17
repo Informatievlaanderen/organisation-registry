@@ -1,3 +1,10 @@
+## [1.312.15](https://github.com/informatievlaanderen/organisation-registry/compare/v1.312.14...v1.312.15) (2023-10-17)
+
+
+### Bug Fixes
+
+* or-1955 restore dotnet tools ([42e7ef4](https://github.com/informatievlaanderen/organisation-registry/commit/42e7ef4d79866f8aa6c424758b36e9a861c44686))
+
 ## [1.312.14](https://github.com/informatievlaanderen/organisation-registry/compare/v1.312.13...v1.312.14) (2023-10-17)
 
 
