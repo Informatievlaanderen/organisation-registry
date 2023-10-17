@@ -87,6 +87,8 @@ jobs:
       test: "test"
 
     steps:
+
+
       - name: Checkout Code
         uses: actions/checkout@v3
 
@@ -435,6 +437,24 @@ jobs:
         uses: actions/checkout@v3
       - name: Setup Node.js
         uses: actions/setup-node@v3
+
+      - name: Cache Paket
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-paket
+        with:
+          path: packages
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('paket.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+
+      - name: Paket install
+        shell: bash
+        run: dotnet paket install
+
+      - name: Paket restore
+        shell: bash
+        run: dotnet paket restore
 
       - name: Node version
         shell: bash
