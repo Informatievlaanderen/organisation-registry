@@ -443,6 +443,11 @@ jobs:
         with:
           dotnet-version: ${{ secrets.VBR_DOTNET_VERSION }}
 
+      - name: Restore dotnet tools
+        shell: bash
+        run: |
+          dotnet tool restore
+
       - name: Cache Paket
         uses: actions/cache@v3
         env:
