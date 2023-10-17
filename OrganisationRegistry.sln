@@ -103,6 +103,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "infra", "infra", "{01C5AB4B
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrganisationRegistry.OpenTelemetry", "src\OrganisationRegistry.OpenTelemetry\OrganisationRegistry.OpenTelemetry.csproj", "{55759034-DCC0-4752-8B9B-9714644D47CB}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "actions", "actions", "{54C35C74-BED8-474C-9D1E-FDE6EF9BB64E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "setup-dotnet", "setup-dotnet", "{A2A8BD22-8030-4E9C-BB21-4219A1FD4FE2}"
+	ProjectSection(SolutionItems) = preProject
+		.github\actions\setup-dotnet\action.yml = .github\actions\setup-dotnet\action.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -259,5 +266,7 @@ Global
 		{CD38186E-B8EB-4BAF-A75F-D6FA4DE1C1A0} = {0F034590-1298-4E13-BF5B-35F79506AB16}
 		{96A2158F-8BBD-40FE-93D1-5006C3F74AA0} = {0F034590-1298-4E13-BF5B-35F79506AB16}
 		{55759034-DCC0-4752-8B9B-9714644D47CB} = {01C5AB4B-0A8F-4ADD-809E-54FCC148B8BF}
+		{54C35C74-BED8-474C-9D1E-FDE6EF9BB64E} = {7CA3FAD8-5352-4788-9A94-6519B5BFBDD6}
+		{A2A8BD22-8030-4E9C-BB21-4219A1FD4FE2} = {54C35C74-BED8-474C-9D1E-FDE6EF9BB64E}
 	EndGlobalSection
 EndGlobal
