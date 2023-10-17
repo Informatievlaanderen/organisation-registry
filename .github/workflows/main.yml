@@ -13,9 +13,11 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.set-version.outputs.version }}
+      installationToken: ${{ steps.set_generated_token.outputs.installationToken }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
 
@@ -26,6 +28,18 @@ jobs:
       - name: Install NPM dependencies
         shell: bash
         run: npm install --legacy-peer-deps
+
+      - name: Generate Token
+        id: generate_token   # Add an ID to this step for reference
+        run: node .github/generate-token.js
+        env:
+          APP_ID: ${{ secrets.MYBOT_APP_ID }}
+          PRIVATE_KEY: ${{ secrets.MYBOT_PRIVATE_KEY }}
+
+      - name: Set Generated Token
+        id: set_generated_token
+        run: echo ::set-output name=installationToken::${{ steps.generate_token.outputs.installationToken }}
+        shell: bash
 
       - name: Run Semantic Release dry-run
         shell: bash
@@ -301,11 +315,16 @@ jobs:
 
     outputs:
       version: ${{ steps.set-version.outputs.version }}
-      test: "test"
 
     steps:
+
+    - name: Delete huge unnecessary tools folder
+      run: rm -rf /opt/hostedtoolcache
+
     - name: Checkout Code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
+      with:
+        token: ${{ steps.set-release-version.outputs.installationToken  }}
 
     - name: Cache NPM
       uses: actions/cache@v3
@@ -374,18 +393,6 @@ jobs:
         python -m pip install --upgrade pip
         pip install requests markdown argparse
 
-    - name: Generate Token
-      id: generate_token   # Add an ID to this step for reference
-      run: node .github/generate-token.js
-      env:
-        APP_ID: ${{ secrets.MYBOT_APP_ID }}
-        PRIVATE_KEY: ${{ secrets.MYBOT_PRIVATE_KEY }}
-
-    - name: Checkout Code
-      uses: actions/checkout@v4
-      with:
-        token: ${{ steps.generate_token.outputs.installationToken  }}
-
     - name: Install NPM dependencies
       shell: bash
       run: npm install --legacy-peer-deps
@@ -396,9 +403,9 @@ jobs:
       env:
         NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY }}
-        GITHUB_TOKEN: ${{ steps.generate_token.outputs.installationToken  }}
+        GITHUB_TOKEN: ${{ steps.set-release-version.outputs.installationToken  }}
         GIT_COMMIT: ${{ github.sha }}
-        GIT_USERNAME: ${{ steps.generate_token.outputs.installationToken  }}
+        GIT_USERNAME: ${{ steps.set-release-version.outputs.installationToken  }}
         GIT_AUTHOR_NAME: ${{ secrets.VBR_GIT_USER }}
         GIT_COMMITTER_NAME: ${{ secrets.VBR_GIT_USER }}
         GIT_EMAIL: ${{ secrets.VBR_GIT_EMAIL }}
@@ -447,10 +454,6 @@ jobs:
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('paket.lock') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
-
-      - name: Paket install
-        shell: bash
-        run: dotnet paket install
 
       - name: Paket restore
         shell: bash
