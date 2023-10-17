@@ -1,3 +1,10 @@
+## [1.312.13](https://github.com/informatievlaanderen/organisation-registry/compare/v1.312.12...v1.312.13) (2023-10-17)
+
+
+### Bug Fixes
+
+* OR-1955 add paket commands to push to staging ([bc8e8a0](https://github.com/informatievlaanderen/organisation-registry/commit/bc8e8a003d24d6a55c9253553dffbae827ebbe59))
+
 ## [1.312.12](https://github.com/informatievlaanderen/organisation-registry/compare/v1.312.11...v1.312.12) (2023-10-13)
 
 
