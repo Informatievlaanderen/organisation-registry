@@ -234,7 +234,7 @@ Target.create "Push" ignore
 "Publish"
   ==> "Pack_Solution"
   ==> "Pack"
-A
+
 "Site_Build"
   ==> "Vue_Build"
   ==> "Containerize_Site"
