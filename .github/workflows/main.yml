@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.set-version.outputs.version }}
-      installationToken: ${{ steps.generate_token.outputs.installationToken }}
+      installationToken: ${{ steps.generate-token.outputs.installationToken }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -22,7 +22,7 @@ jobs:
         uses: ./.github/actions/setup-nodejs
 
       - name: Generate Token
-        id: generate_token   # Add an ID to this step for reference
+        id: generate-token   # Add an ID to this step for reference
         run: node .github/generate-token.js
         env:
           APP_ID: ${{ secrets.MYBOT_APP_ID }}
@@ -251,7 +251,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
-          token: ${{ needs.set-release-version.outputs.installationToken  }}
+          token: ${{ needs.set-release-version.outputs.installationToken }}
 
       - name: Parse repository name
         run: echo REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//") >> $GITHUB_ENV

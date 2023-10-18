@@ -31,6 +31,7 @@ axios.get(`https://api.github.com/app/installations`, {
 
 }).then(response => {
   const installationToken = response.data.token;
+  console.log(`Succesfully created token: ${installationToken.substring(0, 5)}`);
   console.log(`::set-output name=installationToken::${installationToken}`);
 }).catch(error => {
   console.error('Error fetching installation token:', error);
