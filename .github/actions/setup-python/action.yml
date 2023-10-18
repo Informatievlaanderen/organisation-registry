@@ -6,7 +6,7 @@ runs:
   steps:
 
   - name: Cache pip
-    uses: .github/actions/cache-pip
+    uses: ./.github/actions/cache-pip
 
   - name: Set up Python
     uses: actions/setup-python@v3

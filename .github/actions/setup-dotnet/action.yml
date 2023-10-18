@@ -11,7 +11,7 @@ runs:
   steps:
 
   - name: Cache Paket
-    uses: .github/actions/cache-paket
+    uses: ./.github/actions/cache-paket
 
   - name: Setup .NET Core
     uses: actions/setup-dotnet@v3
