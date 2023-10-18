@@ -12,6 +12,9 @@ on:
       image-name: #acm-api
         required: true
         type: string
+      build-project:
+        required: true
+        type: string
       semver:
         required: true
         type: string
