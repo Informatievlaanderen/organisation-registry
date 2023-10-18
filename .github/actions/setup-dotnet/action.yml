@@ -11,13 +11,7 @@ runs:
   steps:
 
   - name: Cache Paket
-    uses: actions/cache@v3
-    with:
-      path: |
-        .paket/
-        paket-files/
-        packages/
-      key: ${{ runner.os }}-paket-${{ hashFiles('**/paket.lock') }}
+    uses: .github/actions/cache-paket
 
   - name: Setup .NET Core
     uses: actions/setup-dotnet@v3

@@ -89,45 +89,15 @@ jobs:
 
     steps:
 
-
       - name: Checkout Code
         uses: actions/checkout@v3
-
-      - name: Setup nodejs
-        uses: ./.github/actions/setup-nodejs
 
       - name: Setup .NET Core
         uses: ./.github/actions/setup-dotnet
 
-      - name: Cache Paket
-        uses: ./.github/actions/cache-paket
-
-      - name: Cache Python
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-pip
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-build-${{ env.cache-name }}
-
       - name: Parse repository name
         run: echo REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//") >> $GITHUB_ENV
         shell: bash
-
-      - name: Set up Python
-        uses: actions/setup-python@v3
-        with:
-          python-version: '3.x'
-
-      - name: Python version
-        shell: bash
-        run: python --version
-
-      - name: Install Python dependencies
-        shell: bash
-        run: |
-          python -m pip install --upgrade pip
-          pip install requests markdown argparse
 
       - name: Test Solution
         shell: bash
@@ -335,37 +305,11 @@ jobs:
         run: echo REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//") >> $GITHUB_ENV
         shell: bash
 
-      - name: Cache Python
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-pip
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-build-${{ env.cache-name }}
-
-      - name: Set up Python
-        uses: actions/setup-python@v3
-        with:
-          python-version: '3.x'
-
-      - name: Python version
-        shell: bash
-        run: python --version
-
-      - name: Install Python dependencies
-        shell: bash
-        run: |
-          python -m pip install --upgrade pip
-          pip install requests markdown argparse
+      - name: Setup Python
+        uses: ./.github/actions/setup-python
 
       - name: Cache Paket
-        uses: actions/cache@v3
-        with:
-          path: |
-            .paket/
-            paket-files/
-            packages/
-          key: ${{ runner.os }}-paket-${{ hashFiles('**/paket.lock') }}
+        uses: ./.github/actions/cache-paket
 
       - name: Publish to Confluence
         if: needs.release.outputs.version != 'none'
