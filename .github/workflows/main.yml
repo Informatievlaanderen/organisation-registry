@@ -461,17 +461,6 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-
-      - name: Node version
-        shell: bash
-        run: node --version
-
-      - name: Install NPM dependencies
-        shell: bash
-        run: npm install --legacy-peer-deps
-
       - name: Configure AWS credentials (Staging)
         if: needs.release.outputs.version != 'none'
         uses: aws-actions/configure-aws-credentials@v1
@@ -613,31 +602,6 @@ jobs:
 
       - name: Checkout Code
         uses: actions/checkout@v3
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-
-      - name: Cache Paket
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-paket
-        with:
-          path: packages
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('paket.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-
-      - name: Paket restore
-        shell: bash
-        run: dotnet paket restore
-
-      - name: Node version
-        shell: bash
-        run: node --version
-
-      - name: Install NPM dependencies
-        shell: bash
-        run: npm install --legacy-peer-deps
 
       - name: Download api artifact
         uses: actions/download-artifact@v3
