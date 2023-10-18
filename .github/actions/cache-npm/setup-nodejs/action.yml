@@ -1,0 +1,20 @@
+name: setup-node
+description: Setup nodejs
+
+runs:
+  using: 'composite'
+  steps:
+
+  - name: Cache NPM
+    uses: .github/actions/cache-npm
+
+  - name: Setup Node.js
+    uses: actions/setup-node@v3
+
+  - name: Node version
+    shell: bash
+    run: node --version
+
+  - name: Install NPM dependencies
+    shell: bash
+    run: npm install --legacy-peer-deps

@@ -19,15 +19,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
-
-      - name: Node version
-        shell: bash
-        run: node --version
-
-      - name: Install NPM dependencies
-        shell: bash
-        run: npm install --legacy-peer-deps
+        uses: ./.github/actions/setup-nodejs
 
       - name: Generate Token
         id: generate_token   # Add an ID to this step for reference
@@ -101,25 +93,14 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Cache NPM
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-npm
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
+      - name: Setup nodejs
+        uses: ./.github/actions/setup-nodejs
+
+      - name: Setup .NET Core
+        uses: ./.github/actions/setup-dotnet
 
       - name: Cache Paket
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-paket
-        with:
-          path: packages
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('paket.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
+        uses: ./.github/actions/cache-paket
 
       - name: Cache Python
         uses: actions/cache@v3
@@ -133,34 +114,14 @@ jobs:
         run: echo REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//") >> $GITHUB_ENV
         shell: bash
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-
-      - name: Setup .NET Core
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: ${{ secrets.VBR_DOTNET_VERSION }}
-
       - name: Set up Python
         uses: actions/setup-python@v3
         with:
           python-version: '3.x'
 
-      - name: Node version
-        shell: bash
-        run: node --version
-
-      - name: .NET version
-        shell: bash
-        run: dotnet --info
-
       - name: Python version
         shell: bash
         run: python --version
-
-      - name: Install NPM dependencies
-        shell: bash
-        run: npm install --legacy-peer-deps
 
       - name: Install Python dependencies
         shell: bash
@@ -326,26 +287,8 @@ jobs:
         run: echo REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//") >> $GITHUB_ENV
         shell: bash
 
-      - name: Cache NPM
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-npm
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-
-      - name: Node version
-        shell: bash
-        run: node --version
-
-      - name: Install NPM dependencies
-        shell: bash
-        run: npm install --legacy-peer-deps
+      - name: Setup nodejs
+        uses: ./.github/actions/setup-nodejs
 
       - name: Run Semantic Release
         shell: bash
@@ -417,13 +360,12 @@ jobs:
 
       - name: Cache Paket
         uses: actions/cache@v3
-        env:
-          cache-name: cache-paket
         with:
-          path: packages
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('paket.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
+          path: |
+            .paket/
+            paket-files/
+            packages/
+          key: ${{ runner.os }}-paket-${{ hashFiles('**/paket.lock') }}
 
       - name: Publish to Confluence
         if: needs.release.outputs.version != 'none'

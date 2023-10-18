@@ -1,0 +1,16 @@
+name: cache-npm
+description: Cache NPM
+
+runs:
+  using: 'composite'
+  steps:
+
+  - name: Cache NPM
+    uses: actions/cache@v3
+    env:
+      cache-name: cache-npm
+    with:
+      path: ~/.npm
+      key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+      restore-keys: |
+        ${{ runner.os }}-build-${{ env.cache-name }}-
