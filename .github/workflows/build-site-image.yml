@@ -12,9 +12,6 @@ on:
       image-name: #acm-api
         required: true
         type: string
-      build-project:
-        required: true
-        type: string
       semver:
         required: true
         type: string
@@ -44,26 +41,6 @@ jobs:
 
       - name: Setup nodejs
         uses: ./.github/actions/setup-nodejs
-
-      - name: Dotnet restore
-        shell: bash
-        run: dotnet restore src/${{ inputs.build-project }} --runtime linux-x64
-
-      - name: Set solution info
-        shell: bash
-        if: inputs.semver != 'none'
-        run: CI_BUILD_NUMBER=$SEMVER ./build.sh SetSolutionInfo
-        env:
-          BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_TST }}
-          SEMVER: ${{ inputs.semver }}
-
-      - name: Dotnet build
-        shell: bash
-        run: dotnet build --no-restore --runtime 'linux-x64' --self-contained -f net6.0 src/${{ inputs.build-project }}
-
-      - name: Dotnet publish
-        shell: bash
-        run: dotnet publish -o dist/${{ inputs.build-project }}/linux --no-build --no-restore --runtime 'linux-x64' --self-contained -f net6.0 src/${{ inputs.build-project }}
 
       - name: Containerize
         shell: bash

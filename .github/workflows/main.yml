@@ -201,12 +201,11 @@ jobs:
 
   build-ui:
     name: Build site
-    uses: ./.github/workflows/build-image.yml
+    uses: ./.github/workflows/build-site-image.yml
     if: github.repository_owner == 'Informatievlaanderen' && needs.set-release-version.outputs.version != 'none'
     needs: [ set-release-version ]
     with:
       build-target: Containerize_Site
-      build-project: OrganisationRegistry.UI
       image-file: ui.tar
       image-name: ui
       semver: ${{ needs.set-release-version.outputs.version }}
