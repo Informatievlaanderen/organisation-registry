@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.set-version.outputs.version }}
-      installationToken: ${{ steps.set_generated_token.outputs.installationToken }}
+      installationToken: ${{ steps.generate_token.outputs.installationToken }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -35,11 +35,6 @@ jobs:
         env:
           APP_ID: ${{ secrets.MYBOT_APP_ID }}
           PRIVATE_KEY: ${{ secrets.MYBOT_PRIVATE_KEY }}
-
-      - name: Set Generated Token
-        id: set_generated_token
-        run: echo ::set-output name=installationToken::${{ steps.generate_token.outputs.installationToken }}
-        shell: bash
 
       - name: Run Semantic Release dry-run
         shell: bash
@@ -358,9 +353,9 @@ jobs:
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY }}
-          GITHUB_TOKEN: ${{ steps.set-release-version.outputs.installationToken  }}
+          GITHUB_TOKEN: ${{ needs.set-release-version.outputs.installationToken  }}
           GIT_COMMIT: ${{ github.sha }}
-          GIT_USERNAME: ${{ steps.set-release-version.outputs.installationToken  }}
+          GIT_USERNAME: ${{ needs.set-release-version.outputs.installationToken  }}
           GIT_AUTHOR_NAME: ${{ secrets.VBR_GIT_USER }}
           GIT_COMMITTER_NAME: ${{ secrets.VBR_GIT_USER }}
           GIT_EMAIL: ${{ secrets.VBR_GIT_EMAIL }}

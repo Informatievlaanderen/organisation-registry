@@ -75,6 +75,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrganisationRegistry.MagdaReRegistration", "src\OrganisationRegistry.MagdaReRegistration\OrganisationRegistry.MagdaReRegistration.csproj", "{3757D695-6832-4FAF-B4E2-4B02262956F8}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{7CA3FAD8-5352-4788-9A94-6519B5BFBDD6}"
+	ProjectSection(SolutionItems) = preProject
+		.github\generate-token.js = .github\generate-token.js
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{C31A5E2C-7DFC-48B0-97BB-0D870EE713BD}"
 ProjectSection(SolutionItems) = preProject
