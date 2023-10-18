@@ -218,7 +218,7 @@ jobs:
     needs: [ set-release-version ]
     with:
       build-target: Containerize_AcmIdm
-      build-project: OrganisationRegistry.IdentityServer/
+      build-project: IdentityServer/
       image-file: acmidm.tar
       image-name: acmidm
       semver: ${{ needs.set-release-version.outputs.version }}
