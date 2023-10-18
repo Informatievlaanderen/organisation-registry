@@ -312,6 +312,7 @@ jobs:
       - build-kbo-mutations
       - build-rebuilder
       - build-ui
+      - set-release-version
 
     outputs:
       version: ${{ steps.set-version.outputs.version }}
@@ -324,7 +325,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
-          token: ${{ steps.set-release-version.outputs.installationToken  }}
+          token: ${{ needs.set-release-version.outputs.installationToken  }}
 
       - name: Parse repository name
         run: echo REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//") >> $GITHUB_ENV
