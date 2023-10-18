@@ -248,6 +248,9 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Setup nodejs
+        uses: ./.github/actions/setup-nodejs
+
       - name: Generate Token
         id: generate-token   # Add an ID to this step for reference
         run: node .github/generate-token.js
@@ -266,9 +269,6 @@ jobs:
       - name: Parse repository name
         run: echo REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//") >> $GITHUB_ENV
         shell: bash
-
-      - name: Setup nodejs
-        uses: ./.github/actions/setup-nodejs
 
       - name: Run Semantic Release
         shell: bash
