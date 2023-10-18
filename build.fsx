@@ -234,39 +234,7 @@ Target.create "Push" ignore
 "Publish"
   ==> "Pack_Solution"
   ==> "Pack"
-
-"Build_Solution"
-  ==> "Publish_Api"
-  ==> "Containerize_Api"
-
-"Build_Solution"
-  ==> "Publish_AgentschapZorgEnGezondheid"
-  ==> "Containerize_AgentschapZorgEnGezondheid"
-
-"Build_Solution"
-  ==> "Publish_VlaanderenBeNotifier"
-  ==> "Containerize_VlaanderenBeNotifier"
-
-"Build_Solution"
-  ==> "Publish_ElasticSearch"
-  ==> "Containerize_ElasticSearch"
-
-"Build_Solution"
-  ==> "Publish_Delegations"
-  ==> "Containerize_Delegations"
-
-"Build_Solution"
-  ==> "Publish_OrganisationRegistry.Reporting"
-  ==> "Containerize_Reporting"
-
-"Build_Solution"
-  ==> "Publish_KboMutions"
-  ==> "Containerize_KboMutations"
-
-"Build_Solution"
-  ==> "Publish_Rebuilder"
-  ==> "Containerize_Rebuilder"
-
+A
 "Site_Build"
   ==> "Vue_Build"
   ==> "Containerize_Site"
@@ -287,17 +255,6 @@ Target.create "Push" ignore
   ==> "Push"
 
 Target.create "Containerize_All" ignore
-
-"Containerize_Api"
-  ==> "Containerize_AgentschapZorgEnGezondheid"
-  ==> "Containerize_VlaanderenBeNotifier"
-  ==> "Containerize_ElasticSearch"
-  ==> "Containerize_Delegations"
-  ==> "Containerize_Reporting"
-  ==> "Containerize_KboMutations"
-  ==> "Containerize_Rebuilder"
-  ==> "Containerize_Site"
-  ==> "Containerize_All"
 
 // By default we build & test
 Target.runOrDefault "Default"
