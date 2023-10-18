@@ -1,6 +1,7 @@
 const axios = require('axios');
 const jwt = require('jsonwebtoken');
 const fs = require('fs');
+const os = require('os');
 
 const APP_ID = process.env.APP_ID;
 const PRIVATE_KEY = process.env.PRIVATE_KEY.replace(/\\n/g, '\n');
@@ -33,6 +34,10 @@ axios.get(`https://api.github.com/app/installations`, {
   const installationToken = response.data.token;
   console.log(`Succesfully created token: ${installationToken.substring(0, 5)}`);
   console.log(`::set-output name=installationToken::${installationToken}`);
+
+  fs.appendFileSync(process.env.GITHUB_ENV, `installationToken=${installationToken}${os.EOL}`, {
+    encoding: 'utf8'
+  });
 }).catch(error => {
   console.error('Error fetching installation token:', error);
 });

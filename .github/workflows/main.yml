@@ -13,20 +13,12 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.set-version.outputs.version }}
-      installationToken: ${{ steps.generate-token.outputs.installationToken }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
 
       - name: Setup Node.js
         uses: ./.github/actions/setup-nodejs
-
-      - name: Generate Token
-        id: generate-token   # Add an ID to this step for reference
-        run: node .github/generate-token.js
-        env:
-          APP_ID: ${{ secrets.MYBOT_APP_ID }}
-          PRIVATE_KEY: ${{ secrets.MYBOT_PRIVATE_KEY }}
 
       - name: Run Semantic Release dry-run
         shell: bash
@@ -245,13 +237,23 @@ jobs:
 
     steps:
 
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Generate Token
+        id: generate-token   # Add an ID to this step for reference
+        run: node .github/generate-token.js
+        env:
+          APP_ID: ${{ secrets.MYBOT_APP_ID }}
+          PRIVATE_KEY: ${{ secrets.MYBOT_PRIVATE_KEY }}
+
       - name: Delete huge unnecessary tools folder
         run: rm -rf /opt/hostedtoolcache
 
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
-          token: ${{ needs.set-release-version.outputs.installationToken }}
+          token: ${{ env.installationToken }}
 
       - name: Parse repository name
         run: echo REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//") >> $GITHUB_ENV
@@ -266,9 +268,9 @@ jobs:
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY }}
-          GITHUB_TOKEN: ${{ needs.set-release-version.outputs.installationToken  }}
+          GITHUB_TOKEN: ${{ env.installationToken  }}
           GIT_COMMIT: ${{ github.sha }}
-          GIT_USERNAME: ${{ needs.set-release-version.outputs.installationToken  }}
+          GIT_USERNAME: ${{ env.installationToken  }}
           GIT_AUTHOR_NAME: ${{ secrets.VBR_GIT_USER }}
           GIT_COMMITTER_NAME: ${{ secrets.VBR_GIT_USER }}
           GIT_EMAIL: ${{ secrets.VBR_GIT_EMAIL }}
