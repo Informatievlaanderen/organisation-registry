@@ -102,7 +102,7 @@ jobs:
     needs: [ test, set-release-version ]
     with:
       build-target: Containerize_Api
-      build-project: OrganisationRegistry.Api
+      build-project: OrganisationRegistry.Api/
       image-file: api.tar
       image-name: api
       semver: ${{ needs.set-release-version.outputs.version }}
@@ -115,7 +115,7 @@ jobs:
     needs: [ test, set-release-version ]
     with:
       build-target: Containerize_AgentschapZorgEnGezondheid
-      build-project: OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump
+      build-project: OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump/
       image-file: batch-agentschapzorgengezondheidftpdump.tar
       image-name: batch-agentschapzorgengezondheidftpdump
       semver: ${{ needs.set-release-version.outputs.version }}
@@ -128,7 +128,7 @@ jobs:
     needs: [ test, set-release-version ]
     with:
       build-target: Containerize_VlaanderenBeNotifier
-      build-project: OrganisationRegistry.VlaanderenBeNotifier
+      build-project: OrganisationRegistry.VlaanderenBeNotifier/
       image-file: batch-vlaanderenbe.tar
       image-name: batch-vlaanderenbe
       semver: ${{ needs.set-release-version.outputs.version }}
@@ -141,7 +141,7 @@ jobs:
     needs: [ test, set-release-version ]
     with:
       build-target: Containerize_ElasticSearch
-      build-project: OrganisationRegistry.ElasticSearch.Projections
+      build-project: OrganisationRegistry.ElasticSearch.Projections/
       image-file: projections-elasticsearch.tar
       image-name: projections-elasticsearch
       semver: ${{ needs.set-release-version.outputs.version }}
@@ -154,7 +154,7 @@ jobs:
     needs: [ test, set-release-version ]
     with:
       build-target: Containerize_Delegations
-      build-project: OrganisationRegistry.Projections.Delegations
+      build-project: OrganisationRegistry.Projections.Delegations/
       image-file: projections-delegations.tar
       image-name: projections-delegations
       semver: ${{ needs.set-release-version.outputs.version }}
@@ -167,7 +167,7 @@ jobs:
     needs: [ test, set-release-version ]
     with:
       build-target: Containerize_Reporting
-      build-project: OrganisationRegistry.Projections.Reporting
+      build-project: OrganisationRegistry.Projections.Reporting/
       image-file: projections-reporting.tar
       image-name: projections-reporting
       semver: ${{ needs.set-release-version.outputs.version }}
@@ -180,7 +180,7 @@ jobs:
     needs: [ test, set-release-version ]
     with:
       build-target: Containerize_KboMutations
-      build-project: OrganisationRegistry.KboMutations
+      build-project: OrganisationRegistry.KboMutations/
       image-file: kbo-mutations.tar
       image-name: kbo-mutations
       semver: ${{ needs.set-release-version.outputs.version }}
@@ -193,7 +193,7 @@ jobs:
     needs: [ test, set-release-version ]
     with:
       build-target: Containerize_Rebuilder
-      build-project: OrganisationRegistry.Rebuilder
+      build-project: OrganisationRegistry.Rebuilder/
       image-file: rebuilder.tar
       image-name: rebuilder
       semver: ${{ needs.set-release-version.outputs.version }}
@@ -218,7 +218,7 @@ jobs:
     needs: [ set-release-version ]
     with:
       build-target: Containerize_AcmIdm
-      build-project: OrganisationRegistry.IdentityServer
+      build-project: OrganisationRegistry.IdentityServer/
       image-file: acmidm.tar
       image-name: acmidm
       semver: ${{ needs.set-release-version.outputs.version }}
