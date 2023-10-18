@@ -58,6 +58,10 @@ Target.create "CleanAll" (fun _ ->
 
 // Solution -----------------------------------------------------------------------
 
+Target.create "SetSolutionInfo" (fun _ ->
+  setVersions "SolutionInfo.cs"
+)
+
 Target.create "Restore_Solution" (fun _ -> restore "OrganisationRegistry")
 
 Target.create "Build_Solution" (fun _ ->
