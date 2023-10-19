@@ -1,3 +1,10 @@
+## [1.312.21](https://github.com/informatievlaanderen/organisation-registry/compare/v1.312.20...v1.312.21) (2023-10-19)
+
+
+### Bug Fixes
+
+* OR-1955 add cache paket for NuGet publish ([40a77e3](https://github.com/informatievlaanderen/organisation-registry/commit/40a77e3f1ad08fbe57b56b8454ff9812fe8ad514))
+
 ## [1.312.20](https://github.com/informatievlaanderen/organisation-registry/compare/v1.312.19...v1.312.20) (2023-10-19)
 
 
