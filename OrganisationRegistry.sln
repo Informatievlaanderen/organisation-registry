@@ -113,6 +113,31 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "setup-dotnet", "setup-dotne
 		.github\actions\setup-dotnet\action.yml = .github\actions\setup-dotnet\action.yml
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "cache-npm", "cache-npm", "{FA4917EB-E1C7-4C1E-BF1F-D2348978186F}"
+	ProjectSection(SolutionItems) = preProject
+		.github\actions\cache-npm\action.yml = .github\actions\cache-npm\action.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "cache-paket", "cache-paket", "{89E1C1FD-2F56-4329-B86C-259B0D94E0BD}"
+	ProjectSection(SolutionItems) = preProject
+		.github\actions\cache-paket\action.yml = .github\actions\cache-paket\action.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "cache-pip", "cache-pip", "{7E59232C-D113-41CB-82ED-C7D4E9D3554D}"
+	ProjectSection(SolutionItems) = preProject
+		.github\actions\cache-pip\action.yml = .github\actions\cache-pip\action.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "setup-nodejs", "setup-nodejs", "{167473E7-439E-4E86-B4A9-E39D1D0A666B}"
+	ProjectSection(SolutionItems) = preProject
+		.github\actions\setup-nodejs\action.yml = .github\actions\setup-nodejs\action.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "setup-python", "setup-python", "{AD9BBCB1-F46C-4DED-94E9-7B1ADED03F36}"
+	ProjectSection(SolutionItems) = preProject
+		.github\actions\setup-python\action.yml = .github\actions\setup-python\action.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -271,5 +296,10 @@ Global
 		{55759034-DCC0-4752-8B9B-9714644D47CB} = {01C5AB4B-0A8F-4ADD-809E-54FCC148B8BF}
 		{54C35C74-BED8-474C-9D1E-FDE6EF9BB64E} = {7CA3FAD8-5352-4788-9A94-6519B5BFBDD6}
 		{A2A8BD22-8030-4E9C-BB21-4219A1FD4FE2} = {54C35C74-BED8-474C-9D1E-FDE6EF9BB64E}
+		{FA4917EB-E1C7-4C1E-BF1F-D2348978186F} = {54C35C74-BED8-474C-9D1E-FDE6EF9BB64E}
+		{89E1C1FD-2F56-4329-B86C-259B0D94E0BD} = {54C35C74-BED8-474C-9D1E-FDE6EF9BB64E}
+		{7E59232C-D113-41CB-82ED-C7D4E9D3554D} = {54C35C74-BED8-474C-9D1E-FDE6EF9BB64E}
+		{167473E7-439E-4E86-B4A9-E39D1D0A666B} = {54C35C74-BED8-474C-9D1E-FDE6EF9BB64E}
+		{AD9BBCB1-F46C-4DED-94E9-7B1ADED03F36} = {54C35C74-BED8-474C-9D1E-FDE6EF9BB64E}
 	EndGlobalSection
 EndGlobal

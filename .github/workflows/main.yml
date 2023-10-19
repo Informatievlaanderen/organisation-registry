@@ -270,6 +270,10 @@ jobs:
         run: echo REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//") >> $GITHUB_ENV
         shell: bash
 
+      - name: Install NPM dependencies
+        shell: bash
+        run: npm install --legacy-peer-deps
+
       - name: Run Semantic Release
         shell: bash
         run: npx semantic-release
