@@ -309,7 +309,7 @@ jobs:
   publish_to_nuget:
     if: needs.release.outputs.version != 'none'
     needs: [ release ]
-    name: Publish to Atlassian
+    name: Publish to NuGet
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -317,6 +317,9 @@ jobs:
 
       - name: Setup nodejs
         uses: ./.github/actions/setup-nodejs
+
+      - name: Cache Paket
+        uses: ./.github/actions/cache-paket
 
       - name: Publish to NuGet
         shell: bash
