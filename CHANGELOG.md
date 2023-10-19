@@ -1,3 +1,11 @@
+## [1.312.22](https://github.com/informatievlaanderen/organisation-registry/compare/v1.312.21...v1.312.22) (2023-10-19)
+
+
+### Bug Fixes
+
+* OR-1955 changed cron expression ([8fde165](https://github.com/informatievlaanderen/organisation-registry/commit/8fde165e6663155bacac12836533847c43db0752))
+* OR-1955 nightly build and dropped NuGet publish ([7b1b1db](https://github.com/informatievlaanderen/organisation-registry/commit/7b1b1db12060fb8ae891fa7f02069b291377533e))
+
 ## [1.312.21](https://github.com/informatievlaanderen/organisation-registry/compare/v1.312.20...v1.312.21) (2023-10-19)
 
 
