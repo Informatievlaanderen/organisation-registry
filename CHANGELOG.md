@@ -1,3 +1,11 @@
+## [1.312.18](https://github.com/informatievlaanderen/organisation-registry/compare/v1.312.17...v1.312.18) (2023-10-19)
+
+
+### Bug Fixes
+
+* OR-1955 added correction for deploy and added nightly build workflow ([31e1a47](https://github.com/informatievlaanderen/organisation-registry/commit/31e1a47106d07e0c21db949b53d8159513650706))
+* OR-1955 added status badge for nightly build in README.md ([fc2b2f6](https://github.com/informatievlaanderen/organisation-registry/commit/fc2b2f6444676f5e543996700be0aa46f520ed96))
+
 ## [1.312.17](https://github.com/informatievlaanderen/organisation-registry/compare/v1.312.16...v1.312.17) (2023-10-19)
 
 
