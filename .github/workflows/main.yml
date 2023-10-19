@@ -299,14 +299,34 @@ jobs:
           echo RELEASE_VERSION=$(cat semver) >> $GITHUB_ENV
         shell: bash
 
-      - name: debug_output
+      - name: Debug Output
         shell: bash
         run: |
           echo 'BEGIN VERSION'
           echo ${{ steps.set-version.outputs.version }}
           echo 'END VERSION'
 
+  publish_to_nuget:
+    if: needs.release.outputs.version != 'none'
+    needs: [ release ]
+    name: Publish to Atlassian
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
 
+      - name: Setup nodejs
+        uses: ./.github/actions/setup-nodejs
+
+      - name: Publish to NuGet
+        shell: bash
+        run: |
+          node packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-nuget.js dist/nuget/$LIBNAME.Api.$SEMVER.nupkg
+        env:
+          LIBNAME: Be.Vlaanderen.Basisregisters.OrganisationRegistry
+          SEMVER: ${{ needs.release.outputs.version }}
+          NUGET_HOST: ${{ secrets.NUGET_HOST }}
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
 
   publish_to_atlassian:
     if: needs.release.outputs.version != 'none'
@@ -639,17 +659,6 @@ jobs:
           BUILD_DOCKER_REGISTRY_PRD: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_PRD }}
           SEMVER: ${{ needs.release.outputs.version }}
           WORKSPACE: ${{ github.workspace }}
-
-  #      - name: Publish to NuGet
-  #        if: needs.release.outputs.version != 'none'
-  #        shell: bash
-  #        run: |
-  #          node packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-nuget.js dist/nuget/$LIBNAME.Api.$SEMVER.nupkg
-  #        env:
-  #          LIBNAME: Be.Vlaanderen.Basisregisters.OrganisationRegistry
-  #          SEMVER: ${{ needs.release.outputs.version }}
-  #          NUGET_HOST: ${{ secrets.NUGET_HOST }}
-  #          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
 
   deploy_staging:
     needs:
