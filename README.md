@@ -1,4 +1,7 @@
-# Organisation Registry [![CI/CD](https://github.com/Informatievlaanderen/organisation-registry/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/Informatievlaanderen/organisation-registry/actions/workflows/main.yml)
+# Organisation Registry 
+
+[![Nightly Build](https://github.com/Informatievlaanderen/organisation-registry/actions/workflows/build-nightly.yml/badge.svg)](https://github.com/Informatievlaanderen/organisation-registry/actions/workflows/build-nightly.yml)
+[![CI/CD](https://github.com/Informatievlaanderen/organisation-registry/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/Informatievlaanderen/organisation-registry/actions/workflows/main.yml)
 
 ## Goal
 
