@@ -1,3 +1,10 @@
+## [1.312.20](https://github.com/informatievlaanderen/organisation-registry/compare/v1.312.19...v1.312.20) (2023-10-19)
+
+
+### Bug Fixes
+
+* OR-1955 add publish to nuget ([d7379c6](https://github.com/informatievlaanderen/organisation-registry/commit/d7379c66f8726a83c9264c6237f8ada863817bf5))
+
 ## [1.312.19](https://github.com/informatievlaanderen/organisation-registry/compare/v1.312.18...v1.312.19) (2023-10-19)
 
 
