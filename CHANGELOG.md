@@ -1,3 +1,10 @@
+## [1.312.19](https://github.com/informatievlaanderen/organisation-registry/compare/v1.312.18...v1.312.19) (2023-10-19)
+
+
+### Bug Fixes
+
+* OR-1955 run nightly build ([127cd95](https://github.com/informatievlaanderen/organisation-registry/commit/127cd95cdcb5cc863e4f703bd92e5778a15d30a6))
+
 ## [1.312.18](https://github.com/informatievlaanderen/organisation-registry/compare/v1.312.17...v1.312.18) (2023-10-19)
 
 
