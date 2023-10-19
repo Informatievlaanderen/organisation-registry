@@ -59,7 +59,8 @@ jobs:
 
       - name: Dotnet build
         shell: bash
-        run: dotnet build --no-restore --runtime 'linux-x64' --self-contained -f net6.0 src/${{ inputs.build-project }}
+        run: |
+          dotnet build --no-restore --os linux --arch x64 --self-contained true -f net6.0 src/${{ inputs.build-project }}/${{ inputs.build-project }}.csproj
 
       - name: Dotnet publish
         shell: bash
