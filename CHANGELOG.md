@@ -1,3 +1,19 @@
+## [1.312.16](https://github.com/informatievlaanderen/organisation-registry/compare/v1.312.15...v1.312.16) (2023-10-19)
+
+
+### Bug Fixes
+
+* or-1941 don't clean before every script ([f1c94e6](https://github.com/informatievlaanderen/organisation-registry/commit/f1c94e6a235f30944a79cca744dddf8ef4a2b6f8))
+* OR-1955 added folder for actions and action.yml for setup-dotnet ([6fd3c37](https://github.com/informatievlaanderen/organisation-registry/commit/6fd3c372d3c3c9c66b392b0936aafee8a1bda7f3))
+* OR-1955 cleanup in several jobs and steps ([e199e67](https://github.com/informatievlaanderen/organisation-registry/commit/e199e67b7d9c6d72713327b065c13a6acaf622ca))
+* or-1955 correct path to identityserver ([6849f1e](https://github.com/informatievlaanderen/organisation-registry/commit/6849f1ee3aff9dbcace756c43a721a08c4eb54f9))
+* OR-1955 deduplicated push to staging and production ([08013dd](https://github.com/informatievlaanderen/organisation-registry/commit/08013dd36bd5885e6a227990220ae48f3d857bac))
+* OR-1955 install npm dependencies before semantic release ([c49ef19](https://github.com/informatievlaanderen/organisation-registry/commit/c49ef199323b8eeaab7ee8807e3e47292087024c))
+* OR-1955 move token generator into higher level and reuse token ([01ceb3a](https://github.com/informatievlaanderen/organisation-registry/commit/01ceb3a5a49f118047565be17016f1ef86c9a5b5))
+* OR-1955 removed trailing slashes in project names ([0ef64f2](https://github.com/informatievlaanderen/organisation-registry/commit/0ef64f273903ccbaa9da4c61ad36d6198308cab6))
+* or-1955 setup node before generating token ([60d45d8](https://github.com/informatievlaanderen/organisation-registry/commit/60d45d8b1e15f6ea140d7ebbfc9f7a3899f90bb6))
+* OR-1955 updated build statement to allow self-contained ([c5efc08](https://github.com/informatievlaanderen/organisation-registry/commit/c5efc081be4516771a9908807312a893f5470cbb))
+
 ## [1.312.15](https://github.com/informatievlaanderen/organisation-registry/compare/v1.312.14...v1.312.15) (2023-10-17)
 
 
