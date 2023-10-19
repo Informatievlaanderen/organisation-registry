@@ -306,6 +306,7 @@ jobs:
           echo ${{ steps.set-version.outputs.version }}
           echo 'END VERSION'
 
+
   publish_to_atlassian:
     if: needs.release.outputs.version != 'none'
     needs: [ release ]
@@ -672,7 +673,9 @@ jobs:
   #          JIRA_VERSION: ${{ needs.release.outputs.version }}
 
   deploy_staging:
-    needs: push_images_to_staging
+    needs:
+      - release
+      - push_images_to_staging
     name: Deploy to Staging
     runs-on: ubuntu-latest
     strategy:

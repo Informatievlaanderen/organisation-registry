@@ -1,0 +1,304 @@
+name: Nightly Build
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # Runs every night at midnight UTC
+
+jobs:
+
+  set-release-version:
+    if: github.repository_owner == 'Informatievlaanderen'
+    name: Decide next version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.set-version.outputs.version }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: ./.github/actions/setup-nodejs
+
+      - name: Run Semantic Release dry-run
+        shell: bash
+        run: npx semantic-release --dry-run
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY }}
+          GITHUB_TOKEN: ${{ secrets.VBR_ACTIONS_TOKEN }}
+          GIT_COMMIT: ${{ github.sha }}
+          GIT_USERNAME: ${{ secrets.VBR_GIT_USER }}
+          GIT_AUTHOR_NAME: ${{ secrets.VBR_GIT_USER }}
+          GIT_COMMITTER_NAME: ${{ secrets.VBR_GIT_USER }}
+          GIT_EMAIL: ${{ secrets.VBR_GIT_EMAIL }}
+          GIT_AUTHOR_EMAIL: ${{ secrets.VBR_GIT_EMAIL }}
+          GIT_COMMITTER_EMAIL: ${{ secrets.VBR_GIT_EMAIL }}
+
+      - name: Set Release Version
+        id: set-version
+        run: |
+          [ ! -f semver ] && echo none > semver
+          echo $(cat semver)
+          echo ::set-output name=version::$(cat semver)
+          echo RELEASE_VERSION=$(cat semver) >> $GITHUB_ENV
+        shell: bash
+
+  test:
+    if: github.repository_owner == 'Informatievlaanderen'
+    name: Test
+    runs-on: ubuntu-latest
+    needs: [ set-release-version ]
+    services:
+      sqlserver:
+        image: mcr.microsoft.com/mssql/server:latest
+        env:
+          ACCEPT_EULA: Y
+          SA_PASSWORD: E@syP@ssw0rd
+          MSSQL_TCP_PORT: 21433
+        ports:
+          - 21433:21433
+      acm:
+        image: ghcr.io/informatievlaanderen/acmidm:1.253.0
+        ports:
+          - 5050:80
+      wiremock:
+        image: ghcr.io/informatievlaanderen/wiremock:main
+        ports:
+          - 8080:8080
+      opensearch:
+        image: opensearchproject/opensearch:1.1.0
+        env:
+          discovery.type: single-node
+          DISABLE_SECURITY_PLUGIN: true
+        ports:
+          - 9200:9200
+          - 9600:9600
+
+    outputs:
+      version: ${{ steps.set-version.outputs.version }}
+      test: "test"
+
+    steps:
+
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup .NET Core
+        uses: ./.github/actions/setup-dotnet
+
+      - name: Parse repository name
+        run: echo REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//") >> $GITHUB_ENV
+        shell: bash
+
+      - name: Test Solution
+        shell: bash
+        run: ./build.sh Test_Solution
+
+  build-api:
+    name: Build api
+    uses: ./.github/workflows/build-image.yml
+    if: github.repository_owner == 'Informatievlaanderen' && needs.set-release-version.outputs.version != 'none'
+    needs: [ test, set-release-version ]
+    with:
+      build-target: Containerize_Api
+      build-project: OrganisationRegistry.Api
+      image-file: api.tar
+      image-name: api
+      semver: ${{ needs.set-release-version.outputs.version }}
+    secrets: inherit
+
+  build-agentschapzorgengezondheidftpdump:
+    name: Build batch-agentschapzorgengezondheidftpdump
+    uses: ./.github/workflows/build-image.yml
+    if: github.repository_owner == 'Informatievlaanderen' && needs.set-release-version.outputs.version != 'none'
+    needs: [ test, set-release-version ]
+    with:
+      build-target: Containerize_AgentschapZorgEnGezondheid
+      build-project: OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump
+      image-file: batch-agentschapzorgengezondheidftpdump.tar
+      image-name: batch-agentschapzorgengezondheidftpdump
+      semver: ${{ needs.set-release-version.outputs.version }}
+    secrets: inherit
+
+  build-vlaanderenbe:
+    name: Build batch-vlaanderenbe
+    uses: ./.github/workflows/build-image.yml
+    if: github.repository_owner == 'Informatievlaanderen' && needs.set-release-version.outputs.version != 'none'
+    needs: [ test, set-release-version ]
+    with:
+      build-target: Containerize_VlaanderenBeNotifier
+      build-project: OrganisationRegistry.VlaanderenBeNotifier
+      image-file: batch-vlaanderenbe.tar
+      image-name: batch-vlaanderenbe
+      semver: ${{ needs.set-release-version.outputs.version }}
+    secrets: inherit
+
+  build-projections-elasticsearch:
+    name: Build elasticsearch projections
+    uses: ./.github/workflows/build-image.yml
+    if: github.repository_owner == 'Informatievlaanderen' && needs.set-release-version.outputs.version != 'none'
+    needs: [ test, set-release-version ]
+    with:
+      build-target: Containerize_ElasticSearch
+      build-project: OrganisationRegistry.ElasticSearch.Projections
+      image-file: projections-elasticsearch.tar
+      image-name: projections-elasticsearch
+      semver: ${{ needs.set-release-version.outputs.version }}
+    secrets: inherit
+
+  build-projections-delegations:
+    name: Build delegations
+    uses: ./.github/workflows/build-image.yml
+    if: github.repository_owner == 'Informatievlaanderen' && needs.set-release-version.outputs.version != 'none'
+    needs: [ test, set-release-version ]
+    with:
+      build-target: Containerize_Delegations
+      build-project: OrganisationRegistry.Projections.Delegations
+      image-file: projections-delegations.tar
+      image-name: projections-delegations
+      semver: ${{ needs.set-release-version.outputs.version }}
+    secrets: inherit
+
+  build-projections-reporting:
+    name: Build reporting
+    uses: ./.github/workflows/build-image.yml
+    if: github.repository_owner == 'Informatievlaanderen' && needs.set-release-version.outputs.version != 'none'
+    needs: [ test, set-release-version ]
+    with:
+      build-target: Containerize_Reporting
+      build-project: OrganisationRegistry.Projections.Reporting
+      image-file: projections-reporting.tar
+      image-name: projections-reporting
+      semver: ${{ needs.set-release-version.outputs.version }}
+    secrets: inherit
+
+  build-kbo-mutations:
+    name: Build kbo-mutations
+    uses: ./.github/workflows/build-image.yml
+    if: github.repository_owner == 'Informatievlaanderen' && needs.set-release-version.outputs.version != 'none'
+    needs: [ test, set-release-version ]
+    with:
+      build-target: Containerize_KboMutations
+      build-project: OrganisationRegistry.KboMutations
+      image-file: kbo-mutations.tar
+      image-name: kbo-mutations
+      semver: ${{ needs.set-release-version.outputs.version }}
+    secrets: inherit
+
+  build-rebuilder:
+    name: Build rebuilder
+    uses: ./.github/workflows/build-image.yml
+    if: github.repository_owner == 'Informatievlaanderen' && needs.set-release-version.outputs.version != 'none'
+    needs: [ test, set-release-version ]
+    with:
+      build-target: Containerize_Rebuilder
+      build-project: OrganisationRegistry.Rebuilder
+      image-file: rebuilder.tar
+      image-name: rebuilder
+      semver: ${{ needs.set-release-version.outputs.version }}
+    secrets: inherit
+
+  build-ui:
+    name: Build site
+    uses: ./.github/workflows/build-site-image.yml
+    if: github.repository_owner == 'Informatievlaanderen' && needs.set-release-version.outputs.version != 'none'
+    needs: [ set-release-version ]
+    with:
+      build-target: Containerize_Site
+      image-file: ui.tar
+      image-name: ui
+      semver: ${{ needs.set-release-version.outputs.version }}
+    secrets: inherit
+
+  build-acm-idm:
+    name: Build acm idm
+    uses: ./.github/workflows/build-image.yml
+    if: github.repository_owner == 'Informatievlaanderen' && needs.set-release-version.outputs.version != 'none'
+    needs: [ set-release-version ]
+    with:
+      build-target: Containerize_AcmIdm
+      build-project: IdentityServer
+      image-file: acmidm.tar
+      image-name: acmidm
+      semver: ${{ needs.set-release-version.outputs.version }}
+    secrets: inherit
+
+  notify-success:
+    if: ${{ success() }}
+    name: Notify Slack of Success
+    runs-on: ubuntu-latest
+    needs:
+      - test
+      - build-api
+      - build-agentschapzorgengezondheidftpdump
+      - build-vlaanderenbe
+      - build-projections-elasticsearch
+      - build-projections-delegations
+      - build-projections-reporting
+      - build-kbo-mutations
+      - build-rebuilder
+      - build-ui
+      - build-acm-idm
+    steps:
+      - name: Post to Slack
+        id: slack
+        uses: slackapi/slack-github-action@v1.21.0
+        with:
+          channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
+          slack-message: ":thumbsup: Nightly build succeeded: \n
+          ${{github.event.head_commit.url }} \n
+          ${{format('{0}: {1}', 'test', needs.test.result) }}\n
+          ${{format('{0}: {1}', 'build-api', needs.build-api.result) }}\n
+          ${{format('{0}: {1}', 'build-agentschapzorgengezondheidftpdump', needs.build-agentschapzorgengezondheidftpdump.result) }}\n
+          ${{format('{0}: {1}', 'build-vlaanderenbe', needs.build-vlaanderenbe.result) }}\n
+          ${{format('{0}: {1}', 'build-projections-elasticsearch', needs.build-projections-elasticsearch.result) }}\n
+          ${{format('{0}: {1}', 'build-projections-delegations', needs.build-projections-delegations.result) }}\n
+          ${{format('{0}: {1}', 'build-projections-reporting', needs.build-projections-reporting.result) }}\n
+          ${{format('{0}: {1}', 'build-kbo-mutations', needs.build-kbo-mutations.result) }}\n
+          ${{format('{0}: {1}', 'build-rebuilder', needs.build-rebuilder.result) }}\n
+          ${{format('{0}: {1}', 'build-ui', needs.build-ui.result) }}\n
+          ${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+
+  notify-failure:
+    if: ${{ failure() }}
+    name: Notify Slack of Failure
+    runs-on: ubuntu-latest
+    needs:
+      - test
+      - build-api
+      - build-agentschapzorgengezondheidftpdump
+      - build-vlaanderenbe
+      - build-projections-elasticsearch
+      - build-projections-delegations
+      - build-projections-reporting
+      - build-kbo-mutations
+      - build-rebuilder
+      - build-ui
+      - build-acm-idm
+    steps:
+      - name: Post to Slack
+        id: slack
+        uses: slackapi/slack-github-action@v1.21.0
+        with:
+          # Slack channel id, channel name, or user id to post message.
+          # See also: https://api.slack.com/methods/chat.postMessage#channels
+          channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
+          # For posting a simple plain text message
+          slack-message: ":thumbsdown: Nightly build failed some checks: \n
+          ${{github.event.head_commit.url }} \n
+          ${{format('{0}: {1}', 'test', needs.test.result) }}\n
+          ${{format('{0}: {1}', 'build-api', needs.build-api.result) }}\n
+          ${{format('{0}: {1}', 'build-agentschapzorgengezondheidftpdump', needs.build-agentschapzorgengezondheidftpdump.result) }}\n
+          ${{format('{0}: {1}', 'build-vlaanderenbe', needs.build-vlaanderenbe.result) }}\n
+          ${{format('{0}: {1}', 'build-projections-elasticsearch', needs.build-projections-elasticsearch.result) }}\n
+          ${{format('{0}: {1}', 'build-projections-delegations', needs.build-projections-delegations.result) }}\n
+          ${{format('{0}: {1}', 'build-projections-reporting', needs.build-projections-reporting.result) }}\n
+          ${{format('{0}: {1}', 'build-kbo-mutations', needs.build-kbo-mutations.result) }}\n
+          ${{format('{0}: {1}', 'build-rebuilder', needs.build-rebuilder.result) }}\n
+          ${{format('{0}: {1}', 'build-ui', needs.build-ui.result) }}\n
+          ${{format('{0}: {1}', 'build-acm-idm', needs.build-acm-idm.result) }}\n
+          ${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
