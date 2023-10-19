@@ -1,3 +1,10 @@
+## [1.312.17](https://github.com/informatievlaanderen/organisation-registry/compare/v1.312.16...v1.312.17) (2023-10-19)
+
+
+### Bug Fixes
+
+* OR-1955 incorrect output source for deployment ([f32d43f](https://github.com/informatievlaanderen/organisation-registry/commit/f32d43f45af2b7c8545a5a350c1d90564f329bd5))
+
 ## [1.312.16](https://github.com/informatievlaanderen/organisation-registry/compare/v1.312.15...v1.312.16) (2023-10-19)
 
 
