@@ -1,3 +1,11 @@
+## [1.312.23](https://github.com/informatievlaanderen/organisation-registry/compare/v1.312.22...v1.312.23) (2023-10-25)
+
+
+### Bug Fixes
+
+* OR-1958 add manual trigger on the nightly ([#1219](https://github.com/informatievlaanderen/organisation-registry/issues/1219)) ([c7f9451](https://github.com/informatievlaanderen/organisation-registry/commit/c7f9451a3aa903eaff3880ccbe712b6fb4338ed2))
+* OR-1958 set nightly build version to match semver ([#1218](https://github.com/informatievlaanderen/organisation-registry/issues/1218)) ([124278d](https://github.com/informatievlaanderen/organisation-registry/commit/124278dde29b31e6e9b07a5dc4f7ddb42bf66be9))
+
 ## [1.312.22](https://github.com/informatievlaanderen/organisation-registry/compare/v1.312.21...v1.312.22) (2023-10-19)
 
 
