@@ -1,3 +1,10 @@
+## [1.312.24](https://github.com/informatievlaanderen/organisation-registry/compare/v1.312.23...v1.312.24) (2023-10-25)
+
+
+### Bug Fixes
+
+* OR-1956 add nightly build ([ac01a0f](https://github.com/informatievlaanderen/organisation-registry/commit/ac01a0fdc5d88b1b4a4bc3c7f56099af7eff7fa8))
+
 ## [1.312.23](https://github.com/informatievlaanderen/organisation-registry/compare/v1.312.22...v1.312.23) (2023-10-25)
 
 
