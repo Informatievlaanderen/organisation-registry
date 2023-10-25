@@ -16,7 +16,7 @@ jobs:
       - name: Set Release Version
         id: set-version
         run: |
-          echo $(date +%Y%m%d)-nightly > semver
+          echo $(date +%Y).$(date +%m).$(date +%d) > semver
           echo $(cat semver)
           echo ::set-output name=version::$(cat semver)
           echo RELEASE_VERSION=$(cat semver) >> $GITHUB_ENV
