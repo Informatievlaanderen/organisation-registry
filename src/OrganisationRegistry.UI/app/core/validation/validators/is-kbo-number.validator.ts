@@ -5,7 +5,7 @@ export function isKboNumber(control: AbstractControl): { [key: string]: boolean 
     return { 'invalidKboNumber': true };
   }
 
-  let pattern = /^0(([0-9]){3}\.?){2}([0-9]){3}$/;
+  let pattern = /^[01](([0-9]){3}\.?){2}([0-9]){3}$/;
   let stringvalue = control.value.toString();
 
   if (!stringvalue.match(pattern))
