@@ -1,3 +1,10 @@
+## [1.312.25](https://github.com/informatievlaanderen/organisation-registry/compare/v1.312.24...v1.312.25) (2024-01-05)
+
+
+### Bug Fixes
+
+* or-2025 allow kbo nr to start with 1 ([d642391](https://github.com/informatievlaanderen/organisation-registry/commit/d6423910a28f9d2b5d7ffb18396ab9589b232d7d))
+
 ## [1.312.24](https://github.com/informatievlaanderen/organisation-registry/compare/v1.312.23...v1.312.24) (2023-10-25)
 
 
