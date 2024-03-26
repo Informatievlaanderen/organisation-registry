@@ -10,7 +10,7 @@ services:
     volumes:
       - mssql-data:/var/opt/mssql
   es:
-    image: opensearchproject/opensearch:1.1.0
+    image: opensearchproject/opensearch:2.11.1
     environment:
       discovery.type: 'single-node'
       DISABLE_SECURITY_PLUGIN: true
