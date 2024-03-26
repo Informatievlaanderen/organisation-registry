@@ -39,6 +39,10 @@ Autofac.Extensions.DependencyInjection
 Newtonsoft.Json
 
 CsvHelper
+
+OpenSearch.Client
+OpenSearch.Net
+
 System.Diagnostics.DiagnosticSource
 
 Serilog
