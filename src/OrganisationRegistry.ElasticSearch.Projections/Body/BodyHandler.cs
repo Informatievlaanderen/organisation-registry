@@ -18,7 +18,7 @@ using LifecyclePhaseType.Events;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Osc;
+using OpenSearch.Client;
 using Organisation.Events;
 using Person.Events;
 using SeatType.Events;

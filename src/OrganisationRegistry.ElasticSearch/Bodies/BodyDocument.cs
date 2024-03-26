@@ -1,10 +1,10 @@
 namespace OrganisationRegistry.ElasticSearch.Bodies;
 
 using Common;
-using Osc;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using OpenSearch.Client;
 
 public class BodyDocument : IDocument
 {

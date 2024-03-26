@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Client;
 using Infrastructure.Events;
-using Osc;
+using OpenSearch.Client;
 using Projections.Infrastructure;
 using Projections.Infrastructure.Change;
 
