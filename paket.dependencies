@@ -67,6 +67,9 @@ nuget RestSharp 107.3.0
 nuget IdentityModel 6.0.0
 nuget EPPlus 5.5.2
 
+nuget OpenSearch.Client 1.1.0
+nuget OpenSearch.Net 1.1.0
+
 nuget Serilog.Sinks.Literate 3.0.0 // TODO: This can be removed eventually
 
 nuget Microsoft.EntityFrameworkCore.Design 6.0.3
