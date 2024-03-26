@@ -6,7 +6,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Osc\Osc.csproj" />
+    <PackageReference Include="OpenSearch.Client" Version="1.1.0" />
+    <PackageReference Include="OpenSearch.Net" Version="1.1.0" />
   </ItemGroup>
 
   <Import Project="..\..\.paket\Paket.Restore.targets" />

@@ -1,7 +1,7 @@
 namespace OrganisationRegistry.ElasticSearch.Common;
 
 using System;
-using Osc;
+using OpenSearch.Client;
 
 public class Period
 {

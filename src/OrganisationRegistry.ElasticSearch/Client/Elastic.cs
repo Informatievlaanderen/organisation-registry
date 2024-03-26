@@ -6,7 +6,7 @@ using Bodies;
 using Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Osc;
+using OpenSearch.Client;
 using Organisations;
 using People;
 using Polly;

@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 using Infrastructure;
 using OrganisationRegistry.Api.Infrastructure.Search.Sorting;
 using ElasticSearch.Organisations;
+using OpenSearch.Client;
 using OrganisationRegistry.Infrastructure.Configuration;
-using Osc;
 using SortOrder = Infrastructure.Search.Sorting.SortOrder;
 
 public class CapacityPerson
