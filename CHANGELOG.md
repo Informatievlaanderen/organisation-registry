@@ -1,3 +1,10 @@
+# [1.314.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.313.1...v1.314.0) (2024-04-02)
+
+
+### Features
+
+* try to improve first org creation perf ([1f3367b](https://github.com/informatievlaanderen/organisation-registry/commit/1f3367b7ccbf443f96f871fd5fd1824014451df9))
+
 ## [1.313.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.313.0...v1.313.1) (2024-04-02)
 
 
