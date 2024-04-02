@@ -1,6 +1,6 @@
 namespace OrganisationRegistry.ElasticSearch.Common;
 
-using OpenSearch.Client;
+using Osc;
 
 public static class FormatErrorHelper
 {

@@ -23,8 +23,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using OpenSearch.Client;
 using OrganisationRegistry.Infrastructure.Infrastructure.Json;
+using Osc;
 
 public class ElasticSearchFacade
 {

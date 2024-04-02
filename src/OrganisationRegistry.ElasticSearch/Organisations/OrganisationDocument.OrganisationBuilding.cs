@@ -2,8 +2,8 @@
 
 using System;
 using Common;
+using Osc;
 using Newtonsoft.Json;
-using OpenSearch.Client;
 
 public partial class OrganisationDocument
 {

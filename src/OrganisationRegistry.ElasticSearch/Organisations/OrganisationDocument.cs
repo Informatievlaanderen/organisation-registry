@@ -1,9 +1,9 @@
 namespace OrganisationRegistry.ElasticSearch.Organisations;
 
+using Osc;
 using System;
 using System.Collections.Generic;
 using Common;
-using OpenSearch.Client;
 
 public partial class OrganisationDocument : IDocument
 {

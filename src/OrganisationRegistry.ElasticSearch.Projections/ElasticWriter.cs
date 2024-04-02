@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Client;
 using Microsoft.Extensions.Logging;
-using OpenSearch.Client;
+using Osc;
 
 public static class ElasticWriter
 {

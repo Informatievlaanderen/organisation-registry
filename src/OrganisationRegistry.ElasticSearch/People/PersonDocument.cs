@@ -1,9 +1,9 @@
 ﻿namespace OrganisationRegistry.ElasticSearch.People;
 
+using Osc;
 using System;
 using System.Collections.Generic;
 using Common;
-using OpenSearch.Client;
 
 public class PersonDocument : IDocument
 {

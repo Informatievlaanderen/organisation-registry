@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Cache;
 using Common;
+using ElasticSearch.Organisations;
 using ElasticSearch.People;
 using Function.Events;
 using Infrastructure;

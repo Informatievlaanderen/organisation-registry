@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OpenSearch.Client;
 using OrganisationRegistry.Tests.Shared;
+using Osc;
 using SqlServer;
 using SqlServer.Infrastructure;
 

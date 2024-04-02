@@ -1,7 +1,8 @@
 ﻿namespace OrganisationRegistry.ElasticSearch.Client;
 
-using OpenSearch.Client;
+using System;
 using Organisations;
+using Osc;
 
 public static class ThrowOnFailureExtension
 {
