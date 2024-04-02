@@ -1,3 +1,12 @@
+## [1.313.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.313.0...v1.313.1) (2024-04-02)
+
+
+### Reverts
+
+* Revert "feat: or-2146 move osc to nuget lib" ([86a95ed](https://github.com/informatievlaanderen/organisation-registry/commit/86a95ed66276cf033c59f362a7c5f487e7eb1d33))
+* Revert "feat: or-2146 use paket and rm original sources" ([4e80306](https://github.com/informatievlaanderen/organisation-registry/commit/4e80306162cedbabba08dd58080a5419b6f1a1fd))
+* Revert "feat: or-2146 upgrade opensearch server in compose file" ([84f1070](https://github.com/informatievlaanderen/organisation-registry/commit/84f1070aaef84d74cb975bdf735cdc99559aea9e))
+
 # [1.313.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.312.25...v1.313.0) (2024-03-26)
 
 
