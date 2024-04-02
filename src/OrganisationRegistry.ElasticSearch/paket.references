@@ -6,9 +6,6 @@ Polly
 
 Newtonsoft.Json
 
-OpenSearch.Client
-OpenSearch.Net
-
 Serilog
 Serilog.Formatting.Compact
 
