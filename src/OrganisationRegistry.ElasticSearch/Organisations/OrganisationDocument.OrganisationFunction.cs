@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 using Common;
-using OpenSearch.Client;
+using Osc;
 
 public partial class OrganisationDocument
 {

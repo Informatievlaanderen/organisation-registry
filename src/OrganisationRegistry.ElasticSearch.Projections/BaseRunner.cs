@@ -2,6 +2,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -11,8 +12,8 @@ using Infrastructure;
 using Infrastructure.Change;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OpenSearch.Client;
 using OpenTelemetry;
+using Osc;
 using OrganisationRegistry.Infrastructure.Events;
 using SqlServer;
 using SqlServer.ElasticSearchProjections;

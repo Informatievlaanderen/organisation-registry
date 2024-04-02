@@ -12,9 +12,9 @@ using Infrastructure;
 using Infrastructure.Change;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OpenSearch.Client;
 using OrganisationRegistry.Infrastructure.Events;
 using OrganisationRegistry.Person.Events;
+using Osc;
 using SqlServer;
 
 public class Person : BaseProjection<Person>,

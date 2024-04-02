@@ -2,7 +2,7 @@
 
 using System;
 using Common;
-using OpenSearch.Client;
+using Osc;
 
 public partial class OrganisationDocument
 {

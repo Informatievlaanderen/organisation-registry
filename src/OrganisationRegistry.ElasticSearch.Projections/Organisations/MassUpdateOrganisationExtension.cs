@@ -4,9 +4,9 @@ using System;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Client;
+using Osc;
 using ElasticSearch.Organisations;
 using Location.Events;
-using OpenSearch.Client;
 
 public static class MassUpdateOrganisationExtension
 {
