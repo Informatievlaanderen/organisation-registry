@@ -1,3 +1,19 @@
+# [1.315.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.314.0...v1.315.0) (2024-04-03)
+
+
+### Bug Fixes
+
+* push ecr devops images ([a9735bf](https://github.com/informatievlaanderen/organisation-registry/commit/a9735bfe4f340ad9b3f5ce05d820a5d967fbf9bf))
+* update access key and secret key ([55aeb2d](https://github.com/informatievlaanderen/organisation-registry/commit/55aeb2dce10822fa2512900cb7183e99ab862a0c))
+* use correct environment parameter inside workflow ([fa388f2](https://github.com/informatievlaanderen/organisation-registry/commit/fa388f209130afc47cd53ad0ce5849c80f165158))
+
+
+### Features
+
+* add workflow with prd-new target ([61cc893](https://github.com/informatievlaanderen/organisation-registry/commit/61cc89370f9d6c76d2f531e1527500071f645a42))
+* support scheduled tasks from workflow ([89a5f2c](https://github.com/informatievlaanderen/organisation-registry/commit/89a5f2cf36d978a225fd16b3708e78ec8d9106e4))
+* support scheduled tasks from workflow ([7b1cc1c](https://github.com/informatievlaanderen/organisation-registry/commit/7b1cc1c469fb5f5462cb1b5024aa8dab3abe92d1))
+
 # [1.314.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.313.1...v1.314.0) (2024-04-02)
 
 
