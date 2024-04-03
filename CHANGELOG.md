@@ -1,3 +1,10 @@
+## [1.315.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.315.0...v1.315.1) (2024-04-03)
+
+
+### Bug Fixes
+
+* split deployment to production and devops ([68d6c32](https://github.com/informatievlaanderen/organisation-registry/commit/68d6c32fac6b05478aa99629f8485090e7b6723c))
+
 # [1.315.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.314.0...v1.315.0) (2024-04-03)
 
 
