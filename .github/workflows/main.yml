@@ -638,6 +638,111 @@ jobs:
           SEMVER: ${{ needs.release.outputs.version }}
           WORKSPACE: ${{ github.workspace }}
 
+  push_images_to_devops:
+    if: needs.release.outputs.version != 'none'
+    needs: [ release ]
+    name: Push images to DevOps
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: debug_output
+        shell: bash
+        run: |
+          echo needs.release.outputs.version: ${{ needs.release.outputs.version }}
+
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Download api artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: api
+          path: ~/
+
+      - name: Load Api image
+        shell: bash
+        run: docker image load -i ~/api.tar
+
+      - name: Download batch-agentschapzorgengezondheidftpdump artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: batch-agentschapzorgengezondheidftpdump
+          path: ~/
+
+      - name: Load batch-agentschapzorgengezondheidftpdump image
+        shell: bash
+        run: docker image load -i ~/batch-agentschapzorgengezondheidftpdump.tar
+
+      - name: Download batch-vlaanderenbe artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: batch-vlaanderenbe
+          path: ~/
+
+      - name: Load batch-vlaanderenbe image
+        shell: bash
+        run: docker image load -i ~/batch-vlaanderenbe.tar
+
+      - name: Download projections-elasticsearch artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: projections-elasticsearch
+          path: ~/
+
+      - name: Load projections-elasticsearch image
+        shell: bash
+        run: docker image load -i ~/projections-elasticsearch.tar
+
+      - name: Download projections-delegations artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: projections-delegations
+          path: ~/
+
+      - name: Load projections-delegations image
+        shell: bash
+        run: docker image load -i ~/projections-delegations.tar
+
+      - name: Download projections-reporting artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: projections-reporting
+          path: ~/
+
+      - name: Load projections-reporting image
+        shell: bash
+        run: docker image load -i ~/projections-reporting.tar
+
+      - name: Download kbo-mutations artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: kbo-mutations
+          path: ~/
+
+      - name: Load kbo-mutations image
+        shell: bash
+        run: docker image load -i ~/kbo-mutations.tar
+
+      - name: Download ui artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: ui
+          path: ~/
+
+      - name: Load ui image
+        shell: bash
+        run: docker image load -i ~/ui.tar
+
+      - name: Download rebuilder artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: rebuilder
+          path: ~/
+
+      - name: Load rebuilder image
+        shell: bash
+        run: docker image load -i ~/rebuilder.tar
+
       - name: Configure AWS credentials (DevOps)
         if: needs.release.outputs.version != 'none'
         uses: aws-actions/configure-aws-credentials@v4.0.2
