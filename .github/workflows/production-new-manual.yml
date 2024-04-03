@@ -14,14 +14,9 @@ jobs:
       matrix:
         services:
           [
-              'organisation-registry-api',
-              'organisation-registry-delegations',
-              'organisation-registry-elasticsearch',
-              'organisation-registry-kbomutations',
-              'organisation-registry-reporting',
-              'organisation-registry-ui',
-              'organisation-registry-vlaanderenbe',
-              'organisation-registry-zorgengezondheid',
+              'organisation-elasticsearch',
+              'organisation-ui',
+              'organisation-api',
           ]
     steps:
       - name: CD
@@ -36,13 +31,51 @@ jobs:
           deploy-url: $BUILD_URL
           access-key: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_DEVOPS }}
           secret-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_DEVOPS }}
-          region: eu-west-1
           interval: 2
           deploy-target: 'agb_ecs_service'
           domain: 'basisregisters'
           project: 'basisregisters'
 
       - name: Output CD services
+        shell: bash
+        run: |
+          echo build-uuid: ${{ steps.awscurl-polling-action.outputs.build-uuid }}
+          echo Status: ${{ steps.awscurl-polling-action.outputs.status }}
+          echo ${{ steps.awscurl-polling-action.outputs.final-message }}
+
+  deploy_tasks:
+    if: github.repository_owner == 'Informatievlaanderen'
+    needs: [deploy_start_slack]
+    name: Deploy tasks
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        services: [
+          'organisation-delegations',
+          'organisation-kbomutations',
+          'organisation-reporting',
+          'organisation-vlaanderenbe',
+          'organisation-zorgengezondheid',
+        ]
+    steps:
+      - name: CD services
+        env:
+          BUILD_URL: ${{ vars.VBR_AWS_BUILD_API_DEVOPS }}/${{matrix.services}}
+          STATUS_URL: ${{ vars.VBR_AWS_BUILD_STATUS_API_DEVOPS }}/${{matrix.services}}
+        uses: informatievlaanderen/awscurl-polling-action/polling-action@main
+        with:
+          environment: ${{ github.event.inputs.environment == 'tst' && 'tst' || github.event.inputs.environment == 'prd' && 'prd' || github.event.inputs.environment }}
+          version: ${{ github.event.inputs.version }}
+          status-url: $STATUS_URL
+          deploy-url: $BUILD_URL
+          access-key: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_DEVOPS }}
+          secret-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_DEVOPS }}
+          interval: 2
+          deploy-target: 'ecs_scheduled_task'
+          domain: 'basisregisters'
+          project: 'basisregisters'
+
+      - name: Output CD tasks
         shell: bash
         run: |
           echo build-uuid: ${{ steps.awscurl-polling-action.outputs.build-uuid }}
