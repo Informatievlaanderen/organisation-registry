@@ -8,8 +8,9 @@ on:
         required: true
 
 jobs:
-  deployment:
+  deploy_services:
     runs-on: ubuntu-latest
+    name: Deploy services
     strategy:
       matrix:
         services:
@@ -63,7 +64,7 @@ jobs:
           STATUS_URL: ${{ vars.VBR_AWS_BUILD_STATUS_API_DEVOPS }}/${{matrix.services}}
         uses: informatievlaanderen/awscurl-polling-action/polling-action@main
         with:
-          environment: ${{ github.event.inputs.environment == 'tst' && 'tst' || github.event.inputs.environment == 'prd' && 'prd' || github.event.inputs.environment }}
+          environment: prd
           version: ${{ github.event.inputs.version }}
           status-url: $STATUS_URL
           deploy-url: $BUILD_URL
