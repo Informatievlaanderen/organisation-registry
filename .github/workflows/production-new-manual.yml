@@ -45,7 +45,6 @@ jobs:
 
   deploy_tasks:
     if: github.repository_owner == 'Informatievlaanderen'
-    needs: [deploy_start_slack]
     name: Deploy tasks
     runs-on: ubuntu-latest
     strategy:
