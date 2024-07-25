@@ -1,3 +1,16 @@
+# [1.317.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.316.2...v1.317.0) (2024-07-25)
+
+
+### Bug Fixes
+
+* or-2282 main workflow syntax error ([4c3b3b3](https://github.com/informatievlaanderen/organisation-registry/commit/4c3b3b39f69f40a375332fa8cc378b8d2f027cf6))
+* or-2282 optimized github workflow ([332d43d](https://github.com/informatievlaanderen/organisation-registry/commit/332d43d706d3ebb1aa4bd0602f55bbf37c20c83e))
+
+
+### Features
+
+* or-2282 migrate staging environment to new AWS setup ([e00d4f9](https://github.com/informatievlaanderen/organisation-registry/commit/e00d4f9eecc622634956703be26b72a3adc37cd6))
+
 ## [1.316.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.316.1...v1.316.2) (2024-07-25)
 
 
