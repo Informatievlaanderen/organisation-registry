@@ -1,3 +1,15 @@
+# [1.316.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.315.1...v1.316.0) (2024-07-25)
+
+
+### Bug Fixes
+
+* incorrect workflow for new staging environment ([c35828c](https://github.com/informatievlaanderen/organisation-registry/commit/c35828cb6a758313cd3357c2178c6a5b00e8ecab))
+
+
+### Features
+
+* add worklow for the new staging environment ([c2dfd53](https://github.com/informatievlaanderen/organisation-registry/commit/c2dfd53c87663fff5e3aa317ac973f05c28eaef5))
+
 ## [1.315.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.315.0...v1.315.1) (2024-04-03)
 
 
