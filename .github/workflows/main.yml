@@ -306,6 +306,7 @@ jobs:
           echo ${{ steps.set-version.outputs.version }}
           echo 'END VERSION'
 
+
   publish_to_atlassian:
     if: needs.release.outputs.version != 'none'
     needs: [ release ]
@@ -789,51 +790,78 @@ jobs:
           WORKSPACE: ${{ github.workspace }}
 
   deploy_staging:
+    name: Deploy to Staging
+    uses: ./.github/workflows/staging-manual.yml
     needs:
+      - set-release-version
       - release
       - push_images_to_staging
-    name: Deploy to Staging
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        services:
-          [
-            'organisation-registry-api',
-            'organisation-registry-delegations',
-            'organisation-registry-elasticsearch',
-            'organisation-registry-kbomutations',
-            'organisation-registry-reporting',
-            'organisation-registry-ui',
-            'organisation-registry-vlaanderenbe',
-            'organisation-registry-zorgengezondheid',
-            'organisation-registry-rebuilder',
-          ]
-    steps:
-      - name: debug_output
-        shell: bash
-        run: |
-          echo ${{ needs.build.outputs.version }}
-      - name: CD
-        env:
-          BUILD_URL: ${{ secrets.VBR_AWS_BUILD_API }}/${{matrix.services}}
-          STATUS_URL: ${{ secrets.VBR_AWS_BUILD_STATUS_API }}/${{matrix.services}}
-        uses: informatievlaanderen/awscurl-polling-action/polling-action@main
-        with:
-          environment: stg
-          version: ${{ needs.release.outputs.version }}
-          status-url: $STATUS_URL
-          deploy-url: $BUILD_URL
-          access-key: ${{ secrets.VBR_AWS_BUILD_USER_ACCESS_KEY_ID }}
-          secret-key: ${{ secrets.VBR_AWS_BUILD_USER_SECRET_ACCESS_KEY }}
-          region: eu-west-1
-          interval: 2
-      - name: output
-        shell: bash
-        run: |
-          echo build-uuid: ${{ steps.awscurl-polling-action.outputs.build-uuid }}
-          echo Status: ${{ steps.awscurl-polling-action.outputs.status }}
-          echo ${{ steps.awscurl-polling-action.outputs.final-message }}
+    with:
+      version: ${{ needs.set-release-version.outputs.version }}
+    secrets: inherit
 
+  build-api-devops:
+    name: Build api
+    uses: ./.github/workflows/build-image.yml
+    if: github.repository_owner == 'Informatievlaanderen' && needs.set-release-version.outputs.version != 'none'
+    needs: [ test, set-release-version ]
+    with:
+      build-target: Containerize_Api
+      build-project: OrganisationRegistry.Api
+      image-file: api.tar
+      image-name: api
+      semver: ${{ needs.set-release-version.outputs.version }}
+    secrets: inherit
+
+  build-projections-elasticsearch-devops:
+    name: Build elasticsearch projections
+    uses: ./.github/workflows/build-image.yml
+    if: github.repository_owner == 'Informatievlaanderen' && needs.set-release-version.outputs.version != 'none'
+    needs: [ test, set-release-version ]
+    with:
+      build-target: Containerize_ElasticSearch
+      build-project: OrganisationRegistry.ElasticSearch.Projections
+      image-file: projections-elasticsearch.tar
+      image-name: projections-elasticsearch
+      semver: ${{ needs.set-release-version.outputs.version }}
+    secrets: inherit
+
+  build-rebuilder-devops:
+    name: Build rebuilder
+    uses: ./.github/workflows/build-image.yml
+    if: github.repository_owner == 'Informatievlaanderen' && needs.set-release-version.outputs.version != 'none'
+    needs: [ test, set-release-version ]
+    with:
+      build-target: Containerize_Rebuilder
+      build-project: OrganisationRegistry.Rebuilder
+      image-file: rebuilder.tar
+      image-name: rebuilder
+      semver: ${{ needs.set-release-version.outputs.version }}
+    secrets: inherit
+
+  build-ui-devops:
+    name: Build site
+    uses: ./.github/workflows/build-site-image.yml
+    if: github.repository_owner == 'Informatievlaanderen' && needs.set-release-version.outputs.version != 'none'
+    needs: [ set-release-version ]
+    with:
+      build-target: Containerize_Site
+      image-file: ui.tar
+      image-name: ui
+      semver: ${{ needs.set-release-version.outputs.version }}
+    secrets: inherit
+
+
+  deploy_staging_new:
+    name: Deploy to Staging NEW
+    uses: ./.github/workflows/staging-new-manual.yml
+    needs:
+      - set-release-version
+      - release
+      - push_images_to_staging
+    with:
+      version: ${{ needs.set-release-version.outputs.version }}
+    secrets: inherit
 
 
 #      - name: Publish to NuGet
