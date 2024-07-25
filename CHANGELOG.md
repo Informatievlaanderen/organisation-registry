@@ -1,3 +1,10 @@
+## [1.316.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.316.1...v1.316.2) (2024-07-25)
+
+
+### Bug Fixes
+
+* rename incorrect workflow and provide prefix for services ([af8398f](https://github.com/informatievlaanderen/organisation-registry/commit/af8398fae41cc654c990ab8d1649121cb8332311))
+
 ## [1.316.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.316.0...v1.316.1) (2024-07-25)
 
 
