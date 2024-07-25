@@ -22,7 +22,7 @@ jobs:
     steps:
       - name: CD
         env:
-          BUILD_URL: ${{ vars.VBR_AWS_BUILD_API_DEVOPS }}/${{matrix.services}}
+          BUILD_URL: ${{ vars.VBR_AWS_BUILD_API_DEVOPS  }}/${{matrix.services}}
           STATUS_URL: ${{ vars.VBR_AWS_BUILD_STATUS_API_DEVOPS }}/${{matrix.services}}
         uses: informatievlaanderen/awscurl-polling-action/polling-action@main
         with:
@@ -32,8 +32,8 @@ jobs:
           deploy-url: $BUILD_URL
           access-key: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_DEVOPS }}
           secret-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_DEVOPS }}
-          interval: 2
           deploy-target: 'agb_ecs_service'
+          interval: 2
           domain: 'basisregisters'
           project: 'basisregisters'
 
