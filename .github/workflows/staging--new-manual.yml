@@ -14,15 +14,15 @@ jobs:
       matrix:
         services:
           [
-            'organisation-registry-api',
-            'organisation-registry-delegations',
-            'organisation-registry-elasticsearch',
-            'organisation-registry-kbomutations',
-            'organisation-registry-reporting',
-            'organisation-registry-ui',
-            'organisation-registry-vlaanderenbe',
-            'organisation-registry-zorgengezondheid',
-            'organisation-registry-rebuilder',
+            'organisation-api',
+            'organisation-delegations',
+            'organisation-elasticsearch',
+            'organisation-kbomutations',
+            'organisation-reporting',
+            'organisation-ui',
+            'organisation-vlaanderenbe',
+            'organisation-zorgengezondheid',
+            'organisation-rebuilder',
           ]
     steps:
       - name: CD
