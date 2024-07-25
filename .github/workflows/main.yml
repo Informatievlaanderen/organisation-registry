@@ -350,250 +350,75 @@ jobs:
   push_images_to_staging:
     if: needs.release.outputs.version != 'none'
     needs: [ release ]
-    name: Push images to Staging
+    name: Push images
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        image: [
+          'api'
+          'batch-agentschapzorgengezondheidftpdump'
+          'batch-vlaanderenbe'
+          'projections-elasticsearch'
+          'projections-delegations'
+          'projections-reporting'
+          'kbo-mutations'
+          'ui'
+        ]
     steps:
-
-      - name: debug_output
-        shell: bash
-        run: |
-          echo needs.release.outputs.version: ${{ needs.release.outputs.version }}
-
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
       - name: Configure AWS credentials (Staging)
         if: needs.release.outputs.version != 'none'
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v4.0.2
         with:
           aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.VBR_AWS_REGION }}
 
-      - name: Login to Amazon ECR (Staging)
-        if: needs.release.outputs.version != 'none'
-        uses: aws-actions/amazon-ecr-login@v1.5.3
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Download api artifact
-        uses: actions/download-artifact@v3
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        continue-on-error: false
         with:
-          name: api
+          name: ${{ matrix.image }}
           path: ~/
 
-      - name: Load Api image
-        shell: bash
-        run: docker image load -i ~/api.tar
-
-      - name: Download batch-agentschapzorgengezondheidftpdump artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: batch-agentschapzorgengezondheidftpdump
-          path: ~/
-
-      - name: Load batch-agentschapzorgengezondheidftpdump image
-        shell: bash
-        run: docker image load -i ~/batch-agentschapzorgengezondheidftpdump.tar
-
-      - name: Download batch-vlaanderenbe artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: batch-vlaanderenbe
-          path: ~/
-
-      - name: Load batch-vlaanderenbe image
-        shell: bash
-        run: docker image load -i ~/batch-vlaanderenbe.tar
-
-      - name: Download projections-elasticsearch artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: projections-elasticsearch
-          path: ~/
-
-      - name: Load projections-elasticsearch image
-        shell: bash
-        run: docker image load -i ~/projections-elasticsearch.tar
-
-      - name: Download projections-delegations artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: projections-delegations
-          path: ~/
-
-      - name: Load projections-delegations image
-        shell: bash
-        run: docker image load -i ~/projections-delegations.tar
-
-      - name: Download projections-reporting artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: projections-reporting
-          path: ~/
-
-      - name: Load projections-reporting image
-        shell: bash
-        run: docker image load -i ~/projections-reporting.tar
-
-      - name: Download kbo-mutations artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: kbo-mutations
-          path: ~/
-
-      - name: Load kbo-mutations image
-        shell: bash
-        run: docker image load -i ~/kbo-mutations.tar
-
-      - name: Download ui artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: ui
-          path: ~/
-
-      - name: Load ui image
-        shell: bash
-        run: docker image load -i ~/ui.tar
-
-      - name: Download rebuilder artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: rebuilder
-          path: ~/
-
-      - name: Load rebuilder image
-        shell: bash
-        run: docker image load -i ~/rebuilder.tar
-
-      - name: Log in to the Container registry
-        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Push to Staging
-        if: needs.release.outputs.version != 'none'
+      - name: Load artifact
         shell: bash
         run: |
-          docker push $BUILD_DOCKER_REGISTRY/organisation-registry/api:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY/organisation-registry/batch-agentschapzorgengezondheidftpdump:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY/organisation-registry/batch-vlaanderenbe:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY/organisation-registry/projections-elasticsearch:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY/organisation-registry/projections-delegations:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY/organisation-registry/projections-reporting:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY/organisation-registry/kbo-mutations:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY/organisation-registry/ui:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY/organisation-registry/rebuilder:$SEMVER
+          docker image load -i ~/$IMAGE.tar
+        env:
+          IMAGE: ${{ matrix.image }}
+
+      - name: Push artifacts to ECR
+        shell: bash
+        run: |
+          echo $IMAGE:$SEMVER
+          docker push $BUILD_DOCKER_REGISTRY/organisation-registry/$IMAGE:$SEMVER
         env:
           BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY }}
+          IMAGE: ${{ matrix.image }}
           SEMVER: ${{ needs.release.outputs.version }}
           WORKSPACE: ${{ github.workspace }}
 
   push_images_to_production:
     if: needs.release.outputs.version != 'none'
     needs: [ release ]
-    name: Push images to Production
+    name: Push images
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        image: [
+          'api'
+          'batch-agentschapzorgengezondheidftpdump'
+          'batch-vlaanderenbe'
+          'projections-elasticsearch'
+          'projections-delegations'
+          'projections-reporting'
+          'kbo-mutations'
+          'ui'
+        ]
     steps:
-
-      - name: debug_output
-        shell: bash
-        run: |
-          echo needs.release.outputs.version: ${{ needs.release.outputs.version }}
-
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
-      - name: Download api artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: api
-          path: ~/
-
-      - name: Load Api image
-        shell: bash
-        run: docker image load -i ~/api.tar
-
-      - name: Download batch-agentschapzorgengezondheidftpdump artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: batch-agentschapzorgengezondheidftpdump
-          path: ~/
-
-      - name: Load batch-agentschapzorgengezondheidftpdump image
-        shell: bash
-        run: docker image load -i ~/batch-agentschapzorgengezondheidftpdump.tar
-
-      - name: Download batch-vlaanderenbe artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: batch-vlaanderenbe
-          path: ~/
-
-      - name: Load batch-vlaanderenbe image
-        shell: bash
-        run: docker image load -i ~/batch-vlaanderenbe.tar
-
-      - name: Download projections-elasticsearch artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: projections-elasticsearch
-          path: ~/
-
-      - name: Load projections-elasticsearch image
-        shell: bash
-        run: docker image load -i ~/projections-elasticsearch.tar
-
-      - name: Download projections-delegations artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: projections-delegations
-          path: ~/
-
-      - name: Load projections-delegations image
-        shell: bash
-        run: docker image load -i ~/projections-delegations.tar
-
-      - name: Download projections-reporting artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: projections-reporting
-          path: ~/
-
-      - name: Load projections-reporting image
-        shell: bash
-        run: docker image load -i ~/projections-reporting.tar
-
-      - name: Download kbo-mutations artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: kbo-mutations
-          path: ~/
-
-      - name: Load kbo-mutations image
-        shell: bash
-        run: docker image load -i ~/kbo-mutations.tar
-
-      - name: Download ui artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: ui
-          path: ~/
-
-      - name: Load ui image
-        shell: bash
-        run: docker image load -i ~/ui.tar
-
-      - name: Download rebuilder artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: rebuilder
-          path: ~/
-
-      - name: Load rebuilder image
-        shell: bash
-        run: docker image load -i ~/rebuilder.tar
-
       - name: Configure AWS credentials (Production)
         if: needs.release.outputs.version != 'none'
         uses: aws-actions/configure-aws-credentials@v4.0.2
@@ -602,190 +427,84 @@ jobs:
           aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_PRD }}
           aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
 
-      - name: Login to Amazon ECR (Production)
-        if: needs.release.outputs.version != 'none'
+      - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Push to ECR (Production)
-        if: needs.release.outputs.version != 'none'
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        continue-on-error: false
+        with:
+          name: ${{ matrix.image }}
+          path: ~/
+
+      - name: Load artifact
         shell: bash
         run: |
-          docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/api:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/api:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/api:$SEMVER
-
-          docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/batch-agentschapzorgengezondheidftpdump:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/batch-agentschapzorgengezondheidftpdump:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/batch-agentschapzorgengezondheidftpdump:$SEMVER
-
-          docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/batch-vlaanderenbe:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/batch-vlaanderenbe:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/batch-vlaanderenbe:$SEMVER
-
-          docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/projections-elasticsearch:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/projections-elasticsearch:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/projections-elasticsearch:$SEMVER
-
-          docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/projections-delegations:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/projections-delegations:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/projections-delegations:$SEMVER
-
-          docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/projections-reporting:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/projections-reporting:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/projections-reporting:$SEMVER
-
-          docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/kbo-mutations:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/kbo-mutations:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/kbo-mutations:$SEMVER
-
-          docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/ui:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/ui:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/ui:$SEMVER
+          docker image load -i ~/$IMAGE.tar
         env:
-          BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY }}
-          BUILD_DOCKER_REGISTRY_PRD: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_PRD }}
+          IMAGE: ${{ matrix.image }}
+
+      - name: Push artifacts to ECR
+        shell: bash
+        run: |
+          echo $IMAGE:$SEMVER
+          docker push $BUILD_DOCKER_REGISTRY/organisation-registry/$IMAGE:$SEMVER
+        env:
+          BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_PRD }}
+          IMAGE: ${{ matrix.image }}
           SEMVER: ${{ needs.release.outputs.version }}
           WORKSPACE: ${{ github.workspace }}
 
   push_images_to_devops:
     if: needs.release.outputs.version != 'none'
     needs: [ release ]
-    name: Push images to DevOps
+    name: Push images
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        image: [
+          'api'
+          'batch-agentschapzorgengezondheidftpdump'
+          'batch-vlaanderenbe'
+          'projections-elasticsearch'
+          'projections-delegations'
+          'projections-reporting'
+          'kbo-mutations'
+          'ui'
+        ]
     steps:
-
-      - name: debug_output
-        shell: bash
-        run: |
-          echo needs.release.outputs.version: ${{ needs.release.outputs.version }}
-
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
-      - name: Download api artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: api
-          path: ~/
-
-      - name: Load Api image
-        shell: bash
-        run: docker image load -i ~/api.tar
-
-      - name: Download batch-agentschapzorgengezondheidftpdump artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: batch-agentschapzorgengezondheidftpdump
-          path: ~/
-
-      - name: Load batch-agentschapzorgengezondheidftpdump image
-        shell: bash
-        run: docker image load -i ~/batch-agentschapzorgengezondheidftpdump.tar
-
-      - name: Download batch-vlaanderenbe artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: batch-vlaanderenbe
-          path: ~/
-
-      - name: Load batch-vlaanderenbe image
-        shell: bash
-        run: docker image load -i ~/batch-vlaanderenbe.tar
-
-      - name: Download projections-elasticsearch artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: projections-elasticsearch
-          path: ~/
-
-      - name: Load projections-elasticsearch image
-        shell: bash
-        run: docker image load -i ~/projections-elasticsearch.tar
-
-      - name: Download projections-delegations artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: projections-delegations
-          path: ~/
-
-      - name: Load projections-delegations image
-        shell: bash
-        run: docker image load -i ~/projections-delegations.tar
-
-      - name: Download projections-reporting artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: projections-reporting
-          path: ~/
-
-      - name: Load projections-reporting image
-        shell: bash
-        run: docker image load -i ~/projections-reporting.tar
-
-      - name: Download kbo-mutations artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: kbo-mutations
-          path: ~/
-
-      - name: Load kbo-mutations image
-        shell: bash
-        run: docker image load -i ~/kbo-mutations.tar
-
-      - name: Download ui artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: ui
-          path: ~/
-
-      - name: Load ui image
-        shell: bash
-        run: docker image load -i ~/ui.tar
-
-      - name: Download rebuilder artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: rebuilder
-          path: ~/
-
-      - name: Load rebuilder image
-        shell: bash
-        run: docker image load -i ~/rebuilder.tar
-
       - name: Configure AWS credentials (DevOps)
-        if: needs.release.outputs.version != 'none'
         uses: aws-actions/configure-aws-credentials@v4.0.2
         with:
           aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_DEVOPS }}
           aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_DEVOPS }}
           aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
 
-      - name: Login to Amazon ECR (DevOps)
-        if: needs.release.outputs.version != 'none'
+      - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Push to ECR (DevOps)
-        if: needs.release.outputs.version != 'none'
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        continue-on-error: false
+        with:
+          name: ${{ matrix.image }}
+          path: ~/
+
+      - name: Load artifact
         shell: bash
         run: |
-          docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/api:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/api:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/api:$SEMVER
-
-          docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/batch-agentschapzorgengezondheidftpdump:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/batch-agentschapzorgengezondheidftpdump:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/batch-agentschapzorgengezondheidftpdump:$SEMVER
-
-          docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/batch-vlaanderenbe:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/batch-vlaanderenbe:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/batch-vlaanderenbe:$SEMVER
-
-          docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/projections-elasticsearch:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/projections-elasticsearch:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/projections-elasticsearch:$SEMVER
-
-          docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/projections-delegations:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/projections-delegations:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/projections-delegations:$SEMVER
-
-          docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/projections-reporting:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/projections-reporting:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/projections-reporting:$SEMVER
-
-          docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/kbo-mutations:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/kbo-mutations:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/kbo-mutations:$SEMVER
-
-          docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/ui:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/ui:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/ui:$SEMVER
+          docker image load -i ~/$IMAGE.tar
         env:
-          BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY }}
-          BUILD_DOCKER_REGISTRY_PRD: ${{ secrets.VBR_DEVOPS_DOCKER_REGISTRY }}
+          IMAGE: ${{ matrix.image }}
+
+      - name: Push artifacts to ECR
+        shell: bash
+        run: |
+          echo $IMAGE:$SEMVER
+          docker push $BUILD_DOCKER_REGISTRY/organisation-registry/$IMAGE:$SEMVER
+        env:
+          BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_DEVOPS_DOCKER_REGISTRY }}
+          IMAGE: ${{ matrix.image }}
           SEMVER: ${{ needs.release.outputs.version }}
           WORKSPACE: ${{ github.workspace }}
 
@@ -800,69 +519,16 @@ jobs:
       version: ${{ needs.set-release-version.outputs.version }}
     secrets: inherit
 
-  build-api-devops:
-    name: Build api
-    uses: ./.github/workflows/build-image.yml
-    if: github.repository_owner == 'Informatievlaanderen' && needs.set-release-version.outputs.version != 'none'
-    needs: [ test, set-release-version ]
-    with:
-      build-target: Containerize_Api
-      build-project: OrganisationRegistry.Api
-      image-file: api.tar
-      image-name: api
-      semver: ${{ needs.set-release-version.outputs.version }}
-    secrets: inherit
-
-  build-projections-elasticsearch-devops:
-    name: Build elasticsearch projections
-    uses: ./.github/workflows/build-image.yml
-    if: github.repository_owner == 'Informatievlaanderen' && needs.set-release-version.outputs.version != 'none'
-    needs: [ test, set-release-version ]
-    with:
-      build-target: Containerize_ElasticSearch
-      build-project: OrganisationRegistry.ElasticSearch.Projections
-      image-file: projections-elasticsearch.tar
-      image-name: projections-elasticsearch
-      semver: ${{ needs.set-release-version.outputs.version }}
-    secrets: inherit
-
-  build-rebuilder-devops:
-    name: Build rebuilder
-    uses: ./.github/workflows/build-image.yml
-    if: github.repository_owner == 'Informatievlaanderen' && needs.set-release-version.outputs.version != 'none'
-    needs: [ test, set-release-version ]
-    with:
-      build-target: Containerize_Rebuilder
-      build-project: OrganisationRegistry.Rebuilder
-      image-file: rebuilder.tar
-      image-name: rebuilder
-      semver: ${{ needs.set-release-version.outputs.version }}
-    secrets: inherit
-
-  build-ui-devops:
-    name: Build site
-    uses: ./.github/workflows/build-site-image.yml
-    if: github.repository_owner == 'Informatievlaanderen' && needs.set-release-version.outputs.version != 'none'
-    needs: [ set-release-version ]
-    with:
-      build-target: Containerize_Site
-      image-file: ui.tar
-      image-name: ui
-      semver: ${{ needs.set-release-version.outputs.version }}
-    secrets: inherit
-
-
   deploy_staging_new:
     name: Deploy to Staging NEW
     uses: ./.github/workflows/staging-new-manual.yml
     needs:
       - set-release-version
       - release
-      - push_images_to_staging
+      - push_images_to_devops
     with:
       version: ${{ needs.set-release-version.outputs.version }}
     secrets: inherit
-
 
 #      - name: Publish to NuGet
 #        shell: bash
