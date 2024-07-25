@@ -1,3 +1,10 @@
+## [1.316.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.316.0...v1.316.1) (2024-07-25)
+
+
+### Bug Fixes
+
+* incorrect service names ([f26fe8a](https://github.com/informatievlaanderen/organisation-registry/commit/f26fe8a6fc80f3d950e830265036e2de867f91cd))
+
 # [1.316.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.315.1...v1.316.0) (2024-07-25)
 
 
