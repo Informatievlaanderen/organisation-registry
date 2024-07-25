@@ -355,13 +355,13 @@ jobs:
     strategy:
       matrix:
         image: [
-          'api'
-          'batch-agentschapzorgengezondheidftpdump'
-          'batch-vlaanderenbe'
-          'projections-elasticsearch'
-          'projections-delegations'
-          'projections-reporting'
-          'kbo-mutations'
+          'api',
+          'batch-agentschapzorgengezondheidftpdump',
+          'batch-vlaanderenbe',
+          'projections-elasticsearch',
+          'projections-delegations',
+          'projections-reporting',
+          'kbo-mutations',
           'ui'
         ]
     steps:
@@ -409,13 +409,13 @@ jobs:
     strategy:
       matrix:
         image: [
-          'api'
-          'batch-agentschapzorgengezondheidftpdump'
-          'batch-vlaanderenbe'
-          'projections-elasticsearch'
-          'projections-delegations'
-          'projections-reporting'
-          'kbo-mutations'
+          'api',
+          'batch-agentschapzorgengezondheidftpdump',
+          'batch-vlaanderenbe',
+          'projections-elasticsearch',
+          'projections-delegations',
+          'projections-reporting',
+          'kbo-mutations',
           'ui'
         ]
     steps:
@@ -463,13 +463,13 @@ jobs:
     strategy:
       matrix:
         image: [
-          'api'
-          'batch-agentschapzorgengezondheidftpdump'
-          'batch-vlaanderenbe'
-          'projections-elasticsearch'
-          'projections-delegations'
-          'projections-reporting'
-          'kbo-mutations'
+          'api',
+          'batch-agentschapzorgengezondheidftpdump',
+          'batch-vlaanderenbe',
+          'projections-elasticsearch',
+          'projections-delegations',
+          'projections-reporting',
+          'kbo-mutations',
           'ui'
         ]
     steps:
@@ -509,26 +509,82 @@ jobs:
           WORKSPACE: ${{ github.workspace }}
 
   deploy_staging:
+    if: needs.release.outputs.version != 'none'
+    needs: [ push_images_to_staging ]
     name: Deploy to Staging
-    uses: ./.github/workflows/staging-manual.yml
-    needs:
-      - set-release-version
-      - release
-      - push_images_to_staging
-    with:
-      version: ${{ needs.set-release-version.outputs.version }}
-    secrets: inherit
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        image: [
+          'organisation-registry-api',
+          'organisation-registry-delegations',
+          'organisation-registry-elasticsearch',
+          'organisation-registry-kbomutations',
+          'organisation-registry-reporting',
+          'organisation-registry-ui',
+          'organisation-registry-vlaanderenbe',
+          'organisation-registry-zorgengezondheid',
+          'organisation-registry-rebuilder'
+        ]
+    steps:
+      - name: CD
+        env:
+          BUILD_URL: ${{ secrets.VBR_AWS_BUILD_API }}/${{matrix.services}}
+          STATUS_URL: ${{ secrets.VBR_AWS_BUILD_STATUS_API }}/${{matrix.services}}
+        uses: informatievlaanderen/awscurl-polling-action/polling-action@main
+        with:
+          environment: stg
+          version: ${{ github.event.inputs.version }}
+          status-url: $STATUS_URL
+          deploy-url: $BUILD_URL
+          access-key: ${{ secrets.VBR_AWS_BUILD_USER_ACCESS_KEY_ID }}
+          secret-key: ${{ secrets.VBR_AWS_BUILD_USER_SECRET_ACCESS_KEY }}
+          interval: 2
+      - name: output
+        shell: bash
+        run: |
+          echo build-uuid: ${{ steps.awscurl-polling-action.outputs.build-uuid }}
+          echo Status: ${{ steps.awscurl-polling-action.outputs.status }}
+          echo ${{ steps.awscurl-polling-action.outputs.final-message }}
 
   deploy_staging_new:
+    if: needs.release.outputs.version != 'none'
+    needs: [ push_images_to_devops ]
     name: Deploy to Staging NEW
-    uses: ./.github/workflows/staging-new-manual.yml
-    needs:
-      - set-release-version
-      - release
-      - push_images_to_devops
-    with:
-      version: ${{ needs.set-release-version.outputs.version }}
-    secrets: inherit
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        services:
+          [
+            'organisation-api',
+            'organisation-elasticsearch',
+            'organisation-rebuilder',
+            'organisation-ui',
+          ]
+    steps:
+      - name: CD
+        env:
+          BUILD_URL: ${{ vars.VBR_AWS_BUILD_API_DEVOPS }}/${{matrix.services}}
+          STATUS_URL: ${{ vars.VBR_AWS_BUILD_STATUS_API_DEVOPS }}/${{matrix.services}}
+        uses: informatievlaanderen/awscurl-polling-action/polling-action@main
+        with:
+          environment: stg
+          version: ${{ github.event.inputs.version }}
+          status-url: $STATUS_URL
+          deploy-url: $BUILD_URL
+          access-key: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_DEVOPS }}
+          secret-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_DEVOPS }}
+          interval: 2
+          deploy-target: 'agb_ecs_service'
+          domain: 'basisregisters'
+          project: 'basisregisters'
+
+      - name: output
+        shell: bash
+        run: |
+          echo build-uuid: ${{ steps.awscurl-polling-action.outputs.build-uuid }}
+          echo Status: ${{ steps.awscurl-polling-action.outputs.status }}
+          echo ${{ steps.awscurl-polling-action.outputs.final-message }}
 
 #      - name: Publish to NuGet
 #        shell: bash
