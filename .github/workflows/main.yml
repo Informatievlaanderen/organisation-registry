@@ -350,7 +350,7 @@ jobs:
   push_images_to_staging:
     if: needs.release.outputs.version != 'none'
     needs: [ release ]
-    name: Push images
+    name: Push images to Staging
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -404,7 +404,7 @@ jobs:
   push_images_to_production:
     if: needs.release.outputs.version != 'none'
     needs: [ release ]
-    name: Push images
+    name: Push images to Production
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -458,7 +458,7 @@ jobs:
   push_images_to_devops:
     if: needs.release.outputs.version != 'none'
     needs: [ release ]
-    name: Push images
+    name: Push images to DevOps
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -547,6 +547,8 @@ jobs:
           echo Status: ${{ steps.awscurl-polling-action.outputs.status }}
           echo ${{ steps.awscurl-polling-action.outputs.final-message }}
 
+
+
   deploy_staging_new:
     if: needs.release.outputs.version != 'none'
     needs: [ push_images_to_devops ]
@@ -585,6 +587,7 @@ jobs:
           echo build-uuid: ${{ steps.awscurl-polling-action.outputs.build-uuid }}
           echo Status: ${{ steps.awscurl-polling-action.outputs.status }}
           echo ${{ steps.awscurl-polling-action.outputs.final-message }}
+
 
 #      - name: Publish to NuGet
 #        shell: bash
