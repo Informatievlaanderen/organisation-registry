@@ -1,3 +1,12 @@
+## [1.317.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.317.0...v1.317.1) (2024-07-26)
+
+
+### Bug Fixes
+
+* or-2282 artifact could not be found ([11c08be](https://github.com/informatievlaanderen/organisation-registry/commit/11c08be713f0d190394a227523327def4d3c2383))
+* or-2282 incorrect artifact upload download ([c8f3373](https://github.com/informatievlaanderen/organisation-registry/commit/c8f3373b72e33c46bce6d083df443a027a6c5c68))
+* or-2282 upload artifact did not upload as archive ([5cf6009](https://github.com/informatievlaanderen/organisation-registry/commit/5cf60099335787a9dd07d2eedec2e9368630b899))
+
 # [1.317.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.316.2...v1.317.0) (2024-07-25)
 
 
