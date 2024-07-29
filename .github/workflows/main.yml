@@ -488,7 +488,7 @@ jobs:
         continue-on-error: false
         with:
           name: ${{ matrix.image }}
-          path: ~/
+          path: ~/${{ matrix.image }}.tar
 
       - name: Load artifact
         shell: bash
