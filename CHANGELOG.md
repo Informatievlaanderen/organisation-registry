@@ -1,3 +1,10 @@
+## [1.317.3](https://github.com/informatievlaanderen/organisation-registry/compare/v1.317.2...v1.317.3) (2024-07-30)
+
+
+### Bug Fixes
+
+* or-2282 artifacts into folder download ([bdb4d12](https://github.com/informatievlaanderen/organisation-registry/commit/bdb4d128dc5773b73c6bdc3ccb4f6df53eee1a57))
+
 ## [1.317.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.317.1...v1.317.2) (2024-07-30)
 
 
