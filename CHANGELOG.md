@@ -1,3 +1,12 @@
+## [1.317.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.317.1...v1.317.2) (2024-07-30)
+
+
+### Bug Fixes
+
+* or-2282 artifacts files return incorrect ([1a7f9ee](https://github.com/informatievlaanderen/organisation-registry/commit/1a7f9ee856a414f9fbf9d0fc49f119aab66fd0fd))
+* or-2282 artifacts uploaded as folder ([70c051e](https://github.com/informatievlaanderen/organisation-registry/commit/70c051e8b517d4e5f12f9c6b00c80c9384794131))
+* or2282 add some output so we know what is happening ([cdb8310](https://github.com/informatievlaanderen/organisation-registry/commit/cdb83102dfff83ff4d90c718270fb48babfe2ea8))
+
 ## [1.317.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.317.0...v1.317.1) (2024-07-26)
 
 
