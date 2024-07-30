@@ -92,3 +92,9 @@ jobs:
         with:
           name: ${{ inputs.image-name }}
           path: ~/${{ inputs.image-file }}
+
+      - name: Debug output
+        shell: bash
+        run: |
+          ls -al
+
