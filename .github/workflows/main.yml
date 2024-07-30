@@ -381,26 +381,17 @@ jobs:
         continue-on-error: false
         with:
           name: ${{ matrix.image }}
-          path: ~/
+          path: ~/artifacts
 
       - name: Debug output
         shell: bash
         run: |
           ls -al
-          unzip ${{ matrix.image }}.zip
-          ls-al
-
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        continue-on-error: false
-        with:
-          name: ${{ matrix.image }}
-          path: ~/${{ matrix.image }}.tar
 
       - name: Load artifact
         shell: bash
         run: |
-          docker image load -i ~/$IMAGE.tar
+          docker image load -i ~/artifacts/$IMAGE.tar
         env:
           IMAGE: ${{ matrix.image }}
 
