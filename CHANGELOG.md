@@ -1,3 +1,10 @@
+## [1.317.4](https://github.com/informatievlaanderen/organisation-registry/compare/v1.317.3...v1.317.4) (2024-07-31)
+
+
+### Bug Fixes
+
+* or-2282 incorrect path for artifacts download ([65996f3](https://github.com/informatievlaanderen/organisation-registry/commit/65996f370be6a9314a01338e9adf1cfcce70e252))
+
 ## [1.317.3](https://github.com/informatievlaanderen/organisation-registry/compare/v1.317.2...v1.317.3) (2024-07-30)
 
 
