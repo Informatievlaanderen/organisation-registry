@@ -306,7 +306,6 @@ jobs:
           echo ${{ steps.set-version.outputs.version }}
           echo 'END VERSION'
 
-
   publish_to_atlassian:
     if: needs.release.outputs.version != 'none'
     needs: [ release ]
@@ -436,7 +435,7 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         continue-on-error: false
         with:
           name: ${{ matrix.image }}
@@ -445,7 +444,7 @@ jobs:
       - name: Load artifact
         shell: bash
         run: |
-          docker image load -i ~/$IMAGE.tar
+          docker image load -i ~/artifacts/$IMAGE.tar
         env:
           IMAGE: ${{ matrix.image }}
 
@@ -498,7 +497,7 @@ jobs:
       - name: Load artifact
         shell: bash
         run: |
-          docker image load -i ~/$IMAGE.tar
+          docker image load -i ~/artifacts/$IMAGE.tar
         env:
           IMAGE: ${{ matrix.image }}
 
@@ -515,7 +514,7 @@ jobs:
 
   deploy_staging:
     if: needs.release.outputs.version != 'none'
-    needs: [ push_images_to_staging ]
+    needs: [ release, push_images_to_staging ]
     name: Deploy to Staging
     runs-on: ubuntu-latest
     strategy:
@@ -533,6 +532,7 @@ jobs:
         ]
     steps:
       - name: CD
+        id: awscurl-polling-action
         env:
           BUILD_URL: ${{ secrets.VBR_AWS_BUILD_API }}/${{matrix.services}}
           STATUS_URL: ${{ secrets.VBR_AWS_BUILD_STATUS_API }}/${{matrix.services}}
@@ -556,7 +556,7 @@ jobs:
 
   deploy_staging_new:
     if: needs.release.outputs.version != 'none'
-    needs: [ push_images_to_devops ]
+    needs: [ release, push_images_to_devops ]
     name: Deploy to Staging NEW
     runs-on: ubuntu-latest
     strategy:
@@ -570,6 +570,7 @@ jobs:
           ]
     steps:
       - name: CD
+        id: awscurl-polling-action
         env:
           BUILD_URL: ${{ vars.VBR_AWS_BUILD_API_DEVOPS }}/${{matrix.services}}
           STATUS_URL: ${{ vars.VBR_AWS_BUILD_STATUS_API_DEVOPS }}/${{matrix.services}}
