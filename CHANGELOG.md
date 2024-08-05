@@ -1,3 +1,11 @@
+## [1.317.5](https://github.com/informatievlaanderen/organisation-registry/compare/v1.317.4...v1.317.5) (2024-08-05)
+
+
+### Bug Fixes
+
+* or-2282 bugfixes for upload and download artifacts v4 ([43c3121](https://github.com/informatievlaanderen/organisation-registry/commit/43c3121ace4a9458cee31a37e537ed50bfa9deee))
+* use v3 for artifacts upload and download ([1c6589e](https://github.com/informatievlaanderen/organisation-registry/commit/1c6589e1396b513883841c1209f82bb1eab2494a))
+
 ## [1.317.4](https://github.com/informatievlaanderen/organisation-registry/compare/v1.317.3...v1.317.4) (2024-07-31)
 
 
