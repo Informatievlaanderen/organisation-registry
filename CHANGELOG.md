@@ -1,3 +1,10 @@
+## [1.317.7](https://github.com/informatievlaanderen/organisation-registry/compare/v1.317.6...v1.317.7) (2024-08-05)
+
+
+### Bug Fixes
+
+* or-2282 revert commented workflow steps ([d762356](https://github.com/informatievlaanderen/organisation-registry/commit/d7623566571b5ba30448fb733a698f5fe13871a4))
+
 ## [1.317.6](https://github.com/informatievlaanderen/organisation-registry/compare/v1.317.5...v1.317.6) (2024-08-05)
 
 
