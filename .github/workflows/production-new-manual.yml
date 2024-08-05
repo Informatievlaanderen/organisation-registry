@@ -21,6 +21,7 @@ jobs:
           ]
     steps:
       - name: CD
+        id: awscurl-polling-action
         env:
           BUILD_URL: ${{ vars.VBR_AWS_BUILD_API_DEVOPS  }}/${{matrix.services}}
           STATUS_URL: ${{ vars.VBR_AWS_BUILD_STATUS_API_DEVOPS }}/${{matrix.services}}
@@ -59,6 +60,7 @@ jobs:
         ]
     steps:
       - name: CD services
+        id: awscurl-polling-action
         env:
           BUILD_URL: ${{ vars.VBR_AWS_BUILD_API_DEVOPS }}/${{matrix.services}}
           STATUS_URL: ${{ vars.VBR_AWS_BUILD_STATUS_API_DEVOPS }}/${{matrix.services}}
