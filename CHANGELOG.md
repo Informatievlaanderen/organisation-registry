@@ -1,3 +1,11 @@
+## [1.317.6](https://github.com/informatievlaanderen/organisation-registry/compare/v1.317.5...v1.317.6) (2024-08-05)
+
+
+### Bug Fixes
+
+* or-2282 comment old staging environment ([109819b](https://github.com/informatievlaanderen/organisation-registry/commit/109819b20f658472ae22e331a4e4ccb1d52e67c3))
+* or-2282 only keep push to devops instead of different environments ([0526baf](https://github.com/informatievlaanderen/organisation-registry/commit/0526baf369f0538412835c2a3d10669fd612bf04))
+
 ## [1.317.5](https://github.com/informatievlaanderen/organisation-registry/compare/v1.317.4...v1.317.5) (2024-08-05)
 
 
