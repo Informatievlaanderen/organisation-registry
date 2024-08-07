@@ -1,3 +1,11 @@
+## [1.317.11](https://github.com/informatievlaanderen/organisation-registry/compare/v1.317.10...v1.317.11) (2024-08-07)
+
+
+### Bug Fixes
+
+* or-2282 incorrect build docker registry ([1aa9c8f](https://github.com/informatievlaanderen/organisation-registry/commit/1aa9c8f0edbf2e1d1b636b800f2ae457e3099115))
+* or-2282 update flow to build and deploy from devops account ([12adb20](https://github.com/informatievlaanderen/organisation-registry/commit/12adb20bd5b178e263a86f60a93d9073b0c4da52))
+
 ## [1.317.10](https://github.com/informatievlaanderen/organisation-registry/compare/v1.317.9...v1.317.10) (2024-08-07)
 
 
