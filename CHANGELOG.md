@@ -1,3 +1,10 @@
+## [1.317.10](https://github.com/informatievlaanderen/organisation-registry/compare/v1.317.9...v1.317.10) (2024-08-07)
+
+
+### Bug Fixes
+
+* or-2282 add source and destination docker registry to main workflow ([0862167](https://github.com/informatievlaanderen/organisation-registry/commit/08621677cb4c5238eb42319b793f2afe9658935b))
+
 ## [1.317.9](https://github.com/informatievlaanderen/organisation-registry/compare/v1.317.8...v1.317.9) (2024-08-07)
 
 
