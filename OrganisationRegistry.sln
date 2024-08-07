@@ -82,8 +82,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{C31A5E2C-7DFC-48B0-97BB-0D870EE713BD}"
 ProjectSection(SolutionItems) = preProject
 	.github\workflows\main.yml = .github\workflows\main.yml
-	.github\workflows\staging-manual.yml = .github\workflows\staging-manual.yml
-	.github\workflows\production-manual.yml = .github\workflows\production-manual.yml
 	.github\workflows\pre-merge-tests.yml = .github\workflows\pre-merge-tests.yml
 	.github\workflows\otel.yml = .github\workflows\otel.yml
 	.github\workflows\aws-cli.yml = .github\workflows\aws-cli.yml
