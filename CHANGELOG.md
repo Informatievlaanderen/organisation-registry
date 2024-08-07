@@ -1,3 +1,10 @@
+## [1.317.8](https://github.com/informatievlaanderen/organisation-registry/compare/v1.317.7...v1.317.8) (2024-08-07)
+
+
+### Bug Fixes
+
+* or-2282 add output to main workflow ([2c66e08](https://github.com/informatievlaanderen/organisation-registry/commit/2c66e081ad99203a615a4979e87bacf9ed5ee4c8))
+
 ## [1.317.7](https://github.com/informatievlaanderen/organisation-registry/compare/v1.317.6...v1.317.7) (2024-08-05)
 
 
