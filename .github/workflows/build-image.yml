@@ -54,7 +54,7 @@ jobs:
         if: inputs.semver != 'none'
         run: CI_BUILD_NUMBER=$SEMVER ./build.sh SetSolutionInfo
         env:
-          BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY_TST }}
+          BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_DEVOPS_DOCKER_REGISTRY }}
           SEMVER: ${{ inputs.semver }}
 
       - name: Dotnet build
@@ -70,7 +70,7 @@ jobs:
         shell: bash
         run: CI_BUILD_NUMBER=$SEMVER ./build.sh ${{ inputs.build-target }}
         env:
-          BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY }}
+          BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_DEVOPS_DOCKER_REGISTRY }}
           SEMVER: ${{ inputs.semver }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
