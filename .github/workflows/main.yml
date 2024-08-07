@@ -382,10 +382,9 @@ jobs:
           name: ${{ matrix.image }}
           path: ~/artifacts
 
-      - name: Debug output
+      - name: Show images
         shell: bash
-        run: |
-          ls -al
+        run: docker images
 
       - name: Load artifact
         shell: bash
@@ -393,6 +392,10 @@ jobs:
           docker image load -i ~/artifacts/$IMAGE.tar
         env:
           IMAGE: ${{ matrix.image }}
+
+      - name: Show images
+        shell: bash
+        run: docker images
 
       - name: Push artifacts to ECR
         shell: bash
@@ -441,12 +444,20 @@ jobs:
           name: ${{ matrix.image }}
           path: ~/artifacts
 
+      - name: Show images
+        shell: bash
+        run: docker images
+
       - name: Load artifact
         shell: bash
         run: |
           docker image load -i ~/artifacts/$IMAGE.tar
         env:
           IMAGE: ${{ matrix.image }}
+
+      - name: Show images
+        shell: bash
+        run: docker images
 
       - name: Push artifacts to ECR
         shell: bash
