@@ -505,12 +505,20 @@ jobs:
           name: ${{ matrix.image }}
           path: ~/artifacts
 
+      - name: Show images
+        shell: bash
+        run: docker images
+
       - name: Load artifact
         shell: bash
         run: |
           docker image load -i ~/artifacts/$IMAGE.tar
         env:
           IMAGE: ${{ matrix.image }}
+
+      - name: Show images
+        shell: bash
+        run: docker images
 
       - name: Push artifacts to ECR
         shell: bash
