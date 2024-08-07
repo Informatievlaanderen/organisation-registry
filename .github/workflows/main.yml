@@ -524,9 +524,11 @@ jobs:
         shell: bash
         run: |
           echo $IMAGE:$SEMVER
-          docker push $BUILD_DOCKER_REGISTRY/organisation-registry/$IMAGE:$SEMVER
+          docker image tag $SOURCE_DOCKER_REGISTRY/organisation-registry/$IMAGE:$SEMVER $DESTINATION_DOCKER_REGISTRY/organisation-registry/$IMAGE:$SEMVER
+          docker push $DESTINATION_DOCKER_REGISTRY/organisation-registry/$IMAGE:$SEMVER
         env:
-          BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_DEVOPS_DOCKER_REGISTRY }}
+          SOURCE_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY }}
+          DESTINATION_DOCKER_REGISTRY: ${{ secrets.VBR_DEVOPS_DOCKER_REGISTRY }}
           IMAGE: ${{ matrix.image }}
           SEMVER: ${{ needs.release.outputs.version }}
           WORKSPACE: ${{ github.workspace }}
