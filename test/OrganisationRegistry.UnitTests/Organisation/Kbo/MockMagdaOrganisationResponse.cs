@@ -2,6 +2,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo;
 
 using System;
 using System.Collections.Generic;
+using Api.Infrastructure.Magda;
 using OrganisationRegistry.Organisation;
 
 public class MockMagdaOrganisationResponse : IMagdaOrganisationResponse
@@ -13,10 +14,12 @@ public class MockMagdaOrganisationResponse : IMagdaOrganisationResponse
     public IMagdaLegalForm? LegalForm { get; set; }
     public IMagdaAddress? Address { get; set; }
     public IMagdaTermination? Termination { get; set; }
+    public IMagdaLegalEntityType LegalEntityType { get; }
 
 
     public MockMagdaOrganisationResponse()
     {
+        LegalEntityType = new MagdaLegalEntityType("1", "Natuurlijke Persoon");
         BankAccounts = new List<IMagdaBankAccount>();
     }
 }

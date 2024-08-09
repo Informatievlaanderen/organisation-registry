@@ -497,6 +497,8 @@ public class OrganisationHandlerTests
         var organisationLocationUpdated = scenario.CreateOrganisationLocationUpdated(organisationLocationAdded);
         var locationUpdated = scenario.CreateLocationUpdated(organisationLocationUpdated);
 
+        var kboLegalEntityTypeAdded = scenario.Create<KboLegalEntityTypeAdded>();
+
         await _eventProcessor.Handle<OrganisationDocument>(
             new List<IEnvelope>()
             {
@@ -505,6 +507,7 @@ public class OrganisationHandlerTests
                 organisationLocationAdded.ToEnvelope(),
                 organisationLocationUpdated.ToEnvelope(),
                 locationUpdated.ToEnvelope(),
+                kboLegalEntityTypeAdded.ToEnvelope(),
             }
         );
 
@@ -524,5 +527,9 @@ public class OrganisationHandlerTests
                 locationUpdated.ZipCode,
                 locationUpdated.City,
                 locationUpdated.Country));
+
+        organisation.Source.LegalEntityType.Should().BeEquivalentTo(new LegalEntityType(
+            kboLegalEntityTypeAdded.LegalEntityTypeCode,
+            kboLegalEntityTypeAdded.LegalEntityTypeDescription));
     }
 }

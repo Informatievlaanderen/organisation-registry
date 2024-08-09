@@ -320,8 +320,23 @@ public class CreateOrganisationFromKboTests: Specification<KboOrganisationComman
     }
 
     [Fact]
+    public async Task AddsLegalEntityType()
+    {
+        await Given(Events)
+            .When(CreateOrganisationFromKboCommand, TestUser.AlgemeenBeheerder)
+            .Then();
+
+        var organisationLabelAdded = PublishedEvents[9].UnwrapBody<KboLegalEntityTypeAdded>();
+        organisationLabelAdded.Should().NotBeNull();
+
+        organisationLabelAdded.OrganisationId.Should().Be(_organisationId);
+        organisationLabelAdded.LegalEntityTypeCode.Should().Be("1");
+        organisationLabelAdded.LegalEntityTypeDescription.Should().Be("Natuurlijke Persoon");
+    }
+
+    [Fact]
     public async Task PublishesTheCorrectNumberOfEvents()
         => await Given(Events)
             .When(CreateOrganisationFromKboCommand, TestUser.AlgemeenBeheerder)
-            .ThenItPublishesTheCorrectNumberOfEvents(9);
+            .ThenItPublishesTheCorrectNumberOfEvents(10);
 }
