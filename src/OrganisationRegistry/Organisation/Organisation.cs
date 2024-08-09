@@ -991,6 +991,16 @@ public partial class Organisation : AggregateRoot
                 validity.End));
     }
 
+    public void AddKboLegalEntityType(IMagdaLegalEntityType kboOrganisationLegalEntityType)
+    {
+        ApplyChange(
+            new KboLegalEntityTypeAdded(
+                Id,
+                kboOrganisationLegalEntityType.Code,
+                kboOrganisationLegalEntityType.Description
+                ));
+    }
+
     public void UpdateKboLegalFormOrganisationClassification(
         IKboOrganisationClassificationRetriever organisationClassificationRetriever,
         OrganisationClassificationType legalFormOrganisationClassificationType,
@@ -3113,5 +3123,10 @@ public partial class Organisation : AggregateRoot
     public void Apply(OrganisationLocationRemoved evnt)
     {
         State.OrganisationLocations.Remove(State.OrganisationLocations[evnt.OrganisationLocationId]);
+    }
+
+    public void Apply(KboLegalEntityTypeAdded evnt)
+    {
+        // no need to keep this in state at time of writing.
     }
 }

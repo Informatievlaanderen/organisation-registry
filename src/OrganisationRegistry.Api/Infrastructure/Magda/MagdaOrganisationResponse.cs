@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Linq;
 using global::Magda.GeefOnderneming;
 using Organisation;
+using CodeSoortOndernemingType = global::Magda.ZoekOnderneming.CodeSoortOndernemingType;
 
 public class MagdaOrganisationResponse : IMagdaOrganisationResponse
 {
@@ -29,6 +30,9 @@ public class MagdaOrganisationResponse : IMagdaOrganisationResponse
     public IMagdaAddress? Address { get; }
 
     public IMagdaTermination? Termination { get; }
+
+    public IMagdaLegalEntityType LegalEntityType { get; set; }
+
 
     public MagdaOrganisationResponse(Onderneming2_0Type? onderneming, IDateTimeProvider dateTimeProvider)
     {
@@ -65,6 +69,8 @@ public class MagdaOrganisationResponse : IMagdaOrganisationResponse
 
         if (onderneming?.Stopzetting != null)
             Termination = new MagdaTermination(onderneming.Stopzetting);
+
+        LegalEntityType = new MagdaLegalEntityType(onderneming?.SoortOnderneming.Code.Value, onderneming?.SoortOnderneming.Code.Value);
     }
 
     private static bool OverlapsWithToday(RechtsvormExtentieType type, DateTime today)
@@ -212,5 +218,17 @@ public class MagdaTermination : IMagdaTermination
         Date = DateTime.ParseExact(stopzetting.Datum, "yyyy-MM-dd", CultureInfo.InvariantCulture);
         Code = stopzetting.Code.Value ?? string.Empty;
         Reason = stopzetting.Code.Beschrijving ?? string.Empty;
+    }
+}
+
+public class MagdaLegalEntityType : IMagdaLegalEntityType
+{
+    public string Code { get; }
+    public string Description { get; }
+
+    public MagdaLegalEntityType(string code, string description)
+    {
+        Code = code;
+        Description = description;
     }
 }

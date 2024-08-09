@@ -41,7 +41,8 @@ public class Organisation :
     IElasticEventHandler<OrganisationTerminated>,
     IElasticEventHandler<OrganisationTerminatedV2>,
     IElasticEventHandler<OrganisationPlacedUnderVlimpersManagement>,
-    IElasticEventHandler<OrganisationReleasedFromVlimpersManagement>
+    IElasticEventHandler<OrganisationReleasedFromVlimpersManagement>,
+    IElasticEventHandler<KboLegalEntityTypeAdded>
 {
     private readonly Elastic _elastic;
     private readonly ElasticSearchConfiguration _elasticSearchOptions;
@@ -117,6 +118,23 @@ public class Organisation :
                 document.ShortName = message.Body.ShortNameBeforeKboCoupling;
 
                 document.KboNumber = string.Empty;
+            }
+        ).ToAsyncResult();
+
+    public async Task<IElasticChange> Handle(
+        DbConnection dbConnection,
+        DbTransaction dbTransaction,
+        IEnvelope<KboLegalEntityTypeAdded> message)
+        => await new ElasticPerDocumentChange<OrganisationDocument>(
+            message.Body.OrganisationId,
+            document =>
+            {
+                document.ChangeId = message.Number;
+                document.ChangeTime = message.Timestamp;
+
+                document.LegalEntityType = new LegalEntityType(
+                    message.Body.LegalEntityTypeCode,
+                    message.Body.LegalEntityTypeDescription);
             }
         ).ToAsyncResult();
 

@@ -262,5 +262,5 @@ public class CreateOrganisationFromKboWithoutAddressAndLegalFormTests
     public async Task PublishesTheCorrectNumberOfEvents()
         => await Given(Events)
             .When(CreateOrganisationFromKboCommand, TestUser.AlgemeenBeheerder)
-            .ThenItPublishesTheCorrectNumberOfEvents(6);
+            .ThenItPublishesTheCorrectNumberOfEvents(7);
 }

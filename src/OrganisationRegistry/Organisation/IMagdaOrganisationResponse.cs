@@ -12,6 +12,7 @@ public interface IMagdaOrganisationResponse
     IMagdaLegalForm? LegalForm { get; }
     IMagdaAddress? Address { get; }
     IMagdaTermination? Termination { get; }
+    IMagdaLegalEntityType LegalEntityType { get; }
 }
 
 public interface IMagdaName
@@ -50,4 +51,10 @@ public interface IMagdaTermination
     DateTime Date { get; }
     string Code { get; }
     string Reason { get; }
+}
+
+public interface IMagdaLegalEntityType
+{
+    string Code { get; }
+    string Description { get; }
 }
