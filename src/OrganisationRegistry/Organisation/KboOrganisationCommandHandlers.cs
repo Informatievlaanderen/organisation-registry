@@ -302,6 +302,8 @@ public class KboOrganisationCommandHandlers :
 
         AddLabel(organisation, kboOrganisation);
 
+        organisation.AddKboLegalEntityType(kboOrganisation.LegalEntityType);
+
         await Session.Commit(user);
     }
 

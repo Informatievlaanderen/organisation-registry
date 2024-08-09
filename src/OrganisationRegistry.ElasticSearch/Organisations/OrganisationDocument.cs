@@ -30,8 +30,11 @@ public partial class OrganisationDocument : IDocument
         BankAccounts = new List<OrganisationBankAccount>();
         OpeningHours = new List<OrganisationOpeningHour>();
         Regulations = new List<OrganisationRegulation>();
+        LegalEntityType = null;
         Validity = Period.Infinite();
     }
+
+    public LegalEntityType? LegalEntityType { get; set; }
 
     public int ChangeId { get; set; }
     public DateTimeOffset ChangeTime { get; set; }
@@ -191,5 +194,10 @@ public partial class OrganisationDocument : IDocument
                             .Name(p => p.Regulations)
                             .IncludeInRoot()
                             .Properties(OrganisationRegulation.Mapping))
+                    .Nested<LegalEntityType>(
+                        n => n
+                            .Name(p => p.LegalEntityType)
+                            .IncludeInRoot()
+                            .Properties(LegalEntityType.Mapping))
             );
 }
