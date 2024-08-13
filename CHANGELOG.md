@@ -1,3 +1,10 @@
+# [1.318.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.317.11...v1.318.0) (2024-08-13)
+
+
+### Features
+
+* or-1394 add legal entity type field ([8ff7188](https://github.com/informatievlaanderen/organisation-registry/commit/8ff71889700733c59d3e27c22ed875bcbad4800f))
+
 ## [1.317.11](https://github.com/informatievlaanderen/organisation-registry/compare/v1.317.10...v1.317.11) (2024-08-07)
 
 
