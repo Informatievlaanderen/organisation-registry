@@ -1,3 +1,10 @@
+## [1.318.3](https://github.com/informatievlaanderen/organisation-registry/compare/v1.318.2...v1.318.3) (2024-08-14)
+
+
+### Bug Fixes
+
+* or-1394 place property as last in doc ([4cefd20](https://github.com/informatievlaanderen/organisation-registry/commit/4cefd20cbe4e370d37f3c85b060c0dc17b2f77a8))
+
 ## [1.318.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.318.1...v1.318.2) (2024-08-14)
 
 
