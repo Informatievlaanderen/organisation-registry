@@ -70,7 +70,7 @@ public class MagdaOrganisationResponse : IMagdaOrganisationResponse
         if (onderneming?.Stopzetting != null)
             Termination = new MagdaTermination(onderneming.Stopzetting);
 
-        LegalEntityType = new MagdaLegalEntityType(onderneming?.SoortOnderneming.Code.Value, onderneming?.SoortOnderneming.Omschrijving.Value);
+        LegalEntityType = new MagdaLegalEntityType(onderneming?.SoortOnderneming.Code.Value, onderneming?.SoortOnderneming.Code.Beschrijving);
     }
 
     private static bool OverlapsWithToday(RechtsvormExtentieType type, DateTime today)
