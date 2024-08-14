@@ -1,3 +1,10 @@
+## [1.318.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.318.0...v1.318.1) (2024-08-14)
+
+
+### Bug Fixes
+
+* or-2282 include deployment to old staging environment ([deeca48](https://github.com/informatievlaanderen/organisation-registry/commit/deeca48e889dfed2ec7b7bfd560fc9cc17cd2dfe))
+
 # [1.318.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.317.11...v1.318.0) (2024-08-13)
 
 
