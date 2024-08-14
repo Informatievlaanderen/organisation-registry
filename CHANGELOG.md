@@ -1,3 +1,11 @@
+## [1.318.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.318.1...v1.318.2) (2024-08-14)
+
+
+### Bug Fixes
+
+* or-1394 use beschrijving field instead of code ([31f1b62](https://github.com/informatievlaanderen/organisation-registry/commit/31f1b62d035fffe9bcd48880928c310a575a1ad0))
+* or-1394 use omschrijving field instead of code ([5c19283](https://github.com/informatievlaanderen/organisation-registry/commit/5c192838ae47a1a48f7e76d4efa9bd1c96a35153))
+
 ## [1.318.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.318.0...v1.318.1) (2024-08-14)
 
 
