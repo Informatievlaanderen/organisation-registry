@@ -404,6 +404,110 @@ jobs:
           SEMVER: ${{ needs.release.outputs.version }}
           WORKSPACE: ${{ github.workspace }}
 
+  push_images_to_staging:
+    if: needs.release.outputs.version != 'none'
+    needs: [ release ]
+    name: Push images to Staging
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        image: [
+          'api',
+          'batch-agentschapzorgengezondheidftpdump',
+          'batch-vlaanderenbe',
+          'projections-elasticsearch',
+          'projections-delegations',
+          'projections-reporting',
+          'kbo-mutations',
+          'ui'
+        ]
+    steps:
+      - name: Configure AWS credentials (Staging)
+        if: needs.release.outputs.version != 'none'
+        uses: aws-actions/configure-aws-credentials@v4.0.2
+        with:
+          aws-access-key-id: ${{ secrets.VBR_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.VBR_AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        continue-on-error: false
+        with:
+          name: ${{ matrix.image }}
+          path: ~/artifacts
+
+      - name: Show images
+        shell: bash
+        run: docker images
+
+      - name: Load artifact
+        shell: bash
+        run: |
+          docker image load -i ~/artifacts/$IMAGE.tar
+        env:
+          IMAGE: ${{ matrix.image }}
+
+      - name: Show images
+        shell: bash
+        run: docker images
+
+      - name: Push artifacts to ECR
+        shell: bash
+        run: |
+          echo $IMAGE:$SEMVER
+          docker image tag $SOURCE_DOCKER_REGISTRY/organisation-registry/$IMAGE:$SEMVER $DESTINATION_DOCKER_REGISTRY/organisation-registry/$IMAGE:$SEMVER
+          docker push $DESTINATION_DOCKER_REGISTRY/organisation-registry/$IMAGE:$SEMVER
+        env:
+          SOURCE_DOCKER_REGISTRY: ${{ secrets.VBR_DEVOPS_DOCKER_REGISTRY }}
+          DESTINATION_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY }}
+          IMAGE: ${{ matrix.image }}
+          SEMVER: ${{ needs.release.outputs.version }}
+          WORKSPACE: ${{ github.workspace }}
+
+  deploy_staging:
+    if: needs.release.outputs.version != 'none'
+    needs: [ release, push_images_to_staging ]
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        image: [
+          'organisation-registry-api',
+          'organisation-registry-delegations',
+          'organisation-registry-elasticsearch',
+          'organisation-registry-kbomutations',
+          'organisation-registry-reporting',
+          'organisation-registry-ui',
+          'organisation-registry-vlaanderenbe',
+          'organisation-registry-zorgengezondheid',
+          'organisation-registry-rebuilder'
+        ]
+    steps:
+      - name: CD
+        id: awscurl-polling-action
+        env:
+          BUILD_URL: ${{ secrets.VBR_AWS_BUILD_API }}/${{matrix.services}}
+          STATUS_URL: ${{ secrets.VBR_AWS_BUILD_STATUS_API }}/${{matrix.services}}
+        uses: informatievlaanderen/awscurl-polling-action/polling-action@main
+        with:
+          environment: stg
+          version: ${{ github.event.inputs.version }}
+          status-url: $STATUS_URL
+          deploy-url: $BUILD_URL
+          access-key: ${{ secrets.VBR_AWS_BUILD_USER_ACCESS_KEY_ID }}
+          secret-key: ${{ secrets.VBR_AWS_BUILD_USER_SECRET_ACCESS_KEY }}
+          interval: 2
+      - name: output
+        shell: bash
+        run: |
+          echo build-uuid: ${{ steps.awscurl-polling-action.outputs.build-uuid }}
+          echo Status: ${{ steps.awscurl-polling-action.outputs.status }}
+          echo ${{ steps.awscurl-polling-action.outputs.final-message }}
+
   deploy_staging_services:
     if: needs.release.outputs.version != 'none'
     needs: [ release, push_images_to_devops ]
