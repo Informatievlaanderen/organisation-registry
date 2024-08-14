@@ -34,8 +34,6 @@ public partial class OrganisationDocument : IDocument
         Validity = Period.Infinite();
     }
 
-    public LegalEntityType? LegalEntityType { get; set; }
-
     public int ChangeId { get; set; }
     public DateTimeOffset ChangeTime { get; set; }
     public Guid Id { get; set; }
@@ -68,6 +66,7 @@ public partial class OrganisationDocument : IDocument
     public List<OrganisationOpeningHour> OpeningHours { get; set; }
     public List<OrganisationRegulation> Regulations { get; set; }
 
+    public LegalEntityType? LegalEntityType { get; set; }
 
     public static TypeMappingDescriptor<OrganisationDocument> Mapping(
         TypeMappingDescriptor<OrganisationDocument> map)
@@ -194,10 +193,9 @@ public partial class OrganisationDocument : IDocument
                             .Name(p => p.Regulations)
                             .IncludeInRoot()
                             .Properties(OrganisationRegulation.Mapping))
-                    .Nested<LegalEntityType>(
+                    .Object<LegalEntityType>(
                         n => n
                             .Name(p => p.LegalEntityType)
-                            .IncludeInRoot()
                             .Properties(LegalEntityType.Mapping))
             );
 }
