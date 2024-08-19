@@ -1,3 +1,10 @@
+## [1.318.4](https://github.com/informatievlaanderen/organisation-registry/compare/v1.318.3...v1.318.4) (2024-08-19)
+
+
+### Bug Fixes
+
+* or-1894 return bad request instead of server error when scroll timed out ([c2c8955](https://github.com/informatievlaanderen/organisation-registry/commit/c2c895558b532b4c588863194c3cb1be65314f03))
+
 ## [1.318.3](https://github.com/informatievlaanderen/organisation-registry/compare/v1.318.2...v1.318.3) (2024-08-14)
 
 
