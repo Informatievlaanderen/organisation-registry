@@ -286,9 +286,14 @@ public class ElasticSearchFacade
 
         if (!searchResults.IsValid)
         {
-            _logger.LogCritical("Elasticsearch error occured on search! {Error}", searchResults.FormatError());
+            const string logMessage = "Er is een probleem opgetreden bij het uitvoeren van de zoekopdracht.";
 
-            throw new ApiException("Er is een probleem opgetreden bij het uitvoeren van de zoekopdracht.");
+            _logger.LogCritical(logMessage + " {Error}", searchResults.FormatError());
+
+            throw searchResults.ServerError.Error.Type.Equals("search_phase_execution_exception")
+            // throw searchResults.Hits.Count.Equals(0) && string.IsNullOrEmpty(searchResults.ScrollId) // Parameters for identifying a timed out scroll
+                ? new ElasticsearchScrollTimeoutException(logMessage)
+                : new ApiException(logMessage);
         }
 
         _httpContext.Response.AddElasticsearchMetaDataResponse(new ElasticsearchMetaData<T>(searchResults));
