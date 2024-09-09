@@ -12,6 +12,7 @@ public class KboState
     public string? ShortNameBeforeKboCoupling { get; set; }
     public KboTermination? TerminationInKbo { get; set; }
     public KboNumber? KboNumber { get; set; }
+    public string? LegalEntityTypeCode { get; set; }
 
     public void Clear()
     {
