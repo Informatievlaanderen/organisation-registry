@@ -993,6 +993,9 @@ public partial class Organisation : AggregateRoot
 
     public void AddKboLegalEntityType(IMagdaLegalEntityType kboOrganisationLegalEntityType)
     {
+        if (!string.IsNullOrEmpty(KboState.LegalEntityTypeCode))
+            return;
+
         ApplyChange(
             new KboLegalEntityTypeAdded(
                 Id,
@@ -3127,6 +3130,6 @@ public partial class Organisation : AggregateRoot
 
     public void Apply(KboLegalEntityTypeAdded evnt)
     {
-        // no need to keep this in state at time of writing.
+        KboState.LegalEntityTypeCode = evnt.LegalEntityTypeCode;
     }
 }

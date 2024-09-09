@@ -220,7 +220,7 @@ public class UpdateFromKboTests : Specification<KboOrganisationCommandHandlers, 
     public async Task PublishesElevenEvents()
     {
         await Given(Events).When(SyncOrganisationWithKboCommand, TestUser.AlgemeenBeheerder)
-            .ThenItPublishesTheCorrectNumberOfEvents(11);
+            .ThenItPublishesTheCorrectNumberOfEvents(12);
     }
 
     [Fact]

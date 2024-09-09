@@ -286,5 +286,5 @@ public class CoupleOrganisationToKboTests: Specification<KboOrganisationCommandH
     public async Task PublishesTheCorrectNumberOfEvents()
         => await Given(Events)
             .When(CoupleOrganisationToKboCommand, TestUser.AlgemeenBeheerder)
-            .ThenItPublishesTheCorrectNumberOfEvents(7);
+            .ThenItPublishesTheCorrectNumberOfEvents(8);
 }

@@ -218,5 +218,5 @@ public class CoupleOrganisationToKboWithoutAddressAndLegalFormTests
     public async Task PublishesTheCorrectNumberOfEvents()
         => await Given(Events)
             .When(CoupleOrganisationToKboCommand, TestUser.AlgemeenBeheerder)
-            .ThenItPublishesTheCorrectNumberOfEvents(4);
+            .ThenItPublishesTheCorrectNumberOfEvents(5);
 }

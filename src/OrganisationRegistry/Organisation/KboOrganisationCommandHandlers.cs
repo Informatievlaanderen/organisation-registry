@@ -348,6 +348,8 @@ public class KboOrganisationCommandHandlers :
                     AddAddresses(organisation, location, registeredOfficeLocationType);
 
                     AddLabel(organisation, kboOrganisation);
+
+                    organisation.AddKboLegalEntityType(kboOrganisation.LegalEntityType);
                 });
 
     public async Task Handle(ICommandEnvelope<CancelCouplingWithKbo> envelope)
