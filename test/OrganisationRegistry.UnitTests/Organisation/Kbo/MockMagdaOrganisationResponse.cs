@@ -7,6 +7,8 @@ using OrganisationRegistry.Organisation;
 
 public class MockMagdaOrganisationResponse : IMagdaOrganisationResponse
 {
+    public const string MockLegalEntityType = "Natuurlijke Persoon";
+    public const string MockLegalEntityTypeCode = "1";
     public IMagdaName FormalName { get; set; } = null!;
     public IMagdaName ShortName { get; set; } = null!;
     public DateTime? ValidFrom { get; set; }
@@ -19,7 +21,7 @@ public class MockMagdaOrganisationResponse : IMagdaOrganisationResponse
 
     public MockMagdaOrganisationResponse()
     {
-        LegalEntityType = new MagdaLegalEntityType("1", "Natuurlijke Persoon");
+        LegalEntityType = new MagdaLegalEntityType(MockLegalEntityTypeCode, MockLegalEntityType);
         BankAccounts = new List<IMagdaBankAccount>();
     }
 }

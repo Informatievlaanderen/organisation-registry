@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Api.Infrastructure.Magda;
+using ElasticSearch.Organisations;
 using FluentAssertions;
 using Infrastructure.Tests.Extensions.TestHelpers;
 using OrganisationRegistry.KeyTypes.Events;
@@ -280,6 +282,21 @@ public class CoupleOrganisationToKboTests: Specification<KboOrganisationCommandH
         organisationLabelAdded.Value.Should().Be("NAME FROM KBO");
         organisationLabelAdded.ValidFrom.Should().Be(new ValidFrom(_kboOrganisationValidFromDate));
         organisationLabelAdded.ValidTo.Should().Be(new ValidTo());
+    }
+
+    [Fact]
+    public async Task AddsLegalEntityType()
+    {
+        await Given(Events)
+            .When(CoupleOrganisationToKboCommand, TestUser.AlgemeenBeheerder)
+            .Then();
+
+        var organisationLabelAdded = PublishedEvents.Where(evt=>evt.Body is KboLegalEntityTypeAdded).ToList()[0].UnwrapBody<KboLegalEntityTypeAdded>();
+        organisationLabelAdded.Should().NotBeNull();
+
+        organisationLabelAdded.OrganisationId.Should().Be(_organisationId);
+        organisationLabelAdded.LegalEntityTypeCode.Should().Be(MockMagdaOrganisationResponse.MockLegalEntityTypeCode);
+        organisationLabelAdded.LegalEntityTypeDescription.Should().Be(MockMagdaOrganisationResponse.MockLegalEntityType);
     }
 
     [Fact]
