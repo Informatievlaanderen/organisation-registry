@@ -330,8 +330,8 @@ public class CreateOrganisationFromKboTests: Specification<KboOrganisationComman
         organisationLabelAdded.Should().NotBeNull();
 
         organisationLabelAdded.OrganisationId.Should().Be(_organisationId);
-        organisationLabelAdded.LegalEntityTypeCode.Should().Be("1");
-        organisationLabelAdded.LegalEntityTypeDescription.Should().Be("Natuurlijke Persoon");
+        organisationLabelAdded.LegalEntityTypeCode.Should().Be(MockMagdaOrganisationResponse.MockLegalEntityTypeCode);
+        organisationLabelAdded.LegalEntityTypeDescription.Should().Be(MockMagdaOrganisationResponse.MockLegalEntityType);
     }
 
     [Fact]

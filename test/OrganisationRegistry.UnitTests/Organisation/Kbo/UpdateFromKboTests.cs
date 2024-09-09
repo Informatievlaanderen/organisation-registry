@@ -217,10 +217,10 @@ public class UpdateFromKboTests : Specification<KboOrganisationCommandHandlers, 
 
 
     [Fact]
-    public async Task PublishesElevenEvents()
+    public async Task PublishesTheCorrectNumberOfEvents()
     {
         await Given(Events).When(SyncOrganisationWithKboCommand, TestUser.AlgemeenBeheerder)
-            .ThenItPublishesTheCorrectNumberOfEvents(12);
+            .ThenItPublishesTheCorrectNumberOfEvents(11);
     }
 
     [Fact]
