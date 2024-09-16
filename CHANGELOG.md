@@ -1,3 +1,10 @@
+# [1.319.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.318.4...v1.319.0) (2024-09-16)
+
+
+### Features
+
+* or-2353 also add kbo legal entity when coupling ([71bdc00](https://github.com/informatievlaanderen/organisation-registry/commit/71bdc0045b9937bdc7622a0c0832a11dc34dc98f))
+
 ## [1.318.4](https://github.com/informatievlaanderen/organisation-registry/compare/v1.318.3...v1.318.4) (2024-08-19)
 
 
