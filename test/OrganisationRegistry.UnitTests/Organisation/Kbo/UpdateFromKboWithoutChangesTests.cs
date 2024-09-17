@@ -3,6 +3,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using ElasticSearch.Organisations;
 using FluentAssertions;
 using Infrastructure.Tests.Extensions.TestHelpers;
 using OrganisationRegistry.KeyTypes.Events;
@@ -147,6 +148,10 @@ public class
                 true,
                 new DateTime(2000, 1, 1),
                 new DateTime(2001, 1, 1)),
+            new KboLegalEntityTypeAdded(
+                _organisationId,
+                MockMagdaOrganisationResponse.MockLegalEntityTypeCode,
+                MockMagdaOrganisationResponse.MockLegalEntityType),
         };
 
     private SyncOrganisationWithKbo SyncOrganisationWithKboCommand

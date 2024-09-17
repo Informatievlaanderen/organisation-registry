@@ -118,6 +118,8 @@ public class KboOrganisationCommandHandlers :
 
         organisation.UpdateKboBankAccount(kboOrganisation.BankAccounts);
 
+        organisation.AddKboLegalEntityType(kboOrganisation.LegalEntityType);
+
         if (kboOrganisation.Termination != null)
             organisation.MarkTerminationFound(kboOrganisation.Termination);
 

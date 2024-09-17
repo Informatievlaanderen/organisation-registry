@@ -220,7 +220,7 @@ public class UpdateFromKboTests : Specification<KboOrganisationCommandHandlers, 
     public async Task PublishesTheCorrectNumberOfEvents()
     {
         await Given(Events).When(SyncOrganisationWithKboCommand, TestUser.AlgemeenBeheerder)
-            .ThenItPublishesTheCorrectNumberOfEvents(11);
+            .ThenItPublishesTheCorrectNumberOfEvents(12);
     }
 
     [Fact]
@@ -397,7 +397,7 @@ public class UpdateFromKboTests : Specification<KboOrganisationCommandHandlers, 
     {
         await Given(Events).When(SyncOrganisationWithKboCommand, TestUser.AlgemeenBeheerder).Then();
 
-        var organisationSyncedFromKbo = PublishedEvents[10].UnwrapBody<OrganisationSyncedFromKbo>();
+        var organisationSyncedFromKbo = PublishedEvents[11].UnwrapBody<OrganisationSyncedFromKbo>();
         organisationSyncedFromKbo.Should().NotBeNull();
 
         organisationSyncedFromKbo.OrganisationId.Should().Be(_organisationId);

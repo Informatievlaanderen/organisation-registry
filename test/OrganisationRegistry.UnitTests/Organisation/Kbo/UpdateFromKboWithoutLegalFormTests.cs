@@ -119,6 +119,10 @@ public class
                 "Classificatie",
                 new ValidFrom(2020, 12, 11),
                 new ValidTo(2020, 12, 12)),
+            new KboLegalEntityTypeAdded(
+                _organisationId,
+                MockMagdaOrganisationResponse.MockLegalEntityTypeCode,
+                MockMagdaOrganisationResponse.MockLegalEntityType),
         };
 
     private SyncOrganisationWithKbo SyncOrganisationWithKboCommand
