@@ -1,3 +1,10 @@
+# [1.320.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.319.0...v1.320.0) (2024-09-17)
+
+
+### Features
+
+* or-2353 also add kbo legal entity when syncing ([dd0f15c](https://github.com/informatievlaanderen/organisation-registry/commit/dd0f15c1e6881e3e8c6da6a014780398c7ce0f02))
+
 # [1.319.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.318.4...v1.319.0) (2024-09-16)
 
 
