@@ -117,6 +117,8 @@ public class Organisation :
                 document.Name = message.Body.NameBeforeKboCoupling;
                 document.ShortName = message.Body.ShortNameBeforeKboCoupling;
 
+                document.LegalEntityType = null;
+
                 document.KboNumber = string.Empty;
             }
         ).ToAsyncResult();

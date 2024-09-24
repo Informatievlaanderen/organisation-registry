@@ -310,6 +310,7 @@ public class OrganisationHandlerTests
         organisation.Source.Validity.Start.Should().Be(organisationCreated.ValidFrom);
         organisation.Source.KboNumber.Should().Be(coupledWithKbo.KboNumber);
         organisation.Source.Validity.End.Should().Be(organisationValidity);
+        organisation.Source.LegalEntityType.Should().BeNull();
     }
 
     [Fact]
