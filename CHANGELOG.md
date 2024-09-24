@@ -1,3 +1,10 @@
+# [1.321.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.320.0...v1.321.0) (2024-09-24)
+
+
+### Features
+
+* or-2535 remove legal ent type when decoupled ([84efcc0](https://github.com/informatievlaanderen/organisation-registry/commit/84efcc097c6afe9ef0c6d34e7d8641dbb29809f9))
+
 # [1.320.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.319.0...v1.320.0) (2024-09-17)
 
 
