@@ -22,6 +22,7 @@ public class KboState
         KboRegisteredOffice = null;
         KboFormalNameLabel = null;
         KboLegalFormOrganisationClassification = null;
+        LegalEntityTypeCode = null;
     }
 
     public KboState()

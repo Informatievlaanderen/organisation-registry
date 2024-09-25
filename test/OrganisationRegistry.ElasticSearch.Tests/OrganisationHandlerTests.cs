@@ -278,6 +278,70 @@ public class OrganisationHandlerTests
     }
 
     [Fact]
+    public async void LegalEntityTypeAdded()
+    {
+        var scenario = new OrganisationScenario(Guid.NewGuid());
+        var forcedKboTermination = false;
+        scenario.AddCustomization(new ParameterNameArg<bool>("forcedKboTermination", forcedKboTermination));
+
+        var organisationValidity = scenario.Create<DateTime?>() ?? scenario.Create<DateTime>();
+
+        var initialiseProjection = scenario.Create<InitialiseProjection>();
+        var organisationCreated = scenario.Create<OrganisationCreated>();
+        var coupledWithKbo = scenario.Create<OrganisationCoupledWithKbo>();
+        var legalEntityTypeAdded = scenario.Create<KboLegalEntityTypeAdded>();
+
+        await _eventProcessor.Handle<OrganisationDocument>(
+            new List<IEnvelope>
+            {
+                initialiseProjection.ToEnvelope(),
+                organisationCreated.ToEnvelope(),
+                coupledWithKbo.ToEnvelope(),
+                legalEntityTypeAdded.ToEnvelope(),
+            }
+        );
+
+        await _fixture.Elastic.ReadClient.Indices.RefreshAsync(Indices.Index<OrganisationDocument>());
+        var organisation = _fixture.Elastic.ReadClient.Get<OrganisationDocument>(organisationCreated.OrganisationId);
+
+        organisation.Source.LegalEntityType.Should().BeEquivalentTo(new LegalEntityType(
+            legalEntityTypeAdded.LegalEntityTypeCode,
+            legalEntityTypeAdded.LegalEntityTypeDescription));
+    }
+
+    [Fact]
+    public async void KboCouplingCancelled()
+    {
+        var scenario = new OrganisationScenario(Guid.NewGuid());
+        var forcedKboTermination = false;
+        scenario.AddCustomization(new ParameterNameArg<bool>("forcedKboTermination", forcedKboTermination));
+
+        var organisationValidity = scenario.Create<DateTime?>() ?? scenario.Create<DateTime>();
+
+        var initialiseProjection = scenario.Create<InitialiseProjection>();
+        var organisationCreated = scenario.Create<OrganisationCreated>();
+        var coupledWithKbo = scenario.Create<OrganisationCoupledWithKbo>();
+        var legalEntityTypeAdded = scenario.Create<KboLegalEntityTypeAdded>();
+        var couplingCancelled = scenario.Create<OrganisationCouplingWithKboCancelled>();
+
+        await _eventProcessor.Handle<OrganisationDocument>(
+            new List<IEnvelope>
+            {
+                initialiseProjection.ToEnvelope(),
+                organisationCreated.ToEnvelope(),
+                coupledWithKbo.ToEnvelope(),
+                legalEntityTypeAdded.ToEnvelope(),
+                couplingCancelled.ToEnvelope(),
+            }
+        );
+
+        await _fixture.Elastic.ReadClient.Indices.RefreshAsync(Indices.Index<OrganisationDocument>());
+        var organisation = _fixture.Elastic.ReadClient.Get<OrganisationDocument>(organisationCreated.OrganisationId);
+
+        organisation.Source.LegalEntityType.Should().BeNull();
+    }
+
+    [Fact]
     public async void OrganisationTerminated()
     {
         var scenario = new OrganisationScenario(Guid.NewGuid());
@@ -310,7 +374,6 @@ public class OrganisationHandlerTests
         organisation.Source.Validity.Start.Should().Be(organisationCreated.ValidFrom);
         organisation.Source.KboNumber.Should().Be(coupledWithKbo.KboNumber);
         organisation.Source.Validity.End.Should().Be(organisationValidity);
-        organisation.Source.LegalEntityType.Should().BeNull();
     }
 
     [Fact]
