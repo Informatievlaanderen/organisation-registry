@@ -1,3 +1,10 @@
+# [1.322.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.321.1...v1.322.0) (2024-09-25)
+
+
+### Features
+
+* or-2535 clear legal entity type when clearing kbo state ([0487762](https://github.com/informatievlaanderen/organisation-registry/commit/0487762cf6e55b29aefdb6ef82cdcb7d2629972c))
+
 ## [1.321.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.321.0...v1.321.1) (2024-09-25)
 
 
