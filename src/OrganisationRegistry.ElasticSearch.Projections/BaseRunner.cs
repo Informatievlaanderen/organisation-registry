@@ -8,6 +8,8 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Client;
 using Configuration;
+using ElasticSearch.Bodies;
+using ElasticSearch.Organisations;
 using Infrastructure;
 using Infrastructure.Change;
 using Microsoft.Extensions.Logging;
@@ -19,7 +21,7 @@ using SqlServer;
 using SqlServer.ElasticSearchProjections;
 using SqlServer.ProjectionState;
 
-public abstract class BaseRunner<T> where T: class, IDocument, new()
+public abstract class BaseRunner<T> where T : class, IDocument, new()
 {
     public string ProjectionName { get; }
     public Type[] EventHandlers { get; }
@@ -80,10 +82,11 @@ public abstract class BaseRunner<T> where T: class, IDocument, new()
 
         var eventsBeingListenedTo =
             EventHandlers
-                .SelectMany(handler => handler
-                    .GetTypeInfo()
-                    .ImplementedInterfaces
-                    .SelectMany(@interface => @interface.GenericTypeArguments))
+                .SelectMany(
+                    handler => handler
+                        .GetTypeInfo()
+                        .ImplementedInterfaces
+                        .SelectMany(@interface => @interface.GenericTypeArguments))
                 .Distinct()
                 .ToList();
 
@@ -161,32 +164,70 @@ public abstract class BaseRunner<T> where T: class, IDocument, new()
             {
                 foreach (var documentChange in elasticDocumentCreation.Changes)
                 {
-                    var document = documentChange.Value();
-                    documentCache.Add(documentChange.Key, document);
+                    try
+                    {
+                        var document = documentChange.Value();
+                        documentCache.Add(documentChange.Key, document);
+                    }
+                    catch (Exception e)
+                    {
+                        var context = _contextFactory.Create();
+                        switch (typeof(T))
+                        {
+                            case Type t when t == typeof(BodyDocument):
+                                context.BodiesToRebuild.Add(new BodyToRebuild() { BodyId = documentChange.Key });
+                                break;
+                            case Type t when t == typeof(OrganisationDocument):
+                                context.OrganisationsToRebuild.Add(new OrganisationToRebuild() { OrganisationId = documentChange.Key });
+                                break;
+                        }
+
+                        throw;
+                    }
                 }
+
                 break;
             }
             case ElasticPerDocumentChange<T> perDocumentChange:
             {
                 foreach (var documentChange in perDocumentChange.Changes)
                 {
-                    T? document;
-
-                    if (!documentCache.ContainsKey(documentChange.Key))
+                    try
                     {
-                        document = (await _elastic.TryGetAsync(async () =>
-                                (await _elastic.WriteClient.GetAsync<T>(documentChange.Key))
-                                .ThrowOnFailure()))
-                            .Source;
+                        T? document;
 
-                        documentCache.Add(documentChange.Key, document);
+                        if (!documentCache.ContainsKey(documentChange.Key))
+                        {
+                            document = (await _elastic.TryGetAsync(
+                                    async () =>
+                                        (await _elastic.WriteClient.GetAsync<T>(documentChange.Key))
+                                        .ThrowOnFailure()))
+                                .Source;
+
+                            documentCache.Add(documentChange.Key, document);
+                        }
+                        else
+                        {
+                            document = documentCache[documentChange.Key];
+                        }
+
+                        await documentChange.Value(document);
                     }
-                    else
+                    catch (Exception e)
                     {
-                        document = documentCache[documentChange.Key];
-                    }
+                        var context = _contextFactory.Create();
+                        switch (typeof(T))
+                        {
+                            case Type t when t == typeof(BodyDocument):
+                                context.BodiesToRebuild.Add(new BodyToRebuild() { BodyId = documentChange.Key });
+                                break;
+                            case Type t when t == typeof(OrganisationDocument):
+                                context.OrganisationsToRebuild.Add(new OrganisationToRebuild() { OrganisationId = documentChange.Key });
+                                break;
+                        }
 
-                    await documentChange.Value(document);
+                        throw;
+                    }
                 }
 
                 break;
@@ -196,11 +237,12 @@ public abstract class BaseRunner<T> where T: class, IDocument, new()
                 await FlushDocuments(documentCache);
                 await massChange.Change(_elastic);
 
-                if(isLastChangeInSet) // don't update  projection state if this is not the last change!
+                if (isLastChangeInSet) // don't update  projection state if this is not the last change!
                     await UpdateProjectionState(eventNumber);
 
-                await _elastic.TryGetAsync(async () =>
-                    (await _elastic.WriteClient.Indices.RefreshAsync(Indices.Index<T>())).ThrowOnFailure());
+                await _elastic.TryGetAsync(
+                    async () =>
+                        (await _elastic.WriteClient.Indices.RefreshAsync(Indices.Index<T>())).ThrowOnFailure());
                 break;
             }
         }
@@ -215,22 +257,22 @@ public abstract class BaseRunner<T> where T: class, IDocument, new()
                 throw new Exception("Found document without key or name.");
             }
 
-            await _elastic.TryAsync(() =>
-            {
-                _elastic.WriteClient.BulkAll(documentCache.Values, b => b
-                        .BackOffTime("30s")
-                        .BackOffRetries(5)
-                        .RefreshOnCompleted(false)
-                        .MaxDegreeOfParallelism(Environment.ProcessorCount)
-                        .Size(1000)
-                    )
-                    .Wait(TimeSpan.FromMinutes(15), next =>
-                    {
-                        _logger.LogInformation("[{ProjectionName}] Flushed documents, page {PageNumber}", ProjectionName, next.Page);
-                    });
+            await _elastic.TryAsync(
+                () =>
+                {
+                    _elastic.WriteClient.BulkAll(
+                            documentCache.Values,
+                            b => b
+                                .BackOffTime("30s")
+                                .BackOffRetries(5)
+                                .RefreshOnCompleted(false)
+                                .MaxDegreeOfParallelism(Environment.ProcessorCount)
+                                .Size(1000)
+                        )
+                        .Wait(TimeSpan.FromMinutes(15), next => { _logger.LogInformation("[{ProjectionName}] Flushed documents, page {PageNumber}", ProjectionName, next.Page); });
 
-                return Task.CompletedTask;
-            });
+                    return Task.CompletedTask;
+                });
             documentCache.Clear();
         }
     }
@@ -257,7 +299,7 @@ public abstract class BaseRunner<T> where T: class, IDocument, new()
 
     private async Task<ElasticChanges> ProcessEnvelope(IEnvelope envelope)
     {
-        var changes = await _bus.Publish(null, null, (dynamic) envelope);
+        var changes = await _bus.Publish(null, null, (dynamic)envelope);
         return new ElasticChanges(envelope.Number, changes);
     }
 }
