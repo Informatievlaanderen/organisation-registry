@@ -1,3 +1,10 @@
+# [1.323.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.322.0...v1.323.0) (2025-02-25)
+
+
+### Features
+
+* autofix elastic search ([edc710e](https://github.com/informatievlaanderen/organisation-registry/commit/edc710e58a5b2476da57b6f4157e2a7095621218))
+
 # [1.322.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.321.1...v1.322.0) (2024-09-25)
 
 
