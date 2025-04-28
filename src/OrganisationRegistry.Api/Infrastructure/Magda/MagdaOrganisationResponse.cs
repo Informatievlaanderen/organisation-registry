@@ -59,10 +59,14 @@ public class MagdaOrganisationResponse : IMagdaOrganisationResponse
         if (legalForm != null)
             LegalForm = new MagdaLegalForm(legalForm);
 
-        var address = onderneming
-            ?.Adressen
-            ?.Where(a => a.Straat != null && a.Huisnummer != null && a.Gemeente != null && a.Land != null)
-            .SingleOrDefault(a => a.Type?.Code?.Value == MaatschappelijkeZetelCode);
+
+        var validAddresses = onderneming?.Adressen?
+            .Where(IsValidAddress)
+            .ToList();
+
+        var address = validAddresses?
+                          .FirstOrDefault(a => IsDutchDescriptionPresent(a) && IsMaatschappelijkeZetel(a))
+                      ?? validAddresses?.SingleOrDefault(IsMaatschappelijkeZetel);
 
         if (address != null)
             Address = new MagdaAddress(address);
@@ -72,6 +76,18 @@ public class MagdaOrganisationResponse : IMagdaOrganisationResponse
 
         LegalEntityType = new MagdaLegalEntityType(onderneming?.SoortOnderneming.Code.Value, onderneming?.SoortOnderneming.Code.Beschrijving);
     }
+
+    private static bool IsValidAddress(AdresOndernemingType a)
+        => a.Straat != null && a.Huisnummer != null && a.Gemeente != null && a.Land != null;
+
+    private static bool IsDutchDescriptionPresent(AdresOndernemingType a)
+        => a.Descripties?.Any(IsDutch) == true;
+
+    private static bool IsMaatschappelijkeZetel(AdresOndernemingType a)
+        => a.Type?.Code?.Value == MaatschappelijkeZetelCode;
+
+    private static bool IsDutch(DescriptieType x)
+        => x.Taalcode == "nl";
 
     private static bool OverlapsWithToday(RechtsvormExtentieType type, DateTime today)
         => new Period(
