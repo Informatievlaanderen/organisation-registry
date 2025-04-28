@@ -13,7 +13,8 @@ public class MagdaOrganisationResponse : IMagdaOrganisationResponse
     private const string KBODateFormat = "yyyy-MM-dd";
 
     // https://vlaamseoverheid.atlassian.net/wiki/spaces/MG/pages/500074551/Beschrijving+Antwoord+GeefOnderneming-02.00#BeschrijvingAntwoord(GeefOnderneming-02.00)-Adres
-    private const string MaatschappelijkeZetelCode = "001";
+    public const string MaatschappelijkeZetelCode = "001";
+    public const string TaalcodeNl = "nl";
 
     public IMagdaName FormalName { get; }
     public IMagdaName ShortName { get; }
@@ -59,17 +60,7 @@ public class MagdaOrganisationResponse : IMagdaOrganisationResponse
         if (legalForm != null)
             LegalForm = new MagdaLegalForm(legalForm);
 
-
-        var validAddresses = onderneming?.Adressen?
-            .Where(IsValidAddress)
-            .ToList();
-
-        var address = validAddresses?
-                          .FirstOrDefault(a => IsDutchDescriptionPresent(a) && IsMaatschappelijkeZetel(a))
-                      ?? validAddresses?.SingleOrDefault(IsMaatschappelijkeZetel);
-
-        if (address != null)
-            Address = new MagdaAddress(address);
+        Address = MagdaAddress.FromAddressesOrNull(onderneming?.Adressen);
 
         if (onderneming?.Stopzetting != null)
             Termination = new MagdaTermination(onderneming.Stopzetting);
@@ -87,7 +78,7 @@ public class MagdaOrganisationResponse : IMagdaOrganisationResponse
         => a.Type?.Code?.Value == MaatschappelijkeZetelCode;
 
     private static bool IsDutch(DescriptieType x)
-        => x.Taalcode == "nl";
+        => string.Equals(x.Taalcode, TaalcodeNl, StringComparison.InvariantCultureIgnoreCase);
 
     private static bool OverlapsWithToday(RechtsvormExtentieType type, DateTime today)
         => new Period(
@@ -132,7 +123,7 @@ public class MagdaOrganisationResponse : IMagdaOrganisationResponse
         }
 
         private static bool IsDutch(NaamOndernemingType x)
-            => x.Taalcode == "nl";
+            => string.Equals(x.Taalcode, TaalcodeNl, StringComparison.InvariantCultureIgnoreCase);
 
         private static bool IsValid(NaamOndernemingType x)
             => (string.IsNullOrEmpty(x.DatumBegin) ||
@@ -214,6 +205,26 @@ public class MagdaOrganisationResponse : IMagdaOrganisationResponse
 
             ValidFrom = ParseKboDate(adresOndernemingType.DatumBegin);
             ValidTo = ParseKboDate(adresOndernemingType.DatumEinde);
+        }
+
+        public static MagdaAddress? FromAddressesOrNull(AdresOndernemingType[]? adresOndernemingTypes)
+        {
+            if (adresOndernemingTypes == null || !adresOndernemingTypes.Any())
+            {
+                return null;
+            }
+
+            var validAddresses = adresOndernemingTypes?
+                .Where(IsValidAddress)
+                .ToList();
+
+            var address = validAddresses?
+                       .FirstOrDefault(a => IsDutchDescriptionPresent(a) && IsMaatschappelijkeZetel(a))
+                   ?? validAddresses?.SingleOrDefault(IsMaatschappelijkeZetel);
+
+            return address == null
+                ? null
+                : new MagdaAddress(address);
         }
     }
 
