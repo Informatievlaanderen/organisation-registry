@@ -1,3 +1,15 @@
+# [1.324.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.323.0...v1.324.0) (2025-05-05)
+
+
+### Bug Fixes
+
+* or-2650 make sure the dutch address is being used ([9643d89](https://github.com/informatievlaanderen/organisation-registry/commit/9643d89a45019405a9b65c2d013275cc364414cd))
+
+
+### Features
+
+* or-2650 use nl address when syncing kbo ([0ae1345](https://github.com/informatievlaanderen/organisation-registry/commit/0ae1345d8935521e42921e3849f35df6caa91a5e))
+
 # [1.323.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.322.0...v1.323.0) (2025-02-25)
 
 
