@@ -71,9 +71,6 @@ public class MagdaOrganisationResponse : IMagdaOrganisationResponse
     private static bool IsValidAddress(AdresOndernemingType a)
         => a.Straat != null && a.Huisnummer != null && a.Gemeente != null && a.Land != null;
 
-    private static bool IsDutchDescriptionPresent(AdresOndernemingType a)
-        => a.Descripties?.Any(IsDutch) == true;
-
     private static bool IsMaatschappelijkeZetel(AdresOndernemingType a)
         => a.Type?.Code?.Value == MaatschappelijkeZetelCode;
 
@@ -181,12 +178,13 @@ public class MagdaOrganisationResponse : IMagdaOrganisationResponse
 
         public MagdaAddress(AdresOndernemingType adresOndernemingType)
         {
-            Country = adresOndernemingType.Descripties?[0].Adres?.Land?.Naam?.Trim() ?? string.Empty;
-            City = adresOndernemingType.Descripties?[0].Adres?.Gemeente?.Naam?.Trim() ?? string.Empty;
+            var dutchAddressOrFirst = adresOndernemingType.Descripties.FirstOrDefault(x => string.Equals(x.Taalcode, TaalcodeNl, StringComparison.InvariantCultureIgnoreCase))
+                                      ?? adresOndernemingType.Descripties.First();
+            Country = dutchAddressOrFirst.Adres?.Land?.Naam?.Trim() ?? string.Empty;
+            City = dutchAddressOrFirst.Adres?.Gemeente?.Naam?.Trim() ?? string.Empty;
             ZipCode = adresOndernemingType.Gemeente?.PostCode?.Trim() ?? string.Empty;
 
-            var streetName = adresOndernemingType
-                .Descripties?[0]
+            var streetName = dutchAddressOrFirst
                 .Adres?
                 .Straat?
                 .Naam?
@@ -214,17 +212,13 @@ public class MagdaOrganisationResponse : IMagdaOrganisationResponse
                 return null;
             }
 
-            var validAddresses = adresOndernemingTypes?
+            var validAddress = adresOndernemingTypes?
                 .Where(IsValidAddress)
-                .ToList();
+                .FirstOrDefault(IsMaatschappelijkeZetel);
 
-            var address = validAddresses?
-                       .FirstOrDefault(a => IsDutchDescriptionPresent(a) && IsMaatschappelijkeZetel(a))
-                   ?? validAddresses?.SingleOrDefault(IsMaatschappelijkeZetel);
-
-            return address == null
+            return validAddress == null
                 ? null
-                : new MagdaAddress(address);
+                : new MagdaAddress(validAddress);
         }
     }
 

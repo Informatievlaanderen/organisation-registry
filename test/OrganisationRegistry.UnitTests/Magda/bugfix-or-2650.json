@@ -1,0 +1,85 @@
+﻿[
+  {
+    "type": {
+      "code": {
+        "beschrijving": null,
+        "value": "001"
+      },
+      "omschrijving": {
+        "oorsprong": null,
+        "taalCode": null,
+        "value": "Zetel"
+      }
+    },
+    "descripties": [
+      {
+        "adres": {
+          "land": {
+            "nisCode": "150",
+            "isoCode": null,
+            "naam": "België"
+          },
+          "straat": {
+            "code": null,
+            "naam": "Boulevard Simon Bolivar"
+          },
+          "huisnummer": null,
+          "busnummer": null,
+          "gemeente": {
+            "nisCode": null,
+            "postCode": null,
+            "naam": "Bruxelles"
+          },
+          "staat": null
+        },
+        "contact": null,
+        "taalcode": "FR",
+        "aanvulling": null
+      },
+      {
+        "adres": {
+          "land": {
+            "nisCode": "150",
+            "isoCode": null,
+            "naam": "België"
+          },
+          "straat": {
+            "code": null,
+            "naam": "Simon Bolivarlaan"
+          },
+          "huisnummer": null,
+          "busnummer": null,
+          "gemeente": {
+            "nisCode": null,
+            "postCode": null,
+            "naam": "Brussel"
+          },
+          "staat": null
+        },
+        "contact": null,
+        "taalcode": "NL",
+        "aanvulling": null
+      }
+    ],
+    "doorhalingen": null,
+    "datumBegin": "2024-05-31",
+    "datumEinde": null,
+    "land": {
+      "nisCode": "150",
+      "isoCode": "BE",
+      "naam": "BELGIE"
+    },
+    "straat": {
+      "code": "7079",
+      "naam": null
+    },
+    "huisnummer": "17",
+    "busnummer": "411",
+    "gemeente": {
+      "nisCode": "21004",
+      "postCode": "1000",
+      "naam": null
+    },
+    "staat": null
+  }
+]

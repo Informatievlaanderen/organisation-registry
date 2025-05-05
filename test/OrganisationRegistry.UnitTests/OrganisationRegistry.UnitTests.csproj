@@ -33,6 +33,8 @@
     <EmbeddedResource Include="Import\Organisations\Terminate\WhenImportingAFaultyCsvFile_output_1.csv" />
     <EmbeddedResource Include="Import\Organisations\Create\WhenImportingACorrectCsvFile_output_1.csv" />
     <EmbeddedResource Include="Import\Organisations\Create\WhenImportingAFaultyCsvFile_input_2.csv" />
+    <None Remove="Magda\bugfix-or-2650.json" />
+    <EmbeddedResource Include="Magda\bugfix-or-2650.json" />
   </ItemGroup>
   
   <Import Project="..\..\.paket\Paket.Restore.targets" />
