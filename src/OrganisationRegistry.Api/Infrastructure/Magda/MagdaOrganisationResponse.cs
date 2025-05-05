@@ -178,7 +178,7 @@ public class MagdaOrganisationResponse : IMagdaOrganisationResponse
 
         public MagdaAddress(AdresOndernemingType adresOndernemingType)
         {
-            var dutchAddressOrFirst = adresOndernemingType.Descripties.FirstOrDefault(x => string.Equals(x.Taalcode, TaalcodeNl, StringComparison.InvariantCultureIgnoreCase))
+            var dutchAddressOrFirst = adresOndernemingType.Descripties.FirstOrDefault(IsDutch)
                                       ?? adresOndernemingType.Descripties.First();
             Country = dutchAddressOrFirst.Adres?.Land?.Naam?.Trim() ?? string.Empty;
             City = dutchAddressOrFirst.Adres?.Gemeente?.Naam?.Trim() ?? string.Empty;

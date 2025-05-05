@@ -39,7 +39,6 @@ public class MagdaAddressTests
         };
         var addresses = JsonConvert.DeserializeObject<AdresOndernemingType[]>(json, settings);
 
-
         var magdaAddress = MagdaOrganisationResponse.MagdaAddress.FromAddressesOrNull(addresses);
 
         magdaAddress.Should().NotBeNull();
