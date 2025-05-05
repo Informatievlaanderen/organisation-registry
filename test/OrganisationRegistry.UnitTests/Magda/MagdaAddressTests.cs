@@ -1,9 +1,12 @@
 namespace OrganisationRegistry.UnitTests.Magda;
 
 using System;
+using System.IO;
+using System.Linq;
 using Api.Infrastructure.Magda;
 using FluentAssertions;
 using global::Magda.GeefOnderneming;
+using Newtonsoft.Json;
 using Xunit;
 
 public class MagdaAddressTests
@@ -27,23 +30,21 @@ public class MagdaAddressTests
     [Fact]
     public void WithFrAndNlAddresses_ThenTakesNlAddress()
     {
-        var nlStraatnaam = "nl straatnaam";
+        var json = GetType().GetAssociatedResourceJson("bugfix-or-2650");
 
-        var builder = new AdresOndernemingTypeBuilder();
+        var settings = new JsonSerializerSettings
+        {
+            MissingMemberHandling = MissingMemberHandling.Ignore,
+            NullValueHandling       = NullValueHandling.Ignore
+        };
+        var addresses = JsonConvert.DeserializeObject<AdresOndernemingType[]>(json, settings);
 
-        var frAdres = builder
-            .WithTaalcode("fr")
-            .Build();
 
-        var nlAdres = builder
-            .WithStraat("Nieuwstraat")
-            .WithTaalcode(MagdaOrganisationResponse.TaalcodeNl)
-            .Build();
-
-        var magdaAddress = MagdaOrganisationResponse.MagdaAddress.FromAddressesOrNull(new[] { frAdres, nlAdres });
+        var magdaAddress = MagdaOrganisationResponse.MagdaAddress.FromAddressesOrNull(addresses);
 
         magdaAddress.Should().NotBeNull();
-        magdaAddress!.Street.Should().Be(nlStraatnaam);
-
+        magdaAddress!.Street.Should().Be("Simon Bolivarlaan 17 bus 411");
+        magdaAddress!.City.Should().Be("Brussel");
+        magdaAddress!.ZipCode.Should().Be("1000");
     }
 }
