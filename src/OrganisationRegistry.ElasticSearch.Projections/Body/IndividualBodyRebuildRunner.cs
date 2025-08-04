@@ -1,21 +1,19 @@
-namespace OrganisationRegistry.ElasticSearch.Projections.Bodies;
+namespace OrganisationRegistry.ElasticSearch.Projections.Body;
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Body;
-using Client;
-using ElasticSearch.Bodies;
-using Infrastructure;
-using Infrastructure.Change;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using OpenTelemetry;
-using Osc;
+using Bodies;
+using Client;
+using Infrastructure;
+using Infrastructure.Change;
 using OrganisationRegistry.Infrastructure.Events;
 using SqlServer;
 using SqlServer.ProjectionState;
+using Osc;
 
 public class IndividualBodyRebuildRunner
 {
