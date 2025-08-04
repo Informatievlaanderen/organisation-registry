@@ -22,8 +22,8 @@ public static class ThrowOnFailureExtension
     {
         if (response.IsValid) return response;
 
-        if (response.ApiCall.HttpStatusCode == 404 && typeof(T) == typeof(OrganisationDocument))
-            throw new ElasticsearchOrganisationNotFoundException(((GetResponse<OrganisationDocument>)response).Id);
+        if (response.ApiCall.HttpStatusCode == 404)
+            throw new ElasticsearchAggregateNotFoundException(((GetResponse<T>)response).Id);
 
         throw new ElasticsearchException(response.DebugInformation, response.OriginalException);
     }
@@ -76,12 +76,25 @@ public static class ThrowOnFailureExtension
     }
 }
 
-public class ElasticsearchOrganisationNotFoundException : ElasticsearchException
+public class ElasticsearchAggregateNotFoundException : ElasticsearchException
 {
-    public string OrganisationId { get; }
+    public string AggregateId { get; }
 
-    public ElasticsearchOrganisationNotFoundException(string organisationId)
+    public ElasticsearchAggregateNotFoundException(string aggregateId)
     {
-        OrganisationId = organisationId;
+        AggregateId = aggregateId;
+    }
+}
+
+
+public class ElasticsearchPerDocumentChangeException : ElasticsearchException
+{
+    public Guid AggregateId { get; }
+    public int EnvelopeNumber { get; }
+
+    public ElasticsearchPerDocumentChangeException(Guid aggregateId, int envelopeNumber)
+    {
+        AggregateId = aggregateId;
+        EnvelopeNumber = envelopeNumber;
     }
 }
