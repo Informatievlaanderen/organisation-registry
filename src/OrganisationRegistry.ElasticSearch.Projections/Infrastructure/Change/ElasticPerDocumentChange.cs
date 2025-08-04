@@ -2,7 +2,11 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Infrastructure.Change;
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Be.Vlaanderen.Basisregisters.Utilities;
+using Client;
+using Humanizer;
 
 public class ElasticPerDocumentChange<T> : IElasticChange where T: IDocument
 {
@@ -10,26 +14,17 @@ public class ElasticPerDocumentChange<T> : IElasticChange where T: IDocument
     {
         Changes = new Dictionary<Guid, Func<T, Task>> {{id, doc =>
             {
-                change(doc);
-                return Task.CompletedTask;
+                try{
+                    change(doc);
+                    return Task.CompletedTask;
+                }catch (InvalidOperationException)
+                {
+                    return Task.FromException(new ElasticsearchPerDocumentChangeException(doc.Id, doc.ChangeId));
+                }
             }
         }};
     }
 
-    public ElasticPerDocumentChange(Dictionary<Guid, Action<T>> changes)
-    {
-        Changes = new Dictionary<Guid, Func<T, Task>>();
-        foreach (var change in changes)
-        {
-            Func<T, Task> changeAction = doc =>
-            {
-                change.Value(doc);
-                return Task.CompletedTask;
-            };
-
-            Changes.Add(change.Key, changeAction);
-        }
-    }
 
     public ElasticPerDocumentChange(Guid id, Func<T, Task> change)
     {
@@ -43,3 +38,4 @@ public class ElasticPerDocumentChange<T> : IElasticChange where T: IDocument
 
     public Dictionary<Guid, Func<T, Task>> Changes { get; init; }
 }
+

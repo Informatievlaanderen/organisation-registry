@@ -131,13 +131,14 @@ public abstract class BaseRunner<T> where T : class, IDocument, new()
             _metrics.NumberOfEnvelopesHandledGauge = envelopes.Count;
             _metrics.NumberOfEnvelopesHandledCounter = envelopes.Count;
         }
-        catch (ElasticsearchOrganisationNotFoundException organisationNotFoundException)
+        catch (ElasticsearchAggregateNotFoundException organisationNotFoundException)
         {
             await using var organisationRegistryContext = _contextFactory.Create();
+
             organisationRegistryContext.OrganisationsToRebuild.Add(
                 new OrganisationToRebuild
                 {
-                    OrganisationId = Guid.Parse(organisationNotFoundException.OrganisationId)
+                    OrganisationId = Guid.Parse(organisationNotFoundException.AggregateId)
                 });
             await organisationRegistryContext.SaveChangesAsync();
             _logger.LogWarning(
@@ -145,7 +146,7 @@ public abstract class BaseRunner<T> where T : class, IDocument, new()
                 organisationNotFoundException,
                 "[{ProjectionName}] Could not find {OrganisationId} in ES while processing envelope #{EnvelopeNumber}, adding it to organisations to rebuild",
                 ProjectionName,
-                organisationNotFoundException.OrganisationId,
+                organisationNotFoundException.AggregateId,
                 newLastProcessedEventNumber);
             throw;
         }
@@ -164,71 +165,15 @@ public abstract class BaseRunner<T> where T : class, IDocument, new()
             {
                 foreach (var documentChange in elasticDocumentCreation.Changes)
                 {
-                    try
-                    {
-                        var document = documentChange.Value();
-                        documentCache.Add(documentChange.Key, document);
-                    }
-                    catch (Exception e)
-                    {
-                        var context = _contextFactory.Create();
-                        switch (typeof(T))
-                        {
-                            case Type t when t == typeof(BodyDocument):
-                                context.BodiesToRebuild.Add(new BodyToRebuild() { BodyId = documentChange.Key });
-                                break;
-                            case Type t when t == typeof(OrganisationDocument):
-                                context.OrganisationsToRebuild.Add(new OrganisationToRebuild() { OrganisationId = documentChange.Key });
-                                break;
-                        }
-
-                        throw;
-                    }
+                    var document = documentChange.Value();
+                    documentCache.Add(documentChange.Key, document);
                 }
 
                 break;
             }
             case ElasticPerDocumentChange<T> perDocumentChange:
             {
-                foreach (var documentChange in perDocumentChange.Changes)
-                {
-                    try
-                    {
-                        T? document;
-
-                        if (!documentCache.ContainsKey(documentChange.Key))
-                        {
-                            document = (await _elastic.TryGetAsync(
-                                    async () =>
-                                        (await _elastic.WriteClient.GetAsync<T>(documentChange.Key))
-                                        .ThrowOnFailure()))
-                                .Source;
-
-                            documentCache.Add(documentChange.Key, document);
-                        }
-                        else
-                        {
-                            document = documentCache[documentChange.Key];
-                        }
-
-                        await documentChange.Value(document);
-                    }
-                    catch (Exception e)
-                    {
-                        var context = _contextFactory.Create();
-                        switch (typeof(T))
-                        {
-                            case Type t when t == typeof(BodyDocument):
-                                context.BodiesToRebuild.Add(new BodyToRebuild() { BodyId = documentChange.Key });
-                                break;
-                            case Type t when t == typeof(OrganisationDocument):
-                                context.OrganisationsToRebuild.Add(new OrganisationToRebuild() { OrganisationId = documentChange.Key });
-                                break;
-                        }
-
-                        throw;
-                    }
-                }
+                await HandlePerDocumentChange(documentCache, perDocumentChange);
 
                 break;
             }
@@ -237,14 +182,83 @@ public abstract class BaseRunner<T> where T : class, IDocument, new()
                 await FlushDocuments(documentCache);
                 await massChange.Change(_elastic);
 
-                if (isLastChangeInSet) // don't update  projection state if this is not the last change!
+                if(isLastChangeInSet) // don't update  projection state if this is not the last change!
                     await UpdateProjectionState(eventNumber);
 
-                await _elastic.TryGetAsync(
-                    async () =>
-                        (await _elastic.WriteClient.Indices.RefreshAsync(Indices.Index<T>())).ThrowOnFailure());
+                await _elastic.TryGetAsync(async () =>
+                    (await _elastic.WriteClient.Indices.RefreshAsync(Indices.Index<T>())).ThrowOnFailure());
                 break;
             }
+        }
+    }
+
+    private async Task HandlePerDocumentChange(Dictionary<Guid, T> documentCache, ElasticPerDocumentChange<T> perDocumentChange)
+    {
+        try
+        {
+            foreach (var documentChange in perDocumentChange.Changes)
+            {
+                T? document;
+
+                if (!documentCache.ContainsKey(documentChange.Key))
+                {
+                    document = (await _elastic.TryGetAsync(async () =>
+                            (await _elastic.WriteClient.GetAsync<T>(documentChange.Key))
+                            .ThrowOnFailure()))
+                        .Source;
+
+                    documentCache.Add(documentChange.Key, document);
+                }
+                else
+                {
+                    document = documentCache[documentChange.Key];
+                }
+
+                await documentChange.Value(document);
+            }
+        }
+        catch (ElasticsearchPerDocumentChangeException e)
+        {
+            await using var organisationRegistryContext = _contextFactory.Create();
+
+            switch (perDocumentChange)
+            {
+                case ElasticPerDocumentChange<OrganisationDocument>:
+                    organisationRegistryContext.OrganisationsToRebuild.Add(
+                        new OrganisationToRebuild
+                        {
+                            OrganisationId = e.AggregateId,
+                        });
+                    await organisationRegistryContext.SaveChangesAsync();
+                    _logger.LogWarning(
+                        0,
+                        e,
+                        "[{ProjectionName}] Error occured for {AggregateId} in ES while processing envelope #{EnvelopeNumber}, adding it to entities to rebuild",
+                        ProjectionName,
+                        e.AggregateId,
+                        e.EnvelopeNumber);
+
+                    break;
+
+                case ElasticPerDocumentChange<BodyDocument>:
+                    organisationRegistryContext.BodiesToRebuild.Add(
+                        new BodyToRebuild()
+                        {
+                            BodyId = e.AggregateId,
+                        });
+                    await organisationRegistryContext.SaveChangesAsync();
+                    _logger.LogWarning(
+                        0,
+                        e,
+                        "[{ProjectionName}] Error occured for {AggregateId} in ES while processing envelope #{EnvelopeNumber}, adding it to entities to rebuild",
+                        ProjectionName,
+                        e.AggregateId,
+                        e.EnvelopeNumber);
+
+                    break;
+            }
+
+            throw;
         }
     }
 
