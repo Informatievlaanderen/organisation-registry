@@ -1,14 +1,16 @@
 namespace OrganisationRegistry.ElasticSearch.Projections.Body;
 
 using System;
+using System.Threading.Tasks;
 using Client;
 using Configuration;
-using ElasticSearch.Bodies;
+using Bodies;
 using Infrastructure;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrganisationRegistry.Infrastructure.Events;
 using SqlServer;
+using SqlServer.ElasticSearchProjections;
 using SqlServer.ProjectionState;
 
 public class BodyRunner : BaseRunner<BodyDocument>
@@ -36,14 +38,24 @@ public class BodyRunner : BaseRunner<BodyDocument>
             configuration,
             store,
             projectionStates,
-            ElasticSearchProjectionsProjectionName,
-            ProjectionFullName,
-            ProjectionName,
             EventHandlers,
             elastic,
             bus,
-            contextFactory)
+            contextFactory,
+            new ProjectionName(ElasticSearchProjectionsProjectionName, ProjectionFullName, ProjectionName))
     {
         busRegistrar.RegisterEventHandlers(EventHandlers);
+    }
+
+    protected override async Task HandlePerDocumentChangeException(ElasticsearchPerDocumentChangeException e)
+    {
+        await using var organisationRegistryContext = ContextFactory.Create();
+
+        organisationRegistryContext.OrganisationsToRebuild.Add(
+            new OrganisationToRebuild
+            {
+                OrganisationId = e.AggregateId,
+            });
+        await organisationRegistryContext.SaveChangesAsync();
     }
 }

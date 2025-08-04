@@ -42,13 +42,11 @@ public class PeopleRunner : BaseRunner<PersonDocument>
             configuration,
             store,
             projectionStates,
-            ElasticSearchProjectionsProjectionName,
-            ProjectionFullName,
-            ProjectionName,
             EventHandlers,
             elastic,
             bus,
-            contextFactory)
+            contextFactory,
+            new ProjectionName(ElasticSearchProjectionsProjectionName, ProjectionFullName, ProjectionName))
     {
         busRegistrar.RegisterEventHandlers(EventHandlers);
     }

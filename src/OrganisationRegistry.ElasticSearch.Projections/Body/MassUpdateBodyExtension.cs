@@ -4,7 +4,7 @@ using System;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Client;
-using ElasticSearch.Bodies;
+using Bodies;
 using Osc;
 
 public static class MassUpdateBodyExtension
