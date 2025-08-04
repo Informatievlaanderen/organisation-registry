@@ -21,13 +21,14 @@ using SqlServer;
 using SqlServer.ElasticSearchProjections;
 using SqlServer.ProjectionState;
 
-public abstract class BaseRunner<T> where T : class, IDocument, new()
+public record ProjectionName(string ElasticSearchProjectionsProjectionName, string FullName, string Name);
+public abstract class BaseRunner<T> where T: class, IDocument, new()
 {
-    public string ProjectionName { get; }
+    public string ProjectionName
+        => _projectionName.Name;
+
     public Type[] EventHandlers { get; }
 
-    private readonly string _elasticSearchProjectionsProjectionName;
-    private readonly string _projectionFullName;
     private readonly Elastic _elastic;
 
     private readonly int _batchSize;
@@ -35,37 +36,34 @@ public abstract class BaseRunner<T> where T : class, IDocument, new()
     private readonly IEventStore _store;
     private readonly IProjectionStates _projectionStates;
     private readonly ElasticBus _bus;
-    private readonly IContextFactory _contextFactory;
+    public IContextFactory ContextFactory { get; }
     private readonly OpenTelemetryMetrics.ElasticSearchProjections _metrics;
+    private readonly ProjectionName _projectionName;
 
     protected BaseRunner(
         ILogger<BaseRunner<T>> logger,
         IOptions<ElasticSearchConfiguration> configuration,
         IEventStore store,
         IProjectionStates projectionStates,
-        string elasticSearchProjectionsProjectionName,
-        string projectionFullName,
-        string projectionName,
         Type[] eventHandlers,
         Elastic elastic,
         ElasticBus bus,
-        IContextFactory contextFactory)
+        IContextFactory contextFactory,
+        ProjectionName projectionName)
     {
         _logger = logger;
         _store = store;
         _projectionStates = projectionStates;
         _bus = bus;
-        _contextFactory = contextFactory;
+        ContextFactory = contextFactory;
+        _projectionName = projectionName;
 
         _batchSize = configuration.Value.BatchSize;
-        _elasticSearchProjectionsProjectionName = elasticSearchProjectionsProjectionName;
-        _projectionFullName = projectionFullName;
         _elastic = elastic;
 
-        ProjectionName = projectionName;
         EventHandlers = eventHandlers;
 
-        _metrics = new OpenTelemetryMetrics.ElasticSearchProjections(projectionName);
+        _metrics = new OpenTelemetryMetrics.ElasticSearchProjections(_projectionName.Name);
     }
 
     public async Task Run()
@@ -73,7 +71,7 @@ public abstract class BaseRunner<T> where T : class, IDocument, new()
         var maxEventNumberToProcess = _store.GetLastEvent();
         _metrics.MaxEventNumberToProcessGauge = _metrics.MaxEventNumberToProcessCounter = maxEventNumberToProcess;
 
-        var lastProcessedEventNumber = await _projectionStates.GetLastProcessedEventNumber(_elasticSearchProjectionsProjectionName);
+        var lastProcessedEventNumber = await _projectionStates.GetLastProcessedEventNumber(_projectionName.ElasticSearchProjectionsProjectionName);
         var envelopesBehind = maxEventNumberToProcess - lastProcessedEventNumber;
         _metrics.NumberOfEnvelopesBehindGauge = _metrics.NumberOfEnvelopesBehindCounter = envelopesBehind;
         _metrics.NumberOfEnvelopesBehindHistogram.Record(envelopesBehind);
@@ -133,7 +131,7 @@ public abstract class BaseRunner<T> where T : class, IDocument, new()
         }
         catch (ElasticsearchAggregateNotFoundException organisationNotFoundException)
         {
-            await using var organisationRegistryContext = _contextFactory.Create();
+            await using var organisationRegistryContext = ContextFactory.Create();
 
             organisationRegistryContext.OrganisationsToRebuild.Add(
                 new OrganisationToRebuild
@@ -219,48 +217,21 @@ public abstract class BaseRunner<T> where T : class, IDocument, new()
         }
         catch (ElasticsearchPerDocumentChangeException e)
         {
-            await using var organisationRegistryContext = _contextFactory.Create();
-
-            switch (perDocumentChange)
-            {
-                case ElasticPerDocumentChange<OrganisationDocument>:
-                    organisationRegistryContext.OrganisationsToRebuild.Add(
-                        new OrganisationToRebuild
-                        {
-                            OrganisationId = e.AggregateId,
-                        });
-                    await organisationRegistryContext.SaveChangesAsync();
-                    _logger.LogWarning(
-                        0,
-                        e,
-                        "[{ProjectionName}] Error occured for {AggregateId} in ES while processing envelope #{EnvelopeNumber}, adding it to entities to rebuild",
-                        ProjectionName,
-                        e.AggregateId,
-                        e.EnvelopeNumber);
-
-                    break;
-
-                case ElasticPerDocumentChange<BodyDocument>:
-                    organisationRegistryContext.BodiesToRebuild.Add(
-                        new BodyToRebuild()
-                        {
-                            BodyId = e.AggregateId,
-                        });
-                    await organisationRegistryContext.SaveChangesAsync();
-                    _logger.LogWarning(
-                        0,
-                        e,
-                        "[{ProjectionName}] Error occured for {AggregateId} in ES while processing envelope #{EnvelopeNumber}, adding it to entities to rebuild",
-                        ProjectionName,
-                        e.AggregateId,
-                        e.EnvelopeNumber);
-
-                    break;
-            }
+            await HandlePerDocumentChangeException(e);
+            _logger.LogWarning(
+                0,
+                e,
+                "[{ProjectionName}] Error occured for {AggregateId} in ES while processing envelope #{EnvelopeNumber}, adding it to entities to rebuild",
+                ProjectionName,
+                e.AggregateId,
+                e.EnvelopeNumber);
 
             throw;
         }
     }
+
+    protected virtual Task HandlePerDocumentChangeException(ElasticsearchPerDocumentChangeException e)
+        => Task.CompletedTask;
 
     private async Task FlushDocuments(Dictionary<Guid, T> documentCache)
     {
@@ -297,7 +268,7 @@ public abstract class BaseRunner<T> where T : class, IDocument, new()
             return;
 
         _logger.LogInformation("[{ProjectionName}] First run, initialising projections!", ProjectionName);
-        await ProcessEnvelope(new InitialiseProjection(_projectionFullName).ToTypedEnvelope());
+        await ProcessEnvelope(new InitialiseProjection(_projectionName.FullName).ToTypedEnvelope());
     }
 
     private async Task UpdateProjectionState(int? newLastProcessedEventNumber)
@@ -306,7 +277,7 @@ public abstract class BaseRunner<T> where T : class, IDocument, new()
             return;
 
         _logger.LogInformation("[{ProjectionName}] Processed up until envelope #{LastProcessedEnvelopeNumber}", ProjectionName, newLastProcessedEventNumber);
-        await _projectionStates.UpdateProjectionState(_elasticSearchProjectionsProjectionName, newLastProcessedEventNumber.Value);
+        await _projectionStates.UpdateProjectionState(_projectionName.ElasticSearchProjectionsProjectionName, newLastProcessedEventNumber.Value);
 
         _metrics.LastProcessedEventNumberGauge = _metrics.LastProcessedEventNumberCounter = newLastProcessedEventNumber.Value;
     }

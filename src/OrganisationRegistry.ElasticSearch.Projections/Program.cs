@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 using Autofac.Features.OwnedInstances;
 using Autofac.Util;
 using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql.EntityFrameworkCore;
-using Bodies;
 using Body;
 using Cache;
 using Client;
