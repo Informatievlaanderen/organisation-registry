@@ -51,10 +51,10 @@ public class BodyRunner : BaseRunner<BodyDocument>
     {
         await using var organisationRegistryContext = ContextFactory.Create();
 
-        organisationRegistryContext.OrganisationsToRebuild.Add(
-            new OrganisationToRebuild
+        organisationRegistryContext.BodiesToRebuild.Add(
+            new BodyToRebuild
             {
-                OrganisationId = e.AggregateId,
+                BodyId = e.AggregateId,
             });
         await organisationRegistryContext.SaveChangesAsync();
     }
