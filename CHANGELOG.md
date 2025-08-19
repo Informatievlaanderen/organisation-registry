@@ -1,3 +1,11 @@
+## [1.324.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.324.0...v1.324.1) (2025-08-19)
+
+
+### Bug Fixes
+
+* or-2893 ensure bodies rebuild on failure ([c5df76f](https://github.com/informatievlaanderen/organisation-registry/commit/c5df76f7c46d50d6ba113761e28a260bcbfd0cf7))
+* or-2893 use correct rebuild table ([23bfa38](https://github.com/informatievlaanderen/organisation-registry/commit/23bfa38c51ca694324f9f27eac561466c3c76e8d))
+
 # [1.324.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.323.0...v1.324.0) (2025-05-05)
 
 
