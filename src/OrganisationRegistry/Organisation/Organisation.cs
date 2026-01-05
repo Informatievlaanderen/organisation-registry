@@ -1104,6 +1104,7 @@ public partial class Organisation : AggregateRoot
             contactType.Name,
             contactValue,
             validity);
+
         if (State.OrganisationContacts.HasDuplicatContactOverlappingWith(
                 newOrganisationContact)
            ) throw new CannotAddDuplicateContact();
