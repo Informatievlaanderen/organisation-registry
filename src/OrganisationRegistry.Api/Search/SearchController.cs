@@ -55,6 +55,24 @@ public class SearchController : OrganisationRegistryController
     /// Na deze request heb je 30 seconden de tijd om een call te doen naar `v1/search/{INDEXNAME}/scroll?id={SCROLLID}`
     /// Deze zal je de volgende pagina geven (opnieuw 500 items), samen met de `x-search-metadata` header en een nieuwe <b>scrollId</b>.
     /// Herhaal dit proces tot je geen nieuwe items meer krijgt.
+    /// <br /><br />
+    /// <b>Omgaan met data wijzigingen (incrementele synchronisatie)</b>
+    /// <br />
+    /// Om enkel gewijzigde data op te halen sinds je laatste synchronisatie, kan je het `changeId` veld gebruiken:
+    /// <br /><br />
+    /// 1. Sla na elke synchronisatie het hoogste `changeId` op dat je hebt ontvangen
+    /// <br />
+    /// 2. Bij de volgende synchronisatie, gebruik je dit nummer + 1 als startpunt in je query:
+    /// <br />
+    /// `https://api.wegwijs.vlaanderen.be/v1/search/people?q=changeId:[43626 TO *]&amp;sort=changeId,id&amp;scroll=true`
+    /// <br /><br />
+    /// 3. Verwerk alle resultaten via de scroll API (zie hierboven)
+    /// <br />
+    /// 4. Sla opnieuw het hoogste `changeId` op uit de ontvangen resultaten
+    /// <br />
+    /// 5. Herhaal dit proces bij elke synchronisatie
+    /// <br /><br />
+    /// Op deze manier haal je enkel de records op die gewijzigd zijn sinds je laatste synchronisatie.
     /// </remarks>
     /// <param name="indexName">ElasticSearch index naam.
     /// Keuze tussen `organisations`, `people`, and `bodies`.</param>
