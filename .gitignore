@@ -78,3 +78,4 @@ angulardoc.json
 /src/*/__build__/
 /__build__/**
 .webpack.json
+mssqllogs/
