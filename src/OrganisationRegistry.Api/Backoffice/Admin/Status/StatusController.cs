@@ -27,16 +27,22 @@ using SqlServer.Configuration;
 [OrganisationRegistryRoute("status")]
 public class StatusController : OrganisationRegistryController
 {
+    /// <summary>Get the status of the API.</summary>
+    /// <response code="200">If the API is running and healthy.</response>
     [HttpGet]
     public async Task<IActionResult> Get()
         => await OkAsync("I'm ok!");
 
+    /// <summary>Get the current feature toggle settings.</summary>
+    /// <response code="200">Returns the current feature toggle configuration.</response>
     [HttpGet]
     [Route("toggles")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetToggles([FromServices] IOptions<TogglesConfigurationSection> toggles)
         => await OkAsync(toggles.Value);
 
+    /// <summary>Get the current feature management feature states.</summary>
+    /// <response code="200">Returns a dictionary of feature names and their enabled status.</response>
     [HttpGet]
     [Route("features")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -51,6 +57,8 @@ public class StatusController : OrganisationRegistryController
         return Ok(features);
     }
 
+    /// <summary>Get the current configuration settings (admin only).</summary>
+    /// <response code="200">Returns the API configuration with sensitive data obfuscated.</response>
     [HttpGet]
     [Route("configuration")]
     [OrganisationRegistryAuthorize(Role.Developer)]

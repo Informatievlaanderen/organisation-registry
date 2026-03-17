@@ -13,6 +13,8 @@ using Microsoft.AspNetCore.Mvc;
 [OrganisationRegistryRoute("mgmt")]
 public class ManagementController : OrganisationRegistryController
 {
+    /// <summary>Get a list of day names for the current culture.</summary>
+    /// <response code="200">Returns a list of days of the week with their localized names.</response>
     [HttpGet("days")]
     public async Task<IActionResult> GetDayNames()
     {
@@ -30,6 +32,8 @@ public class ManagementController : OrganisationRegistryController
         return await OkAsync(days);
     }
 
+    /// <summary>Get a list of available time slots in 30-minute intervals.</summary>
+    /// <response code="200">Returns a list of hours from 00:00 to 23:30 in 30-minute increments.</response>
     [HttpGet("hours")]
     public async Task<IActionResult> GetHours()
     {
