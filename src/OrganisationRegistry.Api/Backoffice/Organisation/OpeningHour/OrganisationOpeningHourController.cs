@@ -16,6 +16,9 @@ using SqlServer.Infrastructure;
 [OrganisationRegistryRoute("organisations/{organisationId}/openingHours")]
 public class OrganisationOpeningHourController : OrganisationRegistryController
 {
+    /// <summary>List opening hours for an organisation.</summary>
+    /// <response code="200">Returns a paginated list of opening hours for the organisation.</response>
+    /// <response code="404">If the organisation cannot be found.</response>
     [HttpGet]
     public async Task<IActionResult> Get(
         [FromServices] OrganisationRegistryContext context,
@@ -33,6 +36,9 @@ public class OrganisationOpeningHourController : OrganisationRegistryController
         return Ok(await pagedOrganisations.Items.ToListAsync());
     }
 
+    /// <summary>Get a specific opening hour for an organisation.</summary>
+    /// <response code="200">If the opening hour is found.</response>
+    /// <response code="404">If the opening hour or organisation cannot be found.</response>
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
