@@ -1,0 +1,68 @@
+#!/bin/bash
+# Pre-commit hook to detect common secrets and sensitive patterns
+
+set -e
+
+# ANSI color codes
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+NC='\033[0m' # No Color
+
+SECRETS_PATTERNS=(
+    # Private keys
+    "-----BEGIN (RSA|DSA|EC|OPENSSH|PGP) PRIVATE KEY"
+    # AWS
+    "AKIA[0-9A-Z]{16}"
+    "aws_access_key_id.*=.*[A-Z0-9]{20}"
+    "aws_secret_access_key.*=.*[A-Za-z0-9/+=]{40}"
+    # API keys and tokens
+    "api[_-]?key['\"]?\s*[:=]\s*['\"][^'\"]{20,}"
+    "token['\"]?\s*[:=]\s*['\"][^'\"]{20,}"
+    "secret['\"]?\s*[:=]\s*['\"][^'\"]{20,}"
+    "password['\"]?\s*[:=]\s*['\"][^'\"]{8,}"
+    # GitHub tokens
+    "gh[pousr]_[A-Za-z0-9_]{36,255}"
+    # Firebase
+    "firebase.*['\"]apiKey['\"].*['\"][^'\"]{39}"
+    # MongoDB
+    "mongodb\+srv://.*:.*@"
+    # Connection strings with credentials
+    "Server=.*User Id=.*Password="
+    "username.*password"
+    # Stripe keys
+    "sk_(live|test)_[0-9a-zA-Z]{20,}"
+    "pk_(live|test)_[0-9a-zA-Z]{20,}"
+)
+
+# Get staged files
+STAGED_FILES=$(git diff --cached --name-only)
+
+if [ -z "$STAGED_FILES" ]; then
+    exit 0
+fi
+
+# Check each staged file
+FOUND_SECRETS=0
+
+while IFS= read -r file; do
+    # Skip certain files
+    [[ "$file" =~ \.(lock|json|xml|pem|key|pfx|p12)$ ]] && continue
+    [[ "$file" =~ (node_modules|\.git|dist|bin|obj) ]] && continue
+
+    # Check for secrets
+    for pattern in "${SECRETS_PATTERNS[@]}"; do
+        if git show ":$file" 2>/dev/null | grep -iE "$pattern" > /dev/null 2>&1; then
+            echo -e "${RED}❌ SECURITY: Potential secret detected in $file${NC}"
+            echo "   Pattern: $pattern"
+            FOUND_SECRETS=1
+        fi
+    done
+done <<< "$STAGED_FILES"
+
+if [ $FOUND_SECRETS -eq 1 ]; then
+    echo -e "${RED}⛔ Commit blocked: Secrets detected${NC}"
+    exit 1
+fi
+
+echo -e "${GREEN}✅ Pre-commit secret scan passed${NC}"
+exit 0

@@ -1,0 +1,324 @@
+openapi: 3.0.0
+info:
+  title: Organisation Registry Internal/Screen APIs
+  description: |
+    Internal APIs for the Organisation Registry, used by the Angular SPA front-end.
+    
+    These APIs provide access to organisation data, governance structures, delegations,
+    and administrative operations. All endpoints require authentication via OAuth2 or JWT.
+  version: "[VERSION_FROM_PUBLIC_API]"
+  contact:
+    name: Organisation Registry Team
+  license:
+    name: EUPL-1.2
+
+servers:
+  - url: /api/v1
+    description: Internal API base path
+
+tags:
+  - name: Organisations
+    description: Create, read, update, list organisations
+  - name: Governance
+    description: Manage governance bodies (Organen) within organisations
+  - name: Addresses
+    description: Manage organisation and building addresses
+  - name: Contacts
+    description: Manage contact information
+  - name: Buildings
+    description: Manage organisation buildings
+  - name: Delegations
+    description: Manage delegated permissions and access control
+  - name: Reports
+    description: Generate reports and exports
+
+paths:
+  # PLACEHOLDER: Paths will be auto-generated from Swashbuckle annotations
+  # Example endpoint structure:
+  /organisations:
+    get:
+      summary: List all organisations
+      operationId: ListOrganisations
+      tags:
+        - Organisations
+      parameters:
+        - name: skip
+          in: query
+          schema:
+            type: integer
+            default: 0
+          description: Number of items to skip
+        - name: take
+          in: query
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+          description: Number of items to return
+        - name: filter
+          in: query
+          schema:
+            type: string
+          description: Filter by name or status
+      responses:
+        200:
+          description: List of organisations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Organisatie'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+      security:
+        - oauth2: [viewer, editor, admin]
+
+components:
+  schemas:
+    Organisatie:
+      type: object
+      title: Organisation
+      description: Represents a Flemish public organisation
+      required:
+        - id
+        - name
+        - status
+        - validFrom
+      properties:
+        id:
+          type: string
+          pattern: 'OVO\d{6}'
+          description: 'OVO-nummer identifier (format: OVO + 6 digits)'
+          example: OVO000123
+        name:
+          type: string
+          maxLength: 255
+          description: Organisation name
+          example: Stad Antwerpen
+        description:
+          type: string
+          nullable: true
+          description: Organisation description
+        status:
+          type: string
+          enum: [Active, Inactive, Archived]
+          description: Current status
+        type:
+          type: string
+          description: Organisation type (municipaliteit, provincia, waterschap, etc.)
+        foundedDate:
+          type: string
+          format: date
+          description: Founding date
+        validFrom:
+          type: string
+          format: date
+          description: Date from which organisation is valid
+        validTo:
+          type: string
+          format: date
+          nullable: true
+          description: Date until which organisation is valid (null = ongoing)
+        addresses:
+          type: array
+          items:
+            $ref: '#/components/schemas/Address'
+          description: Organisation addresses
+        contacts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Contact'
+          description: Organisation contacts
+        organen:
+          type: array
+          items:
+            $ref: '#/components/schemas/Orgaan'
+          description: Governance bodies
+
+    Address:
+      type: object
+      title: Address
+      required:
+        - id
+        - street
+        - number
+        - zipCode
+        - city
+        - country
+      properties:
+        id:
+          type: string
+          description: Unique identifier
+        street:
+          type: string
+          description: Street name
+        number:
+          type: string
+          description: Building number
+        busBox:
+          type: string
+          nullable: true
+          description: Bus or box number (apartment, suite)
+        zipCode:
+          type: string
+          description: Postal code
+        city:
+          type: string
+          description: City name
+        country:
+          type: string
+          description: Country (ISO 3166 code)
+        type:
+          type: string
+          enum: [Registered, Operational, Visiting]
+          description: Type of address
+        validFrom:
+          type: string
+          format: date
+        validTo:
+          type: string
+          format: date
+          nullable: true
+
+    Contact:
+      type: object
+      title: Contact
+      required:
+        - id
+        - type
+        - value
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum: [Email, Phone, Website, Fax]
+        value:
+          type: string
+          description: Contact value (email, phone number, URL)
+        validFrom:
+          type: string
+          format: date
+        validTo:
+          type: string
+          format: date
+          nullable: true
+
+    Orgaan:
+      type: object
+      title: Governance Body
+      required:
+        - id
+        - name
+        - validFrom
+      properties:
+        id:
+          type: string
+        organisationId:
+          type: string
+          pattern: 'OVO\d{6}'
+          description: Parent organisation OVO-nummer
+        name:
+          type: string
+          description: Body name (e.g., Gemeenteraad, Burgemeester en Wethouders)
+        type:
+          type: string
+          description: Type of governance body
+        validFrom:
+          type: string
+          format: date
+        validTo:
+          type: string
+          format: date
+          nullable: true
+
+    Building:
+      type: object
+      title: Building
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        address:
+          $ref: '#/components/schemas/Address'
+        validFrom:
+          type: string
+          format: date
+        validTo:
+          type: string
+          format: date
+          nullable: true
+
+    ErrorResponse:
+      type: object
+      title: Error Response
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          description: Error code identifier
+          example: ORGANISATION_NOT_FOUND
+        message:
+          type: string
+          description: Human-readable error message
+          example: Organisation with OVO-nummer OVO000999 does not exist
+        details:
+          type: string
+          nullable: true
+          description: Additional error details
+        timestamp:
+          type: string
+          format: date-time
+          description: Error timestamp (ISO 8601)
+
+  responses:
+    Unauthorized:
+      description: Authentication required or failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    Forbidden:
+      description: Authenticated but lacks permission
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    ValidationError:
+      description: Validation error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: /auth/authorize
+          scopes:
+            viewer: Read-only access
+            editor: Read and write access
+            admin: Full administrative access
+
+security:
+  - oauth2: [viewer]
