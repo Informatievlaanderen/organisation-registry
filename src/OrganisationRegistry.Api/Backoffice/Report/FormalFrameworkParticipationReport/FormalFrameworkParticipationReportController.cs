@@ -20,7 +20,7 @@ using OrganisationRegistry.SqlServer.Infrastructure;
 public class FormalFrameworkParticipationReportController : OrganisationRegistryController
 {
     /// <summary>Rapport: Meer Evenwichtige Participatie per toepassingsgebied.</summary>
-    /// <remarks>Geef de geslachtsverhouding voor een toepassingsgebied (gegroepeerd per orgaan, organisatie en zetel).</remarks>
+    /// <remarks>Geef de meer evenwichtige participatie voor een toepassingsgebied (gegroepeerd per orgaan, organisatie en zetel).</remarks>
     /// <param name="context"></param>
     /// <param name="formalFrameworkId">A formal framework GUID identifier</param>
     /// <returns></returns>
@@ -68,7 +68,7 @@ public class FormalFrameworkParticipationReportController : OrganisationRegistry
     }
 
     /// <summary>Rapport: Meer Evenwichtige Participatie - samenvatting.</summary>
-    /// <remarks>Geef de samenvatting van de geslachtsverhouding (gegroepeerd per orgaan, organisatie en zetel).</remarks>
+    /// <remarks>Geef de samenvatting van de meer evenwichtige participatie (gegroepeerd per orgaan, organisatie en zetel).</remarks>
     /// <param name="context"></param>
     /// <param name="apiConfiguration"></param>
     /// <param name="dateTimeProvider"></param>

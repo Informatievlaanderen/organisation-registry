@@ -1,5 +1,6 @@
 namespace OrganisationRegistry.Api.Parameters;
 
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Backoffice.Parameters.BodyClassification.Queries;
 using Backoffice.Parameters.BodyClassificationType.Queries;
@@ -26,24 +27,34 @@ using Infrastructure;
 using Infrastructure.Search.Filtering;
 using Infrastructure.Search.Pagination;
 using Infrastructure.Search.Sorting;
+using Infrastructure.Swagger.Examples;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OrganisationRegistry.Infrastructure.Configuration;
+using SqlServer.BodyClassification;
 using SqlServer.BodyClassificationType;
+using SqlServer.Building;
+using SqlServer.Capacity;
 using SqlServer.ContactType;
+using SqlServer.FormalFramework;
 using SqlServer.FormalFrameworkCategory;
 using SqlServer.FunctionType;
 using SqlServer.Infrastructure;
+using SqlServer.KeyType;
 using SqlServer.LabelType;
 using SqlServer.LifecyclePhaseType;
+using SqlServer.Location;
 using SqlServer.LocationType;
 using SqlServer.MandateRoleType;
+using SqlServer.OrganisationClassification;
 using SqlServer.OrganisationClassificationType;
 using SqlServer.OrganisationRelationType;
 using SqlServer.Purpose;
+using SqlServer.RegulationSubTheme;
 using SqlServer.RegulationTheme;
 using SqlServer.SeatType;
+using Swashbuckle.AspNetCore.Filters;
 
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
@@ -59,7 +70,8 @@ public class ParameterController : OrganisationRegistryController
     /// </remarks>
     /// <response code="200">Een lijst van orgaanclassificaties.</response>
     [HttpGet("bodyclassifications")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<BodyClassificationListItem>), StatusCodes.Status200OK)]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(BodyClassificationListExamples))]
     public async Task<IActionResult> GetBodyClassifications([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<BodyClassificationListItemFilter>();
@@ -81,7 +93,8 @@ public class ParameterController : OrganisationRegistryController
     /// </remarks>
     /// <response code="200">Een lijst van orgaanclassificatietypes.</response>
     [HttpGet("bodyclassificationtypes")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<BodyClassificationTypeListItem>), StatusCodes.Status200OK)]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(BodyClassificationTypeListExamples))]
     public async Task<IActionResult> GetBodyClassificationTypes([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<BodyClassificationTypeListItem>();
@@ -103,7 +116,8 @@ public class ParameterController : OrganisationRegistryController
     /// </remarks>
     /// <response code="200">Een lijst van gebouwen.</response>
     [HttpGet("buildings")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<BuildingListItem>), StatusCodes.Status200OK)]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(BuildingListExamples))]
     public async Task<IActionResult> GetBuildings([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<BuildingListItemFilter>();
@@ -125,7 +139,8 @@ public class ParameterController : OrganisationRegistryController
     /// </remarks>
     /// <response code="200">Een lijst van beleidsvelden.</response>
     [HttpGet("purposes")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<PurposeListItem>), StatusCodes.Status200OK)]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(PurposeListExamples))]
     public async Task<IActionResult> GetPurposes([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<PurposeListItem>();
@@ -147,7 +162,8 @@ public class ParameterController : OrganisationRegistryController
     /// </remarks>
     /// <response code="200">Een lijst van regelgevingsubthema's.</response>
     [HttpGet("regulationsubthemes")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<RegulationSubThemeListItem>), StatusCodes.Status200OK)]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(RegulationSubThemeListExamples))]
     public async Task<IActionResult> GetRegulationSubThemes([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<RegulationSubThemeListItemFilter>();
@@ -169,7 +185,8 @@ public class ParameterController : OrganisationRegistryController
     /// </remarks>
     /// <response code="200">Een lijst van regelgevingthema's.</response>
     [HttpGet("regulationthemes")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<RegulationThemeListItem>), StatusCodes.Status200OK)]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(RegulationThemeListExamples))]
     public async Task<IActionResult> GetRegulationThemes([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<RegulationThemeListItem>();
@@ -191,7 +208,8 @@ public class ParameterController : OrganisationRegistryController
     /// </remarks>
     /// <response code="200">Een lijst van zeteltypen.</response>
     [HttpGet("seattypes")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<SeatTypeListItem>), StatusCodes.Status200OK)]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(SeatTypeListExamples))]
     public async Task<IActionResult> GetSeatTypes([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<SeatTypeListItem>();
@@ -213,7 +231,8 @@ public class ParameterController : OrganisationRegistryController
     /// </remarks>
     /// <response code="200">Een lijst van organisatie relatie types.</response>
     [HttpGet("organisationrelationtypes")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<OrganisationRelationTypeListItem>), StatusCodes.Status200OK)]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(OrganisationRelationTypeListExamples))]
     public async Task<IActionResult> GetOrganisationRelationTypes([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<OrganisationRelationTypeListItem>();
@@ -235,7 +254,8 @@ public class ParameterController : OrganisationRegistryController
     /// </remarks>
     /// <response code="200">Een lijst van organisatie classificatie types.</response>
     [HttpGet("organisationclassificationtypes")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<OrganisationClassificationTypeListItem>), StatusCodes.Status200OK)]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(OrganisationClassificationTypeListExamples))]
     public async Task<IActionResult> GetOrganisationClassificationTypes(
         [FromServices] OrganisationRegistryContext context,
         [FromServices] IOrganisationRegistryConfiguration organisationRegistryConfiguration)
@@ -259,7 +279,8 @@ public class ParameterController : OrganisationRegistryController
     /// </remarks>
     /// <response code="200">Een lijst van organisatie classificaties.</response>
     [HttpGet("organisationclassifications")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<OrganisationClassificationListItem>), StatusCodes.Status200OK)]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(OrganisationClassificationListExamples))]
     public async Task<IActionResult> GetOrganisationClassifications([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<OrganisationClassificationListItemFilter>();
@@ -281,7 +302,8 @@ public class ParameterController : OrganisationRegistryController
     /// </remarks>
     /// <response code="200">Een lijst van mandaat rol types.</response>
     [HttpGet("mandateroletypes")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<MandateRoleTypeListItem>), StatusCodes.Status200OK)]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(MandateRoleTypeListExamples))]
     public async Task<IActionResult> GetMandateRoleTypes([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<MandateRoleTypeListItem>();
@@ -303,7 +325,8 @@ public class ParameterController : OrganisationRegistryController
     /// </remarks>
     /// <response code="200">Een lijst van locatie types.</response>
     [HttpGet("locationtypes")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<LocationTypeListItem>), StatusCodes.Status200OK)]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(LocationTypeListExamples))]
     public async Task<IActionResult> GetLocationTypes(
         [FromServices] OrganisationRegistryContext context,
         [FromServices] IOrganisationRegistryConfiguration configuration)
@@ -327,7 +350,8 @@ public class ParameterController : OrganisationRegistryController
     /// </remarks>
     /// <response code="200">Een lijst van locaties.</response>
     [HttpGet("locations")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<LocationListItem>), StatusCodes.Status200OK)]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(LocationListExamples))]
     public async Task<IActionResult> GetLocations([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<LocationListItemFilter>();
@@ -349,7 +373,8 @@ public class ParameterController : OrganisationRegistryController
     /// </remarks>
     /// <response code="200">Een lijst van levensloopfase types.</response>
     [HttpGet("lifecyclephasetypes")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<LifecyclePhaseTypeListItem>), StatusCodes.Status200OK)]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(LifecyclePhaseTypeListExamples))]
     public async Task<IActionResult> GetLifecyclePhaseTypes([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<LifecyclePhaseTypeListItem>();
@@ -371,7 +396,8 @@ public class ParameterController : OrganisationRegistryController
     /// </remarks>
     /// <response code="200">Een lijst van benaming types.</response>
     [HttpGet("labeltypes")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<LabelTypeListItem>), StatusCodes.Status200OK)]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(LabelTypeListExamples))]
     public async Task<IActionResult> GetLabelTypes(
         [FromServices] OrganisationRegistryContext context,
         [FromServices] IOrganisationRegistryConfiguration configuration)
@@ -395,7 +421,8 @@ public class ParameterController : OrganisationRegistryController
     /// </remarks>
     /// <response code="200">Een lijst van informatiesystemen.</response>
     [HttpGet("keytypes")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<KeyTypeListItem>), StatusCodes.Status200OK)]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(KeyTypeListExamples))]
     public async Task<IActionResult> GetKeyTypes(
         [FromServices] OrganisationRegistryContext context)
     {
@@ -420,7 +447,8 @@ public class ParameterController : OrganisationRegistryController
     /// </remarks>
     /// <response code="200">Een lijst van functie types.</response>
     [HttpGet("functiontypes")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<FunctionTypeListItem>), StatusCodes.Status200OK)]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(FunctionTypeListExamples))]
     public async Task<IActionResult> GetFunctionTypes([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<FunctionTypeListItem>();
@@ -436,10 +464,14 @@ public class ParameterController : OrganisationRegistryController
     }
 
     /// <summary>Vraag een lijst van toepassingsgebied categorieën op.</summary>
-    /// <remarks>Vraag een lijst met toepassingsgebied categorieën op. <br />
-    /// Geef de header `x-pagination: none` mee om alle entiteiten op te vragen.
+    /// <remarks>
+    ///     Vraag een lijst met toepassingsgebied categorieën op. <br />
+    ///     Geef de header `x-pagination: none` mee om alle entiteiten op te vragen.
     /// </remarks>
+    /// <response code="200">Een lijst van toepassingsgebied categorieën.</response>
     [HttpGet("formalframeworkcategories")]
+    [ProducesResponseType(typeof(List<FormalFrameworkCategoryListItem>), StatusCodes.Status200OK)]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(FormalFrameworkCategoryListExamples))]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<FormalFrameworkCategoryListItem>();
@@ -461,7 +493,8 @@ public class ParameterController : OrganisationRegistryController
     /// </remarks>
     /// <response code="200">Een lijst van toepassingsgebieden.</response>
     [HttpGet("formalframeworks")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<FormalFrameworkListItem>), StatusCodes.Status200OK)]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(FormalFrameworkListExamples))]
     public async Task<IActionResult> GetFormalFrameworks([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<FormalFrameworkListItemFilter>();
@@ -483,7 +516,8 @@ public class ParameterController : OrganisationRegistryController
     /// </remarks>
     /// <response code="200">Een lijst van contact types.</response>
     [HttpGet("contacttypes")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<ContactTypeListItem>), StatusCodes.Status200OK)]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(ContactTypeListExamples))]
     public async Task<IActionResult> GetContactTypes([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<ContactTypeListItem>();
@@ -505,7 +539,8 @@ public class ParameterController : OrganisationRegistryController
     /// </remarks>
     /// <response code="200">Een lijst van hoedanigheden.</response>
     [HttpGet("capacities")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<CapacityListItem>), StatusCodes.Status200OK)]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(CapacityListExamples))]
     public async Task<IActionResult> GetCapacities([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<CapacityListQuery.CapacityListFilter>();

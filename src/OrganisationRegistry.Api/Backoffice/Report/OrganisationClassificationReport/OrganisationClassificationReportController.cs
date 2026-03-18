@@ -149,7 +149,7 @@ public class OrganisationClassificationReportController : OrganisationRegistryCo
     }
 
     /// <summary>Rapport: Meer Evenwichtige Participatie per classificatieorganisatie.</summary>
-    /// <remarks>Geef de geslachtsverhouding voor een classificatieorganisatie (gegroepeerd per orgaan).</remarks>
+    /// <remarks>Geef de meer evenwichtige participatie voor een classificatieorganisatie (gegroepeerd per orgaan).</remarks>
     /// <param name="context"></param>
     /// <param name="dateTimeProvider"></param>
     /// <param name="classificationOrganisationId">A classification organisation GUID identifier</param>
