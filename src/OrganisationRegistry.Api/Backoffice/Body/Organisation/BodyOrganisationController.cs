@@ -1,4 +1,4 @@
-﻿namespace OrganisationRegistry.Api.Backoffice.Body.Organisation;
+namespace OrganisationRegistry.Api.Backoffice.Body.Organisation;
 
 using System;
 using System.Threading.Tasks;
@@ -14,9 +14,11 @@ using OrganisationRegistry.SqlServer.Infrastructure;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("bodies/{bodyId}/organisations")]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Organen")]
 public class BodyOrganisationController : OrganisationRegistryController
 {
-    /// <summary>Get a list of available organisations for a body.</summary>
+    /// <summary>Vraag een lijst van organisaties voor een orgaan op.</summary>
     [HttpGet]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid bodyId)
     {
@@ -33,9 +35,9 @@ public class BodyOrganisationController : OrganisationRegistryController
         return Ok(await pagedOrganisations.Items.ToListAsync());
     }
 
-    /// <summary>Get an organisation for a body.</summary>
-    /// <response code="200">If the organisation is found.</response>
-    /// <response code="404">If the organisation cannot be found.</response>
+    /// <summary>Vraag een organisatie voor een orgaan op.</summary>
+    /// <response code="200">Als de organisatie gevonden is.</response>
+    /// <response code="404">Als de organisatie niet gevonden kan worden.</response>
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

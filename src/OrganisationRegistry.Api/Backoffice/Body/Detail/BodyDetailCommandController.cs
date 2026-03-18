@@ -15,6 +15,8 @@ using OrganisationRegistry.SqlServer.Infrastructure;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("bodies")]
 [OrganisationRegistryAuthorize]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Organen")]
 public class BodyDetailCommandController : OrganisationRegistryCommandController
 {
     public BodyDetailCommandController(ICommandSender commandSender)
@@ -22,9 +24,9 @@ public class BodyDetailCommandController : OrganisationRegistryCommandController
     {
     }
 
-    /// <summary>Register a body.</summary>
-    /// <response code="201">If the body is registered, together with the location.</response>
-    /// <response code="400">If the body information does not pass validation.</response>
+    /// <summary>Registreer een orgaan.</summary>
+    /// <response code="201">Als het orgaan succesvol geregistreerd is.</response>
+    /// <response code="400">Als de validatie voor het orgaan mislukt is.</response>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

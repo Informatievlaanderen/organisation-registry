@@ -13,9 +13,11 @@ using OrganisationRegistry.SqlServer.Infrastructure;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("bodies")]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Organen")]
 public class BodyListController : OrganisationRegistryController
 {
-    /// <summary>Get a list of available bodies.</summary>
+    /// <summary>Vraag een lijst van organen op.</summary>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)

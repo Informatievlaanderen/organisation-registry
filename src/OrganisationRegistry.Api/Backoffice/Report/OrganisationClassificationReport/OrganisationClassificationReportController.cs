@@ -19,6 +19,8 @@ using OrganisationRegistry.SqlServer.Infrastructure;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("reports")]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Rapporten")]
 public class OrganisationClassificationReportController : OrganisationRegistryController
 {
     private const string ScrollTimeout = "30s";
@@ -32,9 +34,8 @@ public class OrganisationClassificationReportController : OrganisationRegistryCo
         _config = config.Value;
     }
 
-    /// <summary>
-    /// Get all organisations and their labels for a classification of classificationtype "Beleidsdomein".
-    /// </summary>
+    /// <summary>Rapport: Organisaties per beleidsdomein.</summary>
+    /// <remarks>Geef alle organisaties en hun labels voor een classificatie van het type "Beleidsdomein".</remarks>
     /// <param name="elastic"></param>
     /// <param name="id"></param>
     /// <returns></returns>
@@ -84,9 +85,8 @@ public class OrganisationClassificationReportController : OrganisationRegistryCo
                 .ToList());
     }
 
-    /// <summary>
-    /// Get all classifications for classificationtype "Beleidsdomein".
-    /// </summary>
+    /// <summary>Rapport: Alle classificaties voor het classificatietype "Beleidsdomein".</summary>
+    /// <remarks>Geef alle classificaties voor het classificatietype "Beleidsdomein".</remarks>
     /// <param name="context"></param>
     /// <returns></returns>
     [HttpGet("policydomainclassifications")]
@@ -115,9 +115,8 @@ public class OrganisationClassificationReportController : OrganisationRegistryCo
         return Ok(await pagedOrganisationClassifications.Items.ToListAsync());
     }
 
-    /// <summary>
-    /// Get all classifications for classificationtype "Bevoegde minister".
-    /// </summary>
+    /// <summary>Rapport: Alle classificaties voor het classificatietype "Bevoegde minister".</summary>
+    /// <remarks>Geef alle classificaties voor het classificatietype "Bevoegde minister".</remarks>
     /// <param name="context"></param>
     /// <returns></returns>
     [HttpGet("responsibleministerclassifications")]
@@ -146,9 +145,8 @@ public class OrganisationClassificationReportController : OrganisationRegistryCo
         return Ok(await pagedOrganisationClassifications.Items.ToListAsync());
     }
 
-    /// <summary>
-    /// Get gender ratio for a classification organisation (grouped by body)
-    /// </summary>
+    /// <summary>Rapport: Meer Evenwichtige Participatie per classificatieorganisatie.</summary>
+    /// <remarks>Geef de geslachtsverhouding voor een classificatieorganisatie (gegroepeerd per orgaan).</remarks>
     /// <param name="context"></param>
     /// <param name="dateTimeProvider"></param>
     /// <param name="classificationOrganisationId">A classification organisation GUID identifier</param>

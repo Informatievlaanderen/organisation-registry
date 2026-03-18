@@ -1,4 +1,4 @@
-﻿namespace OrganisationRegistry.Api.Backoffice.Parameters.FunctionType;
+namespace OrganisationRegistry.Api.Backoffice.Parameters.FunctionType;
 
 using System;
 using System.Threading.Tasks;
@@ -16,9 +16,11 @@ using SqlServer.Infrastructure;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("functiontypes")]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]
 public class FunctionTypeController : OrganisationRegistryController
 {
-    /// <summary>Get a list of available function types.</summary>
+    /// <summary>Vraag een lijst van functietypes op.</summary>
     [HttpGet]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
     {
@@ -34,9 +36,9 @@ public class FunctionTypeController : OrganisationRegistryController
         return Ok(await pagedFunctionTypes.Items.ToListAsync());
     }
 
-    /// <summary>Get a function type.</summary>
-    /// <response code="200">If the function type is found.</response>
-    /// <response code="404">If the function type cannot be found.</response>
+    /// <summary>Vraag een functietype op.</summary>
+    /// <response code="200">Als het functietype gevonden is.</response>
+    /// <response code="404">Als het functietype niet gevonden kan worden.</response>
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

@@ -15,6 +15,8 @@ using SqlServer.Infrastructure;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryAuthorize]
 [OrganisationRegistryRoute("manage/delegations")]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]
 public class DelegationAssignmentCommandController : OrganisationRegistryCommandController
 {
     public DelegationAssignmentCommandController(ICommandSender commandSender)
@@ -22,9 +24,9 @@ public class DelegationAssignmentCommandController : OrganisationRegistryCommand
     {
     }
 
-    /// <summary>Create a delegation assignment for an organisation.</summary>
-    /// <response code="201">If the delegation assignment is created, together with the location.</response>
-    /// <response code="400">If the delegation assignment information does not pass validation.</response>
+    /// <summary>Voeg een toewijzing toe aan een delegatie.</summary>
+    /// <response code="201">Als de toewijzing succesvol aangemaakt is.</response>
+    /// <response code="400">Als de validatie voor de toewijzing mislukt is.</response>
     [HttpPost("{delegationId}/assignments")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -49,9 +51,9 @@ public class DelegationAssignmentCommandController : OrganisationRegistryCommand
         return CreatedWithLocation(nameof(DelegationAssignmentController),nameof(DelegationAssignmentController.Get), new { delegationId, id = message.DelegationAssignmentId });
     }
 
-    /// <summary>Update a delegation assignment.</summary>
-    /// <response code="200">If the delegation assignment is updated, together with the location.</response>
-    /// <response code="400">If the delegation assignment information does not pass validation.</response>
+    /// <summary>Pas een toewijzing aan.</summary>
+    /// <response code="200">Als de toewijzing succesvol aangepast is.</response>
+    /// <response code="400">Als de validatie voor de toewijzing mislukt is.</response>
     [HttpPut("{delegationId}/assignments/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -77,9 +79,9 @@ public class DelegationAssignmentCommandController : OrganisationRegistryCommand
         return OkWithLocationHeader(nameof(DelegationAssignmentController),nameof(DelegationAssignmentController.Get), new { delegationId, id });
     }
 
-    /// <summary>Remove a delegation assignment.</summary>
-    /// <response code="200">If the delegation assignment is removed, together with the location.</response>
-    /// <response code="400">If the delegation assignment information does not pass validation.</response>
+    /// <summary>Verwijder een toewijzing.</summary>
+    /// <response code="200">Als de toewijzing succesvol verwijderd is.</response>
+    /// <response code="400">Als de validatie voor de toewijzing mislukt is.</response>
     [HttpDelete("{delegationId}/assignments/{delegationAssignmentId}/{bodyId}/{bodySeatId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

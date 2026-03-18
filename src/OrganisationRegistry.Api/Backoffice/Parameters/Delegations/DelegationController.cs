@@ -1,4 +1,4 @@
-﻿namespace OrganisationRegistry.Api.Backoffice.Parameters.Delegations;
+namespace OrganisationRegistry.Api.Backoffice.Parameters.Delegations;
 
 using System;
 using System.Threading.Tasks;
@@ -19,9 +19,11 @@ using SqlServer.Infrastructure;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryAuthorize(Role.AlgemeenBeheerder , Role.DecentraalBeheerder)]
 [OrganisationRegistryRoute("manage/delegations")]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]
 public class DelegationController : OrganisationRegistryController
 {
-    /// <summary>Get a list of available delegations.</summary>
+    /// <summary>Vraag een lijst van delegaties op.</summary>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromServices] ISecurityService securityService)
@@ -41,9 +43,9 @@ public class DelegationController : OrganisationRegistryController
         return Ok(await pagedDelegations.Items.ToListAsync());
     }
 
-    /// <summary>Get a delegation.</summary>
-    /// <response code="200">If the delegation is found.</response>
-    /// <response code="404">If the delegation cannot be found.</response>
+    /// <summary>Vraag een delegatie op.</summary>
+    /// <response code="200">Als de delegatie gevonden is.</response>
+    /// <response code="404">Als de delegatie niet gevonden kan worden.</response>
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

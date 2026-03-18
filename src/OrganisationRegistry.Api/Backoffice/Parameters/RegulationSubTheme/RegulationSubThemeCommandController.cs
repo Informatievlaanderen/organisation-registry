@@ -13,6 +13,8 @@ using Requests;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("regulationsubthemes")]
 [OrganisationRegistryAuthorize]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]
 public class RegulationSubThemeCommandController : OrganisationRegistryCommandController
 {
     public RegulationSubThemeCommandController(ICommandSender commandSender)
@@ -20,9 +22,9 @@ public class RegulationSubThemeCommandController : OrganisationRegistryCommandCo
     {
     }
 
-    /// <summary>Create an regulation sub-theme.</summary>
-    /// <response code="201">If the regulation sub-theme is created, together with the location.</response>
-    /// <response code="400">If the regulation sub-theme information does not pass validation.</response>
+    /// <summary>Registreer een regelgevingsubthema.</summary>
+    /// <response code="201">Als het regelgevingsubthema succesvol aangemaakt is.</response>
+    /// <response code="400">Als de validatie voor het regelgevingsubthema mislukt is.</response>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -36,9 +38,9 @@ public class RegulationSubThemeCommandController : OrganisationRegistryCommandCo
         return CreatedWithLocation(nameof(RegulationSubThemeController), nameof(RegulationSubThemeController.Get), new { id = message.Id });
     }
 
-    /// <summary>Update an regulation sub-theme.</summary>
-    /// <response code="200">If the regulation sub-theme is updated, together with the location.</response>
-    /// <response code="400">If the regulation sub-theme information does not pass validation.</response>
+    /// <summary>Pas een regelgevingsubthema aan.</summary>
+    /// <response code="200">Als het regelgevingsubthema succesvol aangepast is.</response>
+    /// <response code="400">Als de validatie voor het regelgevingsubthema mislukt is.</response>
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

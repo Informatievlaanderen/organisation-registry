@@ -1,4 +1,4 @@
-﻿namespace OrganisationRegistry.Api.Backoffice.Body.LifecyclePhase;
+namespace OrganisationRegistry.Api.Backoffice.Body.LifecyclePhase;
 
 using System;
 using System.Threading.Tasks;
@@ -15,9 +15,11 @@ using OrganisationRegistry.SqlServer.Infrastructure;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("bodies/{bodyId}/lifecyclephases")]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Organen")]
 public class BodyLifecyclePhaseController : OrganisationRegistryController
 {
-    /// <summary>Get a list of available lifecycle phases for a body.</summary>
+    /// <summary>Vraag een lijst van levensloopfasen voor een orgaan op.</summary>
     [HttpGet]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid bodyId)
     {
@@ -33,9 +35,9 @@ public class BodyLifecyclePhaseController : OrganisationRegistryController
         return Ok(await pagedBodyLifecyclePhases.Items.ToListAsync());
     }
 
-    /// <summary>Get a lifecycle phase for a body.</summary>
-    /// <response code="200">If the lifecycle phase is found.</response>
-    /// <response code="404">If the lifecycle phase cannot be found.</response>
+    /// <summary>Vraag een levensloopfase voor een orgaan op.</summary>
+    /// <response code="200">Als de levensloopfase gevonden is.</response>
+    /// <response code="404">Als de levensloopfase niet gevonden kan worden.</response>
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

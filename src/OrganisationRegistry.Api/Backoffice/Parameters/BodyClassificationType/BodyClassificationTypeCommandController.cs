@@ -13,6 +13,8 @@ using Requests;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryAuthorize]
 [OrganisationRegistryRoute("bodyclassificationtypes")]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]
 public class BodyClassificationTypeCommandController : OrganisationRegistryCommandController
 {
     public BodyClassificationTypeCommandController(ICommandSender commandSender)
@@ -20,9 +22,9 @@ public class BodyClassificationTypeCommandController : OrganisationRegistryComma
     {
     }
 
-    /// <summary>Create an body classification type.</summary>
-    /// <response code="201">If the body classificiation type is created, together with the location.</response>
-    /// <response code="400">If the body classificiation type information does not pass validation.</response>
+    /// <summary>Registreer een orgaanclassificatietype.</summary>
+    /// <response code="201">Als het orgaanclassificatietype succesvol aangemaakt is.</response>
+    /// <response code="400">Als de validatie voor het orgaanclassificatietype mislukt is.</response>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -36,9 +38,9 @@ public class BodyClassificationTypeCommandController : OrganisationRegistryComma
         return CreatedWithLocation(nameof(BodyClassificationTypeController),nameof(BodyClassificationTypeController.Get), new { id = message.Id });
     }
 
-    /// <summary>Update an body classification type.</summary>
-    /// <response code="200">If the body classification type is updated, together with the location.</response>
-    /// <response code="400">If the body classification type information does not pass validation.</response>
+    /// <summary>Pas een orgaanclassificatietype aan.</summary>
+    /// <response code="200">Als het orgaanclassificatietype succesvol aangepast is.</response>
+    /// <response code="400">Als de validatie voor het orgaanclassificatietype mislukt is.</response>
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

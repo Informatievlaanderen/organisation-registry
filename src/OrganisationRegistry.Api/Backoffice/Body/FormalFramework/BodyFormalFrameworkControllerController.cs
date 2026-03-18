@@ -12,6 +12,8 @@ using OrganisationRegistry.Infrastructure.Commands;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("bodies/{bodyId}/formalframeworks")]
 [OrganisationRegistryAuthorize]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Organen")]
 public class BodyFormalFrameworkCommandController : OrganisationRegistryCommandController
 {
     public BodyFormalFrameworkCommandController(ICommandSender commandSender)
@@ -19,9 +21,9 @@ public class BodyFormalFrameworkCommandController : OrganisationRegistryCommandC
     {
     }
 
-    /// <summary>Create a formal framework for a body.</summary>
-    /// <response code="201">If the formal framework is created, together with the location.</response>
-    /// <response code="400">If the formal framework information does not pass validation.</response>
+    /// <summary>Voeg een toepassingsgebied toe aan een orgaan.</summary>
+    /// <response code="201">Als het toepassingsgebied succesvol aangemaakt is.</response>
+    /// <response code="400">Als de validatie voor het toepassingsgebied mislukt is.</response>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -37,9 +39,9 @@ public class BodyFormalFrameworkCommandController : OrganisationRegistryCommandC
         return CreatedWithLocation(nameof(BodyFormalFrameworkController), nameof(BodyFormalFrameworkController.Get), new { id = message.BodyFormalFrameworkId });
     }
 
-    /// <summary>Update a formal framework for a body.</summary>
-    /// <response code="201">If the formal framework is updated, together with the location.</response>
-    /// <response code="400">If the formal framework information does not pass validation.</response>
+    /// <summary>Pas een toepassingsgebied aan voor een orgaan.</summary>
+    /// <response code="201">Als het toepassingsgebied succesvol aangepast is.</response>
+    /// <response code="400">Als de validatie voor het toepassingsgebied mislukt is.</response>
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

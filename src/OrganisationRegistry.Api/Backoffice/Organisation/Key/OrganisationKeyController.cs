@@ -1,4 +1,4 @@
-﻿namespace OrganisationRegistry.Api.Backoffice.Organisation.Key;
+namespace OrganisationRegistry.Api.Backoffice.Organisation.Key;
 
 using System;
 using System.Threading.Tasks;
@@ -20,9 +20,11 @@ using SqlServer.Infrastructure;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("organisations/{organisationId}/keys")]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Organisaties")]
 public class OrganisationKeyController : OrganisationRegistryController
 {
-    /// <summary>Get a list of available keys for an organisation.</summary>
+    /// <summary>Vraag een lijst van sleutels voor een organisatie op.</summary>
     [HttpGet]
     [OrganisationRegistryAuthorize]
     [AllowAnonymous]
@@ -53,9 +55,9 @@ public class OrganisationKeyController : OrganisationRegistryController
         return Ok(await pagedOrganisations.Items.ToListAsync());
     }
 
-    /// <summary>Get a key for an organisation.</summary>
-    /// <response code="200">If the key is found.</response>
-    /// <response code="404">If the key cannot be found.</response>
+    /// <summary>Vraag een sleutel voor een organisatie op.</summary>
+    /// <response code="200">Als de sleutel gevonden is.</response>
+    /// <response code="404">Als de sleutel niet gevonden kan worden.</response>
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

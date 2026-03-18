@@ -13,6 +13,8 @@ using Requests;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("mandateroletypes")]
 [OrganisationRegistryAuthorize]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]
 public class MandateRoleTypeCommandController : OrganisationRegistryCommandController
 {
     public MandateRoleTypeCommandController(ICommandSender commandSender)
@@ -20,9 +22,9 @@ public class MandateRoleTypeCommandController : OrganisationRegistryCommandContr
     {
     }
 
-    /// <summary>Create a mandate role type.</summary>
-    /// <response code="201">If the mandate role type is created, together with the location.</response>
-    /// <response code="400">If the mandate role type information does not pass validation.</response>
+    /// <summary>Registreer een mandaat rol type.</summary>
+    /// <response code="201">Als het mandaat rol type succesvol aangemaakt is.</response>
+    /// <response code="400">Als de validatie voor het mandaat rol type mislukt is.</response>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -36,9 +38,9 @@ public class MandateRoleTypeCommandController : OrganisationRegistryCommandContr
         return CreatedWithLocation(nameof(MandateRoleTypeController), nameof(MandateRoleTypeController.Get), new { id = message.Id });
     }
 
-    /// <summary>Update a mandate role type.</summary>
-    /// <response code="200">If the mandate role type is updated, together with the location.</response>
-    /// <response code="400">If the mandate role type information does not pass validation.</response>
+    /// <summary>Pas een mandaat rol type aan.</summary>
+    /// <response code="200">Als het mandaat rol type succesvol aangepast is.</response>
+    /// <response code="400">Als de validatie voor het mandaat rol type mislukt is.</response>
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

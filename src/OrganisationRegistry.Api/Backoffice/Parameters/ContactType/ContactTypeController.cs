@@ -1,4 +1,4 @@
-﻿namespace OrganisationRegistry.Api.Backoffice.Parameters.ContactType;
+namespace OrganisationRegistry.Api.Backoffice.Parameters.ContactType;
 
 using System;
 using System.Threading.Tasks;
@@ -16,9 +16,11 @@ using SqlServer.Infrastructure;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("contacttypes")]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]
 public class ContactTypeController : OrganisationRegistryController
 {
-    /// <summary>Get a list of available contact types.</summary>
+    /// <summary>Vraag een lijst van contacttypes op.</summary>
     [HttpGet]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
     {
@@ -34,9 +36,9 @@ public class ContactTypeController : OrganisationRegistryController
         return Ok(await pagedContactTypes.Items.ToListAsync());
     }
 
-    /// <summary>Get a contact type.</summary>
-    /// <response code="200">If the contact type is found.</response>
-    /// <response code="404">If the contact type cannot be found.</response>
+    /// <summary>Vraag een contacttype op.</summary>
+    /// <response code="200">Als het contacttype gevonden is.</response>
+    /// <response code="404">Als het contacttype niet gevonden kan worden.</response>
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

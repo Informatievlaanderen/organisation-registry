@@ -11,6 +11,8 @@ using OrganisationRegistry.Infrastructure.Commands;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("bodies")]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Organen")]
 public class BodyInfoCommandController : OrganisationRegistryCommandController
 {
     public BodyInfoCommandController(ICommandSender commandSender)
@@ -18,9 +20,9 @@ public class BodyInfoCommandController : OrganisationRegistryCommandController
     {
     }
 
-    /// <summary>Update a body's info.</summary>
-    /// <response code="200">If the body info is updated, together with the location.</response>
-    /// <response code="400">If the body information does not pass validation.</response>
+    /// <summary>Pas de informatie van een orgaan aan.</summary>
+    /// <response code="200">Als de orgaaninfo succesvol aangepast is.</response>
+    /// <response code="400">Als de validatie voor het orgaan mislukt is.</response>
     [HttpPut("{id}/info")]
     [OrganisationRegistryAuthorize]
     [ProducesResponseType(StatusCodes.Status200OK)]

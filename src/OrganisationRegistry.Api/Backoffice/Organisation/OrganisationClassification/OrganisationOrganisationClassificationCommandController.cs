@@ -12,6 +12,8 @@ using OrganisationRegistry.Infrastructure.Commands;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("organisations/{organisationId}/classifications")]
 [OrganisationRegistryAuthorize]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Organisaties")]
 public class OrganisationOrganisationClassificationCommandController : OrganisationRegistryCommandController
 {
     public OrganisationOrganisationClassificationCommandController(ICommandSender commandSender)
@@ -19,9 +21,9 @@ public class OrganisationOrganisationClassificationCommandController : Organisat
     {
     }
 
-    /// <summary>Create a classification for an organisation.</summary>
-    /// <response code="201">If the classification is created, together with the location.</response>
-    /// <response code="400">If the classification information does not pass validation.</response>
+    /// <summary>Voeg een classificatie toe aan een organisatie.</summary>
+    /// <response code="201">Als de classificatie succesvol aangemaakt is.</response>
+    /// <response code="400">Als de validatie voor de classificatie mislukt is.</response>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -37,9 +39,9 @@ public class OrganisationOrganisationClassificationCommandController : Organisat
         return CreatedWithLocation(nameof(OrganisationOrganisationClassificationController), nameof(OrganisationOrganisationClassificationController.Get), new { id = message.OrganisationOrganisationClassificationId });
     }
 
-    /// <summary>Update a classification for an organisation.</summary>
-    /// <response code="201">If the classification is updated, together with the location.</response>
-    /// <response code="400">If the classification information does not pass validation.</response>
+    /// <summary>Pas een classificatie aan voor een organisatie.</summary>
+    /// <response code="201">Als de classificatie succesvol aangepast is.</response>
+    /// <response code="400">Als de validatie voor de classificatie mislukt is.</response>
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

@@ -12,6 +12,8 @@ using OrganisationRegistry.Infrastructure.Commands;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("bodies")]
 [OrganisationRegistryAuthorize]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Organen")]
 public class BodyValidityCommandController : OrganisationRegistryCommandController
 {
     public BodyValidityCommandController(ICommandSender commandSender)
@@ -19,9 +21,9 @@ public class BodyValidityCommandController : OrganisationRegistryCommandControll
     {
     }
 
-    /// <summary>Update a body's validity.</summary>
-    /// <response code="200">If the body validity is updated, together with the location.</response>
-    /// <response code="400">If the body validity information does not pass validation.</response>
+    /// <summary>Pas de geldigheid van een orgaan aan.</summary>
+    /// <response code="200">Als de orgaangeldigheid succesvol aangepast is.</response>
+    /// <response code="400">Als de validatie voor de orgaangeldigheid mislukt is.</response>
     [HttpPut("{id}/validity")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

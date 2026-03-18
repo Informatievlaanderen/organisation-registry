@@ -12,6 +12,8 @@ using OrganisationRegistry.Infrastructure.Commands;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("bodies/{bodyId}/seats")]
 [OrganisationRegistryAuthorize]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Organen")]
 public class BodySeatCommandController : OrganisationRegistryCommandController
 {
     public BodySeatCommandController(ICommandSender commandSender)
@@ -19,9 +21,9 @@ public class BodySeatCommandController : OrganisationRegistryCommandController
     {
     }
 
-    /// <summary>Create a seat for a body.</summary>
-    /// <response code="201">If the seat is created, together with the location.</response>
-    /// <response code="400">If the seat information does not pass validation.</response>
+    /// <summary>Voeg een zetel toe aan een orgaan.</summary>
+    /// <response code="201">Als de post succesvol aangemaakt is.</response>
+    /// <response code="400">Als de validatie voor de post mislukt is.</response>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -37,9 +39,9 @@ public class BodySeatCommandController : OrganisationRegistryCommandController
         return CreatedWithLocation(nameof(BodySeatController), nameof(BodySeatController.Get), new { id = message.BodySeatId });
     }
 
-    /// <summary>Update a seat for a body.</summary>
-    /// <response code="201">If the seat is updated, together with the location.</response>
-    /// <response code="400">If the seat information does not pass validation.</response>
+    /// <summary>Pas een zetel aan voor een orgaan.</summary>
+    /// <response code="201">Als de post succesvol aangepast is.</response>
+    /// <response code="400">Als de validatie voor de post mislukt is.</response>
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

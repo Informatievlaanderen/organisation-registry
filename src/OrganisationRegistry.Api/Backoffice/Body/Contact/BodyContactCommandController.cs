@@ -12,6 +12,8 @@ using OrganisationRegistry.Infrastructure.Commands;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("bodies/{bodyId}/contacts")]
 [OrganisationRegistryAuthorize]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Organen")]
 public class BodyContactCommandController : OrganisationRegistryCommandController
 {
     public BodyContactCommandController(ICommandSender commandSender)
@@ -19,9 +21,9 @@ public class BodyContactCommandController : OrganisationRegistryCommandControlle
     {
     }
 
-    /// <summary>Create a contact for an organisation.</summary>
-    /// <response code="201">If the contact is created, together with the location.</response>
-    /// <response code="400">If the contact information does not pass validation.</response>
+    /// <summary>Maak een contact aan voor een orgaan.</summary>
+    /// <response code="201">Als het contact succesvol aangemaakt is.</response>
+    /// <response code="400">Als de validatie voor het contact mislukt is.</response>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -37,9 +39,9 @@ public class BodyContactCommandController : OrganisationRegistryCommandControlle
         return CreatedWithLocation(nameof(BodyContactController), nameof(BodyContactController.Get), new { id = message.BodyContactId });
     }
 
-    /// <summary>Update a contact for an organisation.</summary>
-    /// <response code="201">If the contact is updated, together with the location.</response>
-    /// <response code="400">If the contact information does not pass validation.</response>
+    /// <summary>Pas een contact aan voor een orgaan.</summary>
+    /// <response code="201">Als het contact succesvol aangepast is.</response>
+    /// <response code="400">Als de validatie voor het contact mislukt is.</response>
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

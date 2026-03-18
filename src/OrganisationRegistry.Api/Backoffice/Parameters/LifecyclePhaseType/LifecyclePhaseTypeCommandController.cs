@@ -13,6 +13,8 @@ using Requests;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("lifecyclephasetypes")]
 [OrganisationRegistryAuthorize]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]
 public class LifecyclePhaseTypeCommandController : OrganisationRegistryCommandController
 {
     public LifecyclePhaseTypeCommandController(ICommandSender commandSender)
@@ -20,9 +22,9 @@ public class LifecyclePhaseTypeCommandController : OrganisationRegistryCommandCo
     {
     }
 
-    /// <summary>Create a lifecyclephase type.</summary>
-    /// <response code="201">If the lifecyclephase type is created, together with the location.</response>
-    /// <response code="400">If the lifecyclephase type information does not pass validation.</response>
+    /// <summary>Registreer een levensloopfasetype.</summary>
+    /// <response code="201">Als het levensloopfasetype succesvol aangemaakt is.</response>
+    /// <response code="400">Als de validatie voor het levensloopfasetype mislukt is.</response>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -36,9 +38,9 @@ public class LifecyclePhaseTypeCommandController : OrganisationRegistryCommandCo
         return CreatedWithLocation(nameof(LifecyclePhaseTypeController), nameof(LifecyclePhaseTypeController.Get), new { id = message.Id });
     }
 
-    /// <summary>Update a lifecyclephase type.</summary>
-    /// <response code="200">If the lifecyclephase type is updated, together with the location.</response>
-    /// <response code="400">If the lifecyclephase type information does not pass validation.</response>
+    /// <summary>Pas een levensloopfasetype aan.</summary>
+    /// <response code="200">Als het levensloopfasetype succesvol aangepast is.</response>
+    /// <response code="400">Als de validatie voor het levensloopfasetype mislukt is.</response>
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

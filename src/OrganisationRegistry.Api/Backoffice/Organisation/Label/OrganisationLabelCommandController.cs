@@ -12,6 +12,8 @@ using OrganisationRegistry.Infrastructure.Commands;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("organisations/{organisationId}/labels")]
 [OrganisationRegistryAuthorize]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Organisaties")]
 public class OrganisationLabelCommandController : OrganisationRegistryCommandController
 {
     public OrganisationLabelCommandController(ICommandSender commandSender)
@@ -19,9 +21,9 @@ public class OrganisationLabelCommandController : OrganisationRegistryCommandCon
     {
     }
 
-    /// <summary>Create a label for an organisation.</summary>
-    /// <response code="201">If the label is created, together with the label.</response>
-    /// <response code="400">If the label information does not pass validation.</response>
+    /// <summary>Voeg een label toe aan een organisatie.</summary>
+    /// <response code="201">Als de benaming succesvol aangemaakt is.</response>
+    /// <response code="400">Als de validatie voor de benaming mislukt is.</response>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -37,9 +39,9 @@ public class OrganisationLabelCommandController : OrganisationRegistryCommandCon
         return CreatedWithLocation(nameof(OrganisationLabelController), nameof(OrganisationLabelController.Get), new { id = message.OrganisationLabelId });
     }
 
-    /// <summary>Update a label for an organisation.</summary>
-    /// <response code="201">If the label is updated, together with the label.</response>
-    /// <response code="400">If the label information does not pass validation.</response>
+    /// <summary>Pas een label aan voor een organisatie.</summary>
+    /// <response code="201">Als de benaming succesvol aangepast is.</response>
+    /// <response code="400">Als de validatie voor de benaming mislukt is.</response>
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

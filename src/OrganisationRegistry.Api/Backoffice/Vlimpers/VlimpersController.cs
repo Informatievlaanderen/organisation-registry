@@ -12,6 +12,8 @@ using OrganisationRegistry.Organisation;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("organisations")]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Organisaties")]
 public class VlimpersController : OrganisationRegistryCommandController
 {
     public VlimpersController(ICommandSender commandSender)
@@ -19,8 +21,8 @@ public class VlimpersController : OrganisationRegistryCommandController
     {
     }
 
-    /// <summary>Couple an organisation to a KBO number.</summary>
-    /// <response code="200">If the organisation was coupled.</response>
+    /// <summary>Pas aan of een organisatie onder Vlimpersbeheer valt of niet.</summary>
+    /// <response code="200">Als de organisatie succesvol aangepast is.</response>
     [HttpPatch("{id}/vlimpers")]
     [OrganisationRegistryAuthorize]
     [ProducesResponseType(StatusCodes.Status200OK)]

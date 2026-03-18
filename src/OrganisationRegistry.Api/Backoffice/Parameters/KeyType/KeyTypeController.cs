@@ -1,4 +1,4 @@
-﻿namespace OrganisationRegistry.Api.Backoffice.Parameters.KeyType;
+namespace OrganisationRegistry.Api.Backoffice.Parameters.KeyType;
 
 using System;
 using System.Threading.Tasks;
@@ -20,9 +20,11 @@ using SqlServer.Infrastructure;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("keytypes")]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]
 public class KeyTypeController : OrganisationRegistryController
 {
-    /// <summary>Get a list of available key types.</summary>
+    /// <summary>Vraag een lijst van sleuteltypes op.</summary>
     [HttpGet]
     [OrganisationRegistryAuthorize]
     public async Task<IActionResult> Get(
@@ -56,9 +58,9 @@ public class KeyTypeController : OrganisationRegistryController
         return Ok(await pagedKeyTypes.Items.ToListAsync());
     }
 
-    /// <summary>Get a key type.</summary>
-    /// <response code="200">If the key type is found.</response>
-    /// <response code="404">If the key type cannot be found.</response>
+    /// <summary>Vraag een sleuteltype op.</summary>
+    /// <response code="200">Als het sleuteltype gevonden is.</response>
+    /// <response code="404">Als het sleuteltype niet gevonden kan worden.</response>
     [HttpGet("{id}")]
     [OrganisationRegistryAuthorize]
     [ProducesResponseType(StatusCodes.Status200OK)]

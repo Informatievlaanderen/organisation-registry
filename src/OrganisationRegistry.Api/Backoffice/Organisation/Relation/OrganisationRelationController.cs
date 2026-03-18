@@ -14,9 +14,11 @@ using SqlServer.Infrastructure;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("organisations/{organisationId}/relations")]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Organisaties")]
 public class OrganisationRelationController : OrganisationRegistryController
 {
-    /// <summary>Get a list of available relations for an organisation.</summary>
+    /// <summary>Vraag een lijst van relaties voor een organisatie op.</summary>
     [HttpGet]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid organisationId)
     {
@@ -32,9 +34,9 @@ public class OrganisationRelationController : OrganisationRegistryController
         return Ok(await pagedOrganisations.Items.ToListAsync());
     }
 
-    /// <summary>Get a relation for an organisation.</summary>
-    /// <response code="200">If the relation is found.</response>
-    /// <response code="404">If the relation cannot be found.</response>
+    /// <summary>Vraag een relatie voor een organisatie op.</summary>
+    /// <response code="200">Als de relatie gevonden is.</response>
+    /// <response code="404">Als de relatie niet gevonden kan worden.</response>
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

@@ -13,6 +13,8 @@ using Requests;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryAuthorize]
 [OrganisationRegistryRoute("capacities")]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]
 public class CapacityCommandController : OrganisationRegistryCommandController
 {
     public CapacityCommandController(ICommandSender commandSender)
@@ -20,9 +22,9 @@ public class CapacityCommandController : OrganisationRegistryCommandController
     {
     }
 
-    /// <summary>Create a capacity.</summary>
-    /// <response code="201">If the capacity is created, together with the location.</response>
-    /// <response code="400">If the capacity information does not pass validation.</response>
+    /// <summary>Registreer een hoedanigheid.</summary>
+    /// <response code="201">Als de hoedanigheid succesvol aangemaakt is.</response>
+    /// <response code="400">Als de validatie voor de hoedanigheid mislukt is.</response>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -36,9 +38,9 @@ public class CapacityCommandController : OrganisationRegistryCommandController
         return CreatedWithLocation(nameof(CapacityController),nameof(CapacityController.Get), new { id = message.Id });
     }
 
-    /// <summary>Update a capacity.</summary>
-    /// <response code="200">If the capacity is updated, together with the location.</response>
-    /// <response code="400">If the capacity information does not pass validation.</response>
+    /// <summary>Pas een hoedanigheid aan.</summary>
+    /// <response code="200">Als de hoedanigheid succesvol aangepast is.</response>
+    /// <response code="400">Als de validatie voor de hoedanigheid mislukt is.</response>
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -54,11 +56,9 @@ public class CapacityCommandController : OrganisationRegistryCommandController
         return OkWithLocationHeader(nameof(CapacityController),nameof(CapacityController.Get), new { id = internalMessage.CapacityId });
     }
 
-    /// <summary>
-    /// Remove a capacity
-    /// </summary>
-    /// <response code="204">If the capacity is successfully removed.</response>
-    /// <response code="400">If the capacity information does not pass validation.</response>
+    /// <summary>Verwijder een hoedanigheid.</summary>
+    /// <response code="204">Als de hoedanigheid succesvol verwijderd is.</response>
+    /// <response code="400">Als de validatie voor de hoedanigheid mislukt is.</response>
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

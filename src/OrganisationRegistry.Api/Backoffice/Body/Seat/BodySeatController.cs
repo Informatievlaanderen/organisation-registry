@@ -1,4 +1,4 @@
-﻿namespace OrganisationRegistry.Api.Backoffice.Body.Seat;
+namespace OrganisationRegistry.Api.Backoffice.Body.Seat;
 
 using System;
 using System.Threading.Tasks;
@@ -14,9 +14,11 @@ using OrganisationRegistry.SqlServer.Infrastructure;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("bodies/{bodyId}/seats")]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Organen")]
 public class BodySeatController : OrganisationRegistryController
 {
-    /// <summary>Get a list of available seats for a body.</summary>
+    /// <summary>Vraag een lijst van zetels voor een orgaan op.</summary>
     [HttpGet]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid bodyId)
     {
@@ -32,9 +34,9 @@ public class BodySeatController : OrganisationRegistryController
         return Ok(await pagedBodySeats.Items.ToListAsync());
     }
 
-    /// <summary>Get a seat for a body.</summary>
-    /// <response code="200">If the seat is found.</response>
-    /// <response code="404">If the seat cannot be found.</response>
+    /// <summary>Vraag een zetel voor een orgaan op.</summary>
+    /// <response code="200">Als de post gevonden is.</response>
+    /// <response code="404">Als de post niet gevonden kan worden.</response>
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

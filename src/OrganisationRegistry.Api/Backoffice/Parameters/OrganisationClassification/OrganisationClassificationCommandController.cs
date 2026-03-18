@@ -13,6 +13,8 @@ using Requests;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("organisationclassifications")]
 [OrganisationRegistryAuthorize]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]
 public class OrganisationClassificationCommandController : OrganisationRegistryCommandController
 {
     public OrganisationClassificationCommandController(
@@ -21,9 +23,9 @@ public class OrganisationClassificationCommandController : OrganisationRegistryC
     {
     }
 
-    /// <summary>Create an organisation classification.</summary>
-    /// <response code="201">If the organisation classificiation is created, together with the location.</response>
-    /// <response code="400">If the organisation classificiation information does not pass validation.</response>
+    /// <summary>Registreer een organisatieclassificatie.</summary>
+    /// <response code="201">Als de organisatieclassificatie succesvol aangemaakt is.</response>
+    /// <response code="400">Als de validatie voor de organisatieclassificatie mislukt is.</response>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -37,9 +39,9 @@ public class OrganisationClassificationCommandController : OrganisationRegistryC
         return CreatedWithLocation(nameof(OrganisationClassificationController), nameof(OrganisationClassificationController.Get), new { id = message.Id });
     }
 
-    /// <summary>Update an organisation classification.</summary>
-    /// <response code="200">If the organisation classification is updated, together with the location.</response>
-    /// <response code="400">If the organisation classification information does not pass validation.</response>
+    /// <summary>Pas een organisatieclassificatie aan.</summary>
+    /// <response code="200">Als de organisatieclassificatie succesvol aangepast is.</response>
+    /// <response code="400">Als de validatie voor de organisatieclassificatie mislukt is.</response>
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

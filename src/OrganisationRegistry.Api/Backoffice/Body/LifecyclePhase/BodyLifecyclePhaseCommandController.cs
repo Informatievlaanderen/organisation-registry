@@ -12,6 +12,8 @@ using OrganisationRegistry.Infrastructure.Commands;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("bodies/{bodyId}/lifecyclephases")]
 [OrganisationRegistryAuthorize]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Organen")]
 public class BodyLifecyclePhaseCommandController : OrganisationRegistryCommandController
 {
     public BodyLifecyclePhaseCommandController(ICommandSender commandSender)
@@ -19,9 +21,9 @@ public class BodyLifecyclePhaseCommandController : OrganisationRegistryCommandCo
     {
     }
 
-    /// <summary>Create a lifecycle phase for a body.</summary>
-    /// <response code="201">If the lifecycle phase is created, together with the location.</response>
-    /// <response code="400">If the lifecycle phase information does not pass validation.</response>
+    /// <summary>Voeg een levensloopfase toe aan een orgaan.</summary>
+    /// <response code="201">Als de levensloopfase succesvol aangemaakt is.</response>
+    /// <response code="400">Als de validatie voor de levensloopfase mislukt is.</response>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -37,9 +39,9 @@ public class BodyLifecyclePhaseCommandController : OrganisationRegistryCommandCo
         return CreatedWithLocation(nameof(BodyLifecyclePhaseController), nameof(BodyLifecyclePhaseController.Get), new { id = message.BodyLifecyclePhaseId });
     }
 
-    /// <summary>Update a lifecycle phase for a body.</summary>
-    /// <response code="201">If the lifecycle phase is updated, together with the location.</response>
-    /// <response code="400">If the lifecycle phase information does not pass validation.</response>
+    /// <summary>Pas een levensloopfase aan voor een orgaan.</summary>
+    /// <response code="201">Als de levensloopfase succesvol aangepast is.</response>
+    /// <response code="400">Als de validatie voor de levensloopfase mislukt is.</response>
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

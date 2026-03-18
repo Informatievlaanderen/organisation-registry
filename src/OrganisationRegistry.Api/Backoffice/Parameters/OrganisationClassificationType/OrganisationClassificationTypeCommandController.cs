@@ -13,6 +13,8 @@ using Requests;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("organisationclassificationtypes")]
 [OrganisationRegistryAuthorize]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]
 public class OrganisationClassificationTypeCommandController : OrganisationRegistryCommandController
 {
     public OrganisationClassificationTypeCommandController(ICommandSender commandSender)
@@ -20,9 +22,9 @@ public class OrganisationClassificationTypeCommandController : OrganisationRegis
     {
     }
 
-    /// <summary>Create an organisation classification type.</summary>
-    /// <response code="201">If the organisation classificiation type is created, together with the location.</response>
-    /// <response code="400">If the organisation classificiation type information does not pass validation.</response>
+    /// <summary>Registreer een organisatieclassificatietype.</summary>
+    /// <response code="201">Als het organisatieclassificatietype succesvol aangemaakt is.</response>
+    /// <response code="400">Als de validatie voor het organisatieclassificatietype mislukt is.</response>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -36,9 +38,9 @@ public class OrganisationClassificationTypeCommandController : OrganisationRegis
         return CreatedWithLocation(nameof(OrganisationClassificationTypeController), nameof(OrganisationClassificationTypeController.Get), new { id = message.Id });
     }
 
-    /// <summary>Update an organisation classification type.</summary>
-    /// <response code="200">If the organisation classification type is updated, together with the location.</response>
-    /// <response code="400">If the organisation classification type information does not pass validation.</response>
+    /// <summary>Pas een organisatieclassificatietype aan.</summary>
+    /// <response code="200">Als het organisatieclassificatietype succesvol aangepast is.</response>
+    /// <response code="400">Als de validatie voor het organisatieclassificatietype mislukt is.</response>
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

@@ -13,6 +13,8 @@ using Requests;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("keytypes")]
 [OrganisationRegistryAuthorize]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]
 public class KeyTypeCommandController : OrganisationRegistryCommandController
 {
     public KeyTypeCommandController(ICommandSender commandSender)
@@ -20,9 +22,9 @@ public class KeyTypeCommandController : OrganisationRegistryCommandController
     {
     }
 
-    /// <summary>Create a key type.</summary>
-    /// <response code="201">If the key type is created, together with the location.</response>
-    /// <response code="400">If the key type information does not pass validation.</response>
+    /// <summary>Registreer een sleuteltype.</summary>
+    /// <response code="201">Als het sleuteltype succesvol aangemaakt is.</response>
+    /// <response code="400">Als de validatie voor het sleuteltype mislukt is.</response>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -36,9 +38,9 @@ public class KeyTypeCommandController : OrganisationRegistryCommandController
         return CreatedWithLocation(nameof(KeyTypeController), nameof(KeyTypeController.Get), new { id = message.Id });
     }
 
-    /// <summary>Update a key type.</summary>
-    /// <response code="200">If the key type is updated, together with the location.</response>
-    /// <response code="400">If the key type information does not pass validation.</response>
+    /// <summary>Pas een sleuteltype aan.</summary>
+    /// <response code="200">Als het sleuteltype succesvol aangepast is.</response>
+    /// <response code="400">Als de validatie voor het sleuteltype mislukt is.</response>
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -54,11 +56,9 @@ public class KeyTypeCommandController : OrganisationRegistryCommandController
         return OkWithLocationHeader(nameof(KeyTypeController), nameof(KeyTypeController.Get), new { id = internalMessage.KeyTypeId });
     }
 
-    /// <summary>
-    /// Remove a key type
-    /// </summary>
-    /// <response code="204">If the key type is successfully removed.</response>
-    /// <response code="400">If the key type information does not pass validation.</response>
+    /// <summary>Verwijder een sleuteltype.</summary>
+    /// <response code="204">Als het sleuteltype succesvol verwijderd is.</response>
+    /// <response code="400">Als de validatie voor het sleuteltype mislukt is.</response>
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

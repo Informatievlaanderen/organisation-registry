@@ -12,9 +12,11 @@ using OrganisationRegistry.SqlServer.Infrastructure;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("people")]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Personen")]
 public class PersonListController : OrganisationRegistryController
 {
-    /// <summary>Get a list of available people.</summary>
+    /// <summary>Vraag een lijst van personen op.</summary>
     [HttpGet]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
     {

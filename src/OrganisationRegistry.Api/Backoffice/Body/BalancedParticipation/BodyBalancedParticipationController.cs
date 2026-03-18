@@ -14,11 +14,13 @@ using OrganisationRegistry.SqlServer.Infrastructure;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("bodies")]
 [OrganisationRegistryAuthorize(Role.AlgemeenBeheerder, Role.OrgaanBeheerder, Role.CjmBeheerder)]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Organen")]
 public class BodyBalancedParticipationController : OrganisationRegistryController
 {
-    /// <summary>Get a body's balanced participation info.</summary>
-    /// <response code="200">If the body is found.</response>
-    /// <response code="404">If the body cannot be found.</response>
+    /// <summary>Vraag de evenwichtige deelnamegegevens van een orgaan op.</summary>
+    /// <response code="200">Als het orgaan gevonden is.</response>
+    /// <response code="404">Als het orgaan niet gevonden kan worden.</response>
     [HttpGet("{id}/balancedparticipation")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

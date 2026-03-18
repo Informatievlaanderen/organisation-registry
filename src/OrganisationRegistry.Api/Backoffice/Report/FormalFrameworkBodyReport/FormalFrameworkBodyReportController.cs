@@ -15,6 +15,8 @@ using OrganisationRegistry.Infrastructure.Configuration;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("reports")]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Rapporten")]
 public class FormalFrameworkBodyReportController : OrganisationRegistryController
 {
     private readonly ApiConfigurationSection _config;
@@ -28,9 +30,8 @@ public class FormalFrameworkBodyReportController : OrganisationRegistryControlle
         _config = config.Value;
     }
 
-    /// <summary>
-    /// Get all bodies for a formal framework.
-    /// </summary>
+    /// <summary>Rapport: Organen per toepassingsgebied.</summary>
+    /// <remarks>Geef alle organen voor een toepassingsgebied.</remarks>
     /// <param name="elastic"></param>
     /// <param name="id">A formal framework GUID identifier</param>
     /// <returns></returns>

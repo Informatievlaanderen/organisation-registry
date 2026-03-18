@@ -13,6 +13,8 @@ using Requests;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("locationtypes")]
 [OrganisationRegistryAuthorize]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]
 public class LocationTypeCommandController : OrganisationRegistryCommandController
 {
     public LocationTypeCommandController(ICommandSender commandSender)
@@ -20,9 +22,9 @@ public class LocationTypeCommandController : OrganisationRegistryCommandControll
     {
     }
 
-    /// <summary>Create a location type.</summary>
-    /// <response code="201">If the location type is created, together with the location.</response>
-    /// <response code="400">If the location type information does not pass validation.</response>
+    /// <summary>Registreer een locatietype.</summary>
+    /// <response code="201">Als het locatietype succesvol aangemaakt is.</response>
+    /// <response code="400">Als de validatie voor het locatietype mislukt is.</response>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -36,9 +38,9 @@ public class LocationTypeCommandController : OrganisationRegistryCommandControll
         return CreatedWithLocation(nameof(LocationTypeController), nameof(LocationTypeController.Get), new { id = message.Id });
     }
 
-    /// <summary>Update a location type.</summary>
-    /// <response code="200">If the location type is updated, together with the location.</response>
-    /// <response code="400">If the location type information does not pass validation.</response>
+    /// <summary>Pas een locatietype aan.</summary>
+    /// <response code="200">Als het locatietype succesvol aangepast is.</response>
+    /// <response code="400">Als de validatie voor het locatietype mislukt is.</response>
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

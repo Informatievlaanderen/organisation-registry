@@ -1,4 +1,4 @@
-﻿namespace OrganisationRegistry.Api.Backoffice.Person.Mandate;
+namespace OrganisationRegistry.Api.Backoffice.Person.Mandate;
 
 using System;
 using System.Threading.Tasks;
@@ -14,9 +14,11 @@ using OrganisationRegistry.SqlServer.Person;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("people/{personId}/mandates")]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Personen")]
 public class PersonMandateController : OrganisationRegistryController
 {
-    /// <summary>Get a list of available mandates for a person.</summary>
+    /// <summary>Vraag een lijst van mandaten voor een persoon op.</summary>
     [HttpGet]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid personId)
     {

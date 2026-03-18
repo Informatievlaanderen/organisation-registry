@@ -15,11 +15,12 @@ using OrganisationRegistry.SqlServer.Infrastructure;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("reports")]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Rapporten")]
 public class FormalFrameworkParticipationReportController : OrganisationRegistryController
 {
-    /// <summary>
-    /// Get gender ratio for a formalframework (grouped by body, organisation and bodyseat)
-    /// </summary>
+    /// <summary>Rapport: Meer Evenwichtige Participatie per toepassingsgebied.</summary>
+    /// <remarks>Geef de geslachtsverhouding voor een toepassingsgebied (gegroepeerd per orgaan, organisatie en zetel).</remarks>
     /// <param name="context"></param>
     /// <param name="formalFrameworkId">A formal framework GUID identifier</param>
     /// <returns></returns>
@@ -65,9 +66,8 @@ public class FormalFrameworkParticipationReportController : OrganisationRegistry
                 .ToList());
     }
 
-    /// <summary>
-    /// Get gender ratio summary (grouped by body, organisation and bodyseat)
-    /// </summary>
+    /// <summary>Rapport: Meer Evenwichtige Participatie - samenvatting.</summary>
+    /// <remarks>Geef de samenvatting van de geslachtsverhouding (gegroepeerd per orgaan, organisatie en zetel).</remarks>
     /// <param name="context"></param>
     /// <param name="apiConfiguration"></param>
     /// <param name="dateTimeProvider"></param>

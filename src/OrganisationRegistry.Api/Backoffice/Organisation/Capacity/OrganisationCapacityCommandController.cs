@@ -12,6 +12,8 @@ using OrganisationRegistry.Infrastructure.Commands;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryAuthorize]
 [OrganisationRegistryRoute("organisations/{organisationId}/capacities")]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Organisaties")]
 public class OrganisationCapacityCommandController : OrganisationRegistryCommandController
 {
     public OrganisationCapacityCommandController(ICommandSender commandSender)
@@ -19,9 +21,9 @@ public class OrganisationCapacityCommandController : OrganisationRegistryCommand
     {
     }
 
-    /// <summary>Create a capacity for an organisation.</summary>
-    /// <response code="201">If the capacity is created, together with the location.</response>
-    /// <response code="400">If the capacity information does not pass validation.</response>
+    /// <summary>Voeg een hoedanigheid toe aan een organisatie.</summary>
+    /// <response code="201">Als de hoedanigheid succesvol aangemaakt is.</response>
+    /// <response code="400">Als de validatie voor de hoedanigheid mislukt is.</response>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -35,9 +37,9 @@ public class OrganisationCapacityCommandController : OrganisationRegistryCommand
         return CreatedWithLocation(nameof(OrganisationCapacityController), nameof(OrganisationCapacityController.Get), new { id = message.OrganisationCapacityId });
     }
 
-    /// <summary>Update a capacity for an organisation.</summary>
-    /// <response code="201">If the capacity is updated, together with the location.</response>
-    /// <response code="400">If the capacity information does not pass validation.</response>
+    /// <summary>Pas een hoedanigheid aan voor een organisatie.</summary>
+    /// <response code="201">Als de hoedanigheid succesvol aangepast is.</response>
+    /// <response code="400">Als de validatie voor de hoedanigheid mislukt is.</response>
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -51,11 +53,9 @@ public class OrganisationCapacityCommandController : OrganisationRegistryCommand
         return Ok();
     }
 
-    /// <summary>
-    /// Remove an organisation capacity
-    /// </summary>
-    /// <response code="204">If the organisation capacity is successfully removed.</response>
-    /// <response code="400">If the organisation capacity id does not pass validation.</response>
+    /// <summary>Verwijder een hoedanigheid van een organisatie.</summary>
+    /// <response code="204">Als de organisatiecapaciteit succesvol verwijderd is.</response>
+    /// <response code="400">Als de validatie voor de organisatiecapaciteit mislukt is.</response>
     [HttpDelete("{organisationCapacityId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

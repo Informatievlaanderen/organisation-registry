@@ -14,13 +14,13 @@ using ISession = OrganisationRegistry.Infrastructure.Domain.ISession;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("debug")]
 [OrganisationRegistryAuthorize(Role.AlgemeenBeheerder, Role.Developer)]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Administratie")]
 public class DebugController : OrganisationRegistryController
 {
-    /// <summary>
-    /// Gets the aggregate state of an organisation
-    /// </summary>
-    /// <response code="200">If the organisation is found.</response>
-    /// <response code="404">If the organisation cannot be found.</response>
+    /// <summary>Vraag de aggregaatstatus van een organisatie op.</summary>
+    /// <response code="200">Als de organisatie gevonden is.</response>
+    /// <response code="404">Als de organisatie niet gevonden kan worden.</response>
     [HttpGet("organisation/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

@@ -15,6 +15,8 @@ using OrganisationRegistry.Infrastructure.Configuration;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("reports")]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Rapporten")]
 public class FormalFrameworkOrganisationReportController : OrganisationRegistryController
 {
     private readonly ApiConfigurationSection _config;
@@ -28,9 +30,8 @@ public class FormalFrameworkOrganisationReportController : OrganisationRegistryC
         _config = config.Value;
     }
 
-    /// <summary>
-    /// Get all organisations for a formal framework.
-    /// </summary>
+    /// <summary>Rapport: Organisaties per toepassingsgebied.</summary>
+    /// <remarks>Geef alle organisaties voor een toepassingsgebied.</remarks>
     /// <param name="elastic"></param>
     /// <param name="dateTimeProvider"></param>
     /// <param name="id">A formal framework GUID identifier</param>
@@ -83,9 +84,8 @@ public class FormalFrameworkOrganisationReportController : OrganisationRegistryC
                 .ToList());
     }
 
-    /// <summary>
-    /// Get all organisations for a formal framework.
-    /// </summary>
+    /// <summary>Rapport: Organisaties per toepassingsgebied (uitgebreid).</summary>
+    /// <remarks>Geef alle organisaties voor een toepassingsgebied.</remarks>
     /// <param name="elastic"></param>
     /// <param name="dateTimeProvider"></param>
     /// <param name="id">A formal framework GUID identifier</param>
@@ -138,9 +138,8 @@ public class FormalFrameworkOrganisationReportController : OrganisationRegistryC
                 .ToList());
     }
 
-    /// <summary>
-    /// Get all organisations for a formal framework.
-    /// </summary>
+    /// <summary>Rapport: Organisaties per toepassingsgebied (vademecum).</summary>
+    /// <remarks>Geef alle organisaties voor een toepassingsgebied.</remarks>
     /// <param name="elastic"></param>
     /// <param name="id">A formal framework GUID identifier</param>
     /// <returns></returns>

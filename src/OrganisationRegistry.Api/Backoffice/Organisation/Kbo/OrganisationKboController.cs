@@ -16,9 +16,11 @@ using SqlServer.Infrastructure;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("organisations")]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Organisaties")]
 public class OrganisationKboController : OrganisationRegistryController
 {
-    /// <summary>Gets the termination status of an organisation coupled with the KBO.</summary>
+    /// <summary>Vraag de beëindigingsstatus van een organisatie gekoppeld aan de KBO op.</summary>
     [HttpGet("{id}/kbo/{kboNumber}/termination")]
     [OrganisationRegistryAuthorize(Role.AlgemeenBeheerder, Role.CjmBeheerder, Role.Developer, Role.VlimpersBeheerder)]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -35,7 +37,7 @@ public class OrganisationKboController : OrganisationRegistryController
         return Ok(OrganisationTerminationResponse.FromListItem(organisationTermination));
     }
 
-    /// <summary>Get a list of organisations to be terminated according to the KBO.</summary>
+    /// <summary>Vraag een lijst van te beëindigen organisaties volgens de KBO op.</summary>
     [HttpGet("kbo/terminated")]
     [OrganisationRegistryAuthorize(Role.AlgemeenBeheerder, Role.CjmBeheerder, Role.Developer)]
     [ProducesResponseType(StatusCodes.Status200OK)]
