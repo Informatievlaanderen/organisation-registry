@@ -38,6 +38,7 @@ public class BuildingOrganisationReportController : OrganisationRegistryControll
     /// <param name="elastic"></param>
     /// <param name="id">A formal framework GUID identifier</param>
     /// <returns></returns>
+    /// <response code="200">Het rapport: Organisaties per gebouw.</response>
     [HttpGet("buildingorganisations/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

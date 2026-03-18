@@ -19,7 +19,9 @@ using OrganisationRegistry.SqlServer.Infrastructure;
 public class BodyMandateController : OrganisationRegistryController
 {
     /// <summary>Vraag een lijst van mandaten voor een orgaan op.</summary>
+    /// <response code="200">Een lijst van mandaten voor een orgaan.</response>
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid bodyId)
     {
         var filtering = Request.ExtractFilteringRequest<BodyMandateListItemFilter>();

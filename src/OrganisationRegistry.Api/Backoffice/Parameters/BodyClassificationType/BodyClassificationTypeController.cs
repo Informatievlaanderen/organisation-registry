@@ -21,7 +21,9 @@ using SqlServer.Infrastructure;
 public class BodyClassificationTypeController : OrganisationRegistryController
 {
     /// <summary>Vraag een lijst van orgaanclassificatietypes op.</summary>
+    /// <response code="200">Een lijst van orgaanclassificatietypes.</response>
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<BodyClassificationTypeListItem>();

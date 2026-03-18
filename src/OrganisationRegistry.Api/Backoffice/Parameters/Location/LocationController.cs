@@ -21,7 +21,9 @@ using SqlServer.Infrastructure;
 public class LocationController : OrganisationRegistryController
 {
     /// <summary>Vraag een lijst van locaties op.</summary>
+    /// <response code="200">Een lijst van locaties.</response>
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<LocationListItemFilter>();

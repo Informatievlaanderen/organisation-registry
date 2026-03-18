@@ -21,7 +21,9 @@ using SqlServer.Purpose;
 public class PurposeController : OrganisationRegistryController
 {
     /// <summary>Vraag een lijst van doeleinden op.</summary>
+    /// <response code="200">Een lijst van doeleinden.</response>
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<PurposeListItem>();

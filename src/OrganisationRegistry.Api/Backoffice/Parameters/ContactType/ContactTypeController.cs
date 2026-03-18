@@ -21,7 +21,9 @@ using SqlServer.Infrastructure;
 public class ContactTypeController : OrganisationRegistryController
 {
     /// <summary>Vraag een lijst van contacttypes op.</summary>
+    /// <response code="200">Een lijst van contacttypes.</response>
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<ContactTypeListItem>();

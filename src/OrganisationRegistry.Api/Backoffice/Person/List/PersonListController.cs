@@ -1,6 +1,7 @@
 namespace OrganisationRegistry.Api.Backoffice.Person.List;
 
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Infrastructure;
@@ -17,7 +18,9 @@ using OrganisationRegistry.SqlServer.Infrastructure;
 public class PersonListController : OrganisationRegistryController
 {
     /// <summary>Vraag een lijst van personen op.</summary>
+    /// <response code="200">Een lijst van personen.</response>
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<PersonListItemFilter>();

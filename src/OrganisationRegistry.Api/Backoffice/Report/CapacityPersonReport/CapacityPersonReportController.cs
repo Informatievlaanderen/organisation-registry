@@ -35,6 +35,7 @@ public class CapacityPersonReportController: OrganisationRegistryController
     /// <param name="elastic"></param>
     /// <param name="id">A capacity GUID identifier</param>
     /// <returns></returns>
+    /// <response code="200">Het rapport: Personen per hoedanigheid.</response>
     [HttpGet("capacitypersons/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

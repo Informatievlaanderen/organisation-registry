@@ -40,8 +40,9 @@ public class BodyLifecyclePhaseCommandController : OrganisationRegistryCommandCo
     }
 
     /// <summary>Pas een levensloopfase aan voor een orgaan.</summary>
-    /// <response code="201">Als de levensloopfase succesvol aangepast is.</response>
+    /// <response code="200">Als de levensloopfase succesvol aangepast is.</response>
     /// <response code="400">Als de validatie voor de levensloopfase mislukt is.</response>
+    /// <response code="200">Als de levensloopfase succesvol aangepast is.</response>
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

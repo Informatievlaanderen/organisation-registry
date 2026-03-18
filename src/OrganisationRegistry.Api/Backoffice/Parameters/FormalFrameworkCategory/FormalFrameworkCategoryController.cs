@@ -21,7 +21,9 @@ using SqlServer.Infrastructure;
 public class FormalFrameworkCategoryController : OrganisationRegistryController
 {
     /// <summary>Vraag een lijst van toepassingsgebiedcategorieën op.</summary>
+    /// <response code="200">Een lijst van toepassingsgebiedcategorieën.</response>
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<FormalFrameworkCategoryListItem>();

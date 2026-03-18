@@ -40,8 +40,9 @@ public class OrganisationOrganisationClassificationCommandController : Organisat
     }
 
     /// <summary>Pas een classificatie aan voor een organisatie.</summary>
-    /// <response code="201">Als de classificatie succesvol aangepast is.</response>
+    /// <response code="200">Als de classificatie succesvol aangepast is.</response>
     /// <response code="400">Als de validatie voor de classificatie mislukt is.</response>
+    /// <response code="200">Als de organisatieclassificatie succesvol aangepast is.</response>
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

@@ -25,7 +25,9 @@ using SqlServer.Infrastructure;
 public class KeyTypeController : OrganisationRegistryController
 {
     /// <summary>Vraag een lijst van sleuteltypes op.</summary>
+    /// <response code="200">Een lijst van sleuteltypes.</response>
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [OrganisationRegistryAuthorize]
     public async Task<IActionResult> Get(
         [FromServices] OrganisationRegistryContext context,

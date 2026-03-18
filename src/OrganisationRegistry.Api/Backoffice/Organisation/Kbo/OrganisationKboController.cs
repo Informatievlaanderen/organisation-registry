@@ -21,6 +21,7 @@ using SqlServer.Infrastructure;
 public class OrganisationKboController : OrganisationRegistryController
 {
     /// <summary>Vraag de beëindigingsstatus van een organisatie gekoppeld aan de KBO op.</summary>
+    /// <response code="200">De beëindigingsstatus van de organisatie gekoppeld aan de KBO.</response>
     [HttpGet("{id}/kbo/{kboNumber}/termination")]
     [OrganisationRegistryAuthorize(Role.AlgemeenBeheerder, Role.CjmBeheerder, Role.Developer, Role.VlimpersBeheerder)]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -38,6 +39,7 @@ public class OrganisationKboController : OrganisationRegistryController
     }
 
     /// <summary>Vraag een lijst van te beëindigen organisaties volgens de KBO op.</summary>
+    /// <response code="200">Een lijst van te beëindigen organisaties volgens de KBO.</response>
     [HttpGet("kbo/terminated")]
     [OrganisationRegistryAuthorize(Role.AlgemeenBeheerder, Role.CjmBeheerder, Role.Developer)]
     [ProducesResponseType(StatusCodes.Status200OK)]

@@ -21,7 +21,9 @@ using SqlServer.SeatType;
 public class SeatTypeController : OrganisationRegistryController
 {
     /// <summary>Vraag een lijst van zeteltypes op.</summary>
+    /// <response code="200">Een lijst van zeteltypes.</response>
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<SeatTypeListItem>();
@@ -37,8 +39,8 @@ public class SeatTypeController : OrganisationRegistryController
     }
 
     /// <summary>Vraag een zeteltype op.</summary>
-    /// <response code="200">Als het posttype gevonden is.</response>
-    /// <response code="404">Als het posttype niet gevonden kan worden.</response>
+    /// <response code="200">Als het zeteltype gevonden is.</response>
+    /// <response code="404">Als het zeteltype niet gevonden kan worden.</response>
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

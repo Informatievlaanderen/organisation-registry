@@ -55,8 +55,9 @@ public class BodyMandateCommandController : OrganisationRegistryCommandControlle
     }
 
     /// <summary>Pas een mandaat aan voor een orgaan.</summary>
-    /// <response code="201">Als het mandaat succesvol aangepast is.</response>
+    /// <response code="200">Als het mandaat succesvol aangepast is.</response>
     /// <response code="400">Als de validatie voor het mandaat mislukt is.</response>
+    /// <response code="200">Als het mandaat succesvol aangepast is.</response>
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

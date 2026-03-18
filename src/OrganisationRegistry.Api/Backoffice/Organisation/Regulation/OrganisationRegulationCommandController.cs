@@ -42,8 +42,9 @@ public class OrganisationRegulationCommandController : OrganisationRegistryComma
     }
 
     /// <summary>Pas een regelgeving aan voor een organisatie.</summary>
-    /// <response code="201">Als de regelgeving succesvol aangepast is.</response>
+    /// <response code="200">Als de regelgeving succesvol aangepast is.</response>
     /// <response code="400">Als de validatie voor de regelgeving mislukt is.</response>
+    /// <response code="200">Als de regelgeving succesvol aangepast is.</response>
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

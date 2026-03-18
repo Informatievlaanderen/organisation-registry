@@ -36,6 +36,7 @@ public class FormalFrameworkOrganisationReportController : OrganisationRegistryC
     /// <param name="dateTimeProvider"></param>
     /// <param name="id">A formal framework GUID identifier</param>
     /// <returns></returns>
+    /// <response code="200">Het rapport: Organisaties per toepassingsgebied.</response>
     [HttpGet("formalframeworkorganisations/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -90,6 +91,7 @@ public class FormalFrameworkOrganisationReportController : OrganisationRegistryC
     /// <param name="dateTimeProvider"></param>
     /// <param name="id">A formal framework GUID identifier</param>
     /// <returns></returns>
+    /// <response code="200">Het rapport: Organisaties per toepassingsgebied (uitgebreid).</response>
     [HttpGet("formalframeworkorganisations/{id}/extended")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -143,6 +145,7 @@ public class FormalFrameworkOrganisationReportController : OrganisationRegistryC
     /// <param name="elastic"></param>
     /// <param name="id">A formal framework GUID identifier</param>
     /// <returns></returns>
+    /// <response code="200">Het rapport: Organisaties per toepassingsgebied (vademecum).</response>
     [HttpGet("formalframeworkorganisations/vademecum/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

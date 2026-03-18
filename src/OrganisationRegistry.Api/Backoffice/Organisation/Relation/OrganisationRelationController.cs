@@ -19,7 +19,9 @@ using SqlServer.Infrastructure;
 public class OrganisationRelationController : OrganisationRegistryController
 {
     /// <summary>Vraag een lijst van relaties voor een organisatie op.</summary>
+    /// <response code="200">Een lijst van relaties voor een organisatie.</response>
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid organisationId)
     {
         var filtering = Request.ExtractFilteringRequest<OrganisationRelationListItemFilter>();

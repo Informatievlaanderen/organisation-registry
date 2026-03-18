@@ -6,6 +6,7 @@ using Infrastructure;
 using Infrastructure.Search.Filtering;
 using Infrastructure.Search.Pagination;
 using Infrastructure.Search.Sorting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SqlServer.Infrastructure;
@@ -19,7 +20,9 @@ using SqlServer.Organisation;
 public class OrganisationChildrenController : OrganisationRegistryController
 {
     /// <summary>Vraag een lijst van onderdelen van een organisatie op.</summary>
+    /// <response code="200">Een lijst van onderdelen van een organisatie.</response>
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid organisationId)
     {
         var filtering = Request.ExtractFilteringRequest<OrganisationChildListItem>();

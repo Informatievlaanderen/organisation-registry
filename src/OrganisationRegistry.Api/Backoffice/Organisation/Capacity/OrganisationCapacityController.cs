@@ -23,7 +23,9 @@ using SqlServer.Infrastructure;
 public class OrganisationCapacityController : OrganisationRegistryController
 {
     /// <summary>Vraag een lijst van hoedanigheden voor een organisatie op.</summary>
+    /// <response code="200">Een lijst van hoedanigheden voor een organisatie.</response>
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get(
         [FromServices] OrganisationRegistryContext context,
         [FromServices] IOrganisationRegistryConfiguration configuration,

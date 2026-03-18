@@ -22,6 +22,7 @@ using SqlServer.Infrastructure;
 public class EventsController : OrganisationRegistryController
 {
     /// <summary>Vraag een lijst van events op.</summary>
+    /// <response code="200">Een lijst van events.</response>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)

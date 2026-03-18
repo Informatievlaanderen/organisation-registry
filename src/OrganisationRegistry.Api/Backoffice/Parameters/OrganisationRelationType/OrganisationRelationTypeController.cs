@@ -21,7 +21,9 @@ using SqlServer.OrganisationRelationType;
 public class OrganisationRelationTypeController : OrganisationRegistryController
 {
     /// <summary>Vraag een lijst van organisatierelatietypes op.</summary>
+    /// <response code="200">Een lijst van organisatierelatietypes.</response>
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<OrganisationRelationTypeListItem>();

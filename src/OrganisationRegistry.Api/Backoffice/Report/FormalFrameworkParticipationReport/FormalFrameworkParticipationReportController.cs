@@ -24,6 +24,7 @@ public class FormalFrameworkParticipationReportController : OrganisationRegistry
     /// <param name="context"></param>
     /// <param name="formalFrameworkId">A formal framework GUID identifier</param>
     /// <returns></returns>
+    /// <response code="200">Het rapport: Meer Evenwichtige Participatie per toepassingsgebied.</response>
     [HttpGet("formalframeworkparticipation/{formalFrameworkId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -72,6 +73,7 @@ public class FormalFrameworkParticipationReportController : OrganisationRegistry
     /// <param name="apiConfiguration"></param>
     /// <param name="dateTimeProvider"></param>
     /// <returns></returns>
+    /// <response code="200">Het rapport: Meer Evenwichtige Participatie - samenvatting.</response>
     [HttpGet("participationsummary")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

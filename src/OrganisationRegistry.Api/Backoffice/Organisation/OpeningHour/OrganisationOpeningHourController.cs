@@ -19,7 +19,7 @@ using SqlServer.Infrastructure;
 public class OrganisationOpeningHourController : OrganisationRegistryController
 {
     /// <summary>Vraag een lijst van openingsuren voor een organisatie op.</summary>
-    /// <response code="200">Een gepagineerde lijst van openingsuren voor de organisatie.</response>
+    /// <response code="200">Een lijst van openingsuren voor de organisatie.</response>
     /// <response code="404">Als de organisatie niet gevonden kan worden.</response>
     [HttpGet]
     public async Task<IActionResult> Get(

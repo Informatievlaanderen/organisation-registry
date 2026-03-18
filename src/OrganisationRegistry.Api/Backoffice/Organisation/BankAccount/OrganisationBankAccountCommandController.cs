@@ -41,8 +41,9 @@ public class OrganisationBankAccountCommandController : OrganisationRegistryComm
     }
 
     /// <summary>Pas een bankrekeningnummer aan voor een organisatie.</summary>
-    /// <response code="201">Als de bankrekening succesvol aangepast is.</response>
+    /// <response code="200">Als de bankrekening succesvol aangepast is.</response>
     /// <response code="400">Als de validatie voor de bankrekening mislukt is.</response>
+    /// <response code="200">Als de bankrekening succesvol aangepast is.</response>
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

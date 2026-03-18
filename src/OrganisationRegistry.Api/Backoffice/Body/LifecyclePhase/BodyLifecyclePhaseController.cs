@@ -20,7 +20,9 @@ using OrganisationRegistry.SqlServer.Infrastructure;
 public class BodyLifecyclePhaseController : OrganisationRegistryController
 {
     /// <summary>Vraag een lijst van levensloopfasen voor een orgaan op.</summary>
+    /// <response code="200">Een lijst van levensloopfasen voor een orgaan.</response>
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid bodyId)
     {
         var filtering = Request.ExtractFilteringRequest<BodyLifecyclePhaseListItem>();

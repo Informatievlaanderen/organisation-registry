@@ -22,7 +22,9 @@ using SqlServer.OrganisationClassificationType;
 public class OrganisationClassificationTypeController : OrganisationRegistryController
 {
     /// <summary>Vraag een lijst van organisatieclassificatietypes op.</summary>
+    /// <response code="200">Een lijst van organisatieclassificatietypes.</response>
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get(
         [FromServices] OrganisationRegistryContext context,
         [FromServices] IOrganisationRegistryConfiguration organisationRegistryConfiguration)

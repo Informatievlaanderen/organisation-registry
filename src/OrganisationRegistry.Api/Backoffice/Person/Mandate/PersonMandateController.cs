@@ -2,6 +2,7 @@ namespace OrganisationRegistry.Api.Backoffice.Person.Mandate;
 
 using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Infrastructure;
@@ -19,7 +20,9 @@ using OrganisationRegistry.SqlServer.Person;
 public class PersonMandateController : OrganisationRegistryController
 {
     /// <summary>Vraag een lijst van mandaten voor een persoon op.</summary>
+    /// <response code="200">Een lijst van mandaten voor een persoon.</response>
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid personId)
     {
         var filtering = Request.ExtractFilteringRequest<PersonMandateListItem>();

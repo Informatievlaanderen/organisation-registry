@@ -30,7 +30,9 @@ public class FormalFrameworkController : OrganisationRegistryController
     }
 
     /// <summary>Vraag een lijst van toepassingsgebieden op.</summary>
+    /// <response code="200">Een lijst van toepassingsgebieden.</response>
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<FormalFrameworkListItemFilter>();
@@ -46,7 +48,9 @@ public class FormalFrameworkController : OrganisationRegistryController
     }
 
     /// <summary>Vraag een lijst van toepassingsgebieden voor het vademecumrapport op.</summary>
+    /// <response code="200">Een lijst van toepassingsgebieden voor het vademecumrapport.</response>
     [HttpGet("vademecum")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetVademecumFormalFrameworks([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<FormalFrameworkListItemFilter>();

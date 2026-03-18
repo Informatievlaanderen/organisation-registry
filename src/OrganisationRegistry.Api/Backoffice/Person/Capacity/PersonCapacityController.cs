@@ -2,6 +2,7 @@ namespace OrganisationRegistry.Api.Backoffice.Person.Capacity;
 
 using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Infrastructure;
@@ -19,7 +20,9 @@ using OrganisationRegistry.SqlServer.Person;
 public class PersonCapacityController : OrganisationRegistryController
 {
     /// <summary>Vraag een lijst van hoedanigheden voor een persoon op.</summary>
+    /// <response code="200">Een lijst van hoedanigheden voor een persoon.</response>
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid personId)
     {
         var filtering = Request.ExtractFilteringRequest<PersonCapacityListItem>();

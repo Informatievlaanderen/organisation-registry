@@ -19,7 +19,9 @@ using OrganisationRegistry.SqlServer.Infrastructure;
 public class BodySeatController : OrganisationRegistryController
 {
     /// <summary>Vraag een lijst van zetels voor een orgaan op.</summary>
+    /// <response code="200">Een lijst van zetels voor een orgaan.</response>
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid bodyId)
     {
         var filtering = Request.ExtractFilteringRequest<BodySeatListItemFilter>();
@@ -35,8 +37,8 @@ public class BodySeatController : OrganisationRegistryController
     }
 
     /// <summary>Vraag een zetel voor een orgaan op.</summary>
-    /// <response code="200">Als de post gevonden is.</response>
-    /// <response code="404">Als de post niet gevonden kan worden.</response>
+    /// <response code="200">Als de zetel gevonden is.</response>
+    /// <response code="404">Als de zetel niet gevonden kan worden.</response>
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

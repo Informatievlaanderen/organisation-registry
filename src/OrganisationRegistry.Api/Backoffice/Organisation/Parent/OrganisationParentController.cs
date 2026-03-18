@@ -20,7 +20,9 @@ using SqlServer.Organisation;
 public class OrganisationParentController : OrganisationRegistryController
 {
     /// <summary>Vraag een lijst van bovenliggende organisaties op.</summary>
+    /// <response code="200">Een lijst van bovenliggende organisaties.</response>
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid organisationId)
     {
         var filtering = Request.ExtractFilteringRequest<OrganisationParentListItem>();
