@@ -213,6 +213,7 @@ public class Startup
                                 x.OperationFilter<ProblemJsonResponseFilter>();
                                 x.OperationFilter<PaginationHeaderOperationFilter>();
                                 x.CustomSchemaIds(type => type.ToString());
+                                x.DocumentFilter<TagDescriptionDocumentFilter>();
                             },
                         },
                         ApiInfo = (_, description) => new OpenApiInfo
