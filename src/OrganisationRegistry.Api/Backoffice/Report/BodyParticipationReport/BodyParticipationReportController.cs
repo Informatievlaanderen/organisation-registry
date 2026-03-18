@@ -20,7 +20,7 @@ using Participation;
 public class BodyParticipationReportController : OrganisationRegistryController
 {
     /// <summary>Rapport: Meer Evenwichtige Participatie per orgaan per zetel.</summary>
-    /// <remarks>Geef de geslachtsverhouding voor een orgaan (gegroepeerd per orgaan en zetel).</remarks>
+    /// <remarks>Geef de meer evenwichtige participatie voor een orgaan (gegroepeerd per orgaan en zetel).</remarks>
     /// <param name="context"></param>
     /// <param name="dateTimeProvider"></param>
     /// <param name="bodyId">A body GUID identifier</param>
@@ -73,7 +73,7 @@ public class BodyParticipationReportController : OrganisationRegistryController
     }
 
     /// <summary>Rapport: Meer Evenwichtige Participatie per orgaan - totaal.</summary>
-    /// <remarks>Geef de totale geslachtsverhouding voor een orgaan (gegroepeerd per orgaan).</remarks>
+    /// <remarks>Geef de totale meer evenwichtige participatie voor een orgaan (gegroepeerd per orgaan).</remarks>
     /// <param name="context"></param>
     /// <param name="dateTimeProvider"></param>
     /// <param name="bodyId">A body GUID identifier</param>
