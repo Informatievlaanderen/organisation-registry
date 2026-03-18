@@ -21,7 +21,9 @@ using SqlServer.Infrastructure;
 public class FunctionTypeController : OrganisationRegistryController
 {
     /// <summary>Vraag een lijst van functietypes op.</summary>
+    /// <response code="200">Een lijst van functietypes.</response>
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<FunctionTypeListItem>();

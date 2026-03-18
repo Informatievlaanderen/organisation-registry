@@ -40,8 +40,9 @@ public class OrganisationContactCommandController : OrganisationRegistryCommandC
     }
 
     /// <summary>Pas een contact aan voor een organisatie.</summary>
-    /// <response code="201">Als het contact succesvol aangepast is.</response>
+    /// <response code="200">Als het contact succesvol aangepast is.</response>
     /// <response code="400">Als de validatie voor het contact mislukt is.</response>
+    /// <response code="200">Als het contact succesvol aangepast is.</response>
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

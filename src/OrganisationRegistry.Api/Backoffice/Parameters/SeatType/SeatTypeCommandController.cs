@@ -23,8 +23,8 @@ public class SeatTypeCommandController : OrganisationRegistryCommandController
     }
 
     /// <summary>Registreer een zeteltype.</summary>
-    /// <response code="201">Als het posttype succesvol aangemaakt is.</response>
-    /// <response code="400">Als de validatie voor het posttype mislukt is.</response>
+    /// <response code="201">Als het zeteltype succesvol aangemaakt is.</response>
+    /// <response code="400">Als de validatie voor het zeteltype mislukt is.</response>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -39,8 +39,8 @@ public class SeatTypeCommandController : OrganisationRegistryCommandController
     }
 
     /// <summary>Pas een zeteltype aan.</summary>
-    /// <response code="200">Als het posttype succesvol aangepast is.</response>
-    /// <response code="400">Als de validatie voor het posttype mislukt is.</response>
+    /// <response code="200">Als het zeteltype succesvol aangepast is.</response>
+    /// <response code="400">Als de validatie voor het zeteltype mislukt is.</response>
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

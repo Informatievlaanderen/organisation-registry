@@ -20,7 +20,9 @@ using SqlServer.Infrastructure;
 public class BodyClassificationController : OrganisationRegistryController
 {
     /// <summary>Vraag een lijst van orgaanclassificaties op.</summary>
+    /// <response code="200">Een lijst van orgaanclassificaties.</response>
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<BodyClassificationListItemFilter>();

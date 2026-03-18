@@ -22,7 +22,9 @@ using SqlServer.Infrastructure;
 public class OrganisationFormalFrameworkController : OrganisationRegistryController
 {
     /// <summary>Vraag een lijst van toepassingsgebieden voor een organisatie op.</summary>
+    /// <response code="200">Een lijst van toepassingsgebieden voor een organisatie.</response>
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get(
         [FromServices] OrganisationRegistryContext context,
         [FromServices] IOrganisationRegistryConfiguration configuration,

@@ -25,6 +25,7 @@ public class BodyParticipationReportController : OrganisationRegistryController
     /// <param name="dateTimeProvider"></param>
     /// <param name="bodyId">A body GUID identifier</param>
     /// <returns></returns>
+    /// <response code="200">Het rapport: Meer Evenwichtige Participatie per orgaan per zetel.</response>
     [HttpGet("bodyparticipation/{bodyId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -77,6 +78,7 @@ public class BodyParticipationReportController : OrganisationRegistryController
     /// <param name="dateTimeProvider"></param>
     /// <param name="bodyId">A body GUID identifier</param>
     /// <returns></returns>
+    /// <response code="200">Het rapport: Meer Evenwichtige Participatie per orgaan - totaal.</response>
     [HttpGet("bodyparticipation/{bodyId}/totals")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

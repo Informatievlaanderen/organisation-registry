@@ -26,7 +26,9 @@ using SqlServer.LabelType;
 public class LabelTypeController : OrganisationRegistryController
 {
     /// <summary>Vraag een lijst van labeltypes op.</summary>
+    /// <response code="200">Een lijst van benamingstypes.</response>
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [OrganisationRegistryAuthorize]
     public async Task<IActionResult> Get(
         [FromServices] OrganisationRegistryContext context,

@@ -40,8 +40,9 @@ public class BodyOrganisationCommandController : OrganisationRegistryCommandCont
     }
 
     /// <summary>Pas een organisatie aan voor een orgaan.</summary>
-    /// <response code="201">Als de organisatie succesvol aangepast is.</response>
+    /// <response code="200">Als de organisatie succesvol aangepast is.</response>
     /// <response code="400">Als de validatie voor de organisatie mislukt is.</response>
+    /// <response code="200">Als de organisatie succesvol aangepast is.</response>
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

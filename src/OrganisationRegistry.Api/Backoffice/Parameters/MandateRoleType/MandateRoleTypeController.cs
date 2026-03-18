@@ -21,7 +21,9 @@ using SqlServer.MandateRoleType;
 public class MandateRoleTypeController : OrganisationRegistryController
 {
     /// <summary>Vraag een lijst van mandaat rol types op.</summary>
+    /// <response code="200">Een lijst van mandaat rol types.</response>
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<MandateRoleTypeListItem>();

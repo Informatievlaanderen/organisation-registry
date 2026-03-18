@@ -19,7 +19,9 @@ using OrganisationRegistry.SqlServer.Infrastructure;
 public class BodyContactController : OrganisationRegistryController
 {
     /// <summary>Vraag een lijst van contacten voor een orgaan op.</summary>
+    /// <response code="200">Een lijst van contacten voor een orgaan.</response>
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid bodyId)
     {
         var filtering = Request.ExtractFilteringRequest<BodyContactListItemFilter>();

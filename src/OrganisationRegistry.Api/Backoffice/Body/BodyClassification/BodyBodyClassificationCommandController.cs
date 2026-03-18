@@ -40,8 +40,9 @@ public class BodyBodyClassificationCommandController : OrganisationRegistryComma
     }
 
     /// <summary>Pas een classificatie aan voor een orgaan.</summary>
-    /// <response code="201">Als de classificatie succesvol aangepast is.</response>
+    /// <response code="200">Als de classificatie succesvol aangepast is.</response>
     /// <response code="400">Als de validatie voor de classificatie mislukt is.</response>
+    /// <response code="200">Als de orgaanclassificatie succesvol aangepast is.</response>
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

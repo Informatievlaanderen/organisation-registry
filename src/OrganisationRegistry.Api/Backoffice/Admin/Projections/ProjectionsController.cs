@@ -23,6 +23,7 @@ using SqlServer.Infrastructure;
 public class ProjectionsController : OrganisationRegistryController
 {
     /// <summary>Vraag een lijst van projecties op.</summary>
+    /// <response code="200">Een lijst van projecties.</response>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get()
@@ -46,6 +47,7 @@ public class ProjectionsController : OrganisationRegistryController
     }
 
     /// <summary>Vraag een lijst van projectiestatussen op.</summary>
+    /// <response code="200">Een lijst van projectiestatussen.</response>
     [HttpGet("states")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
@@ -54,6 +56,7 @@ public class ProjectionsController : OrganisationRegistryController
             .ToListAsync());
 
     /// <summary>Vraag een projectiestatus op basis van het id op.</summary>
+    /// <response code="200">Een lijst van projectiestatussen.</response>
     [HttpGet("states/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, Guid id)
@@ -68,6 +71,7 @@ public class ProjectionsController : OrganisationRegistryController
     }
 
     /// <summary>Vraag het sequentienummer op van het meest recente event.</summary>
+    /// <response code="200">Het sequentienummer van het meest recente event.</response>
     [HttpGet("states/last-event")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> LastEvent([FromServices] OrganisationRegistryContext context)
@@ -76,6 +80,7 @@ public class ProjectionsController : OrganisationRegistryController
     }
 
     /// <summary>Pas een projectiestatus aan.</summary>
+    /// <response code="200">Als de projectiestatus succesvol aangepast is.</response>
     [HttpPut("states/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

@@ -40,8 +40,9 @@ public class OrganisationParentCommandController : OrganisationRegistryCommandCo
     }
 
     /// <summary>Pas de bovenliggende organisatie aan.</summary>
-    /// <response code="201">Als de bovenliggende organisatie succesvol aangepast is.</response>
+    /// <response code="200">Als de bovenliggende organisatie succesvol aangepast is.</response>
     /// <response code="400">Als de validatie voor de bovenliggende organisatie mislukt is.</response>
+    /// <response code="200">Als de bovenliggende organisatie succesvol aangepast is.</response>
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

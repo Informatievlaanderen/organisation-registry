@@ -24,6 +24,7 @@ using SqlServer.Infrastructure;
 public class DelegationAssignmentController : OrganisationRegistryController
 {
     /// <summary>Vraag een lijst van delegatieopdrachten op.</summary>
+    /// <response code="200">Een lijst van delegatieopdrachten.</response>
     [HttpGet("{delegationId}/assignments")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromServices] ISecurityService securityService, [FromRoute] Guid delegationId)

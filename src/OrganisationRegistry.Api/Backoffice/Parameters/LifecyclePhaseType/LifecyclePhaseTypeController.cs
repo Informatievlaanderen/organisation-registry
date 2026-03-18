@@ -21,7 +21,9 @@ using SqlServer.LifecyclePhaseType;
 public class LifecyclePhaseTypeController : OrganisationRegistryController
 {
     /// <summary>Vraag een lijst van levensloopfasetypes op.</summary>
+    /// <response code="200">Een lijst van levensloopfasetypes.</response>
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<LifecyclePhaseTypeListItem>();

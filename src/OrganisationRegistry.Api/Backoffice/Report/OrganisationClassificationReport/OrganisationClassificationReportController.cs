@@ -39,6 +39,7 @@ public class OrganisationClassificationReportController : OrganisationRegistryCo
     /// <param name="elastic"></param>
     /// <param name="id"></param>
     /// <returns></returns>
+    /// <response code="200">Het rapport: Organisaties per beleidsdomein.</response>
     [HttpGet("classificationorganisations/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -89,6 +90,7 @@ public class OrganisationClassificationReportController : OrganisationRegistryCo
     /// <remarks>Geef alle classificaties voor het classificatietype "Beleidsdomein".</remarks>
     /// <param name="context"></param>
     /// <returns></returns>
+    /// <response code="200">Het rapport: Alle classificaties voor het classificatietype "Beleidsdomein".</response>
     [HttpGet("policydomainclassifications")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -119,6 +121,7 @@ public class OrganisationClassificationReportController : OrganisationRegistryCo
     /// <remarks>Geef alle classificaties voor het classificatietype "Bevoegde minister".</remarks>
     /// <param name="context"></param>
     /// <returns></returns>
+    /// <response code="200">Het rapport: Alle classificaties voor het classificatietype "Bevoegde minister".</response>
     [HttpGet("responsibleministerclassifications")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -151,6 +154,7 @@ public class OrganisationClassificationReportController : OrganisationRegistryCo
     /// <param name="dateTimeProvider"></param>
     /// <param name="classificationOrganisationId">A classification organisation GUID identifier</param>
     /// <returns></returns>
+    /// <response code="200">Het rapport: Meer Evenwichtige Participatie per classificatieorganisatie.</response>
     [HttpGet("classificationorganisationsparticipation/{classificationOrganisationId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

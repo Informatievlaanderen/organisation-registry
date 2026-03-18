@@ -24,7 +24,9 @@ using Requests;
 public class ConfigurationController : OrganisationRegistryController
 {
     /// <summary>Vraag een lijst van configuratiewaarden op.</summary>
+    /// <response code="200">Een lijst van configuratiewaarden.</response>
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get([FromServices] ConfigurationContext context)
     {
         var filtering = Request.ExtractFilteringRequest<ConfigurationValue>();

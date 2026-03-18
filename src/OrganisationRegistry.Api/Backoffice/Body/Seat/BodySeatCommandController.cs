@@ -22,8 +22,8 @@ public class BodySeatCommandController : OrganisationRegistryCommandController
     }
 
     /// <summary>Voeg een zetel toe aan een orgaan.</summary>
-    /// <response code="201">Als de post succesvol aangemaakt is.</response>
-    /// <response code="400">Als de validatie voor de post mislukt is.</response>
+    /// <response code="201">Als de zetel succesvol aangemaakt is.</response>
+    /// <response code="400">Als de validatie voor de zetel mislukt is.</response>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -40,8 +40,8 @@ public class BodySeatCommandController : OrganisationRegistryCommandController
     }
 
     /// <summary>Pas een zetel aan voor een orgaan.</summary>
-    /// <response code="201">Als de post succesvol aangepast is.</response>
-    /// <response code="400">Als de validatie voor de post mislukt is.</response>
+    /// <response code="200">Als de zetel succesvol aangepast is.</response>
+    /// <response code="400">Als de validatie voor de zetel mislukt is.</response>
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

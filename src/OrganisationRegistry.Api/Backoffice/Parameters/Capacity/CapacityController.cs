@@ -20,7 +20,9 @@ using SqlServer.Infrastructure;
 public class CapacityController : OrganisationRegistryController
 {
     /// <summary>Vraag een lijst van hoedanigheden op.</summary>
+    /// <response code="200">Een lijst van hoedanigheden.</response>
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<CapacityListQuery.CapacityListFilter>();

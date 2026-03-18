@@ -25,7 +25,9 @@ using SqlServer.Infrastructure;
 public class OrganisationKeyController : OrganisationRegistryController
 {
     /// <summary>Vraag een lijst van sleutels voor een organisatie op.</summary>
+    /// <response code="200">Een lijst van sleutels.</response>
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [OrganisationRegistryAuthorize]
     [AllowAnonymous]
     public async Task<IActionResult> Get(

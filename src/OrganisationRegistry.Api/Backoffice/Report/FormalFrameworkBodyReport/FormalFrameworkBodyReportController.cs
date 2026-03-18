@@ -35,6 +35,7 @@ public class FormalFrameworkBodyReportController : OrganisationRegistryControlle
     /// <param name="elastic"></param>
     /// <param name="id">A formal framework GUID identifier</param>
     /// <returns></returns>
+    /// <response code="200">Het rapport: Organen per toepassingsgebied.</response>
     [HttpGet("formalframeworkbodies/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

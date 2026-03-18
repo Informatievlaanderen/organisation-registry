@@ -41,8 +41,9 @@ public class OrganisationFormalFrameworkCommandController : OrganisationRegistry
     }
 
     /// <summary>Pas een toepassingsgebied aan voor een organisatie.</summary>
-    /// <response code="201">Als het toepassingsgebied succesvol aangepast is.</response>
+    /// <response code="200">Als het toepassingsgebied succesvol aangepast is.</response>
     /// <response code="400">Als de validatie voor het toepassingsgebied mislukt is.</response>
+    /// <response code="200">Als het toepassingsgebied succesvol aangepast is.</response>
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

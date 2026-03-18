@@ -26,6 +26,7 @@ using Infrastructure;
 using Infrastructure.Search.Filtering;
 using Infrastructure.Search.Pagination;
 using Infrastructure.Search.Sorting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OrganisationRegistry.Infrastructure.Configuration;
@@ -56,7 +57,9 @@ public class ParameterController : OrganisationRegistryController
     ///     Vraag een lijst met orgaan classificaties op. <br />
     ///     Geef de header `x-pagination: none` mee om alle entiteiten op te vragen.
     /// </remarks>
+    /// <response code="200">Een lijst van orgaanclassificaties.</response>
     [HttpGet("bodyclassifications")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetBodyClassifications([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<BodyClassificationListItemFilter>();
@@ -76,7 +79,9 @@ public class ParameterController : OrganisationRegistryController
     ///     Vraag een lijst met orgaan classificatietypes op. <br />
     ///     Geef de header `x-pagination: none` mee om alle entiteiten op te vragen.
     /// </remarks>
+    /// <response code="200">Een lijst van orgaanclassificatietypes.</response>
     [HttpGet("bodyclassificationtypes")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetBodyClassificationTypes([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<BodyClassificationTypeListItem>();
@@ -96,7 +101,9 @@ public class ParameterController : OrganisationRegistryController
     ///     Vraag een lijst met gebouwen op. <br />
     ///     Geef de header `x-pagination: none` mee om alle entiteiten op te vragen.
     /// </remarks>
+    /// <response code="200">Een lijst van gebouwen.</response>
     [HttpGet("buildings")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetBuildings([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<BuildingListItemFilter>();
@@ -116,7 +123,9 @@ public class ParameterController : OrganisationRegistryController
     ///     Vraag een lijst met beleidsvelden op. <br />
     ///     Geef de header `x-pagination: none` mee om alle entiteiten op te vragen.
     /// </remarks>
+    /// <response code="200">Een lijst van beleidsvelden.</response>
     [HttpGet("purposes")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetPurposes([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<PurposeListItem>();
@@ -136,7 +145,9 @@ public class ParameterController : OrganisationRegistryController
     ///     Vraag een lijst met regelgevingsubthema's op. <br />
     ///     Geef de header `x-pagination: none` mee om alle entiteiten op te vragen.
     /// </remarks>
+    /// <response code="200">Een lijst van regelgevingsubthema's.</response>
     [HttpGet("regulationsubthemes")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetRegulationSubThemes([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<RegulationSubThemeListItemFilter>();
@@ -156,7 +167,9 @@ public class ParameterController : OrganisationRegistryController
     ///     Vraag een lijst met regelgevingthema's op. <br />
     ///     Geef de header `x-pagination: none` mee om alle entiteiten op te vragen.
     /// </remarks>
+    /// <response code="200">Een lijst van regelgevingthema's.</response>
     [HttpGet("regulationthemes")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetRegulationThemes([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<RegulationThemeListItem>();
@@ -171,12 +184,14 @@ public class ParameterController : OrganisationRegistryController
         return Ok(await pagedRegulationThemes.Items.ToListAsync());
     }
 
-    /// <summary>Vraag een lijst van post types op.</summary>
+    /// <summary>Vraag een lijst van zeteltypen op.</summary>
     /// <remarks>
-    ///     Vraag een lijst met post types op. <br />
+    ///     Vraag een lijst met zeteltypen op. <br />
     ///     Geef de header `x-pagination: none` mee om alle entiteiten op te vragen.
     /// </remarks>
+    /// <response code="200">Een lijst van zeteltypen.</response>
     [HttpGet("seattypes")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetSeatTypes([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<SeatTypeListItem>();
@@ -196,7 +211,9 @@ public class ParameterController : OrganisationRegistryController
     ///     Vraag een lijst met organisatie relatie types op. <br />
     ///     Geef de header `x-pagination: none` mee om alle entiteiten op te vragen.
     /// </remarks>
+    /// <response code="200">Een lijst van organisatie relatie types.</response>
     [HttpGet("organisationrelationtypes")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetOrganisationRelationTypes([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<OrganisationRelationTypeListItem>();
@@ -216,7 +233,9 @@ public class ParameterController : OrganisationRegistryController
     ///     Vraag een lijst met organisatie classificatie types op. <br />
     ///     Geef de header `x-pagination: none` mee om alle entiteiten op te vragen.
     /// </remarks>
+    /// <response code="200">Een lijst van organisatie classificatie types.</response>
     [HttpGet("organisationclassificationtypes")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetOrganisationClassificationTypes(
         [FromServices] OrganisationRegistryContext context,
         [FromServices] IOrganisationRegistryConfiguration organisationRegistryConfiguration)
@@ -238,7 +257,9 @@ public class ParameterController : OrganisationRegistryController
     ///     Vraag een lijst met organisatie classificaties op. <br />
     ///     Geef de header `x-pagination: none` mee om alle entiteiten op te vragen.
     /// </remarks>
+    /// <response code="200">Een lijst van organisatie classificaties.</response>
     [HttpGet("organisationclassifications")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetOrganisationClassifications([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<OrganisationClassificationListItemFilter>();
@@ -258,7 +279,9 @@ public class ParameterController : OrganisationRegistryController
     ///     Vraag een lijst met mandaat rol types op. <br />
     ///     Geef de header `x-pagination: none` mee om alle entiteiten op te vragen.
     /// </remarks>
+    /// <response code="200">Een lijst van mandaat rol types.</response>
     [HttpGet("mandateroletypes")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetMandateRoleTypes([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<MandateRoleTypeListItem>();
@@ -278,7 +301,9 @@ public class ParameterController : OrganisationRegistryController
     ///     Vraag een lijst met locatie types op. <br />
     ///     Geef de header `x-pagination: none` mee om alle entiteiten op te vragen.
     /// </remarks>
+    /// <response code="200">Een lijst van locatie types.</response>
     [HttpGet("locationtypes")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetLocationTypes(
         [FromServices] OrganisationRegistryContext context,
         [FromServices] IOrganisationRegistryConfiguration configuration)
@@ -300,7 +325,9 @@ public class ParameterController : OrganisationRegistryController
     ///     Vraag een lijst met locaties op. <br />
     ///     Geef de header `x-pagination: none` mee om alle entiteiten op te vragen.
     /// </remarks>
+    /// <response code="200">Een lijst van locaties.</response>
     [HttpGet("locations")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetLocations([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<LocationListItemFilter>();
@@ -320,7 +347,9 @@ public class ParameterController : OrganisationRegistryController
     ///     Vraag een lijst met levensloopfase types op. <br />
     ///     Geef de header `x-pagination: none` mee om alle entiteiten op te vragen.
     /// </remarks>
+    /// <response code="200">Een lijst van levensloopfase types.</response>
     [HttpGet("lifecyclephasetypes")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetLifecyclePhaseTypes([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<LifecyclePhaseTypeListItem>();
@@ -340,7 +369,9 @@ public class ParameterController : OrganisationRegistryController
     ///     Vraag een lijst met benaming types op. <br />
     ///     Geef de header `x-pagination: none` mee om alle entiteiten op te vragen.
     /// </remarks>
+    /// <response code="200">Een lijst van benaming types.</response>
     [HttpGet("labeltypes")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetLabelTypes(
         [FromServices] OrganisationRegistryContext context,
         [FromServices] IOrganisationRegistryConfiguration configuration)
@@ -362,7 +393,9 @@ public class ParameterController : OrganisationRegistryController
     ///     Vraag een lijst met informatiesystemen op. <br />
     ///     Geef de header `x-pagination: none` mee om alle entiteiten op te vragen.
     /// </remarks>
+    /// <response code="200">Een lijst van informatiesystemen.</response>
     [HttpGet("keytypes")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetKeyTypes(
         [FromServices] OrganisationRegistryContext context)
     {
@@ -385,7 +418,9 @@ public class ParameterController : OrganisationRegistryController
     ///     Vraag een lijst met functie types op. <br />
     ///     Geef de header `x-pagination: none` mee om alle entiteiten op te vragen.
     /// </remarks>
+    /// <response code="200">Een lijst van functie types.</response>
     [HttpGet("functiontypes")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetFunctionTypes([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<FunctionTypeListItem>();
@@ -424,7 +459,9 @@ public class ParameterController : OrganisationRegistryController
     ///     Vraag een lijst met toepassingsgebieden op. <br />
     ///     Geef de header `x-pagination: none` mee om alle entiteiten op te vragen.
     /// </remarks>
+    /// <response code="200">Een lijst van toepassingsgebieden.</response>
     [HttpGet("formalframeworks")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetFormalFrameworks([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<FormalFrameworkListItemFilter>();
@@ -444,7 +481,9 @@ public class ParameterController : OrganisationRegistryController
     ///     Vraag een lijst met contact types op. <br />
     ///     Geef de header `x-pagination: none` mee om alle entiteiten op te vragen.
     /// </remarks>
+    /// <response code="200">Een lijst van contact types.</response>
     [HttpGet("contacttypes")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetContactTypes([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<ContactTypeListItem>();
@@ -464,7 +503,9 @@ public class ParameterController : OrganisationRegistryController
     ///     Vraag een lijst met hoedanigheden op. <br />
     ///     Geef de header `x-pagination: none` mee om alle entiteiten op te vragen.
     /// </remarks>
+    /// <response code="200">Een lijst van hoedanigheden.</response>
     [HttpGet("capacities")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetCapacities([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<CapacityListQuery.CapacityListFilter>();

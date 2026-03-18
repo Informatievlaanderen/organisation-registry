@@ -19,7 +19,9 @@ using OrganisationRegistry.SqlServer.Infrastructure;
 public class BodyBodyClassificationController : OrganisationRegistryController
 {
     /// <summary>Vraag een lijst van classificaties voor een orgaan op.</summary>
+    /// <response code="200">Een lijst van classificaties voor een orgaan.</response>
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid bodyId)
     {
         var filtering = Request.ExtractFilteringRequest<BodyBodyClassificationListItemFilter>();

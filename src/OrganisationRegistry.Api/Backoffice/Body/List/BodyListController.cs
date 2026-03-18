@@ -18,6 +18,7 @@ using OrganisationRegistry.SqlServer.Infrastructure;
 public class BodyListController : OrganisationRegistryController
 {
     /// <summary>Vraag een lijst van organen op.</summary>
+    /// <response code="200">Een lijst van organen.</response>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)

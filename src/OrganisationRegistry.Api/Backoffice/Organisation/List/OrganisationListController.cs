@@ -19,6 +19,7 @@ using SqlServer.Infrastructure;
 public class OrganisationListController : OrganisationRegistryController
 {
     /// <summary>Vraag een lijst van organisaties op.</summary>
+    /// <response code="200">Een lijst van organisaties.</response>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get(

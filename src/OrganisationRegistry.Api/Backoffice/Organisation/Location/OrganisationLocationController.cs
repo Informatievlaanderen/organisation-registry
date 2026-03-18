@@ -21,7 +21,9 @@ using SqlServer.Infrastructure;
 public class OrganisationLocationController : OrganisationRegistryController
 {
     /// <summary>Vraag een lijst van locaties voor een organisatie op.</summary>
+    /// <response code="200">Een lijst van locaties voor een organisatie.</response>
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get(
         [FromServices] OrganisationRegistryContext context,
         [FromServices] ISecurityService securityService,

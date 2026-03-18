@@ -21,7 +21,9 @@ using SqlServer.Infrastructure;
 public class OrganisationBankAccountController : OrganisationRegistryController
 {
     /// <summary>Vraag een lijst van bankrekeningnummers voor een organisatie op.</summary>
+    /// <response code="200">Een lijst van bankrekeningnummers voor een organisatie.</response>
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid organisationId)
     {
         var filtering = Request.ExtractFilteringRequest<OrganisationBankAccountListItemFilter>();
