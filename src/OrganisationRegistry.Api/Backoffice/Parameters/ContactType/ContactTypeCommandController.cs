@@ -13,6 +13,8 @@ using Requests;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryAuthorize]
 [OrganisationRegistryRoute("contacttypes")]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]
 public class ContactTypeCommandController : OrganisationRegistryCommandController
 {
     public ContactTypeCommandController(ICommandSender commandSender)
@@ -20,9 +22,9 @@ public class ContactTypeCommandController : OrganisationRegistryCommandControlle
     {
     }
 
-    /// <summary>Create a contact type.</summary>
-    /// <response code="201">If the contact type is created, together with the location.</response>
-    /// <response code="400">If the contact type information does not pass validation.</response>
+    /// <summary>Registreer een contacttype.</summary>
+    /// <response code="201">Als het contacttype succesvol aangemaakt is.</response>
+    /// <response code="400">Als de validatie voor het contacttype mislukt is.</response>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -36,9 +38,9 @@ public class ContactTypeCommandController : OrganisationRegistryCommandControlle
         return CreatedWithLocation(nameof(ContactTypeController),nameof(ContactTypeController.Get), new { id = message.Id });
     }
 
-    /// <summary>Update a contact type.</summary>
-    /// <response code="200">If the contact type is updated, together with the location.</response>
-    /// <response code="400">If the contact type information does not pass validation.</response>
+    /// <summary>Pas een contacttype aan.</summary>
+    /// <response code="200">Als het contacttype succesvol aangepast is.</response>
+    /// <response code="400">Als de validatie voor het contacttype mislukt is.</response>
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

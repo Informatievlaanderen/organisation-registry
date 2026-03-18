@@ -14,13 +14,15 @@ using OrganisationRegistry.Organisation.Commands;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryAuthorize]
 [OrganisationRegistryRoute("organisations")]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Organisaties")]
 public class OrganisationKboCommandController : OrganisationRegistryCommandController
 {
     public OrganisationKboCommandController(ICommandSender commandSender)
         : base(commandSender) { }
 
-    /// <summary>Couple an organisation to a KBO number.</summary>
-    /// <response code="200">If the organisation was coupled.</response>
+    /// <summary>Koppel een organisatie aan een KBO-nummer.</summary>
+    /// <response code="200">Als de organisatie gekoppeld is.</response>
     [HttpPut("{id}/kbo/number/{kboNumber}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> CoupleToKboNumber(
@@ -35,8 +37,8 @@ public class OrganisationKboCommandController : OrganisationRegistryCommandContr
         return Ok();
     }
 
-    /// <summary>Cancel an organisation's active coupling with a KBO number.</summary>
-    /// <response code="200">If the organisation coupling was cancelled.</response>
+    /// <summary>Annuleer de actieve koppeling van een organisatie met een KBO-nummer.</summary>
+    /// <response code="200">Als de koppeling geannuleerd is.</response>
     [HttpPut("{id}/kbo/cancel")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> CancelCouplingWithKbo([FromRoute] Guid id)
@@ -48,8 +50,8 @@ public class OrganisationKboCommandController : OrganisationRegistryCommandContr
         return Ok();
     }
 
-    /// <summary>Update the organisation according to data in the KBO.</summary>
-    /// <response code="200">If the organisation was updated.</response>
+    /// <summary>Pas de organisatie aan op basis van gegevens uit de KBO.</summary>
+    /// <response code="200">Als de organisatie succesvol aangepast is.</response>
     [HttpPut("{id}/kbo/sync")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> UpdateFromKbo([FromRoute] Guid id)
@@ -63,8 +65,8 @@ public class OrganisationKboCommandController : OrganisationRegistryCommandContr
         return Ok();
     }
 
-    /// <summary>Terminate the organisation according to data in the KBO.</summary>
-    /// <response code="200">If the organisation was terminated.</response>
+    /// <summary>Beëindig de organisatie op basis van gegevens uit de KBO.</summary>
+    /// <response code="200">Als de organisatie beëindigd is.</response>
     [HttpPut("{id}/kbo/terminate")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> TerminateKboCoupling([FromRoute] Guid id)

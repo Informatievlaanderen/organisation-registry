@@ -25,24 +25,26 @@ using SqlServer.Configuration;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("status")]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Administratie")]
 public class StatusController : OrganisationRegistryController
 {
-    /// <summary>Get the status of the API.</summary>
-    /// <response code="200">If the API is running and healthy.</response>
+    /// <summary>Vraag de status van de API op.</summary>
+    /// <response code="200">Als de API actief en healthy is.</response>
     [HttpGet]
     public async Task<IActionResult> Get()
         => await OkAsync("I'm ok!");
 
-    /// <summary>Get the current feature toggle settings.</summary>
-    /// <response code="200">Returns the current feature toggle configuration.</response>
+    /// <summary>Vraag de huidige feature toggle instellingen op.</summary>
+    /// <response code="200">De huidige feature toggle instellingen.</response>
     [HttpGet]
     [Route("toggles")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetToggles([FromServices] IOptions<TogglesConfigurationSection> toggles)
         => await OkAsync(toggles.Value);
 
-    /// <summary>Get the current feature management feature states.</summary>
-    /// <response code="200">Returns a dictionary of feature names and their enabled status.</response>
+    /// <summary>Vraag de huidige feature management statussen op.</summary>
+    /// <response code="200">Een overzicht van features en hun status.</response>
     [HttpGet]
     [Route("features")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -57,8 +59,8 @@ public class StatusController : OrganisationRegistryController
         return Ok(features);
     }
 
-    /// <summary>Get the current configuration settings (admin only).</summary>
-    /// <response code="200">Returns the API configuration with sensitive data obfuscated.</response>
+    /// <summary>Vraag de huidige configuratie-instellingen (enkel voor beheerders) op.</summary>
+    /// <response code="200">De huidige configuratie-instellingen met verborgen gevoelige data.</response>
     [HttpGet]
     [Route("configuration")]
     [OrganisationRegistryAuthorize(Role.Developer)]

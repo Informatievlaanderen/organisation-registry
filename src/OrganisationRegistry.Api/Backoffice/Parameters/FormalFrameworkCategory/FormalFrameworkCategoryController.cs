@@ -1,4 +1,4 @@
-﻿namespace OrganisationRegistry.Api.Backoffice.Parameters.FormalFrameworkCategory;
+namespace OrganisationRegistry.Api.Backoffice.Parameters.FormalFrameworkCategory;
 
 using System;
 using System.Threading.Tasks;
@@ -16,9 +16,11 @@ using SqlServer.Infrastructure;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("formalframeworkcategories")]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]
 public class FormalFrameworkCategoryController : OrganisationRegistryController
 {
-    /// <summary>Get a list of available formal framework categories.</summary>
+    /// <summary>Vraag een lijst van toepassingsgebiedcategorieën op.</summary>
     [HttpGet]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
     {
@@ -34,9 +36,9 @@ public class FormalFrameworkCategoryController : OrganisationRegistryController
         return Ok(await pagedFormalFrameworkCategories.Items.ToListAsync());
     }
 
-    /// <summary>Get a formal framework category.</summary>
-    /// <response code="200">If the formal framework category is found.</response>
-    /// <response code="404">If the formal framework category cannot be found.</response>
+    /// <summary>Vraag een toepassingsgebiedcategorie op.</summary>
+    /// <response code="200">Als de toepassingsgebiedcategorie gevonden is.</response>
+    /// <response code="404">Als de toepassingsgebiedcategorie niet gevonden kan worden.</response>
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

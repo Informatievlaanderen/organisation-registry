@@ -15,11 +15,12 @@ using Participation;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("reports")]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Rapporten")]
 public class BodyParticipationReportController : OrganisationRegistryController
 {
-    /// <summary>
-    /// Get gender ratio for a body (grouped by body and bodyseat)
-    /// </summary>
+    /// <summary>Rapport: Meer Evenwichtige Participatie per orgaan per zetel.</summary>
+    /// <remarks>Geef de geslachtsverhouding voor een orgaan (gegroepeerd per orgaan en zetel).</remarks>
     /// <param name="context"></param>
     /// <param name="dateTimeProvider"></param>
     /// <param name="bodyId">A body GUID identifier</param>
@@ -70,9 +71,8 @@ public class BodyParticipationReportController : OrganisationRegistryController
                 .ToList());
     }
 
-    /// <summary>
-    /// Get gender ratio totals for a body (grouped by body)
-    /// </summary>
+    /// <summary>Rapport: Meer Evenwichtige Participatie per orgaan - totaal.</summary>
+    /// <remarks>Geef de totale geslachtsverhouding voor een orgaan (gegroepeerd per orgaan).</remarks>
     /// <param name="context"></param>
     /// <param name="dateTimeProvider"></param>
     /// <param name="bodyId">A body GUID identifier</param>

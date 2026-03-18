@@ -13,6 +13,8 @@ using OrganisationRegistry.Organisation;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("organisations/{organisationId}/bankAccounts")]
 [OrganisationRegistryAuthorize]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Organisaties")]
 public class OrganisationBankAccountCommandController : OrganisationRegistryCommandController
 {
     public OrganisationBankAccountCommandController(ICommandSender commandSender)
@@ -20,9 +22,9 @@ public class OrganisationBankAccountCommandController : OrganisationRegistryComm
     {
     }
 
-    /// <summary>Add a bankAccount to an organisation.</summary>
-    /// <response code="201">If the bankAccount is added, together with the location.</response>
-    /// <response code="400">If the bankAccount information does not pass validation.</response>
+    /// <summary>Voeg een bankrekeningnummer toe aan een organisatie.</summary>
+    /// <response code="201">Als de bankrekening succesvol toegevoegd is.</response>
+    /// <response code="400">Als de validatie voor de bankrekening mislukt is.</response>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -38,9 +40,9 @@ public class OrganisationBankAccountCommandController : OrganisationRegistryComm
         return CreatedWithLocation(nameof(OrganisationBankAccountController), nameof(OrganisationBankAccountController.Get), new { id = message.OrganisationBankAccountId });
     }
 
-    /// <summary>Update a bankAccount for an organisation.</summary>
-    /// <response code="201">If the bankAccount is updated, together with the location.</response>
-    /// <response code="400">If the bankAccount information does not pass validation.</response>
+    /// <summary>Pas een bankrekeningnummer aan voor een organisatie.</summary>
+    /// <response code="201">Als de bankrekening succesvol aangepast is.</response>
+    /// <response code="400">Als de validatie voor de bankrekening mislukt is.</response>
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -56,9 +58,9 @@ public class OrganisationBankAccountCommandController : OrganisationRegistryComm
         return Ok();
     }
 
-    /// <summary>Remove a bankaccount from an organisation</summary>
-    /// <response code="204">If the bankAccount is removed.</response>
-    /// <response code="400">If the bankAccount is not found for the organisation.</response>
+    /// <summary>Verwijder een bankrekeningnummer van een organisatie.</summary>
+    /// <response code="204">Als de bankrekening succesvol verwijderd is.</response>
+    /// <response code="400">Als de bankrekening niet gevonden kan worden voor de organisatie.</response>
     [HttpDelete("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

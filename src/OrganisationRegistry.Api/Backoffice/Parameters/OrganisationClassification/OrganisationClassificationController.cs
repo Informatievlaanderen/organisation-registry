@@ -15,9 +15,11 @@ using SqlServer.Infrastructure;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("organisationclassifications")]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]
 public class OrganisationClassificationController : OrganisationRegistryController
 {
-    /// <summary>Get a list of available organisation classifications.</summary>
+    /// <summary>Vraag een lijst van organisatieclassificaties op.</summary>
     [HttpGet]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
     {
@@ -33,9 +35,9 @@ public class OrganisationClassificationController : OrganisationRegistryControll
         return Ok(await pagedOrganisationClassifications.Items.ToListAsync());
     }
 
-    /// <summary>Get an organisation classification.</summary>
-    /// <response code="200">If the organisation classification is found.</response>
-    /// <response code="404">If the organisation classification cannot be found.</response>
+    /// <summary>Vraag een organisatieclassificatie op.</summary>
+    /// <response code="200">Als de organisatieclassificatie gevonden is.</response>
+    /// <response code="404">Als de organisatieclassificatie niet gevonden kan worden.</response>
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

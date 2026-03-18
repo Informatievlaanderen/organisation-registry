@@ -18,9 +18,11 @@ using SqlServer.Infrastructure;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryAuthorize(Role.Developer)]
 [OrganisationRegistryRoute("projections")]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Administratie")]
 public class ProjectionsController : OrganisationRegistryController
 {
-    /// <summary>Get a list of projections.</summary>
+    /// <summary>Vraag een lijst van projecties op.</summary>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get()
@@ -43,7 +45,7 @@ public class ProjectionsController : OrganisationRegistryController
         return await OkAsync(projections);
     }
 
-    /// <summary>Get a list of available projection states.</summary>
+    /// <summary>Vraag een lijst van projectiestatussen op.</summary>
     [HttpGet("states")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
@@ -51,7 +53,7 @@ public class ProjectionsController : OrganisationRegistryController
             .AsQueryable()
             .ToListAsync());
 
-    /// <summary>Get a projection state by its id.</summary>
+    /// <summary>Vraag een projectiestatus op basis van het id op.</summary>
     [HttpGet("states/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, Guid id)
@@ -65,7 +67,7 @@ public class ProjectionsController : OrganisationRegistryController
         return Ok(state);
     }
 
-    /// <summary>Get the max event number.</summary>
+    /// <summary>Vraag het sequentienummer op van het meest recente event.</summary>
     [HttpGet("states/last-event")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> LastEvent([FromServices] OrganisationRegistryContext context)
@@ -73,6 +75,7 @@ public class ProjectionsController : OrganisationRegistryController
         return Ok(await context.Events.AsQueryable().MaxAsync(x => x.Number));
     }
 
+    /// <summary>Pas een projectiestatus aan.</summary>
     [HttpPut("states/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

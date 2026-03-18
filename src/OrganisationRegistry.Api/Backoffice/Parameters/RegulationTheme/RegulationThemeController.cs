@@ -1,4 +1,4 @@
-﻿namespace OrganisationRegistry.Api.Backoffice.Parameters.RegulationTheme;
+namespace OrganisationRegistry.Api.Backoffice.Parameters.RegulationTheme;
 
 using System;
 using System.Threading.Tasks;
@@ -16,9 +16,11 @@ using SqlServer.RegulationTheme;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("regulationthemes")]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]
 public class RegulationThemeController : OrganisationRegistryController
 {
-    /// <summary>Get a list of available regulation themes.</summary>
+    /// <summary>Vraag een lijst van regelgevingthema's op.</summary>
     [HttpGet]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
     {
@@ -34,9 +36,9 @@ public class RegulationThemeController : OrganisationRegistryController
         return Ok(await pagedRegulationThemes.Items.ToListAsync());
     }
 
-    /// <summary>Get a regulation theme.</summary>
-    /// <response code="200">If the regulation theme is found.</response>
-    /// <response code="404">If the regulation theme cannot be found.</response>
+    /// <summary>Vraag een regelgevingthema op.</summary>
+    /// <response code="200">Als het regelgevingsthema gevonden is.</response>
+    /// <response code="404">Als het regelgevingsthema niet gevonden kan worden.</response>
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

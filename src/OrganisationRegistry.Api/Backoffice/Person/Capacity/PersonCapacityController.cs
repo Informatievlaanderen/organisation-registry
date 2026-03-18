@@ -1,4 +1,4 @@
-﻿namespace OrganisationRegistry.Api.Backoffice.Person.Capacity;
+namespace OrganisationRegistry.Api.Backoffice.Person.Capacity;
 
 using System;
 using System.Threading.Tasks;
@@ -14,9 +14,11 @@ using OrganisationRegistry.SqlServer.Person;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("people/{personId}/capacities")]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Personen")]
 public class PersonCapacityController : OrganisationRegistryController
 {
-    /// <summary>Get a list of available capacities for a person.</summary>
+    /// <summary>Vraag een lijst van hoedanigheden voor een persoon op.</summary>
     [HttpGet]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid personId)
     {

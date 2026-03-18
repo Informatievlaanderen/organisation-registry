@@ -13,6 +13,8 @@ using Requests;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryAuthorize]
 [OrganisationRegistryRoute("buildings")]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]
 public class BuildingCommandController : OrganisationRegistryCommandController
 {
     public BuildingCommandController(ICommandSender commandSender)
@@ -20,9 +22,9 @@ public class BuildingCommandController : OrganisationRegistryCommandController
     {
     }
 
-    /// <summary>Create a building.</summary>
-    /// <response code="201">If the building is created, together with the location.</response>
-    /// <response code="400">If the building information does not pass validation.</response>
+    /// <summary>Registreer een gebouw.</summary>
+    /// <response code="201">Als het gebouw succesvol aangemaakt is.</response>
+    /// <response code="400">Als de validatie voor het gebouw mislukt is.</response>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -36,9 +38,9 @@ public class BuildingCommandController : OrganisationRegistryCommandController
         return CreatedWithLocation(nameof(BuildingController),nameof(BuildingController.Get), new { id = message.Id });
     }
 
-    /// <summary>Update a building.</summary>
-    /// <response code="200">If the building is updated, together with the location.</response>
-    /// <response code="400">If the building information does not pass validation.</response>
+    /// <summary>Pas een gebouw aan.</summary>
+    /// <response code="200">Als het gebouw succesvol aangepast is.</response>
+    /// <response code="400">Als de validatie voor het gebouw mislukt is.</response>
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

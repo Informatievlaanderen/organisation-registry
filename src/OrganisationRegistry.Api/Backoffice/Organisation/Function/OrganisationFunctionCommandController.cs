@@ -13,6 +13,8 @@ using OrganisationRegistry.Organisation;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("organisations/{organisationId}/functions")]
 [OrganisationRegistryAuthorize]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Organisaties")]
 public class OrganisationFunctionCommandController : OrganisationRegistryCommandController
 {
     public OrganisationFunctionCommandController(ICommandSender commandSender)
@@ -20,9 +22,9 @@ public class OrganisationFunctionCommandController : OrganisationRegistryCommand
     {
     }
 
-    /// <summary>Create a function for an organisation.</summary>
-    /// <response code="201">If the function is created, together with the location.</response>
-    /// <response code="400">If the function information does not pass validation.</response>
+    /// <summary>Voeg een functie toe aan een organisatie.</summary>
+    /// <response code="201">Als de functie succesvol aangemaakt is.</response>
+    /// <response code="400">Als de validatie voor de functie mislukt is.</response>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -38,9 +40,9 @@ public class OrganisationFunctionCommandController : OrganisationRegistryCommand
         return CreatedWithLocation(nameof(OrganisationFunctionController), nameof(OrganisationFunctionController.Get), new { id = message.OrganisationFunctionId });
     }
 
-    /// <summary>Update a function for an organisation.</summary>
-    /// <response code="201">If the function is updated, together with the location.</response>
-    /// <response code="400">If the function information does not pass validation.</response>
+    /// <summary>Pas een functie aan voor een organisatie.</summary>
+    /// <response code="201">Als de functie succesvol aangepast is.</response>
+    /// <response code="400">Als de validatie voor de functie mislukt is.</response>
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -56,9 +58,9 @@ public class OrganisationFunctionCommandController : OrganisationRegistryCommand
         return Ok();
     }
 
-    /// <summary>Remove a function from an organisation</summary>
-    /// <response code="204">If the function is removed.</response>
-    /// <response code="400">If the function is not found for the organisation.</response>
+    /// <summary>Verwijder een functie van een organisatie.</summary>
+    /// <response code="204">Als de functie succesvol verwijderd is.</response>
+    /// <response code="400">Als de functie niet gevonden kan worden voor de organisatie.</response>
     [HttpDelete("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

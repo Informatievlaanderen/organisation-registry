@@ -12,6 +12,8 @@ using OrganisationRegistry.Infrastructure.Commands;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("bodies/{bodyId}/organisations")]
 [OrganisationRegistryAuthorize]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Organen")]
 public class BodyOrganisationCommandController : OrganisationRegistryCommandController
 {
     public BodyOrganisationCommandController(ICommandSender commandSender)
@@ -19,9 +21,9 @@ public class BodyOrganisationCommandController : OrganisationRegistryCommandCont
     {
     }
 
-    /// <summary>Link an organisation to a body.</summary>
-    /// <response code="201">If the organisation is linked, together with the location.</response>
-    /// <response code="400">If the organisation information does not pass validation.</response>
+    /// <summary>Koppel een organisatie aan een orgaan.</summary>
+    /// <response code="201">Als de organisatie succesvol gekoppeld is.</response>
+    /// <response code="400">Als de validatie voor de organisatie mislukt is.</response>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -37,9 +39,9 @@ public class BodyOrganisationCommandController : OrganisationRegistryCommandCont
         return CreatedWithLocation(nameof(BodyOrganisationController), nameof(BodyOrganisationController.Get), new { id = message.BodyOrganisationId });
     }
 
-    /// <summary>Update an organisation for a body.</summary>
-    /// <response code="201">If the organisation is updated, together with the location.</response>
-    /// <response code="400">If the organisation information does not pass validation.</response>
+    /// <summary>Pas een organisatie aan voor een orgaan.</summary>
+    /// <response code="201">Als de organisatie succesvol aangepast is.</response>
+    /// <response code="400">Als de validatie voor de organisatie mislukt is.</response>
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

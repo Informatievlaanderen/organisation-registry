@@ -16,9 +16,11 @@ using SqlServer.SeatType;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("seattypes")]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]
 public class SeatTypeController : OrganisationRegistryController
 {
-    /// <summary>Get a list of available seat types.</summary>
+    /// <summary>Vraag een lijst van zeteltypes op.</summary>
     [HttpGet]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
     {
@@ -34,9 +36,9 @@ public class SeatTypeController : OrganisationRegistryController
         return Ok(await pagedSeatTypes.Items.ToListAsync());
     }
 
-    /// <summary>Get a seat type.</summary>
-    /// <response code="200">If the seat type is found.</response>
-    /// <response code="404">If the seat type cannot be found.</response>
+    /// <summary>Vraag een zeteltype op.</summary>
+    /// <response code="200">Als het posttype gevonden is.</response>
+    /// <response code="404">Als het posttype niet gevonden kan worden.</response>
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

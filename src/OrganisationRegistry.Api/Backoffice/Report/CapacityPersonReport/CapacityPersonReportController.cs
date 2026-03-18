@@ -15,6 +15,8 @@ using OrganisationRegistry.Infrastructure.Configuration;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("reports")]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Rapporten")]
 public class CapacityPersonReportController: OrganisationRegistryController
 {
     private const string ScrollTimeout = "30s";
@@ -28,9 +30,8 @@ public class CapacityPersonReportController: OrganisationRegistryController
         _config = config.Value;
     }
 
-    /// <summary>
-    /// Get all persons for a capacity.
-    /// </summary>
+    /// <summary>Rapport: Personen per hoedanigheid.</summary>
+    /// <remarks>Geef alle personen voor een hoedanigheid.</remarks>
     /// <param name="elastic"></param>
     /// <param name="id">A capacity GUID identifier</param>
     /// <returns></returns>

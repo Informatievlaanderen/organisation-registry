@@ -13,6 +13,8 @@ using Requests;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("purposes")]
 [OrganisationRegistryAuthorize]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]
 public class PurposeCommandController : OrganisationRegistryCommandController
 {
     public PurposeCommandController(ICommandSender commandSender)
@@ -20,9 +22,9 @@ public class PurposeCommandController : OrganisationRegistryCommandController
     {
     }
 
-    /// <summary>Create a purpose.</summary>
-    /// <response code="201">If the purpose is created, together with the location.</response>
-    /// <response code="400">If the purpose information does not pass validation.</response>
+    /// <summary>Registreer een doeleinde.</summary>
+    /// <response code="201">Als het beleidsveld succesvol aangemaakt is.</response>
+    /// <response code="400">Als de validatie voor het beleidsveld mislukt is.</response>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -36,9 +38,9 @@ public class PurposeCommandController : OrganisationRegistryCommandController
         return CreatedWithLocation(nameof(PurposeController), nameof(PurposeController.Get), new { id = message.Id });
     }
 
-    /// <summary>Update a purpose.</summary>
-    /// <response code="200">If the purpose is updated, together with the location.</response>
-    /// <response code="400">If the purpose information does not pass validation.</response>
+    /// <summary>Pas een doeleinde aan.</summary>
+    /// <response code="200">Als het beleidsveld succesvol aangepast is.</response>
+    /// <response code="400">Als de validatie voor het beleidsveld mislukt is.</response>
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

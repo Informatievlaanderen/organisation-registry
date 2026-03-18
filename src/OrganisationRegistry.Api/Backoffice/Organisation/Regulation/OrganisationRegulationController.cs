@@ -1,4 +1,4 @@
-﻿namespace OrganisationRegistry.Api.Backoffice.Organisation.Regulation;
+namespace OrganisationRegistry.Api.Backoffice.Organisation.Regulation;
 
 using System;
 using System.Threading.Tasks;
@@ -16,9 +16,11 @@ using SqlServer.Infrastructure;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("organisations/{organisationId}/regulations")]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Organisaties")]
 public class OrganisationRegulationController : OrganisationRegistryController
 {
-    /// <summary>Get a list of available regulations for an organisation.</summary>
+    /// <summary>Vraag een lijst van regelgevingen voor een organisatie op.</summary>
     [HttpGet]
     public async Task<IActionResult> Get(
         [FromServices] OrganisationRegistryContext context,
@@ -47,9 +49,9 @@ public class OrganisationRegulationController : OrganisationRegistryController
         return Ok(await pagedOrganisations.Items.ToListAsync());
     }
 
-    /// <summary>Get a regulation for an organisation.</summary>
-    /// <response code="200">If the regulation is found.</response>
-    /// <response code="404">If the regulation cannot be found.</response>
+    /// <summary>Vraag een regelgeving voor een organisatie op.</summary>
+    /// <response code="200">Als de regelgeving gevonden is.</response>
+    /// <response code="404">Als de regelgeving niet gevonden kan worden.</response>
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

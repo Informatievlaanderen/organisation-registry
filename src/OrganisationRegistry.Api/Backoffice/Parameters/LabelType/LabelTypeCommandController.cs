@@ -13,6 +13,8 @@ using Requests;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("labeltypes")]
 [OrganisationRegistryAuthorize]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]
 public class LabelTypeCommandController : OrganisationRegistryCommandController
 {
     public LabelTypeCommandController(ICommandSender commandSender)
@@ -20,9 +22,9 @@ public class LabelTypeCommandController : OrganisationRegistryCommandController
     {
     }
 
-    /// <summary>Create a label type.</summary>
-    /// <response code="201">If the label type is created, together with the location.</response>
-    /// <response code="400">If the label type information does not pass validation.</response>
+    /// <summary>Registreer een labeltype.</summary>
+    /// <response code="201">Als het benamingstype succesvol aangemaakt is.</response>
+    /// <response code="400">Als de validatie voor het benamingstype mislukt is.</response>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -36,9 +38,9 @@ public class LabelTypeCommandController : OrganisationRegistryCommandController
         return CreatedWithLocation(nameof(LabelTypeController), nameof(LabelTypeController.Get), new { id = message.Id });
     }
 
-    /// <summary>Update a label type.</summary>
-    /// <response code="200">If the label type is updated, together with the location.</response>
-    /// <response code="400">If the label type information does not pass validation.</response>
+    /// <summary>Pas een labeltype aan.</summary>
+    /// <response code="200">Als het benamingstype succesvol aangepast is.</response>
+    /// <response code="400">Als de validatie voor het benamingstype mislukt is.</response>
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

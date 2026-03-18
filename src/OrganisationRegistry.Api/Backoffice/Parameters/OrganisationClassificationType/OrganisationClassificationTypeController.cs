@@ -1,4 +1,4 @@
-﻿namespace OrganisationRegistry.Api.Backoffice.Parameters.OrganisationClassificationType;
+namespace OrganisationRegistry.Api.Backoffice.Parameters.OrganisationClassificationType;
 
 using System;
 using System.Threading.Tasks;
@@ -17,9 +17,11 @@ using SqlServer.OrganisationClassificationType;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("organisationclassificationtypes")]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]
 public class OrganisationClassificationTypeController : OrganisationRegistryController
 {
-    /// <summary>Get a list of available organisation classification types.</summary>
+    /// <summary>Vraag een lijst van organisatieclassificatietypes op.</summary>
     [HttpGet]
     public async Task<IActionResult> Get(
         [FromServices] OrganisationRegistryContext context,
@@ -37,9 +39,9 @@ public class OrganisationClassificationTypeController : OrganisationRegistryCont
         return Ok(await pagedOrganisationClassificationTypes.Items.ToListAsync());
     }
 
-    /// <summary>Get an organisation classificication type.</summary>
-    /// <response code="200">If the organisation classification type is found.</response>
-    /// <response code="404">If the organisation classificiation type cannot be found.</response>
+    /// <summary>Vraag een organisatieclassificatietype op.</summary>
+    /// <response code="200">Als het organisatieclassificatietype gevonden is.</response>
+    /// <response code="404">Als het organisatieclassificatietype niet gevonden kan worden.</response>
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

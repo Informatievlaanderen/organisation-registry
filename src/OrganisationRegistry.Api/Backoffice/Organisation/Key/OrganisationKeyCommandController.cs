@@ -12,6 +12,8 @@ using OrganisationRegistry.Infrastructure.Commands;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("organisations/{organisationId}/keys")]
 [OrganisationRegistryAuthorize]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Organisaties")]
 public class OrganisationKeyCommandController : OrganisationRegistryCommandController
 {
     public OrganisationKeyCommandController(ICommandSender commandSender)
@@ -19,9 +21,9 @@ public class OrganisationKeyCommandController : OrganisationRegistryCommandContr
     {
     }
 
-    /// <summary>Create a key for an organisation.</summary>
-    /// <response code="201">If the key is created, together with the location.</response>
-    /// <response code="400">If the key information does not pass validation.</response>
+    /// <summary>Voeg een sleutel toe aan een organisatie.</summary>
+    /// <response code="201">Als de sleutel succesvol aangemaakt is.</response>
+    /// <response code="400">Als de validatie voor de sleutel mislukt is.</response>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -37,9 +39,9 @@ public class OrganisationKeyCommandController : OrganisationRegistryCommandContr
         return CreatedWithLocation(nameof(OrganisationKeyController), nameof(OrganisationKeyController.Get), new { id = message.OrganisationKeyId });
     }
 
-    /// <summary>Update a key for an organisation.</summary>
-    /// <response code="201">If the key is updated, together with the location.</response>
-    /// <response code="400">If the key information does not pass validation.</response>
+    /// <summary>Pas een sleutel aan voor een organisatie.</summary>
+    /// <response code="201">Als de sleutel succesvol aangepast is.</response>
+    /// <response code="400">Als de validatie voor de sleutel mislukt is.</response>
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

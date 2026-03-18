@@ -13,6 +13,8 @@ using Requests;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("locations")]
 [OrganisationRegistryAuthorize]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]
 public class LocationCommandController : OrganisationRegistryCommandController
 {
     public LocationCommandController(ICommandSender commandSender)
@@ -20,9 +22,9 @@ public class LocationCommandController : OrganisationRegistryCommandController
     {
     }
 
-    /// <summary>Create a location.</summary>
-    /// <response code="201">If the location is created, together with the location.</response>
-    /// <response code="400">If the location information does not pass validation.</response>
+    /// <summary>Registreer een locatie.</summary>
+    /// <response code="201">Als de locatie succesvol aangemaakt is.</response>
+    /// <response code="400">Als de validatie voor de locatie mislukt is.</response>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -37,9 +39,9 @@ public class LocationCommandController : OrganisationRegistryCommandController
         return CreatedWithLocation(nameof(LocationController), nameof(LocationController.Get), new { id = command.Id });
     }
 
-    /// <summary>Update a location.</summary>
-    /// <response code="200">If the location is updated, together with the location.</response>
-    /// <response code="400">If the location information does not pass validation.</response>
+    /// <summary>Pas een locatie aan.</summary>
+    /// <response code="200">Als de locatie succesvol aangepast is.</response>
+    /// <response code="400">Als de validatie voor de locatie mislukt is.</response>
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

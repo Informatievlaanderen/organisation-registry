@@ -13,6 +13,8 @@ using Requests;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("functiontypes")]
 [OrganisationRegistryAuthorize]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]
 public class FunctionTypeCommandController : OrganisationRegistryCommandController
 {
     public FunctionTypeCommandController(ICommandSender commandSender)
@@ -20,9 +22,9 @@ public class FunctionTypeCommandController : OrganisationRegistryCommandControll
     {
     }
 
-    /// <summary>Create a function type.</summary>
-    /// <response code="201">If the function type is created, together with the location.</response>
-    /// <response code="400">If the function type information does not pass validation.</response>
+    /// <summary>Registreer een functietype.</summary>
+    /// <response code="201">Als het functietype succesvol aangemaakt is.</response>
+    /// <response code="400">Als de validatie voor het functietype mislukt is.</response>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -36,9 +38,9 @@ public class FunctionTypeCommandController : OrganisationRegistryCommandControll
         return CreatedWithLocation(nameof(FunctionTypeController), nameof(FunctionTypeController.Get), new { id = message.Id });
     }
 
-    /// <summary>Update a function type.</summary>
-    /// <response code="200">If the function type is updated, together with the location.</response>
-    /// <response code="400">If the function type information does not pass validation.</response>
+    /// <summary>Pas een functietype aan.</summary>
+    /// <response code="200">Als het functietype succesvol aangepast is.</response>
+    /// <response code="400">Als de validatie voor het functietype mislukt is.</response>
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

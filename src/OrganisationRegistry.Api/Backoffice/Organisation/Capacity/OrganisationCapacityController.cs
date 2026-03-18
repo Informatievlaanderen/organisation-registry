@@ -1,4 +1,4 @@
-﻿namespace OrganisationRegistry.Api.Backoffice.Organisation.Capacity;
+namespace OrganisationRegistry.Api.Backoffice.Organisation.Capacity;
 
 using System;
 using System.Threading.Tasks;
@@ -18,9 +18,11 @@ using SqlServer.Infrastructure;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("organisations/{organisationId}/capacities")]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Organisaties")]
 public class OrganisationCapacityController : OrganisationRegistryController
 {
-    /// <summary>Get a list of available capacities for an organisation.</summary>
+    /// <summary>Vraag een lijst van hoedanigheden voor een organisatie op.</summary>
     [HttpGet]
     public async Task<IActionResult> Get(
         [FromServices] OrganisationRegistryContext context,
@@ -55,9 +57,9 @@ public class OrganisationCapacityController : OrganisationRegistryController
         return Ok(await pagedOrganisations.Items.ToListAsync());
     }
 
-    /// <summary>Get a capacity for an organisation.</summary>
-    /// <response code="200">If the capacity is found.</response>
-    /// <response code="404">If the capacity cannot be found.</response>
+    /// <summary>Vraag een hoedanigheid voor een organisatie op.</summary>
+    /// <response code="200">Als de hoedanigheid gevonden is.</response>
+    /// <response code="404">Als de hoedanigheid niet gevonden kan worden.</response>
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

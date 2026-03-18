@@ -1,5 +1,6 @@
 namespace OrganisationRegistry.Magda;
 
+using System;
 using Autofac;
 using Microsoft.Extensions.Configuration;
 
@@ -25,9 +26,19 @@ public class MagdaModule : Module
     }
 
     private static MagdaClientCertificate? GetMaybeMagdaClientCertificate(string? maybeCertificateString, string pwd)
-        => maybeCertificateString is { } certificateString && !string.IsNullOrWhiteSpace(certificateString)
-            ? MagdaClientCertificate.Create(certificateString, pwd)
-            : null;
+    {
+        if (maybeCertificateString is not { } certificateString || string.IsNullOrWhiteSpace(certificateString))
+            return null;
+
+        try
+        {
+            return MagdaClientCertificate.Create(certificateString, pwd);
+        }
+        catch (Exception)
+        {
+            return null;
+        }
+    }
 
     protected override void Load(ContainerBuilder builder)
     {

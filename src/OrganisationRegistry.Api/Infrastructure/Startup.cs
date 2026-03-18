@@ -79,14 +79,37 @@ public class Startup
 
         if (apiConfiguration.KboCertificate is { } kboCertificate && kboCertificate.IsNotEmptyOrWhiteSpace())
         {
-            var clientCertificate = MagdaClientCertificate.Create(
-                kboCertificate,
-                apiConfiguration.RijksRegisterCertificatePwd);
+            MagdaClientCertificate? clientCertificate = null;
+            try
+            {
+                clientCertificate = MagdaClientCertificate.Create(
+                    kboCertificate,
+                    apiConfiguration.RijksRegisterCertificatePwd);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogCritical(ex,
+                    "##########################################################################################\n" +
+                    "# MAGDA CERTIFICATE INVALID: KboCertificate is set but could not be loaded.             #\n" +
+                    "# The application will start but all Magda calls will fail.                             #\n" +
+                    "# Verify that ApiConfiguration:KboCertificate contains a valid base-64 encoded PFX.    #\n" +
+                    "##########################################################################################");
+            }
 
-            services
-                .AddHttpClient()
-                .AddHttpClient(MagdaModule.HttpClientName)
-                .ConfigurePrimaryHttpMessageHandler(() => new MagdaHttpClientHandler(clientCertificate));
+            if (clientCertificate is not null)
+            {
+                services
+                    .AddHttpClient()
+                    .AddHttpClient(MagdaModule.HttpClientName)
+                    .ConfigurePrimaryHttpMessageHandler(() => new MagdaHttpClientHandler(clientCertificate));
+            }
+            else
+            {
+                services
+                    .AddHttpClient()
+                    .AddHttpClient(MagdaModule.HttpClientName)
+                    .ConfigurePrimaryHttpMessageHandler(() => new InvalidCertificateMagdaHttpClientHandler());
+            }
         }
         else
         {
@@ -188,6 +211,7 @@ public class Startup
                             {
                                 x.EnableAnnotations();
                                 x.OperationFilter<ProblemJsonResponseFilter>();
+                                x.OperationFilter<PaginationHeaderOperationFilter>();
                                 x.CustomSchemaIds(type => type.ToString());
                             },
                         },

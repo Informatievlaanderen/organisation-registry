@@ -14,9 +14,11 @@ using SqlServer.Organisation;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("organisations/{organisationId}/children")]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Organisaties")]
 public class OrganisationChildrenController : OrganisationRegistryController
 {
-    /// <summary>Get a list of available children for an organisation.</summary>
+    /// <summary>Vraag een lijst van onderdelen van een organisatie op.</summary>
     [HttpGet]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid organisationId)
     {

@@ -13,6 +13,8 @@ using OrganisationRegistry.Organisation;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("organisations/{organisationId}/locations")]
 [OrganisationRegistryAuthorize]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Organisaties")]
 public class OrganisationLocationCommandController : OrganisationRegistryCommandController
 {
     public OrganisationLocationCommandController(ICommandSender commandSender)
@@ -20,9 +22,9 @@ public class OrganisationLocationCommandController : OrganisationRegistryCommand
     {
     }
 
-    /// <summary>Add a location to an organisation.</summary>
-    /// <response code="201">If the location is added, together with the location.</response>
-    /// <response code="400">If the location information does not pass validation.</response>
+    /// <summary>Voeg een locatie toe aan een organisatie.</summary>
+    /// <response code="201">Als de locatie succesvol toegevoegd is.</response>
+    /// <response code="400">Als de validatie voor de locatie mislukt is.</response>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -38,9 +40,9 @@ public class OrganisationLocationCommandController : OrganisationRegistryCommand
         return CreatedWithLocation(nameof(OrganisationLocationController), nameof(OrganisationLocationController.Get), new { id = message.OrganisationLocationId });
     }
 
-    /// <summary>Update a location for an organisation.</summary>
-    /// <response code="201">If the location is updated, together with the location.</response>
-    /// <response code="400">If the location information does not pass validation.</response>
+    /// <summary>Pas een locatie aan voor een organisatie.</summary>
+    /// <response code="201">Als de locatie succesvol aangepast is.</response>
+    /// <response code="400">Als de validatie voor de locatie mislukt is.</response>
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -56,9 +58,9 @@ public class OrganisationLocationCommandController : OrganisationRegistryCommand
         return Ok();
     }
 
-    /// <summary>Remove a location for an organisation.</summary>
-    /// <response code="204">If the location is removed.</response>
-    /// <response code="400">If the location information does not pass validation.</response>
+    /// <summary>Verwijder een locatie van een organisatie.</summary>
+    /// <response code="204">Als de locatie succesvol verwijderd is.</response>
+    /// <response code="400">Als de validatie voor de locatie mislukt is.</response>
     [HttpDelete("{organisationLocationId}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

@@ -15,6 +15,8 @@ using OrganisationRegistry.Infrastructure.Configuration;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("reports")]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Rapporten")]
 public class BuildingOrganisationReportController : OrganisationRegistryController
 {
     private const string ScrollTimeout = "30s";
@@ -31,9 +33,8 @@ public class BuildingOrganisationReportController : OrganisationRegistryControll
         _config = config.Value;
     }
 
-    /// <summary>
-    /// Get all organisations for a formal framework.
-    /// </summary>
+    /// <summary>Rapport: Organisaties per gebouw.</summary>
+    /// <remarks>Geef alle organisaties voor een gebouw.</remarks>
     /// <param name="elastic"></param>
     /// <param name="id">A formal framework GUID identifier</param>
     /// <returns></returns>

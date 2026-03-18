@@ -1,4 +1,4 @@
-﻿namespace OrganisationRegistry.Api.Backoffice.Person.Function;
+namespace OrganisationRegistry.Api.Backoffice.Person.Function;
 
 using System;
 using System.Threading.Tasks;
@@ -14,9 +14,11 @@ using OrganisationRegistry.SqlServer.Person;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("people/{personId}/functions")]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Personen")]
 public class PersonFunctionController : OrganisationRegistryController
 {
-    /// <summary>Get a list of available functions for a person.</summary>
+    /// <summary>Vraag een lijst van functies voor een persoon op.</summary>
     [HttpGet]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid personId)
     {

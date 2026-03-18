@@ -14,11 +14,13 @@ using SqlServer.Infrastructure;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("organisations/{organisationId}/openingHours")]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Organisaties")]
 public class OrganisationOpeningHourController : OrganisationRegistryController
 {
-    /// <summary>List opening hours for an organisation.</summary>
-    /// <response code="200">Returns a paginated list of opening hours for the organisation.</response>
-    /// <response code="404">If the organisation cannot be found.</response>
+    /// <summary>Vraag een lijst van openingsuren voor een organisatie op.</summary>
+    /// <response code="200">Een gepagineerde lijst van openingsuren voor de organisatie.</response>
+    /// <response code="404">Als de organisatie niet gevonden kan worden.</response>
     [HttpGet]
     public async Task<IActionResult> Get(
         [FromServices] OrganisationRegistryContext context,
@@ -36,9 +38,9 @@ public class OrganisationOpeningHourController : OrganisationRegistryController
         return Ok(await pagedOrganisations.Items.ToListAsync());
     }
 
-    /// <summary>Get a specific opening hour for an organisation.</summary>
-    /// <response code="200">If the opening hour is found.</response>
-    /// <response code="404">If the opening hour or organisation cannot be found.</response>
+    /// <summary>Vraag een openingsuur voor een organisatie op.</summary>
+    /// <response code="200">Als het openingsuur gevonden is.</response>
+    /// <response code="404">Als het openingsuur of de organisatie niet gevonden kan worden.</response>
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

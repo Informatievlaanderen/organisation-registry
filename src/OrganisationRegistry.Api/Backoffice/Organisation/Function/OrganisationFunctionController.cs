@@ -14,9 +14,11 @@ using SqlServer.Infrastructure;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("organisations/{organisationId}/functions")]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Organisaties")]
 public class OrganisationFunctionController : OrganisationRegistryController
 {
-    /// <summary>Get a list of available functions for an organisation.</summary>
+    /// <summary>Vraag een lijst van functies voor een organisatie op.</summary>
     [HttpGet]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid organisationId)
     {
@@ -32,9 +34,9 @@ public class OrganisationFunctionController : OrganisationRegistryController
         return Ok(await pagedOrganisations.Items.ToListAsync());
     }
 
-    /// <summary>Get a function for an organisation.</summary>
-    /// <response code="200">If the function is found.</response>
-    /// <response code="404">If the function cannot be found.</response>
+    /// <summary>Vraag een functie voor een organisatie op.</summary>
+    /// <response code="200">Als de functie gevonden is.</response>
+    /// <response code="404">Als de functie niet gevonden kan worden.</response>
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

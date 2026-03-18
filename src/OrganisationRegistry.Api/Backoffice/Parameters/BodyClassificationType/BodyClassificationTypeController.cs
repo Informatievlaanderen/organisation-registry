@@ -16,9 +16,11 @@ using SqlServer.Infrastructure;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("bodyclassificationtypes")]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]
 public class BodyClassificationTypeController : OrganisationRegistryController
 {
-    /// <summary>Get a list of available body classification types.</summary>
+    /// <summary>Vraag een lijst van orgaanclassificatietypes op.</summary>
     [HttpGet]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
     {
@@ -34,9 +36,9 @@ public class BodyClassificationTypeController : OrganisationRegistryController
         return Ok(await pagedBodyClassificationTypes.Items.ToListAsync());
     }
 
-    /// <summary>Get an body classificication type.</summary>
-    /// <response code="200">If the body classification type is found.</response>
-    /// <response code="404">If the body classificiation type cannot be found.</response>
+    /// <summary>Vraag een orgaanclassificatietype op.</summary>
+    /// <response code="200">Als het orgaanclassificatietype gevonden is.</response>
+    /// <response code="404">Als het orgaanclassificatietype niet gevonden kan worden.</response>
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

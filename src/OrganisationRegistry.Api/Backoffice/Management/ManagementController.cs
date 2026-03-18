@@ -11,10 +11,12 @@ using Microsoft.AspNetCore.Mvc;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("mgmt")]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Administratie")]
 public class ManagementController : OrganisationRegistryController
 {
-    /// <summary>Get a list of day names for the current culture.</summary>
-    /// <response code="200">Returns a list of days of the week with their localized names.</response>
+    /// <summary>Vraag een lijst van dagnamen voor de huidige taal op.</summary>
+    /// <response code="200">Een lijst van dagnamen voor de huidige taal.</response>
     [HttpGet("days")]
     public async Task<IActionResult> GetDayNames()
     {
@@ -32,8 +34,8 @@ public class ManagementController : OrganisationRegistryController
         return await OkAsync(days);
     }
 
-    /// <summary>Get a list of available time slots in 30-minute intervals.</summary>
-    /// <response code="200">Returns a list of hours from 00:00 to 23:30 in 30-minute increments.</response>
+    /// <summary>Vraag een lijst van tijdsloten per 30 minuten op.</summary>
+    /// <response code="200">Een lijst van tijdsloten per 30 minuten.</response>
     [HttpGet("hours")]
     public async Task<IActionResult> GetHours()
     {

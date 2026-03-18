@@ -1,4 +1,4 @@
-﻿namespace OrganisationRegistry.Api.Backoffice.Parameters.LifecyclePhaseType;
+namespace OrganisationRegistry.Api.Backoffice.Parameters.LifecyclePhaseType;
 
 using System;
 using System.Threading.Tasks;
@@ -16,9 +16,11 @@ using SqlServer.LifecyclePhaseType;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("lifecyclephasetypes")]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]
 public class LifecyclePhaseTypeController : OrganisationRegistryController
 {
-    /// <summary>Get a list of available lifecyclephase types.</summary>
+    /// <summary>Vraag een lijst van levensloopfasetypes op.</summary>
     [HttpGet]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
     {
@@ -34,9 +36,9 @@ public class LifecyclePhaseTypeController : OrganisationRegistryController
         return Ok(await pagedLifecyclePhaseTypes.Items.ToListAsync());
     }
 
-    /// <summary>Get a lifecyclephase type.</summary>
-    /// <response code="200">If the lifecyclephase type is found.</response>
-    /// <response code="404">If the lifecyclephase type cannot be found.</response>
+    /// <summary>Vraag een levensloopfasetype op.</summary>
+    /// <response code="200">Als het levensloopfasetype gevonden is.</response>
+    /// <response code="404">Als het levensloopfasetype niet gevonden kan worden.</response>
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

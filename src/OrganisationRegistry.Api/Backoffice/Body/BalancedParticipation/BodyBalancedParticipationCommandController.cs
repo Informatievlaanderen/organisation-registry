@@ -12,6 +12,8 @@ using OrganisationRegistry.Infrastructure.Commands;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("bodies")]
 [OrganisationRegistryAuthorize]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Organen")]
 public class BodyBalancedParticipationCommandController : OrganisationRegistryCommandController
 {
     public BodyBalancedParticipationCommandController(ICommandSender commandSender)
@@ -19,9 +21,9 @@ public class BodyBalancedParticipationCommandController : OrganisationRegistryCo
     {
     }
 
-    /// <summary>Update a body's balanced participation info.</summary>
-    /// <response code="200">If the body balanced participation info is updated, together with the location.</response>
-    /// <response code="400">If the body balanced participation information does not pass validation.</response>
+    /// <summary>Pas de evenwichtige deelnamegegevens van een orgaan aan.</summary>
+    /// <response code="200">Als de meer evenwichtige participatie-info succesvol aangepast is.</response>
+    /// <response code="400">Als de validatie voor de meer evenwichtige participatie mislukt is.</response>
     [HttpPut("{id}/balancedparticipation")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

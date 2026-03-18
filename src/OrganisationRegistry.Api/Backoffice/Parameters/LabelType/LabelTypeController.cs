@@ -1,4 +1,4 @@
-﻿namespace OrganisationRegistry.Api.Backoffice.Parameters.LabelType;
+namespace OrganisationRegistry.Api.Backoffice.Parameters.LabelType;
 
 using System;
 using System.Threading.Tasks;
@@ -21,9 +21,11 @@ using SqlServer.LabelType;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("labeltypes")]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]
 public class LabelTypeController : OrganisationRegistryController
 {
-    /// <summary>Get a list of available label types.</summary>
+    /// <summary>Vraag een lijst van labeltypes op.</summary>
     [HttpGet]
     [OrganisationRegistryAuthorize]
     public async Task<IActionResult> Get(
@@ -56,9 +58,9 @@ public class LabelTypeController : OrganisationRegistryController
         return Ok(await pagedLabelTypes.Items.ToListAsync());
     }
 
-    /// <summary>Get a label type.</summary>
-    /// <response code="200">If the label type is found.</response>
-    /// <response code="404">If the label type cannot be found.</response>
+    /// <summary>Vraag een labeltype op.</summary>
+    /// <response code="200">Als het benamingstype gevonden is.</response>
+    /// <response code="404">Als het benamingstype niet gevonden kan worden.</response>
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

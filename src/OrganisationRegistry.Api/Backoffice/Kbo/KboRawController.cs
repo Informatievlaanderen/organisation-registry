@@ -13,6 +13,8 @@ using OrganisationRegistry.Organisation;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("kboraw")]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Administratie")]
 public class KboRawController : OrganisationRegistryController
 {
     private readonly IRegistreerInschrijvingCommand _registerInscriptionCommand;
@@ -26,8 +28,8 @@ public class KboRawController : OrganisationRegistryController
         _geefOndernemingQuery = geefOndernemingQuery;
     }
 
-    /// <summary>Return raw result from magda kbo lookup.</summary>
-    /// <response code="200">The raw request/response from magda kbo lookup.</response>
+    /// <summary>Vraag het ruwe resultaat van een MAGDA KBO-opzoeking op.</summary>
+    /// <response code="200">Het ruwe resultaat van een MAGDA KBO-opzoeking.</response>
     [HttpGet("{kboNumberInput}")]
     [OrganisationRegistryAuthorize(Role.AlgemeenBeheerder, Role.Developer)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

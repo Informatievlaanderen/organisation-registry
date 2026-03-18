@@ -18,6 +18,8 @@ using SqlServer.Infrastructure;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("kbo")]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Administratie")]
 public class KboController : OrganisationRegistryController
 {
     private readonly ILogger<KboController> _logger;
@@ -28,9 +30,9 @@ public class KboController : OrganisationRegistryController
         _logger = logger;
     }
 
-    /// <summary>Find organisation in KBO.</summary>
-    /// <response code="200">If the organisation is found.</response>
-    /// <response code="404">If the kbo number does not exist</response>
+    /// <summary>Zoek een organisatie in de KBO.</summary>
+    /// <response code="200">Als de organisatie gevonden is.</response>
+    /// <response code="404">Als het KBO-nummer niet bestaat.</response>
     [HttpGet("{kboNumberInput}")]
     [OrganisationRegistryAuthorize]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

@@ -12,6 +12,8 @@ using OrganisationRegistry.Infrastructure.Commands;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("organisations/{organisationId}/relations")]
 [OrganisationRegistryAuthorize]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Organisaties")]
 public class OrganisationRelationCommandController : OrganisationRegistryCommandController
 {
     public OrganisationRelationCommandController(ICommandSender commandSender)
@@ -19,9 +21,9 @@ public class OrganisationRelationCommandController : OrganisationRegistryCommand
     {
     }
 
-    /// <summary>Create a relation for an organisation.</summary>
-    /// <response code="201">If the relation is created.</response>
-    /// <response code="400">If the relation information does not pass validation.</response>
+    /// <summary>Voeg een relatie toe aan een organisatie.</summary>
+    /// <response code="201">Als de relatie succesvol aangemaakt is.</response>
+    /// <response code="400">Als de validatie voor de relatie mislukt is.</response>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -37,9 +39,9 @@ public class OrganisationRelationCommandController : OrganisationRegistryCommand
         return CreatedWithLocation(nameof(OrganisationRelationController), nameof(OrganisationRelationController.Get), new { id = message.OrganisationRelationId });
     }
 
-    /// <summary>Update a relation for an organisation.</summary>
-    /// <response code="201">If the relation is updated.</response>
-    /// <response code="400">If the relation information does not pass validation.</response>
+    /// <summary>Pas een relatie aan voor een organisatie.</summary>
+    /// <response code="201">Als de relatie succesvol aangepast is.</response>
+    /// <response code="400">Als de validatie voor de relatie mislukt is.</response>
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

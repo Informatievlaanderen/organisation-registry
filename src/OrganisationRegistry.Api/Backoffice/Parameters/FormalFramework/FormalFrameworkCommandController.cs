@@ -13,6 +13,8 @@ using Requests;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("formalframeworks")]
 [OrganisationRegistryAuthorize]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]
 public class FormalFrameworkCommandController : OrganisationRegistryCommandController
 {
     public FormalFrameworkCommandController(
@@ -21,9 +23,9 @@ public class FormalFrameworkCommandController : OrganisationRegistryCommandContr
     {
     }
 
-    /// <summary>Create a formal framework.</summary>
-    /// <response code="201">If the formal framework is created, together with the location.</response>
-    /// <response code="400">If the formal framework information does not pass validation.</response>
+    /// <summary>Registreer een toepassingsgebied.</summary>
+    /// <response code="201">Als het toepassingsgebied succesvol aangemaakt is.</response>
+    /// <response code="400">Als de validatie voor het toepassingsgebied mislukt is.</response>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -38,9 +40,9 @@ public class FormalFrameworkCommandController : OrganisationRegistryCommandContr
         return CreatedWithLocation(nameof(FormalFrameworkController), nameof(FormalFrameworkController.Get), new { id = command.Id });
     }
 
-    /// <summary>Update a formal framework.</summary>
-    /// <response code="200">If the formal framework is updated, together with the location.</response>
-    /// <response code="400">If the formal framework information does not pass validation.</response>
+    /// <summary>Pas een toepassingsgebied aan.</summary>
+    /// <response code="200">Als het toepassingsgebied succesvol aangepast is.</response>
+    /// <response code="400">Als de validatie voor het toepassingsgebied mislukt is.</response>
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

@@ -1,4 +1,4 @@
-﻿namespace OrganisationRegistry.Api.Backoffice.Organisation.Body;
+namespace OrganisationRegistry.Api.Backoffice.Organisation.Body;
 
 using System;
 using System.Threading.Tasks;
@@ -13,9 +13,11 @@ using SqlServer.Infrastructure;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("organisations/{organisationId}/bodies")]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Organisaties")]
 public class OrganisationBodyController : OrganisationRegistryController
 {
-    /// <summary>Get a list of available bodies for an organisation.</summary>
+    /// <summary>Vraag een lijst van organen voor een organisatie op.</summary>
     [HttpGet]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid organisationId)
     {

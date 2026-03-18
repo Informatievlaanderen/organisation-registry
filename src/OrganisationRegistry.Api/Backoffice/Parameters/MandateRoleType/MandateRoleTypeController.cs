@@ -16,9 +16,11 @@ using SqlServer.MandateRoleType;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("mandateroletypes")]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]
 public class MandateRoleTypeController : OrganisationRegistryController
 {
-    /// <summary>Get a list of available mandate role types.</summary>
+    /// <summary>Vraag een lijst van mandaat rol types op.</summary>
     [HttpGet]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
     {
@@ -34,9 +36,9 @@ public class MandateRoleTypeController : OrganisationRegistryController
         return Ok(await pagedMandateRoleTypes.Items.ToListAsync());
     }
 
-    /// <summary>Get a mandate role type.</summary>
-    /// <response code="200">If the mandate role type is found.</response>
-    /// <response code="404">If the mandate role type cannot be found.</response>
+    /// <summary>Vraag een mandaat rol type op.</summary>
+    /// <response code="200">Als het mandaat rol type gevonden is.</response>
+    /// <response code="404">Als het mandaat rol type niet gevonden kan worden.</response>
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

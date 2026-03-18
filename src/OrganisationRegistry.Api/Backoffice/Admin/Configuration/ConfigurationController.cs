@@ -1,4 +1,4 @@
-﻿namespace OrganisationRegistry.Api.Backoffice.Admin.Configuration;
+namespace OrganisationRegistry.Api.Backoffice.Admin.Configuration;
 
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,9 +19,11 @@ using Requests;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("configuration")]
 [OrganisationRegistryAuthorize(Role.Developer)]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Administratie")]
 public class ConfigurationController : OrganisationRegistryController
 {
-    /// <summary>Get a list of available configuration values.</summary>
+    /// <summary>Vraag een lijst van configuratiewaarden op.</summary>
     [HttpGet]
     public async Task<IActionResult> Get([FromServices] ConfigurationContext context)
     {
@@ -37,9 +39,9 @@ public class ConfigurationController : OrganisationRegistryController
         return Ok(await pagedConfiguration.Items.ToListAsync());
     }
 
-    /// <summary>Get a configuration value.</summary>
-    /// <response code="200">If the configuration value is found.</response>
-    /// <response code="404">If the configuration value cannot be found.</response>
+    /// <summary>Vraag een configuratiewaarde op.</summary>
+    /// <response code="200">Als de configuratiewaarde gevonden is.</response>
+    /// <response code="404">Als de configuratiewaarde niet gevonden kan worden.</response>
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -56,9 +58,9 @@ public class ConfigurationController : OrganisationRegistryController
         return Ok(configurationValue);
     }
 
-    /// <summary>Create a configuration value.</summary>
-    /// <response code="201">If the configuration value is created, together with the location.</response>
-    /// <response code="400">If the configuration value does not pass validation.</response>
+    /// <summary>Registreer een configuratiewaarde.</summary>
+    /// <response code="201">Als de configuratiewaarde succesvol aangemaakt is.</response>
+    /// <response code="400">Als de validatie voor de configuratiewaarde mislukt is.</response>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -73,9 +75,9 @@ public class ConfigurationController : OrganisationRegistryController
         return CreatedWithLocation(nameof(ConfigurationController), nameof(Get), new { id = message.Key });
     }
 
-    /// <summary>Update a configuration value.</summary>
-    /// <response code="200">If the configuration value is updated, together with the location.</response>
-    /// <response code="400">If the configuration value does not pass validation.</response>
+    /// <summary>Pas een configuratiewaarde aan.</summary>
+    /// <response code="200">Als de configuratiewaarde succesvol aangepast is.</response>
+    /// <response code="400">Als de validatie voor de configuratiewaarde mislukt is.</response>
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

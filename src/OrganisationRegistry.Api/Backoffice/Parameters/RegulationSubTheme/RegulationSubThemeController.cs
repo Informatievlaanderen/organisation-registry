@@ -15,9 +15,11 @@ using SqlServer.Infrastructure;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("regulationsubthemes")]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]
 public class RegulationSubThemeController : OrganisationRegistryController
 {
-    /// <summary>Get a list of available regulation sub-themes.</summary>
+    /// <summary>Vraag een lijst van regelgevingsubthema's op.</summary>
     [HttpGet]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
     {
@@ -33,9 +35,9 @@ public class RegulationSubThemeController : OrganisationRegistryController
         return Ok(await pagedRegulationSubThemes.Items.ToListAsync());
     }
 
-    /// <summary>Get an regulation sub-theme.</summary>
-    /// <response code="200">If the regulation sub-theme is found.</response>
-    /// <response code="404">If the regulation sub-theme cannot be found.</response>
+    /// <summary>Vraag een regelgevingsubthema op.</summary>
+    /// <response code="200">Als het regelgevingsubthema gevonden is.</response>
+    /// <response code="404">Als het regelgevingsubthema niet gevonden kan worden.</response>
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

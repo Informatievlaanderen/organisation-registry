@@ -48,10 +48,10 @@ using SqlServer.SeatType;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("parameters")]
 [ApiController]
-[ApiExplorerSettings(GroupName = "Parameters")]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]
 public class ParameterController : OrganisationRegistryController
 {
-    /// <summary>Orgaan classificaties</summary>
+    /// <summary>Vraag een lijst van orgaanclassificaties op.</summary>
     /// <remarks>
     ///     Vraag een lijst met orgaan classificaties op. <br />
     ///     Geef de header `x-pagination: none` mee om alle entiteiten op te vragen.
@@ -71,7 +71,7 @@ public class ParameterController : OrganisationRegistryController
         return Ok(await pagedBodyClassifications.Items.ToListAsync());
     }
 
-    /// <summary>Orgaan classificatietypes</summary>
+    /// <summary>Vraag een lijst van orgaanclassificatietypes op.</summary>
     /// <remarks>
     ///     Vraag een lijst met orgaan classificatietypes op. <br />
     ///     Geef de header `x-pagination: none` mee om alle entiteiten op te vragen.
@@ -91,7 +91,7 @@ public class ParameterController : OrganisationRegistryController
         return Ok(await pagedBodyClassificationTypes.Items.ToListAsync());
     }
 
-    /// <summary>Gebouwen</summary>
+    /// <summary>Vraag een lijst van gebouwen op.</summary>
     /// <remarks>
     ///     Vraag een lijst met gebouwen op. <br />
     ///     Geef de header `x-pagination: none` mee om alle entiteiten op te vragen.
@@ -111,7 +111,7 @@ public class ParameterController : OrganisationRegistryController
         return Ok(await pagedBuildings.Items.ToListAsync());
     }
 
-    /// <summary>Beleidsvelden</summary>
+    /// <summary>Vraag een lijst van beleidsvelden op.</summary>
     /// <remarks>
     ///     Vraag een lijst met beleidsvelden op. <br />
     ///     Geef de header `x-pagination: none` mee om alle entiteiten op te vragen.
@@ -131,7 +131,7 @@ public class ParameterController : OrganisationRegistryController
         return Ok(await pagedPurposes.Items.ToListAsync());
     }
 
-    /// <summary>Regelgevingsubthema's</summary>
+    /// <summary>Vraag een lijst van regelgevingsubthema's op.</summary>
     /// <remarks>
     ///     Vraag een lijst met regelgevingsubthema's op. <br />
     ///     Geef de header `x-pagination: none` mee om alle entiteiten op te vragen.
@@ -151,7 +151,7 @@ public class ParameterController : OrganisationRegistryController
         return Ok(await pagedRegulationSubThemes.Items.ToListAsync());
     }
 
-    /// <summary>Regelgevingthema's</summary>
+    /// <summary>Vraag een lijst van regelgevingthema's op.</summary>
     /// <remarks>
     ///     Vraag een lijst met regelgevingthema's op. <br />
     ///     Geef de header `x-pagination: none` mee om alle entiteiten op te vragen.
@@ -171,7 +171,7 @@ public class ParameterController : OrganisationRegistryController
         return Ok(await pagedRegulationThemes.Items.ToListAsync());
     }
 
-    /// <summary>Post types</summary>
+    /// <summary>Vraag een lijst van post types op.</summary>
     /// <remarks>
     ///     Vraag een lijst met post types op. <br />
     ///     Geef de header `x-pagination: none` mee om alle entiteiten op te vragen.
@@ -191,7 +191,7 @@ public class ParameterController : OrganisationRegistryController
         return Ok(await pagedSeatTypes.Items.ToListAsync());
     }
 
-    /// <summary>Organisatie relatie types</summary>
+    /// <summary>Vraag een lijst van organisatie relatie types op.</summary>
     /// <remarks>
     ///     Vraag een lijst met organisatie relatie types op. <br />
     ///     Geef de header `x-pagination: none` mee om alle entiteiten op te vragen.
@@ -211,7 +211,7 @@ public class ParameterController : OrganisationRegistryController
         return Ok(await pagedOrganisationRelationTypes.Items.ToListAsync());
     }
 
-    /// <summary>Organisatie classificatie types</summary>
+    /// <summary>Vraag een lijst van organisatie classificatie types op.</summary>
     /// <remarks>
     ///     Vraag een lijst met organisatie classificatie types op. <br />
     ///     Geef de header `x-pagination: none` mee om alle entiteiten op te vragen.
@@ -233,7 +233,7 @@ public class ParameterController : OrganisationRegistryController
         return Ok(await pagedOrganisationClassificationTypes.Items.ToListAsync());
     }
 
-    /// <summary>Organisatie classificaties</summary>
+    /// <summary>Vraag een lijst van organisatie classificaties op.</summary>
     /// <remarks>
     ///     Vraag een lijst met organisatie classificaties op. <br />
     ///     Geef de header `x-pagination: none` mee om alle entiteiten op te vragen.
@@ -253,7 +253,7 @@ public class ParameterController : OrganisationRegistryController
         return Ok(await pagedOrganisationClassifications.Items.ToListAsync());
     }
 
-    /// <summary>Mandaat rol types</summary>
+    /// <summary>Vraag een lijst van mandaat rol types op.</summary>
     /// <remarks>
     ///     Vraag een lijst met mandaat rol types op. <br />
     ///     Geef de header `x-pagination: none` mee om alle entiteiten op te vragen.
@@ -273,7 +273,7 @@ public class ParameterController : OrganisationRegistryController
         return Ok(await pagedMandateRoleTypes.Items.ToListAsync());
     }
 
-    /// <summary>Locatie types</summary>
+    /// <summary>Vraag een lijst van locatie types op.</summary>
     /// <remarks>
     ///     Vraag een lijst met locatie types op. <br />
     ///     Geef de header `x-pagination: none` mee om alle entiteiten op te vragen.
@@ -295,7 +295,7 @@ public class ParameterController : OrganisationRegistryController
         return Ok(await pagedLocationTypes.Items.ToListAsync());
     }
 
-    /// <summary>Locaties</summary>
+    /// <summary>Vraag een lijst van locaties op.</summary>
     /// <remarks>
     ///     Vraag een lijst met locaties op. <br />
     ///     Geef de header `x-pagination: none` mee om alle entiteiten op te vragen.
@@ -315,7 +315,7 @@ public class ParameterController : OrganisationRegistryController
         return Ok(await pagedLocations.Items.ToListAsync());
     }
 
-    /// <summary>Levensloopfase types</summary>
+    /// <summary>Vraag een lijst van levensloopfase types op.</summary>
     /// <remarks>
     ///     Vraag een lijst met levensloopfase types op. <br />
     ///     Geef de header `x-pagination: none` mee om alle entiteiten op te vragen.
@@ -335,7 +335,7 @@ public class ParameterController : OrganisationRegistryController
         return Ok(await pagedLifecyclePhaseTypes.Items.ToListAsync());
     }
 
-    /// <summary>Benaming types</summary>
+    /// <summary>Vraag een lijst van benaming types op.</summary>
     /// <remarks>
     ///     Vraag een lijst met benaming types op. <br />
     ///     Geef de header `x-pagination: none` mee om alle entiteiten op te vragen.
@@ -357,7 +357,7 @@ public class ParameterController : OrganisationRegistryController
         return Ok(await pagedLabelTypes.Items.ToListAsync());
     }
 
-    /// <summary>Informatiesystemen</summary>
+    /// <summary>Vraag een lijst van informatiesystemen op.</summary>
     /// <remarks>
     ///     Vraag een lijst met informatiesystemen op. <br />
     ///     Geef de header `x-pagination: none` mee om alle entiteiten op te vragen.
@@ -380,7 +380,7 @@ public class ParameterController : OrganisationRegistryController
         return Ok(await pagedKeyTypes.Items.ToListAsync());
     }
 
-    /// <summary>Functie types</summary>
+    /// <summary>Vraag een lijst van functie types op.</summary>
     /// <remarks>
     ///     Vraag een lijst met functie types op. <br />
     ///     Geef de header `x-pagination: none` mee om alle entiteiten op te vragen.
@@ -400,7 +400,7 @@ public class ParameterController : OrganisationRegistryController
         return Ok(await pagedFunctionTypes.Items.ToListAsync());
     }
 
-    /// <summary>Toepassingsgebied categorieën</summary>
+    /// <summary>Vraag een lijst van toepassingsgebied categorieën op.</summary>
     /// <remarks>Vraag een lijst met toepassingsgebied categorieën op. <br />
     /// Geef de header `x-pagination: none` mee om alle entiteiten op te vragen.
     /// </remarks>
@@ -419,7 +419,7 @@ public class ParameterController : OrganisationRegistryController
         return Ok(await pagedFormalFrameworkCategories.Items.ToListAsync());
     }
 
-    /// <summary>Toepassingsgebieden</summary>
+    /// <summary>Vraag een lijst van toepassingsgebieden op.</summary>
     /// <remarks>
     ///     Vraag een lijst met toepassingsgebieden op. <br />
     ///     Geef de header `x-pagination: none` mee om alle entiteiten op te vragen.
@@ -439,7 +439,7 @@ public class ParameterController : OrganisationRegistryController
         return Ok(await pagedFormalFrameworks.Items.ToListAsync());
     }
 
-    /// <summary>Contact types</summary>
+    /// <summary>Vraag een lijst van contact types op.</summary>
     /// <remarks>
     ///     Vraag een lijst met contact types op. <br />
     ///     Geef de header `x-pagination: none` mee om alle entiteiten op te vragen.
@@ -459,7 +459,7 @@ public class ParameterController : OrganisationRegistryController
         return Ok(await pagedContactTypes.Items.ToListAsync());
     }
 
-    /// <summary>Hoedanigheden</summary>
+    /// <summary>Vraag een lijst van hoedanigheden op.</summary>
     /// <remarks>
     ///     Vraag een lijst met hoedanigheden op. <br />
     ///     Geef de header `x-pagination: none` mee om alle entiteiten op te vragen.

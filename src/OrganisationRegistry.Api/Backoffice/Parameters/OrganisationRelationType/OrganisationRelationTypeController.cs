@@ -1,4 +1,4 @@
-﻿namespace OrganisationRegistry.Api.Backoffice.Parameters.OrganisationRelationType;
+namespace OrganisationRegistry.Api.Backoffice.Parameters.OrganisationRelationType;
 
 using System;
 using System.Threading.Tasks;
@@ -16,9 +16,11 @@ using SqlServer.OrganisationRelationType;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("organisationrelationtypes")]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]
 public class OrganisationRelationTypeController : OrganisationRegistryController
 {
-    /// <summary>Get a list of available organisation relation types.</summary>
+    /// <summary>Vraag een lijst van organisatierelatietypes op.</summary>
     [HttpGet]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
     {
@@ -34,9 +36,9 @@ public class OrganisationRelationTypeController : OrganisationRegistryController
         return Ok(await pagedOrganisationRelationTypes.Items.ToListAsync());
     }
 
-    /// <summary>Get an organisation relation type.</summary>
-    /// <response code="200">If the organisation relation type is found.</response>
-    /// <response code="404">If the organisation relation type cannot be found.</response>
+    /// <summary>Vraag een organisatierelatietype op.</summary>
+    /// <response code="200">Als het organisatierelatietype gevonden is.</response>
+    /// <response code="404">Als het organisatierelatietype niet gevonden kan worden.</response>
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

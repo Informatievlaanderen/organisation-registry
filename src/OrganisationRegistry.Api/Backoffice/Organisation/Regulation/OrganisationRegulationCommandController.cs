@@ -12,6 +12,8 @@ using OrganisationRegistry.Infrastructure.Commands;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("organisations/{organisationId}/regulations")]
 [OrganisationRegistryAuthorize]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Organisaties")]
 public class OrganisationRegulationCommandController : OrganisationRegistryCommandController
 {
     public OrganisationRegulationCommandController(ICommandSender commandSender)
@@ -19,9 +21,9 @@ public class OrganisationRegulationCommandController : OrganisationRegistryComma
     {
     }
 
-    /// <summary>Create a regulation for an organisation.</summary>
-    /// <response code="201">If the regulation is created, together with the location.</response>
-    /// <response code="400">If the regulation information does not pass validation.</response>
+    /// <summary>Voeg een regelgeving toe aan een organisatie.</summary>
+    /// <response code="201">Als de regelgeving succesvol aangemaakt is.</response>
+    /// <response code="400">Als de validatie voor de regelgeving mislukt is.</response>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -39,9 +41,9 @@ public class OrganisationRegulationCommandController : OrganisationRegistryComma
         return CreatedWithLocation(nameof(OrganisationRegulationController), nameof(OrganisationRegulationController.Get), new { id = message.OrganisationRegulationId });
     }
 
-    /// <summary>Update a regulation for an organisation.</summary>
-    /// <response code="201">If the regulation is updated, together with the location.</response>
-    /// <response code="400">If the regulation information does not pass validation.</response>
+    /// <summary>Pas een regelgeving aan voor een organisatie.</summary>
+    /// <response code="201">Als de regelgeving succesvol aangepast is.</response>
+    /// <response code="400">Als de validatie voor de regelgeving mislukt is.</response>
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

@@ -13,6 +13,8 @@ using OrganisationRegistry.Infrastructure.Commands;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("bodies/{bodyId}/mandates")]
 [OrganisationRegistryAuthorize]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Scherm APIs: Organen")]
 public class BodyMandateCommandController : OrganisationRegistryCommandController
 {
     public BodyMandateCommandController(ICommandSender commandSender)
@@ -20,9 +22,9 @@ public class BodyMandateCommandController : OrganisationRegistryCommandControlle
     {
     }
 
-    /// <summary>Create a mandate for a body.</summary>
-    /// <response code="201">If the mandate is created, together with the location.</response>
-    /// <response code="400">If the mandate information does not pass validation.</response>
+    /// <summary>Voeg een mandaat toe aan een orgaan.</summary>
+    /// <response code="201">Als het mandaat succesvol aangemaakt is.</response>
+    /// <response code="400">Als de validatie voor het mandaat mislukt is.</response>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -52,9 +54,9 @@ public class BodyMandateCommandController : OrganisationRegistryCommandControlle
         return CreatedWithLocation(nameof(BodyMandateController), nameof(BodyMandateController.Get), new { id = message.BodyMandateId });
     }
 
-    /// <summary>Update a mandate for a body.</summary>
-    /// <response code="201">If the mandate is updated, together with the location.</response>
-    /// <response code="400">If the mandate information does not pass validation.</response>
+    /// <summary>Pas een mandaat aan voor een orgaan.</summary>
+    /// <response code="201">Als het mandaat succesvol aangepast is.</response>
+    /// <response code="400">Als de validatie voor het mandaat mislukt is.</response>
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
