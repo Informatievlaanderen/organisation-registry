@@ -22,6 +22,7 @@ using SqlServer.OrganisationRelationType;
 using SqlServer.Purpose;
 using SqlServer.RegulationSubTheme;
 using SqlServer.RegulationTheme;
+using SqlServer.ProjectionState;
 using SqlServer.SeatType;
 using Swashbuckle.AspNetCore.Filters;
 
@@ -325,6 +326,34 @@ public class SeatTypeListExamples : IExamplesProvider<List<SeatTypeListItem>>
                 Name = "Naam zeteltype",
                 Order = 1,
                 IsEffective = true,
+            },
+        };
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Projecties
+// ──────────────────────────────────────────────────────────────────────────────
+
+public class ProjectionNameListExamples : IExamplesProvider<List<string>>
+{
+    public List<string> GetExamples() =>
+        new()
+        {
+            "Naam projectieklasse",
+        };
+}
+
+public class ProjectionStateListExamples : IExamplesProvider<List<ProjectionStateItem>>
+{
+    public List<ProjectionStateItem> GetExamples() =>
+        new()
+        {
+            new ProjectionStateItem
+            {
+                Id = new Guid("ff000016-0001-0000-0000-000000000001"),
+                Name = "Naam projectie",
+                EventNumber = 42,
+                LastUpdatedUtc = new DateTimeOffset(2024, 1, 1, 10, 0, 0, TimeSpan.Zero),
             },
         };
 }
