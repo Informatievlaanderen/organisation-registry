@@ -401,6 +401,48 @@ public class Startup
                 });
     }
 
+    private const string SchermApiIntro =
+        "\n\n" +
+        "## Scherm APIs \u2014 algemene werking\n\n" +
+        "De **Scherm APIs** zijn de interne beheers-API's van het Organisatieregister van Digitaal Vlaanderen. " +
+        "Ze zijn uitsluitend bedoeld voor gebruik door de beheerinterface en vereisen authenticatie via **ACM/IDM**.\n\n" +
+        "---\n\n" +
+        "### Authenticatie\n\n" +
+        "Alle Scherm API-endpoints vereisen een geldig **Bearer-token** van ACM/IDM. " +
+        "Voeg het token toe als HTTP-header:\n\n" +
+        "```\nAuthorization: Bearer <token>\n```\n\n" +
+        "---\n\n" +
+        "### Paginering\n\n" +
+        "Lijstendpoints ondersteunen paginering via de `x-pagination` request-header.\n\n" +
+        "**Request-header:**\n\n" +
+        "| Waarde | Betekenis |\n" +
+        "|---|---|\n" +
+        "| `1,10` | Pagina 1, 10 items per pagina |\n" +
+        "| `2,25` | Pagina 2, 25 items per pagina |\n" +
+        "| `none` | Geen paginering \u2014 geeft alle resultaten terug |\n\n" +
+        "**Response-header:**\n\n" +
+        "De server geeft `x-pagination` terug als JSON-object:\n\n" +
+        "```json\n{ \"currentPage\": 1, \"itemsPerPage\": 10, \"totalItems\": 42, \"totalPages\": 5 }\n```\n\n" +
+        "---\n\n" +
+        "### Sortering\n\n" +
+        "Lijstendpoints ondersteunen sortering via de `x-sorting` request-header.\n\n" +
+        "**Formaat:** `<richting>,<veldnaam>`\n\n" +
+        "| Voorbeeld | Betekenis |\n" +
+        "|---|---|\n" +
+        "| `Ascending,name` | Oplopend sorteren op veld `name` |\n" +
+        "| `Descending,name` | Aflopend sorteren op veld `name` |\n\n" +
+        "De beschikbare veldnamen zijn afhankelijk van het endpoint.\n\n" +
+        "---\n\n" +
+        "### Foutformaat\n\n" +
+        "Fouten worden teruggegeven als **RFC 7807 Problem Details**:\n\n" +
+        "| Statuscode | Betekenis |\n" +
+        "|---|---|\n" +
+        "| `200 OK` | Verzoek geslaagd |\n" +
+        "| `400 Bad Request` | Ongeldige invoer of validatiefout |\n" +
+        "| `404 Not Found` | Resource bestaat niet |\n" +
+        "| `500 Internal Server Error` | Onverwachte fout aan serverzijde |\n";
+
     private static string GetApiLeadingText(ApiVersionDescription description)
-        => $"Momenteel leest u de documentatie voor versie {description.ApiVersion} van de Basisregisters Vlaanderen Organisation Registry API{string.Format(description.IsDeprecated ? ", **deze API versie is niet meer ondersteund * *." : ".")}";
+        => $"Momenteel leest u de documentatie voor versie {description.ApiVersion} van de Basisregisters Vlaanderen Organisation Registry API{(description.IsDeprecated ? ", **deze API versie is niet meer ondersteund**." : ".")}"
+           + SchermApiIntro;
 }
