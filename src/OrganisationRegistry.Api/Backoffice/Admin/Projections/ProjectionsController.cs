@@ -1,11 +1,13 @@
 namespace OrganisationRegistry.Api.Backoffice.Admin.Projections;
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Infrastructure;
 using Infrastructure.Security;
+using Infrastructure.Swagger.Examples;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +15,8 @@ using OrganisationRegistry.Infrastructure.Authorization;
 using Requests;
 using SqlServer;
 using SqlServer.Infrastructure;
+using SqlServer.ProjectionState;
+using Swashbuckle.AspNetCore.Filters;
 
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
@@ -25,7 +29,8 @@ public class ProjectionsController : OrganisationRegistryController
     /// <summary>Vraag een lijst van projecties op.</summary>
     /// <response code="200">Een lijst van projecties.</response>
     [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(ProjectionNameListExamples))]
+    [ProducesResponseType(typeof(List<string>), StatusCodes.Status200OK)]
     public async Task<IActionResult> Get()
     {
         var projections = typeof(OrganisationRegistrySqlServerAssemblyTokenClass)
@@ -49,7 +54,8 @@ public class ProjectionsController : OrganisationRegistryController
     /// <summary>Vraag een lijst van projectiestatussen op.</summary>
     /// <response code="200">Een lijst van projectiestatussen.</response>
     [HttpGet("states")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(ProjectionStateListExamples))]
+    [ProducesResponseType(typeof(List<ProjectionStateItem>), StatusCodes.Status200OK)]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
         => Ok(await context.ProjectionStates
             .AsQueryable()

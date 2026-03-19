@@ -1,17 +1,21 @@
 namespace OrganisationRegistry.Api.Backoffice.Organisation.Kbo;
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Infrastructure;
 using Infrastructure.Search.Filtering;
 using Infrastructure.Search.Pagination;
 using Infrastructure.Search.Sorting;
 using Infrastructure.Security;
+using Infrastructure.Swagger.Examples;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OrganisationRegistry.Infrastructure.Authorization;
 using SqlServer.Infrastructure;
+using SqlServer.Organisation;
+using Swashbuckle.AspNetCore.Filters;
 
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
@@ -42,7 +46,8 @@ public class OrganisationKboController : OrganisationRegistryController
     /// <response code="200">Een lijst van te beëindigen organisaties volgens de KBO.</response>
     [HttpGet("kbo/terminated")]
     [OrganisationRegistryAuthorize(Role.AlgemeenBeheerder, Role.CjmBeheerder, Role.Developer)]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<OrganisationTerminationListItem>), StatusCodes.Status200OK)]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(OrganisationTerminationListExamples))]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<OrganisationTerminationListItemFilter>();

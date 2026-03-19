@@ -1,19 +1,23 @@
 namespace OrganisationRegistry.Api.Backoffice.Parameters.FormalFramework;
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
 using Infrastructure;
 using Infrastructure.Search.Filtering;
 using Infrastructure.Search.Pagination;
 using Infrastructure.Search.Sorting;
+using Infrastructure.Swagger.Examples;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using OrganisationRegistry.Infrastructure.Configuration;
 using Queries;
+using SqlServer.FormalFramework;
 using SqlServer.Infrastructure;
+using Swashbuckle.AspNetCore.Filters;
 
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
@@ -32,7 +36,8 @@ public class FormalFrameworkController : OrganisationRegistryController
     /// <summary>Vraag een lijst van toepassingsgebieden op.</summary>
     /// <response code="200">Een lijst van toepassingsgebieden.</response>
     [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(FormalFrameworkListExamples))]
+    [ProducesResponseType(typeof(List<FormalFrameworkListItem>), StatusCodes.Status200OK)]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<FormalFrameworkListItemFilter>();
@@ -50,7 +55,8 @@ public class FormalFrameworkController : OrganisationRegistryController
     /// <summary>Vraag een lijst van toepassingsgebieden voor het vademecumrapport op.</summary>
     /// <response code="200">Een lijst van toepassingsgebieden voor het vademecumrapport.</response>
     [HttpGet("vademecum")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(FormalFrameworkListExamples))]
+    [ProducesResponseType(typeof(List<FormalFrameworkListItem>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetVademecumFormalFrameworks([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<FormalFrameworkListItemFilter>();

@@ -1,6 +1,7 @@
 namespace OrganisationRegistry.Api.Backoffice.Parameters.KeyType;
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Handling.Authorization;
 using Infrastructure;
@@ -8,6 +9,7 @@ using Infrastructure.Search.Filtering;
 using Infrastructure.Search.Pagination;
 using Infrastructure.Search.Sorting;
 using Infrastructure.Security;
+using Infrastructure.Swagger.Examples;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +18,8 @@ using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Configuration;
 using Queries;
 using SqlServer.Infrastructure;
+using SqlServer.KeyType;
+using Swashbuckle.AspNetCore.Filters;
 
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
@@ -27,7 +31,8 @@ public class KeyTypeController : OrganisationRegistryController
     /// <summary>Vraag een lijst van sleuteltypes op.</summary>
     /// <response code="200">Een lijst van sleuteltypes.</response>
     [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(KeyTypeListExamples))]
+    [ProducesResponseType(typeof(List<KeyTypeListItem>), StatusCodes.Status200OK)]
     [OrganisationRegistryAuthorize]
     public async Task<IActionResult> Get(
         [FromServices] OrganisationRegistryContext context,

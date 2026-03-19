@@ -1,11 +1,13 @@
 namespace OrganisationRegistry.Api.Backoffice.Parameters.LocationType;
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Infrastructure;
 using Infrastructure.Search.Filtering;
 using Infrastructure.Search.Pagination;
 using Infrastructure.Search.Sorting;
+using Infrastructure.Swagger.Examples;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +15,7 @@ using OrganisationRegistry.Infrastructure.Configuration;
 using Queries;
 using SqlServer.Infrastructure;
 using SqlServer.LocationType;
+using Swashbuckle.AspNetCore.Filters;
 
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
@@ -24,7 +27,8 @@ public class LocationTypeController : OrganisationRegistryController
     /// <summary>Vraag een lijst van locatietypes op.</summary>
     /// <response code="200">Een lijst van locatietypes.</response>
     [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<LocationTypeListItem>), StatusCodes.Status200OK)]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(LocationTypeListExamples))]
     public async Task<IActionResult> Get(
         [FromServices] OrganisationRegistryContext context,
         [FromServices] IOrganisationRegistryConfiguration configuration)

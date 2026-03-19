@@ -1,6 +1,7 @@
 namespace OrganisationRegistry.Api.Backoffice.Body.Mandate;
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +10,10 @@ using Infrastructure;
 using OrganisationRegistry.Api.Infrastructure.Search.Filtering;
 using OrganisationRegistry.Api.Infrastructure.Search.Pagination;
 using OrganisationRegistry.Api.Infrastructure.Search.Sorting;
+using OrganisationRegistry.Api.Infrastructure.Swagger.Examples;
+using OrganisationRegistry.SqlServer.Body;
 using OrganisationRegistry.SqlServer.Infrastructure;
+using Swashbuckle.AspNetCore.Filters;
 
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
@@ -21,7 +25,8 @@ public class BodyMandateController : OrganisationRegistryController
     /// <summary>Vraag een lijst van mandaten voor een orgaan op.</summary>
     /// <response code="200">Een lijst van mandaten voor een orgaan.</response>
     [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<BodyMandateListItem>), StatusCodes.Status200OK)]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(BodyMandateListExamples))]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid bodyId)
     {
         var filtering = Request.ExtractFilteringRequest<BodyMandateListItemFilter>();

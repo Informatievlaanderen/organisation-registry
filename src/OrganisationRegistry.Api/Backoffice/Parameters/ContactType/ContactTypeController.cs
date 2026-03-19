@@ -1,17 +1,20 @@
 namespace OrganisationRegistry.Api.Backoffice.Parameters.ContactType;
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Infrastructure;
 using Infrastructure.Search.Filtering;
 using Infrastructure.Search.Pagination;
 using Infrastructure.Search.Sorting;
+using Infrastructure.Swagger.Examples;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Queries;
 using SqlServer.ContactType;
 using SqlServer.Infrastructure;
+using Swashbuckle.AspNetCore.Filters;
 
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
@@ -23,7 +26,8 @@ public class ContactTypeController : OrganisationRegistryController
     /// <summary>Vraag een lijst van contacttypes op.</summary>
     /// <response code="200">Een lijst van contacttypes.</response>
     [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<ContactTypeListItem>), StatusCodes.Status200OK)]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(ContactTypeListExamples))]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<ContactTypeListItem>();
