@@ -1,3 +1,10 @@
+# [1.325.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.324.2...v1.325.0) (2026-03-19)
+
+
+### Features
+
+* or-3006 set up speckit framework and frontend-api-docs specification ([2bc4de2](https://github.com/informatievlaanderen/organisation-registry/commit/2bc4de22d432f6dde9119f9012370ce839ecc990))
+
 ## [1.324.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.324.1...v1.324.2) (2026-01-06)
 
 
