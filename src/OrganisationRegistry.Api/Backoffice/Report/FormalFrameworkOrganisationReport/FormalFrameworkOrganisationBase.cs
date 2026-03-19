@@ -55,6 +55,8 @@ public class FormalFrameworkOrganisationBase
     [DisplayName("Locatie")]
     public string? Location { get; set; }
 
+    internal FormalFrameworkOrganisationBase() { }
+
     public FormalFrameworkOrganisationBase(
         OrganisationDocument document,
         ApiConfigurationSection @params,

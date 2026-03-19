@@ -1,6 +1,7 @@
 namespace OrganisationRegistry.Api.Backoffice.Report.FormalFrameworkOrganisationReport;
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -11,6 +12,8 @@ using OrganisationRegistry.Api.Infrastructure.Search.Pagination;
 using OrganisationRegistry.Api.Infrastructure.Search.Sorting;
 using ElasticSearch.Client;
 using OrganisationRegistry.Infrastructure.Configuration;
+using Infrastructure.Swagger.Examples;
+using Swashbuckle.AspNetCore.Filters;
 
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
@@ -38,7 +41,8 @@ public class FormalFrameworkOrganisationReportController : OrganisationRegistryC
     /// <returns></returns>
     /// <response code="200">Het rapport: Organisaties per toepassingsgebied.</response>
     [HttpGet("formalframeworkorganisations/{id}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<FormalFrameworkOrganisationBase>), StatusCodes.Status200OK)]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(FormalFrameworkOrganisationBaseListExamples))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetFormalFrameworkOrganisations(
@@ -93,7 +97,8 @@ public class FormalFrameworkOrganisationReportController : OrganisationRegistryC
     /// <returns></returns>
     /// <response code="200">Het rapport: Organisaties per toepassingsgebied (uitgebreid).</response>
     [HttpGet("formalframeworkorganisations/{id}/extended")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<FormalFrameworkOrganisationExtended>), StatusCodes.Status200OK)]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(FormalFrameworkOrganisationExtendedListExamples))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetFormalFrameworkOrganisationsExtended(
@@ -147,7 +152,8 @@ public class FormalFrameworkOrganisationReportController : OrganisationRegistryC
     /// <returns></returns>
     /// <response code="200">Het rapport: Organisaties per toepassingsgebied (vademecum).</response>
     [HttpGet("formalframeworkorganisations/vademecum/{id}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<FormalFrameworkOrganisationVademecum>), StatusCodes.Status200OK)]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(FormalFrameworkOrganisationVademecumListExamples))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetFormalFrameworkOrganisationsVademecum(

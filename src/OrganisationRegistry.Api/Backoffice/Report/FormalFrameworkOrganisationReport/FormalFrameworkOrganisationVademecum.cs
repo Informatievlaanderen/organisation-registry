@@ -43,6 +43,8 @@ public class FormalFrameworkOrganisationVademecum
     /// </summary>
     /// <param name="document"></param>
     /// <param name="params"></param>
+    internal FormalFrameworkOrganisationVademecum() { }
+
     public FormalFrameworkOrganisationVademecum(
         OrganisationDocument document,
         ApiConfigurationSection @params)
