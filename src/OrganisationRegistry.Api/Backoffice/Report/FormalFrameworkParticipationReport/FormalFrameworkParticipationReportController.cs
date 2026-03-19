@@ -1,6 +1,7 @@
 namespace OrganisationRegistry.Api.Backoffice.Report.FormalFrameworkParticipationReport;
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -11,6 +12,8 @@ using OrganisationRegistry.Api.Infrastructure.Search.Pagination;
 using OrganisationRegistry.Api.Infrastructure.Search.Sorting;
 using OrganisationRegistry.Infrastructure.Configuration;
 using OrganisationRegistry.SqlServer.Infrastructure;
+using Infrastructure.Swagger.Examples;
+using Swashbuckle.AspNetCore.Filters;
 
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
@@ -26,7 +29,8 @@ public class FormalFrameworkParticipationReportController : OrganisationRegistry
     /// <returns></returns>
     /// <response code="200">Het rapport: Meer Evenwichtige Participatie per toepassingsgebied.</response>
     [HttpGet("formalframeworkparticipation/{formalFrameworkId}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<FormalFrameworkParticipation>), StatusCodes.Status200OK)]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(FormalFrameworkParticipationListExamples))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetFormalFrameworkParticipation(
@@ -75,7 +79,8 @@ public class FormalFrameworkParticipationReportController : OrganisationRegistry
     /// <returns></returns>
     /// <response code="200">Het rapport: Meer Evenwichtige Participatie - samenvatting.</response>
     [HttpGet("participationsummary")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<ParticipationSummary>), StatusCodes.Status200OK)]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(ParticipationSummaryListExamples))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetParticipationSummary(

@@ -32,6 +32,8 @@ public class FormalFrameworkBody
     [DisplayName("Entiteit")]
     public string? OrganisationName { get; set; }
 
+    internal FormalFrameworkBody() { }
+
     public FormalFrameworkBody(BodyDocument document)
     {
         BodyId = document.Id;

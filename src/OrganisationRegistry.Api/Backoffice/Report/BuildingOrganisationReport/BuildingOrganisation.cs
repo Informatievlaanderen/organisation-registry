@@ -40,6 +40,8 @@ public class BuildingOrganisation
     /// <param name="document"></param>
     /// <param name="params"></param>
     /// <param name="today"></param>
+    internal BuildingOrganisation() { }
+
     public BuildingOrganisation(
         OrganisationDocument document,
         ApiConfigurationSection @params,

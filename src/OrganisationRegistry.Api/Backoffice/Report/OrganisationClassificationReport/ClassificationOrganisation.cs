@@ -42,6 +42,8 @@ public class ClassificationOrganisation
     /// </summary>
     /// <param name="document"></param>
     /// <param name="params"></param>
+    internal ClassificationOrganisation() { }
+
     public ClassificationOrganisation(
         OrganisationDocument document,
         ApiConfigurationSection @params)

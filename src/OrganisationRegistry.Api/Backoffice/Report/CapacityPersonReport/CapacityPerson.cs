@@ -65,6 +65,8 @@ public class CapacityPerson
     /// <param name="document"></param>
     /// <param name="capacity"></param>
     /// <param name="params"></param>
+    internal CapacityPerson() { }
+
     public CapacityPerson(
         OrganisationDocument document,
         OrganisationDocument.OrganisationCapacity capacity,

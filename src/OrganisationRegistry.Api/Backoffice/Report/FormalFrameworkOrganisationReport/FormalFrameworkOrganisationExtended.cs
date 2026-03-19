@@ -69,6 +69,8 @@ public class FormalFrameworkOrganisationExtended : FormalFrameworkOrganisationBa
     [DisplayName("Organisatietype mandaten- en vermogensaangifte")]
     public string? OrganisatieTypeMandatenEnVermogensaangifte { get; set; }
 
+    internal FormalFrameworkOrganisationExtended() { }
+
     public FormalFrameworkOrganisationExtended(
         OrganisationDocument document,
         ApiConfigurationSection @params,

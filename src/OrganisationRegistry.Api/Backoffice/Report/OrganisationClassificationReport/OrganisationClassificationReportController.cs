@@ -1,6 +1,7 @@
 namespace OrganisationRegistry.Api.Backoffice.Report.OrganisationClassificationReport;
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -15,6 +16,9 @@ using OrganisationRegistry.Api.Infrastructure.Search.Sorting;
 using ElasticSearch.Client;
 using OrganisationRegistry.Infrastructure.Configuration;
 using OrganisationRegistry.SqlServer.Infrastructure;
+using SqlServer.OrganisationClassification;
+using Infrastructure.Swagger.Examples;
+using Swashbuckle.AspNetCore.Filters;
 
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
@@ -41,7 +45,8 @@ public class OrganisationClassificationReportController : OrganisationRegistryCo
     /// <returns></returns>
     /// <response code="200">Het rapport: Organisaties per beleidsdomein.</response>
     [HttpGet("classificationorganisations/{id}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<ClassificationOrganisation>), StatusCodes.Status200OK)]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(ClassificationOrganisationListExamples))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetClassificationOrganisations(
@@ -92,7 +97,8 @@ public class OrganisationClassificationReportController : OrganisationRegistryCo
     /// <returns></returns>
     /// <response code="200">Het rapport: Alle classificaties voor het classificatietype "Beleidsdomein".</response>
     [HttpGet("policydomainclassifications")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<OrganisationClassificationListItem>), StatusCodes.Status200OK)]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(OrganisationClassificationListExamples))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetOrganisationClassificationsForPolicyDomain(
@@ -123,7 +129,8 @@ public class OrganisationClassificationReportController : OrganisationRegistryCo
     /// <returns></returns>
     /// <response code="200">Het rapport: Alle classificaties voor het classificatietype "Bevoegde minister".</response>
     [HttpGet("responsibleministerclassifications")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<OrganisationClassificationListItem>), StatusCodes.Status200OK)]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(OrganisationClassificationListExamples))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetOrganisationClassificationsForResponsibleMinister(
@@ -156,7 +163,8 @@ public class OrganisationClassificationReportController : OrganisationRegistryCo
     /// <returns></returns>
     /// <response code="200">Het rapport: Meer Evenwichtige Participatie per classificatieorganisatie.</response>
     [HttpGet("classificationorganisationsparticipation/{classificationOrganisationId}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<ClassificationOrganisationParticipation>), StatusCodes.Status200OK)]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(ClassificationOrganisationParticipationListExamples))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetClassificationOrganisationParticipation(

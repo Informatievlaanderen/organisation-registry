@@ -1,6 +1,7 @@
 namespace OrganisationRegistry.Api.Backoffice.Report.BodyParticipationReport;
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -11,6 +12,8 @@ using OrganisationRegistry.Api.Infrastructure.Search.Pagination;
 using OrganisationRegistry.Api.Infrastructure.Search.Sorting;
 using OrganisationRegistry.SqlServer.Infrastructure;
 using Participation;
+using Infrastructure.Swagger.Examples;
+using Swashbuckle.AspNetCore.Filters;
 
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
@@ -27,7 +30,8 @@ public class BodyParticipationReportController : OrganisationRegistryController
     /// <returns></returns>
     /// <response code="200">Het rapport: Meer Evenwichtige Participatie per orgaan per zetel.</response>
     [HttpGet("bodyparticipation/{bodyId}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<BodyParticipation>), StatusCodes.Status200OK)]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(BodyParticipationListExamples))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetBodyParticipation(
