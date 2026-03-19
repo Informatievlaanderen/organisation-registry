@@ -1,5 +1,6 @@
 namespace OrganisationRegistry.Api.Backoffice.Admin.Configuration;
 
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Infrastructure;
@@ -7,6 +8,7 @@ using Infrastructure.Search.Filtering;
 using Infrastructure.Search.Pagination;
 using Infrastructure.Search.Sorting;
 using Infrastructure.Security;
+using Infrastructure.Swagger.Examples;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +16,8 @@ using OrganisationRegistry.Configuration.Database;
 using OrganisationRegistry.Infrastructure.Authorization;
 using Queries;
 using Requests;
+using SqlServer.Configuration;
+using Swashbuckle.AspNetCore.Filters;
 
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
@@ -26,7 +30,8 @@ public class ConfigurationController : OrganisationRegistryController
     /// <summary>Vraag een lijst van configuratiewaarden op.</summary>
     /// <response code="200">Een lijst van configuratiewaarden.</response>
     [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<ConfigurationListItem>), StatusCodes.Status200OK)]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(ConfigurationListExamples))]
     public async Task<IActionResult> Get([FromServices] ConfigurationContext context)
     {
         var filtering = Request.ExtractFilteringRequest<ConfigurationValue>();

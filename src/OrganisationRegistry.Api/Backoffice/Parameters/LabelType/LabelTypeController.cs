@@ -1,6 +1,7 @@
 namespace OrganisationRegistry.Api.Backoffice.Parameters.LabelType;
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Handling.Authorization;
 using Infrastructure;
@@ -8,6 +9,7 @@ using Infrastructure.Search.Filtering;
 using Infrastructure.Search.Pagination;
 using Infrastructure.Search.Sorting;
 using Infrastructure.Security;
+using Infrastructure.Swagger.Examples;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -17,6 +19,7 @@ using OrganisationRegistry.Infrastructure.Configuration;
 using Queries;
 using SqlServer.Infrastructure;
 using SqlServer.LabelType;
+using Swashbuckle.AspNetCore.Filters;
 
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
@@ -28,7 +31,8 @@ public class LabelTypeController : OrganisationRegistryController
     /// <summary>Vraag een lijst van labeltypes op.</summary>
     /// <response code="200">Een lijst van benamingstypes.</response>
     [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(LabelTypeListExamples))]
+    [ProducesResponseType(typeof(List<LabelTypeListItem>), StatusCodes.Status200OK)]
     [OrganisationRegistryAuthorize]
     public async Task<IActionResult> Get(
         [FromServices] OrganisationRegistryContext context,

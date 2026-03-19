@@ -1,16 +1,20 @@
 namespace OrganisationRegistry.Api.Backoffice.Parameters.RegulationSubTheme;
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Infrastructure;
 using Infrastructure.Search.Filtering;
 using Infrastructure.Search.Pagination;
 using Infrastructure.Search.Sorting;
+using Infrastructure.Swagger.Examples;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Queries;
 using SqlServer.Infrastructure;
+using SqlServer.RegulationSubTheme;
+using Swashbuckle.AspNetCore.Filters;
 
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
@@ -22,7 +26,8 @@ public class RegulationSubThemeController : OrganisationRegistryController
     /// <summary>Vraag een lijst van regelgevingsubthema's op.</summary>
     /// <response code="200">Een lijst van regelgevingsubthema's.</response>
     [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(RegulationSubThemeListExamples))]
+    [ProducesResponseType(typeof(List<RegulationSubThemeListItem>), StatusCodes.Status200OK)]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<RegulationSubThemeListItemFilter>();

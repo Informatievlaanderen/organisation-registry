@@ -1,17 +1,21 @@
 namespace OrganisationRegistry.Api.Backoffice.Organisation.Regulation;
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Handling.Authorization;
 using Infrastructure;
 using Infrastructure.Search.Filtering;
 using Infrastructure.Search.Pagination;
 using Infrastructure.Search.Sorting;
+using Infrastructure.Swagger.Examples;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OrganisationRegistry.Infrastructure.Authorization;
 using SqlServer.Infrastructure;
+using SqlServer.Organisation;
+using Swashbuckle.AspNetCore.Filters;
 
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
@@ -23,7 +27,8 @@ public class OrganisationRegulationController : OrganisationRegistryController
     /// <summary>Vraag een lijst van regelgevingen voor een organisatie op.</summary>
     /// <response code="200">Een lijst van regelgevingen voor een organisatie.</response>
     [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<OrganisationRegulationListItem>), StatusCodes.Status200OK)]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(OrganisationRegulationListExamples))]
     public async Task<IActionResult> Get(
         [FromServices] OrganisationRegistryContext context,
         [FromServices] ISecurityService securityService,

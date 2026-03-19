@@ -1,17 +1,20 @@
 namespace OrganisationRegistry.Api.Backoffice.Parameters.Purpose;
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Infrastructure;
 using Infrastructure.Search.Filtering;
 using Infrastructure.Search.Pagination;
 using Infrastructure.Search.Sorting;
+using Infrastructure.Swagger.Examples;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Queries;
 using SqlServer.Infrastructure;
 using SqlServer.Purpose;
+using Swashbuckle.AspNetCore.Filters;
 
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
@@ -20,10 +23,11 @@ using SqlServer.Purpose;
 [ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]
 public class PurposeController : OrganisationRegistryController
 {
-    /// <summary>Vraag een lijst van doeleinden op.</summary>
-    /// <response code="200">Een lijst van doeleinden.</response>
+    /// <summary>Vraag een lijst van beleidsvelden op.</summary>
+    /// <response code="200">Een lijst van beleidsvelden.</response>
     [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(PurposeListExamples))]
+    [ProducesResponseType(typeof(List<PurposeListItem>), StatusCodes.Status200OK)]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<PurposeListItem>();
@@ -38,7 +42,7 @@ public class PurposeController : OrganisationRegistryController
         return Ok(await pagedPurposes.Items.ToListAsync());
     }
 
-    /// <summary>Vraag een doeleinde op.</summary>
+    /// <summary>Vraag een beleidsveld op.</summary>
     /// <response code="200">Als het beleidsveld gevonden is.</response>
     /// <response code="404">Als het beleidsveld niet gevonden kan worden.</response>
     [HttpGet("{id}")]

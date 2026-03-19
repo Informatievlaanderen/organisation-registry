@@ -1,6 +1,7 @@
 namespace OrganisationRegistry.Api.Backoffice.Organisation.Key;
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Handling.Authorization;
 using Infrastructure;
@@ -8,6 +9,7 @@ using Infrastructure.Search.Filtering;
 using Infrastructure.Search.Pagination;
 using Infrastructure.Search.Sorting;
 using Infrastructure.Security;
+using Infrastructure.Swagger.Examples;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,6 +18,8 @@ using OrganisationRegistry.Infrastructure.AppSpecific;
 using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Configuration;
 using SqlServer.Infrastructure;
+using SqlServer.Organisation;
+using Swashbuckle.AspNetCore.Filters;
 
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
@@ -27,7 +31,8 @@ public class OrganisationKeyController : OrganisationRegistryController
     /// <summary>Vraag een lijst van sleutels voor een organisatie op.</summary>
     /// <response code="200">Een lijst van sleutels.</response>
     [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<OrganisationKeyListItem>), StatusCodes.Status200OK)]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(OrganisationKeyListExamples))]
     [OrganisationRegistryAuthorize]
     [AllowAnonymous]
     public async Task<IActionResult> Get(

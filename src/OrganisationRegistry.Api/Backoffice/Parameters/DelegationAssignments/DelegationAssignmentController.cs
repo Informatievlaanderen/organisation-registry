@@ -1,19 +1,23 @@
 namespace OrganisationRegistry.Api.Backoffice.Parameters.DelegationAssignments;
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Infrastructure;
 using Infrastructure.Search.Filtering;
 using Infrastructure.Search.Pagination;
 using Infrastructure.Search.Sorting;
 using Infrastructure.Security;
+using Infrastructure.Swagger.Examples;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OrganisationRegistry.Infrastructure.Authorization;
 using Queries;
 using Responses;
+using SqlServer.DelegationAssignments;
 using SqlServer.Infrastructure;
+using Swashbuckle.AspNetCore.Filters;
 
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
@@ -26,7 +30,8 @@ public class DelegationAssignmentController : OrganisationRegistryController
     /// <summary>Vraag een lijst van delegatieopdrachten op.</summary>
     /// <response code="200">Een lijst van delegatieopdrachten.</response>
     [HttpGet("{delegationId}/assignments")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<DelegationAssignmentListItem>), StatusCodes.Status200OK)]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(DelegationAssignmentListExamples))]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromServices] ISecurityService securityService, [FromRoute] Guid delegationId)
     {
         var delegation = await context.DelegationList.FirstOrDefaultAsync(x => x.Id == delegationId);
