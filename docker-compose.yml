@@ -72,6 +72,18 @@ services:
       - "host.docker.internal:host-gateway"
     restart: "no"
 
+  m2m:
+    build: demos/m2m/
+    environment:
+      API_BASE: http://host.docker.internal:9002
+      KEYCLOAK_BASE: http://host.docker.internal:8180
+      KEYCLOAK_REALM: organisatieregister
+      ORAFIN_CLIENT_ID: orafinClient
+      ORAFIN_CLIENT_SECRET: secret
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: "no"
+
   wiremock:
     image: wiremock/wiremock:2.32.0
     container_name: or_wiremock
