@@ -52,11 +52,18 @@ public class OrganisationRegistryTokenBuilder : IOrganisationRegistryTokenBuilde
                 identity.GetOptionalClaim(JwtClaimTypes.Subject) ?? string.Empty,
                 ClaimValueTypes.String));
 
-        identity.AddClaim(
-            new Claim(AcmIdmConstants.Claims.FamilyName, JwtClaimTypes.FamilyName, ClaimValueTypes.String));
+        var givenName = identity.GetOptionalClaim(JwtClaimTypes.GivenName) ?? string.Empty;
+        var familyName = identity.GetOptionalClaim(JwtClaimTypes.FamilyName) ?? string.Empty;
 
-        identity.AddClaim(
-            new Claim(AcmIdmConstants.Claims.Firstname, JwtClaimTypes.GivenName, ClaimValueTypes.String));
+        foreach (var c in identity.Claims.Where(c => c.Type == JwtClaimTypes.GivenName).ToList())
+            identity.RemoveClaim(c);
+        foreach (var c in identity.Claims.Where(c => c.Type == JwtClaimTypes.FamilyName).ToList())
+            identity.RemoveClaim(c);
+
+        identity.AddClaim(new Claim(ClaimTypes.GivenName, givenName, ClaimValueTypes.String));
+        identity.AddClaim(new Claim(ClaimTypes.Surname, familyName, ClaimValueTypes.String));
+        identity.AddClaim(new Claim(AcmIdmConstants.Claims.Firstname, givenName, ClaimValueTypes.String));
+        identity.AddClaim(new Claim(AcmIdmConstants.Claims.FamilyName, familyName, ClaimValueTypes.String));
 
         var roles = identity.GetClaims(AcmIdmConstants.Claims.Role)
             .Select(x => x.ToLowerInvariant())
