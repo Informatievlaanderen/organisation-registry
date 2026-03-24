@@ -64,6 +64,10 @@ services:
       JWT_ISSUER: organisatieregister
       JWT_AUDIENCE: organisatieregister
       DEVELOPER_VO_ID: 9c2f7372-7112-49dc-9771-f127b048b4c7
+      MSSQL_HOST: mssql
+      MSSQL_USER: sa
+      MSSQL_PASSWORD: 'E@syP@ssw0rd'
+      MSSQL_DB: OrganisationRegistry
     extra_hosts:
       - "host.docker.internal:host-gateway"
     restart: "no"

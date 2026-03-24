@@ -559,6 +559,29 @@
           "WegwijsBeheerder-cjmbeheerder:OVO002949"
         ]
       }
+    },
+    {
+      "username": "orafinbeheerder",
+      "enabled": true,
+      "firstName": "Orafin",
+      "lastName": "Beheerder",
+      "credentials": [
+        {
+          "id": "b2e5f1a3-9c34-4d78-a012-ef3456789abc",
+          "type": "password",
+          "createdDate": 1774358576965,
+          "secretData": "{\"value\": \"w7BRcoqoTWthAAMN296HTt4Phupd7P/+1MYaoiEaKWToqkkXMd+sLuW+XgpVEoSokC/FvZXDTBfvsg2m6sc8/Q==\", \"salt\": \"CFtxybrC9Rm4e3ozYqmetg==\", \"additionalParameters\": {}}",
+          "credentialData": "{\"hashIterations\": 210000, \"algorithm\": \"pbkdf2-sha512\", \"additionalParameters\": {}}"
+        }
+      ],
+      "attributes": {
+        "vo_id": [
+          "B3F8C2D1-4A56-7E89-0123-456789ABCDEF"
+        ],
+        "iv_wegwijs_rol_3D": [
+          "WegwijsBeheerder-orafinbeheerder:OVO000099"
+        ]
+      }
     }
   ]
 }

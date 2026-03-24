@@ -14,6 +14,7 @@ import sys
 import time
 import urllib.request
 import urllib.error
+import pymssql
 
 # ---------------------------------------------------------------------------
 # Config — overschrijfbaar via env vars
@@ -28,6 +29,25 @@ AUDIENCE = os.environ.get("JWT_AUDIENCE", "organisatieregister")
 DEVELOPER_VO_ID = os.environ.get(
     "DEVELOPER_VO_ID", "9c2f7372-7112-49dc-9771-f127b048b4c7"
 )
+
+MSSQL_HOST = os.environ.get("MSSQL_HOST", "mssql")
+MSSQL_USER = os.environ.get("MSSQL_USER", "sa")
+MSSQL_PASSWORD = os.environ.get("MSSQL_PASSWORD", "E@syP@ssw0rd")
+MSSQL_DB = os.environ.get("MSSQL_DB", "OrganisationRegistry")
+
+# Orafin-organisatie: vaste waarden voor local dev
+ORAFIN_ORG_ID = "a7e93f0e-000e-0000-0000-000000000001"
+ORAFIN_OVO_CODE = "OVO000099"
+ORAFIN_KEY_TYPE_ID = "1e3611a7-7914-411a-a0c9-84fcd6218e67"
+ORAFIN_ORG_KEY_ID = "a7e93f0e-000e-0000-0000-000000000002"
+
+# Vlimpers-testorganisatie: vaste waarden voor local dev
+# Keycloak vlimpers-user heeft iv_wegwijs_rol_3D met OVO001833,
+# de vlimpersbeheerder moet een organisatie onder vlimpersbeheer kunnen bewerken.
+VLIMPERS_ORG_ID = "a7e93f0f-000f-0000-0000-000000000001"
+VLIMPERS_OVO_CODE = "OVO000002"
+VLIMPERS_KEY_TYPE_ID = "922a46bb-1378-45bd-a61f-b6bbf348a4d5"
+VLIMPERS_ORG_KEY_ID = "a7e93f0f-000f-0000-0000-000000000002"
 
 # ---------------------------------------------------------------------------
 # Minimale HS256 JWT implementatie (geen externe deps)
@@ -110,6 +130,29 @@ def post(path: str, body: dict, token: str) -> tuple[int, str]:
         return e.code, detail
 
 
+def patch(path: str, body: dict, token: str) -> tuple[int, str]:
+    url = f"{API_BASE}{path}"
+    data = json.dumps(body).encode()
+    req = urllib.request.Request(
+        url,
+        data=data,
+        method="PATCH",
+        headers={
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {token}",
+        },
+    )
+    try:
+        with urllib.request.urlopen(req) as resp:
+            return resp.status, ""
+    except urllib.error.HTTPError as e:
+        try:
+            detail = json.loads(e.read()).get("detail", "")
+        except Exception:
+            detail = ""
+        return e.code, detail
+
+
 def wait_for_api(max_wait: int = 120):
     url = f"{API_BASE}/v1/status"
     req = urllib.request.Request(url)
@@ -126,6 +169,83 @@ def wait_for_api(max_wait: int = 120):
         time.sleep(5)
     print("ERROR: API niet bereikbaar na wachten. Seed mislukt.")
     sys.exit(1)
+
+
+# ---------------------------------------------------------------------------
+# DB config (UPSERT Api:* keys in SQL Server Configuration table)
+# ---------------------------------------------------------------------------
+
+DB_CONFIG_KEYS = {
+    "Api:Vlimpers_KeyTypeId": "922a46bb-1378-45bd-a61f-b6bbf348a4d5",
+    "Api:Orafin_KeyTypeId": "1e3611a7-7914-411a-a0c9-84fcd6218e67",
+    "Api:Orafin_OvoCode": "OVO000099",
+    "Api:INR_KeyTypeId": "a7e93f01-0001-0000-0000-000000000002",
+    "Api:KBO_KeyTypeId": "a7e93f01-0001-0000-0000-000000000001",
+    "Api:VademecumKeyTypeId": "a7e93f01-0001-0000-0000-000000000003",
+    "Api:VlimpersKort_KeyTypeId": "a7e93f01-0001-0000-0000-000000000004",
+    "Api:FrenchLabelTypeId": "a7e93f02-0002-0000-0000-000000000001",
+    "Api:GermanLabelTypeId": "a7e93f02-0002-0000-0000-000000000002",
+    "Api:EnglishLabelTypeId": "a7e93f02-0002-0000-0000-000000000003",
+    "Api:KboV2FormalNameLabelTypeId": "a7e93f02-0002-0000-0000-000000000004",
+    "Api:EmailContactTypeId": "a7e93f03-0003-0000-0000-000000000001",
+    "Api:PhoneContactTypeId": "a7e93f03-0003-0000-0000-000000000002",
+    "Api:CellPhoneContactTypeId": "a7e93f03-0003-0000-0000-000000000003",
+    "Api:RegisteredOfficeLocationTypeId": "a7e93f04-0004-0000-0000-000000000001",
+    "Api:KboV2RegisteredOfficeLocationTypeId": "a7e93f04-0004-0000-0000-000000000001",
+    "Api:Bestuursniveau_ClassificationTypeId": "a7e93f06-0006-0000-0000-000000000003",
+    "Api:Categorie_ClassificationTypeId": "a7e93f06-0006-0000-0000-000000000004",
+    "Api:Entiteitsvorm_ClassificationTypeId": "a7e93f06-0006-0000-0000-000000000005",
+    "Api:LegalFormClassificationTypeId": "a7e93f06-0006-0000-0000-000000000001",
+    "Api:PolicyDomainClassificationTypeId": "a7e93f06-0006-0000-0000-000000000002",
+    "Api:KboV2LegalFormOrganisationClassificationTypeId": "a7e93f06-0006-0000-0000-000000000001",
+    "Api:Organisatietype_Mandaten_En_Vermogensaangifte_ClassificationTypeId": "94944afb-7261-554c-dac6-a19ad4387359",
+}
+
+
+def wait_for_mssql(max_wait: int = 120):
+    deadline = time.time() + max_wait
+    while time.time() < deadline:
+        try:
+            conn = pymssql.connect(
+                server=MSSQL_HOST,
+                user=MSSQL_USER,
+                password=MSSQL_PASSWORD,
+                database=MSSQL_DB,
+                timeout=5,
+            )
+            conn.close()
+            print("  SQL Server bereikbaar")
+            return
+        except Exception:
+            pass
+        print(f"  Wachten op SQL Server op {MSSQL_HOST} ...")
+        time.sleep(5)
+    print("ERROR: SQL Server niet bereikbaar na wachten. Seed mislukt.")
+    sys.exit(1)
+
+
+def update_db_config():
+    print("\n=== DB config (Configuration tabel) ===")
+    conn = pymssql.connect(
+        server=MSSQL_HOST,
+        user=MSSQL_USER,
+        password=MSSQL_PASSWORD,
+        database=MSSQL_DB,
+    )
+    cursor = conn.cursor()
+    for key, value in DB_CONFIG_KEYS.items():
+        cursor.execute(
+            """
+            IF EXISTS (SELECT 1 FROM [OrganisationRegistry].[Configuration] WHERE [Key] = %s)
+                UPDATE [OrganisationRegistry].[Configuration] SET [Value] = %s WHERE [Key] = %s
+            ELSE
+                INSERT INTO [OrganisationRegistry].[Configuration] ([Key], [Value]) VALUES (%s, %s)
+            """,
+            (key, value, key, key, value),
+        )
+        print(f"  [OK] {key} = {value}")
+    conn.commit()
+    conn.close()
 
 
 # ---------------------------------------------------------------------------
@@ -198,6 +318,100 @@ def seed(token: str):
         "/v1/keytypes",
         {"id": "a7e93f01-0001-0000-0000-000000000004", "name": "Vlimpers kort"},
     )
+
+    # --- Orafin-organisatie ---
+    # De Orafin-organisatie krijgt een vast OVO-nummer (OVO000099) en de Orafin keytype.
+    # Api:Orafin_OvoCode in de DB config wordt hierna gezet op dit OVO-nummer.
+    # De Keycloak orafinbeheerder-user heeft iv_wegwijs_rol_3D met dit OVO,
+    # zodat de SecurityService.CanUseKeyType() check slaagt.
+    print("\n=== Orafin-organisatie ===")
+    create(
+        "Orafin (lokale dev)",
+        "/v1/organisations",
+        {
+            "id": ORAFIN_ORG_ID,
+            "name": "Orafin",
+            "ovoNumber": ORAFIN_OVO_CODE,
+            "showOnVlaamseOverheidSites": False,
+        },
+    )
+    # Koppel de Orafin keytype aan de organisatie
+    orafin_key_path = f"/v1/organisations/{ORAFIN_ORG_ID}/keys"
+    if exists(orafin_key_path, ORAFIN_ORG_KEY_ID):
+        print("  [bestaat] Orafin key op organisatie")
+        skipped += 1
+    else:
+        status, detail = post(
+            orafin_key_path,
+            {
+                "organisationKeyId": ORAFIN_ORG_KEY_ID,
+                "keyTypeId": ORAFIN_KEY_TYPE_ID,
+                "keyValue": "ORAFIN-LOCAL-DEV",
+            },
+            token,
+        )
+        if status in (200, 201, 204):
+            print("  [OK]      Orafin key op organisatie")
+            created += 1
+        elif status == 409:
+            print("  [bestaat] Orafin key op organisatie")
+            skipped += 1
+        else:
+            print(f"  [FOUT {status}] Orafin key op organisatie: {detail}")
+            errors += 1
+
+    # --- Vlimpers-testorganisatie ---
+    # Organisatie onder Vlimpersbeheer zodat de vlimpersbeheerder (OVO001833)
+    # de Vlimpers-sleutel kan bewerken in de UI.
+    # De UI toont het edit-knopje alleen als underVlimpersManagement = true.
+    print("\n=== Vlimpers-testorganisatie ===")
+    create(
+        "Vlimpers testorg (lokale dev)",
+        "/v1/organisations",
+        {
+            "id": VLIMPERS_ORG_ID,
+            "name": "Vlimpers testorganisatie",
+            "ovoNumber": VLIMPERS_OVO_CODE,
+            "showOnVlaamseOverheidSites": False,
+        },
+    )
+    # Plaats onder Vlimpersbeheer zodat de UI het edit-knopje toont
+    vlimpers_patch_status, vlimpers_patch_detail = patch(
+        f"/v1/organisations/{VLIMPERS_ORG_ID}/vlimpers",
+        {"vlimpersManagement": True},
+        token,
+    )
+    if vlimpers_patch_status in (200, 201, 204):
+        print("  [OK]      Vlimpers-beheer ingeschakeld")
+    else:
+        print(
+            f"  [FOUT {vlimpers_patch_status}] Vlimpers-beheer: {vlimpers_patch_detail}"
+        )
+        errors += 1
+    # Voeg een Vlimpers-sleutel toe zodat de beheerder die kan bewerken
+    vlimpers_key_path = f"/v1/organisations/{VLIMPERS_ORG_ID}/keys"
+    if exists(vlimpers_key_path, VLIMPERS_ORG_KEY_ID):
+        print("  [bestaat] Vlimpers key op organisatie")
+        skipped += 1
+    else:
+        status, detail = post(
+            vlimpers_key_path,
+            {
+                "organisationKeyId": VLIMPERS_ORG_KEY_ID,
+                "keyTypeId": VLIMPERS_KEY_TYPE_ID,
+                "keyValue": "VLIMPERS-LOCAL-DEV",
+            },
+            token,
+        )
+        if status in (200, 201, 204):
+            print("  [OK]      Vlimpers key op organisatie")
+            created += 1
+        elif status == 409:
+            print("  [bestaat] Vlimpers key op organisatie")
+            skipped += 1
+        else:
+            print(f"  [FOUT {status}] Vlimpers key op organisatie: {detail}")
+            errors += 1
 
     # --- LabelTypes ---
     print("\n=== LabelTypes ===")
@@ -619,11 +833,17 @@ def seed(token: str):
 if __name__ == "__main__":
     print("=== Organisation Registry local dev seed ===")
     print(f"  API: {API_BASE}")
+    print(f"  MSSQL: {MSSQL_HOST}/{MSSQL_DB}")
+
+    print("\nWachten op SQL Server...")
+    wait_for_mssql()
 
     print("\nWachten op API...")
     wait_for_api()
 
     token = mint_jwt()
     print(f"  JWT gemint voor vo_id={DEVELOPER_VO_ID}")
+
+    update_db_config()
 
     seed(token)
