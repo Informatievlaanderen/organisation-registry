@@ -1,0 +1,5 @@
+node_modules
+**/node_modules
+.opencode
+src/OrganisationRegistry.Vue
+src/OrganisationRegistry.Vue2

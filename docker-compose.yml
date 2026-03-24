@@ -32,10 +32,29 @@ services:
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_HOSTNAME_URL: http://localhost:8180
+      KC_HOSTNAME_STRICT: "false"
+      KC_HOSTNAME_STRICT_BACKCHANNEL: "false"
     ports:
       - "8180:8080"
     volumes:
       - ./keycloak:/opt/keycloak/data/import
+
+  ui:
+    build:
+      context: .
+      dockerfile: Dockerfile.ui
+    ports:
+      - "80:9007"
+    environment:
+      API_ENDPOINT: http://localhost:9002
+      UI_ENDPOINT: http://organisatie.dev-vlaanderen.local
+      API_VERSION: local
+      AIV_URI: https://www.vlaanderen.be/informatie-vlaanderen
+      OTEL_SERVER_URI: ""
+      OTEL_DISTRIBUTED_TRACING_ORIGINS: ""
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   wiremock:
     image: wiremock/wiremock:2.32.0

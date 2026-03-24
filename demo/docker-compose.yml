@@ -1,0 +1,32 @@
+services:
+  m2m-demo:
+    build: ./m2m/
+    ports:
+      - "5080:8080"
+    environment:
+      KEYCLOAK_TOKEN_ENDPOINT: "http://host.docker.internal:8180/realms/wegwijs/protocol/openid-connect/token"
+      CJM_CLIENT_ID: "cjmClient"
+      CJM_CLIENT_SECRET: "secret"
+      API_BASE_URL: "http://host.docker.internal:9002/v1"
+      TEST_OVO_ID: "OVO000001"
+      ASPNETCORE_URLS: "http://+:8080"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  nuxt-bff:
+    build: ./nuxt-bff/
+    ports:
+      - "5090:3000"
+    environment:
+      KEYCLOAK_AUTH_URL: "http://localhost:8180/realms/wegwijs/protocol/openid-connect/auth"
+      KEYCLOAK_TOKEN_URL: "http://host.docker.internal:8180/realms/wegwijs/protocol/openid-connect/token"
+      KEYCLOAK_LOGOUT_URL: "http://localhost:8180/realms/wegwijs/protocol/openid-connect/logout"
+      BFF_CLIENT_ID: "nuxt-bff"
+      BFF_CLIENT_SECRET: "nuxt-bff-secret"
+      BFF_REDIRECT_URI: "http://localhost:5090/callback"
+      API_BASE_URL: "http://host.docker.internal:9002/v1"
+      SESSION_SECRET: "nuxt-bff-session-secret-32chars!!"
+      TEST_OVO_ID: "OVO000001"
+      NUXT_PORT: "3000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
