@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Local dev seed script voor Organisation Registry.
-Mint een Developer JWT en maakt alle benodigde parameter types aan via de REST API.
+Mint een AlgemeenBeheerder JWT en maakt alle benodigde parameter types aan via de REST API.
 Idempotent: bestaande items (409 Conflict) worden genegeerd.
 """
 
@@ -9,6 +9,7 @@ import base64
 import hashlib
 import hmac
 import json
+import os
 import sys
 import time
 import urllib.request
@@ -17,7 +18,6 @@ import urllib.error
 # ---------------------------------------------------------------------------
 # Config — overschrijfbaar via env vars
 # ---------------------------------------------------------------------------
-import os
 
 API_BASE = os.environ.get("API_BASE", "http://host.docker.internal:9002")
 SIGNING_KEY = os.environ.get(
@@ -25,13 +25,12 @@ SIGNING_KEY = os.environ.get(
 )
 ISSUER = os.environ.get("JWT_ISSUER", "organisatieregister")
 AUDIENCE = os.environ.get("JWT_AUDIENCE", "organisatieregister")
-# vo_id van de dev user — moet overeenkomen met OIDCAuth:Developers in de DB
 DEVELOPER_VO_ID = os.environ.get(
     "DEVELOPER_VO_ID", "9c2f7372-7112-49dc-9771-f127b048b4c7"
 )
 
 # ---------------------------------------------------------------------------
-# Minimale HS256 JWT implementatie (geen externe deps nodig)
+# Minimale HS256 JWT implementatie (geen externe deps)
 # ---------------------------------------------------------------------------
 
 
@@ -42,8 +41,7 @@ def _b64url(data: bytes) -> str:
 def mint_jwt() -> str:
     header = _b64url(json.dumps({"alg": "HS256", "typ": "JWT"}).encode())
     now = int(time.time())
-    # Dit is een custom JWT in het formaat dat de API zelf aanmaakt na /v1/security/exchange.
-    # De API valideert op issuer, audience en signing key, en leest ClaimTypes.Role.
+    # Custom JWT in het formaat dat de API zelf aanmaakt na /v1/security/exchange.
     # ClaimTypes.Role = http://schemas.microsoft.com/ws/2008/06/identity/claims/role
     # RoleMapping.Map(Role.AlgemeenBeheerder) = "algemeenBeheerder"
     payload = _b64url(
@@ -54,11 +52,12 @@ def mint_jwt() -> str:
                 "sub": DEVELOPER_VO_ID,
                 "iat": now,
                 "exp": now + 3600,
-                # ClaimTypes.Role — waarde zoals RoleMapping ze aanmaakt
                 "http://schemas.microsoft.com/ws/2008/06/identity/claims/role": "algemeenBeheerder",
-                # Extra claims voor herkenbaarheid in logs
-                "given_name": "Seed",
-                "family_name": "Script",
+                # ClaimTypes.GivenName / Surname — vereist door SecurityService.GetUser()
+                "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname": "Seed",
+                "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname": "Script",
+                # AcmIdmConstants.Claims.AcmId = "vo_id" — vereist door SecurityService.GetUser()
+                "vo_id": DEVELOPER_VO_ID,
             }
         ).encode()
     )
@@ -68,11 +67,27 @@ def mint_jwt() -> str:
 
 
 # ---------------------------------------------------------------------------
-# HTTP helper
+# HTTP helpers
 # ---------------------------------------------------------------------------
 
 
-def post(path: str, body: dict, token: str) -> tuple[int, dict]:
+def get_list(path: str, token: str) -> list:
+    url = f"{API_BASE}{path}?limit=500"
+    req = urllib.request.Request(
+        url,
+        headers={
+            "Authorization": f"Bearer {token}",
+            "Accept": "application/json",
+        },
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            return json.loads(resp.read())
+    except Exception:
+        return []
+
+
+def post(path: str, body: dict, token: str) -> tuple[int, str]:
     url = f"{API_BASE}{path}"
     data = json.dumps(body).encode()
     req = urllib.request.Request(
@@ -86,14 +101,18 @@ def post(path: str, body: dict, token: str) -> tuple[int, dict]:
     )
     try:
         with urllib.request.urlopen(req) as resp:
-            return resp.status, {}
+            return resp.status, ""
     except urllib.error.HTTPError as e:
-        return e.code, {}
+        try:
+            detail = json.loads(e.read()).get("detail", "")
+        except Exception:
+            detail = ""
+        return e.code, detail
 
 
-def wait_for_api(token: str, max_wait: int = 120):
-    url = f"{API_BASE}/v1/purposes"
-    req = urllib.request.Request(url, headers={"Authorization": f"Bearer {token}"})
+def wait_for_api(max_wait: int = 120):
+    url = f"{API_BASE}/v1/status"
+    req = urllib.request.Request(url)
     deadline = time.time() + max_wait
     while time.time() < deadline:
         try:
@@ -101,18 +120,16 @@ def wait_for_api(token: str, max_wait: int = 120):
                 if resp.status < 500:
                     print(f"  API bereikbaar ({resp.status})")
                     return
-        except Exception as e:
+        except Exception:
             pass
-        print(f"  Wachten op API op {API_BASE} ...")
+        print(f"  Wachten op API op {API_BASE}/v1/status ...")
         time.sleep(5)
     print("ERROR: API niet bereikbaar na wachten. Seed mislukt.")
     sys.exit(1)
 
 
 # ---------------------------------------------------------------------------
-# Seed data
-# GUIDs zijn de bekende lokale dev waarden uit appsettings.development.json
-# en de Authorization config.
+# Seed
 # ---------------------------------------------------------------------------
 
 
@@ -121,17 +138,32 @@ def seed(token: str):
     skipped = 0
     errors = 0
 
+    # Bouw per type een set van bestaande IDs op (lazy, per type eenmalig opgehaald)
+    _existing: dict[str, set] = {}
+
+    def exists(list_path: str, item_id: str) -> bool:
+        if list_path not in _existing:
+            items = get_list(list_path, token)
+            _existing[list_path] = {str(i.get("id", "")).lower() for i in items}
+        return item_id.lower() in _existing[list_path]
+
     def create(label: str, path: str, body: dict):
         nonlocal created, skipped, errors
-        status, _ = post(path, body, token)
+        if exists(path, body["id"]):
+            print(f"  [bestaat] {label}")
+            skipped += 1
+            return
+        status, detail = post(path, body, token)
         if status in (200, 201, 204):
             print(f"  [OK]      {label}")
             created += 1
-        elif status == 409:
+            # Invalideer cache voor dit type
+            _existing.pop(path, None)
+        elif status == 409 or (status == 400 and "niet uniek" in detail.lower()):
             print(f"  [bestaat] {label}")
             skipped += 1
         else:
-            print(f"  [FOUT {status}] {label}")
+            print(f"  [FOUT {status}] {label}: {detail}")
             errors += 1
 
     # --- KeyTypes ---
@@ -309,7 +341,6 @@ def seed(token: str):
         "/v1/organisationclassificationtypes",
         {"id": "a7e93f06-0006-0000-0000-000000000005", "name": "Entiteitsvorm"},
     )
-    # Bekend uit appsettings Authorization config:
     create(
         "Regelgeving classificatie",
         "/v1/organisationclassificationtypes",
@@ -333,7 +364,6 @@ def seed(token: str):
         "/v1/organisationclassificationtypes",
         {"id": "c35407e4-8559-08d4-f461-a8247c993d58", "name": "CJM classificatie C"},
     )
-    # Bekend uit migratie AddConfigurationSettingForReport:
     create(
         "Mandaten en vermogensaangifte",
         "/v1/organisationclassificationtypes",
@@ -361,10 +391,9 @@ def seed(token: str):
         {"id": "a7e93f07-0007-0000-0000-000000000003", "name": "Federaal"},
     )
 
-    # --- FormalFrameworks (bekend uit appsettings Authorization config) ---
+    # --- FormalFrameworks ---
     print("\n=== FormalFrameworks ===")
     ff_cat = "a7e93f07-0007-0000-0000-000000000001"  # Algemeen
-    # Vlimpers-owned:
     create(
         "Vlimpers FF 1",
         "/v1/formalframeworks",
@@ -455,7 +484,6 @@ def seed(token: str):
             "formalFrameworkCategoryId": ff_cat,
         },
     )
-    # Regelgeving-owned:
     create(
         "Regelgeving FF 1",
         "/v1/formalframeworks",
@@ -592,10 +620,10 @@ if __name__ == "__main__":
     print("=== Organisation Registry local dev seed ===")
     print(f"  API: {API_BASE}")
 
+    print("\nWachten op API...")
+    wait_for_api()
+
     token = mint_jwt()
     print(f"  JWT gemint voor vo_id={DEVELOPER_VO_ID}")
-
-    print("\nWachten op API...")
-    wait_for_api(token)
 
     seed(token)
