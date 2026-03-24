@@ -56,6 +56,18 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
+  seed:
+    build: seed/
+    environment:
+      API_BASE: http://host.docker.internal:9002
+      JWT_SIGNING_KEY: keycloak-demo-local-dev-secret-key-32b
+      JWT_ISSUER: organisatieregister
+      JWT_AUDIENCE: organisatieregister
+      DEVELOPER_VO_ID: 9c2f7372-7112-49dc-9771-f127b048b4c7
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: "no"
+
   wiremock:
     image: wiremock/wiremock:2.32.0
     container_name: or_wiremock
