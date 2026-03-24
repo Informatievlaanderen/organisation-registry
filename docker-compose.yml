@@ -57,7 +57,7 @@ services:
       - "host.docker.internal:host-gateway"
 
   seed:
-    build: seed/
+    build: demos/seed/
     environment:
       API_BASE: http://host.docker.internal:9002
       JWT_SIGNING_KEY: keycloak-demo-local-dev-secret-key-32b
