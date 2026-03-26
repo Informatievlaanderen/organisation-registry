@@ -1,13 +1,15 @@
 /**
  * Sessie-utilities — sla tokens op in een encrypted cookie.
- * Voor de demo gebruiken we een simpele Base64+XOR-achtige obfuscatie
- * (geen productie-crypto, maar tokens komen nooit in de browser response).
+ * Voor de demo gebruiken we een simpele AES-256-CBC encryptie
+ * (tokens komen nooit in de browser response — BFF-patroon).
  *
  * Velden in de sessie:
- *   - accessToken:  het Keycloak access token (voor introspection / exchange)
- *   - customJwt:    het custom Organisation Registry JWT (na exchange)
- *   - codeVerifier: PKCE verifier (tijdelijk, enkel tijdens login flow)
- *   - state:        CSRF state parameter
+ *   - accessToken:    het Keycloak access token (voor de gebruiker)
+ *   - exchangedToken: het via RFC 8693 token exchange verkregen token
+ *                     gericht op organisation-registry-api audience
+ *   - exchangeError:  foutmelding als de token exchange mislukt
+ *   - codeVerifier:   PKCE verifier (tijdelijk, enkel tijdens login flow)
+ *   - state:          CSRF state parameter
  */
 
 import { H3Event, setCookie, getCookie } from 'h3'
@@ -18,7 +20,8 @@ const COOKIE_MAX_AGE = 60 * 60 // 1 uur
 
 export interface Session {
   accessToken?: string
-  customJwt?: string
+  exchangedToken?: string
+  exchangeError?: string
   codeVerifier?: string
   state?: string
 }

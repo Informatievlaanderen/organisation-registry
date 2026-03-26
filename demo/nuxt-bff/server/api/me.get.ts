@@ -1,6 +1,7 @@
 /**
  * GET /api/me
  * Geeft de ingelogde gebruiker terug (uit de sessie), zonder tokens te lekken.
+ * Bevat ook de status van de token exchange zodat de UI dit kan tonen.
  */
 import { defineEventHandler } from 'h3'
 import { getSession } from '../utils/session'
@@ -23,6 +24,10 @@ export default defineEventHandler(async (event) => {
       clientId: payload.azp || payload.client_id,
       scope: payload.scope,
       exp: payload.exp,
+      // Token exchange status
+      tokenExchange: session.exchangedToken
+        ? { success: true }
+        : { success: false, error: session.exchangeError ?? 'onbekende fout' },
     }
   } catch {
     return { loggedIn: false }

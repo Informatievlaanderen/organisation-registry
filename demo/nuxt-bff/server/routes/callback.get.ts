@@ -1,8 +1,9 @@
 /**
  * GET /callback
- * Keycloak redirect-handler. Ruilt de authorization code in voor tokens,
- * doet vervolgens exchange bij de Organisation Registry API voor een custom JWT,
- * en slaat beide op in de encrypted session cookie.
+ * Keycloak redirect-handler:
+ * 1. Ruilt de authorization code in voor tokens (authorization_code grant)
+ * 2. Doet een RFC 8693 token exchange: nuxt-bff token → organisation-registry-api token
+ * 3. Slaat beide tokens op in de encrypted session cookie
  */
 import { defineEventHandler, getQuery, sendRedirect } from 'h3'
 import { getSession, saveSession, clearSession } from '../utils/session'
@@ -26,8 +27,9 @@ export default defineEventHandler(async (event) => {
     return sendRedirect(event, '/?error=invalid_state')
   }
 
-  // Stap 1: wissel de authorization code in bij Keycloak (server-side)
   const keycloakTokenUrl = `${config.keycloakInternalUrl}/realms/${config.public.keycloakRealm}/protocol/openid-connect/token`
+
+  // Stap 1: wissel de authorization code in bij Keycloak (authorization_code grant)
   const tokenRes = await $fetch<any>(keycloakTokenUrl, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -40,26 +42,43 @@ export default defineEventHandler(async (event) => {
       code_verifier: session.codeVerifier,
     }).toString(),
   }).catch((err: any) => {
-    throw createError({ statusCode: 502, statusMessage: `Keycloak token exchange failed: ${err.message}` })
+    throw createError({ statusCode: 502, statusMessage: `Keycloak code exchange failed: ${err.message}` })
   })
 
   const accessToken = tokenRes.access_token as string
 
-  // Stap 2: wissel het Keycloak access token in bij de Organisation Registry API
-  // voor een custom JWT (de exchange endpoint verwacht de authorization code flow,
-  // maar wij gebruiken hier het access token direct als Bearer voor de security endpoint)
-  //
-  // BELANGRIJK: dit is de demonstratie van het probleem.
-  // /v1/security/exchange is bedoeld voor de Angular SPA die een code + verifier stuurt.
-  // Hier proberen we het Keycloak access token te gebruiken als Bearer op een
-  // [OrganisationRegistryAuthorize] endpoint — dat werkt NIET omdat dat scheme
-  // alleen het custom JWT accepteert.
-  //
-  // Dus: customJwt = undefined, en we tonen dit probleem in de UI.
+  // Stap 2: RFC 8693 token exchange
+  // nuxt-bff wisselt zijn eigen access token in voor een token gericht op organisation-registry-api.
+  // Keycloak 26 standard token exchange (V2) is standaard ingebouwd — geen extra flags nodig.
+  // Vereiste: nuxt-bff client heeft token.exchange.standard.enabled=true in realm-export.json.
+  let exchangedToken: string | undefined
+  let exchangeError: string | undefined
+
+  try {
+    const exchangeRes = await $fetch<any>(keycloakTokenUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        grant_type: 'urn:ietf:params:oauth:grant-type:token-exchange',
+        client_id: config.public.keycloakClientId,
+        client_secret: config.keycloakClientSecret,
+        subject_token: accessToken,
+        subject_token_type: 'urn:ietf:params:oauth:token-type:access_token',
+        requested_token_type: 'urn:ietf:params:oauth:token-type:access_token',
+        audience: 'organisation-registry-api',
+      }).toString(),
+    })
+    exchangedToken = exchangeRes.access_token as string
+  } catch (err: any) {
+    // Exchange mislukt: toon dit in de UI maar blokkeer login niet
+    const errData = err?.data ?? err?.response?._data
+    exchangeError = errData?.error_description ?? errData?.error ?? err?.message ?? 'token exchange failed'
+  }
 
   saveSession(event, {
     accessToken,
-    customJwt: undefined, // bewust leeg — exchange niet mogelijk via BFF flow
+    exchangedToken,
+    exchangeError,
     codeVerifier: undefined,
     state: undefined,
   }, config.sessionSecret)

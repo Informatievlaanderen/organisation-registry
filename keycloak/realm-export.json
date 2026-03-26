@@ -329,7 +329,8 @@
         "dv_organisatieregister_cjmbeheerder"
       ],
       "attributes": {
-        "pkce.code.challenge.method": "S256"
+        "pkce.code.challenge.method": "S256",
+        "token.exchange.standard.enabled": "true"
       },
       "protocolMappers": [
         {
@@ -588,5 +589,8 @@
         ]
       }
     }
-  ]
+  ],
+  "attributes": {
+    "feature.token.exchange": "true"
+  }
 }

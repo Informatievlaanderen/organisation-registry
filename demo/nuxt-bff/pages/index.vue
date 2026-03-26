@@ -18,6 +18,24 @@
         <a href="/api/logout" class="btn btn-sm btn-secondary">Uitloggen</a>
       </div>
 
+      <!-- Token exchange status -->
+      <div class="card" :class="me.tokenExchange?.success ? 'card-ok' : 'card-warn'">
+        <h2>
+          <span v-if="me.tokenExchange?.success" class="badge badge-ok">Token exchange</span>
+          <span v-else class="badge badge-warning">Token exchange</span>
+          RFC 8693 (Keycloak standard V2)
+        </h2>
+        <p class="explanation" v-if="me.tokenExchange?.success">
+          De BFF heeft het Keycloak access token (audience: <code>nuxt-bff</code>) succesvol
+          ingewisseld voor een nieuw token met audience: <code>organisation-registry-api</code>.<br />
+          Dit token wordt nu gebruikt voor API-calls. Het token zelf is nooit zichtbaar in de browser.
+        </p>
+        <p class="explanation" v-else>
+          Token exchange mislukt: <strong>{{ me.tokenExchange?.error }}</strong><br />
+          API-calls gebruiken het originele Keycloak access token (fallback).
+        </p>
+      </div>
+
       <!-- Organisatie kiezen -->
       <div class="card">
         <h2>Organisatie</h2>
@@ -44,11 +62,12 @@
           PUT /v1/organisations/{id}
         </h2>
         <p class="explanation">
-          De BFF stuurt het <strong>Keycloak access token</strong> als Bearer naar
+          De BFF stuurt het <strong>via RFC 8693 exchanged token</strong> (audience:
+          <code>organisation-registry-api</code>) als Bearer naar
           <code>PUT /v1/organisations/{id}</code>.<br />
-          Dit endpoint heeft <code>[OrganisationRegistryAuthorize]</code> — het verwacht het
-          <strong>custom JWT scheme</strong> (JwtBearerDefaults).<br />
-          Resultaat: <strong>401</strong>, ook al heeft de gebruiker de juiste scope.<br />
+          Dit endpoint heeft <code>[OrganisationRegistryAuthorize]</code> — gebonden aan het
+          <strong>custom JwtBearer scheme</strong>, niet aan <code>EditApi</code> (OAuth2 introspection).<br />
+          Resultaat: <strong>401</strong>, ook al heeft de gebruiker de juiste scope en is het token geldig.<br />
           <em>Na de autorisatie-refactor (scheme → policy) zal dit 200 geven.</em>
         </p>
         <div v-if="org" class="form-row">
@@ -163,6 +182,9 @@ h1 { font-size: 1.4rem; margin-bottom: 24px; }
 h2 { font-size: 1.1rem; margin: 0 0 12px; display: flex; align-items: center; gap: 8px; }
 .card { background: #fff; border: 1px solid #ddd; border-radius: 6px; padding: 20px; margin-bottom: 20px; }
 .status-bar { display: flex; align-items: center; gap: 16px; background: #f0f8e8; border-color: #b7e0a0; }
+.card-ok { background: #d4edda; border-color: #c3e6cb; }
+.card-warn { background: #fff3cd; border-color: #ffc107; }
+.badge-ok { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
 .form-row { display: flex; gap: 8px; align-items: center; margin-top: 12px; }
 .form-row label { min-width: 100px; font-size: 0.9rem; }
 .form-row input { flex: 1; padding: 6px 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.95rem; }

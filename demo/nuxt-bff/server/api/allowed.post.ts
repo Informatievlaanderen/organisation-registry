@@ -1,15 +1,16 @@
 /**
  * POST /api/allowed
  * Server-side call: haal organisatie op en update de naam.
- * Gebruikt het Keycloak access token als Bearer → stuurt naar
- * PUT /v1/organisations/{id} die [OrganisationRegistryAuthorize] heeft.
  *
- * Dit zal 401 teruggeven omdat OrganisationRegistryAuthorize het JwtBearer
- * scheme verwacht (custom JWT), niet het Keycloak access token.
+ * Gebruikt het via RFC 8693 token exchange verkregen token als Bearer.
+ * Dit token is uitgegeven door Keycloak met audience=organisation-registry-api.
  *
- * Dit is de "allowed" call in de demo: de gebruiker heeft de juiste rechten
- * (cjmbeheerder scope) maar het token-formaat wordt niet geaccepteerd.
- * Zodra de auth op policy i.p.v. scheme staat, zal dit wél werken.
+ * De call gaat naar PUT /v1/organisations/{id} die [Authorize(AuthenticationSchemes = EditApi)]
+ * heeft — dit is de OAuth2 introspection scheme (Keycloak → introspect endpoint).
+ *
+ * Dit demonstreert: token exchange slaagt (BFF krijgt een geldig exchanged token),
+ * maar de API-call geeft 401 omdat [OrganisationRegistryAuthorize] gebonden is aan het
+ * custom JwtBearer scheme, niet aan EditApi (introspection).
  */
 import { defineEventHandler, readBody } from 'h3'
 import { getSession } from '../utils/session'
@@ -30,6 +31,12 @@ export default defineEventHandler(async (event) => {
     return { error: 'organisationId en name zijn verplicht', status: 400 }
   }
 
+  // Bepaal welk token we gebruiken:
+  // - exchangedToken: via RFC 8693 exchange verkregen, audience=organisation-registry-api
+  // - fallback naar accessToken als exchange mislukt was (voor demo: toont dan 401)
+  const bearerToken = session.exchangedToken ?? session.accessToken
+  const tokenSource = session.exchangedToken ? 'exchanged (RFC 8693)' : 'direct Keycloak access token (exchange mislukt)'
+
   // Haal eerst de huidige organisatiegegevens op (GET is niet beveiligd)
   let currentOrg: any
   try {
@@ -44,7 +51,7 @@ export default defineEventHandler(async (event) => {
     }
   }
 
-  // PUT met het Keycloak access token — OrganisationRegistryAuthorize verwacht custom JWT
+  // PUT met het exchanged token — [OrganisationRegistryAuthorize] verwacht custom JWT scheme
   const putUrl = `${config.apiBaseUrl}/organisations/${organisationId}`
   let status = 0
   let statusText = ''
@@ -54,7 +61,7 @@ export default defineEventHandler(async (event) => {
     await $fetch(putUrl, {
       method: 'PUT',
       headers: {
-        Authorization: `Bearer ${session.accessToken}`,
+        Authorization: `Bearer ${bearerToken}`,
         'Content-Type': 'application/json',
         Accept: 'application/json',
       },
@@ -88,14 +95,15 @@ export default defineEventHandler(async (event) => {
     status,
     statusText,
     body: responseBody,
+    tokenExchangeUsed: !!session.exchangedToken,
+    tokenSource,
     note: status === 401
-      ? 'De API weigert het Keycloak access token — OrganisationRegistryAuthorize verwacht het custom JWT scheme. Dit is het verwachte gedrag totdat de autorisatie op policy wordt gezet.'
+      ? 'De API weigert het token — [OrganisationRegistryAuthorize] is gebonden aan het custom JwtBearer scheme, niet aan EditApi (OAuth2 introspection). Dit is het verwachte gedrag dat de demo aantoont.'
       : null,
     request: {
       method: 'PUT',
       url: putUrl,
-      // Access token NOOIT meesturen naar browser — dit is de BFF verantwoordelijkheid
-      authScheme: 'Bearer (Keycloak access token, server-side)',
+      authScheme: `Bearer (${tokenSource}, server-side)`,
     },
   }
 })
