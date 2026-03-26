@@ -24,7 +24,7 @@ export default defineEventHandler(async (event) => {
 
   if (!code || !state || state !== session.state || !session.codeVerifier) {
     clearSession(event)
-    return sendRedirect(event, '/?error=invalid_state')
+    return sendRedirect(event, `/?error=invalid_state`)
   }
 
   const keycloakTokenUrl = `${config.keycloakInternalUrl}/realms/${config.public.keycloakRealm}/protocol/openid-connect/token`

@@ -4,7 +4,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     // Server-only (nooit naar browser)
-    keycloakClientSecret: process.env.NUXT_BFF_CLIENT_SECRET || '',
+    keycloakClientSecret: '',
     sessionSecret: process.env.NUXT_SESSION_SECRET || 'change-me-in-production-32chars!!',
 
     public: {
