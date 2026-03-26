@@ -5,12 +5,12 @@
  * Gebruikt het via RFC 8693 token exchange verkregen token als Bearer.
  * Dit token is uitgegeven door Keycloak met audience=organisation-registry-api.
  *
- * De call gaat naar PUT /v1/organisations/{id} die [Authorize(AuthenticationSchemes = EditApi)]
- * heeft — dit is de OAuth2 introspection scheme (Keycloak → introspect endpoint).
+ * De API valideert het token via OAuth2 introspection (BffApi scheme).
+ * De introspection response bevat iv_wegwijs_rol_3D claims die via BffClaimsTransformation
+ * worden omgezet naar interne ClaimTypes.Role claims.
  *
- * Dit demonstreert: token exchange slaagt (BFF krijgt een geldig exchanged token),
- * maar de API-call geeft 401 omdat [OrganisationRegistryAuthorize] gebonden is aan het
- * custom JwtBearer scheme, niet aan EditApi (introspection).
+ * Verwacht resultaat: 200 als de gebruiker beheerder is van de geselecteerde organisatie,
+ * 403 als die rol ontbreekt.
  */
 import { defineEventHandler, readBody } from 'h3'
 import { getSession } from '../utils/session'
@@ -97,9 +97,6 @@ export default defineEventHandler(async (event) => {
     body: responseBody,
     tokenExchangeUsed: !!session.exchangedToken,
     tokenSource,
-    note: status === 401
-      ? 'De API weigert het token — [OrganisationRegistryAuthorize] is gebonden aan het custom JwtBearer scheme, niet aan EditApi (OAuth2 introspection). Dit is het verwachte gedrag dat de demo aantoont.'
-      : null,
     request: {
       method: 'PUT',
       url: putUrl,

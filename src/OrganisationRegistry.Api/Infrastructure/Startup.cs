@@ -16,6 +16,7 @@ using Configuration;
 using global::OpenTelemetry.Trace;
 using HostedServices;
 using Magda;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -76,6 +77,7 @@ public class Startup
             _configuration.GetSection(ApiConfigurationSection.Name).Get<ApiConfigurationSection>();
         var editApiConfiguration = _configuration.GetSection(EditApiConfigurationSection.Name)
             .Get<EditApiConfigurationSection>();
+        var bffApiEnabled = _configuration.GetValue<bool>($"FeatureManagement:{FeatureFlags.BffApi}");
 
         if (apiConfiguration.KboCertificate is { } kboCertificate && kboCertificate.IsNotEmptyOrWhiteSpace())
         {
@@ -120,7 +122,7 @@ public class Startup
             _logger.LogWarning("Magda clientcertificate not configured");
         }
 
-        services
+        var authBuilder = services
             .AddHostedService<ScheduledCommandsService>()
             .AddHostedService<SyncFromKboService>()
             .AddHostedService<SyncRemovedItemsService>()
@@ -148,8 +150,22 @@ public class Startup
                     options.ClientSecret = editApiConfiguration.ClientSecret;
                     options.Authority = editApiConfiguration.Authority;
                     options.IntrospectionEndpoint = editApiConfiguration.IntrospectionEndpoint;
-                })
+                });
+
+        if (bffApiEnabled)
+            authBuilder.AddOAuth2Introspection(
+                AuthenticationSchemes.BffApi,
+                options =>
+                {
+                    options.ClientId = editApiConfiguration.ClientId;
+                    options.ClientSecret = editApiConfiguration.ClientSecret;
+                    options.Authority = editApiConfiguration.Authority;
+                    options.IntrospectionEndpoint = editApiConfiguration.IntrospectionEndpoint;
+                });
+
+        authBuilder
             .Services
+            .AddTransient<IClaimsTransformation, Security.BffClaimsTransformation>()
             .AddSingleton<IActionContextAccessor, ActionContextAccessor>()
             .AddSingleton<ISecurityService, SecurityService>()
             .AddSingleton<ICache<OrganisationSecurityInformation>, OrganisationSecurityCache>()

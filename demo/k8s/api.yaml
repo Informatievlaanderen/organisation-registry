@@ -56,6 +56,8 @@ spec:
           value: "http://keycloak.localhost:9080/realms/wegwijs"
         - name: EditApi__IntrospectionEndpoint
           value: "http://keycloak/realms/wegwijs/protocol/openid-connect/token/introspect"
+        - name: FeatureManagement__BffApi
+          value: "true"
         - name: Api__JwtSharedSigningKey
           valueFrom:
             secretKeyRef:

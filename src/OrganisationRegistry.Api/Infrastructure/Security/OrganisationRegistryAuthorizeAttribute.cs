@@ -5,6 +5,7 @@ using Api.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using OrganisationRegistry.Infrastructure.Authorization;
+using Schemes = OrganisationRegistry.Api.Infrastructure.Security.AuthenticationSchemes;
 
 public class OrganisationRegistryAuthorizeAttribute : AuthorizeAttribute
 {
@@ -15,6 +16,6 @@ public class OrganisationRegistryAuthorizeAttribute : AuthorizeAttribute
 
     public OrganisationRegistryAuthorizeAttribute()
     {
-        AuthenticationSchemes = string.Join(", ", JwtBearerDefaults.AuthenticationScheme);
+        AuthenticationSchemes = $"{JwtBearerDefaults.AuthenticationScheme}, {Schemes.BffApi}";
     }
 }

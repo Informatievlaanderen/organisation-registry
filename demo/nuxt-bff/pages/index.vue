@@ -58,17 +58,17 @@
       <!-- Allowed: update naam -->
       <div class="card">
         <h2>
-          <span class="badge badge-warning">Allowed (verwacht, maar nu 401)</span>
+          <span class="badge badge-ok">Allowed</span>
           PUT /v1/organisations/{id}
         </h2>
         <p class="explanation">
           De BFF stuurt het <strong>via RFC 8693 exchanged token</strong> (audience:
           <code>organisation-registry-api</code>) als Bearer naar
           <code>PUT /v1/organisations/{id}</code>.<br />
-          Dit endpoint heeft <code>[OrganisationRegistryAuthorize]</code> — gebonden aan het
-          <strong>custom JwtBearer scheme</strong>, niet aan <code>EditApi</code> (OAuth2 introspection).<br />
-          Resultaat: <strong>401</strong>, ook al heeft de gebruiker de juiste scope en is het token geldig.<br />
-          <em>Na de autorisatie-refactor (scheme → policy) zal dit 200 geven.</em>
+          De API valideert via <strong>OAuth2 introspection</strong> (BffApi scheme) en zet
+          <code>iv_wegwijs_rol_3D</code> claims om naar interne rollen.<br />
+          Resultaat: <strong>200</strong> als de gebruiker beheerder is van de geselecteerde organisatie,
+          <strong>403</strong> als die rol ontbreekt.
         </p>
         <div v-if="org" class="form-row">
           <label>Nieuwe naam</label>
