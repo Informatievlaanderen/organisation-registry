@@ -140,6 +140,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "setup-python", "setup-pytho
 		.github\actions\setup-python\action.yml = .github\actions\setup-python\action.yml
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "keycloak", "keycloak", "{299FD67F-55CE-4824-AD3B-8CC293B3C42E}"
+	ProjectSection(SolutionItems) = preProject
+		keycloak\realm-export.json = keycloak\realm-export.json
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -303,5 +308,6 @@ Global
 		{7E59232C-D113-41CB-82ED-C7D4E9D3554D} = {54C35C74-BED8-474C-9D1E-FDE6EF9BB64E}
 		{167473E7-439E-4E86-B4A9-E39D1D0A666B} = {54C35C74-BED8-474C-9D1E-FDE6EF9BB64E}
 		{AD9BBCB1-F46C-4DED-94E9-7B1ADED03F36} = {54C35C74-BED8-474C-9D1E-FDE6EF9BB64E}
+		{299FD67F-55CE-4824-AD3B-8CC293B3C42E} = {B060FE93-603A-4BFC-85E2-A5324FB97851}
 	EndGlobalSection
 EndGlobal
