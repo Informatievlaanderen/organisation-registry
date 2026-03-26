@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nuxt-bff
+  namespace: wegwijs-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nuxt-bff
+  template:
+    metadata:
+      labels:
+        app: nuxt-bff
+    spec:
+      containers:
+      - name: nuxt-bff
+        image: k3d-wegwijs-registry:5051/wegwijs-nuxt-bff:local
+        env:
+        # Browser-side: externe Keycloak URL voor redirects
+        - name: NUXT_PUBLIC_KEYCLOAK_URL
+          value: "http://keycloak.localhost"
+        - name: NUXT_PUBLIC_KEYCLOAK_REALM
+          value: "wegwijs"
+        - name: NUXT_PUBLIC_KEYCLOAK_CLIENT_ID
+          value: "nuxt-bff"
+        - name: NUXT_PUBLIC_APP_BASE_URL
+          value: "http://app.localhost"
+        # Server-side: interne cluster URLs
+        - name: NUXT_KEYCLOAK_INTERNAL_URL
+          value: "http://keycloak"
+        - name: NUXT_KEYCLOAK_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: demo-secrets
+              key: nuxt-bff-client-secret
+        - name: NUXT_SESSION_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: demo-secrets
+              key: nuxt-session-secret
+        - name: NUXT_API_BASE_URL
+          value: "http://api/v1"
+        ports:
+        - containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nuxt-bff
+  namespace: wegwijs-demo
+spec:
+  selector:
+    app: nuxt-bff
+  ports:
+  - port: 80
+    targetPort: 3000

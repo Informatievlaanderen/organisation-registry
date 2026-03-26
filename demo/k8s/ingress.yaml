@@ -1,0 +1,62 @@
+# Traefik IngressRoutes for all demo services
+# *.localhost domains resolve automatically to 127.0.0.1 without /etc/hosts changes
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: keycloak
+  namespace: wegwijs-demo
+spec:
+  entryPoints:
+    - web
+  routes:
+  - match: Host(`keycloak.localhost`)
+    kind: Rule
+    services:
+    - name: keycloak
+      port: 80
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: app
+  namespace: wegwijs-demo
+spec:
+  entryPoints:
+    - web
+  routes:
+  - match: Host(`app.localhost`)
+    kind: Rule
+    services:
+    - name: nuxt-bff
+      port: 80
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: api
+  namespace: wegwijs-demo
+spec:
+  entryPoints:
+    - web
+  routes:
+  - match: Host(`api.localhost`)
+    kind: Rule
+    services:
+    - name: api
+      port: 80
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: m2m
+  namespace: wegwijs-demo
+spec:
+  entryPoints:
+    - web
+  routes:
+  - match: Host(`m2m.localhost`)
+    kind: Rule
+    services:
+    - name: m2m-demo
+      port: 80
