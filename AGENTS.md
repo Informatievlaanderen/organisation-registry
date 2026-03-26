@@ -217,3 +217,26 @@ Security policies are defined in `OrganisationRegistry.Api/Security/`.
 - **MAGDA**: Government data exchange platform
 - **Wegwijs**: Directory services
 - **VlaanderenBe**: Public website notifications
+
+## Voortgang
+
+- `701a604` feat: subdomain-based routing for k3d demo environment — configureerde *.localhost:9080 subdomains voor alle services (keycloak, api, ui, app), Angular UI deployment, Tiltfile output, session cookie splitting
+- `38ece45` chore: add keycloak folder to solution file — keycloak map toegevoegd aan solution
+- `d02822c` chore: update configuration files for keycloak demo environment — configuratie aanpassingen voor keycloak demo
+- `60314050` chore: update keycloak environment variables in docker-compose — environment variabelen bijgewerkt
+- `c2c99d7` fix: seed configuration and keycloak realm for token exchange demo — seed en realm configuratie gefixed
+- `ca0a452` feat: nuxt bff demo with rfc 8693 token exchange — Nuxt BFF demo met token exchange functionaliteit
+- `f0bc98f` chore: add kubernetes manifests and tiltfile for k3d development environment — k8s manifests en Tiltfile toegevoegd
+- `c11ae37` fix: keycloak cookies not being set on http — KC_COOKIE_SECURE uitgeschakeld voor development
+- `a190825` refactor: move api/ and .env.example out of demo/ to repo root — api/ en .env.example verplaatst naar repo root
+- `6ba1d92` feat: implement RFC 8693 token exchange in nuxt BFF via Keycloak 26 — RFC 8693 token exchange geïmplementeerd
+- `9503c58` feat: us3 nuxt bff demo, authorization code pkce flow — Nuxt BFF met PKCE flow en allowed/forbidden API calls
+- `31d6488` fix: us2 m2m demo, switch to orafinClient — M2M demo gefixed met orafinClient en keycloak urls
+- `e4e9332` feat: implement US2 M2M demo — .NET 6 console met orafinClient client_credentials flow
+- `79a646f` feat: migrate seed to .NET 6 console app — seed gemigreerd naar demos/seed/
+- `f5bd597` feat: seed — restore pymssql DB config, add Vlimpers test org, add M2M demo project skeleton
+- `82874e7` fix: seed script — Accept JSON header, juiste claims in JWT, idempotente GET-check
+- `f70ffca` feat: add local dev seed container for parameter types — seed container voor parameter types
+- `478df1d` fix: configure API and UI for Keycloak local dev — API en UI geconfigureerd voor lokale Keycloak
+- `08836974` feat: add Keycloak demo infrastructure and realm config — Keycloak demo infrastructuur toegevoegd
+- `8a19059` docs: add speckit spec for 003-keycloak-demo — speckit spec en keycloak service in docker-compose

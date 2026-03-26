@@ -20,7 +20,7 @@ k8s_yaml('demo/k8s/secrets.yaml')
 
 local_resource(
     'keycloak-realm-configmap',
-    'kubectl create configmap keycloak-realm --from-file=keycloak/realm-export.json -n wegwijs-demo --dry-run=client -o yaml | kubectl apply -f -',
+    'KUBECONFIG=.kubeconfig kubectl create configmap keycloak-realm --from-file=keycloak/realm-export.json -n wegwijs-demo --dry-run=client -o yaml | KUBECONFIG=.kubeconfig kubectl apply -f -',
     deps=['keycloak/realm-export.json'],
     labels=['infrastructure'],
     resource_deps=['namespace'],
@@ -29,7 +29,7 @@ local_resource(
 # Pseudo-resource to track namespace creation
 local_resource(
     'namespace',
-    'kubectl wait --for=jsonpath={.status.phase}=Active namespace/wegwijs-demo --timeout=60s',
+    'KUBECONFIG=.kubeconfig kubectl wait --for=jsonpath={.status.phase}=Active namespace/wegwijs-demo --timeout=60s',
     labels=['infrastructure'],
 )
 
