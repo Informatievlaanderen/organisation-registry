@@ -391,6 +391,11 @@
             "userinfo.token.claim": "true"
           }
         }
+      ],
+      "defaultClientScopes": [
+        "profile",
+        "web-origins",
+        "roles"
       ]
     }
   ],
