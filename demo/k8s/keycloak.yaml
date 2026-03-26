@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keycloak
+  namespace: wegwijs-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keycloak
+  template:
+    metadata:
+      labels:
+        app: keycloak
+    spec:
+      containers:
+      - name: keycloak
+        image: quay.io/keycloak/keycloak:26.2
+        args: ["start-dev", "--import-realm"]
+        env:
+        - name: KEYCLOAK_ADMIN
+          valueFrom:
+            secretKeyRef:
+              name: demo-secrets
+              key: keycloak-admin
+        - name: KEYCLOAK_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: demo-secrets
+              key: keycloak-admin-password
+        - name: KC_HOSTNAME
+          value: "http://keycloak.localhost"
+        - name: KC_HOSTNAME_STRICT
+          value: "false"
+        - name: KC_HOSTNAME_BACKCHANNEL_DYNAMIC
+          value: "true"
+        - name: KC_HTTP_ENABLED
+          value: "true"
+        - name: KC_COOKIE_SECURE
+          value: "false"
+        ports:
+        - containerPort: 8080
+        readinessProbe:
+          httpGet:
+            path: /realms/master
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 10
+        volumeMounts:
+        - name: realm-import
+          mountPath: /opt/keycloak/data/import
+      volumes:
+      - name: realm-import
+        configMap:
+          name: keycloak-realm
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: keycloak
+  namespace: wegwijs-demo
+spec:
+  selector:
+    app: keycloak
+  ports:
+  - port: 80
+    targetPort: 8080
