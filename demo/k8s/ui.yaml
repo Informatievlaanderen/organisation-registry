@@ -16,6 +16,7 @@ spec:
       containers:
         - name: ui
           image: k3d-wegwijs-registry:5051/wegwijs-ui:local
+          imagePullPolicy: Always
           ports:
             - containerPort: 9007
           env:
