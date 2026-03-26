@@ -181,10 +181,10 @@
       "directAccessGrantsEnabled": false,
       "serviceAccountsEnabled": false,
       "redirectUris": [
-        "http://organisatie.dev-vlaanderen.local/*"
+        "http://ui.localhost:9080/*"
       ],
       "webOrigins": [
-        "http://organisatie.dev-vlaanderen.local"
+        "http://ui.localhost:9080"
       ],
       "defaultClientScopes": [
         "profile",

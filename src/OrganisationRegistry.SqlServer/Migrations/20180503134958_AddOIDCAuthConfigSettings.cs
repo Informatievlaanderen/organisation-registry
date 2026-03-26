@@ -8,18 +8,18 @@ namespace OrganisationRegistry.SqlServer.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql(InsertSetting("OIDCAuth:Authority", "OpenID Connect provider", "http://localhost:8180/realms/wegwijs"));
-            migrationBuilder.Sql(InsertSetting("OIDCAuth:AuthorizationIssuer", "OpenID Connect issuer", "http://localhost:8180/realms/wegwijs"));
-            migrationBuilder.Sql(InsertSetting("OIDCAuth:AuthorizationEndpoint", "OpenID Connect authorization endpoint", "http://localhost:8180/realms/wegwijs/protocol/openid-connect/auth"));
-            migrationBuilder.Sql(InsertSetting("OIDCAuth:UserInfoEndPoint", "OpenID Connect userinfo endpoint", "http://localhost:8180/realms/wegwijs/protocol/openid-connect/userinfo"));
-            migrationBuilder.Sql(InsertSetting("OIDCAuth:EndSessionEndPoint", "OpenID Connect end session endpoint", "http://localhost:8180/realms/wegwijs/protocol/openid-connect/logout"));
-            migrationBuilder.Sql(InsertSetting("OIDCAuth:JwksUri", "OpenID Connect JWKS URI", "http://localhost:8180/realms/wegwijs/protocol/openid-connect/certs"));
+            migrationBuilder.Sql(InsertSetting("OIDCAuth:Authority", "OpenID Connect provider", "http://keycloak/realms/wegwijs"));
+            migrationBuilder.Sql(InsertSetting("OIDCAuth:AuthorizationIssuer", "OpenID Connect issuer", "http://keycloak.localhost:9080/realms/wegwijs"));
+            migrationBuilder.Sql(InsertSetting("OIDCAuth:AuthorizationEndpoint", "OpenID Connect authorization endpoint", "http://keycloak.localhost:9080/realms/wegwijs/protocol/openid-connect/auth"));
+            migrationBuilder.Sql(InsertSetting("OIDCAuth:UserInfoEndPoint", "OpenID Connect userinfo endpoint", "http://keycloak.localhost:9080/realms/wegwijs/protocol/openid-connect/userinfo"));
+            migrationBuilder.Sql(InsertSetting("OIDCAuth:EndSessionEndPoint", "OpenID Connect end session endpoint", "http://keycloak.localhost:9080/realms/wegwijs/protocol/openid-connect/logout"));
+            migrationBuilder.Sql(InsertSetting("OIDCAuth:JwksUri", "OpenID Connect JWKS URI", "http://keycloak/realms/wegwijs/protocol/openid-connect/certs"));
             migrationBuilder.Sql(InsertSetting("OIDCAuth:ClientId", "OpenID Connect client id", "organisation-registry-local-dev"));
             migrationBuilder.Sql(InsertSetting("OIDCAuth:ClientSecret", "OpenID Connect client secret", "a_very=Secr3t*Key"));
             migrationBuilder.Sql(InsertSetting("OIDCAuth:CallbackPath", "Callback url (zoals geregistreerd bij Authority)", "/oic"));
             migrationBuilder.Sql(InsertSetting("OIDCAuth:TokenEndPoint", "Token endPoint bij Authority", "/protocol/openid-connect/token"));
-            migrationBuilder.Sql(InsertSetting("OIDCAuth:AuthorizationRedirectUri", "Redirect URI na authorisatie", "http://organisatie.dev-vlaanderen.local/oic"));
-            migrationBuilder.Sql(InsertSetting("OIDCAuth:PostLogoutRedirectUri", "Redirect URI na logout", ""));
+            migrationBuilder.Sql(InsertSetting("OIDCAuth:AuthorizationRedirectUri", "Redirect URI na authorisatie", "http://ui.localhost:9080/oic"));
+            migrationBuilder.Sql(InsertSetting("OIDCAuth:PostLogoutRedirectUri", "Redirect URI na logout", "http://ui.localhost:9080"));
 
             migrationBuilder.Sql(InsertSetting("OIDCAuth:JwtCookieName", "JWT cookie naam.", "twegwijs_api"));
             migrationBuilder.Sql(InsertSetting("OIDCAuth:JwtCookieDurationInMinutes", "Leeftijd van authenticatie cookie in minuten.", "1440"));

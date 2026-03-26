@@ -23,7 +23,7 @@ spec:
             - name: API_VERSION
               value: "demo"
             - name: API_ENDPOINT
-              value: "http://api.localhost:9080/v1"
+              value: "http://api.localhost:9080"
             - name: UI_ENDPOINT
               value: "http://ui.localhost:9080"
             - name: AIV_URI
