@@ -77,6 +77,13 @@ spec:
           value: "false"
         - name: DataDog__ServiceName
           value: "organisation-registry-demo"
+        # CORS origins for subdomain routing
+        - name: Cors__0
+          value: "http://ui.localhost:9080"
+        - name: Cors__1
+          value: "http://app.localhost:9080"
+        - name: Cors__2
+          value: "http://localhost:9080"
         ports:
         - containerPort: 9002
         readinessProbe:

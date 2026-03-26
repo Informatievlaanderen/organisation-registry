@@ -83,3 +83,4 @@ seed/__pycache__/
 
 # Demo environment secrets
 demo/.env
+.kubeconfig
