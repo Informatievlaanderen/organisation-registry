@@ -146,6 +146,27 @@
       "attributes": {
         "include.in.token.scope": "true"
       }
+    },
+    {
+      "name": "organisation-registry-api-access",
+      "description": "Adds organisation-registry-api as audience — required for RFC 8693 token exchange",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true"
+      },
+      "protocolMappers": [
+        {
+          "name": "organisation-registry-api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.client.audience": "organisation-registry-api",
+            "id.token.claim": "false",
+            "access.token.claim": "true"
+          }
+        }
+      ]
     }
   ],
   "clients": [
@@ -254,7 +275,10 @@
       "directAccessGrantsEnabled": false,
       "serviceAccountsEnabled": false,
       "redirectUris": [],
-      "webOrigins": []
+      "webOrigins": [],
+      "attributes": {
+        "standard.token.exchange.enabled": "true"
+      }
     },
     {
       "clientId": "cjmClient",
@@ -320,17 +344,17 @@
       "directAccessGrantsEnabled": false,
       "serviceAccountsEnabled": false,
       "redirectUris": [
-        "http://localhost:5090/callback"
+        "http://app.localhost/callback"
       ],
       "webOrigins": [
-        "http://localhost:5090"
+        "http://app.localhost"
       ],
       "optionalClientScopes": [
         "dv_organisatieregister_cjmbeheerder"
       ],
       "attributes": {
         "pkce.code.challenge.method": "S256",
-        "token.exchange.standard.enabled": "true"
+        "standard.token.exchange.enabled": "true"
       },
       "protocolMappers": [
         {
@@ -391,12 +415,24 @@
             "access.token.claim": "true",
             "userinfo.token.claim": "true"
           }
+        },
+        {
+          "name": "nuxt-bff-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.client.audience": "nuxt-bff",
+            "id.token.claim": "false",
+            "access.token.claim": "true"
+          }
         }
       ],
       "defaultClientScopes": [
         "profile",
         "web-origins",
-        "roles"
+        "roles",
+        "organisation-registry-api-access"
       ]
     }
   ],

@@ -239,9 +239,9 @@ def update_db_config():
             IF EXISTS (SELECT 1 FROM [OrganisationRegistry].[Configuration] WHERE [Key] = %s)
                 UPDATE [OrganisationRegistry].[Configuration] SET [Value] = %s WHERE [Key] = %s
             ELSE
-                INSERT INTO [OrganisationRegistry].[Configuration] ([Key], [Value]) VALUES (%s, %s)
+                INSERT INTO [OrganisationRegistry].[Configuration] ([Key], [Description], [Value]) VALUES (%s, %s, %s)
             """,
-            (key, value, key, key, value),
+            (key, value, key, key, key, value),
         )
         print(f"  [OK] {key} = {value}")
     conn.commit()
