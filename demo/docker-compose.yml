@@ -30,7 +30,7 @@ services:
   api:
     build:
       context: ..
-      dockerfile: demo/api/Dockerfile
+      dockerfile: api/Dockerfile
     ports:
       - "9002:9002"
     environment:
