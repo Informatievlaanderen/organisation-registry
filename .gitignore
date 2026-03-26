@@ -80,3 +80,6 @@ angulardoc.json
 .webpack.json
 mssqllogs/
 seed/__pycache__/
+
+# Demo environment secrets
+demo/.env

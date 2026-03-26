@@ -59,7 +59,7 @@ services:
   seed:
     build: demos/seed/
     environment:
-      API_BASE: http://host.docker.internal:9002
+      API_BASE: http://172.21.0.1:9002
       JWT_SIGNING_KEY: keycloak-demo-local-dev-secret-key-32b
       JWT_ISSUER: organisatieregister
       JWT_AUDIENCE: organisatieregister
