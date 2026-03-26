@@ -8,7 +8,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql(InsertSetting("OIDCAuth:Authority", "OpenID Connect provider", "http://keycloak/realms/wegwijs"));
+            migrationBuilder.Sql(InsertSetting("OIDCAuth:Authority", "OpenID Connect provider", "http://keycloak.localhost:9080/realms/wegwijs"));
             migrationBuilder.Sql(InsertSetting("OIDCAuth:AuthorizationIssuer", "OpenID Connect issuer", "http://keycloak.localhost:9080/realms/wegwijs"));
             migrationBuilder.Sql(InsertSetting("OIDCAuth:AuthorizationEndpoint", "OpenID Connect authorization endpoint", "http://keycloak.localhost:9080/realms/wegwijs/protocol/openid-connect/auth"));
             migrationBuilder.Sql(InsertSetting("OIDCAuth:UserInfoEndPoint", "OpenID Connect userinfo endpoint", "http://keycloak.localhost:9080/realms/wegwijs/protocol/openid-connect/userinfo"));
@@ -30,15 +30,15 @@ namespace OrganisationRegistry.SqlServer.Migrations
             migrationBuilder.Sql(InsertSetting("OIDCAuth:JwtAudience", "JWT audience.", "organisatieregister"));
             migrationBuilder.Sql(InsertSetting("OIDCAuth:JwtExpiresInMinutes", "JWT verloopduur in minuten.", "120"));
 
-            migrationBuilder.Sql(InsertSetting("OIDCAuth:Developers", "ACM Ids van ontwikkelaars, gescheiden met punt komma's.", "d8584bf3-4d2a-49c7-8ff2-110bf8cd45d7;fb35efd6-9942-4073-8c8d-99f2c1f79c9b;2c9246c8-ef40-4734-b134-90652ec70acc;92c1e998-0304-4bfd-b017-6d65d442621d"));
+            migrationBuilder.Sql(InsertSetting("OIDCAuth:Developers", "ACM Ids van ontwikkelaars, gescheiden met punt komma's.", "9c2f7372-7112-49dc-9771-f127b048b4c7"));
 
             migrationBuilder.Sql(InsertSetting("OIDCAuth:ReturnUrlGuard", "Restrictie op url om terug te sturen na aanmelden.", "https://twegwijs-ui.beta.informatievlaanderen.be"));
             migrationBuilder.Sql(InsertSetting("OIDCAuth:SignOutReturnUrl", "Adres om terug te sturen na afmelden.", "https://twegwijs-ui.beta.informatievlaanderen.be"));
 
             migrationBuilder.Sql(InsertSetting("EditApi:ClientId", "Edit API client id", "organisation-registry-api"));
             migrationBuilder.Sql(InsertSetting("EditApi:ClientSecret", "Edit API client secret", "a_very=Secr3t*Key"));
-            migrationBuilder.Sql(InsertSetting("EditApi:Authority", "Edit API authority", "http://localhost:8180/realms/wegwijs"));
-            migrationBuilder.Sql(InsertSetting("EditApi:IntrospectionEndpoint", "Edit API introspection endpoint", "http://localhost:8180/realms/wegwijs/protocol/openid-connect/token/introspect"));
+            migrationBuilder.Sql(InsertSetting("EditApi:Authority", "Edit API authority", "http://keycloak.localhost:9080/realms/wegwijs"));
+            migrationBuilder.Sql(InsertSetting("EditApi:IntrospectionEndpoint", "Edit API introspection endpoint", "http://keycloak/realms/wegwijs/protocol/openid-connect/token/introspect"));
 
             migrationBuilder.Sql(InsertSetting("FeatureManagement:EditApi", "Edit API feature toggle", "true"));
         }

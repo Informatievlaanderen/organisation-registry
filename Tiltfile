@@ -45,10 +45,6 @@ k8s_resource('mssql',
     labels=['infrastructure'],
     resource_deps=['namespace'])
 
-k8s_resource('keycloak',
-    labels=['infrastructure'],
-    resource_deps=['keycloak-realm-configmap'])
-
 # =============================================================================
 # Application Images — custom_build pushes to local k3d registry
 # =============================================================================
@@ -119,11 +115,13 @@ k8s_yaml('demo/k8s/ingress.yaml')
 
 k8s_resource('api',
     labels=['applications'],
-    resource_deps=['mssql', 'keycloak'])
+    resource_deps=['mssql', 'keycloak'],
+    links=[link('http://api.localhost:9080/v1', 'API')])
 
 k8s_resource('ui',
     labels=['applications'],
-    resource_deps=['api'])
+    resource_deps=['api'],
+    links=[link('http://ui.localhost:9080', 'Angular UI')])
 
 k8s_resource('seed',
     labels=['applications'],
@@ -131,11 +129,18 @@ k8s_resource('seed',
 
 k8s_resource('m2m-demo',
     labels=['applications'],
-    resource_deps=['api', 'keycloak'])
+    resource_deps=['api', 'keycloak'],
+    links=[link('http://m2m.localhost:9080', 'M2M Demo')])
 
 k8s_resource('nuxt-bff',
     labels=['applications'],
-    resource_deps=['api', 'keycloak'])
+    resource_deps=['api', 'keycloak'],
+    links=[link('http://app.localhost:9080', 'Nuxt BFF')])
+
+k8s_resource('keycloak',
+    labels=['infrastructure'],
+    resource_deps=['keycloak-realm-configmap'],
+    links=[link('http://keycloak.localhost:9080', 'Keycloak')])
 
 # =============================================================================
 # Settings
@@ -157,6 +162,7 @@ print('╠═══════════════════════�
 print('║  keycloak.localhost:9080  → Keycloak (admin/admin)            ║')
 print('║  api.localhost:9080       → Organisation Registry API         ║')
 print('║  ui.localhost:9080        → Angular UI (backoffice)           ║')
+print('║  m2m.localhost:9080       → M2M demo (client credentials)      ║')
 print('║  app.localhost:9080       → Nuxt BFF (Keycloak demo)          ║')
 print('╠═══════════════════════════════════════════════════════════════╣')
 print('║  Demo users: dev / vlimpers / algemeenbeheerder (pw = user)   ║')

@@ -43,7 +43,7 @@ spec:
         - name: ElasticSearch__WriteConnectionString
           value: "http://localhost:9200/"
         - name: OIDCAuth__Authority
-          value: "http://keycloak/realms/wegwijs"
+          value: "http://keycloak.localhost:9080/realms/wegwijs"
         - name: OIDCAuth__JwksUri
           value: "http://keycloak/realms/wegwijs/protocol/openid-connect/certs"
         - name: OIDCAuth__IntrospectionEndpoint
@@ -53,7 +53,7 @@ spec:
         - name: EditApi__ClientSecret
           value: "a_very=Secr3t*Key"
         - name: EditApi__Authority
-          value: "http://keycloak/realms/wegwijs"
+          value: "http://keycloak.localhost:9080/realms/wegwijs"
         - name: EditApi__IntrospectionEndpoint
           value: "http://keycloak/realms/wegwijs/protocol/openid-connect/token/introspect"
         - name: Api__JwtSharedSigningKey

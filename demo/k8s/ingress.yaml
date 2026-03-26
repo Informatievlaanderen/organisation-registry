@@ -65,3 +65,18 @@ spec:
     services:
     - name: nuxt-bff
       port: 80
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: m2m
+  namespace: wegwijs-demo
+spec:
+  entryPoints:
+    - web
+  routes:
+  - match: Host(`m2m.localhost`)
+    kind: Rule
+    services:
+    - name: m2m-demo
+      port: 80
