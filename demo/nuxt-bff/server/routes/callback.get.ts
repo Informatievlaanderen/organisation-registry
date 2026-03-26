@@ -1,17 +1,46 @@
 /**
  * GET /callback
  * Keycloak redirect-handler:
- * 1. Ruilt de authorization code in voor tokens (authorization_code grant)
- * 2. Doet een RFC 8693 token exchange: nuxt-bff token → organisation-registry-api token
- * 3. Slaat beide tokens op in de encrypted session cookie
+ * 1. Decrypt de state parameter om de codeVerifier te krijgen
+ * 2. Ruilt de authorization code in voor tokens (authorization_code grant)
+ * 3. Doet een RFC 8693 token exchange: nuxt-bff token → organisation-registry-api token
+ * 4. Slaat beide tokens op in de encrypted session cookie
  */
 import { defineEventHandler, getQuery, sendRedirect } from 'h3'
-import { getSession, saveSession, clearSession } from '../utils/session'
+import { saveSession, clearSession } from '../utils/session'
+import { createDecipheriv } from 'crypto'
+
+function base64urlToBuffer(str: string): Buffer {
+  const pad = (4 - (str.length % 4)) % 4
+  const b64 = str.replace(/-/g, '+').replace(/_/g, '/') + '='.repeat(pad)
+  return Buffer.from(b64, 'base64')
+}
+
+function getKey(secret: string): Buffer {
+  const buf = Buffer.alloc(32, 0)
+  Buffer.from(secret).copy(buf, 0, 0, 32)
+  return buf
+}
+
+function decryptState(state: string, secret: string): { nonce: string; codeVerifier: string } | null {
+  try {
+    const combined = base64urlToBuffer(state)
+    const iv = combined.subarray(0, 16)
+    const encrypted = combined.subarray(16)
+    const key = getKey(secret)
+    const decipher = createDecipheriv('aes-256-cbc', key, iv)
+    const decrypted = Buffer.concat([decipher.update(encrypted), decipher.final()])
+    return JSON.parse(decrypted.toString('utf8'))
+  } catch {
+    return null
+  }
+}
 
 export default defineEventHandler(async (event) => {
+  console.log('[callback] Handler started')
   const config = useRuntimeConfig()
   const query = getQuery(event)
-  const session = getSession(event, config.sessionSecret)
+  console.log('[callback] Query params:', { code: query.code ? 'present' : 'missing', state: query.state ? 'present' : 'missing', error: query.error })
 
   const code = query.code as string | undefined
   const state = query.state as string | undefined
@@ -22,10 +51,19 @@ export default defineEventHandler(async (event) => {
     return sendRedirect(event, `/?error=${encodeURIComponent(String(query.error_description || error))}`)
   }
 
-  if (!code || !state || state !== session.state || !session.codeVerifier) {
+  if (!code || !state) {
+    clearSession(event)
+    return sendRedirect(event, `/?error=missing_code_or_state`)
+  }
+
+  // Decrypt state to get codeVerifier
+  const stateData = decryptState(state, config.sessionSecret)
+  if (!stateData || !stateData.codeVerifier) {
     clearSession(event)
     return sendRedirect(event, `/?error=invalid_state`)
   }
+
+  const { codeVerifier } = stateData
 
   const keycloakTokenUrl = `${config.keycloakInternalUrl}/realms/${config.public.keycloakRealm}/protocol/openid-connect/token`
 
@@ -39,7 +77,7 @@ export default defineEventHandler(async (event) => {
       client_secret: config.keycloakClientSecret,
       redirect_uri: `${config.public.appBaseUrl}/callback`,
       code,
-      code_verifier: session.codeVerifier,
+      code_verifier: codeVerifier,
     }).toString(),
   }).catch((err: any) => {
     throw createError({ statusCode: 502, statusMessage: `Keycloak code exchange failed: ${err.message}` })
@@ -75,6 +113,12 @@ export default defineEventHandler(async (event) => {
     exchangeError = errData?.error_description ?? errData?.error ?? err?.message ?? 'token exchange failed'
   }
 
+  console.log('[callback] Saving session with tokens:', { 
+    hasAccessToken: !!accessToken, 
+    hasExchangedToken: !!exchangedToken,
+    exchangeError 
+  })
+  
   saveSession(event, {
     accessToken,
     exchangedToken,
@@ -83,5 +127,6 @@ export default defineEventHandler(async (event) => {
     state: undefined,
   }, config.sessionSecret)
 
+  console.log('[callback] Session saved, redirecting to /')
   return sendRedirect(event, '/')
 })

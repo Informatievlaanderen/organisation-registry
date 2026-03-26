@@ -16,7 +16,7 @@ spec:
       containers:
       - name: keycloak
         image: quay.io/keycloak/keycloak:26.2
-        args: ["start-dev", "--import-realm"]
+        args: ["start-dev", "--import-realm", "--hostname-strict=false", "--http-enabled=true"]
         env:
         - name: KEYCLOAK_ADMIN
           valueFrom:
@@ -28,16 +28,13 @@ spec:
             secretKeyRef:
               name: demo-secrets
               key: keycloak-admin-password
+        # Development mode: HTTP with subdomain
         - name: KC_HOSTNAME
-          value: "http://keycloak.localhost"
-        - name: KC_HOSTNAME_STRICT
+          value: "http://keycloak.localhost:9080"
+        - name: KC_HOSTNAME_STRICT_HTTPS
           value: "false"
         - name: KC_HOSTNAME_BACKCHANNEL_DYNAMIC
           value: "true"
-        - name: KC_HTTP_ENABLED
-          value: "true"
-        - name: KC_COOKIE_SECURE
-          value: "false"
         ports:
         - containerPort: 8080
         readinessProbe:

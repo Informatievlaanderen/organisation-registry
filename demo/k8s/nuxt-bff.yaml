@@ -18,14 +18,15 @@ spec:
         image: k3d-wegwijs-registry:5051/wegwijs-nuxt-bff:local
         env:
         # Browser-side: externe Keycloak URL voor redirects
+        # Subdomain-based routing op localhost:9080
         - name: NUXT_PUBLIC_KEYCLOAK_URL
-          value: "http://keycloak.localhost"
+          value: "http://keycloak.localhost:9080"
         - name: NUXT_PUBLIC_KEYCLOAK_REALM
           value: "wegwijs"
         - name: NUXT_PUBLIC_KEYCLOAK_CLIENT_ID
           value: "nuxt-bff"
         - name: NUXT_PUBLIC_APP_BASE_URL
-          value: "http://app.localhost"
+          value: "http://app.localhost:9080"
         # Server-side: interne cluster URLs
         - name: NUXT_KEYCLOAK_INTERNAL_URL
           value: "http://keycloak"

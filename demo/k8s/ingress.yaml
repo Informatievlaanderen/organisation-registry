@@ -1,5 +1,10 @@
 # Traefik IngressRoutes for all demo services
-# *.localhost domains resolve automatically to 127.0.0.1 without /etc/hosts changes
+# Using subdomains on localhost:9080
+#
+# keycloak.localhost:9080  → Keycloak
+# api.localhost:9080       → API
+# ui.localhost:9080        → Angular UI (backoffice)
+# app.localhost:9080       → Nuxt BFF (Keycloak demo)
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
@@ -14,21 +19,6 @@ spec:
     kind: Rule
     services:
     - name: keycloak
-      port: 80
----
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
-  name: app
-  namespace: wegwijs-demo
-spec:
-  entryPoints:
-    - web
-  routes:
-  - match: Host(`app.localhost`)
-    kind: Rule
-    services:
-    - name: nuxt-bff
       port: 80
 ---
 apiVersion: traefik.io/v1alpha1
@@ -49,14 +39,29 @@ spec:
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: m2m
+  name: ui
   namespace: wegwijs-demo
 spec:
   entryPoints:
     - web
   routes:
-  - match: Host(`m2m.localhost`)
+  - match: Host(`ui.localhost`)
     kind: Rule
     services:
-    - name: m2m-demo
+    - name: ui
+      port: 80
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: app
+  namespace: wegwijs-demo
+spec:
+  entryPoints:
+    - web
+  routes:
+  - match: Host(`app.localhost`)
+    kind: Rule
+    services:
+    - name: nuxt-bff
       port: 80

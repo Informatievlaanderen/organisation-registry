@@ -344,10 +344,10 @@
       "directAccessGrantsEnabled": false,
       "serviceAccountsEnabled": false,
       "redirectUris": [
-        "http://app.localhost/callback"
+        "http://app.localhost:9080/callback"
       ],
       "webOrigins": [
-        "http://app.localhost"
+        "http://app.localhost:9080"
       ],
       "optionalClientScopes": [
         "dv_organisatieregister_cjmbeheerder"
