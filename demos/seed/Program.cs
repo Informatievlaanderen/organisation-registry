@@ -32,6 +32,15 @@ var mssqlDb       = Env("MSSQL_DB",       "OrganisationRegistry");
 
 var dbConfigKeys = new Dictionary<string, string>
 {
+    // EditApi: OIDC introspection config — moet keycloak:8080 zijn (intern Docker netwerk)
+    ["EditApi:Authority"]             = "http://keycloak:8080/realms/wegwijs",
+    ["EditApi:IntrospectionEndpoint"] = "http://keycloak:8080/realms/wegwijs/protocol/openid-connect/token/introspect",
+
+    // OIDCAuth: voor browser/SPA flows (US1, US3)
+    ["OIDCAuth:Authority"]             = "http://keycloak:8080/realms/wegwijs",
+    ["OIDCAuth:JwksUri"]               = "http://keycloak:8080/realms/wegwijs/protocol/openid-connect/certs",
+    ["OIDCAuth:IntrospectionEndpoint"] = "http://keycloak:8080/realms/wegwijs/protocol/openid-connect/token/introspect",
+
     ["Api:Vlimpers_KeyTypeId"]                                                    = "922a46bb-1378-45bd-a61f-b6bbf348a4d5",
     ["Api:Orafin_KeyTypeId"]                                                      = "1e3611a7-7914-411a-a0c9-84fcd6218e67",
     ["Api:Orafin_OvoCode"]                                                        = "OVO000099",
@@ -125,15 +134,7 @@ void UpdateDbConfig()
 {
     Console.WriteLine("\n=== DB config (Configuration tabel) ===");
 
-    var connStr = new SqlConnectionStringBuilder
-    {
-        DataSource            = mssqlHost,
-        UserID                = mssqlUser,
-        Password              = mssqlPassword,
-        InitialCatalog        = mssqlDb,
-        TrustServerCertificate = true,
-        Encrypt               = false,
-    }.ConnectionString;
+    var connStr = $"Server={mssqlHost};Database={mssqlDb};User Id={mssqlUser};Password={mssqlPassword};TrustServerCertificate=True;Encrypt=False;";
 
     using var conn = new SqlConnection(connStr);
     conn.Open();
@@ -145,7 +146,7 @@ void UpdateDbConfig()
             "IF EXISTS (SELECT 1 FROM [OrganisationRegistry].[Configuration] WHERE [Key] = @key) " +
             "    UPDATE [OrganisationRegistry].[Configuration] SET [Value] = @value WHERE [Key] = @key " +
             "ELSE " +
-            "    INSERT INTO [OrganisationRegistry].[Configuration] ([Key], [Value]) VALUES (@key, @value)";
+            "    INSERT INTO [OrganisationRegistry].[Configuration] ([Key], [Description], [Value]) VALUES (@key, @key, @value)";
         cmd.Parameters.AddWithValue("@key",   key);
         cmd.Parameters.AddWithValue("@value", value);
         cmd.ExecuteNonQuery();
@@ -159,16 +160,7 @@ void UpdateDbConfig()
 
 async Task WaitForMssqlAsync(int maxWaitSeconds = 120)
 {
-    var connStr = new SqlConnectionStringBuilder
-    {
-        DataSource             = mssqlHost,
-        UserID                 = mssqlUser,
-        Password               = mssqlPassword,
-        InitialCatalog         = mssqlDb,
-        TrustServerCertificate = true,
-        Encrypt                = false,
-        ConnectTimeout         = 5,
-    }.ConnectionString;
+    var connStr = $"Server={mssqlHost};Database=master;User Id={mssqlUser};Password={mssqlPassword};TrustServerCertificate=True;Encrypt=False;Connect Timeout=5;";
 
     var deadline = DateTime.UtcNow.AddSeconds(maxWaitSeconds);
     while (DateTime.UtcNow < deadline)
@@ -180,9 +172,9 @@ async Task WaitForMssqlAsync(int maxWaitSeconds = 120)
             Console.WriteLine("  SQL Server bereikbaar");
             return;
         }
-        catch
+        catch (Exception ex)
         {
-            Console.WriteLine($"  Wachten op SQL Server op {mssqlHost} ...");
+            Console.WriteLine($"  Wachten op SQL Server op {mssqlHost} ... ({ex.GetType().Name}: {ex.Message})");
             await Task.Delay(5000);
         }
     }
@@ -193,13 +185,13 @@ async Task WaitForMssqlAsync(int maxWaitSeconds = 120)
 
 async Task WaitForApiAsync(int maxWaitSeconds = 120)
 {
-    using var client = new HttpClient();
+    using var client = new HttpClient { Timeout = TimeSpan.FromSeconds(5) };
     var deadline = DateTime.UtcNow.AddSeconds(maxWaitSeconds);
     while (DateTime.UtcNow < deadline)
     {
         try
         {
-            var resp = await client.GetAsync($"{apiBase}/v1/status");
+            var resp = await client.GetAsync($"{apiBase}/v1/organisations");
             if ((int)resp.StatusCode < 500)
             {
                 Console.WriteLine($"  API bereikbaar ({(int)resp.StatusCode})");
@@ -207,7 +199,7 @@ async Task WaitForApiAsync(int maxWaitSeconds = 120)
             }
         }
         catch { }
-        Console.WriteLine($"  Wachten op API op {apiBase}/v1/status ...");
+        Console.WriteLine($"  Wachten op API op {apiBase}/v1/organisations ...");
         await Task.Delay(5000);
     }
 

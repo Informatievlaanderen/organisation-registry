@@ -1,11 +1,11 @@
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 
-// Fail fast on missing environment variables
 static string RequireEnv(string name)
 {
     var value = Environment.GetEnvironmentVariable(name);
@@ -15,13 +15,13 @@ static string RequireEnv(string name)
 }
 
 var keycloakTokenEndpoint = RequireEnv("KEYCLOAK_TOKEN_ENDPOINT");
-var cjmClientId           = RequireEnv("CJM_CLIENT_ID");
-var cjmClientSecret       = RequireEnv("CJM_CLIENT_SECRET");
+var orafinClientId        = RequireEnv("ORAFIN_CLIENT_ID");
+var orafinClientSecret    = RequireEnv("ORAFIN_CLIENT_SECRET");
 var apiBaseUrl            = RequireEnv("API_BASE_URL").TrimEnd('/');
-var testOvoId             = RequireEnv("TEST_OVO_ID");
 
-// In-memory token holder (single-instance demo)
-string? storedAccessToken = null;
+// In-memory state (single-instance demo)
+string? storedAccessToken  = null;
+string? storedOrganisationId = null;
 
 app.MapGet("/", () => Results.Content($$"""
 <!DOCTYPE html>
@@ -31,7 +31,7 @@ app.MapGet("/", () => Results.Content($$"""
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>M2M Demo — Organisation Registry</title>
   <style>
-    body { font-family: sans-serif; max-width: 700px; margin: 40px auto; padding: 0 20px; }
+    body { font-family: sans-serif; max-width: 860px; margin: 40px auto; padding: 0 20px; }
     h1 { font-size: 1.4rem; }
     .buttons { display: flex; gap: 12px; margin: 24px 0; }
     button {
@@ -42,38 +42,76 @@ app.MapGet("/", () => Results.Content($$"""
     #btn-allowed   { background: #28a745; }
     #btn-forbidden { background: #dc3545; }
     button:disabled { opacity: 0.5; cursor: not-allowed; }
+    .panel { margin-top: 20px; }
+    .panel-label {
+      font-weight: bold; font-size: 0.85rem; text-transform: uppercase;
+      letter-spacing: 0.05em; color: #555; margin-bottom: 4px;
+    }
     pre {
       background: #f4f4f4; border: 1px solid #ddd; border-radius: 4px;
-      padding: 16px; white-space: pre-wrap; word-break: break-all; min-height: 80px;
+      padding: 16px; white-space: pre-wrap; word-break: break-all;
+      min-height: 60px; font-size: 0.85rem; margin: 0;
     }
-    .label { font-weight: bold; margin-top: 16px; }
+    #token-panel { display: none; }
   </style>
 </head>
 <body>
   <h1>Machine-to-Machine Demo — Organisation Registry</h1>
   <p>
     Demonstreert de Client Credentials flow via Keycloak.<br />
-    Client: <strong>{{cjmClientId}}</strong> | OVO: <strong>{{testOvoId}}</strong>
+    Client: <strong>{{orafinClientId}}</strong> — heeft scope <code>dv_organisatieregister_orafinbeheerder</code><br />
+    <em>Allowed</em>: <code>POST /edit/organisations/{id}/keys</code> (vereist orafinbeheerder of cjmbeheerder)<br />
+    <em>Forbidden</em>: <code>POST /edit/organisations/{id}/contacts</code> (vereist cjmbeheerder — orafin heeft die scope niet)
   </p>
   <div class="buttons">
     <button id="btn-auth"      onclick="doAction('/demo/authenticate')">Authenticate</button>
     <button id="btn-allowed"   onclick="doAction('/demo/allowed')">Allowed call</button>
     <button id="btn-forbidden" onclick="doAction('/demo/forbidden')">Forbidden call</button>
   </div>
-  <div class="label">Resultaat:</div>
-  <pre id="result">(nog geen actie uitgevoerd)</pre>
+
+  <div class="panel" id="token-panel">
+    <div class="panel-label">Access token</div>
+    <pre id="token-display"></pre>
+  </div>
+
+  <div class="panel" style="margin-top:16px">
+    <div class="panel-label">Request</div>
+    <pre id="request-display">(nog geen actie)</pre>
+  </div>
+
+  <div class="panel" style="margin-top:16px">
+    <div class="panel-label">Response</div>
+    <pre id="result">(nog geen actie)</pre>
+  </div>
 
   <script>
     async function doAction(endpoint) {
-      const resultEl = document.getElementById('result');
-      resultEl.textContent = 'Bezig...';
+      const resultEl  = document.getElementById('result');
+      const requestEl = document.getElementById('request-display');
+      resultEl.textContent  = 'Bezig...';
+      requestEl.textContent = 'Bezig...';
       document.querySelectorAll('button').forEach(b => b.disabled = true);
       try {
-        const res = await fetch(endpoint, { method: 'POST' });
+        const res  = await fetch(endpoint, { method: 'POST' });
         const data = await res.json();
+
+        if (data.request) {
+          requestEl.textContent = JSON.stringify(data.request, null, 2);
+          delete data.request;
+        } else {
+          requestEl.textContent = '(geen request details)';
+        }
+
+        if (data.access_token) {
+          document.getElementById('token-panel').style.display = 'block';
+          document.getElementById('token-display').textContent = data.access_token;
+          delete data.access_token;
+        }
+
         resultEl.textContent = JSON.stringify(data, null, 2);
       } catch (err) {
-        resultEl.textContent = 'Fout: ' + err.message;
+        resultEl.textContent  = 'Fout: ' + err.message;
+        requestEl.textContent = '';
       } finally {
         document.querySelectorAll('button').forEach(b => b.disabled = false);
       }
@@ -85,50 +123,81 @@ app.MapGet("/", () => Results.Content($$"""
 
 app.MapPost("/demo/authenticate", async () =>
 {
+    // Stap 1 — token ophalen als orafinClient
     using var http = new HttpClient();
-    var request = new HttpRequestMessage(HttpMethod.Post, keycloakTokenEndpoint)
+    var tokenRequest = new HttpRequestMessage(HttpMethod.Post, keycloakTokenEndpoint)
     {
         Content = new FormUrlEncodedContent(new Dictionary<string, string>
         {
             ["grant_type"]    = "client_credentials",
-            ["client_id"]     = cjmClientId,
-            ["client_secret"] = cjmClientSecret,
+            ["client_id"]     = orafinClientId,
+            ["client_secret"] = orafinClientSecret,
         }),
     };
 
-    var response = await http.SendAsync(request);
-    var body     = await response.Content.ReadAsStringAsync();
+    var tokenResponse = await http.SendAsync(tokenRequest);
+    var tokenBody     = await tokenResponse.Content.ReadAsStringAsync();
 
-    if (!response.IsSuccessStatusCode)
+    if (!tokenResponse.IsSuccessStatusCode)
         return Results.Json(
-            new { error = "Token request failed", status = (int)response.StatusCode, detail = body },
+            new
+            {
+                error   = "Token request failed",
+                request = new { method = "POST", url = keycloakTokenEndpoint, grant_type = "client_credentials", client_id = orafinClientId },
+                status  = (int)tokenResponse.StatusCode,
+                detail  = tokenBody,
+            },
             statusCode: 502);
 
-    using var doc  = JsonDocument.Parse(body);
-    var root       = doc.RootElement;
+    using var doc = JsonDocument.Parse(tokenBody);
+    var root      = doc.RootElement;
     storedAccessToken = root.GetProperty("access_token").GetString();
+
+    // Stap 2 — eerste organisatie-ID ophalen
+    var listUrl = $"{apiBaseUrl}/organisations?limit=1";
+    var listRequest = new HttpRequestMessage(HttpMethod.Get, listUrl);
+    listRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", storedAccessToken);
+    listRequest.Headers.Add("Accept", "application/json");
+
+    var listResponse = await http.SendAsync(listRequest);
+    var listBody     = await listResponse.Content.ReadAsStringAsync();
+
+    storedOrganisationId = null;
+    string? organisationName = null;
+    try
+    {
+        var orgs = JsonNode.Parse(listBody)?.AsArray();
+        var first = orgs?.Count > 0 ? orgs[0] : null;
+        storedOrganisationId = first?["id"]?.GetValue<string>();
+        organisationName     = first?["name"]?.GetValue<string>();
+    }
+    catch { }
 
     return Results.Json(new
     {
-        authenticated = true,
-        expires_in    = root.TryGetProperty("expires_in",  out var exp) ? exp.GetInt32()    : 0,
-        scope         = root.TryGetProperty("scope",       out var sc)  ? sc.GetString()    : "",
-        token_type    = root.TryGetProperty("token_type",  out var tt)  ? tt.GetString()    : "",
+        authenticated    = true,
+        expires_in       = root.TryGetProperty("expires_in",  out var exp) ? exp.GetInt32() : 0,
+        scope            = root.TryGetProperty("scope",       out var sc)  ? sc.GetString() : "",
+        token_type       = root.TryGetProperty("token_type",  out var tt)  ? tt.GetString() : "",
+        organisation_id  = storedOrganisationId,
+        organisation_name = organisationName,
+        access_token     = storedAccessToken,
+        request          = new { method = "POST", url = keycloakTokenEndpoint, grant_type = "client_credentials", client_id = orafinClientId },
     });
 });
 
 app.MapPost("/demo/allowed", async () =>
 {
     if (storedAccessToken is null)
-        return Results.Json(
-            new { error = "Niet geauthenticeerd. Klik eerst op 'Authenticate'." },
-            statusCode: 400);
+        return Results.Json(new { error = "Niet geauthenticeerd. Klik eerst op 'Authenticate'." }, statusCode: 400);
+    if (storedOrganisationId is null)
+        return Results.Json(new { error = "Geen organisatie gevonden. Zijn er organisaties in de database?" }, statusCode: 400);
 
-    // Intentionally minimal/invalid body — auth is checked before model validation.
-    // 400 = authorised (invalid input), 403 = forbidden, 401 = not authenticated.
+    // orafinClient heeft dv_organisatieregister_orafinbeheerder — Keys policy staat orafin toe
+    var url = $"{apiBaseUrl}/edit/organisations/{storedOrganisationId}/keys";
+
     using var http    = new HttpClient();
-    var request       = new HttpRequestMessage(HttpMethod.Post,
-        $"{apiBaseUrl}/edit/organisations/{testOvoId}/contacts");
+    var request       = new HttpRequestMessage(HttpMethod.Post, url);
     request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", storedAccessToken);
     request.Content               = new StringContent("{}", Encoding.UTF8, "application/json");
 
@@ -139,22 +208,29 @@ app.MapPost("/demo/allowed", async () =>
     {
         status     = (int)response.StatusCode,
         statusText = response.StatusCode.ToString(),
-        body       = Truncate(responseBody),
+        body       = TryParseJson(responseBody),
+        request    = new
+        {
+            method  = "POST",
+            url,
+            headers = new { Authorization = $"Bearer {storedAccessToken}", ContentType = "application/json" },
+            body    = "{}",
+        },
     });
 });
 
 app.MapPost("/demo/forbidden", async () =>
 {
     if (storedAccessToken is null)
-        return Results.Json(
-            new { error = "Niet geauthenticeerd. Klik eerst op 'Authenticate'." },
-            statusCode: 400);
+        return Results.Json(new { error = "Niet geauthenticeerd. Klik eerst op 'Authenticate'." }, statusCode: 400);
+    if (storedOrganisationId is null)
+        return Results.Json(new { error = "Geen organisatie gevonden. Zijn er organisaties in de database?" }, statusCode: 400);
 
-    // POST /edit/organisations/{ovo}/keys requires dv_organisatieregister_orafinbeheerder.
-    // cjmClient only has dv_organisatieregister_cjmbeheerder → expect 403.
+    // orafinClient heeft GEEN dv_organisatieregister_cjmbeheerder — Contacts policy verbiedt orafin → 403
+    var url = $"{apiBaseUrl}/edit/organisations/{storedOrganisationId}/contacts";
+
     using var http    = new HttpClient();
-    var request       = new HttpRequestMessage(HttpMethod.Post,
-        $"{apiBaseUrl}/edit/organisations/{testOvoId}/keys");
+    var request       = new HttpRequestMessage(HttpMethod.Post, url);
     request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", storedAccessToken);
     request.Content               = new StringContent("{}", Encoding.UTF8, "application/json");
 
@@ -165,11 +241,21 @@ app.MapPost("/demo/forbidden", async () =>
     {
         status     = (int)response.StatusCode,
         statusText = response.StatusCode.ToString(),
-        body       = Truncate(responseBody),
+        body       = TryParseJson(responseBody),
+        request    = new
+        {
+            method  = "POST",
+            url,
+            headers = new { Authorization = $"Bearer {storedAccessToken}", ContentType = "application/json" },
+            body    = "{}",
+        },
     });
 });
 
 app.Run();
 
-static string Truncate(string s, int max = 500)
-    => s.Length <= max ? s : s[..max] + "…";
+static object TryParseJson(string s)
+{
+    try { return JsonDocument.Parse(s).RootElement; }
+    catch { return s; }
+}
