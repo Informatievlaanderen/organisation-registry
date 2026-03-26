@@ -19,9 +19,9 @@ services:
     environment:
       KEYCLOAK_ADMIN: '${KEYCLOAK_ADMIN}'
       KEYCLOAK_ADMIN_PASSWORD: '${KEYCLOAK_ADMIN_PASSWORD}'
-      KC_HOSTNAME_URL: http://localhost:8180
+      KC_HOSTNAME: http://localhost:8180
       KC_HOSTNAME_STRICT: "false"
-      KC_HOSTNAME_STRICT_BACKCHANNEL: "false"
+      KC_HOSTNAME_BACKCHANNEL_DYNAMIC: "true"
     ports:
       - "8180:8080"
     volumes:
@@ -108,7 +108,7 @@ services:
       NUXT_PUBLIC_APP_BASE_URL: "http://localhost:5090"
       # Server-side: interne Docker netwerk URLs
       NUXT_KEYCLOAK_INTERNAL_URL: "http://keycloak:8080"
-      NUXT_BFF_CLIENT_SECRET: '${NUXT_BFF_CLIENT_SECRET}'
+      NUXT_KEYCLOAK_CLIENT_SECRET: '${NUXT_BFF_CLIENT_SECRET}'
       NUXT_SESSION_SECRET: '${NUXT_SESSION_SECRET}'
       NUXT_API_BASE_URL: "http://api:9002/v1"
     depends_on:
