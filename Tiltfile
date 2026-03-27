@@ -30,7 +30,7 @@ local_resource(
 local_resource(
     'namespace',
     'KUBECONFIG=.kubeconfig kubectl wait --for=jsonpath={.status.phase}=Active namespace/wegwijs-demo --timeout=60s',
-    labels=['infrastructure'],
+    labels=['setup'],
 )
 
 # =============================================================================
