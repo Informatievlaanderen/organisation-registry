@@ -22,7 +22,7 @@ local_resource(
     'keycloak-realm-configmap',
     'KUBECONFIG=.kubeconfig kubectl create configmap keycloak-realm --from-file=keycloak/realm-export.json -n wegwijs-demo --dry-run=client -o yaml | KUBECONFIG=.kubeconfig kubectl apply -f -',
     deps=['keycloak/realm-export.json'],
-    labels=['infrastructure'],
+    labels=['setup'],
     resource_deps=['namespace'],
 )
 
@@ -124,7 +124,7 @@ k8s_resource('ui',
     links=[link('http://ui.localhost:9080', 'Angular UI')])
 
 k8s_resource('seed',
-    labels=['seed'],
+    labels=['setup'],
     resource_deps=['api'])
 
 k8s_resource('m2m-demo',
