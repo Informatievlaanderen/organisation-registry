@@ -124,16 +124,16 @@ k8s_resource('ui',
     links=[link('http://ui.localhost:9080', 'Angular UI')])
 
 k8s_resource('seed',
-    labels=['applications'],
+    labels=['seed'],
     resource_deps=['api'])
 
 k8s_resource('m2m-demo',
-    labels=['applications'],
+    labels=['demo'],
     resource_deps=['api', 'keycloak'],
     links=[link('http://m2m.localhost:9080', 'M2M Demo')])
 
 k8s_resource('nuxt-bff',
-    labels=['applications'],
+    labels=['demo'],
     resource_deps=['api', 'keycloak'],
     links=[link('http://app.localhost:9080', 'Nuxt BFF')])
 
