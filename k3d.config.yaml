@@ -1,0 +1,21 @@
+apiVersion: k3d.io/v1alpha5
+kind: Simple
+metadata:
+  name: wegwijs-dev
+servers: 1
+agents: 0
+ports:
+  - port: 9080:80
+    nodeFilters:
+      - loadbalancer
+registries:
+  create:
+    name: k3d-wegwijs-registry
+    host: localhost
+    hostPort: "5051"
+options:
+  k3s:
+    extraArgs:
+      - arg: --kubelet-arg=eviction-hard=nodefs.available<1%,imagefs.available<1%,nodefs.inodesFree<1%
+        nodeFilters:
+          - server:*

@@ -2,7 +2,7 @@
 # Run with: tilt up (from repo root)
 #
 # Prerequisites:
-#   k3d cluster:   k3d cluster create wegwijs-dev -p "9080:80@loadbalancer" --registry-create k3d-wegwijs-registry:5051
+#   k3d cluster:   k3d cluster create --config k3d.config.yaml
 #   Traefik:       helm upgrade --install traefik traefik/traefik -f demo/helm/traefik-values.yaml -n traefik --create-namespace
 
 allow_k8s_contexts('k3d-wegwijs-dev')
