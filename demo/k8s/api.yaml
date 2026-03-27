@@ -44,6 +44,8 @@ spec:
           value: "http://localhost:9200/"
         - name: OIDCAuth__Authority
           value: "http://keycloak.localhost:9080/realms/wegwijs"
+        - name: OIDCAuth__InternalAuthorityOverride
+          value: "http://keycloak/realms/wegwijs"
         - name: OIDCAuth__JwksUri
           value: "http://keycloak/realms/wegwijs/protocol/openid-connect/certs"
         - name: OIDCAuth__IntrospectionEndpoint
@@ -79,6 +81,9 @@ spec:
           value: "false"
         - name: DataDog__ServiceName
           value: "organisation-registry-demo"
+        # OpenTelemetry → OTel Collector (gRPC, poort 4317)
+        - name: COLLECTOR_URL
+          value: "http://otel-collector:4317"
         # CORS origins for subdomain routing
         - name: Cors__0
           value: "http://ui.localhost:9080"

@@ -39,26 +39,38 @@ local_resource(
 
 k8s_yaml('demo/k8s/mssql.yaml')
 k8s_yaml('demo/k8s/keycloak.yaml')
+k8s_yaml('demo/k8s/seq.yaml')
+k8s_yaml('demo/k8s/otel-collector.yaml')
 
 k8s_resource('mssql',
     port_forwards='11433:1433',
     labels=['infrastructure'],
     resource_deps=['namespace'])
 
+k8s_resource('seq',
+    labels=['infrastructure'],
+    resource_deps=['namespace'],
+    links=[link('http://seq.localhost:9080', 'Seq')])
+
+k8s_resource('otel-collector',
+    labels=['infrastructure'],
+    resource_deps=['seq'])
+
 # =============================================================================
-# Application Images — custom_build pushes to local k3d registry
+# Application Images — custom_build via k3d image import (registry mirror unreliable)
 # =============================================================================
 
 # API — build context is repo root
 custom_build(
-    'k3d-wegwijs-registry:5051/wegwijs-api:local',
-    'docker build -t $EXPECTED_REF -f api/Dockerfile . && docker push $EXPECTED_REF',
+    'wegwijs-api:local',
+    'docker build -t $EXPECTED_REF -f api/Dockerfile . && k3d image import $EXPECTED_REF -c wegwijs-dev',
     deps=[
         'api/Dockerfile',
         'src/OrganisationRegistry',
         'src/OrganisationRegistry.Api',
         'src/OrganisationRegistry.SqlServer',
         'src/OrganisationRegistry.Infrastructure',
+        'src/OrganisationRegistry.OpenTelemetry',
         'paket.dependencies',
         'paket.lock',
     ],
@@ -68,7 +80,7 @@ custom_build(
 # UI — Angular frontend (pre-built in wwwroot)
 custom_build(
     'k3d-wegwijs-registry:5051/wegwijs-ui:local',
-    'docker build -t $EXPECTED_REF src/OrganisationRegistry.UI && docker push $EXPECTED_REF',
+    'docker build -t $EXPECTED_REF src/OrganisationRegistry.UI && k3d image import $EXPECTED_REF -c wegwijs-dev',
     deps=[
         'src/OrganisationRegistry.UI/Dockerfile',
         'src/OrganisationRegistry.UI/wwwroot',
@@ -81,7 +93,7 @@ custom_build(
 # Seed — Python script
 custom_build(
     'k3d-wegwijs-registry:5051/wegwijs-seed:local',
-    'docker build -t $EXPECTED_REF seed && docker push $EXPECTED_REF',
+    'docker build -t $EXPECTED_REF seed && k3d image import $EXPECTED_REF -c wegwijs-dev',
     deps=[
         'seed/Dockerfile',
         'seed/seed.py',
@@ -91,14 +103,14 @@ custom_build(
 # M2M demo
 custom_build(
     'k3d-wegwijs-registry:5051/wegwijs-m2m:local',
-    'docker build -t $EXPECTED_REF demo/m2m && docker push $EXPECTED_REF',
+    'docker build -t $EXPECTED_REF demo/m2m && k3d image import $EXPECTED_REF -c wegwijs-dev',
     deps=['demo/m2m/'],
 )
 
 # Nuxt BFF
 custom_build(
     'k3d-wegwijs-registry:5051/wegwijs-nuxt-bff:local',
-    'docker build -t $EXPECTED_REF demo/nuxt-bff && docker push $EXPECTED_REF',
+    'docker build -t $EXPECTED_REF demo/nuxt-bff && k3d image import $EXPECTED_REF -c wegwijs-dev',
     deps=['demo/nuxt-bff/'],
 )
 
@@ -115,7 +127,7 @@ k8s_yaml('demo/k8s/ingress.yaml')
 
 k8s_resource('api',
     labels=['applications'],
-    resource_deps=['mssql', 'keycloak'],
+    resource_deps=['mssql', 'keycloak', 'otel-collector'],
     links=[link('http://api.localhost:9080/v1', 'API')])
 
 k8s_resource('ui',
@@ -160,6 +172,7 @@ print('╔═══════════════════════�
 print('║  Wegwijs / Organisation Registry - Development Environment    ║')
 print('╠═══════════════════════════════════════════════════════════════╣')
 print('║  keycloak.localhost:9080  → Keycloak (admin/admin)            ║')
+print('║  seq.localhost:9080       → Seq (structured logs / OTLP)     ║')
 print('║  api.localhost:9080       → Organisation Registry API         ║')
 print('║  ui.localhost:9080        → Angular UI (backoffice)           ║')
 print('║  m2m.localhost:9080       → M2M demo (client credentials)      ║')
