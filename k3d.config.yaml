@@ -11,7 +11,7 @@ ports:
 registries:
   create:
     name: k3d-wegwijs-registry
-    host: localhost
+    host: "0.0.0.0"
     hostPort: "5051"
 options:
   k3s:
