@@ -84,6 +84,7 @@ export default defineEventHandler(async (event) => {
   })
 
   const accessToken = tokenRes.access_token as string
+  const idToken = tokenRes.id_token as string | undefined
 
   // Stap 2: RFC 8693 token exchange
   // nuxt-bff wisselt zijn eigen access token in voor een token gericht op organisation-registry-api.
@@ -121,6 +122,7 @@ export default defineEventHandler(async (event) => {
   
   saveSession(event, {
     accessToken,
+    idToken,
     exchangedToken,
     exchangeError,
     codeVerifier: undefined,

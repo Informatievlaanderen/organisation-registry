@@ -57,6 +57,7 @@ export default defineEventHandler(async (event) => {
     state,
     code_challenge: codeChallenge,
     code_challenge_method: 'S256',
+    prompt: 'select_account',
   })
 
   const authUrl = `${config.public.keycloakUrl}/realms/${config.public.keycloakRealm}/protocol/openid-connect/auth?${params}`

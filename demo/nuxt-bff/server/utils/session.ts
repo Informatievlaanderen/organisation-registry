@@ -18,6 +18,7 @@ const COOKIE_MAX_AGE = 60 * 60 // 1 uur
 
 export interface Session {
   accessToken?: string
+  idToken?: string
   exchangedToken?: string
   exchangeError?: string
   codeVerifier?: string
@@ -26,6 +27,7 @@ export interface Session {
 
 interface SessionPart1 {
   accessToken?: string
+  idToken?: string
   exchangeError?: string
 }
 
@@ -75,6 +77,7 @@ export function getSession(event: H3Event, secret: string): Session {
   
   return {
     accessToken: part1?.accessToken,
+    idToken: part1?.idToken,
     exchangeError: part1?.exchangeError,
     exchangedToken: part2?.exchangedToken,
   }
@@ -89,9 +92,10 @@ export function saveSession(event: H3Event, session: Session, secret: string): v
     path: '/',
   }
   
-  // Part 1: accessToken + metadata (in main cookie)
+  // Part 1: accessToken + idToken + metadata (in main cookie)
   const part1: SessionPart1 = {
     accessToken: session.accessToken,
+    idToken: session.idToken,
     exchangeError: session.exchangeError,
   }
   const encrypted1 = encrypt(part1, secret)
