@@ -5,6 +5,7 @@
 # api.localhost:9080       → API
 # ui.localhost:9080        → Angular UI (backoffice)
 # app.localhost:9080       → Nuxt BFF (Keycloak demo)
+# seq.localhost:9080       → Seq (structured log viewer)
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
@@ -79,4 +80,19 @@ spec:
     kind: Rule
     services:
     - name: m2m-demo
+      port: 80
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: seq
+  namespace: wegwijs-demo
+spec:
+  entryPoints:
+    - web
+  routes:
+  - match: Host(`seq.localhost`)
+    kind: Rule
+    services:
+    - name: seq
       port: 80

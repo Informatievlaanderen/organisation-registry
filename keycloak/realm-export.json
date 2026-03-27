@@ -149,7 +149,7 @@
     },
     {
       "name": "organisation-registry-api-access",
-      "description": "Adds organisation-registry-api as audience — required for RFC 8693 token exchange",
+      "description": "Adds organisation-registry-api as audience \u2014 required for RFC 8693 token exchange",
       "protocol": "openid-connect",
       "attributes": {
         "include.in.token.scope": "true"
@@ -354,7 +354,8 @@
       ],
       "attributes": {
         "pkce.code.challenge.method": "S256",
-        "standard.token.exchange.enabled": "true"
+        "standard.token.exchange.enabled": "true",
+        "post.logout.redirect.uris": "http://app.localhost:9080"
       },
       "protocolMappers": [
         {
@@ -368,7 +369,8 @@
             "jsonType.label": "String",
             "id.token.claim": "true",
             "access.token.claim": "true",
-            "userinfo.token.claim": "true"
+            "userinfo.token.claim": "true",
+            "introspection.token.claim": "true"
           }
         },
         {
@@ -382,7 +384,8 @@
             "jsonType.label": "String",
             "id.token.claim": "true",
             "access.token.claim": "true",
-            "userinfo.token.claim": "true"
+            "userinfo.token.claim": "true",
+            "introspection.token.claim": "true"
           }
         },
         {
@@ -414,7 +417,8 @@
             "multivalued": "false",
             "id.token.claim": "true",
             "access.token.claim": "true",
-            "userinfo.token.claim": "true"
+            "userinfo.token.claim": "true",
+            "introspection.token.claim": "true"
           }
         },
         {
@@ -628,6 +632,7 @@
     }
   ],
   "attributes": {
-    "feature.token.exchange": "true"
+    "feature.token.exchange": "true",
+    "oidc.logout.idtoken.required": "false"
   }
 }
