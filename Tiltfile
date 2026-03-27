@@ -120,7 +120,7 @@ k8s_resource('api',
 
 k8s_resource('ui',
     labels=['applications'],
-    resource_deps=['api'],
+    resource_deps=['api', 'keycloak'],
     links=[link('http://ui.localhost:9080', 'Angular UI')])
 
 k8s_resource('seed',
