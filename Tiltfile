@@ -57,14 +57,15 @@ k8s_resource('otel-collector',
     resource_deps=['seq'])
 
 # =============================================================================
-# Application Images — custom_build via k3d image import (registry mirror unreliable)
+# Application Images — build and push to k3d registry
 # =============================================================================
 
 # API — build context is repo root
-custom_build(
-    'wegwijs-api:local',
-    'docker build -t $EXPECTED_REF -f api/Dockerfile . && k3d image import $EXPECTED_REF -c wegwijs-dev',
-    deps=[
+docker_build(
+    'k3d-wegwijs-registry:5051/wegwijs-api:local',
+    '.',
+    dockerfile='api/Dockerfile',
+    only=[
         'api/Dockerfile',
         'src/OrganisationRegistry',
         'src/OrganisationRegistry.Api',
@@ -80,7 +81,7 @@ custom_build(
 # UI — Angular frontend (pre-built in wwwroot)
 custom_build(
     'k3d-wegwijs-registry:5051/wegwijs-ui:local',
-    'docker build -t $EXPECTED_REF src/OrganisationRegistry.UI && k3d image import $EXPECTED_REF -c wegwijs-dev',
+    'docker build -t $EXPECTED_REF src/OrganisationRegistry.UI && docker push $EXPECTED_REF',
     deps=[
         'src/OrganisationRegistry.UI/Dockerfile',
         'src/OrganisationRegistry.UI/wwwroot',
@@ -93,7 +94,7 @@ custom_build(
 # Seed — Python script
 custom_build(
     'k3d-wegwijs-registry:5051/wegwijs-seed:local',
-    'docker build -t $EXPECTED_REF seed && k3d image import $EXPECTED_REF -c wegwijs-dev',
+    'docker build -t $EXPECTED_REF seed && docker push $EXPECTED_REF',
     deps=[
         'seed/Dockerfile',
         'seed/seed.py',
@@ -103,14 +104,14 @@ custom_build(
 # M2M demo
 custom_build(
     'k3d-wegwijs-registry:5051/wegwijs-m2m:local',
-    'docker build -t $EXPECTED_REF demo/m2m && k3d image import $EXPECTED_REF -c wegwijs-dev',
+    'docker build -t $EXPECTED_REF demo/m2m && docker push $EXPECTED_REF',
     deps=['demo/m2m/'],
 )
 
 # Nuxt BFF
 custom_build(
     'k3d-wegwijs-registry:5051/wegwijs-nuxt-bff:local',
-    'docker build -t $EXPECTED_REF demo/nuxt-bff && k3d image import $EXPECTED_REF -c wegwijs-dev',
+    'docker build -t $EXPECTED_REF demo/nuxt-bff && docker push $EXPECTED_REF',
     deps=['demo/nuxt-bff/'],
 )
 
