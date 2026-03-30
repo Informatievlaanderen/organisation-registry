@@ -16,6 +16,6 @@ public class OrganisationRegistryAuthorizeAttribute : AuthorizeAttribute
 
     public OrganisationRegistryAuthorizeAttribute()
     {
-        AuthenticationSchemes = $"{JwtBearerDefaults.AuthenticationScheme}, {Schemes.EditApi}, {Schemes.BffApi}";
+        AuthenticationSchemes = $"{Schemes.LegacySelfMintedToken}, {Schemes.Introspection}";
     }
 }

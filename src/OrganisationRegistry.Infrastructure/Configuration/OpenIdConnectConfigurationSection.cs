@@ -43,4 +43,13 @@ public class OpenIdConnectConfigurationSection
     public string? Developers { get; set; }
 
     public int JwtExpiresInMinutes { get; set; }
+
+    /// <summary>
+    /// Introspection endpoint for Keycloak tokens (used by BffApi scheme).
+    /// Derived from EffectiveAuthority when not explicitly configured.
+    /// </summary>
+    public string? IntrospectionEndpoint { get; set; }
+
+    public string EffectiveIntrospectionEndpoint =>
+        IntrospectionEndpoint ?? $"{EffectiveAuthority.TrimEnd('/')}/protocol/openid-connect/token/introspect";
 }

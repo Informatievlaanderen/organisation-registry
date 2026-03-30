@@ -143,7 +143,7 @@ public class Startup
                         new OrganisationRegistryTokenValidationParameters(openIdConfiguration);
                 })
             .AddOAuth2Introspection(
-                AuthenticationSchemes.EditApi,
+                AuthenticationSchemes.Introspection,
                 options =>
                 {
                     options.ClientId = editApiConfiguration.ClientId;
@@ -153,15 +153,16 @@ public class Startup
                 });
 
         if (bffApiEnabled)
+        {
             authBuilder.AddOAuth2Introspection(
                 AuthenticationSchemes.BffApi,
                 options =>
                 {
                     options.ClientId = editApiConfiguration.ClientId;
                     options.ClientSecret = editApiConfiguration.ClientSecret;
-                    options.Authority = editApiConfiguration.Authority;
-                    options.IntrospectionEndpoint = editApiConfiguration.IntrospectionEndpoint;
+                    options.IntrospectionEndpoint = openIdConfiguration.EffectiveIntrospectionEndpoint;
                 });
+        }
 
         authBuilder
             .Services
