@@ -8,6 +8,7 @@
  */
 import { defineEventHandler, sendRedirect } from 'h3'
 import { randomBytes, createHash, createCipheriv } from 'crypto'
+import { getAppBaseUrl, getKeycloakUrl } from '../utils/urls'
 
 function base64url(buf: Buffer): string {
   return buf.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
@@ -49,10 +50,13 @@ export default defineEventHandler(async (event) => {
   // Encrypt nonce + codeVerifier into state parameter
   const state = encryptState({ nonce, codeVerifier }, config.sessionSecret)
 
+  const appBaseUrl = getAppBaseUrl(event)
+  const keycloakUrl = getKeycloakUrl(event)
+
   const params = new URLSearchParams({
     response_type: 'code',
     client_id: config.public.keycloakClientId,
-    redirect_uri: `${config.public.appBaseUrl}/callback`,
+    redirect_uri: `${appBaseUrl}/callback`,
     scope: 'openid profile dv_organisatieregister_cjmbeheerder',
     state,
     code_challenge: codeChallenge,
@@ -60,6 +64,6 @@ export default defineEventHandler(async (event) => {
     prompt: 'select_account',
   })
 
-  const authUrl = `${config.public.keycloakUrl}/realms/${config.public.keycloakRealm}/protocol/openid-connect/auth?${params}`
+  const authUrl = `${keycloakUrl}/realms/${config.public.keycloakRealm}/protocol/openid-connect/auth?${params}`
   return sendRedirect(event, authUrl)
 })

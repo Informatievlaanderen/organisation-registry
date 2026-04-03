@@ -1,11 +1,14 @@
 # Traefik IngressRoutes for all demo services
-# Using subdomains on localhost:9080
+# Matches both:
+#   *.localhost:9080          (local dev)
+#   *.10.20.20.100.nip.io:9080  (any IP via nip.io)
 #
-# keycloak.localhost:9080  → Keycloak
-# api.localhost:9080       → API
-# ui.localhost:9080        → Angular UI (backoffice)
-# app.localhost:9080       → Nuxt BFF (Keycloak demo)
-# seq.localhost:9080       → Seq (structured log viewer)
+# keycloak.* → Keycloak
+# api.*       → API
+# ui.*        → Angular UI (backoffice)
+# app.*       → Nuxt BFF (Keycloak demo)
+# seq.*       → Seq (structured log viewer)
+# m2m.*       → M2M demo
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
@@ -16,7 +19,7 @@ spec:
   entryPoints:
     - web
   routes:
-  - match: Host(`keycloak.localhost`)
+  - match: HostRegexp(`{h:keycloak\..+}`)
     kind: Rule
     services:
     - name: keycloak
@@ -31,7 +34,7 @@ spec:
   entryPoints:
     - web
   routes:
-  - match: Host(`api.localhost`)
+  - match: HostRegexp(`{h:api\..+}`)
     kind: Rule
     services:
     - name: api
@@ -46,7 +49,7 @@ spec:
   entryPoints:
     - web
   routes:
-  - match: Host(`ui.localhost`)
+  - match: HostRegexp(`{h:ui\..+}`)
     kind: Rule
     services:
     - name: ui
@@ -61,7 +64,7 @@ spec:
   entryPoints:
     - web
   routes:
-  - match: Host(`app.localhost`)
+  - match: HostRegexp(`{h:app\..+}`)
     kind: Rule
     services:
     - name: nuxt-bff
@@ -76,7 +79,7 @@ spec:
   entryPoints:
     - web
   routes:
-  - match: Host(`m2m.localhost`)
+  - match: HostRegexp(`{h:m2m\..+}`)
     kind: Rule
     services:
     - name: m2m-demo
@@ -91,7 +94,7 @@ spec:
   entryPoints:
     - web
   routes:
-  - match: Host(`seq.localhost`)
+  - match: HostRegexp(`{h:seq\..+}`)
     kind: Rule
     services:
     - name: seq

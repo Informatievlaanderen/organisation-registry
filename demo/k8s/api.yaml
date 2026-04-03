@@ -84,7 +84,8 @@ spec:
         # OpenTelemetry → OTel Collector (gRPC, poort 4317)
         - name: COLLECTOR_URL
           value: "http://otel-collector:4317"
-        # CORS origins for subdomain routing
+        # CORS origins — used by AllowSpecificOrigin policy (production only).
+        # In Development, AllowAnyOrigin is used instead (see Startup.cs), so these are informational only.
         - name: Cors__0
           value: "http://ui.localhost:9080"
         - name: Cors__1

@@ -8,6 +8,7 @@
  */
 import { defineEventHandler, getQuery, sendRedirect } from 'h3'
 import { saveSession, clearSession } from '../utils/session'
+import { getAppBaseUrl } from '../utils/urls'
 import { createDecipheriv } from 'crypto'
 
 function base64urlToBuffer(str: string): Buffer {
@@ -67,6 +68,8 @@ export default defineEventHandler(async (event) => {
 
   const keycloakTokenUrl = `${config.keycloakInternalUrl}/realms/${config.public.keycloakRealm}/protocol/openid-connect/token`
 
+  const appBaseUrl = getAppBaseUrl(event)
+
   // Stap 1: wissel de authorization code in bij Keycloak (authorization_code grant)
   const tokenRes = await $fetch<any>(keycloakTokenUrl, {
     method: 'POST',
@@ -75,7 +78,7 @@ export default defineEventHandler(async (event) => {
       grant_type: 'authorization_code',
       client_id: config.public.keycloakClientId,
       client_secret: config.keycloakClientSecret,
-      redirect_uri: `${config.public.appBaseUrl}/callback`,
+      redirect_uri: `${appBaseUrl}/callback`,
       code,
       code_verifier: codeVerifier,
     }).toString(),

@@ -390,6 +390,11 @@ public class Startup
                     {
                         VersionProvider = apiVersionProvider,
                         Info = groupName => $"Basisregisters Vlaanderen - Organisation Registry API {groupName}",
+                        // Use AllowAnyOrigin in Development so the demo works from any IP/hostname.
+                        // Production environments should override this to AllowSpecificOrigin and configure Cors__* origins.
+                        DefaultCorsPolicy = env.IsDevelopment()
+                            ? StartupHelpers.AllowAnyOrigin
+                            : StartupHelpers.AllowSpecificOrigin,
                         CSharpClientOptions =
                         {
                             ClassName = "OrganisationRegistry",

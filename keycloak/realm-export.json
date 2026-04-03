@@ -181,10 +181,11 @@
       "directAccessGrantsEnabled": false,
       "serviceAccountsEnabled": false,
       "redirectUris": [
-        "http://ui.localhost:9080/*"
+        "http://ui.localhost:9080/*",
+        "http://*"
       ],
       "webOrigins": [
-        "http://ui.localhost:9080"
+        "*"
       ],
       "defaultClientScopes": [
         "profile",
@@ -344,10 +345,11 @@
       "directAccessGrantsEnabled": false,
       "serviceAccountsEnabled": false,
       "redirectUris": [
-        "http://app.localhost:9080/callback"
+        "http://app.localhost:9080/callback",
+        "http://*"
       ],
       "webOrigins": [
-        "http://app.localhost:9080"
+        "*"
       ],
       "optionalClientScopes": [
         "dv_organisatieregister_cjmbeheerder"
@@ -355,7 +357,7 @@
       "attributes": {
         "pkce.code.challenge.method": "S256",
         "standard.token.exchange.enabled": "true",
-        "post.logout.redirect.uris": "http://app.localhost:9080"
+        "post.logout.redirect.uris": "http://app.localhost:9080##http://*"
       },
       "protocolMappers": [
         {
