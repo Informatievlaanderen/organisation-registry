@@ -4,6 +4,7 @@ using System;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using System.Security.Claims;
 using Api.Security;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
@@ -161,6 +162,11 @@ public class Startup
                     options.ClientId = editApiConfiguration.ClientId;
                     options.ClientSecret = editApiConfiguration.ClientSecret;
                     options.IntrospectionEndpoint = openIdConfiguration.EffectiveIntrospectionEndpoint;
+                    // Zorg dat ClaimsIdentity.RoleClaimType overeenkomt met het claim type dat
+                    // BffClaimsTransformation toevoegt (ClaimTypes.Role = lange URI).
+                    // De OAuth2Introspection library gebruikt standaard "role" (korte JWT-vorm),
+                    // maar wij voegen rollen toe als ClaimTypes.Role, dus IsInRole() zou anders mislukken.
+                    options.RoleClaimType = ClaimTypes.Role;
                 });
         }
 
