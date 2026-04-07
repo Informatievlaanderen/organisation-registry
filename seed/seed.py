@@ -264,7 +264,15 @@ def seed(token: str):
     def exists(list_path: str, item_id: str) -> bool:
         if list_path not in _existing:
             items = get_list(list_path, token)
-            _existing[list_path] = {str(i.get("id", "")).lower() for i in items}
+            # Sommige endpoints gebruiken een samengesteld id-veld (bv. organisationKeyId)
+            # ipv het standaard "id" veld.  We verzamelen alle waarden van alle velden
+            # die eindigen op "Id" of gelijk zijn aan "id".
+            ids: set[str] = set()
+            for i in items:
+                for k, v in i.items():
+                    if k == "id" or k.endswith("Id"):
+                        ids.add(str(v).lower())
+            _existing[list_path] = ids
         return item_id.lower() in _existing[list_path]
 
     def create(label: str, path: str, body: dict):
