@@ -4,12 +4,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using Api.Edit;
 using Api.Infrastructure;
 using Api.Infrastructure.Security;
+using Api.Security;
 using FluentAssertions;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
+using OrganisationRegistry.Infrastructure.Authorization;
 using Xunit;
 using Xunit.Abstractions;
 using Schemes = Api.Infrastructure.Security.AuthenticationSchemes;
@@ -26,8 +31,9 @@ using Schemes = Api.Infrastructure.Security.AuthenticationSchemes;
 ///
 ///   2. Backoffice command controllers (gebruikers + M2M via alle schemes)
 ///      Elke subclass van <see cref="OrganisationRegistryCommandController"/> MOET:
-///      - [OrganisationRegistryAuthorize] of [Authorize] hebben
+///      - [OrganisationRegistryAuthorize] of [Authorize(Policy = PolicyNames.BackofficeUser)] hebben
 ///      - Géén [AllowAnonymous] hebben (tenzij expliciet uitgezonderd)
+///      - Geen schemes op controller-niveau vastleggen
 ///
 /// Wanneer een test hier faalt betekent het dat een controller het verkeerde scheme of
 /// de verkeerde policy heeft, of dat [Authorize] volledig ontbreekt.
@@ -126,13 +132,13 @@ public class AuthorizationContractTests
     }
 
     // ---------------------------------------------------------------------------
-    // Backoffice command controllers — gebruikers + M2M via alle drie schemes
+    // Backoffice command controllers — gebruikers via token-exchange JWT of BffApi
     // ---------------------------------------------------------------------------
 
     /// <summary>
     /// Elke concrete subclass van OrganisationRegistryCommandController moet
     /// een [Authorize] of [OrganisationRegistryAuthorize] attribuut hebben.
-    /// OrganisationRegistryAuthorize accepteert alle drie schemes (JwtBearer, Introspection, BffApi).
+    /// OrganisationRegistryAuthorize is een wrapper rond PolicyNames.BackofficeUser.
     /// </summary>
     [Fact]
     public void BackofficeCommandControllers_MustHaveAuthorizeAttribute()
@@ -154,12 +160,11 @@ public class AuthorizationContractTests
     }
 
     /// <summary>
-    /// OrganisationRegistryCommandControllers mogen NIET het EditApi-scheme exclusief gebruiken.
-    /// Ze zijn bedoeld voor alle drie schemes (JwtBearer SPA + Introspection M2M + BffApi Nuxt BFF).
-    /// [OrganisationRegistryAuthorize] configureert alle drie automatisch.
+    /// OrganisationRegistryCommandControllers moeten de BackofficeUser-policy gebruiken.
+    /// Die policy eist vo_id en sluit daardoor M2M-tokens zonder gebruikersclaim uit.
     /// </summary>
     [Fact]
-    public void BackofficeCommandControllers_MustNotUseOnlyEditApiScheme()
+    public void BackofficeCommandControllers_MustUseBackofficeUserPolicy()
     {
         var violations = new List<string>();
 
@@ -168,15 +173,98 @@ public class AuthorizationContractTests
             var authorize = controller.GetCustomAttribute<AuthorizeAttribute>();
             if (authorize is null) continue;
 
-            if (authorize.AuthenticationSchemes == Schemes.EditApi)
+            if (authorize.Policy != PolicyNames.BackofficeUser)
                 violations.Add(
-                    $"{controller.Name}: gebruikt exclusief scheme \"{Schemes.EditApi}\" — " +
-                    $"gebruik [OrganisationRegistryAuthorize] voor alle drie schemes");
+                    $"{controller.Name}: Policy = \"{authorize.Policy}\" " +
+                    $"maar verwacht \"{PolicyNames.BackofficeUser}\"");
         }
 
         violations.Should().BeEmpty(
-            because: "backoffice command controllers moeten bereikbaar zijn via het Angular SPA (JwtBearer), " +
-                     "het Nuxt BFF (BffApi) én direct M2M (Introspection)");
+            because: "backoffice command controllers moeten policy-based autorisatie gebruiken op basis van vo_id");
+    }
+
+    /// <summary>
+    /// Backoffice controllers mogen geen schemes meer vastleggen op het attribuut.
+    /// De toegestane schemes horen centraal bij de BackofficeUser-policy.
+    /// </summary>
+    [Fact]
+    public void BackofficeCommandControllers_MustNotDeclareAuthenticationSchemes()
+    {
+        var violations = new List<string>();
+
+        foreach (var controller in GetConcreteSubclasses<OrganisationRegistryCommandController>())
+        {
+            var authorize = controller.GetCustomAttribute<AuthorizeAttribute>();
+            if (authorize is null) continue;
+
+            if (!string.IsNullOrWhiteSpace(authorize.AuthenticationSchemes))
+                violations.Add(
+                    $"{controller.Name}: AuthenticationSchemes = \"{authorize.AuthenticationSchemes}\" " +
+                    "maar schemes horen centraal in de BackofficeUser-policy");
+        }
+
+        violations.Should().BeEmpty(
+            because: "transportkeuze en toegangsbeslissing moeten gescheiden blijven");
+    }
+
+    [Fact]
+    public void OrganisationRegistryAuthorizeAttribute_IsBackofficeUserPolicyWrapper()
+    {
+        var attribute = new OrganisationRegistryAuthorizeAttribute(Role.AlgemeenBeheerder, Role.Developer);
+
+        attribute.Policy.Should().Be(PolicyNames.BackofficeUser);
+        attribute.AuthenticationSchemes.Should().BeNullOrWhiteSpace();
+        attribute.Roles.Should().Be($"{RoleMapping.Map(Role.AlgemeenBeheerder)},{RoleMapping.Map(Role.Developer)}");
+    }
+
+    [Fact]
+    public void BackofficeUserPolicy_WhenBffApiDisabled_UsesTokenExchangeJwtBearerOnly()
+    {
+        var policy = GetBackofficeUserPolicy(bffApiEnabled: false);
+
+        policy.AuthenticationSchemes.Should().BeEquivalentTo(new[] { Schemes.JwtBearer });
+        policy.Requirements.OfType<DenyAnonymousAuthorizationRequirement>().Should().ContainSingle();
+        policy.Requirements
+            .OfType<ClaimsAuthorizationRequirement>()
+            .Should()
+            .ContainSingle(x => x.ClaimType == AcmIdmConstants.Claims.AcmId);
+    }
+
+    [Fact]
+    public void BackofficeUserPolicy_WhenBffApiEnabled_UsesTokenExchangeJwtBearerAndBffApi()
+    {
+        var policy = GetBackofficeUserPolicy(bffApiEnabled: true);
+
+        policy.AuthenticationSchemes.Should().BeEquivalentTo(new[] { Schemes.JwtBearer, Schemes.BffApi });
+        policy.AuthenticationSchemes.Should().NotContain(Schemes.Introspection);
+    }
+
+    [Fact]
+    public async Task BackofficeUserPolicy_AllowsAuthenticatedUserTokenWithVoId()
+    {
+        var policy = GetBackofficeUserPolicy(bffApiEnabled: true);
+        var principal = new ClaimsPrincipal(
+            new ClaimsIdentity(
+                new[] { new Claim(AcmIdmConstants.Claims.AcmId, "user-id") },
+                Schemes.JwtBearer));
+
+        var context = await EvaluatePolicy(policy, principal);
+
+        context.HasSucceeded.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task BackofficeUserPolicy_RejectsMachineToMachineTokenWithOnlyScopes()
+    {
+        var policy = GetBackofficeUserPolicy(bffApiEnabled: true);
+        var principal = new ClaimsPrincipal(
+            new ClaimsIdentity(
+                new[] { new Claim(AcmIdmConstants.Claims.Scope, AcmIdmConstants.Scopes.CjmBeheerder) },
+                Schemes.Introspection));
+
+        var context = await EvaluatePolicy(policy, principal);
+
+        context.HasSucceeded.Should().BeFalse();
     }
 
     /// <summary>
@@ -186,15 +274,16 @@ public class AuthorizationContractTests
     [Fact]
     public void BackofficeCommandControllers_AuthConfiguration_IsDocumented()
     {
-        _output.WriteLine("Backoffice command controller → auth mapping (alle drie schemes via OrganisationRegistryAuthorize):");
+        _output.WriteLine("Backoffice command controller → auth mapping (BackofficeUser policy via OrganisationRegistryAuthorize):");
         _output.WriteLine(new string('-', 70));
 
         foreach (var controller in GetConcreteSubclasses<OrganisationRegistryCommandController>().OrderBy(c => c.Name))
         {
             var authorize = controller.GetCustomAttribute<AuthorizeAttribute>();
             var attributeName = authorize?.GetType().Name ?? "(geen authorize)";
+            var policy = authorize?.Policy ?? "(geen policy)";
             var roles = string.IsNullOrWhiteSpace(authorize?.Roles) ? "(geen rollen)" : authorize.Roles;
-            _output.WriteLine($"  {controller.Name,-55} [{attributeName}] roles={roles}");
+            _output.WriteLine($"  {controller.Name,-55} [{attributeName}] policy={policy,-20} roles={roles}");
         }
 
         GetConcreteSubclasses<OrganisationRegistryCommandController>().Should().NotBeEmpty(
@@ -212,4 +301,34 @@ public class AuthorizationContractTests
                 t.IsClass &&
                 !t.IsAbstract &&
                 t.IsSubclassOf(typeof(TBase)));
+
+    private static AuthorizationPolicy GetBackofficeUserPolicy(bool bffApiEnabled)
+    {
+        var options = new AuthorizationOptions();
+        GetConfigureAuthPolicies()(options);
+
+        return options.GetPolicy(PolicyNames.BackofficeUser)
+               ?? throw new InvalidOperationException($"{PolicyNames.BackofficeUser} policy is not registered");
+
+        Action<AuthorizationOptions> GetConfigureAuthPolicies()
+        {
+            var method = typeof(Startup).GetMethod(
+                "ConfigureAuthPolicies",
+                BindingFlags.NonPublic | BindingFlags.Static);
+
+            return (Action<AuthorizationOptions>)method!.Invoke(null, new object[] { bffApiEnabled })!;
+        }
+    }
+
+    private static async Task<AuthorizationHandlerContext> EvaluatePolicy(
+        AuthorizationPolicy policy,
+        ClaimsPrincipal principal)
+    {
+        var context = new AuthorizationHandlerContext(policy.Requirements, principal, resource: null);
+
+        foreach (var handler in policy.Requirements.OfType<IAuthorizationHandler>())
+            await handler.HandleAsync(context);
+
+        return context;
+    }
 }
