@@ -16,6 +16,6 @@ public class OrganisationRegistryAuthorizeAttribute : AuthorizeAttribute
 
     public OrganisationRegistryAuthorizeAttribute()
     {
-        AuthenticationSchemes = $"{Schemes.JwtBearer}, {Schemes.BffApi}";
+        AuthenticationSchemes = $"{Schemes.JwtBearer}, {Schemes.BffApi}, {Schemes.Introspection}";
     }
 }
