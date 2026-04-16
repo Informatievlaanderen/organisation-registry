@@ -201,7 +201,8 @@
         "offline_access"
       ],
       "attributes": {
-        "pkce.code.challenge.method": "S256"
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "http://ui.localhost:9080/*##http://*"
       },
       "protocolMappers": [
         {
@@ -336,8 +337,8 @@
     },
     {
       "clientId": "nuxt-bff",
-      "name": "Nuxt BFF Demo",
       "enabled": true,
+      "name": "Nuxt BFF Demo",
       "publicClient": false,
       "secret": "nuxt-bff-secret",
       "standardFlowEnabled": true,

@@ -16,9 +16,11 @@ using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
 using Configuration;
 using global::OpenTelemetry.Trace;
 using HostedServices;
+using IdentityModel.AspNetCore.OAuth2Introspection;
 using Magda;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
@@ -144,7 +146,7 @@ public class Startup
                         new OrganisationRegistryTokenValidationParameters(openIdConfiguration);
                 })
             .AddOAuth2Introspection(
-                AuthenticationSchemes.Introspection,
+                AuthenticationSchemes.Introspection, // voor M2M
                 options =>
                 {
                     options.ClientId = editApiConfiguration.ClientId;
@@ -262,45 +264,7 @@ public class Startup
                     },
                     MiddlewareHooks =
                     {
-                        Authorization = options =>
-                        {
-                            options.AddPolicy(
-                                PolicyNames.Organisations,
-                                builder => builder.RequireClaim(
-                                    AcmIdmConstants.Claims.Scope,
-                                    AcmIdmConstants.Scopes.CjmBeheerder,
-                                    AcmIdmConstants.Scopes.TestClient));
-
-                            options.AddPolicy(
-                                PolicyNames.BankAccounts,
-                                builder => builder.RequireClaim(
-                                    AcmIdmConstants.Claims.Scope,
-                                    AcmIdmConstants.Scopes.CjmBeheerder,
-                                    AcmIdmConstants.Scopes.TestClient));
-
-                            options.AddPolicy(
-                                PolicyNames.OrganisationClassifications,
-                                builder => builder.RequireClaim(
-                                    AcmIdmConstants.Claims.Scope,
-                                    AcmIdmConstants.Scopes.CjmBeheerder,
-                                    AcmIdmConstants.Scopes.TestClient));
-
-                            options.AddPolicy(
-                                PolicyNames.OrganisationContacts,
-                                builder => builder.RequireClaim(
-                                    AcmIdmConstants.Claims.Scope,
-                                    AcmIdmConstants.Scopes.CjmBeheerder,
-                                    AcmIdmConstants.Scopes.TestClient));
-
-                            options.AddPolicy(
-                                PolicyNames.Keys,
-                                builder => builder.RequireClaim(
-                                    AcmIdmConstants.Claims.Scope,
-                                    AcmIdmConstants.Scopes.CjmBeheerder,
-                                    AcmIdmConstants.Scopes.OrafinBeheerder,
-                                    AcmIdmConstants.Scopes.TestClient)
-                            );
-                        },
+                        Authorization = ConfigureEditApiAuthPolicies(),
                         ConfigureJsonOptions = options => { options.SerializerSettings.ConfigureForOrganisationRegistry(); },
                         ConfigureMvcCore = cfg =>
                         {
@@ -344,6 +308,49 @@ public class Startup
         _applicationContainer = containerBuilder.Build();
 
         return new AutofacServiceProvider(_applicationContainer);
+    }
+
+    private static Action<AuthorizationOptions> ConfigureEditApiAuthPolicies()
+    {
+        return options =>
+        {
+            options.AddPolicy(
+                PolicyNames.Organisations,
+                builder => builder.RequireClaim(
+                    AcmIdmConstants.Claims.Scope,
+                    AcmIdmConstants.Scopes.CjmBeheerder,
+                    AcmIdmConstants.Scopes.TestClient));
+
+            options.AddPolicy(
+                PolicyNames.BankAccounts,
+                builder => builder.RequireClaim(
+                    AcmIdmConstants.Claims.Scope,
+                    AcmIdmConstants.Scopes.CjmBeheerder,
+                    AcmIdmConstants.Scopes.TestClient));
+
+            options.AddPolicy(
+                PolicyNames.OrganisationClassifications,
+                builder => builder.RequireClaim(
+                    AcmIdmConstants.Claims.Scope,
+                    AcmIdmConstants.Scopes.CjmBeheerder,
+                    AcmIdmConstants.Scopes.TestClient));
+
+            options.AddPolicy(
+                PolicyNames.OrganisationContacts,
+                builder => builder.RequireClaim(
+                    AcmIdmConstants.Claims.Scope,
+                    AcmIdmConstants.Scopes.CjmBeheerder,
+                    AcmIdmConstants.Scopes.TestClient));
+
+            options.AddPolicy(
+                PolicyNames.Keys,
+                builder => builder.RequireClaim(
+                    AcmIdmConstants.Claims.Scope,
+                    AcmIdmConstants.Scopes.CjmBeheerder,
+                    AcmIdmConstants.Scopes.OrafinBeheerder,
+                    AcmIdmConstants.Scopes.TestClient)
+            );
+        };
     }
 
     public void Configure(

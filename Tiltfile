@@ -26,11 +26,19 @@ local_resource(
     resource_deps=['namespace'],
 )
 
+# Refresh kubeconfig from k3d — certs are regenerated on cluster create
+local_resource(
+    'kubeconfig',
+    'k3d kubeconfig get wegwijs-dev > .kubeconfig',
+    labels=['setup'],
+)
+
 # Pseudo-resource to track namespace creation
 local_resource(
     'namespace',
     'KUBECONFIG=.kubeconfig kubectl wait --for=jsonpath={.status.phase}=Active namespace/wegwijs-demo --timeout=60s',
     labels=['setup'],
+    resource_deps=['kubeconfig'],
 )
 
 # =============================================================================
