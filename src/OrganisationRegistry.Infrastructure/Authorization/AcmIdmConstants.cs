@@ -33,6 +33,7 @@ public static class AcmIdmConstants
     {
         public const string CjmBeheerder = "dv_organisatieregister_cjmbeheerder";
         public const string OrafinBeheerder = "dv_organisatieregister_orafinbeheerder";
+        public const string PowerBi = "dv_organisatieregister_powerBi";
         public const string Info  = "dv_organisatieregister_info";
         public const string TestClient  = "dv_organisatieregister_testclient";
     }

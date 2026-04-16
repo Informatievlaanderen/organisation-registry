@@ -264,7 +264,7 @@ public class Startup
                     },
                     MiddlewareHooks =
                     {
-                        Authorization = ConfigureEditApiAuthPolicies(),
+                        Authorization = ConfigureAuthPolicies(bffApiEnabled),
                         ConfigureJsonOptions = options => { options.SerializerSettings.ConfigureForOrganisationRegistry(); },
                         ConfigureMvcCore = cfg =>
                         {
@@ -310,10 +310,24 @@ public class Startup
         return new AutofacServiceProvider(_applicationContainer);
     }
 
-    private static Action<AuthorizationOptions> ConfigureEditApiAuthPolicies()
+    private static Action<AuthorizationOptions> ConfigureAuthPolicies(bool bffApiEnabled)
     {
         return options =>
         {
+            options.AddPolicy(
+                PolicyNames.BackofficeUser,
+                builder =>
+                {
+                    builder.AuthenticationSchemes.Add(AuthenticationSchemes.JwtBearer);
+
+                    if (bffApiEnabled)
+                        builder.AuthenticationSchemes.Add(AuthenticationSchemes.BffApi);
+
+                    builder
+                        .RequireAuthenticatedUser()
+                        .RequireClaim(AcmIdmConstants.Claims.AcmId);
+                });
+
             options.AddPolicy(
                 PolicyNames.Organisations,
                 builder => builder.RequireClaim(
