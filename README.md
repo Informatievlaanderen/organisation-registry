@@ -12,7 +12,8 @@ Please see our [contributing guidelines](CONTRIBUTING.md) before contributing.
 ## Required tools
 - dotnet sdk (see `global.json` for exact version)
 - nvm
-- docker compose
+- [tilt](https://docs.tilt.dev/install.html)
+- [k3d](https://k3d.io/) (local Kubernetes cluster)
 
 ### Useful commands
 
@@ -41,10 +42,19 @@ Organisation Registry integrates with a number of external systems:
 - OpenSearch
 - ACM/IDM (Identity Server for development purposes)
 
-To facilitate development, these systems can be run on your environment with Docker Compose:
-```
-docker compose up --build
-```
+All infrastructure dependencies are managed by Tilt. To start the full local development environment:
+
+1. Create a local k3d cluster (first time only):
+   ```bash
+   k3d cluster create org-registry
+   ```
+
+2. Start all services with Tilt:
+   ```bash
+   tilt up
+   ```
+
+This starts SQL Server, OpenSearch, ACM/IDM, WireMock, and the OpenTelemetry Collector — all exposed on the same host ports as the previous `docker compose` setup (SQL Server on 21433, OpenSearch on 9200/9600, ACM on 5050, WireMock on 8080, OTel Collector on 4317). No `docker compose` commands are needed.
 
 #### To set up identity server settings
 

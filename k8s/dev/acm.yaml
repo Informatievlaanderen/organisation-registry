@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: acm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: acm
+  template:
+    metadata:
+      labels:
+        app: acm
+    spec:
+      containers:
+        - name: acm
+          image: acm
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: acm
+# Port 80 is the container port; Tilt forwards host port 5050 → 80
+spec:
+  selector:
+    app: acm
+  ports:
+    - port: 80
+      targetPort: 80
