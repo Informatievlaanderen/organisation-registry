@@ -19,7 +19,7 @@ spec:
   entryPoints:
     - web
   routes:
-  - match: HostRegexp(`{h:keycloak\..+}`)
+  - match: HostRegexp(`^keycloak\..+$`)
     kind: Rule
     services:
     - name: keycloak
@@ -34,7 +34,7 @@ spec:
   entryPoints:
     - web
   routes:
-  - match: HostRegexp(`{h:api\..+}`)
+  - match: HostRegexp(`^api\..+$`)
     kind: Rule
     services:
     - name: api
@@ -49,7 +49,7 @@ spec:
   entryPoints:
     - web
   routes:
-  - match: HostRegexp(`{h:ui\..+}`)
+  - match: HostRegexp(`^ui\..+$`)
     kind: Rule
     services:
     - name: ui
@@ -64,7 +64,7 @@ spec:
   entryPoints:
     - web
   routes:
-  - match: HostRegexp(`{h:app\..+}`)
+  - match: HostRegexp(`^app\..+$`)
     kind: Rule
     services:
     - name: nuxt-bff
@@ -79,7 +79,7 @@ spec:
   entryPoints:
     - web
   routes:
-  - match: HostRegexp(`{h:m2m\..+}`)
+  - match: HostRegexp(`^m2m\..+$`)
     kind: Rule
     services:
     - name: m2m-demo
@@ -94,7 +94,7 @@ spec:
   entryPoints:
     - web
   routes:
-  - match: HostRegexp(`{h:seq\..+}`)
+  - match: HostRegexp(`^seq\..+$`)
     kind: Rule
     services:
     - name: seq
