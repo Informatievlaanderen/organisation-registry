@@ -3,7 +3,7 @@
 **Feature Branch**: `002-keycloak-demo`  
 **Created**: 2026-03-23  
 **Status**: Draft  
-**Input**: User description: "Keycloak demo: laat Keycloak (24.0, poort 8180) werken als identity provider voor de bestaande Angular SPA flow (authorisation code + PKCE → token exchange bij de API → custom JWT). Daarna een machine-to-machine demo: een kleine .NET Minimal API web UI (in Docker, bereikbaar via browser) met 3 knoppen — "Authenticate" (haalt client credentials token op via cjmClient), "Allowed call" (roept een EditApi endpoint op waar cjmClient rechten voor heeft), "Forbidden call" (roept een endpoint op waar cjmClient geen rechten voor heeft, verwacht 403). Ten slotte een Nuxt 3 BFF demo: gebruiker logt in via Keycloak (authorization code flow), de BFF doet server-side token exchange voor een API-scoped token, en toont een pagina met een "allowed" call en een "forbidden" call naar de Organisation Registry API. Alles draait lokaal via docker-compose."
+**Input**: User description: "Keycloak demo: laat Keycloak werken als identity provider voor de bestaande Angular SPA flow (authorisation code + PKCE → token exchange bij de API → custom JWT). Daarna een machine-to-machine demo: een kleine .NET Minimal API web UI met 3 knoppen — "Authenticate", "Allowed call", "Forbidden call". Ten slotte een Nuxt 3 BFF demo: gebruiker logt in via Keycloak (authorization code flow), de BFF doet server-side token exchange voor een API-scoped token, en toont een pagina met een "allowed" call en een "forbidden" call naar de Organisation Registry API. Alles draait lokaal via k3d + Tilt."
 
 ---
 
@@ -13,17 +13,17 @@
 
 De Organisation Registry API hanteert een **tweeledig authenticatiemechanisme**:
 
-1. **Angular SPA (gebruikers)** — Authorization Code + PKCE flow via ACM/IDM (Duende IdentityServer, poort 5050):
+1. **Angular SPA (gebruikers)** — Authorization Code + PKCE flow via Keycloak:
    - Angular roept `/v1/security/info` op om OIDC-instellingen op te halen
-   - Redirect naar IdentityServer voor login
+   - Redirect naar Keycloak voor login
    - Callback met `code` → API `/v1/security/exchange?code=...&verifier=...`
-   - API doet token exchange bij IdentityServer, bouwt een **eigen custom JWT** (gesigneerd met `JwtSharedSigningKey`)
+   - API doet token exchange bij Keycloak, bouwt een **eigen custom JWT** (gesigneerd met `JwtSharedSigningKey`)
    - Alle volgende requests dragen dit custom JWT als `Bearer`-token
    - Validatie: `JwtBearerDefaults.AuthenticationScheme` met `OrganisationRegistryTokenValidationParameters`
 
 2. **Edit API (machine-to-machine)** — OAuth2 introspection via `AddOAuth2Introspection`:
    - Clients (`cjmClient`, `orafinClient`, `testClient`) halen een access token op via Client Credentials
-   - De API valideert het token live via de introspection endpoint van de IdentityServer
+   - De API valideert het token live via de introspection endpoint van Keycloak
    - Autorisatie via `scope`-claims: `dv_organisatieregister_cjmbeheerder`, `dv_organisatieregister_orafinbeheerder`, etc.
    - Controllers zijn versierd met `[Authorize(AuthenticationSchemes = AuthenticationSchemes.EditApi, Policy = PolicyNames.X)]`
 
@@ -37,12 +37,12 @@ Relevante clients in `src/IdentityServer/Config.cs`:
 
 API Resource: `organisation-registry-local-dev` met secret `a_very=Secr3t*Key`, voor introspection.
 
-### Keycloak (poort 8180)
+### Keycloak (lokaal via k3d + Tilt)
 
-Al geconfigureerd in `docker-compose.yml`:
-- Image: `quay.io/keycloak/keycloak:24.0`
-- `--import-realm` flag: leest realm-configuratie uit `./keycloak/` volume
-- `./keycloak/` is momenteel leeg — de realm moet nog aangemaakt worden
+Geconfigureerd via `Tiltfile` + `demo/k8s/`:
+- Keycloak draait achter Traefik op `http://keycloak.localhost:9080`
+- de realm wordt uit `keycloak/realm-export.json` geïmporteerd via een Tilt `local_resource`
+- server-side pods gebruiken de interne servicehost `http://keycloak`
 
 ### Edit API — toegangsmodel
 
@@ -65,13 +65,13 @@ Een ontwikkelaar kan de bestaande Angular SPA laten draaien met Keycloak als ide
 
 **Why this priority**: Dit is de fundering. Keycloak moet draaien en werkende OIDC-endpoints blootstellen die de bestaande `SecurityController.ExchangeCode` flow ondersteunen. Zonder dit werken de andere demo's ook niet.
 
-**Independent Test**: Start `docker-compose up keycloak` + API. Ga naar de Angular SPA, klik op "inloggen", log in als een testgebruiker in Keycloak, en verifieer dat de SPA een custom JWT ontvangt en ingelogd is.
+**Independent Test**: Start `tilt up keycloak api ui`. Ga naar de Angular SPA, klik op "inloggen", log in als een testgebruiker in Keycloak, en verifieer dat de SPA een custom JWT ontvangt en ingelogd is.
 
 **Acceptance Scenarios**:
 
 1. **Given** Keycloak draait op poort 8180 met een geconfigureerde realm, **When** de Angular SPA `/v1/security/info` opvraagt, **Then** geeft de API OIDC-configuratie terug die naar Keycloak-endpoints wijst (poort 8180).
 
-2. **Given** de gebruiker klikt op "inloggen" in de Angular SPA, **When** de PKCE-flow start, **Then** wordt de browser geredirect naar `http://localhost:8180/realms/wegwijs/protocol/openid-connect/auth`.
+2. **Given** de gebruiker klikt op "inloggen" in de Angular SPA, **When** de PKCE-flow start, **Then** wordt de browser geredirect naar `http://keycloak.localhost:9080/realms/wegwijs/protocol/openid-connect/auth`.
 
 3. **Given** de gebruiker logt in als `dev` / `dev` in Keycloak, **When** de callback arriveert met een `code`, **Then** roept de Angular SPA `/v1/security/exchange?code=...&verifier=...` aan.
 
@@ -87,11 +87,11 @@ Een ontwikkelaar kan via een web UI in de browser demonstreren hoe een machine-t
 
 **Why this priority**: De M2M-demo illustreert het Edit API-toegangsmodel (scope-based autorisatie). Ze bouwt verder op de Keycloak-configuratie van US1 maar is technisch onafhankelijk van de Angular SPA.
 
-**Independent Test**: Start `docker-compose up keycloak m2m-demo`. Open `http://localhost:<poort>` in de browser. Klik de drie knoppen in volgorde en verifieer de resultaten.
+**Independent Test**: Start `tilt up keycloak api m2m-demo`. Open `http://m2m.localhost:9080` in de browser. Klik de drie knoppen in volgorde en verifieer de resultaten.
 
 **Acceptance Scenarios**:
 
-1. **Given** de M2M web UI draait in Docker, **When** de gebruiker op "Authenticate" klikt, **Then** haalt de UI een Client Credentials access token op van Keycloak als `cjmClient` en toont het token (of een samenvatting) op de pagina.
+1. **Given** de M2M web UI draait in k3d, **When** de gebruiker op "Authenticate" klikt, **Then** haalt de UI een Client Credentials access token op van Keycloak als `cjmClient` en toont het token (of een samenvatting) op de pagina.
 
 2. **Given** de gebruiker heeft een geldig token via "Authenticate", **When** op "Allowed call" geklikt wordt, **Then** roept de UI een EditApi endpoint aan waar `cjmClient` rechten voor heeft (bijv. `POST /edit/organisations/{id}/contacts`) en toont de HTTP-statuscode `201` of `200`.
 
@@ -99,7 +99,7 @@ Een ontwikkelaar kan via een web UI in de browser demonstreren hoe een machine-t
 
 4. **Given** nog niet geauthenticeerd, **When** op "Allowed call" of "Forbidden call" geklikt wordt, **Then** toont de UI een foutmelding dat eerst geauthenticeerd moet worden.
 
-5. **Given** de UI draait in Docker, **When** de container start, **Then** is de UI bereikbaar via de browser op een vaste poort (bijv. `http://localhost:5080`).
+5. **Given** de UI draait in k3d, **When** de workload start, **Then** is de UI bereikbaar via de browser op `http://m2m.localhost:9080`.
 
 ---
 
@@ -109,11 +109,11 @@ Een ontwikkelaar kan via een Nuxt 3 BFF demonstreren hoe een interactieve gebrui
 
 **Why this priority**: De BFF-demo toont het geavanceerde patroon van server-side token management. Ze bouwt voort op de Keycloak-configuratie van US1 en vereist een draaiende Organisation Registry API.
 
-**Independent Test**: Start `docker-compose up keycloak m2m-demo nuxt-bff` (+ API). Open `http://localhost:<poort>` in de browser. Klik "inloggen", log in via Keycloak, en verifieer dat de pagina de resultaten van de allowed en forbidden call toont.
+**Independent Test**: Start `tilt up keycloak api nuxt-bff`. Open `http://app.localhost:9080` in de browser. Klik "inloggen", log in via Keycloak, en verifieer dat de pagina de resultaten van de allowed en forbidden call toont.
 
 **Acceptance Scenarios**:
 
-1. **Given** de Nuxt 3 BFF draait in Docker, **When** de gebruiker op "inloggen" klikt, **Then** wordt de browser geredirect naar Keycloak voor authorization code flow.
+1. **Given** de Nuxt 3 BFF draait in k3d, **When** de gebruiker op "inloggen" klikt, **Then** wordt de browser geredirect naar Keycloak voor authorization code flow.
 
 2. **Given** de gebruiker heeft succesvol ingelogd via Keycloak, **When** de callback arriveert bij de BFF, **Then** voert de BFF **server-side** een token exchange uit voor een API-scoped access token (scope `dv_organisatieregister_cjmbeheerder`) en slaat deze op in de sessie (nooit blootgesteld aan de browser).
 
@@ -123,7 +123,7 @@ Een ontwikkelaar kan via een Nuxt 3 BFF demonstreren hoe een interactieve gebrui
 
 5. **Given** de gebruiker is **niet** ingelogd, **When** de beveiligde pagina bezocht wordt, **Then** redirect de BFF automatisch naar Keycloak voor login.
 
-6. **Given** de BFF draait in Docker, **When** de container start, **Then** is de BFF bereikbaar via de browser op een vaste poort (bijv. `http://localhost:5090`).
+6. **Given** de BFF draait in k3d, **When** de workload start, **Then** is de BFF bereikbaar via de browser op `http://app.localhost:9080`.
 
 ---
 
@@ -135,7 +135,7 @@ Een ontwikkelaar kan via een Nuxt 3 BFF demonstreren hoe een interactieve gebrui
 - **CORS op Keycloak**: De Angular SPA draait op een andere origin dan Keycloak. Keycloak moet de juiste Web Origins geconfigureerd hebben voor de Angular-client.
 - **Token lifetime**: De M2M demo-tokens bij Duende zijn geconfigureerd met `AccessTokenLifetime = int.MaxValue`. Bij Keycloak geldt een standaard lifetime. Voor de demo is dit acceptabel maar moet gedocumenteerd worden.
 - **BFF sessie-isolatie**: Het API-scoped token in de Nuxt BFF moet **nooit** naar de browser gestuurd worden. Foutieve implementaties die het token in de response meegeven zijn een beveiligingsrisico.
-- **docker-compose netwerken**: De M2M web UI en Nuxt BFF moeten de Organisation Registry API bereiken via het Docker-netwerk (niet via `localhost`), maar Keycloak moet bereikbaar zijn voor zowel browser-redirects (extern, poort 8180) als server-side token requests (intern, via Docker-netwerk).
+- **k3d service discovery**: De M2M web UI en Nuxt BFF moeten de Organisation Registry API bereiken via Kubernetes service discovery (niet via `localhost`), terwijl Keycloak bereikbaar moet zijn voor zowel browser-redirects (`keycloak.localhost:9080`) als server-side token requests (`http://keycloak`).
 
 ---
 
@@ -148,12 +148,12 @@ Een ontwikkelaar kan via een Nuxt 3 BFF demonstreren hoe een interactieve gebrui
 - **FR-003**: Keycloak MOET een client `cjmClient` configureren voor Client Credentials flow met scope `dv_organisatieregister_cjmbeheerder`.
 - **FR-004**: Keycloak MOET een introspection endpoint blootstellen dat de Organisation Registry API kan gebruiken om M2M-tokens te valideren.
 - **FR-005**: De Organisation Registry API MOET configureerbaar zijn om Keycloak als authority te gebruiken via `appsettings.keycloak.json` (of vergelijkbare override), zonder wijzigingen aan de Angular broncode.
-- **FR-006**: De M2M web UI MOET een Docker-container zijn die bereikbaar is via de browser, met drie knoppen: "Authenticate", "Allowed call", "Forbidden call".
+- **FR-006**: De M2M web UI MOET als workload in de Tilt/k3d omgeving bereikbaar zijn via de browser, met drie knoppen: "Authenticate", "Allowed call", "Forbidden call".
 - **FR-007**: De M2M web UI MOET de HTTP-statuscode en relevante response-informatie tonen na elke API-aanroep.
 - **FR-008**: De Nuxt 3 BFF MOET de authorization code flow volledig server-side afhandelen. Het access token voor de Organisation Registry API mag nooit in de browser-response terechtkomen.
 - **FR-009**: De Nuxt 3 BFF MOET twee API-aanroepen uitvoeren na login: één naar een endpoint waarvoor de gebruiker rechten heeft, één naar een endpoint waarvoor niet — en beide resultaten tonen.
-- **FR-010**: De Keycloak realm-configuratie MOET als JSON export-bestand in `./keycloak/` staan zodat `docker-compose up` automatisch de realm importeert.
-- **FR-011**: `docker-compose up` MOET alle services starten (Keycloak, M2M web UI, Nuxt BFF) zonder handmatige tussenkomst.
+- **FR-010**: De Keycloak realm-configuratie MOET als JSON export-bestand in `./keycloak/` staan zodat Tilt de realm automatisch kan importeren bij startup.
+- **FR-011**: `tilt up` MOET alle services starten (Keycloak, M2M web UI, Nuxt BFF) zonder handmatige tussenkomst.
 
 ### Key Entities *(include if feature involves data)*
 
@@ -161,8 +161,8 @@ Een ontwikkelaar kan via een Nuxt 3 BFF demonstreren hoe een interactieve gebrui
 - **Keycloak Client `organisation-registry-local-dev`**: OIDC-client voor de Angular SPA, Authorization Code + PKCE, met Web Origins voor CORS.
 - **Keycloak Client `cjmClient`**: Confidential client voor Client Credentials, met scope `dv_organisatieregister_cjmbeheerder`.
 - **Keycloak Client `organisation-registry-api`**: Resource server client voor introspection, met secret `a_very=Secr3t*Key`.
-- **M2M Demo Web UI**: .NET 8 Minimal API of ASP.NET Core Razor Pages, Docker-container, HTML-pagina met drie knoppen en resultatenweergave.
-- **Nuxt 3 BFF**: Nuxt 3 server-side rendered applicatie met `@sidebase/nuxt-auth` of eigen server middleware voor OIDC session management, Docker-container.
+- **M2M Demo Web UI**: .NET 8 Minimal API of ASP.NET Core Razor Pages, als Kubernetes workload achter Traefik, HTML-pagina met drie knoppen en resultatenweergave.
+- **Nuxt 3 BFF**: Nuxt 3 server-side rendered applicatie met eigen server middleware voor OIDC session management, als Kubernetes workload achter Traefik.
 - **appsettings.keycloak.json**: Configuratie-override voor de Organisation Registry API die Keycloak als authority configureert.
 
 ---
@@ -171,9 +171,9 @@ Een ontwikkelaar kan via een Nuxt 3 BFF demonstreren hoe een interactieve gebrui
 
 ### Measurable Outcomes
 
-- **SC-001**: `docker-compose up` start alle services zonder fouten en Keycloak is beschikbaar op `http://localhost:8180` binnen 60 seconden.
+- **SC-001**: `tilt up` start alle services zonder fouten en Keycloak is beschikbaar op `http://keycloak.localhost:9080` binnen 60 seconden.
 - **SC-002**: Een ontwikkelaar kan de Angular SPA opstarten, inloggen via Keycloak met `dev`/`dev`, en een custom JWT ontvangen — aantoonbaar via de browser developer tools (Network tab).
 - **SC-003**: De M2M web UI toont na klikken op "Authenticate" een geldig access token van Keycloak. Na "Allowed call" toont de pagina een 2xx-statuscode. Na "Forbidden call" toont de pagina exact `403 Forbidden`.
 - **SC-004**: De Nuxt 3 BFF toont na login twee API-resultaten: één succesvol (2xx) en één verboden (403), waarbij het access token **niet** zichtbaar is in de browser developer tools (Network tab).
-- **SC-005**: De Keycloak realm-configuratie is volledig gedefinieerd in `./keycloak/realm-export.json` en wordt automatisch geïmporteerd bij `docker-compose up keycloak`.
+- **SC-005**: De Keycloak realm-configuratie is volledig gedefinieerd in `./keycloak/realm-export.json` en wordt automatisch geïmporteerd bij `tilt up keycloak`.
 - **SC-006**: De drie demo-componenten zijn onafhankelijk te starten en te testen (elk kan apart `up` worden gezet mits Keycloak en de API draaien).
