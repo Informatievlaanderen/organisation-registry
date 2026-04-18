@@ -23,25 +23,25 @@
 - [ ] T004 [1] [US1] Add protocol mappers to `organisation-registry-local-dev` in `keycloak/realm-export.json`: `iv_wegwijs_rol_3D` (oidc-usermodel-attribute-mapper, `multivalued: true`, id+access+userinfo token) and `vo_id` (oidc-usermodel-attribute-mapper, `multivalued: false`, id+access+userinfo token)
 - [ ] T005 [1] [US1] Add client `cjmClient` to `keycloak/realm-export.json`: Client Credentials, `secret: secret`, `serviceAccountsEnabled: true`, allowed scopes `dv_organisatieregister_cjmbeheerder dv_organisatieregister_info`
 - [ ] T006 [1] [US1] Add client `organisation-registry-api` to `keycloak/realm-export.json`: resource server for introspection, `secret: a_very=Secr3t*Key`, `standardFlowEnabled: false`, `directAccessGrantsEnabled: false`, `serviceAccountsEnabled: false`, `publicClient: false` — confidential client used only for introspection (note: `bearerOnly` does not exist in Keycloak 24)
-- [ ] T007 [1] [US3] Add client `nuxt-bff` to `keycloak/realm-export.json`: Authorization Code + PKCE, `secret: nuxt-bff-secret`, `validRedirectUris: http://app.localhost:9080/callback`, `webOrigins: http://app.localhost:9080`, allowed scopes `openid profile dv_organisatieregister_cjmbeheerder`, same protocol mappers as SPA client
+- [ ] T007 [1] [US3] Add client `nuxt-bff` to `keycloak/realm-export.json`: Authorization Code + PKCE, `secret: nuxt-bff-secret`, `validRedirectUris: http://localhost:5090/callback`, `webOrigins: http://localhost:5090`, allowed scopes `openid profile dv_organisatieregister_cjmbeheerder`, same protocol mappers as SPA client
 - [ ] T008 [1] [US1] Add test users to `keycloak/realm-export.json` with hashed-on-import passwords and `attributes` (`vo_id`, `iv_wegwijs_rol_3D`): `dev/dev`, `vlimpers/vlimpers`, `decentraalbeheerder/decentraalbeheerder`, `algemeenbeheerder/algemeenbeheerder`, `organen/organen`, `regelgeving/regelgeving`, `cjmbeheerder/cjmbeheerder`
-- [ ] T009 [1] [US1] Smoke-test realm import: `tilt up keycloak`, verify `http://keycloak.localhost:9080/realms/wegwijs/.well-known/openid-configuration` returns expected endpoints and all clients/users are present in admin console
+- [ ] T009 [1] [US1] Smoke-test realm import: `docker-compose up keycloak`, verify `http://localhost:8180/realms/wegwijs/.well-known/openid-configuration` returns expected endpoints and all clients/users are present in admin console
 
 ### API Config Override
 
-- [ ] T010 [1] [US1] Create `src/OrganisationRegistry.Api/appsettings.keycloak.json` (NEW) — `OIDCAuth` section: `Authority` → `http://keycloak:8080/realms/wegwijs`, `TokenEndPoint` → `/protocol/openid-connect/token`, `AuthorizationIssuer` → `http://keycloak.localhost:9080/realms/wegwijs`, `JwksUri` → `http://keycloak:8080/realms/wegwijs/protocol/openid-connect/certs`
-- [ ] T011 [1] [US1] Add browser-facing OIDC endpoints to `src/OrganisationRegistry.Api/appsettings.keycloak.json`: `AuthorizationEndpoint`, `UserInfoEndPoint`, `EndSessionEndPoint` all pointing to `http://keycloak.localhost:9080/realms/wegwijs/…`
+- [ ] T010 [1] [US1] Create `src/OrganisationRegistry.Api/appsettings.keycloak.json` (NEW) — `OIDCAuth` section: `Authority` → `http://keycloak:8080/realms/wegwijs`, `TokenEndPoint` → `/protocol/openid-connect/token`, `AuthorizationIssuer` → `http://localhost:8180/realms/wegwijs`, `JwksUri` → `http://keycloak:8080/realms/wegwijs/protocol/openid-connect/certs`
+- [ ] T011 [1] [US1] Add browser-facing OIDC endpoints to `src/OrganisationRegistry.Api/appsettings.keycloak.json`: `AuthorizationEndpoint`, `UserInfoEndPoint`, `EndSessionEndPoint` all pointing to `http://localhost:8180/realms/wegwijs/…`
 - [ ] T012 [1] [US1] Add client credentials and JWT settings to `src/OrganisationRegistry.Api/appsettings.keycloak.json`: `ClientId: organisation-registry-local-dev`, `ClientSecret: a_very=Secr3t*Key`, `AuthorizationRedirectUri`, `JwtSharedSigningKey`, `JwtIssuer`, `JwtAudience` (unchanged from development values)
 - [ ] T013 [1] [US1] Add `EditApi` section to `src/OrganisationRegistry.Api/appsettings.keycloak.json`: `ClientId: organisation-registry-api`, `ClientSecret: a_very=Secr3t*Key`, `Authority: http://keycloak:8080/realms/wegwijs`, `IntrospectionEndpoint: http://keycloak:8080/realms/wegwijs/protocol/openid-connect/token/introspect`, `FeatureManagement.EditApi: true`
 
-### Tilt / k8s — Keycloak environment fixes
+### docker-compose.yml — Keycloak environment fixes
 
-- [ ] T014 [1] [US1] Modify `demo/k8s/keycloak.yaml` / `demo/k8s/config.yaml` (MOD) — configure Keycloak external and internal URLs for split-horizon `iss` handling in the Tilt/k3d setup
+- [ ] T014 [1] [US1] Modify `docker-compose.yml` (MOD) — add `KC_HOSTNAME_URL: http://localhost:8180` and `KC_HOSTNAME_STRICT: "false"` to the `keycloak` service environment (fixes split-horizon `iss` claim)
 - [ ] T015 [1] [US1] Document in `demo/README.md` (NEW) how to start the API locally with the Keycloak config: `ASPNETCORE_ENVIRONMENT=Keycloak dotnet run --project src/OrganisationRegistry.Api` — the API runs outside Docker, `appsettings.keycloak.json` is loaded by the environment name
 
 ### Phase 1 acceptance verification
 
-- [ ] T016 [1] [US1] Manual test: start `tilt up keycloak api ui`, open Angular SPA, click "inloggen", log in as `dev/dev`, verify SPA receives custom JWT (Network tab shows 200 from `/v1/security/exchange`) — covers SC-002
+- [ ] T016 [1] [US1] Manual test: start `docker-compose up keycloak` + API, open Angular SPA, click "inloggen", log in as `dev/dev`, verify SPA receives custom JWT (Network tab shows 200 from `/v1/security/exchange`) — covers SC-002
 
 ---
 
@@ -49,16 +49,16 @@
 
 > Phase 2 tasks are the integration-level verification tasks that confirm US1 acceptance scenarios end-to-end once Phase 1 files are in place.
 
-- [ ] T017 [2] [US1] Verify AC1: call `GET /v1/security/info` and confirm response body contains OIDC endpoints pointing to `keycloak.localhost:9080` (not `localhost:5050`)
-- [ ] T018 [2] [US1] Verify AC2: in Angular SPA click "inloggen", confirm browser redirects to `http://keycloak.localhost:9080/realms/wegwijs/protocol/openid-connect/auth` (check Network tab Location header)
+- [ ] T017 [2] [US1] Verify AC1: call `GET /v1/security/info` and confirm response body contains OIDC endpoints pointing to `localhost:8180` (not `localhost:5050`)
+- [ ] T018 [2] [US1] Verify AC2: in Angular SPA click "inloggen", confirm browser redirects to `http://localhost:8180/realms/wegwijs/protocol/openid-connect/auth` (check Network tab Location header)
 - [ ] T019 [2] [US1] Verify AC3: complete Keycloak login as `dev/dev`, confirm Angular SPA callback calls `GET /v1/security/exchange?code=…&verifier=…`
 - [ ] T020 [2] [US1] Verify AC4: confirm `POST /v1/security/exchange` returns a custom JWT that contains `iv_wegwijs_rol_3D` and `vo_id` claims (decode JWT in browser console or jwt.io)
 - [ ] T021 [2] [US1] Verify AC5: navigate to a protected screen in the SPA and confirm subsequent API calls use `Authorization: Bearer <custom_jwt>` and return 200 OK
-- [ ] T022 [2] [US1] Verify edge case — introspection: start `tilt up keycloak`, confirm M2M introspection endpoint `http://keycloak/realms/wegwijs/protocol/openid-connect/token/introspect` responds to a test `POST` with valid client credentials
+- [ ] T022 [2] [US1] Verify edge case — introspection: start `docker-compose up keycloak` only (no Duende), confirm M2M introspection endpoint `http://keycloak:8080/realms/wegwijs/protocol/openid-connect/token/introspect` responds to a test `POST` with valid client credentials
 
 ---
 
-## Phase 3 — US2: M2M .NET Minimal API Demo in Tilt/k3d
+## Phase 3 — US2: M2M .NET Minimal API Demo in Docker
 
 ### Project files
 
@@ -67,19 +67,19 @@
 - [ ] T025 [3] [US2] Add `POST /demo/authenticate` to `demo/m2m/Program.cs`: calls Keycloak token endpoint with Client Credentials (`CJM_CLIENT_ID` / `CJM_CLIENT_SECRET`), stores `access_token` in static in-memory holder, returns JSON `{ expires_in, scope }` — raw token NOT returned
 - [ ] T026 [3] [US2] Add `POST /demo/allowed` to `demo/m2m/Program.cs`: uses stored token to call `POST /edit/organisations/{TEST_OVO_ID}/contacts` on `API_BASE_URL` with an intentionally minimal/invalid body — auth is checked before model validation so 403 proves access, 400 proves allowed (not 401/403); returns JSON `{ status, body }`; returns 400 with message if not yet authenticated
 - [ ] T027 [3] [US2] Add `POST /demo/forbidden` to `demo/m2m/Program.cs`: uses stored token to call `POST /edit/organisations/{TEST_OVO_ID}/keys` on `API_BASE_URL` (policy `Keys` requires `dv_organisatieregister_orafinbeheerder` — cjmClient lacks this); returns JSON `{ status, body }` — expected status 403; returns 400 with message if not yet authenticated
-- [ ] T028 [3] [US2] Read environment variables in `demo/m2m/Program.cs`: `KEYCLOAK_TOKEN_ENDPOINT`, `CJM_CLIENT_ID`, `CJM_CLIENT_SECRET`, `API_BASE_URL`, `TEST_OVO_ID` — fail fast with descriptive error if any are missing; `API_BASE_URL` points to the in-cluster API service (`http://api:80`)
+- [ ] T028 [3] [US2] Read environment variables in `demo/m2m/Program.cs`: `KEYCLOAK_TOKEN_ENDPOINT`, `CJM_CLIENT_ID`, `CJM_CLIENT_SECRET`, `API_BASE_URL`, `TEST_OVO_ID` — fail fast with descriptive error if any are missing; `API_BASE_URL` points to `http://host.docker.internal:<api_port>` so the container reaches the locally running API
 
 ### Dockerfile
 
 - [ ] T029 [3] [US2] Create `demo/m2m/Dockerfile` (NEW) — multi-stage: stage 1 `mcr.microsoft.com/dotnet/sdk:8.0` runs `dotnet publish -c Release -o /app/publish`; stage 2 `mcr.microsoft.com/dotnet/aspnet:8.0` copies published output, `EXPOSE 8080`, `ENTRYPOINT ["dotnet", "m2m.dll"]`
 
-### demo/k8s manifests
+### docker-compose.yml splits
 
-- [ ] T030 [3] [US2] Create/update `demo/k8s/m2m.yaml` (MOD) — deployment/service for `m2m-demo`, met environment variables uit `demo-config` en `demo-secrets`, bereikbaar via Traefik op `m2m.localhost:9080`
+- [ ] T030 [3] [US2] Create `demo/docker-compose.yml` (NEW) — standalone compose file for demo services only: `m2m-demo` service: `build: ./m2m/`, `ports: 5080:8080`, environment variables `KEYCLOAK_TOKEN_ENDPOINT` (pointing to `http://host.docker.internal:8180/realms/wegwijs/…`), `CJM_CLIENT_ID`, `CJM_CLIENT_SECRET`, `API_BASE_URL: http://host.docker.internal:<api_port>`, `TEST_OVO_ID`; add `extra_hosts: host.docker.internal:host-gateway` for Linux compatibility
 
 ### Phase 3 acceptance verification
 
-- [ ] T031 [3] [US2] Verify AC5/SC-006: `tilt up keycloak api m2m-demo`, open `http://m2m.localhost:9080`, confirm page loads with three buttons
+- [ ] T031 [3] [US2] Verify AC5/SC-006: `docker-compose up keycloak m2m-demo`, open `http://localhost:5080`, confirm page loads with three buttons
 - [ ] T032 [3] [US2] Verify AC1/SC-003: click "Authenticate", confirm page shows token summary (expiry + scopes) — raw token must NOT be visible in browser Network tab response body
 - [ ] T033 [3] [US2] Verify AC2/SC-003: click "Allowed call", confirm page shows HTTP status 2xx
 - [ ] T034 [3] [US2] Verify AC3/SC-003: click "Forbidden call", confirm page shows exactly `403 Forbidden`
@@ -87,7 +87,7 @@
 
 ---
 
-## Phase 4 — US3: Nuxt 3 BFF Demo in Tilt/k3d
+## Phase 4 — US3: Nuxt 3 BFF Demo in Docker
 
 ### Project scaffolding
 
@@ -118,18 +118,18 @@
 
 - [ ] T046 [4] [US3] Create `demo/nuxt-bff/Dockerfile` (NEW) — multi-stage: stage 1 `node:20-alpine` runs `npm ci && npm run build`; stage 2 `node:20-alpine` copies `.output/`, `EXPOSE 3000`, `CMD ["node", ".output/server/index.mjs"]`
 
-### demo/k8s manifests — nuxt-bff
+### demo/docker-compose.yml — nuxt-bff service
 
-- [ ] T047 [4] [US3] Add/update `demo/k8s/nuxt-bff.yaml` (MOD) — deployment/service for `nuxt-bff`, environment variables from `demo-config` and `demo-secrets`, bereikbaar via Traefik op `app.localhost:9080`
+- [ ] T047 [4] [US3] Add `nuxt-bff` service to `demo/docker-compose.yml` (MOD) — `build: ./nuxt-bff/`, `ports: 5090:3000`, environment variables `KEYCLOAK_AUTH_URL` (external, `http://localhost:8180/…`), `KEYCLOAK_TOKEN_URL` (internal, `http://host.docker.internal:8180/…`), `BFF_CLIENT_ID`, `BFF_CLIENT_SECRET`, `BFF_REDIRECT_URI: http://localhost:5090/callback`, `API_BASE_URL: http://host.docker.internal:<api_port>`, `SESSION_SECRET`, `TEST_OVO_ID`; add `extra_hosts: host.docker.internal:host-gateway` for Linux compatibility
 
 ### Phase 4 acceptance verification
 
-- [ ] T048 [4] [US3] Verify AC6/SC-006: `tilt up keycloak api nuxt-bff`, open `http://app.localhost:9080`, confirm page loads with login button
-- [ ] T049 [4] [US3] Verify AC1: click "inloggen", confirm browser redirects to `http://keycloak.localhost:9080/realms/wegwijs/protocol/openid-connect/auth`
+- [ ] T048 [4] [US3] Verify AC6/SC-006: `docker-compose up keycloak nuxt-bff` (+ API), open `http://localhost:5090`, confirm page loads with login button
+- [ ] T049 [4] [US3] Verify AC1: click "inloggen", confirm browser redirects to `http://localhost:8180/realms/wegwijs/protocol/openid-connect/auth`
 - [ ] T050 [4] [US3] Verify AC2/SC-004: complete login as `dev/dev`, confirm redirect to `/dashboard`; open browser Network tab and verify `access_token` does NOT appear in any response body or cookie value in plain text
 - [ ] T051 [4] [US3] Verify AC3/SC-004: dashboard shows allowed call result with 2xx status
 - [ ] T052 [4] [US3] Verify AC4/SC-004: dashboard shows forbidden call result with `403 Forbidden`
-- [ ] T053 [4] [US3] Verify AC5: clear session cookie and visit `http://app.localhost:9080/dashboard` directly, confirm automatic redirect to Keycloak login
+- [ ] T053 [4] [US3] Verify AC5: clear session cookie and visit `http://localhost:5090/dashboard` directly, confirm automatic redirect to Keycloak login
 - [ ] T054 [4] [US3] Verify SC-004 security: inspect browser DevTools Network tab during entire login + dashboard flow, confirm `access_token` string is never present in any XHR/fetch response
 
 ---
@@ -138,15 +138,14 @@
 
 | Phase | Scope | Tasks |
 |---|---|---|
-| 1 | Setup: realm JSON + appsettings.keycloak.json + Keycloak env in Tilt/k8s + demo/README.md | T001–T016 |
+| 1 | Setup: realm JSON + appsettings.keycloak.json + Keycloak env in docker-compose.yml + demo/README.md | T001–T016 |
 | 2 | US1 acceptance verification: Angular SPA with Keycloak | T017–T022 |
-| 3 | US2: M2M .NET Minimal API demo + `demo/k8s/m2m.yaml` | T023–T035 |
-| 4 | US3: Nuxt 3 BFF demo + `demo/k8s/nuxt-bff.yaml` | T036–T054 |
+| 3 | US2: M2M .NET Minimal API demo + demo/docker-compose.yml | T023–T035 |
+| 4 | US3: Nuxt 3 BFF demo + demo/docker-compose.yml uitbreiden | T036–T054 |
 
-**Actieve lokale structuur**:
-- `Tiltfile` — start infra, applicaties en demo-workloads
-- `k3d.config.yaml` — lokale cluster- en registryconfiguratie
-- `demo/k8s/*.yaml` — manifests voor Keycloak, API, UI, m2m-demo en nuxt-bff
-- API + Angular UI zijn bereikbaar via Traefik op `*.localhost:9080`
+**Compose structuur**:
+- `docker-compose.yml` — Keycloak (poort 8180) + bestaande infra (mssql, es, wiremock, acm)
+- `demo/docker-compose.yml` — M2M demo (poort 5080) + Nuxt BFF (poort 5090); beide bereiken de lokaal draaiende API via `host.docker.internal`
+- API + Angular SPA draaien lokaal: `ASPNETCORE_ENVIRONMENT=Keycloak dotnet run` + `npm run start`
 
 **Total tasks**: 54

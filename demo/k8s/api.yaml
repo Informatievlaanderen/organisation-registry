@@ -39,13 +39,9 @@ spec:
         - name: SqlServer__MigrationsConnectionString
           value: "Server=mssql;Database=OrganisationRegistry;User Id=sa;Password=$(MSSQL_SA_PASSWORD);TrustServerCertificate=True;MultipleActiveResultSets=True"
         - name: ElasticSearch__ReadConnectionString
-          value: "http://opensearch:9200/"
+          value: "http://localhost:9200/"
         - name: ElasticSearch__WriteConnectionString
-          value: "http://opensearch:9200/"
-        - name: Api__KboMagdaEndpoint
-          value: "http://wiremock:8080"
-        - name: Api__RepertoriumMagdaEndpoint
-          value: "http://wiremock:8080"
+          value: "http://localhost:9200/"
         - name: OIDCAuth__Authority
           value: "http://keycloak.localhost:9080/realms/wegwijs"
         - name: OIDCAuth__InternalAuthorityOverride

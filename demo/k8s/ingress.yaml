@@ -7,10 +7,8 @@
 # api.*       → API
 # ui.*        → Angular UI (backoffice)
 # app.*       → Nuxt BFF (Keycloak demo)
-# seq.*        → Seq (structured log viewer)
-# m2m.*        → M2M demo
-# opensearch.* → OpenSearch
-# mock.*       → WireMock
+# seq.*       → Seq (structured log viewer)
+# m2m.*       → M2M demo
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
@@ -101,33 +99,3 @@ spec:
     services:
     - name: seq
       port: 80
----
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
-  name: opensearch
-  namespace: wegwijs-demo
-spec:
-  entryPoints:
-    - web
-  routes:
-  - match: HostRegexp(`^opensearch\..+$`)
-    kind: Rule
-    services:
-    - name: opensearch
-      port: 9200
----
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
-  name: mock
-  namespace: wegwijs-demo
-spec:
-  entryPoints:
-    - web
-  routes:
-  - match: HostRegexp(`^mock\..+$`)
-    kind: Rule
-    services:
-    - name: wiremock
-      port: 8080

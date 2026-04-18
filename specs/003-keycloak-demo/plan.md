@@ -8,7 +8,7 @@
 Replace Duende IdentityServer with Keycloak 24.0 as the identity provider for all three authentication
 flows used by the Organisation Registry: the Angular SPA (Authorization Code + PKCE with custom JWT
 exchange), machine-to-machine (Client Credentials via OAuth2 introspection), and an interactive BFF
-pattern (Nuxt 3 server-side token management). Everything runs locally via k3d + Tilt.
+pattern (Nuxt 3 server-side token management). Everything runs locally via docker-compose.
 
 The plan is split into three independent but sequentially-dependent user stories:
 
@@ -26,8 +26,8 @@ JSON (Keycloak realm config)
 **Primary Dependencies**: Keycloak 24.0, IdentityModel (for `RequestAuthorizationCodeTokenAsync`),
 `@sidebase/nuxt-auth` or custom `h3` server middleware (Nuxt 3)  
 **Storage**: No new storage. Session state in Nuxt BFF uses encrypted server-side cookie store.  
-**Testing**: Manual acceptance scenarios (Tilt/k3d based); no automated tests for demo workloads  
-**Target Platform**: k3d / Kubernetes with Tilt, linux/arm64 and linux/amd64  
+**Testing**: Manual acceptance scenarios (docker-compose based); no automated tests for demo containers  
+**Target Platform**: Docker (all three components), linux/amd64  
 **Project Type**: Infrastructure / demo services  
 **Performance Goals**: Demo-level; no throughput requirements  
 **Constraints**: No changes to Angular SPA source. No changes to existing domain code or events.
@@ -46,12 +46,12 @@ JSON (Keycloak realm config)
 | IV. Respect Aggregate Boundaries | PASS | No aggregates modified |
 | V. Testing is Not Optional | CONDITIONAL | Demo containers have acceptance scenarios; no unit/integration test required for pure config and demo services per spec priority |
 
-**Complexity justification (new demo workloads)**:
+**Complexity justification (new Docker services)**:
 
 | Addition | Why Needed | Simpler Alternative Rejected Because |
 |---|---|---|
-| `m2m-demo` workload | US2 requires browser-accessible M2M demo | Static HTML cannot do server-side Client Credentials safely |
-| `nuxt-bff` workload | US3 requires server-side token isolation | Browser-side token would violate FR-008 security requirement |
+| `m2m-demo` Docker service | US2 requires browser-accessible M2M demo | Static HTML cannot do server-side Client Credentials safely |
+| `nuxt-bff` Docker service | US3 requires server-side token isolation | Browser-side token would violate FR-008 security requirement |
 | `keycloak/realm-export.json` | Keycloak `--import-realm` requires a realm JSON file in the import volume | Manual Keycloak UI setup is not reproducible |
 
 ## Project Structure
@@ -75,9 +75,7 @@ keycloak/
 src/OrganisationRegistry.Api/
 └── appsettings.keycloak.json        # Config override: OIDCAuth + EditApi → Keycloak endpoints
 
-Tiltfile                            # Primary local runner for the demo environment
-k3d.config.yaml                     # Local cluster and registry config
-demo/k8s/                           # Kubernetes manifests for infra, apps and demo workloads
+docker-compose.yml                   # Extended: m2m-demo + nuxt-bff services added
 
 demo/m2m/
 ├── Dockerfile
@@ -124,12 +122,12 @@ See `research.md` for full analysis. Key conclusions:
    `dv_organisatieregister_cjmbeheerder`. The BFF uses authorization code flow; the id_token user
    identity is stored in the session; a separate client-credentials request retrieves an API token.
 
-4. **k3d networking**: Keycloak is dual-addressed:
-   - Browser → `http://keycloak.localhost:9080` (external, for redirects and login UI)
-   - Server-side (API, M2M demo, Nuxt BFF) → `http://keycloak` (internal Kubernetes service)
+4. **Docker networking**: Keycloak is dual-addressed:
+   - Browser → `http://localhost:8180` (external, for redirects and login UI)
+   - Server-side (API, M2M demo, Nuxt BFF) → `http://keycloak:8080` (internal Docker network)
    This means the `Authority` / `IntrospectionEndpoint` in server-side config uses the internal
    hostname, while `AuthorizationEndpoint` / `EndSessionEndPoint` in the `/v1/security/info`
-   response (consumed by the Angular SPA browser) must use the external `keycloak.localhost:9080` address.
+   response (consumed by the Angular SPA browser) must use the external `localhost:8180` address.
    The `appsettings.keycloak.json` sets `Authority` to the internal hostname for token/introspect
    operations, and the public-facing OIDC endpoints to the external hostname.
 
@@ -156,7 +154,7 @@ The Keycloak realm JSON must configure:
 | `organisation-registry-local-dev` | `authorization_code` | `a_very=Secr3t*Key` | openid, profile, `iv_wegwijs`, `dv_organisatieregister_cjmbeheerder` | `https://organisatie.dev-vlaanderen.local/#/oic`, `https://organisatie.dev-vlaanderen.local/v2/oic` | `https://organisatie.dev-vlaanderen.local` |
 | `cjmClient` | `client_credentials` | `secret` | `dv_organisatieregister_cjmbeheerder`, `dv_organisatieregister_info` | — | — |
 | `organisation-registry-api` | (resource server for introspection) | `a_very=Secr3t*Key` | — | — | — |
-| `nuxt-bff` | `authorization_code` | `nuxt-bff-secret` | openid, profile, `dv_organisatieregister_cjmbeheerder` | `http://app.localhost:9080/callback` | `http://app.localhost:9080` |
+| `nuxt-bff` | `authorization_code` | `nuxt-bff-secret` | openid, profile, `dv_organisatieregister_cjmbeheerder` | `http://localhost:5090/callback` | `http://localhost:5090` |
 
 **Client Scopes** (maps to `ApiScope` in Duende):
 - `dv_organisatieregister_cjmbeheerder`
@@ -193,10 +191,10 @@ Key mappings:
 |---|---|---|
 | `Authority` | `http://keycloak:8080/realms/wegwijs` | Internal Docker, used for token server-side |
 | `TokenEndPoint` | `/protocol/openid-connect/token` | Relative to Authority |
-| `AuthorizationEndpoint` | `http://keycloak.localhost:9080/realms/wegwijs/protocol/openid-connect/auth` | External, for browser redirect |
-| `UserInfoEndPoint` | `http://keycloak.localhost:9080/realms/wegwijs/protocol/openid-connect/userinfo` | External |
-| `EndSessionEndPoint` | `http://keycloak.localhost:9080/realms/wegwijs/protocol/openid-connect/logout` | External |
-| `AuthorizationIssuer` | `http://keycloak.localhost:9080/realms/wegwijs` | Must match token `iss` claim for Angular |
+| `AuthorizationEndpoint` | `http://localhost:8180/realms/wegwijs/protocol/openid-connect/auth` | External, for browser redirect |
+| `UserInfoEndPoint` | `http://localhost:8180/realms/wegwijs/protocol/openid-connect/userinfo` | External |
+| `EndSessionEndPoint` | `http://localhost:8180/realms/wegwijs/protocol/openid-connect/logout` | External |
+| `AuthorizationIssuer` | `http://localhost:8180/realms/wegwijs` | Must match token `iss` claim for Angular |
 | `JwksUri` | `http://keycloak:8080/realms/wegwijs/protocol/openid-connect/certs` | Internal for validation |
 | `ClientId` | `organisation-registry-local-dev` | Same as Duende |
 | `ClientSecret` | `a_very=Secr3t*Key` | Same as Duende |
@@ -217,17 +215,17 @@ For `EditApi` introspection:
 **Critical**: The `OIDCAuth.Authority` (used server-side for `RequestAuthorizationCodeTokenAsync`)
 must point to the **internal** Docker hostname `keycloak:8080`, while `AuthorizationEndpoint`,
 `UserInfoEndPoint`, and `EndSessionEndPoint` (consumed by the Angular browser SPA via
-`/v1/security/info`) must point to **external** `keycloak.localhost:9080`.
+`/v1/security/info`) must point to **external** `localhost:8180`.
 
 **Also**: `WegwijsTokenValidationParameters` validates the JWT issuer. It must accept
-`http://keycloak.localhost:9080/realms/wegwijs` as issuer (Keycloak sets `iss` to the public URL).
+`http://localhost:8180/realms/wegwijs` as issuer (Keycloak sets `iss` to the public URL).
 `ValidIssuers` must include the external URL even though the API resolves internally — this is
 standard for split-horizon setups. The `JwksUri` can remain internal for performance.
 
-#### Tilt / k8s changes
+#### docker-compose.yml changes
 
-- Ensure `Tiltfile` loads `demo/k8s/keycloak.yaml`, `demo/k8s/api.yaml`, `demo/k8s/m2m.yaml` and `demo/k8s/nuxt-bff.yaml`
-- Ensure realm import stays wired through the Tilt `keycloak-realm-configmap` local resource
+- Add `ASPNETCORE_ENVIRONMENT: Keycloak` to the `api` service (or pass as docker-compose override)
+- Ensure Keycloak `--import-realm` flag is already present (it is)
 - The `keycloak/` volume mount already points to `./keycloak:/opt/keycloak/data/import`
 
 ---
@@ -256,14 +254,14 @@ sanitised responses.
 
 #### Configuration
 
-Environment variables configured via `demo/k8s` manifests:
+Environment variables passed via docker-compose:
 - `KEYCLOAK_TOKEN_ENDPOINT=http://keycloak:8080/realms/wegwijs/protocol/openid-connect/token`
 - `CJM_CLIENT_ID=cjmClient`
 - `CJM_CLIENT_SECRET=secret`
-- `API_BASE_URL=http://api:80` (internal Kubernetes service)
+- `API_BASE_URL=http://api:80` (internal Docker network)
 - `TEST_OVO_ID=OVO002949` (or any existing OVO in the seeded database)
 
-#### demo/k8s workload
+#### docker-compose service
 
 ```yaml
 m2m-demo:
@@ -307,7 +305,7 @@ a secret. This is available out-of-the-box in Nuxt 3.
 #### OIDC Flow
 
 1. User visits `/` (unauthenticated) → redirect to `/login`
-2. `/login` → redirect to Keycloak with `response_type=code`, `scope=openid profile dv_organisatieregister_cjmbeheerder`, PKCE parameters, `redirect_uri=http://app.localhost:9080/callback`
+2. `/login` → redirect to Keycloak with `response_type=code`, `scope=openid profile dv_organisatieregister_cjmbeheerder`, PKCE parameters, `redirect_uri=http://localhost:5090/callback`
 3. User logs in at Keycloak → redirect back to `/callback?code=...`
 4. `/callback`:
    - Exchange code for tokens at Keycloak token endpoint (server-side)
@@ -330,16 +328,16 @@ appears in a response body or network request from the browser.
 
 #### Configuration (environment variables)
 
-- `KEYCLOAK_AUTH_URL=http://keycloak.localhost:9080/realms/wegwijs/protocol/openid-connect/auth`
+- `KEYCLOAK_AUTH_URL=http://localhost:8180/realms/wegwijs/protocol/openid-connect/auth`
 - `KEYCLOAK_TOKEN_URL=http://keycloak:8080/realms/wegwijs/protocol/openid-connect/token`
 - `BFF_CLIENT_ID=nuxt-bff`
 - `BFF_CLIENT_SECRET=nuxt-bff-secret`
-- `BFF_REDIRECT_URI=http://app.localhost:9080/callback`
+- `BFF_REDIRECT_URI=http://localhost:5090/callback`
 - `API_BASE_URL=http://api:80`
 - `SESSION_SECRET=a-32-character-minimum-secret-here`
 - `TEST_OVO_ID=OVO002949`
 
-#### demo/k8s workload
+#### docker-compose service
 
 ```yaml
 nuxt-bff:
@@ -347,11 +345,11 @@ nuxt-bff:
   ports:
     - "5090:3000"
   environment:
-    KEYCLOAK_AUTH_URL: http://keycloak.localhost:9080/realms/wegwijs/protocol/openid-connect/auth
+    KEYCLOAK_AUTH_URL: http://localhost:8180/realms/wegwijs/protocol/openid-connect/auth
     KEYCLOAK_TOKEN_URL: http://keycloak:8080/realms/wegwijs/protocol/openid-connect/token
     BFF_CLIENT_ID: nuxt-bff
     BFF_CLIENT_SECRET: nuxt-bff-secret
-    BFF_REDIRECT_URI: http://app.localhost:9080/callback
+    BFF_REDIRECT_URI: http://localhost:5090/callback
     API_BASE_URL: http://api:80
     SESSION_SECRET: demo-session-secret-minimum-32chars
     TEST_OVO_ID: OVO002949
@@ -369,7 +367,7 @@ nuxt-bff:
    - Realm `wegwijs`, all clients, all client scopes, all users with user attributes
    - Protocol mappers for `iv_wegwijs_rol_3D` (multi-valued User Attribute mapper) and `vo_id`
    - Introspection enabled on `organisation-registry-api` client
-2. Verify: `tilt up keycloak`, open `http://keycloak.localhost:9080/realms/wegwijs/.well-known/openid-configuration` returns expected endpoints
+2. Verify: `docker-compose up keycloak`, open `http://localhost:8180/realms/wegwijs/.well-known/openid-configuration` returns expected endpoints
 3. Author `src/OrganisationRegistry.Api/appsettings.keycloak.json`
 4. Start API with `ASPNETCORE_ENVIRONMENT=Keycloak`, run the Angular SPA, test full login flow
 
@@ -377,8 +375,8 @@ nuxt-bff:
 
 1. Author `demo/m2m/m2m.csproj` and `demo/m2m/Program.cs`
 2. Author `demo/m2m/Dockerfile`
-3. Add `m2m-demo` deployment/service to `demo/k8s/m2m.yaml`
-4. Test: `tilt up keycloak api m2m-demo`, open `http://m2m.localhost:9080`
+3. Add `m2m-demo` service to `docker-compose.yml`
+4. Test: `docker-compose up keycloak m2m-demo`, open `http://localhost:5080`
 
 ### Step 3 — Nuxt BFF (US3)
 
@@ -386,7 +384,7 @@ nuxt-bff:
 2. Author server routes (`login`, `callback`, `logout`) and API routes (`allowed`, `forbidden`)
 3. Author pages (`index.vue`, `dashboard.vue`)
 4. Author `demo/nuxt-bff/Dockerfile` (multi-stage: `node:20-alpine` build → runtime)
-5. Add `nuxt-bff` deployment/service to `demo/k8s/nuxt-bff.yaml`
+5. Add `nuxt-bff` service to `docker-compose.yml`
 6. Test: full login flow, verify token not visible in browser Network tab
 
 ---
@@ -395,7 +393,7 @@ nuxt-bff:
 
 | Risk | Mitigation |
 |---|---|
-| Keycloak `iss` claim uses public hostname (`keycloak.localhost:9080`) but API validates tokens with internal URL | Set `ValidIssuers` in `WegwijsTokenValidationParameters` to include both `http://keycloak.localhost:9080/realms/wegwijs` and internal URL, or use Keycloak's `frontendUrl` setting to control the `iss` value |
+| Keycloak `iss` claim uses public hostname (`localhost:8180`) but API validates tokens with internal URL | Set `ValidIssuers` in `WegwijsTokenValidationParameters` to include both `http://localhost:8180/realms/wegwijs` and internal URL, or use Keycloak's `frontendUrl` setting to control the `iss` value |
 | `iv_wegwijs_rol_3D` multi-valued attribute mapper in realm JSON | Use `"multivalued": true` in the protocol mapper config; Keycloak serialises as JSON array in the token |
 | Introspection auth: Keycloak uses `client_credentials` for introspection (not just `client_id` + `client_secret` in body) | `IdentityModel.AspNetCore.OAuth2Introspection` sends Basic auth header by default; Keycloak accepts this — confirmed in research.md |
 | Angular SPA has hardcoded `redirect_uri` with `#/oic` fragment | Keycloak client must register this exact URI; hash fragments in redirect URIs require Keycloak `validRedirectUris` to use a wildcard or exact match |

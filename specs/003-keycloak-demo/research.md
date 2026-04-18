@@ -3,10 +3,6 @@
 **Branch**: `003-keycloak-demo` | **Date**: 2026-03-23  
 **Purpose**: Resolve key technical unknowns before implementation begins.
 
-> Nota: dit document bevat ook historische migratiecontext uit de eerdere Docker Compose-opstelling.
-> De actieve lokale demo draait nu via `k3d` + `Tilt`, met Keycloak als vervanging voor ACM/IDM
-> in de lokale demo-flow.
-
 ---
 
 ## RQ-1: Keycloak Claim Mappers for `iv_wegwijs_rol_3D` and `vo_id`

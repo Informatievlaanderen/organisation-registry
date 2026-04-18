@@ -12,11 +12,7 @@ Please see our [contributing guidelines](CONTRIBUTING.md) before contributing.
 ## Required tools
 - dotnet sdk (see `global.json` for exact version)
 - nvm
-- docker
-- k3d
-- kubectl
-- helm
-- tilt
+- docker compose
 
 ### Useful commands
 
@@ -38,46 +34,19 @@ npm run start:hmr
 # browse to https://organisatie.dev-vlaanderen.local
 ```
 
-#### To run the local demo environment
-
-The actieve lokale demo draait via `k3d` + `Tilt`. In deze setup vervangt Keycloak de vroegere
-ACM/IDM / IdentityServer demo-opstelling.
-
-Fast path:
-```bash
-bash scripts/dev-setup.sh
-```
-
-Manual path:
-```bash
-k3d cluster create --config k3d.config.yaml
-helm upgrade --install traefik traefik/traefik \
-  -f demo/helm/traefik-values.yaml \
-  -n traefik \
-  --create-namespace
-tilt up
-```
-
-Beschikbare URLs:
-- `http://keycloak.localhost:9080`
-- `http://seq.localhost:9080`
-- `http://opensearch.localhost:9080`
-- `http://mock.localhost:9080`
-- `http://api.localhost:9080/v1`
-- `http://ui.localhost:9080`
-- `http://m2m.localhost:9080`
-- `http://app.localhost:9080`
-
-#### External dependencies in the demo
+#### To run external dependencies
 
 Organisation Registry integrates with a number of external systems:
 - Microsoft Sql Server
 - OpenSearch
-- Keycloak
-- WireMock
-- Seq
+- ACM/IDM (Identity Server for development purposes)
 
-#### To set up identity server settings (legacy)
+To facilitate development, these systems can be run on your environment with Docker Compose:
+```
+docker compose up --build
+```
+
+#### To set up identity server settings
 
 After the initial database setup, run the sql in `scripts/development/setup_auth/remove_oidc_auth.sql`.
 

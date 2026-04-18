@@ -26,22 +26,6 @@ local_resource(
     resource_deps=['namespace'],
 )
 
-local_resource(
-    'wiremock-mappings-configmap',
-    'KUBECONFIG=.kubeconfig kubectl create configmap wiremock-mappings --from-file=wiremock/mappings -n wegwijs-demo --dry-run=client -o yaml | KUBECONFIG=.kubeconfig kubectl apply -f -',
-    deps=['wiremock/mappings'],
-    labels=['setup'],
-    resource_deps=['namespace'],
-)
-
-local_resource(
-    'wiremock-files-configmap',
-    'KUBECONFIG=.kubeconfig kubectl create configmap wiremock-files --from-file=wiremock/files -n wegwijs-demo --dry-run=client -o yaml | KUBECONFIG=.kubeconfig kubectl apply -f -',
-    deps=['wiremock/files'],
-    labels=['setup'],
-    resource_deps=['namespace'],
-)
-
 # Refresh kubeconfig from k3d — certs are regenerated on cluster create
 local_resource(
     'kubeconfig',
@@ -62,9 +46,7 @@ local_resource(
 # =============================================================================
 
 k8s_yaml('demo/k8s/mssql.yaml')
-k8s_yaml('demo/k8s/opensearch.yaml')
 k8s_yaml('demo/k8s/keycloak.yaml')
-k8s_yaml('demo/k8s/wiremock.yaml')
 k8s_yaml('demo/k8s/seq.yaml')
 k8s_yaml('demo/k8s/otel-collector.yaml')
 
@@ -72,16 +54,6 @@ k8s_resource('mssql',
     port_forwards='11433:1433',
     labels=['infrastructure'],
     resource_deps=['namespace'])
-
-k8s_resource('opensearch',
-    labels=['infrastructure'],
-    resource_deps=['namespace'],
-    links=[link('http://opensearch.localhost:9080', 'OpenSearch')])
-
-k8s_resource('wiremock',
-    labels=['infrastructure'],
-    resource_deps=['wiremock-mappings-configmap', 'wiremock-files-configmap'],
-    links=[link('http://mock.localhost:9080', 'WireMock')])
 
 k8s_resource('seq',
     labels=['infrastructure'],
@@ -173,7 +145,7 @@ k8s_yaml('demo/k8s/ingress.yaml')
 
 k8s_resource('api',
     labels=['applications'],
-    resource_deps=['mssql', 'opensearch', 'keycloak', 'wiremock', 'otel-collector'],
+    resource_deps=['mssql', 'keycloak', 'otel-collector'],
     links=[link('http://api.localhost:9080/v1', 'API')])
 
 k8s_resource('ui',
@@ -219,8 +191,6 @@ print('║  Wegwijs / Organisation Registry - Development Environment    ║')
 print('╠═══════════════════════════════════════════════════════════════╣')
 print('║  keycloak.localhost:9080  → Keycloak (admin/admin)            ║')
 print('║  seq.localhost:9080       → Seq (structured logs / OTLP)     ║')
-print('║  opensearch.localhost:9080 → OpenSearch                      ║')
-print('║  mock.localhost:9080      → WireMock (MAGDA mock)            ║')
 print('║  api.localhost:9080       → Organisation Registry API         ║')
 print('║  ui.localhost:9080        → Angular UI (backoffice)           ║')
 print('║  m2m.localhost:9080       → M2M demo (client credentials)      ║')
