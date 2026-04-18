@@ -16,10 +16,9 @@ using AutoFixture.Kernel;
 using BackOffice;
 using FluentAssertions;
 using FluentAssertions.Execution;
-using IdentityModel;
-using IdentityModel.Client;
 using Infrastructure;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -76,8 +75,13 @@ public class ApiFixture : IDisposable, IAsyncLifetime
 
         Directory.SetCurrentDirectory(rootDirectory);
 
+        var maybeConfigurationBasePath = Directory
+            .GetParent(GetType().GetTypeInfo().Assembly.Location)?.Parent?.Parent?.Parent?.FullName;
+        if (maybeConfigurationBasePath is not { } configurationBasePath)
+            throw new NullReferenceException("Configuration base path cannot be null");
+
         var builder = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
+            .SetBasePath(configurationBasePath)
             .AddJsonFile("appsettings.json", optional: true)
             .AddJsonFile($"appsettings.{Environment.MachineName.ToLowerInvariant()}.json", optional: true);
 
@@ -93,7 +97,9 @@ public class ApiFixture : IDisposable, IAsyncLifetime
                 x => x.MigrationsHistoryTable("__EFMigrationsHistory", WellknownSchemas.BackofficeSchema))
             .Options;
 
+        EnsureDatabaseExists(connectionString);
         new OrganisationRegistryContext(dbContextOptions).Database.EnsureDeleted();
+        EnsureDatabaseExists(connectionString);
 
         IWebHostBuilder hostBuilder = new WebHostBuilder();
         var environment = hostBuilder.GetSetting("environment");
@@ -119,6 +125,7 @@ public class ApiFixture : IDisposable, IAsyncLifetime
         _configurationRoot = builder.Build();
 
         WiremockSetup.Run(_configurationRoot["Api:KboMagdaEndpoint"]).GetAwaiter().GetResult();
+        WiremockSetup.ConfigureEditApiAuthentication(_configurationRoot["Api:KboMagdaEndpoint"]).GetAwaiter().GetResult();
 
         _webHost = hostBuilder
             .UseContentRoot(Directory.GetCurrentDirectory())
@@ -168,34 +175,16 @@ public class ApiFixture : IDisposable, IAsyncLifetime
     public async Task<HttpClient> CreateTestClient()
         => await CreateMachine2MachineClientFor(Test.Client, Test.Scope);
 
-    public async Task<HttpClient> CreateMachine2MachineClientFor(string clientId, string scope)
+    public Task<HttpClient> CreateMachine2MachineClientFor(string clientId, string scope)
     {
-        var editApiConfiguration = _configurationRoot!.GetSection(EditApiConfigurationSection.Name)
-            .Get<EditApiConfigurationSection>();
-
-        var tokenClient = new TokenClient(
-            () => new HttpClient(),
-            new TokenClientOptions
-            {
-                Address = $"{editApiConfiguration.Authority}/connect/token",
-                ClientId = clientId,
-                ClientSecret = "secret",
-                Parameters = new Parameters(
-                    new[]
-                    {
-                        new KeyValuePair<string, string>("scope", scope),
-                    }),
-            });
-
-        var acmResponse = await tokenClient.RequestTokenAsync(OidcConstants.GrantTypes.ClientCredentials);
-        var token = acmResponse.AccessToken;
         var httpClientFor = new HttpClient
         {
             BaseAddress = new Uri(ApiEndpoint),
         };
         httpClientFor.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        httpClientFor.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        return httpClientFor;
+        httpClientFor.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", CreateMachine2MachineToken(clientId, scope));
+        return Task.FromResult(httpClientFor);
     }
 
     public static async Task<HttpResponseMessage> Post(HttpClient httpClient, string route, object body)
@@ -209,6 +198,34 @@ public class ApiFixture : IDisposable, IAsyncLifetime
 
     public static async Task<HttpResponseMessage> Delete(HttpClient httpClient, string route)
         => await httpClient.DeleteAsync(route);
+
+    private static void EnsureDatabaseExists(string connectionString)
+    {
+        var connectionStringBuilder = new SqlConnectionStringBuilder(connectionString);
+        var databaseName = connectionStringBuilder.InitialCatalog;
+
+        if (string.IsNullOrWhiteSpace(databaseName))
+            throw new InvalidOperationException("The SQL Server connection string must contain a database name.");
+
+        connectionStringBuilder.InitialCatalog = "master";
+
+        using var connection = new SqlConnection(connectionStringBuilder.ConnectionString);
+        connection.Open();
+
+        using var command = connection.CreateCommand();
+        command.CommandText =
+            $"IF DB_ID(N'{EscapeSqlLiteral(databaseName)}') IS NULL CREATE DATABASE [{EscapeSqlIdentifier(databaseName)}]";
+        command.ExecuteNonQuery();
+    }
+
+    private static string EscapeSqlLiteral(string value)
+        => value.Replace("'", "''");
+
+    private static string EscapeSqlIdentifier(string value)
+        => value.Replace("]", "]]");
+
+    private static string CreateMachine2MachineToken(string clientId, string scope)
+        => $"token-{clientId}-{scope}";
 
     private static StringContent ToJson(object body)
         => new(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");

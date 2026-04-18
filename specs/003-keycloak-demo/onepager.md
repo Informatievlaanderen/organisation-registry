@@ -110,7 +110,7 @@ Volledige k3d dev stack met Tiltfile:
 - [ ] **Token refresh** in de Nuxt BFF — huidige implementatie heeft geen refresh flow;
   na verlopen van het access token moet de gebruiker opnieuw inloggen
 - [ ] **README** voor de demo — `demo/README.md` ontbreekt (was gepland als T015);
-  how-to voor `dev-setup.sh`, Tilt, docker-compose
+  how-to voor `dev-setup.sh`, Tilt en k3d
 - [ ] **Secrets** — harde secrets in `k3d.config.yaml`, `demo/k8s/secrets.yaml`, `.env`-bestanden;
   voor een échte demo-omgeving moeten die via `.env.example` + gitignore afgeschermd worden
 

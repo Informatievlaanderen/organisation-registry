@@ -143,6 +143,8 @@ check_hosts() {
     echo "    127.0.0.1  app.localhost"
     echo "    127.0.0.1  keycloak.localhost"
     echo "    127.0.0.1  seq.localhost"
+    echo "    127.0.0.1  opensearch.localhost"
+    echo "    127.0.0.1  mock.localhost"
     echo "    127.0.0.1  m2m.localhost"
     echo ""
 }
@@ -205,6 +207,8 @@ main() {
     echo "  Services worden beschikbaar op:"
     echo "    http://keycloak.localhost:9080  — Keycloak (admin / admin)"
     echo "    http://seq.localhost:9080       — Seq (logs)"
+    echo "    http://opensearch.localhost:9080 — OpenSearch"
+    echo "    http://mock.localhost:9080      — WireMock"
     echo "    http://api.localhost:9080/v1    — Organisation Registry API"
     echo "    http://ui.localhost:9080        — Angular UI"
     echo "    http://app.localhost:9080       — Nuxt BFF demo"
