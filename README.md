@@ -40,7 +40,7 @@ npm run start:hmr
 
 #### To run the local demo environment
 
-The actieve lokale demo draait via `k3d` + `Tilt`. In deze setup vervangt Keycloak de vroegere
+The active local demo runs via `k3d` + `Tilt`. In deze setup vervangt Keycloak de vroegere
 ACM/IDM / IdentityServer demo-opstelling.
 
 Fast path:
