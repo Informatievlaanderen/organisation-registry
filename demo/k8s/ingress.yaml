@@ -21,7 +21,7 @@ spec:
   entryPoints:
     - web
   routes:
-  - match: HostRegexp(`^keycloak\..+$`)
+  - match: Host(`keycloak.localhost`) || HostRegexp(`^keycloak\..+$`)
     kind: Rule
     services:
     - name: keycloak
@@ -36,7 +36,7 @@ spec:
   entryPoints:
     - web
   routes:
-  - match: HostRegexp(`^api\..+$`)
+  - match: Host(`api.localhost`) || HostRegexp(`^api\..+$`)
     kind: Rule
     services:
     - name: api
@@ -51,7 +51,7 @@ spec:
   entryPoints:
     - web
   routes:
-  - match: HostRegexp(`^ui\..+$`)
+  - match: Host(`ui.localhost`) || HostRegexp(`^ui\..+$`)
     kind: Rule
     services:
     - name: ui
@@ -66,7 +66,7 @@ spec:
   entryPoints:
     - web
   routes:
-  - match: HostRegexp(`^app\..+$`)
+  - match: Host(`app.localhost`) || HostRegexp(`^app\..+$`)
     kind: Rule
     services:
     - name: nuxt-bff
@@ -81,7 +81,7 @@ spec:
   entryPoints:
     - web
   routes:
-  - match: HostRegexp(`^m2m\..+$`)
+  - match: Host(`m2m.localhost`) || HostRegexp(`^m2m\..+$`)
     kind: Rule
     services:
     - name: m2m-demo
@@ -96,7 +96,7 @@ spec:
   entryPoints:
     - web
   routes:
-  - match: HostRegexp(`^seq\..+$`)
+  - match: Host(`seq.localhost`) || HostRegexp(`^seq\..+$`)
     kind: Rule
     services:
     - name: seq
@@ -111,7 +111,7 @@ spec:
   entryPoints:
     - web
   routes:
-  - match: HostRegexp(`^opensearch\..+$`)
+  - match: Host(`opensearch.localhost`) || HostRegexp(`^opensearch\..+$`)
     kind: Rule
     services:
     - name: opensearch
@@ -126,7 +126,7 @@ spec:
   entryPoints:
     - web
   routes:
-  - match: HostRegexp(`^mock\..+$`)
+  - match: Host(`mock.localhost`) || HostRegexp(`^mock\..+$`)
     kind: Rule
     services:
     - name: wiremock

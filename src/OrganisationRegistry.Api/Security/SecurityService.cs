@@ -136,16 +136,16 @@ public class SecurityService : ISecurityService
         if (principal == null)
             throw new Exception("Could not determine current user");
 
-        var scope = principal.FindFirstValue(AcmIdmConstants.Claims.Scope);
-        switch (scope)
-        {
-            case AcmIdmConstants.Scopes.CjmBeheerder:
-                return WellknownUsers.Cjm;
-            case AcmIdmConstants.Scopes.OrafinBeheerder:
-                return WellknownUsers.Orafin;
-            case AcmIdmConstants.Scopes.TestClient:
-                return WellknownUsers.TestClient;
-        }
+        var scopes = GetScopes(principal);
+
+        if (scopes.Contains(AcmIdmConstants.Scopes.CjmBeheerder))
+            return WellknownUsers.Cjm;
+
+        if (scopes.Contains(AcmIdmConstants.Scopes.OrafinBeheerder))
+            return WellknownUsers.Orafin;
+
+        if (scopes.Contains(AcmIdmConstants.Scopes.TestClient))
+            return WellknownUsers.TestClient;
 
         var firstName = principal.FindFirst(ClaimTypes.GivenName);
         if (firstName == null)
@@ -173,6 +173,12 @@ public class SecurityService : ISecurityService
             securityInformation.BodyIds,
             securityInformation.OrganisationIds);
     }
+
+    private static string[] GetScopes(ClaimsPrincipal principal)
+        => principal.FindAll(AcmIdmConstants.Claims.Scope)
+            .SelectMany(claim => claim.Value.Split(' ', StringSplitOptions.RemoveEmptyEntries))
+            .Distinct(StringComparer.Ordinal)
+            .ToArray();
 
     public async Task<IUser> GetUser(ClaimsPrincipal? principal)
     {

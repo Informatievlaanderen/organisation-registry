@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Sockets;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -54,10 +55,12 @@ public class ApiFixture : IDisposable, IAsyncLifetime
         public const string Scope = AcmIdmConstants.Scopes.TestClient;
     }
 
+    private static readonly string DynamicApiEndpoint = $"http://localhost:{GetFreeTcpPort()}";
+
     private readonly IWebHost _webHost;
     private readonly IConfigurationRoot? _configurationRoot;
     public IOrganisationRegistryConfiguration Configuration { get; }
-    public const string ApiEndpoint = "http://localhost:5000";
+    public static string ApiEndpoint => DynamicApiEndpoint;
     public const string Jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdF9oYXNoIjoiMklEMHdGR3l6WnJWaHRmbi00Ty1EQSIsImF1ZCI6WyJodHRwczovL2RpZW5zdHZlcmxlbmluZy10ZXN0LmJhc2lzcmVnaXN0ZXJzLnZsYWFuZGVyZW4iXSwiYXpwIjoiN2Q4MDExOTctNmQ0My00NzZhLTgzZWYtMzU4NjllZTUyZDg1IiwiZXhwIjoxODkzOTM2ODIzLCJmYW1pbHlfbmFtZSI6IkFwaSIsImdpdmVuX25hbWUiOiJUZXN0IiwiaWF0IjoxNTc4MzExNjMzLCJ2b19pZCI6IjEyMzk4Nzk4Ny0xMjMxMjMiLCJpc3MiOiJodHRwczovL2RpZW5zdHZlcmxlbmluZy10ZXN0LmJhc2lzcmVnaXN0ZXJzLnZsYWFuZGVyZW4iLCJ1cm46YmU6dmxhYW5kZXJlbjpkaWVuc3R2ZXJsZW5pbmc6YWNtaWQiOiJ2b19pZCIsInVybjpiZTp2bGFhbmRlcmVuOmFjbTpmYW1pbGllbmFhbSI6ImZhbWlseV9uYW1lIiwidXJuOmJlOnZsYWFuZGVyZW46YWNtOnZvb3JuYWFtIjoiZ2l2ZW5fbmFtZSIsInVybjpiZTp2bGFhbmRlcmVuOndlZ3dpanM6YWNtaWQiOiJ0ZXN0Iiwicm9sZSI6WyJhbGdlbWVlbkJlaGVlcmRlciJdLCJuYmYiOjE1NzgzOTY2MzN9.wWYDfwbcBxHMdaBIhoFH0UnXNl82lE_rsu-R49km1FM";
 
     public HttpClient HttpClient { get; } = new()
@@ -85,7 +88,20 @@ public class ApiFixture : IDisposable, IAsyncLifetime
         var builder = new ConfigurationBuilder()
             .SetBasePath(configurationBasePath)
             .AddJsonFile("appsettings.json", optional: true)
+            .AddJsonFile($"appsettings.{Environment.MachineName}.json", optional: true)
             .AddJsonFile($"appsettings.{Environment.MachineName.ToLowerInvariant()}.json", optional: true);
+
+        var existingConfiguration = builder.Build();
+
+        var editApiOverrides = new Dictionary<string, string>
+        {
+            ["EditApi:ClientId"] = existingConfiguration["EditApi:ClientId"] ?? "organisation-registry-api",
+            ["EditApi:ClientSecret"] = existingConfiguration["EditApi:ClientSecret"] ?? "a_very=Secr3t*Key",
+            ["EditApi:Authority"] = existingConfiguration["EditApi:Authority"] ?? "http://keycloak.localhost:9080/realms/wegwijs",
+            ["EditApi:IntrospectionEndpoint"] = existingConfiguration["EditApi:IntrospectionEndpoint"] ?? "http://keycloak.localhost:9080/realms/wegwijs/protocol/openid-connect/token/introspect",
+        };
+
+        builder.AddInMemoryCollection(editApiOverrides);
 
         var connectionString =
             builder.Build()
@@ -121,7 +137,9 @@ public class ApiFixture : IDisposable, IAsyncLifetime
         }
         else
         {
-            hostBuilder = hostBuilder.UseKestrel(server => server.AddServerHeader = false);
+            hostBuilder = hostBuilder
+                .UseKestrel(server => server.AddServerHeader = false)
+                .UseUrls(ApiEndpoint);
         }
 
         _configurationRoot = builder.Build();
@@ -130,6 +148,7 @@ public class ApiFixture : IDisposable, IAsyncLifetime
         WiremockSetup.ConfigureEditApiAuthentication(_configurationRoot["Api:KboMagdaEndpoint"]).GetAwaiter().GetResult();
 
         _webHost = hostBuilder
+            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(editApiOverrides))
             .UseContentRoot(Directory.GetCurrentDirectory())
             .UseConfiguration(_configurationRoot)
             .UseStartup<Startup>()
@@ -179,41 +198,14 @@ public class ApiFixture : IDisposable, IAsyncLifetime
 
     public async Task<HttpClient> CreateMachine2MachineClientFor(string clientId, string scope)
     {
-        var editApiConfiguration = _configurationRoot!.GetSection(EditApiConfigurationSection.Name)
-            .Get<EditApiConfigurationSection>();
-
-        var tokenClient = new TokenClient(
-            () => new HttpClient(),
-            new TokenClientOptions
-            {
-                Address = $"{editApiConfiguration.Authority}/realms/wegwijs/protocol/openid-connect/token",
-                ClientId = clientId,
-                ClientSecret = "secret",
-                Parameters = new Parameters(
-                    new[]
-                    {
-                        new KeyValuePair<string, string>("scope", scope),
-                    }),
-            });
-
-        var acmResponse = await tokenClient.RequestTokenAsync(OidcConstants.GrantTypes.ClientCredentials);
-        var token = acmResponse.AccessToken;
         var httpClientFor = new HttpClient
         {
             BaseAddress = new Uri(ApiEndpoint),
         };
         httpClientFor.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        httpClientFor.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        httpClientFor.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", await GetMachineToMachineToken(clientId, scope));
         return httpClientFor;
-
-        // var httpClientFor = new HttpClient
-        // {
-        //     BaseAddress = new Uri(ApiEndpoint),
-        // };
-        // httpClientFor.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        // httpClientFor.DefaultRequestHeaders.Authorization =
-        //     new AuthenticationHeaderValue("Bearer", CreateMachine2MachineToken(clientId, scope));
-        // return Task.FromResult(httpClientFor);
     }
 
     public static async Task<HttpResponseMessage> Post(HttpClient httpClient, string route, object body)
@@ -253,8 +245,49 @@ public class ApiFixture : IDisposable, IAsyncLifetime
     private static string EscapeSqlIdentifier(string value)
         => value.Replace("]", "]]");
 
-    private static string CreateMachine2MachineToken(string clientId, string scope)
-        => $"token-{clientId}-{scope}";
+    private static int GetFreeTcpPort()
+    {
+        var listener = new TcpListener(IPAddress.Loopback, 0);
+
+        try
+        {
+            listener.Start();
+            return ((IPEndPoint)listener.LocalEndpoint).Port;
+        }
+        finally
+        {
+            listener.Stop();
+        }
+    }
+
+    private async Task<string> GetMachineToMachineToken(string clientId, string scope)
+    {
+        var editApiConfiguration = _configurationRoot!.GetSection(EditApiConfigurationSection.Name)
+            .Get<EditApiConfigurationSection>();
+
+        var tokenClient = new TokenClient(
+            () => new HttpClient(),
+            new TokenClientOptions
+            {
+                Address = $"{editApiConfiguration.Authority.TrimEnd('/')}/protocol/openid-connect/token",
+                ClientId = clientId,
+                ClientSecret = "secret",
+                Parameters = new Parameters(
+                    new[]
+                    {
+                        new KeyValuePair<string, string>("scope", scope),
+                    }),
+            });
+
+        var response = await tokenClient.RequestTokenAsync(OidcConstants.GrantTypes.ClientCredentials);
+
+        if (response.IsError || string.IsNullOrWhiteSpace(response.AccessToken))
+            throw new InvalidOperationException(
+                $"Could not retrieve Keycloak M2M token for '{clientId}' from '{editApiConfiguration.Authority}'. " +
+                $"Error: {response.Error}. Description: {response.ErrorDescription}.");
+
+        return response.AccessToken;
+    }
 
     private static StringContent ToJson(object body)
         => new(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");

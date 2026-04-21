@@ -1,5 +1,6 @@
 namespace OrganisationRegistry.Api.IntegrationTests;
 
+using System;
 using System.IO;
 using System.Reflection;
 using FluentAssertions;
@@ -14,8 +15,8 @@ public class IntegrationTestConfigurationTests
         var configuration = BuildConfiguration();
 
         configuration["EditApi:ClientId"].Should().Be("organisation-registry-api");
-        configuration["EditApi:Authority"].Should().Be("http://localhost:8180/realms/wegwijs");
-        configuration["EditApi:IntrospectionEndpoint"].Should().Be("http://localhost:8180/realms/wegwijs/protocol/openid-connect/token/introspect");
+        configuration["EditApi:Authority"].Should().Be("http://keycloak.localhost:9080/realms/wegwijs");
+        configuration["EditApi:IntrospectionEndpoint"].Should().Be("http://keycloak.localhost:9080/realms/wegwijs/protocol/openid-connect/token/introspect");
     }
 
     [Fact]
@@ -37,6 +38,8 @@ public class IntegrationTestConfigurationTests
         return new ConfigurationBuilder()
             .SetBasePath(maybeProjectDirectory!)
             .AddJsonFile("appsettings.json")
+            .AddJsonFile($"appsettings.{Environment.MachineName}.json", optional: true)
+            .AddJsonFile($"appsettings.{Environment.MachineName.ToLowerInvariant()}.json", optional: true)
             .Build();
     }
 }

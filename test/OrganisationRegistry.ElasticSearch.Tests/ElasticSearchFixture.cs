@@ -34,8 +34,7 @@ public class ElasticSearchFixture : IDisposable
 
         var builder = new ConfigurationBuilder()
             .SetBasePath(configurationBasePath)
-            .AddJsonFile("appsettings.json", optional: false)
-            .AddJsonFile($"appsettings.{Environment.MachineName}.json", optional: true);
+            .AddJsonFile("appsettings.json", optional: false);
 
         Configuration = builder.Build();
 

@@ -87,6 +87,22 @@ public class AuthenticationSetupTests
     }
 
     [Fact]
+    public async Task EditApiPolicy_AllowsIntrospectionClientWithMultipleScopesInSingleClaim()
+    {
+        var services = CreateServices(
+            bffApiEnabled: true,
+            introspectionPrincipal: UserPrincipal(
+                Schemes.Introspection,
+                new Claim(
+                    AcmIdmConstants.Claims.Scope,
+                    $"{AcmIdmConstants.Scopes.Info} {AcmIdmConstants.Scopes.CjmBeheerder}")));
+
+        var result = await AuthorizeAsync(services, PolicyNames.Organisations, Schemes.EditApi);
+
+        result.Succeeded.Should().BeTrue();
+    }
+
+    [Fact]
     public async Task EditApiPolicy_RejectsJwtBearerUserToken()
     {
         var services = CreateServices(
@@ -170,6 +186,7 @@ public class AuthenticationSetupTests
                     options => options.Principal = bffPrincipal);
         }
 
+        services.AddTransient<IClaimsTransformation, BffClaimsTransformation>();
         services.AddAuthorization(ConfigureAuthPolicies(bffApiEnabled));
 
         return services.BuildServiceProvider();
