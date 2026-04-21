@@ -16,6 +16,8 @@ using AutoFixture.Kernel;
 using BackOffice;
 using FluentAssertions;
 using FluentAssertions.Execution;
+using IdentityModel;
+using IdentityModel.Client;
 using Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Data.SqlClient;
@@ -175,16 +177,43 @@ public class ApiFixture : IDisposable, IAsyncLifetime
     public async Task<HttpClient> CreateTestClient()
         => await CreateMachine2MachineClientFor(Test.Client, Test.Scope);
 
-    public Task<HttpClient> CreateMachine2MachineClientFor(string clientId, string scope)
+    public async Task<HttpClient> CreateMachine2MachineClientFor(string clientId, string scope)
     {
+        var editApiConfiguration = _configurationRoot!.GetSection(EditApiConfigurationSection.Name)
+            .Get<EditApiConfigurationSection>();
+
+        var tokenClient = new TokenClient(
+            () => new HttpClient(),
+            new TokenClientOptions
+            {
+                Address = $"{editApiConfiguration.Authority}/realms/wegwijs/protocol/openid-connect/token",
+                ClientId = clientId,
+                ClientSecret = "secret",
+                Parameters = new Parameters(
+                    new[]
+                    {
+                        new KeyValuePair<string, string>("scope", scope),
+                    }),
+            });
+
+        var acmResponse = await tokenClient.RequestTokenAsync(OidcConstants.GrantTypes.ClientCredentials);
+        var token = acmResponse.AccessToken;
         var httpClientFor = new HttpClient
         {
             BaseAddress = new Uri(ApiEndpoint),
         };
         httpClientFor.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        httpClientFor.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer", CreateMachine2MachineToken(clientId, scope));
-        return Task.FromResult(httpClientFor);
+        httpClientFor.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        return httpClientFor;
+
+        // var httpClientFor = new HttpClient
+        // {
+        //     BaseAddress = new Uri(ApiEndpoint),
+        // };
+        // httpClientFor.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        // httpClientFor.DefaultRequestHeaders.Authorization =
+        //     new AuthenticationHeaderValue("Bearer", CreateMachine2MachineToken(clientId, scope));
+        // return Task.FromResult(httpClientFor);
     }
 
     public static async Task<HttpResponseMessage> Post(HttpClient httpClient, string route, object body)
