@@ -20,12 +20,17 @@ public class IntegrationTestConfigurationTests
     }
 
     [Fact]
-    public void MagdaConfiguration_ShouldUseWiremockEndpoints()
+    public void TiltConfiguration_ShouldUseTiltEndpoints()
     {
         var configuration = BuildConfiguration();
 
-        configuration["Api:KboMagdaEndpoint"].Should().Be("http://localhost:8080");
-        configuration["Api:RepertoriumMagdaEndpoint"].Should().Be("http://localhost:8080");
+        configuration["ApiIntegrationTests:ApiBaseUrl"].Should().Be("http://api.localhost:9080");
+        configuration["Api:KboMagdaEndpoint"].Should().Be("http://mock.localhost:9080");
+        configuration["Api:RepertoriumMagdaEndpoint"].Should().Be("http://mock.localhost:9080");
+        configuration["Api:KboV2RegisteredOfficeLocationTypeId"].Should().Be("a7e93f04-0004-0000-0000-000000000001");
+        configuration["Api:KboV2LegalFormOrganisationClassificationTypeId"].Should().Be("a7e93f06-0006-0000-0000-000000000001");
+        configuration["Api:KboV2FormalNameLabelTypeId"].Should().Be("a7e93f02-0002-0000-0000-000000000004");
+        configuration["Authorization:KeyIdsAllowedOnlyForOrafin"].Should().Be("1e3611a7-7914-411a-a0c9-84fcd6218e67");
     }
 
     private static IConfigurationRoot BuildConfiguration()

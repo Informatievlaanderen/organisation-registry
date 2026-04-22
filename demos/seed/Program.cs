@@ -24,6 +24,8 @@ var signingKey    = Env("JWT_SIGNING_KEY", "keycloak-demo-local-dev-secret-key-3
 var issuer        = Env("JWT_ISSUER",      "organisatieregister");
 var audience      = Env("JWT_AUDIENCE",    "organisatieregister");
 var developerVoId = Env("DEVELOPER_VO_ID", "9c2f7372-7112-49dc-9771-f127b048b4c7");
+var kboCertificate = Env("KBO_CERTIFICATE", "");
+var rijksRegisterCertificatePwd = Env("RIJKSREGISTER_CERTIFICATE_PWD", "");
 
 var mssqlHost     = Env("MSSQL_HOST",     "mssql");
 var mssqlUser     = Env("MSSQL_USER",     "sa");
@@ -40,6 +42,8 @@ var dbConfigKeys = new Dictionary<string, string>
     ["OIDCAuth:Authority"]             = "http://keycloak:8080/realms/wegwijs",
     ["OIDCAuth:JwksUri"]               = "http://keycloak:8080/realms/wegwijs/protocol/openid-connect/certs",
     ["OIDCAuth:IntrospectionEndpoint"] = "http://keycloak:8080/realms/wegwijs/protocol/openid-connect/token/introspect",
+    ["Api:KboCertificate"]             = kboCertificate,
+    ["Api:RijksRegisterCertificatePwd"] = rijksRegisterCertificatePwd,
 
     ["Api:Vlimpers_KeyTypeId"]                                                    = "922a46bb-1378-45bd-a61f-b6bbf348a4d5",
     ["Api:Orafin_KeyTypeId"]                                                      = "1e3611a7-7914-411a-a0c9-84fcd6218e67",

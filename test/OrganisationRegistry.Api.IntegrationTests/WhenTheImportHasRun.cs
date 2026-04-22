@@ -2,6 +2,8 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using FluentAssertions;
 using OrganisationRegistry.Import.Piavo.Models;
@@ -20,7 +22,12 @@ public class WhenTheImportHasRun
 
     private async Task<IEnumerable<T>> Get<T>(string requestUri)
     {
-        var items = await _fixture.HttpClient.GetStringAsync($"/v1/{requestUri}");
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"/v1/{requestUri}");
+        request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        request.Headers.Add("x-pagination", "none");
+
+        using var response = await _fixture.HttpClient.SendAsync(request);
+        var items = await response.Content.ReadAsStringAsync();
         return JsonConvert.DeserializeObject<IEnumerable<T>>(items) ?? new List<T>();
     }
 

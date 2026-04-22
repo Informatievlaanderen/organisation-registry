@@ -4,6 +4,10 @@ This note documents the local Keycloak and test stabilization fixes that were ad
 
 It focuses on the follow-up changes needed to make the local demo environment and test suite behave correctly.
 
+Additional follow-up note:
+
+- [api-integration-tests-tilt.md](/Users/oussamasadik/Documents/GitHub/organisation-registry/specs/003-keycloak-demo/implementation/api-integration-tests-tilt.md) — waarom de API integration tests nu tegen Tilt lopen, wat daarvoor is aangepast, en wat nog openstaat rond `CreateFromKboNumberTests`
+
 ## Files In Scope
 
 - [demo/k8s/ingress.yaml](/Users/oussamasadik/Documents/GitHub/organisation-registry/demo/k8s/ingress.yaml)
