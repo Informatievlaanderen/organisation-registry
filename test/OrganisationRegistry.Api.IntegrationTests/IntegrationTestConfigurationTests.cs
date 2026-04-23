@@ -25,6 +25,9 @@ public class IntegrationTestConfigurationTests
         var configuration = BuildConfiguration();
 
         configuration["ApiIntegrationTests:ApiBaseUrl"].Should().Be("http://api.localhost:9080");
+        configuration["Infrastructure:EventStoreConnectionString"].Should().Contain("Database=OrganisationRegistry;");
+        configuration["Configuration:ConnectionString"].Should().Contain("Database=OrganisationRegistry;");
+        configuration["SqlServer:ConnectionString"].Should().Contain("Database=OrganisationRegistry;");
         configuration["Api:KboMagdaEndpoint"].Should().Be("http://mock.localhost:9080");
         configuration["Api:RepertoriumMagdaEndpoint"].Should().Be("http://mock.localhost:9080");
         configuration["Api:KboV2RegisteredOfficeLocationTypeId"].Should().Be("a7e93f04-0004-0000-0000-000000000001");

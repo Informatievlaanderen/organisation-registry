@@ -17,11 +17,15 @@ public class CreateContactsTests
     private const string ContactTypeName = "contactTypeName";
     private readonly ApiFixture _apiFixture;
     private readonly Guid _organisationId;
+    private readonly string _organisationName;
+    private readonly string _contactTypeName;
 
     public CreateContactsTests(ApiFixture apiFixture)
     {
         _apiFixture = apiFixture;
         _organisationId = _apiFixture.Fixture.Create<Guid>();
+        _organisationName = $"{TestOrganisationForCreateContacts} {_organisationId:N}";
+        _contactTypeName = $"{ContactTypeName} {_organisationId:N}";
     }
 
     [EnvVarIgnoreFact]
@@ -50,8 +54,8 @@ public class CreateContactsTests
     [EnvVarIgnoreFact]
     public async Task AsCJM_CanAddAndUpdate()
     {
-        await _apiFixture.Create.Organisation(_organisationId, TestOrganisationForCreateContacts);
-        var contactTypeId = await _apiFixture.Create.ContactType(ContactTypeName);
+        await _apiFixture.Create.Organisation(_organisationId, _organisationName);
+        var contactTypeId = await _apiFixture.Create.ContactType(_contactTypeName);
 
         var httpClient = await _apiFixture.CreateMachine2MachineClientFor(ApiFixture.CJM.Client, ApiFixture.CJM.Scope);
         var organisationContactId = await CreatAndVerify(httpClient, contactTypeId);
@@ -73,7 +77,7 @@ public class CreateContactsTests
 
         var getResponse = await ApiFixture.Get(httpClient, $"/v1/organisations/{_organisationId}/contacts/{organisationContactId}");
         await ApiFixture.VerifyStatusCode(getResponse, HttpStatusCode.OK);
-        VerifyResponse(await ApiFixture.Deserialize(getResponse), contactTypeId, value);
+        VerifyResponse(await ApiFixture.Deserialize(getResponse), contactTypeId, _contactTypeName, value);
     }
 
     private async Task<Guid> CreatAndVerify(HttpClient httpClient, Guid contactTypeId)
@@ -90,15 +94,19 @@ public class CreateContactsTests
 
         var getResponse = await ApiFixture.Get(httpClient, $"/v1/organisations/{_organisationId}/contacts/{organisationContactId}");
         await ApiFixture.VerifyStatusCode(getResponse, HttpStatusCode.OK);
-        VerifyResponse(await ApiFixture.Deserialize(getResponse), contactTypeId, value);
+        VerifyResponse(await ApiFixture.Deserialize(getResponse), contactTypeId, _contactTypeName, value);
 
         return organisationContactId;
     }
 
-    private static void VerifyResponse(IReadOnlyDictionary<string, object> deserializedResponse, Guid contactTypeId, string value)
+    private static void VerifyResponse(
+        IReadOnlyDictionary<string, object> deserializedResponse,
+        Guid contactTypeId,
+        string contactTypeName,
+        string value)
     {
         deserializedResponse["contactTypeId"].Should().Be(contactTypeId.ToString());
-        deserializedResponse["contactTypeName"].Should().Be(ContactTypeName);
+        deserializedResponse["contactTypeName"].Should().Be(contactTypeName);
         deserializedResponse["contactValue"].Should().Be(value);
         deserializedResponse["validFrom"].Should().BeNull();
         deserializedResponse["validTo"].Should().BeNull();
