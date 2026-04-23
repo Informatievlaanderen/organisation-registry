@@ -13,56 +13,6 @@ spec:
       labels:
         app: api
     spec:
-      initContainers:
-      - name: wait-for-mssql
-        image: busybox
-        command: ['sh', '-c', 'until nc -z mssql 1433; do echo waiting for mssql; sleep 5; done']
-      - name: configure-local-magda
-        image: mcr.microsoft.com/mssql-tools
-        command:
-        - /bin/bash
-        - -ec
-        - |
-          until /opt/mssql-tools/bin/sqlcmd -S mssql -U sa -P "$MSSQL_SA_PASSWORD" -Q "SELECT 1" >/dev/null 2>&1; do
-            echo waiting for mssql login
-            sleep 5
-          done
-
-          /opt/mssql-tools/bin/sqlcmd -S mssql -U sa -P "$MSSQL_SA_PASSWORD" -d master -b -Q "
-          IF DB_ID(N'OrganisationRegistry') IS NULL
-              CREATE DATABASE [OrganisationRegistry];
-          "
-
-          /opt/mssql-tools/bin/sqlcmd -S mssql -U sa -P "$MSSQL_SA_PASSWORD" -d OrganisationRegistry -b -Q "
-          IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name = N'OrganisationRegistry')
-              EXEC('CREATE SCHEMA [OrganisationRegistry] AUTHORIZATION [dbo]');
-
-          IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='Configuration' AND xtype = 'U')
-              CREATE TABLE [OrganisationRegistry].[Configuration] (
-                  [Key] nvarchar(450) NOT NULL,
-                  [Description] nvarchar(max),
-                  [Value] nvarchar(max),
-                  CONSTRAINT [PK_Configuration] PRIMARY KEY CLUSTERED ([Key])
-              );
-
-          MERGE [OrganisationRegistry].[Configuration] AS target
-          USING (VALUES
-              (N'Api:KboMagdaEndpoint', N'KBO: endpoint voor MAGDA', N'http://wiremock:8080'),
-              (N'Api:RepertoriumMagdaEndpoint', N'Repertorium: endpoint voor MAGDA', N'http://wiremock:8080')
-          ) AS source ([Key], [Description], [Value])
-          ON target.[Key] = source.[Key]
-          WHEN MATCHED THEN
-              UPDATE SET [Value] = source.[Value]
-          WHEN NOT MATCHED THEN
-              INSERT ([Key], [Description], [Value])
-              VALUES (source.[Key], source.[Description], source.[Value]);
-          "
-        env:
-        - name: MSSQL_SA_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: demo-secrets
-              key: mssql-sa-password
       containers:
       - name: api
         image: k3d-wegwijs-registry:5051/wegwijs-api:local
