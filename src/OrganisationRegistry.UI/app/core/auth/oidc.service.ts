@@ -107,7 +107,7 @@ export class OidcService {
   exchangeCode(code: string): Observable<[string, SecurityInfo]> {
     const url = `${
       this.securityUrl
-    }/exchange?code=${code}&verifier=${localStorage.getItem("verifier")}`;
+    }/exchange?code=${encodeURIComponent(code)}&verifier=${encodeURIComponent(localStorage.getItem("verifier") || "")}`;
 
     let headers = new HeadersBuilder().json().build();
 
