@@ -16,6 +16,7 @@ using Configuration;
 using global::OpenTelemetry.Trace;
 using HostedServices;
 using Magda;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -26,6 +27,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.FeatureManagement;
 using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
@@ -126,13 +129,13 @@ public class Startup
             .AddHostedService<SyncRemovedItemsService>()
             .AddHostedService<ProcessImportedFilesService>()
             .AddHostedService<MEPCalculatorService>()
-            .AddAuthentication(
-                options =>
-                {
-                    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                })
+                .AddAuthentication(
+                    options =>
+                    {
+                        options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                    })
             .AddJwtBearer(
                 JwtBearerDefaults.AuthenticationScheme,
                 options =>
@@ -149,7 +152,19 @@ public class Startup
                     options.Authority = editApiConfiguration.Authority;
                     options.IntrospectionEndpoint = editApiConfiguration.IntrospectionEndpoint;
                 })
+            .AddOAuth2Introspection(
+                AuthenticationSchemes.TokenExchange,
+                options =>
+                {
+                    var tokenExchangeConfig = _configuration.GetSection("TokenExchange").Get<TokenExchangeConfiguration>();
+                    options.Authority = tokenExchangeConfig.Authority;
+                    options.ClientId = tokenExchangeConfig.ClientId;
+                    options.ClientSecret = tokenExchangeConfig.ClientSecret;
+                    options.IntrospectionEndpoint = tokenExchangeConfig.IntrospectionEndpoint;
+                })
             .Services
+            .Configure<TokenExchangeConfiguration>(_configuration.GetSection("TokenExchange"))
+            .AddTransient<IClaimsTransformation, TokenExchangeClaimsTransformation>()
             .AddSingleton<IActionContextAccessor, ActionContextAccessor>()
             .AddSingleton<ISecurityService, SecurityService>()
             .AddSingleton<ICache<OrganisationSecurityInformation>, OrganisationSecurityCache>()

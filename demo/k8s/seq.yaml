@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: seq
+  namespace: wegwijs-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: seq
+  template:
+    metadata:
+      labels:
+        app: seq
+    spec:
+      containers:
+      - name: seq
+        image: datalust/seq:latest
+        env:
+        - name: ACCEPT_EULA
+          value: "Y"
+        - name: SEQ_FIRSTRUN_ADMINPASSWORD
+          value: "admin"
+        ports:
+        - containerPort: 80    # UI
+        - containerPort: 5341  # ingestion (HTTP + OTLP/HTTP)
+        - containerPort: 45341 # OTLP/gRPC
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: seq
+  namespace: wegwijs-demo
+spec:
+  selector:
+    app: seq
+  ports:
+  - name: ui
+    port: 80
+    targetPort: 80
+  - name: ingestion
+    port: 5341
+    targetPort: 5341
+  - name: otlp-grpc
+    port: 45341
+    targetPort: 45341

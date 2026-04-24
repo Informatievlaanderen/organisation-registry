@@ -13,8 +13,10 @@ public class OrganisationRegistryAuthorizeAttribute : AuthorizeAttribute
         Roles = string.Join(",", roles.Select(RoleMapping.Map));
     }
 
-    public OrganisationRegistryAuthorizeAttribute()
-    {
-        AuthenticationSchemes = string.Join(", ", JwtBearerDefaults.AuthenticationScheme);
-    }
+        public OrganisationRegistryAuthorizeAttribute()
+        {
+            AuthenticationSchemes = string.Join(", ", 
+                Infrastructure.Security.AuthenticationSchemes.TokenExchange,
+                JwtBearerDefaults.AuthenticationScheme);
+        }
 }

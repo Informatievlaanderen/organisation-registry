@@ -1,0 +1,658 @@
+{
+  "realm": "wegwijs",
+  "enabled": true,
+  "registrationAllowed": false,
+  "accessTokenLifespan": 3600,
+  "ssoSessionIdleTimeout": 1800,
+  "ssoSessionMaxLifespan": 36000,
+  "requiredCredentials": [
+    "password"
+  ],
+  "requiredActions": [],
+  "clientScopes": [
+    {
+      "name": "openid",
+      "description": "OpenID Connect built-in scope: openid",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true",
+        "consent.screen.text": "${openidScopeConsentText}",
+        "display.on.consent.screen": "true"
+      }
+    },
+    {
+      "name": "dv_organisatieregister_cjmbeheerder",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true"
+      }
+    },
+    {
+      "name": "dv_organisatieregister_orafinbeheerder",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true"
+      }
+    },
+    {
+      "name": "dv_organisatieregister_info",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true"
+      }
+    },
+    {
+      "name": "dv_organisatieregister_testclient",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true"
+      }
+    },
+    {
+      "name": "profile",
+      "description": "OpenID Connect built-in scope: profile",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true",
+        "consent.screen.text": "${profileScopeConsentText}",
+        "display.on.consent.screen": "true"
+      },
+      "protocolMappers": [
+        {
+          "name": "full name",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-full-name-mapper",
+          "consentRequired": false,
+          "config": {
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        },
+        {
+          "name": "family name",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "lastName",
+            "claim.name": "family_name",
+            "jsonType.label": "String",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        },
+        {
+          "name": "given name",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "firstName",
+            "claim.name": "given_name",
+            "jsonType.label": "String",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        }
+      ]
+    },
+    {
+      "name": "email",
+      "description": "OpenID Connect built-in scope: email",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true",
+        "consent.screen.text": "${emailScopeConsentText}",
+        "display.on.consent.screen": "true"
+      },
+      "protocolMappers": [
+        {
+          "name": "email",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "email",
+            "claim.name": "email",
+            "jsonType.label": "String",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        }
+      ]
+    },
+    {
+      "name": "roles",
+      "description": "OpenID Connect scope for add user roles to the access token",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "false",
+        "display.on.consent.screen": "true"
+      }
+    },
+    {
+      "name": "web-origins",
+      "description": "OpenID Connect scope for add allowed web origins to the access token",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "false",
+        "display.on.consent.screen": "false"
+      }
+    },
+    {
+      "name": "vo",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true"
+      }
+    },
+    {
+      "name": "iv_wegwijs",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true"
+      }
+    },
+    {
+      "name": "organisation-registry-api-access",
+      "description": "Adds organisation-registry-api as audience \u2014 required for RFC 8693 token exchange",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true"
+      },
+      "protocolMappers": [
+        {
+          "name": "organisation-registry-api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.client.audience": "organisation-registry-api",
+            "id.token.claim": "false",
+            "access.token.claim": "true"
+          }
+        }
+      ]
+    }
+  ],
+  "clients": [
+    {
+      "clientId": "organisation-registry-local-dev",
+      "name": "Organisation Registry SPA",
+      "enabled": true,
+      "publicClient": false,
+      "secret": "a_very=Secr3t*Key",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "http://ui.localhost:9080/*",
+        "http://*"
+      ],
+      "webOrigins": [
+        "*"
+      ],
+      "defaultClientScopes": [
+        "openid",
+        "profile",
+        "email",
+        "roles",
+        "web-origins",
+        "vo",
+        "iv_wegwijs",
+        "dv_organisatieregister_cjmbeheerder",
+        "dv_organisatieregister_info"
+      ],
+      "optionalClientScopes": [
+        "offline_access"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "http://ui.localhost:9080/*##http://*"
+      },
+      "protocolMappers": [
+        {
+          "name": "iv_wegwijs_rol_3D",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "iv_wegwijs_rol_3D",
+            "claim.name": "iv_wegwijs_rol_3D",
+            "jsonType.label": "String",
+            "multivalued": "true",
+            "aggregate.attrs": "false",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        },
+        {
+          "name": "vo_id",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "vo_id",
+            "claim.name": "vo_id",
+            "jsonType.label": "String",
+            "multivalued": "false",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        },
+        {
+          "name": "given_name",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-property-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "firstName",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "given_name",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "name": "family_name",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-property-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "lastName",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "family_name",
+            "jsonType.label": "String"
+          }
+        }
+      ]
+    },
+    {
+      "clientId": "organisation-registry-api",
+      "name": "Organisation Registry API (introspection)",
+      "enabled": true,
+      "publicClient": false,
+      "secret": "a_very=Secr3t*Key",
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [],
+      "webOrigins": [],
+      "attributes": {
+        "standard.token.exchange.enabled": "true"
+      }
+    },
+    {
+      "clientId": "cjmClient",
+      "name": "CJM Client (M2M)",
+      "enabled": true,
+      "publicClient": false,
+      "secret": "secret",
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "redirectUris": [],
+      "webOrigins": [],
+      "defaultClientScopes": [
+        "dv_organisatieregister_cjmbeheerder",
+        "dv_organisatieregister_info"
+      ]
+    },
+    {
+      "clientId": "orafinClient",
+      "name": "Orafin Client (M2M)",
+      "enabled": true,
+      "publicClient": false,
+      "secret": "secret",
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "redirectUris": [],
+      "webOrigins": [],
+      "defaultClientScopes": [
+        "dv_organisatieregister_orafinbeheerder",
+        "dv_organisatieregister_info"
+      ]
+    },
+    {
+      "clientId": "testClient",
+      "name": "Test Client (M2M)",
+      "enabled": true,
+      "publicClient": false,
+      "secret": "secret",
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "redirectUris": [],
+      "webOrigins": [],
+      "defaultClientScopes": [
+        "dv_organisatieregister_cjmbeheerder",
+        "dv_organisatieregister_orafinbeheerder",
+        "dv_organisatieregister_info",
+        "dv_organisatieregister_testclient"
+      ]
+    },
+    {
+      "clientId": "nuxt-bff",
+      "enabled": true,
+      "name": "Nuxt BFF Demo",
+      "publicClient": false,
+      "secret": "nuxt-bff-secret",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "http://app.localhost:9080/callback",
+        "http://*"
+      ],
+      "webOrigins": [
+        "*"
+      ],
+      "defaultClientScopes": [
+        "openid",
+        "profile",
+        "email",
+        "roles",
+        "web-origins",
+        "vo",
+        "iv_wegwijs"
+      ],
+      "optionalClientScopes": [
+        "dv_organisatieregister_cjmbeheerder",
+        "offline_access"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "standard.token.exchange.enabled": "true",
+        "post.logout.redirect.uris": "http://app.localhost:9080##http://*"
+      },
+      "protocolMappers": [
+        {
+          "name": "given_name",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-property-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "firstName",
+            "claim.name": "given_name",
+            "jsonType.label": "String",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "introspection.token.claim": "true"
+          }
+        },
+        {
+          "name": "family_name",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-property-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "lastName",
+            "claim.name": "family_name",
+            "jsonType.label": "String",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "introspection.token.claim": "true"
+          }
+        },
+        {
+          "name": "iv_wegwijs_rol_3D",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "iv_wegwijs_rol_3D",
+            "claim.name": "iv_wegwijs_rol_3D",
+            "jsonType.label": "String",
+            "multivalued": "true",
+            "aggregate.attrs": "false",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "introspection.token.claim": "true"
+          }
+        },
+        {
+          "name": "vo_id",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "vo_id",
+            "claim.name": "vo_id",
+            "jsonType.label": "String",
+            "multivalued": "false",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "introspection.token.claim": "true"
+          }
+        },
+        {
+          "name": "nuxt-bff-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.client.audience": "nuxt-bff",
+            "id.token.claim": "false",
+            "access.token.claim": "true"
+          }
+        }
+      ],
+      "defaultClientScopes": [
+        "profile",
+        "web-origins",
+        "roles",
+        "organisation-registry-api-access"
+      ]
+    }
+  ],
+  "users": [
+    {
+      "username": "dev",
+      "enabled": true,
+      "firstName": "Developer",
+      "lastName": "Persona",
+      "credentials": [
+        {
+          "id": "cfb9dc8b-4888-4965-af1a-8f29b2222542",
+          "type": "password",
+          "createdDate": 1774358576067,
+          "secretData": "{\"value\":\"0H0oDy38Udm+xWPaHCjh9zFPuUmGMZNO2Y9Quxsks+B9YpboKAZlBNor3YrVkVAKgH+n48dSU4g282b5N0K5sw==\",\"salt\":\"SWqNSlZdYiZcWD3JJNI4bw==\",\"additionalParameters\":{}}",
+          "credentialData": "{\"hashIterations\":210000,\"algorithm\":\"pbkdf2-sha512\",\"additionalParameters\":{}}"
+        }
+      ],
+      "attributes": {
+        "vo_id": [
+          "9c2f7372-7112-49dc-9771-f127b048b4c7"
+        ],
+        "iv_wegwijs_rol_3D": [
+          "algemeenbeheerder"
+        ]
+      }
+    },
+    {
+      "username": "vlimpers",
+      "enabled": true,
+      "firstName": "Vlimpers",
+      "lastName": "Persona",
+      "credentials": [
+        {
+          "id": "923e0899-7842-4f59-8a93-7efaf8739ce5",
+          "type": "password",
+          "createdDate": 1774358576965,
+          "secretData": "{\"value\":\"neC2yThHEDeSy2ZPXDKWronk1BsTBKwxxEgyNgh39ifjDUjmujaDGNJ1QRYEmQJ26fdZcolW6tNn5n/7ClvfbA==\",\"salt\":\"mJa44+sSUT5u06HETWz0Fg==\",\"additionalParameters\":{}}",
+          "credentialData": "{\"hashIterations\":210000,\"algorithm\":\"pbkdf2-sha512\",\"additionalParameters\":{}}"
+        }
+      ],
+      "attributes": {
+        "vo_id": [
+          "E6D110DC-231A-4666-BAFB-C354255EF547"
+        ],
+        "iv_wegwijs_rol_3D": [
+          "vlimpersBeheerder"
+        ]
+      }
+    },
+    {
+      "username": "decentraalbeheerder",
+      "enabled": true,
+      "firstName": "Decentraalbeheerder",
+      "lastName": "Persona",
+      "credentials": [
+        {
+          "id": "ef73f582-c354-4d38-9d91-1ab6ad380a7c",
+          "type": "password",
+          "createdDate": 1774358577877,
+          "secretData": "{\"value\":\"9Z4w/s6xVPkzyPtSv7sewi99AvM7n52VTE83xkfO9CfjUwqVkaQwG/8663grjcuV/058DO7i24scxm1u8eT5EQ==\",\"salt\":\"Ekz/ETmp2ZQIDB2cYs7bCA==\",\"additionalParameters\":{}}",
+          "credentialData": "{\"hashIterations\":210000,\"algorithm\":\"pbkdf2-sha512\",\"additionalParameters\":{}}"
+        }
+      ],
+      "attributes": {
+        "vo_id": [
+          "34E7CF51-0AF1-436E-B187-BEE803525BA6"
+        ],
+        "iv_wegwijs_rol_3D": [
+          "decentraalBeheerder"
+        ]
+      }
+    },
+    {
+      "username": "algemeenbeheerder",
+      "enabled": true,
+      "firstName": "Algemeenbeheerder",
+      "lastName": "Persona",
+      "credentials": [
+        {
+          "id": "40ac065b-000c-4b9b-90d4-b352dc6e80ec",
+          "type": "password",
+          "createdDate": 1774358578772,
+          "secretData": "{\"value\":\"rzVYrR/OHs0LZ5NHW3DFrb+xqMwdvvg3i5g+SQoHcfmTxfTyET7nmU90i4HAeGh6291mPOYjpihQkAutGX1tTQ==\",\"salt\":\"hVXqQujnp4VFK3jj+CZrtw==\",\"additionalParameters\":{}}",
+          "credentialData": "{\"hashIterations\":210000,\"algorithm\":\"pbkdf2-sha512\",\"additionalParameters\":{}}"
+        }
+      ],
+      "attributes": {
+        "vo_id": [
+          "A5C5BFCD-266C-4CC7-9869-4B95E34C090D"
+        ],
+        "iv_wegwijs_rol_3D": [
+          "algemeenbeheerder"
+        ]
+      }
+    },
+    {
+      "username": "organen",
+      "enabled": true,
+      "firstName": "Orgaanbeheerder",
+      "lastName": "Persona",
+      "credentials": [
+        {
+          "id": "88c8febf-bb13-41c4-b6fa-d24175a5429e",
+          "type": "password",
+          "createdDate": 1774358579685,
+          "secretData": "{\"value\":\"edkOYLWI4pCnCjgD/5hiFC31dXQR/h7ocPIr3c0fJrJF9gL6ie1fMrbaFPhHo0xK2odCCsBxvEFr8/D5O35n/Q==\",\"salt\":\"KbUFRvOa1GKNo4w55icupg==\",\"additionalParameters\":{}}",
+          "credentialData": "{\"hashIterations\":210000,\"algorithm\":\"pbkdf2-sha512\",\"additionalParameters\":{}}"
+        }
+      ],
+      "attributes": {
+        "vo_id": [
+          "A5C5BFCD-266C-4CC7-9869-4B95E34C090D"
+        ],
+        "iv_wegwijs_rol_3D": [
+          "orgaanbeheerder"
+        ]
+      }
+    },
+    {
+      "username": "regelgeving",
+      "enabled": true,
+      "firstName": "Regelgevingbeheerder",
+      "lastName": "Persona",
+      "credentials": [
+        {
+          "id": "bda83995-425a-4bd7-83f5-5132b50e888f",
+          "type": "password",
+          "createdDate": 1774358580603,
+          "secretData": "{\"value\":\"nYva78ywvppyYGvHws9zczwLb+G2Wa2mUkrnFBfduKU5CfRXw/2B97t2YeMCsCtq5vIpYab2QKCAnYiu0RwU+A==\",\"salt\":\"XIgJUqNuPZyGn6WK2cRocw==\",\"additionalParameters\":{}}",
+          "credentialData": "{\"hashIterations\":210000,\"algorithm\":\"pbkdf2-sha512\",\"additionalParameters\":{}}"
+        }
+      ],
+      "attributes": {
+        "vo_id": [
+          "A5C5BFCD-266C-4CC7-9869-4B95E34C090D"
+        ],
+        "iv_wegwijs_rol_3D": [
+          "regelgevingbeheerder"
+        ]
+      }
+    },
+    {
+      "username": "cjmbeheerder",
+      "enabled": true,
+      "firstName": "CJM Beheerder",
+      "lastName": "Persona",
+      "credentials": [
+        {
+          "id": "d27795d0-a714-43e8-ad5a-658c17a8fd6c",
+          "type": "password",
+          "createdDate": 1774358581511,
+          "secretData": "{\"value\":\"ZUbJACvBLNxUbImCtLA6VCumb8gk+be1JreJym8B1WU88tN7+nGbONacZi3xzBnlGZoBPactN1PZy8TrmdEOnQ==\",\"salt\":\"TJsYZe4X0EJv9o6Rtmz3Iw==\",\"additionalParameters\":{}}",
+          "credentialData": "{\"hashIterations\":210000,\"algorithm\":\"pbkdf2-sha512\",\"additionalParameters\":{}}"
+        }
+      ],
+      "attributes": {
+        "vo_id": [
+          "A5C5BFCD-266C-4CC7-9869-5B95E34C090E"
+        ],
+        "iv_wegwijs_rol_3D": [
+          "cjmbeheerder"
+        ]
+      }
+    },
+    {
+      "username": "orafinbeheerder",
+      "enabled": true,
+      "firstName": "Orafin",
+      "lastName": "Beheerder",
+      "credentials": [
+        {
+          "id": "b2e5f1a3-9c34-4d78-a012-ef3456789abc",
+          "type": "password",
+          "createdDate": 1774358576965,
+          "secretData": "{\"value\": \"w7BRcoqoTWthAAMN296HTt4Phupd7P/+1MYaoiEaKWToqkkXMd+sLuW+XgpVEoSokC/FvZXDTBfvsg2m6sc8/Q==\", \"salt\": \"CFtxybrC9Rm4e3ozYqmetg==\", \"additionalParameters\": {}}",
+          "credentialData": "{\"hashIterations\": 210000, \"algorithm\": \"pbkdf2-sha512\", \"additionalParameters\": {}}"
+        }
+      ],
+      "attributes": {
+        "vo_id": [
+          "B3F8C2D1-4A56-7E89-0123-456789ABCDEF"
+        ],
+        "iv_wegwijs_rol_3D": [
+          "orafin"
+        ]
+      }
+    }
+  ],
+  "attributes": {
+    "feature.token.exchange": "true",
+    "oidc.logout.idtoken.required": "false"
+  }
+}

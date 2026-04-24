@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wiremock
+  namespace: wegwijs-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wiremock
+  template:
+    metadata:
+      labels:
+        app: wiremock
+    spec:
+      containers:
+      - name: wiremock
+        image: wiremock/wiremock:2.32.0
+        args:
+        - --verbose
+        - --global-response-templating
+        ports:
+        - containerPort: 8080
+        readinessProbe:
+          httpGet:
+            path: /__admin/mappings
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 12
+        volumeMounts:
+        - name: mappings
+          mountPath: /home/wiremock/mappings
+        - name: files
+          mountPath: /home/wiremock/__files
+      volumes:
+      - name: mappings
+        configMap:
+          name: wiremock-mappings
+      - name: files
+        configMap:
+          name: wiremock-files
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wiremock
+  namespace: wegwijs-demo
+spec:
+  selector:
+    app: wiremock
+  ports:
+  - port: 8080
+    targetPort: 8080

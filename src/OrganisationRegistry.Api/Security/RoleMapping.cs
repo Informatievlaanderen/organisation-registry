@@ -8,14 +8,14 @@ public static class RoleMapping
 
     static RoleMapping()
     {
-        Mapping.Add(Role.AlgemeenBeheerder, "algemeenBeheerder");
-        Mapping.Add(Role.VlimpersBeheerder, "vlimpersBeheerder");
-        Mapping.Add(Role.DecentraalBeheerder, "decentraalBeheerder");
-        Mapping.Add(Role.RegelgevingBeheerder, "regelgevingBeheerder");
-        Mapping.Add(Role.OrgaanBeheerder, "orgaanBeheerder");
+        Mapping.Add(Role.AlgemeenBeheerder, AcmIdmConstants.Roles.AlgemeenBeheerder);
+        Mapping.Add(Role.VlimpersBeheerder, AcmIdmConstants.Roles.VlimpersBeheerder);
+        Mapping.Add(Role.DecentraalBeheerder, AcmIdmConstants.Roles.DecentraalBeheerder);
+        Mapping.Add(Role.RegelgevingBeheerder, AcmIdmConstants.Roles.RegelgevingBeheerder);
+        Mapping.Add(Role.OrgaanBeheerder, AcmIdmConstants.Roles.OrgaanBeheerder);
         Mapping.Add(Role.Developer, "developer");
         Mapping.Add(Role.AutomatedTask, "automatedTask");
-        Mapping.Add(Role.CjmBeheerder, "cjmBeheerder");
+        Mapping.Add(Role.CjmBeheerder, AcmIdmConstants.Roles.CjmBeheerder);
     }
 
     public static string Map(Role role)
@@ -25,5 +25,5 @@ public static class RoleMapping
         => Mapping[role];
 
     public static bool Exists(string role)
-        => Mapping.ContainsKey(role);
+        => Mapping.Reverse.ContainsKey(role);
 }

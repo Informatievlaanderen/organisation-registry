@@ -7,9 +7,9 @@ WORKDIR /app
 
 RUN apt-get update && \
     apt-get install curl jq -y && \
-    chmod +x ./init.sh
+    chmod +x ./src/OrganisationRegistry.Api/init.sh
 
 EXPOSE 9002/tcp
 ENV ASPNETCORE_URLS http://*:9002
 
-ENTRYPOINT ["./init.sh"]
+ENTRYPOINT ["./src/OrganisationRegistry.Api/init.sh"]

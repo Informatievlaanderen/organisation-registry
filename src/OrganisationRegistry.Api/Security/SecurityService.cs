@@ -107,7 +107,19 @@ public class SecurityService : ISecurityService
 
         var firstName = user.GetRequiredClaim(ClaimTypes.GivenName);
         var name = user.GetRequiredClaim(ClaimTypes.Surname);
-        var acmId = user.GetRequiredClaim(AcmIdmConstants.Claims.AcmId);
+        
+        // Support both JWT Bearer (ACM-IDM) and OAuth2Introspection (TokenExchange) authentication
+        string cacheKey;
+        if (user.Identity.AuthenticationType == "OAuth2Introspection")
+        {
+            // For TokenExchange authentication, use vo_id as the cache key
+            cacheKey = user.GetRequiredClaim("vo_id");
+        }
+        else
+        {
+            // For JWT Bearer authentication, use ACM ID as the cache key
+            cacheKey = user.GetRequiredClaim(AcmIdmConstants.Claims.AcmId);
+        }
 
         var roles = user
             .GetClaims(ClaimTypes.Role)
@@ -116,7 +128,7 @@ public class SecurityService : ISecurityService
             .ToImmutableArray();
 
         var organisationSecurityInformation = await _cache.GetOrAdd(
-            acmId,
+            cacheKey,
             async () =>
             {
                 var organisations = GetOrganisations(user);
@@ -155,9 +167,21 @@ public class SecurityService : ISecurityService
         if (lastName == null)
             throw new Exception("Could not determine current user's last name");
 
-        var acmId = principal.FindFirst(AcmIdmConstants.Claims.AcmId);
-        if (acmId == null)
-            throw new Exception("Could not determine current user's acm id");
+        string acmId;
+        if (principal.Identity?.AuthenticationType == "OAuth2Introspection")
+        {
+            var voId = principal.FindFirst("vo_id");
+            if (voId == null)
+                throw new Exception("Could not determine current user's vo_id");
+            acmId = voId.Value;
+        }
+        else
+        {
+            var acmIdClaim = principal.FindFirst(AcmIdmConstants.Claims.AcmId);
+            if (acmIdClaim == null)
+                throw new Exception("Could not determine current user's acm id");
+            acmId = acmIdClaim.Value;
+        }
 
         var ip = principal.FindFirst(AcmIdmConstants.Claims.Ip);
 
@@ -166,7 +190,7 @@ public class SecurityService : ISecurityService
         return new User(
             firstName.Value,
             lastName.Value,
-            acmId.Value,
+            acmId,
             ip?.Value,
             securityInformation.Roles.ToArray(),
             securityInformation.OvoNumbers,

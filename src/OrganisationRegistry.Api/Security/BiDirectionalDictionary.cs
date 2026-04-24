@@ -49,7 +49,7 @@ public class BiDirectionalDictionary<TForwardKey, TReverseKey>
     }
 
     private Indexer<TForwardKey, TReverseKey> Forward { get; }
-    private Indexer<TReverseKey, TForwardKey> Reverse { get; }
+    public Indexer<TReverseKey, TForwardKey> Reverse { get; }
 
     public TReverseKey this[TForwardKey index]
         => Forward[index];
