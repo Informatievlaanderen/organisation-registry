@@ -184,18 +184,18 @@
       "clientId": "organisation-registry-local-dev",
       "name": "Organisation Registry SPA",
       "enabled": true,
-      "publicClient": false,
-      "secret": "a_very=Secr3t*Key",
+      "publicClient": true,
       "standardFlowEnabled": true,
       "implicitFlowEnabled": false,
       "directAccessGrantsEnabled": false,
       "serviceAccountsEnabled": false,
       "redirectUris": [
-        "http://ui.localhost:9080/*",
-        "http://*"
+        "http://ui.localhost:9080/#/oic",
+        "http://localhost:9080/#/oic"
       ],
       "webOrigins": [
-        "*"
+        "http://ui.localhost:9080",
+        "http://localhost:9080"
       ],
       "defaultClientScopes": [
         "openid",
@@ -282,7 +282,7 @@
       "name": "Organisation Registry API (introspection)",
       "enabled": true,
       "publicClient": false,
-      "secret": "a_very=Secr3t*Key",
+      "secret": "api-introspection-secret-2024",
       "standardFlowEnabled": false,
       "implicitFlowEnabled": false,
       "directAccessGrantsEnabled": false,
@@ -298,7 +298,7 @@
       "name": "CJM Client (M2M)",
       "enabled": true,
       "publicClient": false,
-      "secret": "secret",
+      "secret": "cjm-client-secret-2024",
       "standardFlowEnabled": false,
       "implicitFlowEnabled": false,
       "directAccessGrantsEnabled": false,
@@ -315,7 +315,7 @@
       "name": "Orafin Client (M2M)",
       "enabled": true,
       "publicClient": false,
-      "secret": "secret",
+      "secret": "orafin-client-secret-2024",
       "standardFlowEnabled": false,
       "implicitFlowEnabled": false,
       "directAccessGrantsEnabled": false,
@@ -332,7 +332,7 @@
       "name": "Test Client (M2M)",
       "enabled": true,
       "publicClient": false,
-      "secret": "secret",
+      "secret": "test-client-secret-2024",
       "standardFlowEnabled": false,
       "implicitFlowEnabled": false,
       "directAccessGrantsEnabled": false,
@@ -358,10 +358,11 @@
       "serviceAccountsEnabled": false,
       "redirectUris": [
         "http://app.localhost:9080/callback",
-        "http://*"
+        "http://localhost:9080/callback"
       ],
       "webOrigins": [
-        "*"
+        "http://app.localhost:9080",
+        "http://localhost:9080"
       ],
       "defaultClientScopes": [
         "openid",

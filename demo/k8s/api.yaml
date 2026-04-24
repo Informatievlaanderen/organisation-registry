@@ -70,8 +70,6 @@ spec:
           value: "http://ui.localhost:9080"
         - name: OIDCAuth__ClientId
           value: "organisation-registry-local-dev"
-        - name: OIDCAuth__ClientSecret
-          value: "a_very=Secr3t*Key"
         - name: OIDCAuth__TokenEndPoint
           value: "/protocol/openid-connect/token"
         - name: OIDCAuth__JwksUri
@@ -96,7 +94,7 @@ spec:
         - name: EditApi__ClientId
           value: "organisation-registry-api"
         - name: EditApi__ClientSecret
-          value: "a_very=Secr3t*Key"
+          value: "api-introspection-secret-2024"
         - name: EditApi__Authority
           value: "http://keycloak.localhost:9080/realms/wegwijs"
         - name: EditApi__IntrospectionEndpoint
