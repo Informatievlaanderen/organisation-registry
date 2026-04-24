@@ -2,6 +2,7 @@
 
 CONTAINERID=$(curl -s http://169.254.170.2/v2/metadata | jq -r ".Containers[] | select(.Labels[\"com.amazonaws.ecs.container-name\"] | startswith(\"basisregisters-\") and endswith(\"-api\")) | .DockerId")
 
-sed -i "s/REPLACE_CONTAINERID/$CONTAINERID/g" appsettings.json
+sed -i "s/REPLACE_CONTAINERID/$CONTAINERID/g" src/OrganisationRegistry.Api/appsettings.json
 
-./OrganisationRegistry.Api
+cd src/OrganisationRegistry.Api
+dotnet OrganisationRegistry.Api.dll

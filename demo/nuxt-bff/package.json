@@ -1,0 +1,15 @@
+{
+  "name": "nuxt-bff-demo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "start": "node .output/server/index.mjs"
+  },
+  "dependencies": {
+    "nuxt": "^3.11.0",
+    "h3": "^1.11.0",
+    "ofetch": "^1.3.3"
+  }
+}

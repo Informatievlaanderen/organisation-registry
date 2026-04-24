@@ -37,6 +37,14 @@ public class OrganisationRegistryTokenValidationParameters : TokenValidationPara
         // If you want to allow a certain amount of clock drift, set that here:
         ClockSkew = new TimeSpan(0, 5, 0);
 
+        // Disable automatic configuration manager and JWKS fetching
+        // Force use of symmetric key only
+        ConfigurationManager = null;
+        RequireSignedTokens = true;
+
+        // Force using the symmetric key even without kid claim
+        TryAllIssuerSigningKeys = true;
+
         RoleClaimType = ClaimTypes.Role;
     }
 }

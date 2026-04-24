@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nuxt-bff
+  namespace: wegwijs-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nuxt-bff
+  template:
+    metadata:
+      labels:
+        app: nuxt-bff
+    spec:
+      containers:
+      - name: nuxt-bff
+        image: k3d-wegwijs-registry:5051/wegwijs-nuxt-bff:local
+        env:
+        # Public config — keycloakRealm and clientId are still needed as static config
+        - name: NUXT_PUBLIC_KEYCLOAK_REALM
+          value: "wegwijs"
+        - name: NUXT_PUBLIC_KEYCLOAK_CLIENT_ID
+          value: "nuxt-bff"
+        # NUXT_PUBLIC_KEYCLOAK_URL and NUXT_PUBLIC_APP_BASE_URL are intentionally omitted:
+        # server-side handlers derive these dynamically from the incoming Host header (see urls.ts)
+        # so the demo works on any IP/hostname without redeployment.
+        # Server-side: interne cluster URLs
+        - name: NUXT_KEYCLOAK_INTERNAL_URL
+          value: "http://keycloak"
+        - name: NUXT_KEYCLOAK_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: demo-secrets
+              key: nuxt-bff-client-secret
+        - name: NUXT_SESSION_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: demo-secrets
+              key: nuxt-session-secret
+        - name: NUXT_API_BASE_URL
+          value: "http://api/v1"
+        ports:
+        - containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nuxt-bff
+  namespace: wegwijs-demo
+spec:
+  selector:
+    app: nuxt-bff
+  ports:
+  - port: 80
+    targetPort: 3000

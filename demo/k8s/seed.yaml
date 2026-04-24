@@ -1,0 +1,61 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: seed
+  namespace: wegwijs-demo
+spec:
+  ttlSecondsAfterFinished: 300
+  template:
+    spec:
+      restartPolicy: OnFailure
+      initContainers:
+      - name: wait-for-api
+        image: busybox
+        command: ['sh', '-c', 'until nc -z api 80; do echo waiting for api; sleep 5; done']
+      containers:
+      - name: seed
+        image: k3d-wegwijs-registry:5051/wegwijs-seed:local
+        env:
+        - name: API_BASE
+          value: "http://api"
+        - name: JWT_SIGNING_KEY
+          valueFrom:
+            secretKeyRef:
+              name: demo-secrets
+              key: jwt-signing-key
+        - name: JWT_ISSUER
+          valueFrom:
+            secretKeyRef:
+              name: demo-secrets
+              key: jwt-issuer
+        - name: JWT_AUDIENCE
+          valueFrom:
+            secretKeyRef:
+              name: demo-secrets
+              key: jwt-audience
+        - name: KBO_CERTIFICATE
+          valueFrom:
+            secretKeyRef:
+              name: demo-secrets
+              key: kbo-certificate
+        - name: RIJKSREGISTER_CERTIFICATE_PWD
+          valueFrom:
+            secretKeyRef:
+              name: demo-secrets
+              key: rijksregister-certificate-password
+        - name: DEVELOPER_VO_ID
+          valueFrom:
+            secretKeyRef:
+              name: demo-secrets
+              key: developer-vo-id
+        - name: MSSQL_HOST
+          value: mssql
+        - name: MSSQL_USER
+          value: sa
+        - name: MSSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: demo-secrets
+              key: mssql-sa-password
+        - name: MSSQL_DB
+          value: OrganisationRegistry
