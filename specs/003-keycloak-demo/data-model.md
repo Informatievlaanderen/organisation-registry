@@ -18,8 +18,8 @@
 
 ### `keycloak/realm-export.json` — NEW
 
-**Purpose**: Keycloak 24.0 realm import file. Auto-imported on `docker-compose up keycloak` via
-the `--import-realm` flag and the `./keycloak:/opt/keycloak/data/import` volume mount.
+**Purpose**: Keycloak realm import file. Auto-imported in de actieve Tilt/k3d setup via de
+`keycloak-realm-configmap` local resource en de Keycloak deployment.
 
 **Contains**:
 - Realm `wegwijs` with `enabled: true`
@@ -40,8 +40,8 @@ the `--import-realm` flag and the `./keycloak:/opt/keycloak/data/import` volume 
   - `bearerOnly: false`, `standardFlowEnabled: false`, `directAccessGrantsEnabled: false`
 - Client `nuxt-bff` (Authorization Code + PKCE):
   - `secret: nuxt-bff-secret`
-  - `validRedirectUris`: `http://localhost:5090/callback`
-  - `webOrigins`: `http://localhost:5090`
+  - `validRedirectUris`: `http://app.localhost:9080/callback`
+  - `webOrigins`: `http://app.localhost:9080`
   - Protocol mappers: `iv_wegwijs_rol_3D`, `vo_id` (same as SPA client)
   - Allowed scopes: openid, profile, `dv_organisatieregister_cjmbeheerder`
 - Users (7 test users mirroring Duende `Config.cs`):
@@ -67,10 +67,10 @@ Replaces all Duende IdentityServer endpoints with Keycloak 24.0 equivalents for 
 |---|---|---|
 | `OIDCAuth` | `Authority` | `http://keycloak:8080/realms/wegwijs` |
 | `OIDCAuth` | `TokenEndPoint` | `/protocol/openid-connect/token` |
-| `OIDCAuth` | `AuthorizationEndpoint` | `http://localhost:8180/realms/wegwijs/protocol/openid-connect/auth` |
-| `OIDCAuth` | `UserInfoEndPoint` | `http://localhost:8180/realms/wegwijs/protocol/openid-connect/userinfo` |
-| `OIDCAuth` | `EndSessionEndPoint` | `http://localhost:8180/realms/wegwijs/protocol/openid-connect/logout` |
-| `OIDCAuth` | `AuthorizationIssuer` | `http://localhost:8180/realms/wegwijs` |
+| `OIDCAuth` | `AuthorizationEndpoint` | `http://keycloak.localhost:9080/realms/wegwijs/protocol/openid-connect/auth` |
+| `OIDCAuth` | `UserInfoEndPoint` | `http://keycloak.localhost:9080/realms/wegwijs/protocol/openid-connect/userinfo` |
+| `OIDCAuth` | `EndSessionEndPoint` | `http://keycloak.localhost:9080/realms/wegwijs/protocol/openid-connect/logout` |
+| `OIDCAuth` | `AuthorizationIssuer` | `http://keycloak.localhost:9080/realms/wegwijs` |
 | `OIDCAuth` | `JwksUri` | `http://keycloak:8080/realms/wegwijs/protocol/openid-connect/certs` |
 | `OIDCAuth` | `ClientId` | `organisation-registry-local-dev` |
 | `OIDCAuth` | `ClientSecret` | `a_very=Secr3t*Key` |
@@ -86,13 +86,12 @@ Replaces all Duende IdentityServer endpoints with Keycloak 24.0 equivalents for 
 
 ---
 
-### `docker-compose.yml` — MOD
+### `Tiltfile` + `demo/k8s/*.yaml` — MOD
 
 **Changes**:
-1. Keycloak service: add `KC_HOSTNAME_URL: http://localhost:8180` and `KC_HOSTNAME_STRICT: "false"`
-   environment variables (fixes the split-horizon `iss` claim issue)
-2. Add `m2m-demo` service (US2)
-3. Add `nuxt-bff` service (US3)
+1. Keycloak deployment/config: externe URL op `keycloak.localhost:9080`, interne URL via service `http://keycloak`
+2. `m2m-demo` deployment/service (US2)
+3. `nuxt-bff` deployment/service (US3)
 
 ---
 
@@ -164,7 +163,7 @@ dv_organisatieregister_cjmbeheerder`, `code_challenge`, `redirect_uri`.
 ### `demo/nuxt-bff/server/routes/callback.get.ts` — NEW
 
 **Purpose**: Receives authorization code from Keycloak. Retrieves `code_verifier` from session.
-Exchanges code for tokens at `KEYCLOAK_TOKEN_URL` (internal Docker URL). Stores `access_token`
+Exchanges code for tokens at `KEYCLOAK_TOKEN_URL` (internal Kubernetes service URL). Stores `access_token`
 in the encrypted session (using Nitro's `useSession`). Redirects to `/dashboard`.  
 The `access_token` is **never** written to a response body.
 
@@ -220,7 +219,7 @@ Bypasses itself for `/login`, `/callback`, and `/api/*` routes to avoid redirect
 |---|---|---|
 | `keycloak/realm-export.json` | JSON | US1 |
 | `src/OrganisationRegistry.Api/appsettings.keycloak.json` | JSON | US1 |
-| `docker-compose.yml` | MOD | US1/2/3 |
+| `Tiltfile` + `demo/k8s/*` | MOD | US1/2/3 |
 | `demo/m2m/m2m.csproj` | XML | US2 |
 | `demo/m2m/Program.cs` | C# | US2 |
 | `demo/m2m/Dockerfile` | Docker | US2 |

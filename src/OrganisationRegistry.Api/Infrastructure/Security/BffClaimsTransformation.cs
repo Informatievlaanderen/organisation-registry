@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Authentication;
 using OrganisationRegistry.Infrastructure.Authorization;
 
 /// <summary>
-/// Zet claims uit de OAuth2 introspection response (BffApi scheme) om naar
+/// Zet claims uit OAuth2 introspection responses om naar
 /// de interne claims die door SecurityService en [OrganisationRegistryAuthorize] gebruikt worden.
 ///
 /// De introspection response bevat:
@@ -24,22 +24,17 @@ public class BffClaimsTransformation : IClaimsTransformation
         // Zoek een introspection identity: dit is elke identity die given_name bevat maar
         // nog geen ClaimTypes.GivenName heeft. Bearer JWT-tokens gaan via ParseRoles en
         // hebben ClaimTypes.GivenName al; introspection responses hebben JwtClaimTypes.GivenName.
-        // We filteren NIET op AuthenticationType omdat de OAuth2Introspection library de naam
-        // niet altijd consistent instelt afhankelijk van de versie.
         var introspectionIdentity = principal.Identities
-            .FirstOrDefault(i =>
-                i.FindFirst(JwtClaimTypes.GivenName) != null &&
-                i.FindFirst(ClaimTypes.GivenName) == null);
+            .OfType<ClaimsIdentity>()
+            .FirstOrDefault(NeedsTransformation);
 
         if (introspectionIdentity == null)
             return Task.FromResult(principal);
 
-        // Kloon de introspection identity en bouw een nieuwe principal
         var identity = (ClaimsIdentity)introspectionIdentity.Clone();
-        var cloned = new ClaimsPrincipal(identity);
+        var cloned = new ClaimsPrincipal(
+            principal.Identities.Select(existing => ReferenceEquals(existing, introspectionIdentity) ? identity : existing));
 
-        // Map given_name / family_name naar ClaimTypes.GivenName / ClaimTypes.Surname
-        // De introspection library doet geen OIDC claim mapping, dus we doen het zelf.
         MapNameClaim(identity, JwtClaimTypes.GivenName, ClaimTypes.GivenName);
         MapNameClaim(identity, JwtClaimTypes.FamilyName, ClaimTypes.Surname);
 
@@ -88,6 +83,10 @@ public class BffClaimsTransformation : IClaimsTransformation
 
         return Task.FromResult(cloned);
     }
+
+    private static bool NeedsTransformation(ClaimsIdentity identity)
+        => identity.FindFirst(JwtClaimTypes.GivenName) != null &&
+           identity.FindFirst(ClaimTypes.GivenName) == null;
 
     private static void MapNameClaim(ClaimsIdentity identity, string sourceType, string targetType)
     {

@@ -1,5 +1,8 @@
 # Vragen voor ACM/IDM
 
+> Historisch document. De actieve lokale demo gebruikt Keycloak als vervanging voor ACM/IDM;
+> deze vragen blijven alleen bewaard als referentie voor productie-onzekerheden.
+
 Gegenereerd op basis van de BFF-demo implementatie (RFC 8693 token exchange via Keycloak,
 OAuth2 introspection door de API). De vragen hieronder zijn de gaten die we niet kunnen
 invullen zonder informatie van ACM/IDM.

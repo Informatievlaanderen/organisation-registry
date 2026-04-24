@@ -7,8 +7,10 @@
 # api.*       → API
 # ui.*        → Angular UI (backoffice)
 # app.*       → Nuxt BFF (Keycloak demo)
-# seq.*       → Seq (structured log viewer)
-# m2m.*       → M2M demo
+# seq.*        → Seq (structured log viewer)
+# m2m.*        → M2M demo
+# opensearch.* → OpenSearch
+# mock.*       → WireMock
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
@@ -19,7 +21,7 @@ spec:
   entryPoints:
     - web
   routes:
-  - match: HostRegexp(`^keycloak\..+$`)
+  - match: Host(`keycloak.localhost`) || HostRegexp(`^keycloak\..+$`)
     kind: Rule
     services:
     - name: keycloak
@@ -34,7 +36,7 @@ spec:
   entryPoints:
     - web
   routes:
-  - match: HostRegexp(`^api\..+$`)
+  - match: Host(`api.localhost`) || HostRegexp(`^api\..+$`)
     kind: Rule
     services:
     - name: api
@@ -49,7 +51,7 @@ spec:
   entryPoints:
     - web
   routes:
-  - match: HostRegexp(`^ui\..+$`)
+  - match: Host(`ui.localhost`) || HostRegexp(`^ui\..+$`)
     kind: Rule
     services:
     - name: ui
@@ -64,7 +66,7 @@ spec:
   entryPoints:
     - web
   routes:
-  - match: HostRegexp(`^app\..+$`)
+  - match: Host(`app.localhost`) || HostRegexp(`^app\..+$`)
     kind: Rule
     services:
     - name: nuxt-bff
@@ -79,7 +81,7 @@ spec:
   entryPoints:
     - web
   routes:
-  - match: HostRegexp(`^m2m\..+$`)
+  - match: Host(`m2m.localhost`) || HostRegexp(`^m2m\..+$`)
     kind: Rule
     services:
     - name: m2m-demo
@@ -94,8 +96,38 @@ spec:
   entryPoints:
     - web
   routes:
-  - match: HostRegexp(`^seq\..+$`)
+  - match: Host(`seq.localhost`) || HostRegexp(`^seq\..+$`)
     kind: Rule
     services:
     - name: seq
       port: 80
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: opensearch
+  namespace: wegwijs-demo
+spec:
+  entryPoints:
+    - web
+  routes:
+  - match: Host(`opensearch.localhost`) || HostRegexp(`^opensearch\..+$`)
+    kind: Rule
+    services:
+    - name: opensearch
+      port: 9200
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: mock
+  namespace: wegwijs-demo
+spec:
+  entryPoints:
+    - web
+  routes:
+  - match: Host(`mock.localhost`) || HostRegexp(`^mock\..+$`)
+    kind: Rule
+    services:
+    - name: wiremock
+      port: 8080

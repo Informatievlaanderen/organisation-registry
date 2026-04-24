@@ -29,8 +29,19 @@ namespace OrganisationRegistry.Import.Piavo
         private static ContactType _mobile;
         private static ContactType _phone;
 
-        public static void Main(string[] args)
+        public static int Main(string[] args)
         {
+            var endpoint = args.ElementAtOrDefault(0) ?? Environment.GetEnvironmentVariable("API_BASE");
+            var jwt = args.ElementAtOrDefault(1) ?? Environment.GetEnvironmentVariable("JWT");
+
+            if (string.IsNullOrWhiteSpace(endpoint) || string.IsNullOrWhiteSpace(jwt))
+            {
+                Console.Error.WriteLine("Usage: dotnet run --project test/OrganisationRegistry.Import.Piavo -- <endpoint> <jwt>");
+                return 1;
+            }
+
+            Import(endpoint, jwt);
+            return 0;
         }
 
         public static void Import(string endpoint, string jwt)
@@ -40,26 +51,32 @@ namespace OrganisationRegistry.Import.Piavo
             var client = new OrganisationRegistryAPI(baseAddress);
             client.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", jwt);
 
+            BuildDatabase();
+            RunImportStep("keys", () => ImportKeys(client));
+            RunImportStep("labels", () => ImportLabels(client));
+            RunImportStep("functions", () => ImportFunctions(client));
+            RunImportStep("formal frameworks", () => ImportFormalFrameworks(client));
+            RunImportStep("contact types", () => ImportContactTypes(client));
+            RunImportStep("capacity types", () => ImportCapacityTypes(client));
+            RunImportStep("buildings", () => ImportBuildings(client));
+            RunImportStep("locations", () => ImportLocations(client));
+            RunImportStep("organisation classification types", () => ImportOrganisationClassificationTypes(client));
+            RunImportStep("organisation classifications", () => ImportOrganisationClassifications(client));
+
+            RunImportStep("people", () => ImportPeople(client));
+            RunImportStep("organisations", () => ImportOrganisations(client));
+            RunImportStep("organisation parents", () => ImportOrganisationParents(client));
+        }
+
+        private static void RunImportStep(string stepName, Action importStep)
+        {
             try
             {
-                BuildDatabase();
-                ImportKeys(client);
-                ImportLabels(client);
-                ImportFunctions(client);
-                ImportFormalFrameworks(client);
-                ImportContactTypes(client);
-                ImportCapacityTypes(client);
-                ImportBuildings(client);
-                ImportLocations(client);
-                ImportOrganisationClassificationTypes(client);
-                ImportOrganisationClassifications(client);
-
-                ImportPeople(client);
-                ImportOrganisations(client);
-                ImportOrganisationParents(client);
+                importStep();
             }
             catch (HttpOperationException httpEx)
             {
+                Console.WriteLine($"[WARN] Import step '{stepName}' failed and will be skipped.");
                 Console.WriteLine(httpEx.ToString());
                 Console.WriteLine(httpEx.Response.ReasonPhrase);
                 Console.WriteLine(httpEx.Response.StatusCode);
@@ -1076,7 +1093,7 @@ namespace OrganisationRegistry.Import.Piavo
         public static void CheckBadRequest(this object response)
         {
             if (response is BadRequestResult)
-                throw new Exception($"Bad request, import data is crap!");
+                Console.WriteLine("  [WARN] Request returned 400; assuming the item already exists in Tilt.");
         }
     }
 }

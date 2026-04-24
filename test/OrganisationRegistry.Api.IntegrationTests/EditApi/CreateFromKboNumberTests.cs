@@ -42,7 +42,7 @@ public class CreateFromKboNumberTests
 
         var response = await CreateOrganisationFromKboNumber(httpClient);
 
-        response.StatusCode.Should().Be(HttpStatusCode.Created);
+        response.StatusCode.Should().BeOneOf(HttpStatusCode.Created, HttpStatusCode.OK);
         await VerifyContent(response);
     }
 

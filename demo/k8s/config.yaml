@@ -16,6 +16,8 @@ data:
   # API
   API_INTERNAL_BASE_URL: "http://api/v1"
   API_EXTERNAL_BASE_URL: "http://api.localhost:9080/v1"
+  OPENSEARCH_INTERNAL_URL: "http://opensearch:9200"
+  WIREMOCK_INTERNAL_URL: "http://wiremock:8080"
 
   # App URLs
   APP_URL: "http://app.localhost:9080"

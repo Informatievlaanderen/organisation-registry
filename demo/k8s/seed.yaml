@@ -33,6 +33,16 @@ spec:
             secretKeyRef:
               name: demo-secrets
               key: jwt-audience
+        - name: KBO_CERTIFICATE
+          valueFrom:
+            secretKeyRef:
+              name: demo-secrets
+              key: kbo-certificate
+        - name: RIJKSREGISTER_CERTIFICATE_PWD
+          valueFrom:
+            secretKeyRef:
+              name: demo-secrets
+              key: rijksregister-certificate-password
         - name: DEVELOPER_VO_ID
           valueFrom:
             secretKeyRef:

@@ -26,5 +26,11 @@
     <EmbeddedResource Include="Wiremock\files\*.xml" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="appsettings.Oussamas-MacBook-Pro.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

@@ -330,42 +330,50 @@ public class Startup
 
             options.AddPolicy(
                 PolicyNames.Organisations,
-                builder => builder.RequireClaim(
-                    AcmIdmConstants.Claims.Scope,
+                builder => RequireAnyScope(
+                    builder,
                     AcmIdmConstants.Scopes.CjmBeheerder,
                     AcmIdmConstants.Scopes.TestClient));
 
             options.AddPolicy(
                 PolicyNames.BankAccounts,
-                builder => builder.RequireClaim(
-                    AcmIdmConstants.Claims.Scope,
+                builder => RequireAnyScope(
+                    builder,
                     AcmIdmConstants.Scopes.CjmBeheerder,
                     AcmIdmConstants.Scopes.TestClient));
 
             options.AddPolicy(
                 PolicyNames.OrganisationClassifications,
-                builder => builder.RequireClaim(
-                    AcmIdmConstants.Claims.Scope,
+                builder => RequireAnyScope(
+                    builder,
                     AcmIdmConstants.Scopes.CjmBeheerder,
                     AcmIdmConstants.Scopes.TestClient));
 
             options.AddPolicy(
                 PolicyNames.OrganisationContacts,
-                builder => builder.RequireClaim(
-                    AcmIdmConstants.Claims.Scope,
+                builder => RequireAnyScope(
+                    builder,
                     AcmIdmConstants.Scopes.CjmBeheerder,
                     AcmIdmConstants.Scopes.TestClient));
 
             options.AddPolicy(
                 PolicyNames.Keys,
-                builder => builder.RequireClaim(
-                    AcmIdmConstants.Claims.Scope,
+                builder => RequireAnyScope(
+                    builder,
                     AcmIdmConstants.Scopes.CjmBeheerder,
                     AcmIdmConstants.Scopes.OrafinBeheerder,
-                    AcmIdmConstants.Scopes.TestClient)
-            );
+                    AcmIdmConstants.Scopes.TestClient));
         };
     }
+
+    private static void RequireAnyScope(AuthorizationPolicyBuilder builder, params string[] requiredScopes)
+        => builder.RequireAssertion(context => GetScopes(context.User).Intersect(requiredScopes).Any());
+
+    private static string[] GetScopes(ClaimsPrincipal principal)
+        => principal.FindAll(AcmIdmConstants.Claims.Scope)
+            .SelectMany(claim => claim.Value.Split(' ', StringSplitOptions.RemoveEmptyEntries))
+            .Distinct(StringComparer.Ordinal)
+            .ToArray();
 
     public void Configure(
         IServiceProvider serviceProvider,

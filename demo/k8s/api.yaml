@@ -13,10 +13,6 @@ spec:
       labels:
         app: api
     spec:
-      initContainers:
-      - name: wait-for-mssql
-        image: busybox
-        command: ['sh', '-c', 'until nc -z mssql 1433; do echo waiting for mssql; sleep 5; done']
       containers:
       - name: api
         image: k3d-wegwijs-registry:5051/wegwijs-api:local
@@ -39,9 +35,23 @@ spec:
         - name: SqlServer__MigrationsConnectionString
           value: "Server=mssql;Database=OrganisationRegistry;User Id=sa;Password=$(MSSQL_SA_PASSWORD);TrustServerCertificate=True;MultipleActiveResultSets=True"
         - name: ElasticSearch__ReadConnectionString
-          value: "http://localhost:9200/"
+          value: "http://opensearch:9200/"
         - name: ElasticSearch__WriteConnectionString
-          value: "http://localhost:9200/"
+          value: "http://opensearch:9200/"
+        - name: Api__KboMagdaEndpoint
+          value: "http://wiremock:8080"
+        - name: Api__RepertoriumMagdaEndpoint
+          value: "http://wiremock:8080"
+        - name: Api__KboCertificate
+          valueFrom:
+            secretKeyRef:
+              name: demo-secrets
+              key: kbo-certificate
+        - name: Api__RijksRegisterCertificatePwd
+          valueFrom:
+            secretKeyRef:
+              name: demo-secrets
+              key: rijksregister-certificate-password
         - name: OIDCAuth__Authority
           value: "http://keycloak.localhost:9080/realms/wegwijs"
         - name: OIDCAuth__InternalAuthorityOverride

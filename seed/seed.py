@@ -107,6 +107,26 @@ def get_list(path: str, token: str) -> list:
         return []
 
 
+def get_exists(path: str, item_id: str, token: str) -> bool:
+    url = f"{API_BASE}{path.rstrip('/')}/{item_id}"
+    req = urllib.request.Request(
+        url,
+        headers={
+            "Authorization": f"Bearer {token}",
+            "Accept": "application/json",
+        },
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            return 200 <= resp.status < 300
+    except urllib.error.HTTPError as e:
+        if e.code == 404:
+            return False
+        return False
+    except Exception:
+        return False
+
+
 def post(path: str, body: dict, token: str) -> tuple[int, str]:
     url = f"{API_BASE}{path}"
     data = json.dumps(body).encode()
@@ -199,6 +219,8 @@ DB_CONFIG_KEYS = {
     "Api:PolicyDomainClassificationTypeId": "a7e93f06-0006-0000-0000-000000000002",
     "Api:KboV2LegalFormOrganisationClassificationTypeId": "a7e93f06-0006-0000-0000-000000000001",
     "Api:Organisatietype_Mandaten_En_Vermogensaangifte_ClassificationTypeId": "94944afb-7261-554c-dac6-a19ad4387359",
+    "Api:KboMagdaEndpoint": os.environ.get("KBO_MAGDA_ENDPOINT", "http://wiremock:8080"),
+    "Api:RepertoriumMagdaEndpoint": os.environ.get("REPERTORIUM_MAGDA_ENDPOINT", "http://wiremock:8080"),
 }
 
 
@@ -262,6 +284,9 @@ def seed(token: str):
     _existing: dict[str, set] = {}
 
     def exists(list_path: str, item_id: str) -> bool:
+        if get_exists(list_path, item_id, token):
+            return True
+
         if list_path not in _existing:
             items = get_list(list_path, token)
             # Sommige endpoints gebruiken een samengesteld id-veld (bv. organisationKeyId)

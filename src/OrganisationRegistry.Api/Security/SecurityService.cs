@@ -16,6 +16,11 @@ using SqlServer;
 public class SecurityService : ISecurityService
 {
     private const string ClaimOrganisation = "urn:be:vlaanderen:wegwijs:organisation";
+    private const string ClaimClientId = "client_id";
+    private const string ClaimAuthorizedParty = "azp";
+    private const string CjmClientId = "cjmClient";
+    private const string OrafinClientId = "orafinClient";
+    private const string TestClientId = "testClient";
 
     private readonly ICache<OrganisationSecurityInformation> _cache;
     private readonly IOrganisationRegistryConfiguration _configuration;
@@ -136,16 +141,19 @@ public class SecurityService : ISecurityService
         if (principal == null)
             throw new Exception("Could not determine current user");
 
-        var scope = principal.FindFirstValue(AcmIdmConstants.Claims.Scope);
-        switch (scope)
-        {
-            case AcmIdmConstants.Scopes.CjmBeheerder:
-                return WellknownUsers.Cjm;
-            case AcmIdmConstants.Scopes.OrafinBeheerder:
-                return WellknownUsers.Orafin;
-            case AcmIdmConstants.Scopes.TestClient:
-                return WellknownUsers.TestClient;
-        }
+        if (GetClientUser(principal) is { } clientUser)
+            return clientUser;
+
+        var scopes = GetScopes(principal);
+
+        if (scopes.Contains(AcmIdmConstants.Scopes.TestClient))
+            return WellknownUsers.TestClient;
+
+        if (scopes.Contains(AcmIdmConstants.Scopes.CjmBeheerder))
+            return WellknownUsers.Cjm;
+
+        if (scopes.Contains(AcmIdmConstants.Scopes.OrafinBeheerder))
+            return WellknownUsers.Orafin;
 
         var firstName = principal.FindFirst(ClaimTypes.GivenName);
         if (firstName == null)
@@ -172,6 +180,26 @@ public class SecurityService : ISecurityService
             securityInformation.OvoNumbers,
             securityInformation.BodyIds,
             securityInformation.OrganisationIds);
+    }
+
+    private static string[] GetScopes(ClaimsPrincipal principal)
+        => principal.FindAll(AcmIdmConstants.Claims.Scope)
+            .SelectMany(claim => claim.Value.Split(' ', StringSplitOptions.RemoveEmptyEntries))
+            .Distinct(StringComparer.Ordinal)
+            .ToArray();
+
+    private static IUser? GetClientUser(ClaimsPrincipal principal)
+    {
+        var clientId = principal.FindFirst(ClaimClientId)?.Value ??
+                       principal.FindFirst(ClaimAuthorizedParty)?.Value;
+
+        return clientId switch
+        {
+            CjmClientId => WellknownUsers.Cjm,
+            OrafinClientId => WellknownUsers.Orafin,
+            TestClientId => WellknownUsers.TestClient,
+            _ => null,
+        };
     }
 
     public async Task<IUser> GetUser(ClaimsPrincipal? principal)
