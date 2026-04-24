@@ -13,6 +13,7 @@ using OrganisationRegistry.Organisation;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("organisations")]
 [ApiController]
+[OrganisationRegistryAuthorize]
 [ApiExplorerSettings(GroupName = "Scherm APIs: Organisaties")]
 public class VlimpersController : OrganisationRegistryCommandController
 {
@@ -24,7 +25,6 @@ public class VlimpersController : OrganisationRegistryCommandController
     /// <summary>Pas aan of een organisatie onder Vlimpersbeheer valt of niet.</summary>
     /// <response code="200">Als de organisatie succesvol aangepast is.</response>
     [HttpPatch("{id}/vlimpers")]
-    [OrganisationRegistryAuthorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Vlimpers(
         [FromRoute] Guid id,

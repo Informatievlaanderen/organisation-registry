@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ui
+  namespace: wegwijs-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ui
+  template:
+    metadata:
+      labels:
+        app: ui
+    spec:
+      containers:
+        - name: ui
+          image: k3d-wegwijs-registry:5051/wegwijs-ui:local
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 9007
+          env:
+            - name: API_VERSION
+              value: "demo"
+            - name: API_ENDPOINT
+              value: "http://api.localhost:9080"
+            - name: UI_ENDPOINT
+              value: "http://ui.localhost:9080"
+            - name: AIV_URI
+              value: "https://www.vlaanderen.be/digitaal-vlaanderen"
+            - name: OTEL_SERVER_URI
+              value: ""
+            - name: OTEL_DISTRIBUTED_TRACING_ORIGINS
+              value: ""
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "100m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ui
+  namespace: wegwijs-demo
+spec:
+  selector:
+    app: ui
+  ports:
+    - port: 80
+      targetPort: 9007

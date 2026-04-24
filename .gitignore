@@ -79,3 +79,8 @@ angulardoc.json
 /__build__/**
 .webpack.json
 mssqllogs/
+seed/__pycache__/
+
+# Demo environment secrets
+demo/.env
+.kubeconfig

@@ -52,7 +52,7 @@ public class SecurityController : OrganisationRegistryController
         using var httpClient = httpClientFactory.CreateClient();
 
         var tokenEndpointAddress =
-            $"{_openIdConnectConfiguration.Authority}{_openIdConnectConfiguration.TokenEndPoint}";
+            $"{_openIdConnectConfiguration.EffectiveAuthority}{_openIdConnectConfiguration.TokenEndPoint}";
 
         var tokenResponse = await httpClient.RequestAuthorizationCodeTokenAsync(
             new AuthorizationCodeTokenRequest

@@ -1,0 +1,119 @@
+services:
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2017-latest
+    environment:
+      ACCEPT_EULA: 'Y'
+      SA_PASSWORD: '${MSSQL_SA_PASSWORD}'
+    volumes:
+      - mssql-data:/var/opt/mssql
+    healthcheck:
+      test: /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "$$SA_PASSWORD" -Q "SELECT 1" -b
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.2
+    command: start-dev --import-realm
+    environment:
+      KEYCLOAK_ADMIN: '${KEYCLOAK_ADMIN}'
+      KEYCLOAK_ADMIN_PASSWORD: '${KEYCLOAK_ADMIN_PASSWORD}'
+      KC_HOSTNAME: http://localhost:8180
+      KC_HOSTNAME_STRICT: "false"
+      KC_HOSTNAME_BACKCHANNEL_DYNAMIC: "true"
+    ports:
+      - "8180:8080"
+    volumes:
+      - ../keycloak:/opt/keycloak/data/import
+
+  api:
+    build:
+      context: ..
+      dockerfile: api/Dockerfile
+    ports:
+      - "9002:9002"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      Configuration__ConnectionString: "Server=mssql;Database=OrganisationRegistry;User Id=sa;Password=${MSSQL_SA_PASSWORD};TrustServerCertificate=True;MultipleActiveResultSets=True"
+      Infrastructure__EventStoreConnectionString: "Server=mssql;Database=OrganisationRegistry;User Id=sa;Password=${MSSQL_SA_PASSWORD};TrustServerCertificate=True;MultipleActiveResultSets=True"
+      Infrastructure__EventStoreAdministrationConnectionString: "Server=mssql;Database=OrganisationRegistry;User Id=sa;Password=${MSSQL_SA_PASSWORD};TrustServerCertificate=True;MultipleActiveResultSets=True"
+      SqlServer__ConnectionString: "Server=mssql;Database=OrganisationRegistry;User Id=sa;Password=${MSSQL_SA_PASSWORD};TrustServerCertificate=True;MultipleActiveResultSets=True"
+      SqlServer__MigrationsConnectionString: "Server=mssql;Database=OrganisationRegistry;User Id=sa;Password=${MSSQL_SA_PASSWORD};TrustServerCertificate=True;MultipleActiveResultSets=True"
+      ElasticSearch__ReadConnectionString: "http://localhost:9200/"
+      ElasticSearch__WriteConnectionString: "http://localhost:9200/"
+      OIDCAuth__Authority: "http://keycloak:8080/realms/wegwijs"
+      OIDCAuth__JwksUri: "http://keycloak:8080/realms/wegwijs/protocol/openid-connect/certs"
+      OIDCAuth__IntrospectionEndpoint: "http://keycloak:8080/realms/wegwijs/protocol/openid-connect/token/introspect"
+      EditApi__ClientId: "organisation-registry-api"
+      EditApi__ClientSecret: "a_very=Secr3t*Key"
+      EditApi__Authority: "http://keycloak:8080/realms/wegwijs"
+      EditApi__IntrospectionEndpoint: "http://keycloak:8080/realms/wegwijs/protocol/openid-connect/token/introspect"
+      Api__JwtSharedSigningKey: '${JWT_SIGNING_KEY}'
+      Api__JwtIssuer: '${JWT_ISSUER}'
+      Api__JwtAudience: '${JWT_AUDIENCE}'
+      DataDog__Enabled: "false"
+      DataDog__Debug: "false"
+      DataDog__ServiceName: "organisation-registry-demo"
+    depends_on:
+      mssql:
+        condition: service_healthy
+    restart: on-failure
+
+  seed:
+    build:
+      context: ../demos/seed/
+    environment:
+      API_BASE: http://api:9002
+      JWT_SIGNING_KEY: '${JWT_SIGNING_KEY}'
+      JWT_ISSUER: '${JWT_ISSUER}'
+      JWT_AUDIENCE: '${JWT_AUDIENCE}'
+      DEVELOPER_VO_ID: '${DEVELOPER_VO_ID}'
+      MSSQL_HOST: mssql
+      MSSQL_USER: sa
+      MSSQL_PASSWORD: '${MSSQL_SA_PASSWORD}'
+      MSSQL_DB: OrganisationRegistry
+    depends_on:
+      mssql:
+        condition: service_healthy
+      api:
+        condition: service_started
+    restart: "no"
+
+  m2m-demo:
+    build: ./m2m/
+    ports:
+      - "5080:8080"
+    environment:
+      KEYCLOAK_TOKEN_ENDPOINT: "http://keycloak:8080/realms/wegwijs/protocol/openid-connect/token"
+      CJM_CLIENT_ID: '${CJM_CLIENT_ID}'
+      CJM_CLIENT_SECRET: '${CJM_CLIENT_SECRET}'
+      ORAFIN_CLIENT_ID: '${ORAFIN_CLIENT_ID}'
+      ORAFIN_CLIENT_SECRET: '${ORAFIN_CLIENT_SECRET}'
+      API_BASE_URL: "http://api:9002/v1"
+      ASPNETCORE_URLS: "http://+:8080"
+    depends_on:
+      - api
+      - keycloak
+
+  nuxt-bff:
+    build: ./nuxt-bff/
+    ports:
+      - "5090:3000"
+    environment:
+      # Publiek (browser-zijde): externe Keycloak URL voor redirects
+      NUXT_PUBLIC_KEYCLOAK_URL: "http://localhost:8180"
+      NUXT_PUBLIC_KEYCLOAK_REALM: "wegwijs"
+      NUXT_PUBLIC_KEYCLOAK_CLIENT_ID: "nuxt-bff"
+      NUXT_PUBLIC_APP_BASE_URL: "http://localhost:5090"
+      # Server-side: interne Docker netwerk URLs
+      NUXT_KEYCLOAK_INTERNAL_URL: "http://keycloak:8080"
+      NUXT_KEYCLOAK_CLIENT_SECRET: '${NUXT_BFF_CLIENT_SECRET}'
+      NUXT_SESSION_SECRET: '${NUXT_SESSION_SECRET}'
+      NUXT_API_BASE_URL: "http://api:9002/v1"
+    depends_on:
+      - api
+      - keycloak
+
+volumes:
+  mssql-data:

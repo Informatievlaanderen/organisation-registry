@@ -6,7 +6,6 @@ import {AlertService} from './core/alert';
 import {ConfigurationService} from "./core/configuration";
 import {Environments} from "./environments";
 import {Subscription} from "rxjs/Subscription";
-import {init as initApm} from '@elastic/apm-rum'
 
 @Component({
   selector: 'wegwijs',
@@ -38,12 +37,9 @@ export class App implements OnInit, OnDestroy {
       this.environment = Environments.production;
     }
 
-    if (configurationService.otelServerUri)
-      this.initializeApm(router,
-        configurationService.otelServerUri,
-        configurationService.applicationVersion,
-        configurationService.otelDistributedTracingOrigins,
-        this.environment);
+    if (configurationService.otelServerUri) {
+      // APM telemetry removed
+    }
 
     this.subscriptions.push(router.events
       .filter(event => event instanceof NavigationStart)
@@ -82,45 +78,5 @@ export class App implements OnInit, OnDestroy {
   }
 
   private initializeApm(router, serverUrl, serviceVersion, distributedTracingOrigins, environment) {
-    const apm = initApm({
-
-      serviceName: 'OrganisationRegistry_UI',
-
-      serverUrl: serverUrl,
-
-      serviceVersion: serviceVersion,
-
-      // Set the service environment
-      environment: environment,
-      breakdownMetrics: true,
-      distributedTracing: true,
-      distributedTracingOrigins: distributedTracingOrigins,
-    });
-
-    const spans = {};
-    this.subscriptions.push(router.events
-      .filter(event => event instanceof NavigationStart)
-      .subscribe(navigationStart => {
-        let currentTransaction = apm.getCurrentTransaction();
-        if (!currentTransaction) {
-          return;
-        }
-        apm.setInitialPageLoadName(navigationStart.url);
-        currentTransaction.name = navigationStart.url;
-        const span = currentTransaction.startSpan("navigation", "navigation");
-        spans[navigationStart.id] = span;
-      }));
-
-    this.subscriptions.push(router.events
-      .filter(event => event instanceof NavigationEnd)
-      .subscribe(navigationEnd => {
-        apm.setInitialPageLoadName(navigationEnd.url);
-        let span = spans[navigationEnd.id];
-        if(!span)
-          return;
-
-        span.end();
-        delete spans[navigationEnd.id];
-      }));
   }
 }

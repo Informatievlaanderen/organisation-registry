@@ -4,6 +4,7 @@ using System;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using System.Security.Claims;
 using Api.Security;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
@@ -15,8 +16,11 @@ using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
 using Configuration;
 using global::OpenTelemetry.Trace;
 using HostedServices;
+using IdentityModel.AspNetCore.OAuth2Introspection;
 using Magda;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
@@ -76,6 +80,7 @@ public class Startup
             _configuration.GetSection(ApiConfigurationSection.Name).Get<ApiConfigurationSection>();
         var editApiConfiguration = _configuration.GetSection(EditApiConfigurationSection.Name)
             .Get<EditApiConfigurationSection>();
+        var bffApiEnabled = _configuration.GetValue<bool>($"FeatureManagement:{FeatureFlags.BffApi}");
 
         if (apiConfiguration.KboCertificate is { } kboCertificate && kboCertificate.IsNotEmptyOrWhiteSpace())
         {
@@ -120,7 +125,7 @@ public class Startup
             _logger.LogWarning("Magda clientcertificate not configured");
         }
 
-        services
+        var authBuilder = services
             .AddHostedService<ScheduledCommandsService>()
             .AddHostedService<SyncFromKboService>()
             .AddHostedService<SyncRemovedItemsService>()
@@ -141,15 +146,35 @@ public class Startup
                         new OrganisationRegistryTokenValidationParameters(openIdConfiguration);
                 })
             .AddOAuth2Introspection(
-                AuthenticationSchemes.EditApi,
+                AuthenticationSchemes.Introspection, // voor M2M
                 options =>
                 {
                     options.ClientId = editApiConfiguration.ClientId;
                     options.ClientSecret = editApiConfiguration.ClientSecret;
                     options.Authority = editApiConfiguration.Authority;
                     options.IntrospectionEndpoint = editApiConfiguration.IntrospectionEndpoint;
-                })
+                });
+
+        if (bffApiEnabled)
+        {
+            authBuilder.AddOAuth2Introspection(
+                AuthenticationSchemes.BffApi,
+                options =>
+                {
+                    options.ClientId = editApiConfiguration.ClientId;
+                    options.ClientSecret = editApiConfiguration.ClientSecret;
+                    options.IntrospectionEndpoint = openIdConfiguration.EffectiveIntrospectionEndpoint;
+                    // Zorg dat ClaimsIdentity.RoleClaimType overeenkomt met het claim type dat
+                    // BffClaimsTransformation toevoegt (ClaimTypes.Role = lange URI).
+                    // De OAuth2Introspection library gebruikt standaard "role" (korte JWT-vorm),
+                    // maar wij voegen rollen toe als ClaimTypes.Role, dus IsInRole() zou anders mislukken.
+                    options.RoleClaimType = ClaimTypes.Role;
+                });
+        }
+
+        authBuilder
             .Services
+            .AddTransient<IClaimsTransformation, Security.BffClaimsTransformation>()
             .AddSingleton<IActionContextAccessor, ActionContextAccessor>()
             .AddSingleton<ISecurityService, SecurityService>()
             .AddSingleton<ICache<OrganisationSecurityInformation>, OrganisationSecurityCache>()
@@ -239,45 +264,7 @@ public class Startup
                     },
                     MiddlewareHooks =
                     {
-                        Authorization = options =>
-                        {
-                            options.AddPolicy(
-                                PolicyNames.Organisations,
-                                builder => builder.RequireClaim(
-                                    AcmIdmConstants.Claims.Scope,
-                                    AcmIdmConstants.Scopes.CjmBeheerder,
-                                    AcmIdmConstants.Scopes.TestClient));
-
-                            options.AddPolicy(
-                                PolicyNames.BankAccounts,
-                                builder => builder.RequireClaim(
-                                    AcmIdmConstants.Claims.Scope,
-                                    AcmIdmConstants.Scopes.CjmBeheerder,
-                                    AcmIdmConstants.Scopes.TestClient));
-
-                            options.AddPolicy(
-                                PolicyNames.OrganisationClassifications,
-                                builder => builder.RequireClaim(
-                                    AcmIdmConstants.Claims.Scope,
-                                    AcmIdmConstants.Scopes.CjmBeheerder,
-                                    AcmIdmConstants.Scopes.TestClient));
-
-                            options.AddPolicy(
-                                PolicyNames.OrganisationContacts,
-                                builder => builder.RequireClaim(
-                                    AcmIdmConstants.Claims.Scope,
-                                    AcmIdmConstants.Scopes.CjmBeheerder,
-                                    AcmIdmConstants.Scopes.TestClient));
-
-                            options.AddPolicy(
-                                PolicyNames.Keys,
-                                builder => builder.RequireClaim(
-                                    AcmIdmConstants.Claims.Scope,
-                                    AcmIdmConstants.Scopes.CjmBeheerder,
-                                    AcmIdmConstants.Scopes.OrafinBeheerder,
-                                    AcmIdmConstants.Scopes.TestClient)
-                            );
-                        },
+                        Authorization = ConfigureAuthPolicies(bffApiEnabled),
                         ConfigureJsonOptions = options => { options.SerializerSettings.ConfigureForOrganisationRegistry(); },
                         ConfigureMvcCore = cfg =>
                         {
@@ -321,6 +308,63 @@ public class Startup
         _applicationContainer = containerBuilder.Build();
 
         return new AutofacServiceProvider(_applicationContainer);
+    }
+
+    private static Action<AuthorizationOptions> ConfigureAuthPolicies(bool bffApiEnabled)
+    {
+        return options =>
+        {
+            options.AddPolicy(
+                PolicyNames.BackofficeUser,
+                builder =>
+                {
+                    builder.AuthenticationSchemes.Add(AuthenticationSchemes.JwtBearer);
+
+                    if (bffApiEnabled)
+                        builder.AuthenticationSchemes.Add(AuthenticationSchemes.BffApi);
+
+                    builder
+                        .RequireAuthenticatedUser()
+                        .RequireClaim(AcmIdmConstants.Claims.AcmId);
+                });
+
+            options.AddPolicy(
+                PolicyNames.Organisations,
+                builder => builder.RequireClaim(
+                    AcmIdmConstants.Claims.Scope,
+                    AcmIdmConstants.Scopes.CjmBeheerder,
+                    AcmIdmConstants.Scopes.TestClient));
+
+            options.AddPolicy(
+                PolicyNames.BankAccounts,
+                builder => builder.RequireClaim(
+                    AcmIdmConstants.Claims.Scope,
+                    AcmIdmConstants.Scopes.CjmBeheerder,
+                    AcmIdmConstants.Scopes.TestClient));
+
+            options.AddPolicy(
+                PolicyNames.OrganisationClassifications,
+                builder => builder.RequireClaim(
+                    AcmIdmConstants.Claims.Scope,
+                    AcmIdmConstants.Scopes.CjmBeheerder,
+                    AcmIdmConstants.Scopes.TestClient));
+
+            options.AddPolicy(
+                PolicyNames.OrganisationContacts,
+                builder => builder.RequireClaim(
+                    AcmIdmConstants.Claims.Scope,
+                    AcmIdmConstants.Scopes.CjmBeheerder,
+                    AcmIdmConstants.Scopes.TestClient));
+
+            options.AddPolicy(
+                PolicyNames.Keys,
+                builder => builder.RequireClaim(
+                    AcmIdmConstants.Claims.Scope,
+                    AcmIdmConstants.Scopes.CjmBeheerder,
+                    AcmIdmConstants.Scopes.OrafinBeheerder,
+                    AcmIdmConstants.Scopes.TestClient)
+            );
+        };
     }
 
     public void Configure(

@@ -1,0 +1,116 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+  namespace: wegwijs-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      labels:
+        app: api
+    spec:
+      initContainers:
+      - name: wait-for-mssql
+        image: busybox
+        command: ['sh', '-c', 'until nc -z mssql 1433; do echo waiting for mssql; sleep 5; done']
+      containers:
+      - name: api
+        image: k3d-wegwijs-registry:5051/wegwijs-api:local
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: Development
+        - name: MSSQL_SA_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: demo-secrets
+              key: mssql-sa-password
+        - name: Configuration__ConnectionString
+          value: "Server=mssql;Database=OrganisationRegistry;User Id=sa;Password=$(MSSQL_SA_PASSWORD);TrustServerCertificate=True;MultipleActiveResultSets=True"
+        - name: Infrastructure__EventStoreConnectionString
+          value: "Server=mssql;Database=OrganisationRegistry;User Id=sa;Password=$(MSSQL_SA_PASSWORD);TrustServerCertificate=True;MultipleActiveResultSets=True"
+        - name: Infrastructure__EventStoreAdministrationConnectionString
+          value: "Server=mssql;Database=OrganisationRegistry;User Id=sa;Password=$(MSSQL_SA_PASSWORD);TrustServerCertificate=True;MultipleActiveResultSets=True"
+        - name: SqlServer__ConnectionString
+          value: "Server=mssql;Database=OrganisationRegistry;User Id=sa;Password=$(MSSQL_SA_PASSWORD);TrustServerCertificate=True;MultipleActiveResultSets=True"
+        - name: SqlServer__MigrationsConnectionString
+          value: "Server=mssql;Database=OrganisationRegistry;User Id=sa;Password=$(MSSQL_SA_PASSWORD);TrustServerCertificate=True;MultipleActiveResultSets=True"
+        - name: ElasticSearch__ReadConnectionString
+          value: "http://localhost:9200/"
+        - name: ElasticSearch__WriteConnectionString
+          value: "http://localhost:9200/"
+        - name: OIDCAuth__Authority
+          value: "http://keycloak.localhost:9080/realms/wegwijs"
+        - name: OIDCAuth__InternalAuthorityOverride
+          value: "http://keycloak/realms/wegwijs"
+        - name: OIDCAuth__JwksUri
+          value: "http://keycloak/realms/wegwijs/protocol/openid-connect/certs"
+        - name: OIDCAuth__IntrospectionEndpoint
+          value: "http://keycloak/realms/wegwijs/protocol/openid-connect/token/introspect"
+        - name: EditApi__ClientId
+          value: "organisation-registry-api"
+        - name: EditApi__ClientSecret
+          value: "a_very=Secr3t*Key"
+        - name: EditApi__Authority
+          value: "http://keycloak.localhost:9080/realms/wegwijs"
+        - name: EditApi__IntrospectionEndpoint
+          value: "http://keycloak/realms/wegwijs/protocol/openid-connect/token/introspect"
+        - name: FeatureManagement__BffApi
+          value: "true"
+        - name: Api__JwtSharedSigningKey
+          valueFrom:
+            secretKeyRef:
+              name: demo-secrets
+              key: jwt-signing-key
+        - name: Api__JwtIssuer
+          valueFrom:
+            secretKeyRef:
+              name: demo-secrets
+              key: jwt-issuer
+        - name: Api__JwtAudience
+          valueFrom:
+            secretKeyRef:
+              name: demo-secrets
+              key: jwt-audience
+        - name: DataDog__Enabled
+          value: "false"
+        - name: DataDog__Debug
+          value: "false"
+        - name: DataDog__ServiceName
+          value: "organisation-registry-demo"
+        # OpenTelemetry → OTel Collector (gRPC, poort 4317)
+        - name: COLLECTOR_URL
+          value: "http://otel-collector:4317"
+        # CORS origins — used by AllowSpecificOrigin policy (production only).
+        # In Development, AllowAnyOrigin is used instead (see Startup.cs), so these are informational only.
+        - name: Cors__0
+          value: "http://ui.localhost:9080"
+        - name: Cors__1
+          value: "http://app.localhost:9080"
+        - name: Cors__2
+          value: "http://localhost:9080"
+        ports:
+        - containerPort: 9002
+        readinessProbe:
+          httpGet:
+            path: /v1/organisations
+            port: 9002
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api
+  namespace: wegwijs-demo
+spec:
+  selector:
+    app: api
+  ports:
+  - port: 80
+    targetPort: 9002

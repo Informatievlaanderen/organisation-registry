@@ -20,6 +20,7 @@ using SqlServer.Infrastructure;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("tasks")]
 [ApiController]
+[OrganisationRegistryAuthorize(Role.AutomatedTask, Role.Developer)]
 [ApiExplorerSettings(GroupName = "Scherm APIs: Administratie")]
 public class TaskController : OrganisationRegistryCommandController
 {
@@ -34,7 +35,6 @@ public class TaskController : OrganisationRegistryCommandController
     /// <response code="200">Als de taak uitgevoerd is.</response>
     /// <response code="400">Als de validatie voor de taak mislukt is.</response>
     [HttpPost]
-    [OrganisationRegistryAuthorize(Role.AutomatedTask, Role.Developer)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Post(
