@@ -106,7 +106,7 @@
     "@semantic-release/github": "8.1.0",
     "@semantic-release/npm": "9.0.1",
     "@semantic-release/release-notes-generator": "10.0.3",
-    "@types/hammerjs": "2.0.35",
+    "@types/hammerjs": "2.0.46",
     "@types/jasmine": "2.5.38",
     "@types/node": "6.0.48",
     "@types/selenium-webdriver": "2.53.35",
