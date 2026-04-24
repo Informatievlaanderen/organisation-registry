@@ -22,7 +22,7 @@ public class OpenIdConnectConfigurationSection
 
     public string ClientId { get; set; } = null!;
 
-    public string ClientSecret { get; set; } = null!;
+    public string? ClientSecret { get; set; }
 
     public string TokenEndPoint { get; set; } = null!;
 
