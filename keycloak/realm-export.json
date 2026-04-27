@@ -1,6 +1,7 @@
 {
   "realm": "wegwijs",
   "enabled": true,
+  "sslRequired": "none",
   "registrationAllowed": false,
   "accessTokenLifespan": 3600,
   "ssoSessionIdleTimeout": 1800,
@@ -190,8 +191,8 @@
       "directAccessGrantsEnabled": false,
       "serviceAccountsEnabled": false,
       "redirectUris": [
-        "http://ui.localhost:9080/#/oic",
-        "http://localhost:9080/#/oic"
+        "http://ui.localhost:9080/oic",
+        "http://localhost:9080/oic"
       ],
       "webOrigins": [
         "http://ui.localhost:9080",

@@ -25,15 +25,15 @@ spec:
               name: demo-secrets
               key: mssql-sa-password
         - name: Configuration__ConnectionString
-          value: "Server=mssql;Database=OrganisationRegistry;User Id=sa;Password=$(MSSQL_SA_PASSWORD);TrustServerCertificate=True;MultipleActiveResultSets=True"
+          value: "Server=mssql,1433;Database=OrganisationRegistry;User Id=sa;Password=$(MSSQL_SA_PASSWORD);TrustServerCertificate=True;MultipleActiveResultSets=True"
         - name: Infrastructure__EventStoreConnectionString
-          value: "Server=mssql;Database=OrganisationRegistry;User Id=sa;Password=$(MSSQL_SA_PASSWORD);TrustServerCertificate=True;MultipleActiveResultSets=True"
+          value: "Server=mssql,1433;Database=OrganisationRegistry;User Id=sa;Password=$(MSSQL_SA_PASSWORD);TrustServerCertificate=True;MultipleActiveResultSets=True"
         - name: Infrastructure__EventStoreAdministrationConnectionString
-          value: "Server=mssql;Database=OrganisationRegistry;User Id=sa;Password=$(MSSQL_SA_PASSWORD);TrustServerCertificate=True;MultipleActiveResultSets=True"
+          value: "Server=mssql,1433;Database=OrganisationRegistry;User Id=sa;Password=$(MSSQL_SA_PASSWORD);TrustServerCertificate=True;MultipleActiveResultSets=True"
         - name: SqlServer__ConnectionString
-          value: "Server=mssql;Database=OrganisationRegistry;User Id=sa;Password=$(MSSQL_SA_PASSWORD);TrustServerCertificate=True;MultipleActiveResultSets=True"
+          value: "Server=mssql,1433;Database=OrganisationRegistry;User Id=sa;Password=$(MSSQL_SA_PASSWORD);TrustServerCertificate=True;MultipleActiveResultSets=True"
         - name: SqlServer__MigrationsConnectionString
-          value: "Server=mssql;Database=OrganisationRegistry;User Id=sa;Password=$(MSSQL_SA_PASSWORD);TrustServerCertificate=True;MultipleActiveResultSets=True"
+          value: "Server=mssql,1433;Database=OrganisationRegistry;User Id=sa;Password=$(MSSQL_SA_PASSWORD);TrustServerCertificate=True;MultipleActiveResultSets=True"
         - name: ElasticSearch__ReadConnectionString
           value: "http://opensearch:9200/"
         - name: ElasticSearch__WriteConnectionString
@@ -65,7 +65,7 @@ spec:
         - name: OIDCAuth__AuthorizationIssuer
           value: "http://keycloak.localhost:9080/realms/wegwijs"
         - name: OIDCAuth__AuthorizationRedirectUri
-          value: "http://ui.localhost:9080/#/oic"
+          value: "http://ui.localhost:9080/oic"
         - name: OIDCAuth__PostLogoutRedirectUri
           value: "http://ui.localhost:9080"
         - name: OIDCAuth__ClientId

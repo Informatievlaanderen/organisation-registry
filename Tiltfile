@@ -124,17 +124,32 @@ docker_build(
     ignore=['**/bin', '**/obj'],
 )
 
-# UI — Angular frontend (pre-built in wwwroot)
+# UI — Angular frontend matching exact GitHub Actions CI process
 custom_build(
     'k3d-wegwijs-registry:5051/wegwijs-ui:local',
-    'docker build -t $EXPECTED_REF src/OrganisationRegistry.UI && docker push $EXPECTED_REF',
+    'DOCKER_BUILDKIT=1 docker build -f src/OrganisationRegistry.UI/Dockerfile.optimized -t $EXPECTED_REF . && docker tag $EXPECTED_REF localhost:5051/wegwijs-ui:local && docker push localhost:5051/wegwijs-ui:local',
     deps=[
-        'src/OrganisationRegistry.UI/Dockerfile',
-        'src/OrganisationRegistry.UI/wwwroot',
+        'src/OrganisationRegistry.UI/Dockerfile.optimized',
+        'src/OrganisationRegistry.UI/app',
+        'src/OrganisationRegistry.UI/assets',
+        'src/OrganisationRegistry.UI/Infrastructure',
         'src/OrganisationRegistry.UI/default.conf',
         'src/OrganisationRegistry.UI/init.sh',
         'src/OrganisationRegistry.UI/config.js',
+        'src/OrganisationRegistry.UI/index.html',
+        'src/OrganisationRegistry.UI/main.aot.ts',
+        'src/OrganisationRegistry.UI/main.browser.ts',
+        'src/OrganisationRegistry.UI/polyfills.browser.ts',
+        'src/OrganisationRegistry.UI/vendor.browser.ts',
+        'src/OrganisationRegistry.UI/custom-typings.d.ts',
+        'package.json',
+        'package-lock.json',
+        'tsconfig.aot.json',
+        'config/',
+        'scripts/',
+        'organisationregistry-ui.pfx',
     ],
+    ignore=['**/node_modules', '**/bin', '**/obj', '**/*.map', 'src/OrganisationRegistry.UI/wwwroot', 'src/OrganisationRegistry.UI/dist'],
 )
 
 # Seed — .NET application

@@ -52,11 +52,20 @@ public class OrganisationRegistryTokenBuilder : IOrganisationRegistryTokenBuilde
                 identity.GetOptionalClaim(JwtClaimTypes.Subject) ?? string.Empty,
                 ClaimValueTypes.String));
 
-        identity.AddClaim(
-            new Claim(AcmIdmConstants.Claims.FamilyName, JwtClaimTypes.FamilyName, ClaimValueTypes.String));
+            // Map user name claims from JWT to ACM-IDM format
+            var familyName = identity.GetOptionalClaim(JwtClaimTypes.FamilyName);
+            if (!string.IsNullOrEmpty(familyName))
+            {
+                identity.AddClaim(
+                    new Claim(AcmIdmConstants.Claims.FamilyName, familyName, ClaimValueTypes.String));
+            }
 
-        identity.AddClaim(
-            new Claim(AcmIdmConstants.Claims.Firstname, JwtClaimTypes.GivenName, ClaimValueTypes.String));
+            var givenName = identity.GetOptionalClaim(JwtClaimTypes.GivenName);
+            if (!string.IsNullOrEmpty(givenName))
+            {
+                identity.AddClaim(
+                    new Claim(AcmIdmConstants.Claims.Firstname, givenName, ClaimValueTypes.String));
+            }
 
         var roles = identity.GetClaims(AcmIdmConstants.Claims.Role)
             .Select(x => x.ToLowerInvariant())

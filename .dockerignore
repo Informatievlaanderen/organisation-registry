@@ -1,0 +1,51 @@
+# Exclude unnecessary files from Docker build context
+node_modules/
+.git/
+.github/
+*.log
+*.tmp
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Build artifacts
+dist/
+build/
+coverage/
+.nyc_output/
+
+# UI specific excludes
+src/OrganisationRegistry.UI/wwwroot/
+src/OrganisationRegistry.UI/dist/
+src/OrganisationRegistry.UI/node_modules/
+
+# .NET build artifacts  
+bin/
+obj/
+packages/
+*.user
+*.suo
+*.userprefs
+
+# Temporary files
+tmp/
+temp/
+.cache/
+
+# Documentation
+*.md
+docs/
+
+# CI/CD
+.github/
+docker-compose*.yml
+Dockerfile*
+!Dockerfile.build
+Tiltfile
+
+# Package manager locks (keep package-lock.json)
+yarn.lock
+pnpm-lock.yaml
