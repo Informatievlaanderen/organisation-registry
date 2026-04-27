@@ -30,6 +30,36 @@ public class SecurityController : OrganisationRegistryController
         _openIdConnectConfiguration = openIdConnectConfiguration.Value;
         _logger = logger;
     }
+    
+    /// <summary>
+    /// Gets the effective authority for server-to-server OAuth2 calls.
+    /// Uses InternalAuthorityOverride when available for container networking,
+    /// otherwise falls back to the regular Authority for external calls.
+    /// </summary>
+    private string GetEffectiveAuthority()
+    {
+        var authority = !string.IsNullOrWhiteSpace(_openIdConnectConfiguration.InternalAuthorityOverride)
+            ? _openIdConnectConfiguration.InternalAuthorityOverride
+            : _openIdConnectConfiguration.Authority;
+            
+        _logger.LogDebug("Using effective authority for OAuth2 calls: {Authority} (Internal override: {InternalOverride})", 
+            authority, _openIdConnectConfiguration.InternalAuthorityOverride ?? "not configured");
+            
+        return authority;
+    }
+    
+    /// <summary>
+    /// Determines if the OAuth2 client is configured as a confidential client (has ClientSecret).
+    /// Public clients (SPAs) don't have secrets, confidential clients (server apps) do.
+    /// </summary>
+    private bool IsConfidentialClient() =>
+        !string.IsNullOrWhiteSpace(_openIdConnectConfiguration.ClientSecret);
+
+    /// <summary>
+    /// Gets the OAuth2 client type for logging and debugging purposes.
+    /// </summary>
+    private string GetClientType() =>
+        IsConfidentialClient() ? "confidential" : "public";
 
     [HttpGet]
     [OrganisationRegistryAuthorize]
@@ -63,22 +93,32 @@ public class SecurityController : OrganisationRegistryController
 
         using var httpClient = httpClientFactory.CreateClient();
 
-        var tokenEndpointAddress =
-            $"{_openIdConnectConfiguration.Authority}{_openIdConnectConfiguration.TokenEndPoint}";
+        var tokenEndpointAddress = $"{GetEffectiveAuthority()}{_openIdConnectConfiguration.TokenEndPoint}";
 
-        _logger.LogDebug("Exchanging authorization code at endpoint: {TokenEndpointAddress}", tokenEndpointAddress);
+        _logger.LogDebug("Exchanging authorization code at endpoint: {TokenEndpointAddress} using {ClientType} client", 
+            tokenEndpointAddress, GetClientType());
 
-        var tokenResponse = await httpClient.RequestAuthorizationCodeTokenAsync(
-            new AuthorizationCodeTokenRequest
-            {
-                ClientId = _openIdConnectConfiguration.ClientId,
-                ClientSecret = _openIdConnectConfiguration.ClientSecret,
-                RedirectUri = redirectUri ?? _openIdConnectConfiguration.AuthorizationRedirectUri,
-                Address = tokenEndpointAddress,
-                Code = code,
-                CodeVerifier = verifier,
-            },
-            cancellationToken);
+        var tokenRequest = new AuthorizationCodeTokenRequest
+        {
+            ClientId = _openIdConnectConfiguration.ClientId,
+            RedirectUri = redirectUri ?? _openIdConnectConfiguration.AuthorizationRedirectUri,
+            Address = tokenEndpointAddress,
+            Code = code,
+            CodeVerifier = verifier,
+        };
+
+        // Only include ClientSecret for confidential clients (public clients use PKCE only)
+        if (IsConfidentialClient())
+        {
+            tokenRequest.ClientSecret = _openIdConnectConfiguration.ClientSecret;
+            _logger.LogDebug("Using confidential client authentication with ClientSecret");
+        }
+        else
+        {
+            _logger.LogDebug("Using public client authentication with PKCE only (no ClientSecret)");
+        }
+
+        var tokenResponse = await httpClient.RequestAuthorizationCodeTokenAsync(tokenRequest, cancellationToken);
 
         if (tokenResponse.IsError)
         {

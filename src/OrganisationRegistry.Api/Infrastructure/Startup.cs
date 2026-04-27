@@ -292,6 +292,13 @@ public class Startup
                                     AcmIdmConstants.Scopes.OrafinBeheerder,
                                     AcmIdmConstants.Scopes.TestClient)
                             );
+
+                            options.AddPolicy(
+                                PolicyNames.BackofficeUser,
+                                builder => builder
+                                    .RequireAuthenticatedUser()
+                                    .RequireClaim(AcmIdmConstants.Claims.AcmId));
+
                         },
                         ConfigureJsonOptions = options => { options.SerializerSettings.ConfigureForOrganisationRegistry(); },
                         ConfigureMvcCore = cfg =>

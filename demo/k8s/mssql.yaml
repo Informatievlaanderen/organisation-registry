@@ -25,6 +25,10 @@ spec:
             secretKeyRef:
               name: demo-secrets
               key: mssql-sa-password
+        - name: MSSQL_TCP_PORT
+          value: "1433"
+        - name: MSSQL_IP_ADDRESS
+          value: "0.0.0.0"
         ports:
         - containerPort: 1433
         readinessProbe:
