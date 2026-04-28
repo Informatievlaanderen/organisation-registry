@@ -140,12 +140,17 @@ export class OidcService {
   }
 
   public signOut() {
-    localStorage.removeItem("token");
-    localStorage.removeItem("verifier");
     this.GetClient().then(
       client => client
-        .createSignoutRequest()
+        .createSignoutRequest({
+          extraQueryParams: {
+            client_id: client.settings.client_id,
+          },
+        })
         .then((req) => {
+          localStorage.removeItem("token");
+          localStorage.removeItem("verifier");
+          this.securityInfoSubject.next(createSecurityInfo());
           window.location.href = req.url;
         })
         .catch((err) => {
