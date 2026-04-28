@@ -102,7 +102,7 @@ spec:
         - name: TokenExchange__ClientId
           value: "organisation-registry-api"
         - name: TokenExchange__ClientSecret
-          value: "a_very=Secr3t*Key"
+          value: "api-introspection-secret-2024"
         - name: TokenExchange__Authority
           value: "http://keycloak.localhost:9080/realms/wegwijs"
         - name: TokenExchange__IntrospectionEndpoint
