@@ -18,6 +18,16 @@ spec:
         env:
         - name: API_BASE
           value: "http://api"
+        - name: CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: demo-secrets
+              key: cjm-client-id
+        - name: CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: demo-secrets
+              key: cjm-client-secret
         - name: JWT_SIGNING_KEY
           valueFrom:
             secretKeyRef:

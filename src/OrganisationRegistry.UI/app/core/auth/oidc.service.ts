@@ -233,7 +233,7 @@ export class OidcService {
   public getFromServer(): Observable<SecurityInfo> {
     return this.getUser().pipe(
       map((user: User) =>{
-        createSecurityInfo(
+        return createSecurityInfo(
           user,
           (this.securityInfoSubject.getValue() ? this.securityInfoSubject.getValue().refreshtoken : 1000) + 1
         )}
