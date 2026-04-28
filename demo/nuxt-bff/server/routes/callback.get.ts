@@ -89,6 +89,9 @@ export default defineEventHandler(async (event) => {
   const accessToken = tokenRes.access_token as string
   const idToken = tokenRes.id_token as string | undefined
 
+  console.log('accessToken', accessToken)
+  console.log('idToken', idToken)
+
   // Stap 2: RFC 8693 token exchange
   // nuxt-bff wisselt zijn eigen access token in voor een token gericht op organisation-registry-api.
   // Keycloak 26 standard token exchange (V2) is standaard ingebouwd — geen extra flags nodig.
@@ -117,12 +120,12 @@ export default defineEventHandler(async (event) => {
     exchangeError = errData?.error_description ?? errData?.error ?? err?.message ?? 'token exchange failed'
   }
 
-  console.log('[callback] Saving session with tokens:', { 
-    hasAccessToken: !!accessToken, 
+  console.log('[callback] Saving session with tokens:', {
+    hasAccessToken: !!accessToken,
     hasExchangedToken: !!exchangedToken,
-    exchangeError 
+    exchangeError
   })
-  
+
   saveSession(event, {
     accessToken,
     idToken,

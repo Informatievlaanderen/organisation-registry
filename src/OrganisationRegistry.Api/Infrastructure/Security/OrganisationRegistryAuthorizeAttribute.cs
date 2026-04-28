@@ -2,7 +2,6 @@ namespace OrganisationRegistry.Api.Infrastructure.Security;
 
 using System.Linq;
 using Api.Security;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using OrganisationRegistry.Infrastructure.Authorization;
 
