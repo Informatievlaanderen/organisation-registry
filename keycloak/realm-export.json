@@ -372,7 +372,8 @@
         "roles",
         "web-origins",
         "vo",
-        "iv_wegwijs"
+        "iv_wegwijs",
+        "organisation-registry-api-access"
       ],
       "optionalClientScopes": [
         "dv_organisatieregister_cjmbeheerder",
@@ -458,12 +459,6 @@
             "access.token.claim": "true"
           }
         }
-      ],
-      "defaultClientScopes": [
-        "profile",
-        "web-origins",
-        "roles",
-        "organisation-registry-api-access"
       ]
     }
   ],

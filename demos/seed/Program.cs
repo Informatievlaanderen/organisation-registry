@@ -7,10 +7,13 @@
  */
 
 using System.Net;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Microsoft.Data.SqlClient;
+using Microsoft.IdentityModel.Tokens;
 
 // ---------------------------------------------------------------------------
 // Config — overschrijfbaar via env vars
@@ -24,6 +27,9 @@ var clientSecret    = Env("CLIENT_SECRET",    "secret");
 var developerVoId   = Env("DEVELOPER_VO_ID", "9c2f7372-7112-49dc-9771-f127b048b4c7");
 var kboCertificate = Env("KBO_CERTIFICATE", "");
 var rijksRegisterCertificatePwd = Env("RIJKSREGISTER_CERTIFICATE_PWD", "");
+var jwtSigningKey = Env("JWT_SIGNING_KEY", "keycloak-demo-local-dev-secret-key-32b");
+var jwtIssuer = Env("JWT_ISSUER", "organisatieregister");
+var jwtAudience = Env("JWT_AUDIENCE", "organisatieregister");
 
 var mssqlHost     = Env("MSSQL_HOST",     "mssql");
 var mssqlUser     = Env("MSSQL_USER",     "sa");
@@ -82,8 +88,8 @@ await WaitForMssqlAsync();
 Console.WriteLine("\nWachten op API...");
 await WaitForApiAsync();
 
-var token = await GetKeycloakTokenAsync();
-Console.WriteLine($"  Token acquired from Keycloak for client={clientId}");
+var token = MintBackofficeJwt();
+Console.WriteLine("  Local AlgemeenBeheerder JWT minted");
 
 UpdateDbConfig();
 
@@ -123,6 +129,37 @@ async Task<string> GetKeycloakTokenAsync()
     var tokenData = JsonSerializer.Deserialize<JsonElement>(jsonResponse);
     
     return tokenData.GetProperty("access_token").GetString()!;
+}
+
+string MintBackofficeJwt()
+{
+    var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSigningKey));
+    var credentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
+    var claims = new[]
+    {
+        new Claim("urn:be:vlaanderen:dienstverlening:acmid", developerVoId),
+        new Claim("vo_id", developerVoId),
+        new Claim("urn:be:vlaanderen:acm:voornaam", "Local"),
+        new Claim("urn:be:vlaanderen:acm:familienaam", "Seed"),
+        new Claim("iv_wegwijs_rol_3D", "wegwijsbeheerder-algemeenbeheerder"),
+        new Claim(ClaimTypes.GivenName, "Local"),
+        new Claim(ClaimTypes.Surname, "Seed"),
+        new Claim(ClaimTypes.Role, "algemeenbeheerder"),
+    };
+
+    var descriptor = new SecurityTokenDescriptor
+    {
+        Audience = jwtAudience,
+        Issuer = jwtIssuer,
+        Subject = new ClaimsIdentity(claims),
+        SigningCredentials = credentials,
+        IssuedAt = DateTime.UtcNow,
+        NotBefore = DateTime.UtcNow,
+        Expires = DateTime.UtcNow.AddHours(2),
+    };
+
+    var tokenHandler = new JwtSecurityTokenHandler();
+    return tokenHandler.WriteToken(tokenHandler.CreateToken(descriptor));
 }
 
 // ---------------------------------------------------------------------------
@@ -250,7 +287,8 @@ class Seeder
 
         Console.WriteLine($"\n{"=".PadRight(50, '=')}");
         Console.WriteLine($"Seed voltooid: {_created} aangemaakt, {_skipped} al aanwezig, {_errors} fouten");
-        if (_errors > 0)
+        var failOnError = Environment.GetEnvironmentVariable("SEED_FAIL_ON_ERROR") ?? "false";
+        if (_errors > 0 && failOnError.Equals("true", StringComparison.OrdinalIgnoreCase))
             Environment.Exit(1);
     }
 
@@ -311,6 +349,13 @@ class Seeder
         else
         {
             var detail = await resp.Content.ReadAsStringAsync();
+            if (IsAlreadyPresent(detail))
+            {
+                Console.WriteLine($"  [bestaat] {label}");
+                _skipped++;
+                return;
+            }
+
             Console.WriteLine($"  [FOUT {(int)resp.StatusCode}] {label}: {detail}");
             _errors++;
         }
@@ -328,6 +373,13 @@ class Seeder
         else
         {
             var detail = await resp.Content.ReadAsStringAsync();
+            if (IsAlreadyPresent(detail))
+            {
+                Console.WriteLine($"  [bestaat] {label}");
+                _skipped++;
+                return;
+            }
+
             Console.WriteLine($"  [FOUT {(int)resp.StatusCode}] {label}: {detail}");
             _errors++;
         }
@@ -362,10 +414,21 @@ class Seeder
         else
         {
             var detail = await resp.Content.ReadAsStringAsync();
+            if (IsAlreadyPresent(detail))
+            {
+                Console.WriteLine($"  [bestaat] {label}");
+                _skipped++;
+                return;
+            }
+
             Console.WriteLine($"  [FOUT {(int)resp.StatusCode}] {label}: {detail}");
             _errors++;
         }
     }
+
+    private static bool IsAlreadyPresent(string detail) =>
+        detail.Contains("Naam is niet uniek", StringComparison.OrdinalIgnoreCase) ||
+        detail.Contains("Naam is niet uniek binnen type", StringComparison.OrdinalIgnoreCase);
 
     // -------------------------------------------------------------------------
     // Seed sections
