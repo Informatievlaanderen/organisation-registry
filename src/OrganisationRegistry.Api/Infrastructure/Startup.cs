@@ -295,7 +295,7 @@ public class Startup
 
                             options.AddPolicy(
                                 PolicyNames.BackofficeUser,
-                                builder => builder
+                                builder => builder.AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme, AuthenticationSchemes.TokenExchange)
                                     .RequireAuthenticatedUser()
                                     .RequireClaim(AcmIdmConstants.Claims.AcmId));
 
