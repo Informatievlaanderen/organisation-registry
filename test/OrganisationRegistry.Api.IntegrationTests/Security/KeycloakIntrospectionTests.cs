@@ -222,14 +222,23 @@ public class KeycloakIntrospectionTests
     private async Task<string> GetKeycloakAccessToken(string clientId, string scope)
     {
         const string defaultKeycloakAuthority = "http://keycloak.localhost:9080/realms/wegwijs";
-        
+
+        // Select the correct client secret based on the clientId
+        var clientSecret = clientId switch
+        {
+            ApiFixture.CJM.Client => "cjm-client-secret-2024",
+            ApiFixture.Orafin.Client => "orafin-client-secret-2024",
+            ApiFixture.Test.Client => "secret",
+            _ => "secret"
+        };
+
         var tokenClient = new TokenClient(
             () => new HttpClient(),
             new TokenClientOptions
             {
                 Address = $"{defaultKeycloakAuthority.TrimEnd('/')}/protocol/openid-connect/token",
                 ClientId = clientId,
-                ClientSecret = "secret",
+                ClientSecret = clientSecret,
                 Parameters = new Parameters(
                     new[]
                     {

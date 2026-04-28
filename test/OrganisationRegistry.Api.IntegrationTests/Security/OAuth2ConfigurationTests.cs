@@ -144,14 +144,23 @@ public class OAuth2ConfigurationTests
     private async Task<string> GetConfidentialClientAccessToken(string clientId, string scope)
     {
         const string defaultKeycloakAuthority = "http://keycloak.localhost:9080/realms/wegwijs";
-        
+
+        // Select the correct client secret based on the clientId
+        var clientSecret = clientId switch
+        {
+            ApiFixture.CJM.Client => "cjm-client-secret-2024",
+            ApiFixture.Orafin.Client => "orafin-client-secret-2024",
+            ApiFixture.Test.Client => "secret",
+            _ => "secret"
+        };
+
         var tokenClient = new TokenClient(
             () => new HttpClient(),
             new TokenClientOptions
             {
                 Address = $"{defaultKeycloakAuthority.TrimEnd('/')}/protocol/openid-connect/token",
                 ClientId = clientId,
-                ClientSecret = "secret", // Confidential client with secret
+                ClientSecret = clientSecret, // Confidential client with secret
                 Parameters = new Parameters(
                     new[]
                     {

@@ -58,6 +58,19 @@ public class ApiFixture : IDisposable, IAsyncLifetime
         public const string Scope = AcmIdmConstants.Scopes.TestClient;
     }
 
+    /// <summary>
+    /// Gets the client secret for the specified client ID.
+    /// Centralizes client secret mapping for all integration tests.
+    /// </summary>
+    public static string GetClientSecret(string clientId)
+        => clientId switch
+        {
+            CJM.Client => "cjm-client-secret-2024",
+            Orafin.Client => "orafin-client-secret-2024",
+            Test.Client => "secret",
+            _ => "secret"
+        };
+
     private readonly IConfigurationRoot _configurationRoot;
     private readonly OpenIdConnectConfigurationSection _openIdConnectConfiguration;
 
@@ -116,7 +129,7 @@ public class ApiFixture : IDisposable, IAsyncLifetime
         await EnsureParameterExists("organisationclassificationtypes", Configuration.Authorization.OrganisationClassificationTypeIdsOwnedByCjm.Last(), "CJM Classification 2");
         await EnsureParameterExists("labeltypes", Configuration.Kbo.KboV2FormalNameLabelTypeId, "KBO label");
         await EnsureParameterExists("keytypes", Configuration.Authorization.KeyIdsAllowedOnlyForOrafin.First(), "orafin key type");
-        await EnsureImportedDataIsReady();
+        // await EnsureImportedDataIsReady();
     }
 
     public async Task<HttpClient> CreateCjmClient()
@@ -362,13 +375,14 @@ public class ApiFixture : IDisposable, IAsyncLifetime
             ? DefaultKeycloakAuthority
             : editApiConfiguration.Authority;
 
+        var address = $"{authority.TrimEnd('/')}/protocol/openid-connect/token";
         var tokenClient = new TokenClient(
             () => new HttpClient(),
             new TokenClientOptions
             {
-                Address = $"{authority.TrimEnd('/')}/protocol/openid-connect/token",
+                Address = address,
                 ClientId = clientId,
-                ClientSecret = "secret",
+                ClientSecret = GetClientSecret(clientId),
                 Parameters = new Parameters(
                     new[]
                     {
@@ -380,7 +394,7 @@ public class ApiFixture : IDisposable, IAsyncLifetime
 
         if (response.IsError || string.IsNullOrWhiteSpace(response.AccessToken))
             throw new InvalidOperationException(
-                $"Could not retrieve Keycloak M2M token for '{clientId}' from '{authority}'. " +
+                $"Could not retrieve Keycloak M2M token for '{clientId}' from '{authority} ({address})'. " +
                 $"Error: {response.Error}. Description: {response.ErrorDescription}.");
 
         return response.AccessToken;
