@@ -482,7 +482,7 @@
           "9c2f7372-7112-49dc-9771-f127b048b4c7"
         ],
         "iv_wegwijs_rol_3D": [
-          "wegwijsbeheerder-algemeenbeheerder"
+          "wegwijsbeheerder-algemeenbeheerder:OVO00001"
         ]
       }
     },
@@ -505,7 +505,7 @@
           "E6D110DC-231A-4666-BAFB-C354255EF547"
         ],
         "iv_wegwijs_rol_3D": [
-          "wegwijsbeheerder-vlimpersbeheerder"
+          "wegwijsbeheerder-vlimpersbeheerder:OVO00001"
         ]
       }
     },
@@ -551,7 +551,7 @@
           "A5C5BFCD-266C-4CC7-9869-4B95E34C090D"
         ],
         "iv_wegwijs_rol_3D": [
-          "wegwijsbeheerder-algemeenbeheerder"
+          "wegwijsbeheerder-algemeenbeheerder:OVO00001"
         ]
       }
     },
@@ -574,7 +574,7 @@
           "A5C5BFCD-266C-4CC7-9869-4B95E34C090D"
         ],
         "iv_wegwijs_rol_3D": [
-          "wegwijsbeheerder-orgaanbeheerder"
+          "wegwijsbeheerder-orgaanbeheerder:OVO00001"
         ]
       }
     },
@@ -597,7 +597,7 @@
           "A5C5BFCD-266C-4CC7-9869-4B95E34C090D"
         ],
         "iv_wegwijs_rol_3D": [
-          "wegwijsbeheerder-regelgevingbeheerder"
+          "wegwijsbeheerder-regelgevingbeheerder:OVO00001"
         ]
       }
     },
@@ -620,7 +620,7 @@
           "A5C5BFCD-266C-4CC7-9869-5B95E34C090E"
         ],
         "iv_wegwijs_rol_3D": [
-          "wegwijsbeheerder-cjmbeheerder"
+          "wegwijsbeheerder-cjmbeheerder:OVO00001"
         ]
       }
     },

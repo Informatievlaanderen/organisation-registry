@@ -12,28 +12,11 @@ public class TokenExchangeClaimsTransformation : IClaimsTransformation
 {
     public Task<ClaimsPrincipal> TransformAsync(ClaimsPrincipal principal)
     {
-        if (principal.Identity?.AuthenticationType != "OAuth2Introspection")
-        {
-            return Task.FromResult(principal);
-        }
+        var isServiceAccount = principal.FindFirst(AcmIdmConstants.Claims.AcmId) is null;
 
-        var claimsToAdd = new List<Claim>();
-
-        // Check if this is a service account with a known scope
-        var scope = principal.FindFirst(AcmIdmConstants.Claims.Scope)?.Value;
-        var isServiceAccount = scope switch
-        {
-            AcmIdmConstants.Scopes.CjmBeheerder or
-            AcmIdmConstants.Scopes.OrafinBeheerder or
-            AcmIdmConstants.Scopes.TestClient => true,
-            _ => false
-        };
-
-        // Only map user claims for non-service accounts
         if (isServiceAccount)
-        {
             return Task.FromResult(principal);
-        }
+
         var introspectionIdentity = principal.Identities
             .FirstOrDefault(i =>
                 i.FindFirst(JwtClaimTypes.GivenName) != null &&
@@ -42,12 +25,9 @@ public class TokenExchangeClaimsTransformation : IClaimsTransformation
         if (introspectionIdentity == null)
             return Task.FromResult(principal);
 
-        // Kloon de introspection identity en bouw een nieuwe principal
         var identity = (ClaimsIdentity)introspectionIdentity.Clone();
         var cloned = new ClaimsPrincipal(identity);
 
-        // Map given_name / family_name naar ClaimTypes.GivenName / ClaimTypes.Surname
-        // De introspection library doet geen OIDC claim mapping, dus we doen het zelf.
         MapNameClaim(identity, JwtClaimTypes.GivenName, ClaimTypes.GivenName);
         MapNameClaim(identity, JwtClaimTypes.FamilyName, ClaimTypes.Surname);
 
@@ -79,7 +59,6 @@ public class TokenExchangeClaimsTransformation : IClaimsTransformation
             if (roles.Any(r => r.Contains(AcmIdmConstants.Roles.RegelgevingBeheerder)))
                 AddRoleClaim(identity, Role.RegelgevingBeheerder);
 
-            // DecentraalBeheerder: voeg ook organisatie-claims toe
             var decentraalRoles = roles.Where(r => r.StartsWith(AcmIdmConstants.Roles.DecentraalBeheerder)).ToList();
             if (decentraalRoles.Any())
             {
@@ -99,7 +78,6 @@ public class TokenExchangeClaimsTransformation : IClaimsTransformation
 
     private static void MapNameClaim(ClaimsIdentity identity, string sourceType, string targetType)
     {
-        // Sla over als het target-type al aanwezig is
         if (identity.FindFirst(targetType) != null)
             return;
 
