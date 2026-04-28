@@ -15,8 +15,8 @@ static string RequireEnv(string name)
 }
 
 var keycloakTokenEndpoint = RequireEnv("KEYCLOAK_TOKEN_ENDPOINT");
-var orafinClientId        = RequireEnv("ORAFIN_CLIENT_ID");
-var orafinClientSecret    = RequireEnv("ORAFIN_CLIENT_SECRET");
+var cjmClientId           = RequireEnv("CJM_CLIENT_ID");
+var cjmClientSecret       = RequireEnv("CJM_CLIENT_SECRET");
 var apiBaseUrl            = RequireEnv("API_BASE_URL").TrimEnd('/');
 
 // In-memory state (single-instance demo)
@@ -59,9 +59,9 @@ app.MapGet("/", () => Results.Content($$"""
   <h1>Machine-to-Machine Demo — Organisation Registry</h1>
   <p>
     Demonstreert de Client Credentials flow via Keycloak.<br />
-    Client: <strong>{{orafinClientId}}</strong> — heeft scope <code>dv_organisatieregister_orafinbeheerder</code><br />
-    <em>Allowed</em>: <code>POST /edit/organisations/{id}/keys</code> (vereist orafinbeheerder of cjmbeheerder)<br />
-    <em>Forbidden</em>: <code>POST /edit/organisations/{id}/contacts</code> (vereist cjmbeheerder — orafin heeft die scope niet)
+    Client: <strong>{{cjmClientId}}</strong> — heeft scope <code>dv_organisatieregister_cjmbeheerder</code><br />
+    <em>Allowed</em>: <code>POST /edit/organisations/{id}/contacts</code> (vereist cjmbeheerder)<br />
+    <em>Forbidden</em>: <code>POST /edit/organisations/{id}/keys</code> met Orafin key type (vereist orafinbeheerder — cjm heeft die scope niet)
   </p>
   <div class="buttons">
     <button id="btn-auth"      onclick="doAction('/demo/authenticate')">Authenticate</button>
@@ -123,15 +123,15 @@ app.MapGet("/", () => Results.Content($$"""
 
 app.MapPost("/demo/authenticate", async () =>
 {
-    // Stap 1 — token ophalen als orafinClient
+    // Stap 1 — token ophalen als cjmClient
     using var http = new HttpClient();
     var tokenRequest = new HttpRequestMessage(HttpMethod.Post, keycloakTokenEndpoint)
     {
         Content = new FormUrlEncodedContent(new Dictionary<string, string>
         {
             ["grant_type"]    = "client_credentials",
-            ["client_id"]     = orafinClientId,
-            ["client_secret"] = orafinClientSecret,
+            ["client_id"]     = cjmClientId,
+            ["client_secret"] = cjmClientSecret,
         }),
     };
 
@@ -143,7 +143,7 @@ app.MapPost("/demo/authenticate", async () =>
             new
             {
                 error   = "Token request failed",
-                request = new { method = "POST", url = keycloakTokenEndpoint, grant_type = "client_credentials", client_id = orafinClientId },
+                request = new { method = "POST", url = keycloakTokenEndpoint, grant_type = "client_credentials", client_id = cjmClientId },
                 status  = (int)tokenResponse.StatusCode,
                 detail  = tokenBody,
             },
@@ -182,7 +182,7 @@ app.MapPost("/demo/authenticate", async () =>
         organisation_id  = storedOrganisationId,
         organisation_name = organisationName,
         access_token     = storedAccessToken,
-        request          = new { method = "POST", url = keycloakTokenEndpoint, grant_type = "client_credentials", client_id = orafinClientId },
+        request          = new { method = "POST", url = keycloakTokenEndpoint, grant_type = "client_credentials", client_id = cjmClientId },
     });
 });
 

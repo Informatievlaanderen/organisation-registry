@@ -32,7 +32,7 @@ public class AuthorizationEquivalenceTests
         await _apiFixture.Create.Organisation(organisationId, "Test Organization");
 
         var keycloakToken = await GetKeycloakAccessToken(clientId, scope);
-        
+
         var bearerClient = CreateClientWithBearerToken(keycloakToken);
         var tokenExchangeClient = CreateClientWithTokenExchange(keycloakToken);
 
@@ -40,12 +40,12 @@ public class AuthorizationEquivalenceTests
         var tokenExchangeResponse = await GetOrganisationDetails(tokenExchangeClient, organisationId);
 
         bearerResponse.StatusCode.Should().Be(tokenExchangeResponse.StatusCode);
-        
+
         if (bearerResponse.IsSuccessStatusCode)
         {
             var bearerContent = await bearerResponse.Content.ReadAsStringAsync();
             var tokenExchangeContent = await tokenExchangeResponse.Content.ReadAsStringAsync();
-            
+
             bearerContent.Should().Be(tokenExchangeContent);
         }
     }
@@ -80,7 +80,7 @@ public class AuthorizationEquivalenceTests
     private async Task<string> GetKeycloakAccessToken(string clientId, string scope)
     {
         const string defaultKeycloakAuthority = "http://keycloak.localhost:9080/realms/wegwijs";
-        
+
         var tokenClient = new TokenClient(
             () => new HttpClient(),
             new TokenClientOptions
