@@ -67,7 +67,7 @@ public class ApiFixture : IDisposable, IAsyncLifetime
         {
             CJM.Client => "cjm-client-secret-2024",
             Orafin.Client => "orafin-client-secret-2024",
-            Test.Client => "secret",
+            Test.Client => "test-client-secret-2024",
             _ => "secret"
         };
 
@@ -129,7 +129,7 @@ public class ApiFixture : IDisposable, IAsyncLifetime
         await EnsureParameterExists("organisationclassificationtypes", Configuration.Authorization.OrganisationClassificationTypeIdsOwnedByCjm.Last(), "CJM Classification 2");
         await EnsureParameterExists("labeltypes", Configuration.Kbo.KboV2FormalNameLabelTypeId, "KBO label");
         await EnsureParameterExists("keytypes", Configuration.Authorization.KeyIdsAllowedOnlyForOrafin.First(), "orafin key type");
-        // await EnsureImportedDataIsReady();
+        await EnsureImportedDataIsReady();
     }
 
     public async Task<HttpClient> CreateCjmClient()
@@ -201,7 +201,7 @@ public class ApiFixture : IDisposable, IAsyncLifetime
         await Task.CompletedTask;
     }
 
-    private async Task EnsureImportedDataIsReady()
+    public async Task EnsureImportedDataIsReady()
     {
         if (!await HasImportedOrganisationsAsync())
             OrganisationRegistry.Import.Piavo.Program.Import(ApiEndpoint, Jwt);
@@ -293,6 +293,8 @@ public class ApiFixture : IDisposable, IAsyncLifetime
     {
         await EnsureImportedOrganisationHasKey();
         await EnsureImportedOrganisationHasCapacity();
+        await EnsureImportedOrganisationHasContact();
+        await EnsureImportedOrganisationHasChild();
         await EnsureImportedOrganisationHasClassification();
     }
 
@@ -309,6 +311,47 @@ public class ApiFixture : IDisposable, IAsyncLifetime
                 OrganisationKeyId = Guid.NewGuid(),
                 KeyTypeId = Configuration.Authorization.KeyIdsAllowedOnlyForOrafin.First(),
                 KeyValue = $"TILT-READY-{ImportedParentOrganisationId:N}",
+                ValidFrom = (DateTime?)null,
+                ValidTo = (DateTime?)null,
+            });
+
+        await VerifyStatusCode(response, HttpStatusCode.Created);
+    }
+
+    private async Task EnsureImportedOrganisationHasContact()
+    {
+        if (await HasAnyItems($"/v1/organisations/{ImportedParentOrganisationId}/contacts"))
+            return;
+
+        var contactTypeId = await Create.ContactType("Tilt readiness contact");
+
+        using var response = await Post(
+            HttpClient,
+            $"/v1/organisations/{ImportedParentOrganisationId}/contacts",
+            new
+            {
+                OrganisationContactId = Guid.NewGuid(),
+                ContactTypeId = contactTypeId,
+                ContactValue = "tilt-readiness@example.org",
+                ValidFrom = (DateTime?)null,
+                ValidTo = (DateTime?)null,
+            });
+
+        await VerifyStatusCode(response, HttpStatusCode.Created);
+    }
+
+    private async Task EnsureImportedOrganisationHasChild()
+    {
+        if (await HasAnyItems($"/v1/organisations/{ImportedParentOrganisationId}/children"))
+            return;
+
+        using var response = await Post(
+            HttpClient,
+            $"/v1/organisations/{ImportedChildOrganisationId}/parents",
+            new
+            {
+                OrganisationOrganisationParentId = Guid.NewGuid(),
+                ParentOrganisationId = ImportedParentOrganisationId,
                 ValidFrom = (DateTime?)null,
                 ValidTo = (DateTime?)null,
             });

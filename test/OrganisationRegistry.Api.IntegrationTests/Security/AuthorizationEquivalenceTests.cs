@@ -72,7 +72,7 @@ public class AuthorizationEquivalenceTests
 
         var tokenExchangeClient = CreateClientWithoutAuth();
 
-        var response = await GetOrganisationDetails(tokenExchangeClient, organisationId);
+        var response = await GetSecurityInformation(tokenExchangeClient);
 
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
@@ -87,7 +87,7 @@ public class AuthorizationEquivalenceTests
             {
                 Address = $"{defaultKeycloakAuthority.TrimEnd('/')}/protocol/openid-connect/token",
                 ClientId = clientId,
-                ClientSecret = "secret",
+                ClientSecret = ApiFixture.GetClientSecret(clientId),
                 Parameters = new Parameters(
                     new[]
                     {
@@ -115,7 +115,7 @@ public class AuthorizationEquivalenceTests
     private HttpClient CreateClientWithTokenExchange(string token)
     {
         var client = new HttpClient { BaseAddress = new Uri(_apiFixture.ApiEndpoint) };
-        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("TokenExchange", token);
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         return client;
     }
 
@@ -127,5 +127,10 @@ public class AuthorizationEquivalenceTests
     private async Task<HttpResponseMessage> GetOrganisationDetails(HttpClient client, Guid organisationId)
     {
         return await client.GetAsync($"/v1/organisations/{organisationId}");
+    }
+
+    private async Task<HttpResponseMessage> GetSecurityInformation(HttpClient client)
+    {
+        return await client.GetAsync("/v1/security");
     }
 }

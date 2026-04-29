@@ -1,6 +1,7 @@
 ﻿namespace OrganisationRegistry.Api.IntegrationTests.BackOffice;
 
 using System;
+using System.Net;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using AutoFixture;
@@ -133,8 +134,33 @@ public class CreationHelpers
 
     private async Task DefaultLifecyclePhaseTypes()
     {
-        await LifecyclePhaseType(isDefaultPhase: true, representsActivePhase: true);
-        await LifecyclePhaseType(isDefaultPhase: true, representsActivePhase: false);
+        await EnsureDefaultLifecyclePhaseType(representsActivePhase: true);
+        await EnsureDefaultLifecyclePhaseType(representsActivePhase: false);
+    }
+
+    private async Task EnsureDefaultLifecyclePhaseType(bool representsActivePhase)
+    {
+        using var response = await ApiFixture.Post(
+            _fixture.HttpClient,
+            "/v1/lifecyclephasetypes",
+            new CreateLifecyclePhaseTypeRequest
+            {
+                Id = _fixture.Fixture.Create<Guid>(),
+                Name = _fixture.Fixture.Create<string>(),
+                IsDefaultPhase = true,
+                RepresentsActivePhase = representsActivePhase,
+            });
+
+        if (response.StatusCode is HttpStatusCode.Created or HttpStatusCode.OK)
+            return;
+
+        var body = await response.Content.ReadAsStringAsync();
+        if (response.StatusCode == HttpStatusCode.BadRequest &&
+            body.Contains("Standaard levensloopfase is reeds gedefinieerd", StringComparison.OrdinalIgnoreCase))
+            return;
+
+        throw new InvalidOperationException(
+            $"Could not ensure default lifecycle phase type. Status: {response.StatusCode}. Body: {body}");
     }
 
     public async Task<Guid> LifecyclePhaseType(bool? isDefaultPhase = null, bool? representsActivePhase = null)
@@ -251,7 +277,29 @@ public class CreationHelpers
             throw new InvalidDataContractException("Object to create should have an 'Id' property.");
 
         body.Id = _fixture.Fixture.Create<TId>();
-        await ApiFixture.Post(_fixture.HttpClient, route, body);
+        using var response = await ApiFixture.Post(_fixture.HttpClient, route, body);
+        if (response.StatusCode is not (HttpStatusCode.Created or HttpStatusCode.OK))
+            throw new InvalidOperationException(
+                $"Could not create test resource at '{route}'. " +
+                $"Status: {response.StatusCode}. Body: {await response.Content.ReadAsStringAsync()}");
+
+        await WaitUntilCreated(route, body.Id);
         return body.Id;
+    }
+
+    private async Task WaitUntilCreated(string route, object id)
+    {
+        var deadline = DateTime.UtcNow.AddSeconds(10);
+
+        while (DateTime.UtcNow < deadline)
+        {
+            using var response = await ApiFixture.Get(_fixture.HttpClient, $"{route}/{id}");
+            if (response.StatusCode == HttpStatusCode.OK)
+                return;
+
+            await Task.Delay(250);
+        }
+
+        throw new InvalidOperationException($"Created test resource '{route}/{id}' did not become readable in time.");
     }
 }

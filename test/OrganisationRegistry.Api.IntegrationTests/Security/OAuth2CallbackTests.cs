@@ -22,7 +22,7 @@ public class OAuth2CallbackTests : IDisposable
     public OAuth2CallbackTests(ApiFixture apiFixture)
     {
         _apiFixture = apiFixture;
-        _httpClient = new HttpClient();
+        _httpClient = new HttpClient(new HttpClientHandler { AllowAutoRedirect = false });
     }
 
     // ========================================================================

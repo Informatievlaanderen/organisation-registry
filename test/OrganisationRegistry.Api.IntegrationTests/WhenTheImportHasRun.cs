@@ -9,14 +9,21 @@ using Newtonsoft.Json;
 using Xunit;
 
 [Collection(ApiTestsCollection.Name)]
-public class WhenTheImportHasRun
+public class WhenTheImportHasRun : IAsyncLifetime
 {
+    private static readonly string ImportedParentOrganisationId = "4e83f3ff-4154-4719-833c-d1a8c77568c0";
     private readonly ApiFixture _fixture;
 
     public WhenTheImportHasRun(ApiFixture fixture)
     {
         _fixture = fixture;
     }
+
+    public async Task InitializeAsync()
+        => await _fixture.EnsureImportedDataIsReady();
+
+    public Task DisposeAsync()
+        => Task.CompletedTask;
 
     private async Task<IEnumerable<T>> Get<T>(string requestUri)
     {
@@ -97,8 +104,8 @@ public class WhenTheImportHasRun
     [Fact]
     public async Task AtLeastOneOrganisationHasCapacities()
     {
-        (await Get<OrganisationListQueryResult>("organisations"))
-            .Count(item => Get<OrganisationCapacityListItem>($"organisations/{item.Id}/capacities").GetAwaiter().GetResult().Any())
+        (await Get<OrganisationCapacityListItem>($"organisations/{ImportedParentOrganisationId}/capacities"))
+            .Count()
             .Should()
             .BeGreaterThan(0);
     }
@@ -106,8 +113,8 @@ public class WhenTheImportHasRun
     [Fact]
     public async Task AtLeastOneOrganisationHasChildren()
     {
-        (await Get<OrganisationListQueryResult>("organisations"))
-            .Count(item => Get<object>($"organisations/{item.Id}/children").GetAwaiter().GetResult().Any())
+        (await Get<object>($"organisations/{ImportedParentOrganisationId}/children"))
+            .Count()
             .Should()
             .BeGreaterThan(0);
     }
@@ -115,8 +122,8 @@ public class WhenTheImportHasRun
     [Fact]
     public async Task AtLeastOneOrganisationHasContacts()
     {
-        (await Get<OrganisationListQueryResult>("organisations"))
-            .Count(item => Get<OrganisationContactListItem>($"organisations/{item.Id}/contacts").GetAwaiter().GetResult().Any())
+        (await Get<OrganisationContactListItem>($"organisations/{ImportedParentOrganisationId}/contacts"))
+            .Count()
             .Should()
             .BeGreaterThan(0);
     }
@@ -124,8 +131,8 @@ public class WhenTheImportHasRun
     [Fact]
     public async Task AtLeastOneOrganisationHasKeys()
     {
-        (await Get<OrganisationListQueryResult>("organisations"))
-            .Count(item => Get<OrganisationKeyListItem>($"organisations/{item.Id}/keys").GetAwaiter().GetResult().Any())
+        (await Get<OrganisationKeyListItem>($"organisations/{ImportedParentOrganisationId}/keys"))
+            .Count()
             .Should()
             .BeGreaterThan(0);
     }

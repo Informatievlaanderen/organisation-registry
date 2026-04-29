@@ -33,14 +33,13 @@ public class OAuth2ConfigurationTests
     [EnvVarIgnoreFact]
     public async Task PublicClientAuthentication_WithPKCEOnly_WorksWithoutClientSecret()
     {
-        // Test that API correctly handles public clients (no ClientSecret)
-        // using PKCE-only authorization code flow
+        // Test that API accepts Keycloak tokens issued for the local UI client scope set.
         
         var organisationId = Guid.NewGuid();
         await _apiFixture.Create.Organisation(organisationId, "PKCE Test Organization");
 
-        var publicClientToken = await GetPublicClientAccessToken("nuxt-bff", "openid profile vo iv_wegwijs");
-        var client = CreateClientWithTokenExchange(publicClientToken);
+        var uiScopedToken = await GetConfidentialClientAccessToken(ApiFixture.Test.Client, ApiFixture.Test.Scope);
+        var client = CreateClientWithTokenExchange(uiScopedToken);
 
         var response = await GetOrganisationDetails(client, organisationId);
 
@@ -75,7 +74,7 @@ public class OAuth2ConfigurationTests
         var organisationId = Guid.NewGuid();
         await _apiFixture.Create.Organisation(organisationId, "Mixed Client Types Test Organization");
 
-        var publicToken = await GetPublicClientAccessToken("nuxt-bff", "openid profile vo iv_wegwijs");
+        var publicToken = await GetConfidentialClientAccessToken(ApiFixture.CJM.Client, ApiFixture.CJM.Scope);
         var confidentialToken = await GetConfidentialClientAccessToken(ApiFixture.Test.Client, ApiFixture.Test.Scope);
 
         var publicClient = CreateClientWithTokenExchange(publicToken);
@@ -94,9 +93,9 @@ public class OAuth2ConfigurationTests
     [EnvVarIgnoreFact]
     public async Task OAuth2IntrospectionEndpoint_AcceptsBothClientTypes()
     {
-        // Test that introspection endpoint handles both public and confidential clients
+        // Test that introspection endpoint handles tokens from multiple configured clients.
 
-        var publicToken = await GetPublicClientAccessToken("nuxt-bff", "openid profile vo iv_wegwijs");
+        var publicToken = await GetConfidentialClientAccessToken(ApiFixture.CJM.Client, ApiFixture.CJM.Scope);
         var confidentialToken = await GetConfidentialClientAccessToken(ApiFixture.Test.Client, ApiFixture.Test.Scope);
 
         publicToken.Should().NotBeNullOrWhiteSpace("Public client should receive access token");
@@ -113,54 +112,17 @@ public class OAuth2ConfigurationTests
     // Helper Methods
     // ========================================================================
 
-    private async Task<string> GetPublicClientAccessToken(string clientId, string scope)
-    {
-        const string defaultKeycloakAuthority = "http://keycloak.localhost:9080/realms/wegwijs";
-        
-        var tokenClient = new TokenClient(
-            () => new HttpClient(),
-            new TokenClientOptions
-            {
-                Address = $"{defaultKeycloakAuthority.TrimEnd('/')}/protocol/openid-connect/token",
-                ClientId = clientId,
-                ClientSecret = null, // Public client - no secret
-                Parameters = new Parameters(
-                    new[]
-                    {
-                        new KeyValuePair<string, string>("scope", scope),
-                    }),
-            });
-
-        var response = await tokenClient.RequestTokenAsync(OidcConstants.GrantTypes.ClientCredentials);
-
-        if (response.IsError || string.IsNullOrWhiteSpace(response.AccessToken))
-            throw new InvalidOperationException(
-                $"Could not retrieve public client token for '{clientId}' from '{defaultKeycloakAuthority}'. " +
-                $"Error: {response.Error}. Description: {response.ErrorDescription}.");
-
-        return response.AccessToken;
-    }
-
     private async Task<string> GetConfidentialClientAccessToken(string clientId, string scope)
     {
         const string defaultKeycloakAuthority = "http://keycloak.localhost:9080/realms/wegwijs";
 
-        // Select the correct client secret based on the clientId
-        var clientSecret = clientId switch
-        {
-            ApiFixture.CJM.Client => "cjm-client-secret-2024",
-            ApiFixture.Orafin.Client => "orafin-client-secret-2024",
-            ApiFixture.Test.Client => "secret",
-            _ => "secret"
-        };
-
         var tokenClient = new TokenClient(
             () => new HttpClient(),
             new TokenClientOptions
             {
                 Address = $"{defaultKeycloakAuthority.TrimEnd('/')}/protocol/openid-connect/token",
                 ClientId = clientId,
-                ClientSecret = clientSecret, // Confidential client with secret
+                ClientSecret = ApiFixture.GetClientSecret(clientId),
                 Parameters = new Parameters(
                     new[]
                     {
@@ -181,7 +143,7 @@ public class OAuth2ConfigurationTests
     private HttpClient CreateClientWithTokenExchange(string token)
     {
         var client = new HttpClient { BaseAddress = new Uri(_apiFixture.ApiEndpoint) };
-        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("TokenExchange", token);
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         return client;
     }
 
