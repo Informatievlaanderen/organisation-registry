@@ -175,6 +175,26 @@ void UpdateDbConfig()
     using var conn = new SqlConnection(connStr);
     conn.Open();
 
+    // DB-backed config provider wordt LAATST geladen in de API en zou env vars overriden — verwijder stale OIDCAuth rijen.
+    var staleKeys = new[]
+    {
+        "OIDCAuth:JwtAudience",
+        "OIDCAuth:JwtIssuer",
+        "OIDCAuth:JwksUri",
+        "OIDCAuth:Authority",
+        "OIDCAuth:IntrospectionEndpoint",
+    };
+
+    foreach (var staleKey in staleKeys)
+    {
+        using var deleteCmd = conn.CreateCommand();
+        deleteCmd.CommandText = "DELETE FROM [OrganisationRegistry].[Configuration] WHERE [Key] = @key";
+        deleteCmd.Parameters.AddWithValue("@key", staleKey);
+        var deleted = deleteCmd.ExecuteNonQuery();
+        if (deleted > 0)
+            Console.WriteLine($"  [VERWIJDERD] {staleKey} (override van env var hersteld)");
+    }
+
     foreach (var (key, value) in dbConfigKeys)
     {
         using var cmd = conn.CreateCommand();
