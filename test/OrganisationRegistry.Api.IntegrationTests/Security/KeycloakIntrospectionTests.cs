@@ -38,7 +38,7 @@ public class KeycloakIntrospectionTests
         var client = CreateClientWithTokenExchange(keycloakToken);
         
         // Act - This will trigger introspection internally
-        var response = await GetOrganisationDetails(client, organisationId);
+        var response = await GetSecurityInformation(client);
         
         // Assert - Successful introspection means we don't get Unauthorized
         response.StatusCode.Should().NotBe(HttpStatusCode.Unauthorized, 
@@ -58,7 +58,7 @@ public class KeycloakIntrospectionTests
         var client = CreateClientWithTokenExchange(invalidToken);
         
         // Act - Invalid token should fail introspection
-        var response = await GetOrganisationDetails(client, organisationId);
+        var response = await GetSecurityInformation(client);
         
         // Assert - Failed introspection should result in Unauthorized
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized,
@@ -76,7 +76,7 @@ public class KeycloakIntrospectionTests
         var client = CreateClientWithTokenExchange(malformedToken);
         
         // Act - Malformed token should fail introspection
-        var response = await GetOrganisationDetails(client, organisationId);
+        var response = await GetSecurityInformation(client);
         
         // Assert - Failed introspection should result in Unauthorized
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized,
@@ -124,7 +124,7 @@ public class KeycloakIntrospectionTests
         var client = CreateClientWithTokenExchange(keycloakToken);
         
         // Act - Token introspection should work for different clients
-        var response = await GetOrganisationDetails(client, organisationId);
+        var response = await GetSecurityInformation(client);
         
         // Assert - Successful introspection means no Unauthorized
         response.StatusCode.Should().NotBe(HttpStatusCode.Unauthorized,
@@ -143,7 +143,7 @@ public class KeycloakIntrospectionTests
         var client = CreateClientWithoutAuth();
         
         // Act - No token means no introspection
-        var response = await GetOrganisationDetails(client, organisationId);
+        var response = await GetSecurityInformation(client);
         
         // Assert - Missing token should be Unauthorized
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized,
@@ -223,22 +223,13 @@ public class KeycloakIntrospectionTests
     {
         const string defaultKeycloakAuthority = "http://keycloak.localhost:9080/realms/wegwijs";
 
-        // Select the correct client secret based on the clientId
-        var clientSecret = clientId switch
-        {
-            ApiFixture.CJM.Client => "cjm-client-secret-2024",
-            ApiFixture.Orafin.Client => "orafin-client-secret-2024",
-            ApiFixture.Test.Client => "secret",
-            _ => "secret"
-        };
-
         var tokenClient = new TokenClient(
             () => new HttpClient(),
             new TokenClientOptions
             {
                 Address = $"{defaultKeycloakAuthority.TrimEnd('/')}/protocol/openid-connect/token",
                 ClientId = clientId,
-                ClientSecret = clientSecret,
+                ClientSecret = ApiFixture.GetClientSecret(clientId),
                 Parameters = new Parameters(
                     new[]
                     {
@@ -259,7 +250,7 @@ public class KeycloakIntrospectionTests
     private HttpClient CreateClientWithTokenExchange(string token)
     {
         var client = new HttpClient { BaseAddress = new Uri(_apiFixture.ApiEndpoint) };
-        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("TokenExchange", token);
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         return client;
     }
 
@@ -271,5 +262,10 @@ public class KeycloakIntrospectionTests
     private async Task<HttpResponseMessage> GetOrganisationDetails(HttpClient client, Guid organisationId)
     {
         return await client.GetAsync($"/v1/organisations/{organisationId}");
+    }
+
+    private async Task<HttpResponseMessage> GetSecurityInformation(HttpClient client)
+    {
+        return await client.GetAsync("/v1/security");
     }
 }

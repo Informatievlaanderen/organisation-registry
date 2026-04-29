@@ -23,7 +23,7 @@ public class OAuth2DiagnosticsTests : IDisposable
     public OAuth2DiagnosticsTests(ApiFixture apiFixture)
     {
         _apiFixture = apiFixture;
-        _httpClient = new HttpClient();
+        _httpClient = new HttpClient(new HttpClientHandler { AllowAutoRedirect = false });
     }
 
     // ========================================================================
@@ -85,7 +85,7 @@ public class OAuth2DiagnosticsTests : IDisposable
         // Test that OpenID Connect discovery document is accessible
         // Angular UI relies on this for OAuth2 configuration
 
-        var discoveryUrl = "http://keycloak.localhost:9080/realms/wegwijs/.well-known/openid_configuration";
+        var discoveryUrl = "http://keycloak.localhost:9080/realms/wegwijs/.well-known/openid-configuration";
 
         var response = await _httpClient.GetAsync(discoveryUrl);
 
@@ -117,7 +117,7 @@ public class OAuth2DiagnosticsTests : IDisposable
         // Test that API security configuration returns correct OAuth2 endpoints
         // UI retrieves these to configure OAuth2 client
 
-        var securityConfigUrl = $"{_apiFixture.ApiEndpoint}/v1/security/configuration";
+        var securityConfigUrl = $"{_apiFixture.ApiEndpoint}/v1/security/info";
 
         var response = await _httpClient.GetAsync(securityConfigUrl);
 
@@ -142,7 +142,7 @@ public class OAuth2DiagnosticsTests : IDisposable
         clientIdValue.Should().NotBeNullOrWhiteSpace("ClientId must be configured");
         
         authorityValue.Should().Contain("keycloak", "Authority should point to Keycloak");
-        clientIdValue.Should().Be("nuxt-bff", "ClientId should match UI client configuration");
+        clientIdValue.Should().Be("organisation-registry-local-dev", "ClientId should match UI client configuration");
     }
 
     [EnvVarIgnoreFact]
@@ -153,7 +153,7 @@ public class OAuth2DiagnosticsTests : IDisposable
 
         var authorizationUrl = BuildAuthorizationUrl(
             authority: "http://keycloak.localhost:9080/realms/wegwijs",
-            clientId: "nuxt-bff",
+            clientId: "organisation-registry-local-dev",
             redirectUri: "http://ui.localhost:9080/oic",
             state: "test_state_" + Guid.NewGuid().ToString("N")[..8],
             scopes: "openid profile vo iv_wegwijs"
@@ -234,7 +234,7 @@ public class OAuth2DiagnosticsTests : IDisposable
         // Test CORS configuration for OAuth2-related requests
         // CORS failures can cause silent OAuth2 errors in browsers
 
-        var securityConfigUrl = $"{_apiFixture.ApiEndpoint}/v1/security/configuration";
+        var securityConfigUrl = $"{_apiFixture.ApiEndpoint}/v1/security/info";
         var corsRequest = new HttpRequestMessage(HttpMethod.Options, securityConfigUrl);
         corsRequest.Headers.Add("Origin", "http://ui.localhost:9080");
         corsRequest.Headers.Add("Access-Control-Request-Method", "GET");
@@ -259,12 +259,12 @@ public class OAuth2DiagnosticsTests : IDisposable
 
         // Step 1: Get security configuration from API
         var securityConfigResponse = await _httpClient.GetAsync(
-            $"{_apiFixture.ApiEndpoint}/v1/security/configuration");
+            $"{_apiFixture.ApiEndpoint}/v1/security/info");
         securityConfigResponse.StatusCode.Should().Be(HttpStatusCode.OK, "Step 1: Security config failed");
 
         // Step 2: Access Keycloak discovery document
         var discoveryResponse = await _httpClient.GetAsync(
-            "http://keycloak.localhost:9080/realms/wegwijs/.well-known/openid_configuration");
+            "http://keycloak.localhost:9080/realms/wegwijs/.well-known/openid-configuration");
         discoveryResponse.StatusCode.Should().Be(HttpStatusCode.OK, "Step 2: OIDC discovery failed");
 
         // Step 3: Test authorization endpoint accessibility
@@ -307,7 +307,7 @@ public class OAuth2DiagnosticsTests : IDisposable
 
     private string GenerateCodeChallenge()
     {
-        return Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes("test_code_challenge"))
+        return Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes("test_code_challenge_with_sufficient_length_for_pkce"))
             .TrimEnd('=').Replace('+', '-').Replace('/', '_');
     }
 
