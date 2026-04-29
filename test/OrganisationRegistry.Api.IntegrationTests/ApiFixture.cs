@@ -99,6 +99,7 @@ public class ApiFixture : IDisposable, IAsyncLifetime
         _configurationRoot = new ConfigurationBuilder()
             .SetBasePath(configurationBasePath)
             .AddJsonFile("appsettings.json", optional: true)
+            .AddJsonFile("appsettings.development.json", optional: true)
             .AddJsonFile($"appsettings.{Environment.MachineName}.json", optional: true)
             .AddJsonFile($"appsettings.{Environment.MachineName.ToLowerInvariant()}.json", optional: true)
             .AddEnvironmentVariables()
