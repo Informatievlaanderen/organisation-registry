@@ -152,15 +152,33 @@ custom_build(
     ignore=['**/node_modules', '**/bin', '**/obj', '**/*.map', 'src/OrganisationRegistry.UI/wwwroot', 'src/OrganisationRegistry.UI/dist'],
 )
 
-# Seed — .NET application
-custom_build(
-    'k3d-wegwijs-registry:5051/wegwijs-seed:local',
-    'docker build -t $EXPECTED_REF demos/seed && docker push $EXPECTED_REF',
-    deps=[
-        'demos/seed/Dockerfile',
-        'demos/seed/Program.cs',
-        'demos/seed/OrganisationRegistry.Demo.Seed.csproj',
+# PIAVO Import — .NET application
+docker_build(
+    'k3d-wegwijs-registry:5051/wegwijs-piavo-import:local',
+    '.',
+    dockerfile='test/OrganisationRegistry.Import.Piavo/Dockerfile',
+    only=[
+        'test/OrganisationRegistry.Import.Piavo/Dockerfile',
+        '.config/dotnet-tools.json',
+        '.paket/',
+        'organisationregistry-api.pfx',
+        'organisationregistry-ui.pfx',
+        'SolutionInfo.cs',
+        'paket.dependencies',
+        'paket.lock',
+        'src/OrganisationRegistry',
+        'src/OrganisationRegistry.Api',
+        'src/OrganisationRegistry.Configuration.Database',
+        'src/OrganisationRegistry.ElasticSearch',
+        'src/OrganisationRegistry.Infrastructure',
+        'src/OrganisationRegistry.Magda',
+        'src/OrganisationRegistry.OpenTelemetry',
+        'src/OrganisationRegistry.SqlServer',
+        'src/Osc',
+        'src/OpenSearch.Net',
+        'test/OrganisationRegistry.Import.Piavo/',
     ],
+    ignore=['**/bin', '**/obj'],
 )
 
 # M2M demo
@@ -183,7 +201,7 @@ custom_build(
 
 k8s_yaml('demo/k8s/api.yaml')
 k8s_yaml('demo/k8s/ui.yaml')
-k8s_yaml('demo/k8s/seed.yaml')
+k8s_yaml('demo/k8s/piavo-import.yaml')
 k8s_yaml('demo/k8s/m2m.yaml')
 k8s_yaml('demo/k8s/nuxt-bff.yaml')
 k8s_yaml('demo/k8s/ingress.yaml')
@@ -198,7 +216,7 @@ k8s_resource('ui',
     resource_deps=['api', 'keycloak'],
     links=[link('http://ui.localhost:9080', 'Angular UI')])
 
-k8s_resource('seed',
+k8s_resource('piavo-import',
     labels=['setup'],
     resource_deps=['api'])
 

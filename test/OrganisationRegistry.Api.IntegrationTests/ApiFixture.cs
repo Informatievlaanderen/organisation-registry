@@ -204,9 +204,6 @@ public class ApiFixture : IDisposable, IAsyncLifetime
 
     public async Task EnsureImportedDataIsReady()
     {
-        if (!await HasImportedOrganisationsAsync())
-            OrganisationRegistry.Import.Piavo.Program.Import(ApiEndpoint, Jwt);
-
         await WaitUntilAsync(
             HasImportedOrganisationsAsync,
             ImportReadinessTimeout,

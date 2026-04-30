@@ -3,10 +3,13 @@ namespace OrganisationRegistry.Import.Piavo
     using System;
     using System.Collections.Generic;
     using System.Globalization;
+    using System.IdentityModel.Tokens.Jwt;
     using System.IO;
     using System.Linq;
     using System.Net.Http.Headers;
+    using System.Security.Claims;
     using System.Text;
+    using Microsoft.IdentityModel.Tokens;
     using Microsoft.Rest;
     using Models;
 
@@ -31,6 +34,62 @@ namespace OrganisationRegistry.Import.Piavo
 
         public static void Main(string[] args)
         {
+            var apiBase = Environment.GetEnvironmentVariable("API_BASE") ?? "http://localhost:5000";
+            var developerVoId = Environment.GetEnvironmentVariable("DEVELOPER_VO_ID") ?? "9c2f7372-7112-49dc-9771-f127b048b4c7";
+            var jwtSigningKey = Environment.GetEnvironmentVariable("JWT_SIGNING_KEY") ?? "keycloak-demo-local-dev-secret-key-32b";
+            var jwtIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER") ?? "organisatieregister";
+            var jwtAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE") ?? "organisatieregister";
+            
+            Console.WriteLine("=== PIAVO Import ===");
+            Console.WriteLine($"API: {apiBase}");
+            
+            try
+            {
+                Console.WriteLine("Minting local JWT token...");
+                var token = MintBackofficeJwt(jwtSigningKey, jwtIssuer, jwtAudience, developerVoId);
+                Console.WriteLine("JWT token created successfully");
+                
+                Console.WriteLine("Starting PIAVO import...");
+                Import(apiBase, token);
+                Console.WriteLine("PIAVO import completed successfully!");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"ERROR: PIAVO import failed: {ex.Message}");
+                Console.WriteLine($"Details: {ex}");
+                Environment.Exit(1);
+            }
+        }
+        
+        private static string MintBackofficeJwt(string jwtSigningKey, string jwtIssuer, string jwtAudience, string developerVoId)
+        {
+            var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSigningKey));
+            var credentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
+            var claims = new[]
+            {
+                new Claim("urn:be:vlaanderen:dienstverlening:acmid", developerVoId),
+                new Claim("vo_id", developerVoId),
+                new Claim("urn:be:vlaanderen:acm:voornaam", "PIAVO"),
+                new Claim("urn:be:vlaanderen:acm:familienaam", "Import"),
+                new Claim("iv_wegwijs_rol_3D", "wegwijsbeheerder-algemeenbeheerder"),
+                new Claim(ClaimTypes.GivenName, "PIAVO"),
+                new Claim(ClaimTypes.Surname, "Import"),
+                new Claim(ClaimTypes.Role, "algemeenbeheerder"),
+            };
+
+            var descriptor = new SecurityTokenDescriptor
+            {
+                Audience = jwtAudience,
+                Issuer = jwtIssuer,
+                Subject = new ClaimsIdentity(claims),
+                SigningCredentials = credentials,
+                IssuedAt = DateTime.UtcNow,
+                NotBefore = DateTime.UtcNow,
+                Expires = DateTime.UtcNow.AddHours(2),
+            };
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            return tokenHandler.WriteToken(tokenHandler.CreateToken(descriptor));
         }
 
         public static void Import(string endpoint, string jwt)

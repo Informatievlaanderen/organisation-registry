@@ -2,3 +2,5 @@ Microsoft.Rest.ClientRuntime
 
 SourceLink.Embed.AllSourceFiles
 SourceLink.Copy.PdbFiles
+IdentityModel
+System.IdentityModel.Tokens.Jwt

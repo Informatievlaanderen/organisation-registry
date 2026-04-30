@@ -1,0 +1,5 @@
+﻿﻿identifier|ovonummer|altLabelId|alternativeLabel|startDate|endDate
+101|OVO000001|Engelse naam|Department of Town and Country Planning, Housing Policy and Immovable Heritage|2006-07-01|9999-12-99
+105|OVO000105|Franse naam|Inspection de l&#039;Aménagement du Territoire, de la Politique du Logement et du Patrimoine immobilier|2006-07-01|9999-12-99
+105|OVO000105|Duitse naam|Inspektion für Raumordnung, Wohnpolitik und unbewegliches Kulturerbe|2006-07-01|9999-12-99
+105|OVO000105|Engelse naam|Inspectorate for Spatial Planning, Housing Policy and Immovable Heritage|2006-07-01|9999-12-99
