@@ -37,8 +37,6 @@ export default defineEventHandler(async (event) => {
   const bearerToken = session.exchangedToken ?? session.accessToken
   const tokenSource = session.exchangedToken ? 'exchanged (RFC 8693)' : 'direct Keycloak access token (exchange mislukt)'
 
-  console.log('bearerToken', bearerToken)
-
   // Haal eerst de huidige organisatiegegevens op (GET is niet beveiligd)
   let currentOrg: any
   try {
@@ -58,8 +56,6 @@ export default defineEventHandler(async (event) => {
   let status = 0
   let statusText = ''
   let responseBody: any = null
-
-  console.log('putUrl', putUrl)
 
   try {
     await $fetch(putUrl, {
@@ -86,7 +82,6 @@ export default defineEventHandler(async (event) => {
     statusText = 'OK'
     responseBody = { success: true }
   } catch (err: any) {
-    console.log('error', JSON.stringify(err))
     status = err?.response?.status ?? 502
     statusText = err?.response?.statusText ?? err?.message ?? 'Fout'
     try {

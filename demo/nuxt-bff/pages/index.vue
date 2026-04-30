@@ -13,9 +13,48 @@
 
     <template v-else>
       <div class="card status-bar">
-        <span>Ingelogd als <strong>{{ me.clientId }}</strong></span>
+        <span>
+          Ingelogd als
+          <strong>{{ me.security?.body?.userName || me.clientId }}</strong>
+        </span>
         <span>Scope: <code>{{ me.scope }}</code></span>
         <a href="/api/logout" class="btn btn-sm btn-secondary">Uitloggen</a>
+      </div>
+
+      <!-- Ingelogde gebruiker volgens de API -->
+      <div class="card" :class="me.security?.success ? 'card-ok' : 'card-warn'">
+        <h2>
+          <span v-if="me.security?.success" class="badge badge-ok">Security</span>
+          <span v-else class="badge badge-warning">Security</span>
+          GET /v1/security
+        </h2>
+        <div v-if="me.security?.success" class="security-grid">
+          <div>
+            <span class="field-label">Gebruiker</span>
+            <strong>{{ me.security.body.userName }}</strong>
+          </div>
+          <div>
+            <span class="field-label">Rollen</span>
+            <div class="pill-list">
+              <code v-for="role in me.security.body.roles" :key="role" class="pill">{{ role }}</code>
+            </div>
+          </div>
+          <div>
+            <span class="field-label">OVO-nummers</span>
+            <div class="pill-list">
+              <code v-for="ovo in me.security.body.ovoNumbers" :key="ovo" class="pill">{{ ovo }}</code>
+              <span v-if="!me.security.body.ovoNumbers?.length" class="muted">Geen</span>
+            </div>
+          </div>
+        </div>
+        <div v-else class="result result-forbidden">
+          <div class="result-status">HTTP {{ me.security?.status }} {{ me.security?.statusText }}</div>
+          <pre>{{ JSON.stringify(me.security?.body, null, 2) }}</pre>
+        </div>
+        <div class="result-request">
+          Request: <code>{{ me.security?.request?.method }} {{ me.security?.request?.url }}</code>
+          ({{ me.security?.request?.authScheme }})
+        </div>
       </div>
 
       <!-- Token exchange status -->
@@ -89,18 +128,21 @@
         </div>
       </div>
 
-      <!-- Forbidden: admin endpoint -->
+      <!-- Admin endpoint -->
       <div class="card">
         <h2>
-          <span class="badge badge-danger">Forbidden</span>
+          <span class="badge badge-ok">Admin</span>
           GET /v1/events
         </h2>
         <p class="explanation">
-          De BFF roept <code>GET /v1/events</code> aan met het Keycloak access token.<br />
-          Dit endpoint heeft <code>[OrganisationRegistryAuthorize(Role.AlgemeenBeheerder)]</code>.<br />
-          Resultaat: <strong>401</strong> — verkeerd scheme én verkeerde rol.
+          De BFF roept <code>GET /v1/events</code> aan met hetzelfde
+          <strong>via RFC 8693 exchanged token</strong> als hierboven.<br />
+          Dit endpoint heeft
+          <code>[OrganisationRegistryAuthorize(Role.AlgemeenBeheerder, Role.Developer)]</code>.<br />
+          Resultaat: <strong>200</strong> voor AlgemeenBeheerder of Developer,
+          <strong>403</strong> als die rol ontbreekt.
         </p>
-        <button class="btn btn-danger" @click="doForbidden" :disabled="loading">Uitvoeren</button>
+        <button class="btn btn-success" @click="doForbidden" :disabled="loading">Uitvoeren</button>
         <div v-if="forbiddenResult" class="result" :class="resultClass(forbiddenResult.status)">
           <div class="result-status">HTTP {{ forbiddenResult.status }} {{ forbiddenResult.statusText }}</div>
           <pre>{{ JSON.stringify(forbiddenResult.body, null, 2) }}</pre>
@@ -185,6 +227,10 @@ h2 { font-size: 1.1rem; margin: 0 0 12px; display: flex; align-items: center; ga
 .card-ok { background: #d4edda; border-color: #c3e6cb; }
 .card-warn { background: #fff3cd; border-color: #ffc107; }
 .badge-ok { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+.security-grid { display: grid; grid-template-columns: 1.1fr 1fr 1fr; gap: 16px; margin-top: 8px; }
+.field-label { display: block; color: #555; font-size: 0.8rem; margin-bottom: 4px; }
+.pill-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.pill { display: inline-block; }
 .form-row { display: flex; gap: 8px; align-items: center; margin-top: 12px; }
 .form-row label { min-width: 100px; font-size: 0.9rem; }
 .form-row input { flex: 1; padding: 6px 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.95rem; }

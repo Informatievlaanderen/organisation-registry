@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="ImportFiles[0-9]\**\*.txt" CopyToOutputDirectory="Always" />
+    <None Update="ImportFiles\**\*.txt" CopyToOutputDirectory="Always" />
   </ItemGroup>
 
   <ItemGroup>

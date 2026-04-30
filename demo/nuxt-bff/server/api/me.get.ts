@@ -14,16 +14,19 @@ export default defineEventHandler(async (event) => {
     return { loggedIn: false }
   }
 
-  // Decodeer het Keycloak JWT payload (geen verificatie — we vertrouwen onze eigen sessie)
+  // Decodeer het Keycloak JWT payload (geen verificatie; de sessiecookie is server-side beheerd)
   try {
     const parts = session.accessToken.split('.')
     const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf8'))
+    const security = await getApiSecurityInformation(config.apiBaseUrl, session.exchangedToken ?? session.accessToken, !!session.exchangedToken)
+
     return {
       loggedIn: true,
       sub: payload.sub,
       clientId: payload.azp || payload.client_id,
       scope: payload.scope,
       exp: payload.exp,
+      security,
       // Token exchange status
       tokenExchange: session.exchangedToken
         ? { success: true }
@@ -33,3 +36,50 @@ export default defineEventHandler(async (event) => {
     return { loggedIn: false }
   }
 })
+
+async function getApiSecurityInformation(apiBaseUrl: string, bearerToken: string, tokenExchangeUsed: boolean) {
+  const url = `${apiBaseUrl}/security`
+  const tokenSource = tokenExchangeUsed
+    ? 'exchanged (RFC 8693)'
+    : 'direct Keycloak access token (exchange mislukt)'
+
+  try {
+    const body = await $fetch(url, {
+      headers: {
+        Authorization: `Bearer ${bearerToken}`,
+        Accept: 'application/json',
+      },
+    })
+
+    return {
+      success: true,
+      status: 200,
+      statusText: 'OK',
+      body,
+      request: {
+        method: 'GET',
+        url,
+        authScheme: `Bearer (${tokenSource}, server-side)`,
+      },
+    }
+  } catch (err: any) {
+    let body: any = err?.message
+    try {
+      body = await err?.response?.json()
+    } catch {
+      // Houd de oorspronkelijke foutboodschap.
+    }
+
+    return {
+      success: false,
+      status: err?.response?.status ?? 502,
+      statusText: err?.response?.statusText ?? err?.message ?? 'Fout',
+      body,
+      request: {
+        method: 'GET',
+        url,
+        authScheme: `Bearer (${tokenSource}, server-side)`,
+      },
+    }
+  }
+}

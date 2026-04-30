@@ -27,6 +27,8 @@ var clientSecret    = Env("CLIENT_SECRET",    "secret");
 var developerVoId   = Env("DEVELOPER_VO_ID", "9c2f7372-7112-49dc-9771-f127b048b4c7");
 var kboCertificate = Env("KBO_CERTIFICATE", "");
 var rijksRegisterCertificatePwd = Env("RIJKSREGISTER_CERTIFICATE_PWD", "");
+var kboMagdaEndpoint = Env("KBO_MAGDA_ENDPOINT", "http://wiremock:8080");
+var repertoriumMagdaEndpoint = Env("REPERTORIUM_MAGDA_ENDPOINT", "http://wiremock:8080");
 var jwtSigningKey = Env("JWT_SIGNING_KEY", "keycloak-demo-local-dev-secret-key-32b");
 var jwtIssuer = Env("JWT_ISSUER", "organisatieregister");
 var jwtAudience = Env("JWT_AUDIENCE", "organisatieregister");
@@ -48,6 +50,8 @@ var dbConfigKeys = new Dictionary<string, string>
     ["OIDCAuth:IntrospectionEndpoint"] = $"{keycloakBase}/realms/{keycloakRealm}/protocol/openid-connect/token/introspect",
     ["Api:KboCertificate"]             = kboCertificate,
     ["Api:RijksRegisterCertificatePwd"] = rijksRegisterCertificatePwd,
+    ["Api:KboMagdaEndpoint"]            = kboMagdaEndpoint,
+    ["Api:RepertoriumMagdaEndpoint"]    = repertoriumMagdaEndpoint,
 
     ["Api:Vlimpers_KeyTypeId"]                                                    = "922a46bb-1378-45bd-a61f-b6bbf348a4d5",
     ["Api:Orafin_KeyTypeId"]                                                      = "1e3611a7-7914-411a-a0c9-84fcd6218e67",
@@ -160,6 +164,33 @@ string MintBackofficeJwt()
 
     var tokenHandler = new JwtSecurityTokenHandler();
     return tokenHandler.WriteToken(tokenHandler.CreateToken(descriptor));
+}
+
+void UpdateDbConfig()
+{
+    var connStr = $"Server={mssqlHost};Database={mssqlDb};User Id={mssqlUser};Password={mssqlPassword};TrustServerCertificate=True;Encrypt=False;Connect Timeout=30;";
+
+    using var conn = new SqlConnection(connStr);
+    conn.Open();
+
+    foreach (var (key, value) in dbConfigKeys)
+    {
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = @"
+MERGE [OrganisationRegistry].[Configuration] AS target
+USING (SELECT @Key AS [Key], @Value AS [Value]) AS source
+ON target.[Key] = source.[Key]
+WHEN MATCHED THEN
+    UPDATE SET [Value] = source.[Value]
+WHEN NOT MATCHED THEN
+    INSERT ([Key], [Description], [Value])
+    VALUES (source.[Key], source.[Key], source.[Value]);";
+        cmd.Parameters.AddWithValue("@Key", key);
+        cmd.Parameters.AddWithValue("@Value", value);
+        cmd.ExecuteNonQuery();
+    }
+
+    Console.WriteLine($"  {dbConfigKeys.Count} configuratiesleutels geupdatet");
 }
 
 // ---------------------------------------------------------------------------
