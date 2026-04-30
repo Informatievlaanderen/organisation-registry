@@ -110,6 +110,12 @@ namespace OrganisationRegistry.Import.Piavo
 
             try
             {
+                if (ImportAlreadyCompleted(client))
+                {
+                    Console.WriteLine("PIAVO import data is already present; skipping import.");
+                    return;
+                }
+
                 BuildDatabase();
                 ImportKeys(client);
                 ImportLabels(client);
@@ -133,6 +139,24 @@ namespace OrganisationRegistry.Import.Piavo
                 Console.WriteLine(httpEx.Response.StatusCode);
                 Console.WriteLine(httpEx.Response.Content);
                 throw;
+            }
+        }
+
+        private static bool ImportAlreadyCompleted(OrganisationRegistryAPI client)
+        {
+            try
+            {
+                using var response = client.HttpClient
+                    .GetAsync(new Uri(client.BaseUri, "organisations/OVO000001"))
+                    .GetAwaiter()
+                    .GetResult();
+
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine($"Could not determine whether PIAVO import already ran: {exception.Message}");
+                return false;
             }
         }
 
