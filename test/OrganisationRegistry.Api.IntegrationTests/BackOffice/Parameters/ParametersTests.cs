@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
 using AutoFixture;
+using Backoffice.Parameters.LifecyclePhaseType.Requests;
 using FluentAssertions;
 using Xunit;
 
@@ -174,6 +175,12 @@ public class ParametersTests
         ImmutableList<string> dependencyRoutes)
     {
         var request = _apiFixture.CreateInstanceOf(requestType);
+
+        if (request is CreateLifecyclePhaseTypeRequest lifecyclePhaseTypeRequest)
+        {
+            lifecyclePhaseTypeRequest.IsDefaultPhase = false;
+            lifecyclePhaseTypeRequest.RepresentsActivePhase = false;
+        }
 
         foreach (var route in dependencyRoutes)
         {

@@ -79,3 +79,4 @@ angulardoc.json
 /__build__/**
 .webpack.json
 mssqllogs/
+.kubeconfig
