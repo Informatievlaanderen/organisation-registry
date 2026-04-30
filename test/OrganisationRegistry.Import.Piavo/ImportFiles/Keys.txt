@@ -1,0 +1,13 @@
+﻿﻿identifier|keyLabel
+1|Vlimpers
+3|Piavo_Sortering
+5|Orafin
+7|NIS
+9|INR
+11|Rapportsortering
+2|Invoerder
+4|PIAVO_Sleutel
+6|Vlimpers_Entiteitcode
+8|KBO
+10|MAGDA
+12|Vlimpers_kort

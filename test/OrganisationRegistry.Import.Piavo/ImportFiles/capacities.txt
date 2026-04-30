@@ -1,0 +1,3 @@
+personid|organizationid|type|startDate|endDate|email|mobilephone|phonenumber
+1|1|Contactpersoon Wegwijs Organisatie|null|null|email@example.com||02  716 34 03
+4|14|Contactpersoon Wegwijs Organisatie|null|null|le.email@example.vlaanderen.be||02  553 27 69

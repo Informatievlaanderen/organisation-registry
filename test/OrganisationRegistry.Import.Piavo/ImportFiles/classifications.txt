@@ -1,0 +1,4 @@
+﻿﻿id|ClassificationLabel|ClassificationTypeID|ClassificationType|Active|SortNumber|1
+11|Niet gespecifieerd|1|Entiteitsvorm|on|1|2
+13|Departement|3|Entiteitsvorm|on|2|2
+15|Intern verzelfstandigd agentschap (IVA) met rechtspersoonlijkheid|3|Entiteitsvorm|on|5|2

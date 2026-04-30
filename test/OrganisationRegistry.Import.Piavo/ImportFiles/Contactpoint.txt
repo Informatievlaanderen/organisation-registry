@@ -1,0 +1,5 @@
+﻿﻿Id|OrganizationId|Contactpoint|Type
+6077|1|departement@example.vlaanderen.be|1
+102010|1|987653214|6
+6521|14|info@example.be|1
+6520|14|info@example2.be|1

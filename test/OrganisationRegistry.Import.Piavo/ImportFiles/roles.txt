@@ -1,0 +1,2 @@
+﻿﻿personid|organizationid|type|startDate|endDate|email|mobilephone|phonenumber
+4|101|Woordvoerder|null|null|asdf@example.be||12  123 00 00

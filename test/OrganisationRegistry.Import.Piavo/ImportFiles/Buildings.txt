@@ -1,0 +1,3 @@
+﻿﻿Id|Building
+1|Anna Bijnsgebouw
+2|De Zandloper

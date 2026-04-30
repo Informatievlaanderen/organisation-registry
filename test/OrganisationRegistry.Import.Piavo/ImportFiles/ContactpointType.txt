@@ -1,0 +1,6 @@
+﻿﻿TypeID|Type
+6|fax
+1|email
+2|website
+3|intranetsite
+5|telefoon

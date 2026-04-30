@@ -163,54 +163,6 @@ string MintBackofficeJwt()
 }
 
 // ---------------------------------------------------------------------------
-// DB config
-// ---------------------------------------------------------------------------
-
-void UpdateDbConfig()
-{
-    Console.WriteLine("\n=== DB config (Configuration tabel) ===");
-
-    var connStr = $"Server={mssqlHost};Database={mssqlDb};User Id={mssqlUser};Password={mssqlPassword};TrustServerCertificate=True;Encrypt=False;";
-
-    using var conn = new SqlConnection(connStr);
-    conn.Open();
-
-    // DB-backed config provider wordt LAATST geladen in de API en zou env vars overriden — verwijder stale OIDCAuth rijen.
-    var staleKeys = new[]
-    {
-        "OIDCAuth:JwtAudience",
-        "OIDCAuth:JwtIssuer",
-        "OIDCAuth:JwksUri",
-        "OIDCAuth:Authority",
-        "OIDCAuth:IntrospectionEndpoint",
-    };
-
-    foreach (var staleKey in staleKeys)
-    {
-        using var deleteCmd = conn.CreateCommand();
-        deleteCmd.CommandText = "DELETE FROM [OrganisationRegistry].[Configuration] WHERE [Key] = @key";
-        deleteCmd.Parameters.AddWithValue("@key", staleKey);
-        var deleted = deleteCmd.ExecuteNonQuery();
-        if (deleted > 0)
-            Console.WriteLine($"  [VERWIJDERD] {staleKey} (override van env var hersteld)");
-    }
-
-    foreach (var (key, value) in dbConfigKeys)
-    {
-        using var cmd = conn.CreateCommand();
-        cmd.CommandText =
-            "IF EXISTS (SELECT 1 FROM [OrganisationRegistry].[Configuration] WHERE [Key] = @key) " +
-            "    UPDATE [OrganisationRegistry].[Configuration] SET [Value] = @value WHERE [Key] = @key " +
-            "ELSE " +
-            "    INSERT INTO [OrganisationRegistry].[Configuration] ([Key], [Description], [Value]) VALUES (@key, @key, @value)";
-        cmd.Parameters.AddWithValue("@key",   key);
-        cmd.Parameters.AddWithValue("@value", value);
-        cmd.ExecuteNonQuery();
-        Console.WriteLine($"  [OK] {key} = {value}");
-    }
-}
-
-// ---------------------------------------------------------------------------
 // Wait helpers
 // ---------------------------------------------------------------------------
 
