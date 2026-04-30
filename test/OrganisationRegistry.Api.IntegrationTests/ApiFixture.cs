@@ -35,10 +35,10 @@ public class ApiFixture : IDisposable, IAsyncLifetime
     private const string DefaultKeycloakAuthority = "http://keycloak.localhost:9080/realms/wegwijs";
     private const string ApiBaseUrlConfigurationKey = "ApiIntegrationTests:ApiBaseUrl";
     private static readonly string[] DateResponseKeys = { "date", "validFrom", "validTo" };
-    private static readonly Guid ImportedParentOrganisationId = Guid.Parse("4e83f3ff-4154-4719-833c-d1a8c77568c0");
-    private static readonly Guid ImportedChildOrganisationId = Guid.Parse("24fe3a2f-f5d0-4895-acac-3b1918ca1ec7");
     private static readonly TimeSpan ImportReadinessTimeout = TimeSpan.FromMinutes(3);
     private static readonly TimeSpan ReadinessPollInterval = TimeSpan.FromSeconds(2);
+    private Guid? _importedParentOrganisationId;
+    private Guid? _importedChildOrganisationId;
 
     public struct Orafin
     {
@@ -77,6 +77,11 @@ public class ApiFixture : IDisposable, IAsyncLifetime
     public IOrganisationRegistryConfiguration Configuration { get; }
     public string ApiEndpoint { get; }
     public string Jwt { get; }
+    public Guid ImportedParentOrganisationId
+        => _importedParentOrganisationId ?? throw new InvalidOperationException("Imported parent organisation is not ready.");
+
+    public Guid ImportedChildOrganisationId
+        => _importedChildOrganisationId ?? throw new InvalidOperationException("Imported child organisation is not ready.");
 
     public HttpClient HttpClient { get; }
 
@@ -205,7 +210,7 @@ public class ApiFixture : IDisposable, IAsyncLifetime
     public async Task EnsureImportedDataIsReady()
     {
         await WaitUntilAsync(
-            HasImportedOrganisationsAsync,
+            DiscoverImportedOrganisationsAsync,
             ImportReadinessTimeout,
             "Tilt importdata is niet klaar. " +
             "Controleer of de Piavo-import gelopen heeft en of de projecties afgewerkt zijn.");
@@ -250,8 +255,26 @@ public class ApiFixture : IDisposable, IAsyncLifetime
         }
     }
 
-    private async Task<bool> HasImportedOrganisationsAsync()
+    private async Task<bool> DiscoverImportedOrganisationsAsync()
     {
+        using var response = await GetWithoutPagination("/v1/organisations");
+        if (!response.IsSuccessStatusCode)
+            return false;
+
+        var organisations = await DeserializeAsList(response);
+        var parent = organisations.FirstOrDefault(IsImportedParentOrganisation);
+        if (parent == null || !TryGetGuid(parent, "id", out var parentOrganisationId))
+            return false;
+
+        var child = organisations.FirstOrDefault(organisation =>
+            TryGetString(organisation, "parentOrganisationId", out var parentId) &&
+            string.Equals(parentId, parentOrganisationId.ToString(), StringComparison.OrdinalIgnoreCase));
+        if (child == null || !TryGetGuid(child, "id", out var childOrganisationId))
+            return false;
+
+        _importedParentOrganisationId = parentOrganisationId;
+        _importedChildOrganisationId = childOrganisationId;
+
         return await RouteExists($"/v1/organisations/{ImportedParentOrganisationId}") &&
                await RouteExists($"/v1/organisations/{ImportedChildOrganisationId}");
     }
@@ -271,6 +294,27 @@ public class ApiFixture : IDisposable, IAsyncLifetime
                await HasAnyItems($"/v1/organisations/{ImportedChildOrganisationId}/classifications");
     }
 
+    private static bool IsImportedParentOrganisation(Dictionary<string, object> organisation)
+        => TryGetString(organisation, "ovoNumber", out var ovoNumber) &&
+           ovoNumber == "OVO000001";
+
+    private static bool TryGetGuid(Dictionary<string, object> item, string key, out Guid value)
+    {
+        value = Guid.Empty;
+        return TryGetString(item, key, out var rawValue) &&
+               Guid.TryParse(rawValue, out value);
+    }
+
+    private static bool TryGetString(Dictionary<string, object> item, string key, out string value)
+    {
+        value = string.Empty;
+        if (!item.TryGetValue(key, out var rawValue) || rawValue == null)
+            return false;
+
+        value = rawValue.ToString() ?? string.Empty;
+        return !string.IsNullOrWhiteSpace(value);
+    }
+
     private async Task<bool> HasAnyItems(string route)
     {
         using var response = await Get(HttpClient, route);
@@ -279,6 +323,13 @@ public class ApiFixture : IDisposable, IAsyncLifetime
 
         var items = await DeserializeAsList(response);
         return items.Length > 0;
+    }
+
+    private async Task<HttpResponseMessage> GetWithoutPagination(string route)
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Get, route);
+        request.Headers.Add("x-pagination", "none");
+        return await HttpClient.SendAsync(request);
     }
 
     private async Task<bool> RouteExists(string route)

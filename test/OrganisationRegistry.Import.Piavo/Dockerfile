@@ -15,7 +15,7 @@ RUN --mount=type=cache,target=/root/.nuget/packages \
     dotnet paket restore && \
     dotnet build src/OrganisationRegistry.Api/OrganisationRegistry.Api.csproj -c Release && \
     dotnet publish test/OrganisationRegistry.Import.Piavo/OrganisationRegistry.Import.Piavo.csproj \
-    -c Release -o /out --no-dependencies -r linux-x64 --self-contained false -p:PublishReadyToRun=false
+    -c Release -o /out --no-dependencies --self-contained false -p:UseAppHost=false -p:PublishReadyToRun=false
 
 FROM mcr.microsoft.com/dotnet/runtime:6.0
 WORKDIR /app

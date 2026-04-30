@@ -1,11 +1,15 @@
 using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using OrganisationRegistry.SqlServer.Infrastructure;
 
 #nullable disable
 
 namespace OrganisationRegistry.SqlServer.Migrations
 {
     /// <inheritdoc />
-    public partial class RemoveStaleOidcConfigurationKeys : Migration
+    [DbContext(typeof(OrganisationRegistryContext))]
+    [Migration("20260430103600_RemoveStaleOidcConfigurationKeys")]
+    public partial class RemoveStaleOidcConfigurationKeys : BaseMigration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

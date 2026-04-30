@@ -16,6 +16,7 @@ spec:
       containers:
       - name: api
         image: k3d-wegwijs-registry:5051/wegwijs-api:local
+        imagePullPolicy: Always
         env:
         - name: ASPNETCORE_ENVIRONMENT
           value: Development
@@ -108,6 +109,8 @@ spec:
         - name: TokenExchange__IntrospectionEndpoint
           value: "http://keycloak/realms/wegwijs/protocol/openid-connect/token/introspect"
         - name: FeatureManagement__BffApi
+          value: "true"
+        - name: FeatureManagement__EditApi
           value: "true"
         - name: Api__JwtSharedSigningKey
           valueFrom:

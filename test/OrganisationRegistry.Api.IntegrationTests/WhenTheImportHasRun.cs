@@ -11,7 +11,6 @@ using Xunit;
 [Collection(ApiTestsCollection.Name)]
 public class WhenTheImportHasRun : IAsyncLifetime
 {
-    private static readonly string ImportedParentOrganisationId = "4e83f3ff-4154-4719-833c-d1a8c77568c0";
     private readonly ApiFixture _fixture;
 
     public WhenTheImportHasRun(ApiFixture fixture)
@@ -104,7 +103,7 @@ public class WhenTheImportHasRun : IAsyncLifetime
     [Fact]
     public async Task AtLeastOneOrganisationHasCapacities()
     {
-        (await Get<OrganisationCapacityListItem>($"organisations/{ImportedParentOrganisationId}/capacities"))
+        (await Get<OrganisationCapacityListItem>($"organisations/{_fixture.ImportedParentOrganisationId}/capacities"))
             .Count()
             .Should()
             .BeGreaterThan(0);
@@ -113,7 +112,7 @@ public class WhenTheImportHasRun : IAsyncLifetime
     [Fact]
     public async Task AtLeastOneOrganisationHasChildren()
     {
-        (await Get<object>($"organisations/{ImportedParentOrganisationId}/children"))
+        (await Get<object>($"organisations/{_fixture.ImportedParentOrganisationId}/children"))
             .Count()
             .Should()
             .BeGreaterThan(0);
@@ -122,7 +121,7 @@ public class WhenTheImportHasRun : IAsyncLifetime
     [Fact]
     public async Task AtLeastOneOrganisationHasContacts()
     {
-        (await Get<OrganisationContactListItem>($"organisations/{ImportedParentOrganisationId}/contacts"))
+        (await Get<OrganisationContactListItem>($"organisations/{_fixture.ImportedParentOrganisationId}/contacts"))
             .Count()
             .Should()
             .BeGreaterThan(0);
@@ -131,7 +130,7 @@ public class WhenTheImportHasRun : IAsyncLifetime
     [Fact]
     public async Task AtLeastOneOrganisationHasKeys()
     {
-        (await Get<OrganisationKeyListItem>($"organisations/{ImportedParentOrganisationId}/keys"))
+        (await Get<OrganisationKeyListItem>($"organisations/{_fixture.ImportedParentOrganisationId}/keys"))
             .Count()
             .Should()
             .BeGreaterThan(0);

@@ -3,6 +3,7 @@ namespace OrganisationRegistry.UnitTests;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using FluentAssertions;
 using IdentityModel;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -219,5 +220,30 @@ public class SecurityServiceRoleMappingTests
             .ToImmutableArray();
 
         mappedRoles.Should().Contain(Role.AlgemeenBeheerder, "AlgemeenBeheerder role should be mapped");
+    }
+
+    [Fact]
+    public async Task TokenExchangeClaimsTransformation_AddsRolesForIsInRole()
+    {
+        var identity = new ClaimsIdentity(
+            new[]
+            {
+                new Claim(JwtClaimTypes.GivenName, "Developer"),
+                new Claim(JwtClaimTypes.FamilyName, "Persona"),
+                new Claim(AcmIdmConstants.Claims.AcmId, "9c2f7372-7112-49dc-9771-f127b048b4c7"),
+                new Claim(AcmIdmConstants.Claims.Role, "wegwijsbeheerder-algemeenbeheerder:OVO000001"),
+            },
+            "OAuth2Introspection",
+            JwtClaimTypes.Name,
+            "role");
+
+        var principal = new ClaimsPrincipal(identity);
+
+        var transformed = await new TokenExchangeClaimsTransformation().TransformAsync(principal);
+
+        transformed.IsInRole(RoleMapping.Map(Role.AlgemeenBeheerder)).Should().BeTrue();
+        transformed.Claims.Should().Contain(claim =>
+            claim.Type == ClaimTypes.Role &&
+            claim.Value == RoleMapping.Map(Role.AlgemeenBeheerder));
     }
 }

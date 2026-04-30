@@ -89,8 +89,14 @@ public class TokenExchangeClaimsTransformation : IClaimsTransformation
     private static void AddRoleClaim(ClaimsIdentity identity, Role value)
     {
         var role = RoleMapping.Map(value);
-        if (!identity.HasClaim(ClaimTypes.Role, role))
-            identity.AddClaim(new Claim(ClaimTypes.Role, role, ClaimValueTypes.String));
+        AddClaimIfMissing(identity, identity.RoleClaimType, role);
+        AddClaimIfMissing(identity, ClaimTypes.Role, role);
+    }
+
+    private static void AddClaimIfMissing(ClaimsIdentity identity, string claimType, string value)
+    {
+        if (!identity.HasClaim(claimType, value))
+            identity.AddClaim(new Claim(claimType, value, ClaimValueTypes.String));
     }
 
     private static void AddOrganisationClaim(ClaimsIdentity identity, string ovoNumber)

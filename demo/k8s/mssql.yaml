@@ -29,6 +29,8 @@ spec:
           value: "1433"
         - name: MSSQL_IP_ADDRESS
           value: "0.0.0.0"
+        - name: MSSQL_MEMORY_LIMIT_MB
+          value: "1024"
         ports:
         - containerPort: 1433
         readinessProbe:

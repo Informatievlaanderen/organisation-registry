@@ -34,20 +34,29 @@ namespace OrganisationRegistry.Import.Piavo
 
         public static void Main(string[] args)
         {
-            var apiBase = Environment.GetEnvironmentVariable("API_BASE") ?? "http://localhost:5000";
+            var apiBase = args.Length > 0
+                ? args[0]
+                : Environment.GetEnvironmentVariable("API_BASE") ?? "http://localhost:5000";
             var developerVoId = Environment.GetEnvironmentVariable("DEVELOPER_VO_ID") ?? "9c2f7372-7112-49dc-9771-f127b048b4c7";
             var jwtSigningKey = Environment.GetEnvironmentVariable("JWT_SIGNING_KEY") ?? "keycloak-demo-local-dev-secret-key-32b";
             var jwtIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER") ?? "organisatieregister";
             var jwtAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE") ?? "organisatieregister";
+            var jwt = args.Length > 1
+                ? args[1]
+                : null;
             
             Console.WriteLine("=== PIAVO Import ===");
             Console.WriteLine($"API: {apiBase}");
             
             try
             {
-                Console.WriteLine("Minting local JWT token...");
-                var token = MintBackofficeJwt(jwtSigningKey, jwtIssuer, jwtAudience, developerVoId);
-                Console.WriteLine("JWT token created successfully");
+                var token = jwt;
+                if (string.IsNullOrWhiteSpace(token))
+                {
+                    Console.WriteLine("Minting local JWT token...");
+                    token = MintBackofficeJwt(jwtSigningKey, jwtIssuer, jwtAudience, developerVoId);
+                    Console.WriteLine("JWT token created successfully");
+                }
                 
                 Console.WriteLine("Starting PIAVO import...");
                 Import(apiBase, token);
@@ -123,6 +132,7 @@ namespace OrganisationRegistry.Import.Piavo
                 Console.WriteLine(httpEx.Response.ReasonPhrase);
                 Console.WriteLine(httpEx.Response.StatusCode);
                 Console.WriteLine(httpEx.Response.Content);
+                throw;
             }
         }
 

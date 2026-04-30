@@ -1,11 +1,7 @@
 /**
  * POST /api/forbidden
- * Server-side call naar een endpoint zonder auth (GET /v1/organisations) —
- * daarna een call naar een Admin endpoint dat AlgemeenBeheerder vereist.
- * cjmClient scope heeft geen AlgemeenBeheerder rol → 403/401.
- *
- * Dit toont dat ook na een correcte login, scope-gebaseerde toegang
- * anders werkt dan rol-gebaseerde toegang.
+ * Server-side call naar een Admin endpoint dat AlgemeenBeheerder of Developer vereist.
+ * Gebruikt hetzelfde exchanged token als /api/me en /api/allowed.
  */
 import { defineEventHandler } from 'h3'
 import { getSession } from '../utils/session'
@@ -18,9 +14,10 @@ export default defineEventHandler(async (event) => {
     return { error: 'Niet ingelogd', status: 401 }
   }
 
-  // Roep een admin endpoint aan dat [OrganisationRegistryAuthorize(Role.AlgemeenBeheerder)] heeft
-  // Dit endpoint vereist het custom JWT scheme + AlgemeenBeheerder rol — beide ontbreken
+  // Roep een admin endpoint aan dat [OrganisationRegistryAuthorize(Role.AlgemeenBeheerder, Role.Developer)] heeft.
   const forbiddenUrl = `${config.apiBaseUrl}/events`
+  const bearerToken = session.exchangedToken ?? session.accessToken
+  const tokenSource = session.exchangedToken ? 'exchanged (RFC 8693)' : 'direct Keycloak access token (exchange mislukt)'
 
   let status = 0
   let statusText = ''
@@ -30,7 +27,7 @@ export default defineEventHandler(async (event) => {
     await $fetch(forbiddenUrl, {
       method: 'GET',
       headers: {
-        Authorization: `Bearer ${session.accessToken}`,
+        Authorization: `Bearer ${bearerToken}`,
         Accept: 'application/json',
       },
     })
@@ -54,7 +51,7 @@ export default defineEventHandler(async (event) => {
     request: {
       method: 'GET',
       url: forbiddenUrl,
-      authScheme: 'Bearer (Keycloak access token, server-side)',
+      authScheme: `Bearer (${tokenSource}, server-side)`,
     },
   }
 })

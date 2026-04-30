@@ -41,7 +41,7 @@ payload = {
     "vo_id": os.environ["JWT_ACM_ID"],
     "given_name": "Algemeenbeheerder",
     "family_name": "Persona",
-    "http://schemas.microsoft.com/ws/2008/06/identity/claims/role": "algemeenBeheerder",
+    "http://schemas.microsoft.com/ws/2008/06/identity/claims/role": "algemeenbeheerder",
 }
 
 header_segment = b64url(json.dumps(header, separators=(",", ":")).encode("utf-8"))
@@ -77,6 +77,7 @@ token = os.environ["AUTH_TOKEN"]
 headers = {
     "Accept": "application/json",
     "Authorization": f"Bearer {token}",
+    "x-pagination": "none",
 }
 
 def get_json(path: str):
@@ -88,8 +89,17 @@ for route in ("/v1/people", "/v1/buildings", "/v1/functiontypes", "/v1/capacitie
     if not get_json(route):
         sys.exit(1)
 
-parent_organisation_id = "4e83f3ff-4154-4719-833c-d1a8c77568c0"
-child_organisation_id = "24fe3a2f-f5d0-4895-acac-3b1918ca1ec7"
+organisations = get_json("/v1/organisations")
+parent_organisation_id = next(
+    organisation["id"]
+    for organisation in organisations
+    if organisation["ovoNumber"] == "OVO000001"
+)
+child_organisation_id = next(
+    organisation["id"]
+    for organisation in organisations
+    if organisation["parentOrganisationId"] == parent_organisation_id
+)
 
 if not get_json(f"/v1/organisations/{parent_organisation_id}"):
     sys.exit(1)
