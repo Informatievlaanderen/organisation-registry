@@ -4,151 +4,108 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using FluentAssertions;
-using IdentityModel.Client;
-using IdentityModel;
 using Tests.Shared;
 using Xunit;
 
 /// <summary>
-/// Integration tests for OAuth2 configuration scenarios including PKCE flows and client types.
-/// Tests Track C: Public client PKCE-only OAuth2 flow support.
+/// Integration tests for the Nuxt BFF authorization-code + PKCE entry point.
 /// </summary>
 [Collection(ApiTestsCollection.Name)]
-public class OAuth2ConfigurationTests
+public class OAuth2ConfigurationTests : IDisposable
 {
-    private readonly ApiFixture _apiFixture;
+    private const string NuxtBffBaseUrl = "http://app.localhost:9080";
+    private const string KeycloakAuthorizationPath = "/realms/wegwijs/protocol/openid-connect/auth";
+
+    private readonly HttpClient _httpClient;
 
     public OAuth2ConfigurationTests(ApiFixture apiFixture)
     {
-        _apiFixture = apiFixture;
-    }
-
-    // ========================================================================
-    // Track C: Public Client PKCE-Only Flow Tests
-    // ========================================================================
-
-    [EnvVarIgnoreFact]
-    public async Task PublicClientAuthentication_WithPKCEOnly_WorksWithoutClientSecret()
-    {
-        // Test that API accepts Keycloak tokens issued for the local UI client scope set.
-        
-        var organisationId = Guid.NewGuid();
-        await _apiFixture.Create.Organisation(organisationId, "PKCE Test Organization");
-
-        var uiScopedToken = await GetConfidentialClientAccessToken(ApiFixture.Test.Client, ApiFixture.Test.Scope);
-        var client = CreateClientWithTokenExchange(uiScopedToken);
-
-        var response = await GetOrganisationDetails(client, organisationId);
-
-        response.StatusCode.Should().NotBe(HttpStatusCode.Unauthorized,
-            "Public client PKCE-only tokens should be accepted by TokenExchange authentication");
-        
-        response.StatusCode.Should().BeOneOf(HttpStatusCode.OK, HttpStatusCode.Forbidden);
+        _ = apiFixture;
+        _httpClient = new HttpClient(new HttpClientHandler { AllowAutoRedirect = false });
     }
 
     [EnvVarIgnoreFact]
-    public async Task ConfidentialClientAuthentication_WithClientSecret_ContinuesToWork()
+    public async Task NuxtBffLogin_RedirectsToKeycloak_WithAuthorizationCodePkceParameters()
     {
-        // Ensure confidential clients (with ClientSecret) still work after PKCE support
-        
-        var organisationId = Guid.NewGuid();
-        await _apiFixture.Create.Organisation(organisationId, "Confidential Client Test Organization");
+        var response = await _httpClient.GetAsync($"{NuxtBffBaseUrl}/api/login");
 
-        var confidentialToken = await GetConfidentialClientAccessToken(ApiFixture.Test.Client, ApiFixture.Test.Scope);
-        var client = CreateClientWithTokenExchange(confidentialToken);
+        response.StatusCode.Should().Be(HttpStatusCode.Redirect);
 
-        var response = await GetOrganisationDetails(client, organisationId);
+        var location = response.Headers.Location;
+        location.Should().NotBeNull();
+        location!.Host.Should().Be("keycloak.localhost");
+        location.Port.Should().Be(9080);
+        location.AbsolutePath.Should().Be(KeycloakAuthorizationPath);
 
-        response.StatusCode.Should().NotBe(HttpStatusCode.Unauthorized,
-            "Confidential client tokens should continue working after PKCE support");
-        
-        response.StatusCode.Should().BeOneOf(HttpStatusCode.OK, HttpStatusCode.Forbidden);
+        var query = ParseQuery(location);
+        query.Should().ContainKey("response_type").WhoseValue.Should().Be("code");
+        query.Should().ContainKey("client_id").WhoseValue.Should().Be("nuxt-bff");
+        query.Should().ContainKey("redirect_uri").WhoseValue.Should().Be($"{NuxtBffBaseUrl}/callback");
+        query.Should().ContainKey("scope").WhoseValue.Should().Be("openid profile vo iv_wegwijs");
+        query.Should().ContainKey("code_challenge_method").WhoseValue.Should().Be("S256");
+        query.Should().ContainKey("prompt").WhoseValue.Should().Be("select_account");
+        query.Should().ContainKey("state").WhoseValue.Should().NotBeNullOrWhiteSpace();
+        query.Should().ContainKey("code_challenge").WhoseValue.Should().NotBeNullOrWhiteSpace();
     }
 
     [EnvVarIgnoreFact]
-    public async Task MixedClientTypes_BothPublicAndConfidential_CanAuthenticate()
+    public async Task NuxtBffAuthorizationRequest_IsAcceptedByKeycloak()
     {
-        var organisationId = Guid.NewGuid();
-        await _apiFixture.Create.Organisation(organisationId, "Mixed Client Types Test Organization");
+        var loginResponse = await _httpClient.GetAsync($"{NuxtBffBaseUrl}/api/login");
+        var authorizationUrl = loginResponse.Headers.Location;
 
-        var publicToken = await GetConfidentialClientAccessToken(ApiFixture.CJM.Client, ApiFixture.CJM.Scope);
-        var confidentialToken = await GetConfidentialClientAccessToken(ApiFixture.Test.Client, ApiFixture.Test.Scope);
+        authorizationUrl.Should().NotBeNull();
 
-        var publicClient = CreateClientWithTokenExchange(publicToken);
-        var confidentialClient = CreateClientWithTokenExchange(confidentialToken);
+        var response = await _httpClient.GetAsync(authorizationUrl);
 
-        var publicResponse = await GetOrganisationDetails(publicClient, organisationId);
-        var confidentialResponse = await GetOrganisationDetails(confidentialClient, organisationId);
+        response.StatusCode.Should().BeOneOf(
+            HttpStatusCode.OK,
+            HttpStatusCode.Found,
+            HttpStatusCode.SeeOther);
 
-        publicResponse.StatusCode.Should().NotBe(HttpStatusCode.Unauthorized,
-            "Public client should authenticate successfully");
-        
-        confidentialResponse.StatusCode.Should().NotBe(HttpStatusCode.Unauthorized,
-            "Confidential client should authenticate successfully");
+        response.StatusCode.Should().NotBe(HttpStatusCode.BadRequest,
+            "the Nuxt BFF redirect URI, client id and PKCE parameters must match the Keycloak realm configuration");
     }
 
     [EnvVarIgnoreFact]
-    public async Task OAuth2IntrospectionEndpoint_AcceptsBothClientTypes()
+    public async Task NuxtBffEndpoint_IsReachableThroughTiltIngress()
     {
-        // Test that introspection endpoint handles tokens from multiple configured clients.
+        var response = await _httpClient.GetAsync(NuxtBffBaseUrl);
 
-        var publicToken = await GetConfidentialClientAccessToken(ApiFixture.CJM.Client, ApiFixture.CJM.Scope);
-        var confidentialToken = await GetConfidentialClientAccessToken(ApiFixture.Test.Client, ApiFixture.Test.Scope);
-
-        publicToken.Should().NotBeNullOrWhiteSpace("Public client should receive access token");
-        confidentialToken.Should().NotBeNullOrWhiteSpace("Confidential client should receive access token");
-
-        var publicTokenIsJwt = publicToken.Split('.').Length == 3;
-        var confidentialTokenIsJwt = confidentialToken.Split('.').Length == 3;
-
-        publicTokenIsJwt.Should().BeTrue("Public client token should be JWT format");
-        confidentialTokenIsJwt.Should().BeTrue("Confidential client token should be JWT format");
+        response.StatusCode.Should().BeOneOf(HttpStatusCode.OK, HttpStatusCode.Redirect);
+        response.StatusCode.Should().NotBe(HttpStatusCode.ServiceUnavailable);
+        response.StatusCode.Should().NotBe(HttpStatusCode.BadGateway);
     }
 
-    // ========================================================================
-    // Helper Methods
-    // ========================================================================
-
-    private async Task<string> GetConfidentialClientAccessToken(string clientId, string scope)
+    private static IDictionary<string, string> ParseQuery(Uri uri)
     {
-        const string defaultKeycloakAuthority = "http://keycloak.localhost:9080/realms/wegwijs";
+        var query = uri.Query.TrimStart('?');
+        var result = new Dictionary<string, string>(StringComparer.Ordinal);
 
-        var tokenClient = new TokenClient(
-            () => new HttpClient(),
-            new TokenClientOptions
-            {
-                Address = $"{defaultKeycloakAuthority.TrimEnd('/')}/protocol/openid-connect/token",
-                ClientId = clientId,
-                ClientSecret = ApiFixture.GetClientSecret(clientId),
-                Parameters = new Parameters(
-                    new[]
-                    {
-                        new KeyValuePair<string, string>("scope", scope),
-                    }),
-            });
+        foreach (var part in query.Split('&', StringSplitOptions.RemoveEmptyEntries))
+        {
+            var separatorIndex = part.IndexOf('=');
+            var key = separatorIndex >= 0 ? part[..separatorIndex] : part;
+            var value = separatorIndex >= 0 ? part[(separatorIndex + 1)..] : string.Empty;
 
-        var response = await tokenClient.RequestTokenAsync(OidcConstants.GrantTypes.ClientCredentials);
+            result[Uri.UnescapeDataString(key.Replace("+", " "))] =
+                Uri.UnescapeDataString(value.Replace("+", " "));
+        }
 
-        if (response.IsError || string.IsNullOrWhiteSpace(response.AccessToken))
-            throw new InvalidOperationException(
-                $"Could not retrieve confidential client token for '{clientId}' from '{defaultKeycloakAuthority}'. " +
-                $"Error: {response.Error}. Description: {response.ErrorDescription}.");
-
-        return response.AccessToken;
+        return result;
     }
 
-    private HttpClient CreateClientWithTokenExchange(string token)
+    protected virtual void Dispose(bool disposing)
     {
-        var client = new HttpClient { BaseAddress = new Uri(_apiFixture.ApiEndpoint) };
-        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        return client;
+        if (disposing)
+            _httpClient.Dispose();
     }
 
-    private async Task<HttpResponseMessage> GetOrganisationDetails(HttpClient client, Guid organisationId)
+    public void Dispose()
     {
-        return await client.GetAsync($"/v1/organisations/{organisationId}");
+        Dispose(true);
+        GC.SuppressFinalize(this);
     }
 }

@@ -82,8 +82,7 @@ public class OAuth2DiagnosticsTests : IDisposable
     [EnvVarIgnoreFact]
     public async Task OAuth2WellKnownConfiguration_IsAccessible_AndValid()
     {
-        // Test that OpenID Connect discovery document is accessible
-        // Angular UI relies on this for OAuth2 configuration
+        // Test that OpenID Connect discovery document is accessible.
 
         var discoveryUrl = "http://keycloak.localhost:9080/realms/wegwijs/.well-known/openid-configuration";
 
@@ -112,10 +111,10 @@ public class OAuth2DiagnosticsTests : IDisposable
     }
 
     [EnvVarIgnoreFact]
-    public async Task ApiSecurityConfiguration_ExposesCorrectOAuth2Settings()
+    public async Task ApiSecurityConfiguration_ExposesLocalSpaOAuth2Settings()
     {
         // Test that API security configuration returns correct OAuth2 endpoints
-        // UI retrieves these to configure OAuth2 client
+        // for the local SPA client. Nuxt BFF has its own server-side configuration.
 
         var securityConfigUrl = $"{_apiFixture.ApiEndpoint}/v1/security/info";
 
@@ -153,8 +152,8 @@ public class OAuth2DiagnosticsTests : IDisposable
 
         var authorizationUrl = BuildAuthorizationUrl(
             authority: "http://keycloak.localhost:9080/realms/wegwijs",
-            clientId: "organisation-registry-local-dev",
-            redirectUri: "http://ui.localhost:9080/oic",
+            clientId: "nuxt-bff",
+            redirectUri: "http://app.localhost:9080/callback",
             state: "test_state_" + Guid.NewGuid().ToString("N")[..8],
             scopes: "openid profile vo iv_wegwijs"
         );
@@ -171,7 +170,7 @@ public class OAuth2DiagnosticsTests : IDisposable
             "Authorization request parameters should be valid");
         
         response.StatusCode.Should().NotBe(HttpStatusCode.Unauthorized,
-            "Public client should be able to initiate authorization flow");
+            "Nuxt BFF should be able to initiate authorization-code flow");
 
         if (response.StatusCode == HttpStatusCode.OK)
         {
@@ -181,16 +180,16 @@ public class OAuth2DiagnosticsTests : IDisposable
     }
 
     [EnvVarIgnoreFact]
-    public async Task UIProxyConfiguration_AllowsOAuth2Callbacks()
+    public async Task NuxtBffIngress_AllowsOAuth2Callbacks()
     {
-        // Test that UI nginx proxy correctly handles OAuth2 callback URLs
+        // Test that Nuxt BFF ingress correctly handles OAuth2 callback URLs
         // This is where "login does nothing" often fails due to routing issues
 
         var callbackUrls = new[]
         {
-            "http://ui.localhost:9080/oic?code=test_code&state=test_state",
-            "http://ui.localhost:9080/oic/callback?code=test_code&state=test_state",
-            "http://ui.localhost:9080/auth/callback?code=test_code&state=test_state"
+            "http://app.localhost:9080/callback",
+            "http://app.localhost:9080/callback?code=test_code&state=invalid-state",
+            "http://app.localhost:9080/callback?error=access_denied&error_description=User+denied+access&state=test_state"
         };
 
         foreach (var callbackUrl in callbackUrls)
@@ -198,7 +197,7 @@ public class OAuth2DiagnosticsTests : IDisposable
             var response = await _httpClient.GetAsync(callbackUrl);
 
             response.StatusCode.Should().NotBe(HttpStatusCode.NotFound,
-                $"UI should handle OAuth2 callback URL: {callbackUrl}");
+                $"Nuxt BFF should handle OAuth2 callback URL: {callbackUrl}");
             
             response.StatusCode.Should().NotBe(HttpStatusCode.BadGateway,
                 $"nginx proxy should be configured correctly for: {callbackUrl}");
@@ -212,20 +211,19 @@ public class OAuth2DiagnosticsTests : IDisposable
     }
 
     [EnvVarIgnoreFact]
-    public async Task NetworkConnectivity_BetweenUIAndAPI_IsWorking()
+    public async Task NetworkConnectivity_BetweenAppOriginAndAPI_IsWorking()
     {
-        // Test basic network connectivity from UI domain to API domain
+        // Test basic network connectivity from app domain to API domain
         // Network issues can cause silent OAuth2 failures
 
         var apiHealthUrl = $"{_apiFixture.ApiEndpoint}/health";
         var uiDomainRequest = new HttpRequestMessage(HttpMethod.Get, apiHealthUrl);
-        uiDomainRequest.Headers.Add("Host", "ui.localhost:9080");
-        uiDomainRequest.Headers.Add("Origin", "http://ui.localhost:9080");
+        uiDomainRequest.Headers.Add("Origin", "http://app.localhost:9080");
 
         var response = await _httpClient.SendAsync(uiDomainRequest);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK,
-            "API should be accessible from UI domain for OAuth2 flows");
+            "API should be accessible from app domain for OAuth2 flows");
     }
 
     [EnvVarIgnoreFact]
@@ -236,7 +234,7 @@ public class OAuth2DiagnosticsTests : IDisposable
 
         var securityConfigUrl = $"{_apiFixture.ApiEndpoint}/v1/security/info";
         var corsRequest = new HttpRequestMessage(HttpMethod.Options, securityConfigUrl);
-        corsRequest.Headers.Add("Origin", "http://ui.localhost:9080");
+        corsRequest.Headers.Add("Origin", "http://app.localhost:9080");
         corsRequest.Headers.Add("Access-Control-Request-Method", "GET");
         corsRequest.Headers.Add("Access-Control-Request-Headers", "Authorization");
 
@@ -272,9 +270,9 @@ public class OAuth2DiagnosticsTests : IDisposable
             "http://keycloak.localhost:9080/realms/wegwijs/protocol/openid-connect/auth");
         authResponse.StatusCode.Should().NotBe(HttpStatusCode.ServiceUnavailable, "Step 3: Authorization endpoint unreachable");
 
-        // Step 4: Test UI callback endpoint accessibility
-        var callbackResponse = await _httpClient.GetAsync("http://ui.localhost:9080/oic");
-        callbackResponse.StatusCode.Should().NotBe(HttpStatusCode.ServiceUnavailable, "Step 4: UI callback endpoint unreachable");
+        // Step 4: Test Nuxt BFF callback endpoint accessibility
+        var callbackResponse = await _httpClient.GetAsync("http://app.localhost:9080/callback");
+        callbackResponse.StatusCode.Should().NotBe(HttpStatusCode.ServiceUnavailable, "Step 4: Nuxt BFF callback endpoint unreachable");
 
         // Step 5: Test token endpoint accessibility
         var tokenResponse = await _httpClient.PostAsync(
