@@ -8,11 +8,81 @@ on:
       - 003-keycloak-demo
 
 jobs:
+  build-application:
+    if: github.repository_owner == 'Informatievlaanderen'
+    name: Build front and backend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Delete huge unnecessary tools folder
+        run: rm -rf /opt/hostedtoolcache
+
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Cache NPM
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-npm
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+
+      - name: Cache Paket
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-paket
+        with:
+          path: packages
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('paket.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+
+      - name: Setup .NET Core
+        uses: ./.github/actions/setup-dotnet
+        with:
+          version: ${{ secrets.VBR_DOTNET_VERSION }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.x'
+
+      - name: Install NPM dependencies
+        shell: bash
+        run: npm install --legacy-peer-deps
+
+      - name: Install Python dependencies
+        shell: bash
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests markdown argparse
+
+      - name: Build backend
+        shell: bash
+        run: ./build.sh Build_Solution
+
+      - name: Build Angular site
+        shell: bash
+        run: ./build.sh Site_Build
+
+      - name: Build Vue site
+        shell: bash
+        run: ./build.sh Vue_Build
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
   build:
     if: github.repository_owner == 'Informatievlaanderen'
     name: Run Tests
     runs-on: ubuntu-latest
     timeout-minutes: 75
+    needs: build-application
 
     strategy:
       fail-fast: false
