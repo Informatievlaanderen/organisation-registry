@@ -77,6 +77,8 @@ jobs:
         shell: bash
         working-directory: src/OrganisationRegistry.Vue2
         run: npm install --legacy-peer-deps
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Build Vue site
         shell: bash
