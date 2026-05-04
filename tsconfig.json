@@ -30,6 +30,7 @@
     "node_modules",
     "dist",
     "packages",
+    "demo/nuxt-bff",
     "src/OrganisationRegistry.Vue",
     "src/OrganisationRegistry.Vue2"
   ],
