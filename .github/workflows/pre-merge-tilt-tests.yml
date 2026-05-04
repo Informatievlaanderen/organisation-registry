@@ -8,11 +8,23 @@ on:
       - 003-keycloak-demo
 
 jobs:
-  deploy-and-test:
+  build:
     if: github.repository_owner == 'Informatievlaanderen'
-    name: Deploy Tilt stack and run tests
+    name: Run Tests
     runs-on: ubuntu-latest
     timeout-minutes: 75
+
+    strategy:
+      fail-fast: false
+      matrix:
+        projects:
+          [
+            "test/OrganisationRegistry.Api.IntegrationTests",
+            "test/OrganisationRegistry.ElasticSearch.Tests",
+            "test/OrganisationRegistry.KboMutations.UnitTests",
+            "test/OrganisationRegistry.SqlServer.IntegrationTests",
+            "test/OrganisationRegistry.UnitTests"
+          ]
 
     steps:
       - name: Delete huge unnecessary tools folder
@@ -50,13 +62,13 @@ jobs:
           127.0.0.1 ui.localhost
           EOF
 
-      - name: Deploy Tilt stack and run tests
+      - name: Run Pre-merge Tilt Tests
         shell: bash
         env:
           ElasticSearch__ReadConnectionString: http://opensearch.localhost:9080/
           ElasticSearch__WriteConnectionString: http://opensearch.localhost:9080/
           TIMEOUT_SECONDS: 300
-        run: ./scripts/run-tilt-premerge-tests.sh
+        run: ./scripts/run-tilt-premerge-tests.sh "${{ matrix.projects }}"
 
       - name: Dump Tilt diagnostics
         if: failure()

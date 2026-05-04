@@ -41,13 +41,17 @@ KUBECONFIG="${KUBECONFIG_FILE}" tilt ci --timeout="${TILT_CI_TIMEOUT}" 2>&1 | te
 
 TIMEOUT_SECONDS="${TIMEOUT_SECONDS}" ./scripts/wait-for-tilt-api-integration-tests.sh
 
-test_projects=(
-  "test/OrganisationRegistry.UnitTests/OrganisationRegistry.UnitTests.csproj"
-  "test/OrganisationRegistry.KboMutations.UnitTests/OrganisationRegistry.KboMutations.UnitTests.csproj"
-  "test/OrganisationRegistry.SqlServer.IntegrationTests/OrganisationRegistry.SqlServer.IntegrationTests.csproj"
-  "test/OrganisationRegistry.ElasticSearch.Tests/OrganisationRegistry.ElasticSearch.Tests.csproj"
-  "test/OrganisationRegistry.Api.IntegrationTests/OrganisationRegistry.Api.IntegrationTests.csproj"
-)
+if [ "$#" -gt 0 ]; then
+  test_projects=("$@")
+else
+  test_projects=(
+    "test/OrganisationRegistry.Api.IntegrationTests"
+    "test/OrganisationRegistry.ElasticSearch.Tests"
+    "test/OrganisationRegistry.KboMutations.UnitTests"
+    "test/OrganisationRegistry.SqlServer.IntegrationTests"
+    "test/OrganisationRegistry.UnitTests"
+  )
+fi
 
 for test_project in "${test_projects[@]}"; do
   ElasticSearch__ReadConnectionString="${ElasticSearch__ReadConnectionString:-http://opensearch.localhost:9080/}" \
