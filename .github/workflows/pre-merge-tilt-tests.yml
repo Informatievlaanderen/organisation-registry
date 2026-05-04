@@ -1,0 +1,74 @@
+name: Pre-merge Tilt
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches:
+      - main
+      - 003-keycloak-demo
+
+jobs:
+  deploy-and-test:
+    if: github.repository_owner == 'Informatievlaanderen'
+    name: Deploy Tilt stack and run tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+
+    steps:
+      - name: Delete huge unnecessary tools folder
+        run: rm -rf /opt/hostedtoolcache
+
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup .NET Core
+        uses: ./.github/actions/setup-dotnet
+        with:
+          version: ${{ secrets.VBR_DOTNET_VERSION }}
+
+      - name: Install k3d and Tilt
+        shell: bash
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | TAG=v5.7.5 bash
+          curl -fsSL https://github.com/tilt-dev/tilt/releases/download/v0.37.1/tilt.0.37.1.linux.x86_64.tar.gz -o tilt.tar.gz
+          sudo tar -xzf tilt.tar.gz -C /usr/local/bin tilt
+          k3d version
+          tilt version
+
+      - name: Configure local demo hostnames and OpenSearch sysctl
+        shell: bash
+        run: |
+          sudo sysctl -w vm.max_map_count=262144
+          sudo tee -a /etc/hosts >/dev/null <<'EOF'
+          127.0.0.1 api.localhost
+          127.0.0.1 app.localhost
+          127.0.0.1 keycloak.localhost
+          127.0.0.1 m2m.localhost
+          127.0.0.1 mock.localhost
+          127.0.0.1 opensearch.localhost
+          127.0.0.1 seq.localhost
+          127.0.0.1 ui.localhost
+          EOF
+
+      - name: Deploy Tilt stack and run tests
+        shell: bash
+        env:
+          ElasticSearch__ReadConnectionString: http://opensearch.localhost:9080/
+          ElasticSearch__WriteConnectionString: http://opensearch.localhost:9080/
+          TIMEOUT_SECONDS: 300
+        run: ./scripts/run-tilt-premerge-tests.sh
+
+      - name: Dump Tilt diagnostics
+        if: failure()
+        shell: bash
+        run: |
+          tail -n 500 tilt.log || true
+          KUBECONFIG=.kubeconfig kubectl get pods -n wegwijs-demo -o wide || true
+          KUBECONFIG=.kubeconfig kubectl get events -n wegwijs-demo --sort-by=.lastTimestamp || true
+          KUBECONFIG=.kubeconfig kubectl logs -n wegwijs-demo deploy/api --tail=500 || true
+
+      - name: Stop Tilt stack
+        if: always()
+        shell: bash
+        run: |
+          k3d cluster delete wegwijs-dev || true

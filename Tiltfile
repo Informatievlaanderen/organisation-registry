@@ -52,9 +52,17 @@ local_resource(
 # Pseudo-resource to track namespace creation
 local_resource(
     'namespace',
-    'KUBECONFIG=.kubeconfig kubectl wait --for=jsonpath={.status.phase}=Active namespace/wegwijs-demo --timeout=60s',
+    'KUBECONFIG=.kubeconfig kubectl apply -f demo/k8s/namespace.yaml && KUBECONFIG=.kubeconfig kubectl wait --for=jsonpath={.status.phase}=Active namespace/wegwijs-demo --timeout=60s',
     labels=['setup'],
     resource_deps=['kubeconfig'],
+)
+
+local_resource(
+    'api-configuration',
+    './scripts/seed-tilt-api-configuration.sh',
+    deps=['scripts/seed-tilt-api-configuration.sh'],
+    labels=['setup'],
+    resource_deps=['api'],
 )
 
 # =============================================================================
@@ -213,21 +221,21 @@ k8s_resource('api',
 
 k8s_resource('ui',
     labels=['applications'],
-    resource_deps=['api', 'keycloak'],
+    resource_deps=['api-configuration', 'keycloak'],
     links=[link('http://ui.localhost:9080', 'Angular UI')])
 
 k8s_resource('piavo-import',
     labels=['setup'],
-    resource_deps=['api'])
+    resource_deps=['api-configuration'])
 
 k8s_resource('m2m-demo',
     labels=['demo'],
-    resource_deps=['api', 'keycloak'],
+    resource_deps=['api-configuration', 'keycloak'],
     links=[link('http://m2m.localhost:9080', 'M2M Demo')])
 
 k8s_resource('nuxt-bff',
     labels=['demo'],
-    resource_deps=['api', 'keycloak'],
+    resource_deps=['api-configuration', 'keycloak'],
     links=[link('http://app.localhost:9080', 'Nuxt BFF')])
 
 k8s_resource('keycloak',
