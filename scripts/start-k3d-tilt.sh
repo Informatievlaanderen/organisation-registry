@@ -53,6 +53,11 @@ main() {
     log "Merging kubeconfig into ~/.kube/config..."
     k3d kubeconfig merge "$CLUSTER_NAME" --kubeconfig-merge-default 2>/dev/null || true
 
+    if [[ "${START_TILT:-true}" == "false" ]]; then
+        log "Skipping Tilt start."
+        return
+    fi
+
     log "Starting Tilt..."
     KUBECONFIG="$KUBECONFIG_FILE" tilt up
 }
