@@ -91,7 +91,6 @@ jobs:
     name: Run Tests
     runs-on: ubuntu-latest
     timeout-minutes: 75
-    needs: [build-backend, build-site]
 
     strategy:
       fail-fast: false
