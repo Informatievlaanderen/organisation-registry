@@ -65,6 +65,11 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
 
+      - name: Setup .NET Core
+        uses: ./.github/actions/setup-dotnet
+        with:
+          version: ${{ secrets.VBR_DOTNET_VERSION }}
+
       - name: Set up Python
         uses: actions/setup-python@v3
         with:
@@ -96,6 +101,7 @@ jobs:
     name: Run Tests
     runs-on: ubuntu-latest
     timeout-minutes: 75
+    needs: [build-backend, build-site]
 
     strategy:
       fail-fast: false
@@ -167,3 +173,41 @@ jobs:
         shell: bash
         run: |
           k3d cluster delete wegwijs-dev || true
+
+  notify-success:
+    if: ${{ success() }}
+    name: Notify Slack of Success
+    runs-on: ubuntu-latest
+
+    needs: [build-backend, build-site, build]
+
+    steps:
+      - name: Post to Slack
+        id: slack
+        uses: slackapi/slack-github-action@v1.21.0
+        with:
+          channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
+          slack-message: ":white_check_mark: Tilt pre-merge checks are ready:\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+
+  notify:
+    if: ${{ failure() }}
+    name: Notify Slack of Failure
+    runs-on: ubuntu-latest
+
+    needs: [build-backend, build-site, build]
+
+    steps:
+      - name: Post to Slack
+        id: slack
+        uses: slackapi/slack-github-action@v1.21.0
+        with:
+          channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
+          slack-message: ":x: Tilt pre-merge checks failed: \n
+          ${{format('{0}: {1}', 'build-backend', needs.build-backend.result) }}\n
+          ${{format('{0}: {1}', 'build-site', needs.build-site.result) }}\n
+          ${{format('{0}: {1}', 'build', needs.build.result) }}\n
+          ${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
