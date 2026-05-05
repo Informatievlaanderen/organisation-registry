@@ -1,3 +1,30 @@
+# [1.326.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.325.0...v1.326.0) (2026-05-05)
+
+
+### Bug Fixes
+
+* align api image startup script paths ([bc45a9d](https://github.com/informatievlaanderen/organisation-registry/commit/bc45a9d2822d27a1a309f22880d90d044ed66401))
+* include client_id in OIDC logout request ([ee3d452](https://github.com/informatievlaanderen/organisation-registry/commit/ee3d452c9b046f379bf16e3e10c5610cf332d7ca))
+* or-3080 add authentication schemes to backoffice policy ([7cec078](https://github.com/informatievlaanderen/organisation-registry/commit/7cec0784ae16b6266b34255943fe0f19d525a036))
+* or-3080 demo app & integration tests updated to prod behaviour ([e25d7ee](https://github.com/informatievlaanderen/organisation-registry/commit/e25d7ee2c23837c02f308a68f88ae6ae3635b769))
+* or-3080 exclude Nuxt demo from Angular TypeScript build ([b06278c](https://github.com/informatievlaanderen/organisation-registry/commit/b06278cd1139854f492c732a0c6ab58a1f8c7f8c))
+* or-3080 stabilize external token auth demo and API integration tests ([480a25d](https://github.com/informatievlaanderen/organisation-registry/commit/480a25d25f152d6dda3669140b9fa6e2d5486ae3))
+* or-3080 update token exchange client secret ([c519a0a](https://github.com/informatievlaanderen/organisation-registry/commit/c519a0a8a74647917c9bf94adb55907d238e8385))
+* or-3080 use correct client ids ([9e0fab6](https://github.com/informatievlaanderen/organisation-registry/commit/9e0fab6c6b24fe800045715fb6df44211cae3fdb))
+* prevent OAuth2 URL encoding corruption in Angular UI ([8883045](https://github.com/informatievlaanderen/organisation-registry/commit/888304507921dffcdc4f115327603505b5a6487c))
+* repair local OIDC login and demo auth flow ([701f332](https://github.com/informatievlaanderen/organisation-registry/commit/701f332fbac7c7ae69cb8e765bf454c0b1216a5f))
+* rights in keycloack ([9eb7b70](https://github.com/informatievlaanderen/organisation-registry/commit/9eb7b70f77079d708b668cd2c26f51093879b035))
+* stabilize API integration tests for Tilt Keycloak setup ([3cfd6d9](https://github.com/informatievlaanderen/organisation-registry/commit/3cfd6d9493995d87990e2d4e83d7a0f1ef27b617))
+* support OAuth2 public clients in API configuration ([8f94884](https://github.com/informatievlaanderen/organisation-registry/commit/8f948847ab52281c4df2fc5723a35e1c85a6482c))
+* update OAuth2 client configurations across all environments ([4d70e63](https://github.com/informatievlaanderen/organisation-registry/commit/4d70e6373529c4ad44e6300a17da3276e137ed3c))
+
+
+### Features
+
+* add external token auth specification and contracts ([a5d2949](https://github.com/informatievlaanderen/organisation-registry/commit/a5d2949be0d65ace74616578f29b7f06cdc8d380))
+* implement OAuth2 introspection authentication with complete Tilt infrastructure ([58c4f1b](https://github.com/informatievlaanderen/organisation-registry/commit/58c4f1befd276f78eb5e978bccd8cb19478d23ba))
+* or-3080 new git workflow with tilt ([2b7bfab](https://github.com/informatievlaanderen/organisation-registry/commit/2b7bfabbfd6601ceec3baedb9225fbacf758650b))
+
 # [1.325.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.324.2...v1.325.0) (2026-03-19)
 
 
