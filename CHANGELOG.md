@@ -1,3 +1,10 @@
+# [1.327.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.326.0...v1.327.0) (2026-05-06)
+
+
+### Features
+
+* add docs for k3d tilt ([e97e5c5](https://github.com/informatievlaanderen/organisation-registry/commit/e97e5c544af7b28980d98fe6b45053166c5a1e73))
+
 # [1.326.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.325.0...v1.326.0) (2026-05-05)
 
 
