@@ -43,7 +43,7 @@ Organisation Registry integrates with a number of external systems:
 
 To facilitate development, these systems can be run on your environment with Docker Compose:
 ```
-docker compose up --build
+./scripts/start-k3d-tilt.sh
 ```
 
 #### To set up identity server settings
