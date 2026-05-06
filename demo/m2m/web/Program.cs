@@ -23,12 +23,12 @@ var apiBaseUrl            = RequireEnv("API_BASE_URL").TrimEnd('/');
 string? storedAccessToken  = null;
 string? storedOrganisationId = null;
 
-app.MapGet("/", () => Results.Content($$"""
+app.MapGet("/", () => Results.Content(@"
 <!DOCTYPE html>
-<html lang="nl">
+<html lang=""nl"">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset=""UTF-8"" />
+  <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"" />
   <title>M2M Demo — Organisation Registry</title>
   <style>
     body { font-family: sans-serif; max-width: 860px; margin: 40px auto; padding: 0 20px; }
@@ -59,29 +59,29 @@ app.MapGet("/", () => Results.Content($$"""
   <h1>Machine-to-Machine Demo — Organisation Registry</h1>
   <p>
     Demonstreert de Client Credentials flow via Keycloak.<br />
-    Client: <strong>{{cjmClientId}}</strong> — heeft scope <code>dv_organisatieregister_cjmbeheerder</code><br />
+    Client: <strong>" + System.Net.WebUtility.HtmlEncode(cjmClientId) + @"</strong> — heeft scope <code>dv_organisatieregister_cjmbeheerder</code><br />
     <em>Allowed</em>: <code>POST /edit/organisations/{id}/contacts</code> (vereist cjmbeheerder)<br />
     <em>Forbidden</em>: <code>POST /edit/organisations/{id}/keys</code> met Orafin key type (vereist orafinbeheerder — cjm heeft die scope niet)
   </p>
-  <div class="buttons">
-    <button id="btn-auth"      onclick="doAction('/demo/authenticate')">Authenticate</button>
-    <button id="btn-allowed"   onclick="doAction('/demo/allowed')">Allowed call</button>
-    <button id="btn-forbidden" onclick="doAction('/demo/forbidden')">Forbidden call</button>
+  <div class=""buttons"">
+    <button id=""btn-auth""      onclick=""doAction('/demo/authenticate')"">Authenticate</button>
+    <button id=""btn-allowed""   onclick=""doAction('/demo/allowed')"">Allowed call</button>
+    <button id=""btn-forbidden"" onclick=""doAction('/demo/forbidden')"">Forbidden call</button>
   </div>
 
-  <div class="panel" id="token-panel">
-    <div class="panel-label">Access token</div>
-    <pre id="token-display"></pre>
+  <div class=""panel"" id=""token-panel"">
+    <div class=""panel-label"">Access token</div>
+    <pre id=""token-display""></pre>
   </div>
 
-  <div class="panel" style="margin-top:16px">
-    <div class="panel-label">Request</div>
-    <pre id="request-display">(nog geen actie)</pre>
+  <div class=""panel"" style=""margin-top:16px"">
+    <div class=""panel-label"">Request</div>
+    <pre id=""request-display"">(nog geen actie)</pre>
   </div>
 
-  <div class="panel" style="margin-top:16px">
-    <div class="panel-label">Response</div>
-    <pre id="result">(nog geen actie)</pre>
+  <div class=""panel"" style=""margin-top:16px"">
+    <div class=""panel-label"">Response</div>
+    <pre id=""result"">(nog geen actie)</pre>
   </div>
 
   <script>
@@ -119,7 +119,7 @@ app.MapGet("/", () => Results.Content($$"""
   </script>
 </body>
 </html>
-""", "text/html"));
+", "text/html"));
 
 app.MapPost("/demo/authenticate", async () =>
 {

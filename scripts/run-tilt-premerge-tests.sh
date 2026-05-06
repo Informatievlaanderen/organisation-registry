@@ -32,10 +32,10 @@ KUBECONFIG="${KUBECONFIG_FILE}" kubectl wait \
   crd/ingressroutes.traefik.io \
   --timeout=2s
 
-KUBECONFIG="${KUBECONFIG_FILE}" kubectl apply -f demo/k8s/namespace.yaml
-KUBECONFIG="${KUBECONFIG_FILE}" kubectl apply -f demo/k8s/secrets.yaml
-KUBECONFIG="${KUBECONFIG_FILE}" kubectl apply -f demo/k8s/otel-collector.yaml
-KUBECONFIG="${KUBECONFIG_FILE}" kubectl apply -f demo/k8s/ingress.yaml
+KUBECONFIG="${KUBECONFIG_FILE}" kubectl apply -f local-dev/k8s/namespace.yaml
+KUBECONFIG="${KUBECONFIG_FILE}" kubectl apply -f local-dev/k8s/secrets.yaml
+KUBECONFIG="${KUBECONFIG_FILE}" kubectl apply -f local-dev/k8s/otel-collector.yaml
+KUBECONFIG="${KUBECONFIG_FILE}" kubectl apply -f local-dev/k8s/ingress.yaml
 
 KUBECONFIG="${KUBECONFIG_FILE}" tilt ci --timeout="${TILT_CI_TIMEOUT}" 2>&1 | tee "${TILT_LOG_FILE}"
 
