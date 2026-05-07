@@ -1,3 +1,10 @@
+# [1.328.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.327.0...v1.328.0) (2026-05-07)
+
+
+### Features
+
+* or-3060 add new tst deployment ([3e25776](https://github.com/informatievlaanderen/organisation-registry/commit/3e2577607810f6ab357718ce057b3994600146a2))
+
 # [1.327.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.326.0...v1.327.0) (2026-05-06)
 
 
