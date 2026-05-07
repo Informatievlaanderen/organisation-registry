@@ -27,7 +27,7 @@ var realm         = Env("KEYCLOAK_REALM",  "organisatieregister");
 var orafinClient  = Env("ORAFIN_CLIENT_ID",     "orafinClient");
 var orafinSecret  = Env("ORAFIN_CLIENT_SECRET",  "secret");
 
-// Vaste GUIDs — zelfde als in demos/seed/Program.cs (Constants)
+// Vaste GUIDs — zelfde als in demo/m2m/seed/Program.cs (Constants)
 var orafinOrgId     = "a7e93f0e-000e-0000-0000-000000000001";
 var orafinKeyTypeId = "1e3611a7-7914-411a-a0c9-84fcd6218e67";
 var orafinOrgKeyId  = "a7e93f0e-000e-0000-0000-000000000002";

@@ -3,7 +3,7 @@
 #
 # Prerequisites:
 #   k3d cluster:   k3d cluster create --config k3d.config.yaml
-#   Traefik:       helm upgrade --install traefik traefik/traefik -f demo/helm/traefik-values.yaml -n traefik --create-namespace
+#   Traefik:       helm upgrade --install traefik traefik/traefik -f local-dev/helm/traefik-values.yaml -n traefik --create-namespace
 
 allow_k8s_contexts('k3d-wegwijs-dev')
 
@@ -11,8 +11,8 @@ allow_k8s_contexts('k3d-wegwijs-dev')
 # Namespace & Secrets
 # =============================================================================
 
-k8s_yaml('demo/k8s/namespace.yaml')
-k8s_yaml('demo/k8s/secrets.yaml')
+k8s_yaml('local-dev/k8s/namespace.yaml')
+k8s_yaml('local-dev/k8s/secrets.yaml')
 
 # =============================================================================
 # Keycloak realm ConfigMap — built from keycloak/realm-export.json
@@ -52,7 +52,7 @@ local_resource(
 # Pseudo-resource to track namespace creation
 local_resource(
     'namespace',
-    'KUBECONFIG=.kubeconfig kubectl apply -f demo/k8s/namespace.yaml && KUBECONFIG=.kubeconfig kubectl wait --for=jsonpath={.status.phase}=Active namespace/wegwijs-demo --timeout=60s',
+    'KUBECONFIG=.kubeconfig kubectl apply -f local-dev/k8s/namespace.yaml && KUBECONFIG=.kubeconfig kubectl wait --for=jsonpath={.status.phase}=Active namespace/wegwijs-demo --timeout=60s',
     labels=['setup'],
     resource_deps=['kubeconfig'],
 )
@@ -69,12 +69,12 @@ local_resource(
 # Infrastructure
 # =============================================================================
 
-k8s_yaml('demo/k8s/mssql.yaml')
-k8s_yaml('demo/k8s/opensearch.yaml')
-k8s_yaml('demo/k8s/keycloak.yaml')
-k8s_yaml('demo/k8s/wiremock.yaml')
-k8s_yaml('demo/k8s/seq.yaml')
-k8s_yaml('demo/k8s/otel-collector.yaml')
+k8s_yaml('local-dev/k8s/mssql.yaml')
+k8s_yaml('local-dev/k8s/opensearch.yaml')
+k8s_yaml('local-dev/k8s/keycloak.yaml')
+k8s_yaml('local-dev/k8s/wiremock.yaml')
+k8s_yaml('local-dev/k8s/seq.yaml')
+k8s_yaml('local-dev/k8s/otel-collector.yaml')
 
 k8s_resource('mssql',
     port_forwards='21433:1433',
@@ -192,8 +192,8 @@ docker_build(
 # M2M demo
 custom_build(
     'k3d-wegwijs-registry:5051/wegwijs-m2m:local',
-    'docker build -t $EXPECTED_REF demo/m2m && docker push $EXPECTED_REF',
-    deps=['demo/m2m/'],
+    'docker build -t $EXPECTED_REF demo/m2m/web && docker push $EXPECTED_REF',
+    deps=['demo/m2m/web/'],
 )
 
 # Nuxt BFF
@@ -207,12 +207,12 @@ custom_build(
 # Applications
 # =============================================================================
 
-k8s_yaml('demo/k8s/api.yaml')
-k8s_yaml('demo/k8s/ui.yaml')
-k8s_yaml('demo/k8s/piavo-import.yaml')
-k8s_yaml('demo/k8s/m2m.yaml')
-k8s_yaml('demo/k8s/nuxt-bff.yaml')
-k8s_yaml('demo/k8s/ingress.yaml')
+k8s_yaml('local-dev/k8s/api.yaml')
+k8s_yaml('local-dev/k8s/ui.yaml')
+k8s_yaml('local-dev/k8s/piavo-import.yaml')
+k8s_yaml('local-dev/k8s/m2m.yaml')
+k8s_yaml('local-dev/k8s/nuxt-bff.yaml')
+k8s_yaml('local-dev/k8s/ingress.yaml')
 
 k8s_resource('api',
     labels=['applications'],
