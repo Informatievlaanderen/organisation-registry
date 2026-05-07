@@ -9,38 +9,8 @@ on:
 
 jobs:
   deployment:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        services:
-          [
-            'organisation-api',
-            'organisation-elasticsearch',
-            'organisation-rebuilder',
-            'organisation-ui',
-          ]
-    steps:
-      - name: CD
-        id: awscurl-polling-action
-        env:
-          BUILD_URL: ${{ vars.VBR_AWS_BUILD_API_DEVOPS }}/${{matrix.services}}
-          STATUS_URL: ${{ vars.VBR_AWS_BUILD_STATUS_API_DEVOPS }}/${{matrix.services}}
-        uses: informatievlaanderen/awscurl-polling-action/polling-action@main
-        with:
-          environment: stg
-          version: ${{ github.event.inputs.version }}
-          status-url: $STATUS_URL
-          deploy-url: $BUILD_URL
-          access-key: ${{ secrets.VBR_AWS_ACCESS_KEY_ID_DEVOPS }}
-          secret-key: ${{ secrets.VBR_AWS_SECRET_ACCESS_KEY_DEVOPS }}
-          interval: 2
-          deploy-target: 'agb_ecs_service'
-          domain: 'basisregisters'
-          project: 'basisregisters'
-
-      - name: output
-        shell: bash
-        run: |
-          echo build-uuid: ${{ steps.awscurl-polling-action.outputs.build-uuid }}
-          echo Status: ${{ steps.awscurl-polling-action.outputs.status }}
-          echo ${{ steps.awscurl-polling-action.outputs.final-message }}
+    uses: ./.github/workflows/deploy-environment.yml
+    with:
+      environment: stg
+      version: ${{ github.event.inputs.version }}
+    secrets: inherit
