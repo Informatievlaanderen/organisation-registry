@@ -91,7 +91,19 @@ test/
   OrganisationRegistry.Api.IntegrationTests/  # API integration tests
   OrganisationRegistry.SqlServer.IntegrationTests/  # Database integration tests
   OrganisationRegistry.Tests.Shared/     # Shared test utilities
+demo/
+  m2m/web/                               # Active M2M web demo used by Tilt
+  m2m/console/                           # Console M2M client credentials demo
+  m2m/seed/                              # Seed app for the M2M console demo
+  nuxt-bff/                              # Nuxt BFF demo used by Tilt
+local-dev/
+  k8s/                                   # Kubernetes manifests for local Tilt/k3d development
+  k8s/manual/                            # Preserved manifests not loaded automatically by Tilt
+  helm/                                  # Helm values for local dependencies
 ```
+
+Do not create a new root-level `demos/` folder. Demo applications belong under
+`demo/`; local infrastructure belongs under `local-dev/`.
 
 ## Build & Test
 
@@ -117,7 +129,19 @@ dotnet ef database update --context OrganisationRegistryContext
 nvm use
 npm install
 npm run start:hmr
+
+# Local Kubernetes development
+k3d cluster create --config k3d.config.yaml
+helm upgrade --install traefik traefik/traefik \
+  -f local-dev/helm/traefik-values.yaml \
+  -n traefik --create-namespace
+tilt up
+
+# Premerge Tilt checks
+./scripts/run-tilt-premerge-tests.sh
 ```
+
+Tilt loads Kubernetes manifests from `local-dev/k8s`, not from `demo`.
 
 ## Command and Event Patterns
 
@@ -173,6 +197,15 @@ Validation happens at the InternalRequest level using FluentValidation.
 - Do not introduce new NuGet packages without discussion
 - Always validate commands before sending to domain
 - Respect aggregate boundaries — don't expose internal state
+- Kubernetes and Helm configuration belong under `local-dev`, not under `demo`
+- Demo applications belong under `demo`; do not recreate a root-level `demos/`
+  folder
+- `demo/m2m/seed` supports the M2M console demo; do not treat it as a general
+  local development seed
+- `local-dev/k8s/manual/seed.yaml` is preserved for manual use and is not loaded
+  automatically by Tilt
+- When cleaning up folders, prefer `git mv` and preserve files unless deletion is
+  explicitly requested
 
 ## Testing Patterns
 
@@ -191,6 +224,11 @@ API integration tests should:
 - Test full request/response cycles
 - Verify database state after commands
 - Test authorization rules
+- Put auth regression tests under
+  `test/OrganisationRegistry.Api.IntegrationTests/Security/`
+- For OAuth2/Tilt auth changes, cover the security config endpoint, OIDC
+  discovery, token endpoint, callback route, CORS, and `/v1/security`
+- Tilt/Keycloak-backed integration tests require the local Tilt stack
 
 ## Workflow
 
@@ -210,6 +248,33 @@ When adding new domain functionality:
 The system integrates with ACM/IDM for authentication.
 Use `[OrganisationRegistryAuthorize]` attribute on controllers.
 Security policies are defined in `OrganisationRegistry.Api/Security/`.
+
+Current authentication flows:
+- Backoffice endpoints use `PolicyNames.BackofficeUser`; do not hardcode a
+  single authentication scheme on controllers
+- `PolicyNames.BackofficeUser` accepts both `JwtBearer` and `TokenExchange`
+  authentication
+- Edit API and M2M calls use OAuth2 introspection through
+  `AuthenticationSchemes.EditApi`
+- External user-token introspection uses the separate
+  `AuthenticationSchemes.TokenExchange` scheme
+
+OIDC and PKCE conventions:
+- `OIDCAuth.ClientSecret` is optional because public clients use PKCE without a
+  client secret
+- `/v1/security/exchange` exchanges authorization codes and must support both
+  public PKCE clients and confidential clients
+- Use `InternalAuthorityOverride` for server-side OAuth2 calls from containers
+  when the browser-facing authority is not reachable from inside the cluster
+
+Claims and roles:
+- Use `AcmIdmConstants` and `RoleMapping`; do not duplicate role strings
+- TokenExchange claims must be normalized to `ClaimTypes.GivenName`,
+  `ClaimTypes.Surname`, and `ClaimTypes.Role` before security information is
+  built
+- `iv_wegwijs_rol_3D` contains Wegwijs role data and `vo_id` identifies
+  introspected user tokens
+- Scope values can be space-delimited; do not assume one exact value per claim
 
 ## External Integrations
 

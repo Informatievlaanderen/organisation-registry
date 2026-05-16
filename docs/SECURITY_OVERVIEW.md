@@ -595,7 +595,7 @@ Per april 2026 is de OAuth2 introspection implementatie volledig geïntegreerd m
 **Ondersteuning & Verdere Vragen**:
 - Technische implementatie details: Zie `src/OrganisationRegistry.Api/Security/`
 - Test voorbeelden: Zie `test/OrganisationRegistry.Api.IntegrationTests/Security/`
-- Configuration templates: Zie `demo/k8s/` en `keycloak/realm-export.json`
+- Configuration templates: Zie `local-dev/k8s/` en `keycloak/realm-export.json`
 
 ---
 

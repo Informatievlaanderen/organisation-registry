@@ -1,3 +1,4 @@
+# Manual manifest. This is not loaded by Tilt by default.
 apiVersion: batch/v1
 kind: Job
 metadata:

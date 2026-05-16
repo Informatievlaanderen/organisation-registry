@@ -84,4 +84,3 @@ demo/nuxt-bff/.nuxt/
 demo/nuxt-bff/.output/
 e2e/test-results/.last-run.json
 tilt.log
-.kubeconfig
