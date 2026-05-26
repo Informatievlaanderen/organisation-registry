@@ -1,5 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\packages\Be.Vlaanderen.Basisregisters.Build.Pipeline\Content\Be.Vlaanderen.Basisregisters.Build.Pipeline.Settings.App.props" />
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <PublishReadyToRun>true</PublishReadyToRun>
+    <IsTestProject>false</IsTestProject>
+  </PropertyGroup>
+
 
   <PropertyGroup>
     <NoWarn>8600,8601,8602,8603,8604,8618,8625</NoWarn>
@@ -21,6 +26,12 @@
   <ItemGroup>
     <Compile Include="..\..\SolutionInfo.cs" Link="Properties\SolutionInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Rest.ClientRuntime" Version="2.3.23" />
+    <PackageReference Include="SourceLink.Embed.AllSourceFiles" Version="2.8.3" />
+    <PackageReference Include="SourceLink.Copy.PdbFiles" Version="2.8.3" />
+    <PackageReference Include="IdentityModel" Version="6.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.16" />
+  </ItemGroup>
 
-  <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

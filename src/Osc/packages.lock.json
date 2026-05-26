@@ -25,6 +25,8 @@
           "System.Diagnostics.DiagnosticSource": "5.0.0"
         }
       }
-    }
+    },
+    "net6.0/linux-x64": {},
+    "net6.0/win-x64": {}
   }
 }

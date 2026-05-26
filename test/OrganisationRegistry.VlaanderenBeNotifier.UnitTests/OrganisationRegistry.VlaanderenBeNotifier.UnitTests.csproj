@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\packages\Be.Vlaanderen.Basisregisters.Build.Pipeline\Content\Be.Vlaanderen.Basisregisters.Build.Pipeline.Settings.Test.props" />
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <EnableDefaultContentItems>false</EnableDefaultContentItems>
+  </PropertyGroup>
+
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\OrganisationRegistry.VlaanderenBeNotifier\OrganisationRegistry.VlaanderenBeNotifier.csproj" />
@@ -10,6 +16,25 @@
   <ItemGroup>
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1" />
+    <PackageReference Include="Microsoft.DotNet.InternalAbstractions" Version="1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="6.0.3" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="6.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Serilog" Version="2.10" />
+    <PackageReference Include="Serilog.Extensions.Logging" Version="3.1" />
+    <PackageReference Include="Serilog.Sinks.Literate" Version="3.0" />
+    <PackageReference Include="Serilog.Settings.Configuration" Version="3.3" />
+    <PackageReference Include="Serilog.Enrichers.Thread" Version="3.1" />
+    <PackageReference Include="Serilog.Enrichers.Environment" Version="2.2" />
+    <PackageReference Include="Serilog.Formatting.Compact" Version="1.1" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3" />
+    <PackageReference Include="xunit.categories" Version="2.0.6" />
+    <PackageReference Include="AutoFixture" Version="4.17" />
+    <PackageReference Include="FluentAssertions" Version="6.5.1" />
+    <PackageReference Include="Moq" Version="4.17.2" />
+  </ItemGroup>
 
-  <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

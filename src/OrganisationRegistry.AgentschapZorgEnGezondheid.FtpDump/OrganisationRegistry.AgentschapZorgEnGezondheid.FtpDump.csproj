@@ -1,5 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\packages\Be.Vlaanderen.Basisregisters.Build.Pipeline\Content\Be.Vlaanderen.Basisregisters.Build.Pipeline.Settings.App.props" />
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <PublishReadyToRun>true</PublishReadyToRun>
+    <IsTestProject>false</IsTestProject>
+  </PropertyGroup>
+
 
   <PropertyGroup>
     <NoWarn>8602,8604,8618</NoWarn>
@@ -22,6 +27,25 @@
   <ItemGroup>
     <Compile Include="..\..\SolutionInfo.cs" Link="Properties\SolutionInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="FluentFTP" Version="33.0.3" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="6.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="6.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="6.0" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="6.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0" />
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="7.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Serilog" Version="2.10" />
+    <PackageReference Include="Serilog.Extensions.Logging" Version="3.1" />
+    <PackageReference Include="Serilog.Sinks.Literate" Version="3.0" />
+    <PackageReference Include="Serilog.Settings.Configuration" Version="3.3" />
+    <PackageReference Include="Serilog.Enrichers.Thread" Version="3.1" />
+    <PackageReference Include="Serilog.Enrichers.Environment" Version="2.2" />
+    <PackageReference Include="Serilog.Formatting.Compact" Version="1.1" />
+    <PackageReference Include="SourceLink.Embed.AllSourceFiles" Version="2.8.3" />
+    <PackageReference Include="SourceLink.Copy.PdbFiles" Version="2.8.3" />
+  </ItemGroup>
 
-  <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

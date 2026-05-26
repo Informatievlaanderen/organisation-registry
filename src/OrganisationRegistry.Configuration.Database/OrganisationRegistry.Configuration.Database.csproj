@@ -1,5 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\packages\Be.Vlaanderen.Basisregisters.Build.Pipeline\Content\Be.Vlaanderen.Basisregisters.Build.Pipeline.Settings.Library.props" />
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <IsTestProject>false</IsTestProject>
+  </PropertyGroup>
+
 
   <ItemGroup>
     <ProjectReference Include="..\OrganisationRegistry.Infrastructure\OrganisationRegistry.Infrastructure.csproj" />
@@ -9,6 +13,21 @@
   <ItemGroup>
     <Compile Include="..\..\SolutionInfo.cs" Link="Properties\SolutionInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="System.Reflection.TypeExtensions" Version="4.7" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="6.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.3" />
+    <PackageReference Include="Dapper" Version="2.0.123" />
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="7.2" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.Api" Version="18.0.2" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql" Version="5.0" />
+    <PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="6.0.2" />
+    <PackageReference Include="SourceLink.Embed.AllSourceFiles" Version="2.8.3" />
+    <PackageReference Include="SourceLink.Copy.PdbFiles" Version="2.8.3" />
+  </ItemGroup>
 
-  <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
