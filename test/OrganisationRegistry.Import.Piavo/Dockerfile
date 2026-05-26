@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 COPY .config/dotnet-tools.json ./.config/dotnet-tools.json
@@ -14,7 +14,7 @@ RUN --mount=type=cache,target=/root/.nuget/packages \
     dotnet publish test/OrganisationRegistry.Import.Piavo/OrganisationRegistry.Import.Piavo.csproj \
     -c Release -o /out --no-dependencies --self-contained false -p:UseAppHost=false -p:PublishReadyToRun=false
 
-FROM mcr.microsoft.com/dotnet/runtime:6.0
+FROM mcr.microsoft.com/dotnet/runtime:8.0
 WORKDIR /app
 COPY --from=build /out .
 

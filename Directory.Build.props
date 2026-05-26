@@ -1,12 +1,11 @@
 <Project>
   <PropertyGroup>
     <LangVersion>latest</LangVersion>
-    <TargetFramework Condition="'$(TargetFramework)' == ''">net6.0</TargetFramework>
+    <TargetFramework Condition="'$(TargetFramework)' == ''">net8.0</TargetFramework>
     <TargetLatestRuntimePatch>true</TargetLatestRuntimePatch>
 
     <RuntimeIdentifier Condition="'$(MyRuntimeIdentifier)' != ''">$(MyRuntimeIdentifier)</RuntimeIdentifier>
     <RuntimeIdentifiers>win-x64;linux-x64</RuntimeIdentifiers>
-    <RuntimeFrameworkVersion>6.0.3</RuntimeFrameworkVersion>
     <DisableImplicitFrameworkReferences>false</DisableImplicitFrameworkReferences>
 
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>

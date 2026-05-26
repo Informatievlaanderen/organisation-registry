@@ -43,7 +43,7 @@
     <EmbeddedResource Include="Magda\bugfix-or-2650.json" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
     <PackageReference Include="Microsoft.DotNet.InternalAbstractions" Version="1.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Serilog" Version="2.10" />

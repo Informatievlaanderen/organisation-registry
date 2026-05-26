@@ -15,17 +15,17 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="System.Reflection.TypeExtensions" Version="4.7" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="6.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.3" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.3" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.3" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.3" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.3" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="8.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.19" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.19" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.19" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.19" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.19" />
     <PackageReference Include="Dapper" Version="2.0.123" />
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="7.2" />
     <PackageReference Include="Be.Vlaanderen.Basisregisters.Api" Version="18.0.2" />
     <PackageReference Include="Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql" Version="5.0" />
-    <PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="6.0.2" />
+    <PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="8.0.2" />
     <PackageReference Include="SourceLink.Embed.AllSourceFiles" Version="2.8.3" />
     <PackageReference Include="SourceLink.Copy.PdbFiles" Version="2.8.3" />
   </ItemGroup>
