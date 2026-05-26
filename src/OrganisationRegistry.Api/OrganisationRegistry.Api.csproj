@@ -33,7 +33,6 @@
   <ItemGroup>
     <Content Include="Dockerfile" CopyToOutputDirectory="Always" />
     <Content Include="init.sh" CopyToOutputDirectory="Always" />
-    <Content Include="paket.template" CopyToOutputDirectory="Always" />
     <Content Include="appsettings.json" CopyToOutputDirectory="Always" />
     <Content Include="appsettings.*.json" CopyToOutputDirectory="Always" />
   </ItemGroup>
