@@ -4,6 +4,7 @@ WORKDIR /src
 
 # Kopieer tool manifest en source
 COPY .config/dotnet-tools.json ./.config/dotnet-tools.json
+COPY Directory.Build.props ./
 COPY SolutionInfo.cs ./
 COPY organisationregistry-api.pfx ./
 COPY src/ ./src/

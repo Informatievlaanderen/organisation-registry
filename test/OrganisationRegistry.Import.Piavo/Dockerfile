@@ -3,6 +3,7 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 COPY .config/dotnet-tools.json ./.config/dotnet-tools.json
+COPY Directory.Build.props ./
 COPY *.pfx ./
 COPY SolutionInfo.cs ./
 COPY src/ ./src/
