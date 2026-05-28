@@ -17,10 +17,10 @@
     <Folder Include="Organisation\Regulation\Events" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="Be.Vlaanderen.Basisregisters.AggregateSource" Version="6.0" />
-    <PackageReference Include="SourceLink.Embed.AllSourceFiles" Version="2.8.3" />
-    <PackageReference Include="SourceLink.Copy.PdbFiles" Version="2.8.3" />
+    <PackageReference Include="Newtonsoft.Json" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.AggregateSource" />
+    <PackageReference Include="SourceLink.Embed.AllSourceFiles" />
+    <PackageReference Include="SourceLink.Copy.PdbFiles" />
   </ItemGroup>
 
 </Project>
