@@ -4,6 +4,7 @@ WORKDIR /src
 
 COPY .config/dotnet-tools.json ./.config/dotnet-tools.json
 COPY Directory.Build.props ./
+COPY Directory.Packages.props ./
 COPY *.pfx ./
 COPY SolutionInfo.cs ./
 COPY src/ ./src/
