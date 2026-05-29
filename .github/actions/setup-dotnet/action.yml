@@ -3,7 +3,7 @@ description: Setup .NET Core
 
 inputs:
   version:
-    description: 'Required dotnet version'
+    description: 'Optional dotnet version. Falls back to global.json when omitted.'
     required: false
 
 runs:
