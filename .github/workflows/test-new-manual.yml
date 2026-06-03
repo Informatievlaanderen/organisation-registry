@@ -1,0 +1,16 @@
+name: Manual Staging NEW
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version'
+        required: true
+
+jobs:
+  deployment:
+    uses: ./.github/workflows/deploy-environment.yml
+    with:
+      environment: tst
+      version: ${{ github.event.inputs.version }}
+    secrets: inherit
