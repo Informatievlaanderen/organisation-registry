@@ -8,22 +8,12 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Cache Paket
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-paket
-        with:
-          path: packages
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('paket.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-
       - name: Parse repository name
         run: echo REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//") >> $GITHUB_ENV
         shell: bash
 
       - name: Setup .NET Core
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ secrets.VBR_DOTNET_VERSION }}
 
@@ -71,14 +61,6 @@ jobs:
         shell: bash
         run: |
           ./.sonar/scanner/dotnet-sonarscanner begin /k:"Informatievlaanderen_organisation-registry" /o:"informatievlaanderen" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.dotcover.reportsPaths=dotCover.Output.html
-
-      - name: Paket install
-        shell: bash
-        run: dotnet paket install
-
-      - name: Paket restore
-        shell: bash
-        run: dotnet paket restore
 
       - name: Dotnet restore
         shell: bash
@@ -183,21 +165,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
 
-      - name: Cache Paket
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-paket
-        with:
-          path: packages
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('paket.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-
       - name: Setup Node.js
         uses: actions/setup-node@v3
 
       - name: Setup .NET Core
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ secrets.VBR_DOTNET_VERSION }}
 
@@ -251,21 +223,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
 
-      - name: Cache Paket
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-paket
-        with:
-          path: packages
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('paket.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-
       - name: Setup Node.js
         uses: actions/setup-node@v3
 
       - name: Setup .NET Core
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ secrets.VBR_DOTNET_VERSION }}
 

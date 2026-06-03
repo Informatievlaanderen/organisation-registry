@@ -1,5 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\packages\Be.Vlaanderen.Basisregisters.Build.Pipeline\Content\Be.Vlaanderen.Basisregisters.Build.Pipeline.Settings.App.props" />
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <PublishReadyToRun>true</PublishReadyToRun>
+    <IsTestProject>false</IsTestProject>
+  </PropertyGroup>
+
 
   <ItemGroup>
     <Content Include="appsettings.json" CopyToOutputDirectory="Always" />
@@ -22,20 +27,42 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Update="App.Metrics" Version="4.3.0" />
-    <PackageReference Update="App.Metrics.Abstractions" Version="4.3.0" />
-    <PackageReference Update="App.Metrics.Core" Version="4.3.0" />
-    <PackageReference Update="App.Metrics.AspNetCore.Core" Version="4.3.0" />
-    <PackageReference Update="App.Metrics.AspNetCore.Abstractions" Version="4.3.0" />
-    <PackageReference Update="App.Metrics.AspNetCore.Hosting" Version="4.3.0" />
-    <PackageReference Update="App.Metrics.AspNetCore.Tracking" Version="4.3.0" />
-    <PackageReference Update="App.Metrics.Concurrency" Version="4.3.0" />
-    <PackageReference Update="App.Metrics.Extensions.Configuration" Version="4.3.0" />
-    <PackageReference Update="App.Metrics.Extensions.DependencyInjection" Version="4.3.0" />
-    <PackageReference Update="App.Metrics.Formatters.Ascii" Version="4.3.0" />
-    <PackageReference Update="App.Metrics.Formatters.Json" Version="4.3.0" />
-    <PackageReference Update="App.Metrics.Reporting.Console" Version="4.3.0" />
+    <PackageReference Update="App.Metrics" />
+    <PackageReference Update="App.Metrics.Abstractions" />
+    <PackageReference Update="App.Metrics.Core" />
+    <PackageReference Update="App.Metrics.AspNetCore.Core" />
+    <PackageReference Update="App.Metrics.AspNetCore.Abstractions" />
+    <PackageReference Update="App.Metrics.AspNetCore.Hosting" />
+    <PackageReference Update="App.Metrics.AspNetCore.Tracking" />
+    <PackageReference Update="App.Metrics.Concurrency" />
+    <PackageReference Update="App.Metrics.Extensions.Configuration" />
+    <PackageReference Update="App.Metrics.Extensions.DependencyInjection" />
+    <PackageReference Update="App.Metrics.Formatters.Ascii" />
+    <PackageReference Update="App.Metrics.Formatters.Json" />
+    <PackageReference Update="App.Metrics.Reporting.Console" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="System.Reflection.TypeExtensions" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
+    <PackageReference Include="Microsoft.Data.SqlClient" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
+    <PackageReference Include="Microsoft.Extensions.Logging" />
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" />
+    <PackageReference Include="Newtonsoft.Json" />
+    <PackageReference Include="Serilog" />
+    <PackageReference Include="Serilog.Extensions.Logging" />
+    <PackageReference Include="Serilog.Sinks.Literate" />
+    <PackageReference Include="Serilog.Settings.Configuration" />
+    <PackageReference Include="Serilog.Enrichers.Thread" />
+    <PackageReference Include="Serilog.Enrichers.Environment" />
+    <PackageReference Include="Serilog.Formatting.Compact" />
+    <PackageReference Include="SourceLink.Embed.AllSourceFiles" />
+    <PackageReference Include="SourceLink.Copy.PdbFiles" />
   </ItemGroup>
 
-  <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

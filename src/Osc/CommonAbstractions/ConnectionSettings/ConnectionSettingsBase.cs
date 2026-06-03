@@ -44,7 +44,12 @@ namespace Osc
 	{
 		/// <summary> The default user agent for OSC </summary>
 		public static readonly string DefaultUserAgent =
-			$"opensearch-net/{typeof(IConnectionSettingsValues).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion} ({"OSDescription placeholder"}; {"FrameworkDescription placeholder"}; Osc)";
+			$"opensearch-net/{GetAssemblyInformationalVersion()} ({"OSDescription placeholder"}; {"FrameworkDescription placeholder"}; Osc)";
+
+		private static string GetAssemblyInformationalVersion() =>
+			typeof(IConnectionSettingsValues).Assembly
+				.GetCustomAttribute<AssemblyInformationalVersionAttribute>()
+				?.InformationalVersion ?? "0.0.0";
 
 		/// <summary>
 		/// A delegate used to construct a serializer to serialize CLR types representing documents and other types related to

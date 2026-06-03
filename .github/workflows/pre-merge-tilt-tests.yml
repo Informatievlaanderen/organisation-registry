@@ -20,17 +20,6 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-
-      - name: Cache Paket
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-paket
-        with:
-          path: packages
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('paket.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-
       - name: Setup .NET Core
         uses: ./.github/actions/setup-dotnet
         with:
