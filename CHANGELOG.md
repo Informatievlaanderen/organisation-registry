@@ -1,3 +1,10 @@
+# [1.329.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.328.0...v1.329.0) (2026-06-16)
+
+
+### Features
+
+* log exception info on index creation failure ([2b1c632](https://github.com/informatievlaanderen/organisation-registry/commit/2b1c63218476b87e6e0ff9e38ae70e60fcf0167f))
+
 # [1.328.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.327.0...v1.328.0) (2026-05-07)
 
 
