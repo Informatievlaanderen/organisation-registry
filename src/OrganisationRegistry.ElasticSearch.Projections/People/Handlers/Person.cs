@@ -114,7 +114,7 @@ public class Person : BaseProjection<Person>,
                             .NumberOfReplicas(_elasticSearchOptions.NumberOfReplicas)));
 
             if (!indexResult.IsValid)
-                throw new Exception($"Could not create people index '{indexName}'.");
+                throw new Exception($"Could not create people index '{indexName}': {indexResult.DebugInformation}.");
         }
     }
 }

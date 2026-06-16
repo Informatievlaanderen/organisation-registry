@@ -473,7 +473,7 @@ public class Organisation :
                             .NumberOfReplicas(_elasticSearchOptions.NumberOfReplicas)));
 
             if (!indexResult.IsValid)
-                throw new Exception($"Could not create organisation index '{indexName}'.");
+                throw new Exception($"Could not create organisation index '{indexName}': {indexResult.DebugInformation}.");
         }
     }
 }

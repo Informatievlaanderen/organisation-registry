@@ -108,7 +108,7 @@ public class BodyHandler :
                             .NumberOfReplicas(_elasticSearchOptions.NumberOfReplicas)));
 
             if (!indexResult.IsValid)
-                throw new Exception($"Could not create body index '{indexName}'.");
+                throw new Exception($"Could not create body index '{indexName}': {indexResult.DebugInformation}.");
         }
     }
 
