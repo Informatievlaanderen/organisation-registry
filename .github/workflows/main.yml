@@ -486,10 +486,10 @@ jobs:
           SEMVER: ${{ needs.release.outputs.version }}
           WORKSPACE: ${{ github.workspace }}
 
-  deploy_staging:
+  deploy_test:
     if: needs.release.outputs.version != 'none'
     needs: [ release, push_images_to_staging ]
-    name: Deploy to Staging
+    name: Deploy to Test
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -512,7 +512,7 @@ jobs:
           STATUS_URL: ${{ secrets.VBR_AWS_BUILD_STATUS_API }}/${{matrix.services}}
         uses: informatievlaanderen/awscurl-polling-action/polling-action@main
         with:
-          environment: stg
+          environment: tst
           version: ${{ needs.release.outputs.version }}
           status-url: $STATUS_URL
           deploy-url: $BUILD_URL
@@ -526,15 +526,6 @@ jobs:
           echo Status: ${{ steps.awscurl-polling-action.outputs.status }}
           echo ${{ steps.awscurl-polling-action.outputs.final-message }}
 
-  deploy_to_staging:
-    if: needs.release.outputs.version != 'none'
-    needs: [ release, push_images_to_devops ]
-    name: Deploy to Staging
-    uses: ./.github/workflows/deploy-environment.yml
-    with:
-      environment: stg
-      version: ${{ needs.release.outputs.version }}
-    secrets: inherit
 
   deploy_to_test:
     if: needs.release.outputs.version != 'none'
