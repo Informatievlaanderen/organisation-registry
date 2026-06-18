@@ -1,5 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\packages\Be.Vlaanderen.Basisregisters.Build.Pipeline\Content\Be.Vlaanderen.Basisregisters.Build.Pipeline.Settings.Library.props" />
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <IsTestProject>false</IsTestProject>
+  </PropertyGroup>
+
 
   <ItemGroup>
     <ProjectReference Include="..\OrganisationRegistry.Infrastructure\OrganisationRegistry.Infrastructure.csproj" />
@@ -12,6 +16,11 @@
   <ItemGroup>
     <Folder Include="Organisation\Regulation\Events" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.AggregateSource" />
+    <PackageReference Include="SourceLink.Embed.AllSourceFiles" />
+    <PackageReference Include="SourceLink.Copy.PdbFiles" />
+  </ItemGroup>
 
-  <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

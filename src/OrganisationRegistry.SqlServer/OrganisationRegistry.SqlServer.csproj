@@ -1,5 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\packages\Be.Vlaanderen.Basisregisters.Build.Pipeline\Content\Be.Vlaanderen.Basisregisters.Build.Pipeline.Settings.Library.props" />
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <IsTestProject>false</IsTestProject>
+  </PropertyGroup>
+
 
   <ItemGroup>
     <ProjectReference Include="..\OrganisationRegistry.Infrastructure\OrganisationRegistry.Infrastructure.csproj" />
@@ -9,6 +13,21 @@
   <ItemGroup>
     <Compile Include="..\..\SolutionInfo.cs" Link="Properties\SolutionInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="System.Reflection.TypeExtensions" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
+    <PackageReference Include="Dapper" />
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.Api" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql" />
+    <PackageReference Include="AspNetCore.HealthChecks.SqlServer" />
+    <PackageReference Include="SourceLink.Embed.AllSourceFiles" />
+    <PackageReference Include="SourceLink.Copy.PdbFiles" />
+  </ItemGroup>
 
-  <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

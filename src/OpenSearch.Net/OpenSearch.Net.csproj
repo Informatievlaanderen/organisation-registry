@@ -8,7 +8,7 @@
       Exposes all the OpenSearch API endpoints but leaves you in control of building the request and response bodies.
       Comes with built in cluster failover/connection pooling support.
     </Description>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <DefineConstants>$(DefineConstants);DOTNETCORE</DefineConstants>
   </PropertyGroup>
 
@@ -30,12 +30,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.CSharp" Version="4.6.0" />
-    <PackageReference Include="System.Buffers" Version="4.5.1" />
-    <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="5.0.0" />
+    <PackageReference Include="Microsoft.CSharp" />
+    <PackageReference Include="System.Buffers" />
+    <PackageReference Include="System.Diagnostics.DiagnosticSource" />
 
-    <PackageReference Condition="'$(TargetFramework)' == 'netstandard2.0'" Include="System.Reflection.Emit" Version="4.3.0" />
-    <PackageReference Condition="'$(TargetFramework)' == 'netstandard2.0'" Include="System.Reflection.Emit.Lightweight" Version="4.3.0" />
+    <PackageReference Condition="'$(TargetFramework)' == 'netstandard2.0'" Include="System.Reflection.Emit" />
+    <PackageReference Condition="'$(TargetFramework)' == 'netstandard2.0'" Include="System.Reflection.Emit.Lightweight" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="Osc" Key="$(ExposedPublicKey)" />

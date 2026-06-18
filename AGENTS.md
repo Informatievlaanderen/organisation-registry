@@ -63,13 +63,13 @@ Projections are updated asynchronously as events are processed.
 
 ## Tech Stack
 
-- .NET 6, C#, nullable reference types enabled
+- .NET 8, C#, nullable reference types enabled
 - SQL Server (event store + read models)
 - Entity Framework Core with migrations
 - ElasticSearch (search projections)
 - Be.Vlaanderen.Basisregisters.AggregateSource (aggregate base classes)
 - FluentValidation, Serilog, AutoFixture
-- FAKE build system, Paket package manager
+- NuGet PackageReference package management
 - xUnit for tests
 
 ## Project Structure
@@ -163,7 +163,7 @@ Validation happens at the InternalRequest level using FluentValidation.
 - Partial classes for aggregates to organize related functionality
 - git commits follow conventional commits: `fix: OR-1234 allow X in Y`
 - Value objects for domain concepts (wrapped primitives)
-- Central package versions in `paket.dependencies`
+- Package versions live in project `PackageReference` entries
 - AI assistants must NOT add attribution or Co-Authored-By tags to commit messages
 
 ## Guardrails

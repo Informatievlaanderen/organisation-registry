@@ -32,12 +32,13 @@ public static class ServiceCollectionExtensions
 
         var configureResource = BuildConfigureResource(serviceName, assemblyVersion);
 
-        services.AddOpenTelemetryTracing(
-            builder =>
-            {
-                builder
+        services.AddOpenTelemetry()
+            .ConfigureResource(configureResource)
+            .WithTracing(
+                builder =>
+                {
+                    builder
                     .AddSource(serviceName)
-                    .ConfigureResource(configureResource)
                     .AddOtlpExporter(
                         options =>
                         {
@@ -45,8 +46,30 @@ public static class ServiceCollectionExtensions
                             options.Endpoint = new Uri(collectorUrl);
                         });
 
-                customize(builder);
-            });
+                    customize(builder);
+                })
+            .WithMetrics(
+                builder =>
+                    builder
+                        .AddRuntimeInstrumentation()
+                        .AddHttpClientInstrumentation()
+                        .AddAspNetCoreInstrumentation()
+                        .AddOtlpExporter(
+                            exporter =>
+                            {
+                                exporter.Protocol = OtlpExportProtocol.Grpc;
+                                exporter.Endpoint = new Uri(collectorUrl);
+                            }).AddConsoleExporter(
+                            (exporterOptions, readerOptions) =>
+                            {
+                                readerOptions.PeriodicExportingMetricReaderOptions = new PeriodicExportingMetricReaderOptions
+                                {
+                                    ExportIntervalMilliseconds = (int)TimeSpan.FromMinutes(10).TotalMilliseconds
+                                };
+                            })
+                        .AddMeter(OpenTelemetryMetrics.ElasticSearchProjections.MeterNameFunc("Organisation"))
+                        .AddMeter(OpenTelemetryMetrics.ElasticSearchProjections.MeterNameFunc("Body"))
+                        .AddMeter(OpenTelemetryMetrics.ElasticSearchProjections.MeterNameFunc("Person")));
 
         services.AddLogging(
             builder =>
@@ -54,7 +77,7 @@ public static class ServiceCollectionExtensions
                     .AddOpenTelemetry(
                         options =>
                         {
-                            options.ConfigureResource(configureResource);
+                            options.SetResourceBuilder(CreateResourceBuilder(configureResource));
 
                             options.IncludeScopes = true;
                             options.IncludeFormattedMessage = true;
@@ -68,30 +91,6 @@ public static class ServiceCollectionExtensions
                                 });
                         }));
 
-        services.AddOpenTelemetryMetrics(
-            options =>
-                options
-                    .ConfigureResource(configureResource)
-                    .AddRuntimeInstrumentation()
-                    .AddHttpClientInstrumentation()
-                    .AddAspNetCoreInstrumentation()
-                    .AddOtlpExporter(
-                        exporter =>
-                        {
-                            exporter.Protocol = OtlpExportProtocol.Grpc;
-                            exporter.Endpoint = new Uri(collectorUrl);
-                        }).AddConsoleExporter(
-                        (exporterOptions, readerOptions) =>
-                        {
-                            readerOptions.PeriodicExportingMetricReaderOptions = new PeriodicExportingMetricReaderOptions()
-                            {
-                                ExportIntervalMilliseconds = (int)TimeSpan.FromMinutes(10).TotalMilliseconds
-                            };
-                        })
-                    .AddMeter(OpenTelemetryMetrics.ElasticSearchProjections.MeterNameFunc("Organisation"))
-                    .AddMeter(OpenTelemetryMetrics.ElasticSearchProjections.MeterNameFunc("Body"))
-                    .AddMeter(OpenTelemetryMetrics.ElasticSearchProjections.MeterNameFunc("Person"))
-                );
         return services;
     }
 
@@ -120,7 +119,7 @@ public static class ServiceCollectionExtensions
 
         builder.AddOpenTelemetry(options =>
         {
-            options.ConfigureResource(configureResource);
+            options.SetResourceBuilder(CreateResourceBuilder(configureResource));
 
             options.IncludeScopes = true;
             options.IncludeFormattedMessage = true;
@@ -135,5 +134,12 @@ public static class ServiceCollectionExtensions
             // .AddConsoleExporter();
         }).AddSimpleConsole();
         return builder;
+    }
+
+    private static ResourceBuilder CreateResourceBuilder(Action<ResourceBuilder> configureResource)
+    {
+        var resourceBuilder = ResourceBuilder.CreateDefault();
+        configureResource(resourceBuilder);
+        return resourceBuilder;
     }
 }

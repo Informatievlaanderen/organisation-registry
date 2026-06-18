@@ -139,7 +139,7 @@ Make sure we have a clean build directory to start with.
 
 #### Restore
 
-Restore dependencies for `debian.8-x64` and `win10-x64` using dotnet restore and Paket.
+Restore dependencies using `dotnet restore`.
 
 #### Build
 
@@ -157,8 +157,7 @@ It does this using the Release configuration.
 
 #### Pack
 
-Packs the solution using Paket in Release mode and places the result in the `dist` folder.
-This is usually used to build documentation NuGet packages.
+This target is no longer used; NuGet packaging is handled through regular `dotnet` tooling when needed.
 
 #### Containerize
 
@@ -198,8 +197,6 @@ The new version 1.2 of the European Union Public Licence (EUPL) is published in 
 
 ### Libraries
 
-* [Paket](https://fsprojects.github.io/Paket/license.html) - _A dependency manager for .NET with support for NuGet packages and Git repositories._ - [MIT](https://choosealicense.com/licenses/mit/)
-* [FAKE](https://github.com/fsharp/FAKE/blob/release/next/License.txt) - _"FAKE - F# Make" is a cross platform build automation system._ - [MIT](https://choosealicense.com/licenses/mit/)
 * [Structurizr](https://github.com/structurizr/dotnet/blob/master/LICENSE) - _Visualise, document and explore your software architecture._ - [Apache License 2.0](https://choosealicense.com/licenses/apache-2.0/)
 * [xUnit](https://github.com/xunit/xunit/blob/master/license.txt) - _xUnit.net is a free, open source, community-focused unit testing tool for the .NET Framework._ - [Apache License 2.0](https://choosealicense.com/licenses/apache-2.0/)
 * [Autofac](https://github.com/autofac/Autofac/blob/develop/LICENSE) - _An addictive .NET IoC container._ - [MIT](https://choosealicense.com/licenses/mit/)
@@ -232,7 +229,6 @@ The new version 1.2 of the European Union Public Licence (EUPL) is published in 
 
 ### Flemish Government Libraries
 
-* [Be.Vlaanderen.Basisregisters.Build.Pipeline](https://github.com/informatievlaanderen/build-pipeline/blob/master/LICENSE) - _Contains generic files for all Basisregisters Vlaanderen pipelines._ - [MIT](https://choosealicense.com/licenses/mit/)
 * [Be.Vlaanderen.Basisregisters.Testing.Infrastructure.Events](https://github.com/informatievlaanderen/infrastructure-tests/blob/master/LICENSE) - _Infrastructure unit-tests to validate assemblies._ - [MIT](https://choosealicense.com/licenses/mit/)
 * [Be.Vlaanderen.Basisregisters.DataDog](https://github.com/Informatievlaanderen/datadog-tracing/blob/master/LICENSE) - _A C# Implementation of Data Dog Tracing._ - [MIT](https://choosealicense.com/licenses/mit/)
 * [Be.Vlaanderen.Basisregisters.Shaperon](https://github.com/Informatievlaanderen/shaperon/blob/master/LICENSE) - _Lightweight dbase and shape record handling._ - [MIT](https://choosealicense.com/licenses/mit/)

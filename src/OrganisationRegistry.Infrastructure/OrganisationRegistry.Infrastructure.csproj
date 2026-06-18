@@ -1,9 +1,33 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\packages\Be.Vlaanderen.Basisregisters.Build.Pipeline\Content\Be.Vlaanderen.Basisregisters.Build.Pipeline.Settings.Library.props" />
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <IsTestProject>false</IsTestProject>
+  </PropertyGroup>
+
 
   <ItemGroup>
     <Compile Include="..\..\SolutionInfo.cs" Link="Properties\SolutionInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="System.Dynamic.Runtime" />
+    <PackageReference Include="System.Runtime.Caching" />
+    <PackageReference Include="System.Reflection.TypeExtensions" />
+    <PackageReference Include="System.ComponentModel" />
+    <PackageReference Include="System.Security.Claims" />
+    <PackageReference Include="Microsoft.CSharp" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Logging" />
+    <PackageReference Include="Microsoft.Extensions.Http" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.Converters.TrimString" />
+    <PackageReference Include="Be.Vlaanderen.Basisregisters.Converters.Timestamp" />
+    <PackageReference Include="Dapper" />
+    <PackageReference Include="Microsoft.Data.SqlClient" />
+    <PackageReference Include="Newtonsoft.Json" />
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" />
+    <PackageReference Include="SourceLink.Embed.AllSourceFiles" />
+    <PackageReference Include="SourceLink.Copy.PdbFiles" />
+  </ItemGroup>
 
-  <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
