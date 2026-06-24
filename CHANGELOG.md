@@ -1,3 +1,10 @@
+## [1.329.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.329.0...v1.329.1) (2026-06-24)
+
+
+### Bug Fixes
+
+* or-3064 add logging for TX ([05d177a](https://github.com/informatievlaanderen/organisation-registry/commit/05d177a139882daeaf366e299a5a73ee1132e108))
+
 # [1.329.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.328.0...v1.329.0) (2026-06-16)
 
 
