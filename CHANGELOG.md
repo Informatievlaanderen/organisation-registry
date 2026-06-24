@@ -1,3 +1,10 @@
+## [1.329.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.329.1...v1.329.2) (2026-06-24)
+
+
+### Bug Fixes
+
+* or-3064 allow TX scheme for claimsprincipal middleware ([29c8bc8](https://github.com/informatievlaanderen/organisation-registry/commit/29c8bc8fef5b7b8f8b5ca42d9c1f347a1e3826b5))
+
 ## [1.329.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.329.0...v1.329.1) (2026-06-24)
 
 
