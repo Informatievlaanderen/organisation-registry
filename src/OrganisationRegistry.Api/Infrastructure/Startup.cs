@@ -44,6 +44,7 @@ using OrganisationRegistry.Infrastructure.Infrastructure.Json;
 using OrganisationRegistry.Magda;
 using Search;
 using Security;
+using Serilog;
 using SqlServer.Configuration;
 using SqlServer.Infrastructure;
 using Swagger;
@@ -163,6 +164,21 @@ public class Startup
                     options.ClientId = tokenExchangeConfig.ClientId;
                     options.ClientSecret = tokenExchangeConfig.ClientSecret;
                     options.IntrospectionEndpoint = tokenExchangeConfig.IntrospectionEndpoint;
+
+                    options.Events = new OAuth2IntrospectionEvents()
+                    {
+                        OnAuthenticationFailed = context =>
+                        {
+                            Log.Logger.Information("Token Exchange failed: {@Error}", context.Error);
+
+                            return Task.CompletedTask;
+                        },
+                        OnTokenValidated = context =>
+                        {
+                            Log.Logger.Information("Token Exchange validated for '{@Name}': {@Claims}", context.Principal.Identity.Name, context.Principal.Claims);
+                            return Task.CompletedTask;
+                        },
+                    };
                 })
             .Services
             .Configure<TokenExchangeConfiguration>(_configuration.GetSection("TokenExchange"))
