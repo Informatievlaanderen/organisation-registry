@@ -1,3 +1,10 @@
+## [1.329.3](https://github.com/informatievlaanderen/organisation-registry/compare/v1.329.2...v1.329.3) (2026-06-24)
+
+
+### Bug Fixes
+
+* or-3064 check whether auth info returns success ([1953e14](https://github.com/informatievlaanderen/organisation-registry/commit/1953e142c2bb3e546860cf05cd39647844c9b8c4))
+
 ## [1.329.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.329.1...v1.329.2) (2026-06-24)
 
 
