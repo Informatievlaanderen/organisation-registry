@@ -43,7 +43,25 @@ public class ConfigureClaimsPrincipalSelectorMiddleware
     }
 
     private static AuthenticateResult? TryGetAuthInfo(IHttpContextAccessor httpContextAccessor)
-        => httpContextAccessor.HttpContext?.GetAuthenticateInfo(JwtBearerDefaults.AuthenticationScheme) ??
-           httpContextAccessor.HttpContext?.GetAuthenticateInfo(AuthenticationSchemes.EditApi) ??
-           httpContextAccessor.HttpContext?.GetAuthenticateInfo(AuthenticationSchemes.TokenExchange);
+    {
+        var httpContext = httpContextAccessor.HttpContext;
+        if (httpContext == null)
+            return null;
+
+        var schemes = new[]
+        {
+            JwtBearerDefaults.AuthenticationScheme,
+            AuthenticationSchemes.EditApi,
+            AuthenticationSchemes.TokenExchange,
+        };
+
+        foreach (var scheme in schemes)
+        {
+            var result = httpContext.GetAuthenticateInfo(scheme);
+            if (result?.Succeeded == true && result.Principal != null)
+                return result;
+        }
+
+        return null;
+    }
 }
