@@ -91,7 +91,12 @@ namespace OpenSearch.Net
 		/// <summary>
 		/// The default user agent for OpenSearch.Net
 		/// </summary>
-		public static readonly string DefaultUserAgent = $"opensearch-net/{typeof(IConnectionConfigurationValues).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion} ({RuntimeInformation.OSDescription}; {RuntimeInformation.FrameworkDescription}; OpenSearch.Net)";
+		public static readonly string DefaultUserAgent = $"opensearch-net/{GetAssemblyInformationalVersion()} ({RuntimeInformation.OSDescription}; {RuntimeInformation.FrameworkDescription}; OpenSearch.Net)";
+
+		private static string GetAssemblyInformationalVersion() =>
+			typeof(IConnectionConfigurationValues).Assembly
+				.GetCustomAttribute<AssemblyInformationalVersionAttribute>()
+				?.InformationalVersion ?? "0.0.0";
 
 		/// <summary>
 		/// Creates a new instance of <see cref="ConnectionConfiguration"/>

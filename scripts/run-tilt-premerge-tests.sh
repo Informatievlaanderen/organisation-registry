@@ -12,7 +12,6 @@ DOTNET_TEST_LOGGER="${DOTNET_TEST_LOGGER:-html}"
 cd "${ROOT_DIR}"
 
 dotnet tool restore
-dotnet paket restore
 dotnet restore
 
 START_TILT=false ./scripts/start-k3d-tilt.sh
