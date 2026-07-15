@@ -12,7 +12,8 @@ Please see our [contributing guidelines](CONTRIBUTING.md) before contributing.
 ## Required tools
 - dotnet sdk (see `global.json` for exact version)
 - nvm
-- docker compose
+- k3d
+- tilt
 
 ### Useful commands
 
