@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "dependencies": {
     "net8.0": {
       "Microsoft.CSharp": {
@@ -16,9 +16,9 @@
       },
       "System.Diagnostics.DiagnosticSource": {
         "type": "Direct",
-        "requested": "[10.0.0, )",
-        "resolved": "10.0.0",
-        "contentHash": "0KdBK+h7G13PuOSC2R/DalAoFMvdYMznvGRuICtkdcUMXgl/gYXsG6z4yUvTxHSMACorWgHCU1Faq0KUHU6yAQ=="
+        "requested": "[10.0.10, )",
+        "resolved": "10.0.10",
+        "contentHash": "cjtKi6ERMYWp6b9UTVPcwDT29PjKDtlM3W9OwnWL5abRsI8ku42Q2wqZoLIIXJnT/XF2s2CjuK8Nl4a3mmTxQQ=="
       }
     },
     "net8.0/linux-x64": {},
