@@ -29,7 +29,6 @@
         "contentHash": "0KdBK+h7G13PuOSC2R/DalAoFMvdYMznvGRuICtkdcUMXgl/gYXsG6z4yUvTxHSMACorWgHCU1Faq0KUHU6yAQ=="
       }
     },
-    "net8.0/linux-x64": {},
-    "net8.0/win-x64": {}
+    "net8.0/linux-x64": {}
   }
 }
