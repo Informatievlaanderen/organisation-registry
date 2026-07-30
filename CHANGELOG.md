@@ -1,3 +1,16 @@
+# [1.330.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.329.3...v1.330.0) (2026-07-30)
+
+
+### Bug Fixes
+
+* dotnet build no longer needs --os ([6cfa2eb](https://github.com/informatievlaanderen/organisation-registry/commit/6cfa2eb2b9adb4937c51453b99f5219657ab265b))
+* pass release configuration ([eb3f5b4](https://github.com/informatievlaanderen/organisation-registry/commit/eb3f5b43ca25ec5ece0ff55f749d28cf0ad9a618))
+
+
+### Features
+
+* update readme with tilt (force build) ([295ed3f](https://github.com/informatievlaanderen/organisation-registry/commit/295ed3f3a23f551e9d6b404aaffe252fc6c0d25e))
+
 ## [1.329.3](https://github.com/informatievlaanderen/organisation-registry/compare/v1.329.2...v1.329.3) (2026-06-24)
 
 
