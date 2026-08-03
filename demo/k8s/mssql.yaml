@@ -14,9 +14,13 @@ spec:
       labels:
         app: mssql
     spec:
+      securityContext:
+        fsGroup: 10001
+        runAsUser: 10001
+        runAsGroup: 10001
       containers:
       - name: mssql
-        image: mcr.microsoft.com/mssql/server:2017-latest
+        image: mcr.microsoft.com/mssql/server:2022-latest
         env:
         - name: ACCEPT_EULA
           value: "Y"
@@ -30,22 +34,15 @@ spec:
         - name: MSSQL_IP_ADDRESS
           value: "0.0.0.0"
         - name: MSSQL_MEMORY_LIMIT_MB
-          value: "1024"
+          value: "2048"
         ports:
         - containerPort: 1433
         readinessProbe:
           exec:
             command:
-            - /opt/mssql-tools/bin/sqlcmd
-            - -S
-            - localhost
-            - -U
-            - sa
-            - -P
-            - "E@syP@ssw0rd"
-            - -Q
-            - "SELECT 1"
-            - -b
+            - /bin/sh
+            - -c
+            - /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P "$SA_PASSWORD" -Q "SELECT 1" -b
           initialDelaySeconds: 30
           periodSeconds: 10
           timeoutSeconds: 5
