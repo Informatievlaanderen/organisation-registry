@@ -6,7 +6,7 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 KUBECONFIG="${KUBECONFIG:-${ROOT_DIR}/.kubeconfig}"
 NAMESPACE="${NAMESPACE:-wegwijs-demo}"
 KUBECTL="${KUBECTL:-kubectl}"
-SQLCMD="${SQLCMD:-/opt/mssql-tools/bin/sqlcmd}"
+SQLCMD="${SQLCMD:-/opt/mssql-tools18/bin/sqlcmd}"
 
 export KUBECONFIG
 
@@ -87,6 +87,7 @@ SQL="${SQL//\$(KboCertificate)/${KBO_CERTIFICATE}}"
 echo "Seeding Tilt API configuration values..."
 "${KUBECTL}" exec -n "${NAMESPACE}" mssql-0 -- \
   "${SQLCMD}" \
+    -C \
     -S localhost \
     -U sa \
     -P "${MSSQL_PASSWORD}" \
