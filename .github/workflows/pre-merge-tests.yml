@@ -1,5 +1,11 @@
 name: Pre-merge
 
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches:
+      - main
+
 jobs:
   analyze-code:
     runs-on: ubuntu-latest
