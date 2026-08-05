@@ -32,6 +32,7 @@ public class KboController : OrganisationRegistryController
 
     /// <summary>Zoek een organisatie in de KBO.</summary>
     /// <response code="200">Als de organisatie gevonden is.</response>
+    /// <response code="400">Er was een probleem met de doorgestuurde waarden.</response>
     /// <response code="404">Als het KBO-nummer niet bestaat.</response>
     [HttpGet("{kboNumberInput}")]
     [OrganisationRegistryAuthorize]
@@ -42,6 +43,8 @@ public class KboController : OrganisationRegistryController
         [FromServices] ISecurityService securityService,
         [FromRoute] string kboNumberInput)
     {
+        KboNumber.Validate(kboNumberInput);
+
         var kboNumber = new KboNumber(kboNumberInput);
         var dotFormat = kboNumber.ToDotFormat();
         var digitsOnly = kboNumber.ToDigitsOnly();
