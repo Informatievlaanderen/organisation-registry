@@ -8,6 +8,7 @@ using global::Magda.RegistreerInschrijving;
 using Microsoft.Extensions.Logging;
 using OrganisationRegistry.Infrastructure.Authorization;
 using Organisation;
+using Organisation.Exceptions;
 
 public class KboOrganisationRetriever : IKboOrganisationRetriever
 {
@@ -39,7 +40,7 @@ public class KboOrganisationRetriever : IKboOrganisationRetriever
         var maybeRegisterInscriptionReply =
             registerInscription?.Body?.RegistreerInschrijvingResponse?.Repliek?.Antwoorden?.Antwoord;
         if (maybeRegisterInscriptionReply is not { } registerInscriptionReply)
-            throw new Exception("Geen antwoord van magda gekregen.");
+            throw new KboOrganisationNotFound(["Geen antwoord van magda gekregen."]);
 
         LogExceptions(registerInscriptionReply);
         var errors = registerInscriptionReply.Uitzonderingen?
@@ -47,16 +48,18 @@ public class KboOrganisationRetriever : IKboOrganisationRetriever
             .ToList() ?? new List<UitzonderingType>();
 
         if (errors.Any())
-            throw new Exception(
+            throw new KboOrganisationNotFound(
+            [
                 "Er is een fout opgetreden tijdens het inschrijven bij magda:\n" +
-                $"{string.Join('\n', errors.Select(type => type.Diagnose))}");
+                $"{string.Join('\n', errors.Select(type => type.Diagnose))}"
+            ]);
 
         var giveOrganisation = await _geefOndernemingQuery.Execute(user, kboNumberDotLess);
 
         var maybeGiveOrganisationReply =
             giveOrganisation?.Body?.GeefOndernemingResponse?.Repliek?.Antwoorden?.Antwoord;
         if (maybeGiveOrganisationReply is not { } giveOrganisationReply)
-            throw new Exception("Geen antwoord van magda gekregen.");
+            throw new KboOrganisationNotFound(["Geen antwoord van magda gekregen."]);
 
         LogExceptions(giveOrganisationReply);
 
