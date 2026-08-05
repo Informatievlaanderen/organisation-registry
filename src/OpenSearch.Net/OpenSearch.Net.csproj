@@ -33,9 +33,6 @@
     <PackageReference Include="Microsoft.CSharp" />
     <PackageReference Include="System.Buffers" />
     <PackageReference Include="System.Diagnostics.DiagnosticSource" />
-
-    <PackageReference Condition="'$(TargetFramework)' == 'netstandard2.0'" Include="System.Reflection.Emit" />
-    <PackageReference Condition="'$(TargetFramework)' == 'netstandard2.0'" Include="System.Reflection.Emit.Lightweight" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="Osc" Key="$(ExposedPublicKey)" />
