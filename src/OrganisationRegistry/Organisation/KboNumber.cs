@@ -2,8 +2,9 @@ namespace OrganisationRegistry.Organisation;
 
 using System.Text;
 using System.Text.RegularExpressions;
+using Exceptions;
 
-public class KboNumber
+public record KboNumber
 {
     private readonly string _value;
 
@@ -35,4 +36,12 @@ public class KboNumber
 
     public override string ToString()
         => _value;
+
+    public static void Validate(string kboNumber)
+    {
+        if (kboNumber.Length != 10)
+        {
+            throw new InvalidKBONumber();
+        }
+    }
 }

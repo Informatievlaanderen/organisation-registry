@@ -2,6 +2,7 @@ namespace OrganisationRegistry.UnitTests;
 
 using FluentAssertions;
 using OrganisationRegistry.Organisation;
+using OrganisationRegistry.Organisation.Exceptions;
 using Xunit;
 
 public class KboNumberTests
@@ -22,5 +23,21 @@ public class KboNumberTests
             .ToDotFormat()
             .Should()
             .Be("0248.211.419");
+    }
+
+    [Theory]
+    [InlineData("1234")]
+    [InlineData("123456789")]
+    public void WithInvalidKBONumber_ThenThrowsInvalidKBONumberException(string kboNumber)
+    {
+        Assert.Throws<InvalidKBONumber>(() => KboNumber.Validate(kboNumber));
+    }
+
+    [Fact]
+    public void WithValidKBONumber_ThenDoesNotThrow()
+    {
+        var kboNumber = "0123456789";
+
+        KboNumber.Validate(kboNumber);
     }
 }
