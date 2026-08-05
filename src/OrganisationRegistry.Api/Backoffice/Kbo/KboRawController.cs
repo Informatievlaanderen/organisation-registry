@@ -30,6 +30,7 @@ public class KboRawController : OrganisationRegistryController
 
     /// <summary>Vraag het ruwe resultaat van een MAGDA KBO-opzoeking op.</summary>
     /// <response code="200">Het ruwe resultaat van een MAGDA KBO-opzoeking.</response>
+    /// <response code="400">Er was een probleem met de doorgestuurde waarden.</response>
     [HttpGet("{kboNumberInput}")]
     [OrganisationRegistryAuthorize(Role.AlgemeenBeheerder, Role.Developer)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -37,6 +38,8 @@ public class KboRawController : OrganisationRegistryController
         [FromServices] ISecurityService securityService,
         [FromRoute] string kboNumberInput)
     {
+        KboNumber.Validate(kboNumberInput);
+
         var kboNumber = new KboNumber(kboNumberInput);
         var digitsOnly = kboNumber.ToDigitsOnly();
 

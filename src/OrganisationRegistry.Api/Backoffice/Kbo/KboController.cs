@@ -43,6 +43,8 @@ public class KboController : OrganisationRegistryController
         [FromServices] ISecurityService securityService,
         [FromRoute] string kboNumberInput)
     {
+        KboNumber.Validate(kboNumberInput);
+
         var kboNumber = new KboNumber(kboNumberInput);
         var dotFormat = kboNumber.ToDotFormat();
         var digitsOnly = kboNumber.ToDigitsOnly();
