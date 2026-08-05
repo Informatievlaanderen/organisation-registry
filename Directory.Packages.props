@@ -16,7 +16,6 @@
     <PackageVersion Include="CsvHelper" Version="27.2.1" />
     <PackageVersion Include="Dapper" Version="2.0.123" />
     <PackageVersion Include="Duende.IdentityServer" Version="6.0.0" />
-    <PackageVersion Include="EPPlus" Version="5.5.2" />
     <PackageVersion Include="FluentAssertions" Version="6.5.1" />
     <PackageVersion Include="FluentFTP" Version="33.0.3" />
     <PackageVersion Include="FluentValidation.AspNetCore" Version="10.4" />
