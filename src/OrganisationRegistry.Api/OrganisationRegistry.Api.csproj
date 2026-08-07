@@ -43,7 +43,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Be.Vlaanderen.Basisregisters.Api" />
-    <PackageReference Include="System.Reflection.TypeExtensions" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" />
     <PackageReference Include="System.Interactive.Async" />
     <PackageReference Include="System.Linq.Async" />
