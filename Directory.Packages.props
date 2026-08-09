@@ -60,14 +60,14 @@
     <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.15.1" />
     <PackageVersion Include="OpenTelemetry.Instrumentation.SqlClient" Version="1.15.2" />
     <PackageVersion Include="Optional" Version="4.0" />
-    <PackageVersion Include="Polly" Version="8.3.1" />
-    <PackageVersion Include="Serilog" Version="3.1.1" />
+    <PackageVersion Include="Polly" Version="8.6.6" />
+    <PackageVersion Include="Serilog" Version="4.3.1" />
     <PackageVersion Include="Serilog.AspNetCore" Version="4.1.0" />
-    <PackageVersion Include="Serilog.Enrichers.Environment" Version="2.3.0" />
-    <PackageVersion Include="Serilog.Enrichers.Thread" Version="3.1" />
-    <PackageVersion Include="Serilog.Extensions.Logging" Version="8.0.0" />
-    <PackageVersion Include="Serilog.Formatting.Compact" Version="2.0.0" />
-    <PackageVersion Include="Serilog.Settings.Configuration" Version="8.0.0" />
+    <PackageVersion Include="Serilog.Enrichers.Environment" Version="3.0.1" />
+    <PackageVersion Include="Serilog.Enrichers.Thread" Version="4.0.0" />
+    <PackageVersion Include="Serilog.Extensions.Logging" Version="10.0.0" />
+    <PackageVersion Include="Serilog.Formatting.Compact" Version="3.0.0" />
+    <PackageVersion Include="Serilog.Settings.Configuration" Version="10.0.0" />
     <PackageVersion Include="Serilog.Sinks.Literate" Version="3.0" />
     <PackageVersion Include="SourceLink.Copy.PdbFiles" Version="2.8.3" />
     <PackageVersion Include="SourceLink.Embed.AllSourceFiles" Version="2.8.3" />
