@@ -4,7 +4,6 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Amazon;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
@@ -91,7 +90,6 @@ internal class Program
         var distributedLock = new DistributedLock<Program>(
             new DistributedLockOptions
             {
-                Region = RegionEndpoint.GetBySystemName(delegationsRunnerOptions.LockRegionEndPoint),
                 AwsAccessKeyId = delegationsRunnerOptions.LockAccessKeyId,
                 AwsSecretAccessKey = delegationsRunnerOptions.LockAccessKeySecret,
                 TableName = delegationsRunnerOptions.LockTableName,
@@ -105,7 +103,7 @@ internal class Program
         try
         {
             logger.LogInformation("Trying to acquire lock");
-            acquiredLock = distributedLock.AcquireLock();
+            acquiredLock = distributedLock.AcquireLockAsync().GetAwaiter().GetResult();
             if (!acquiredLock)
             {
                 logger.LogInformation("Could not get lock, another instance is busy");
@@ -135,7 +133,7 @@ internal class Program
         {
             if (acquiredLock)
             {
-                distributedLock.ReleaseLock();
+                distributedLock.ReleaseLockAsync().GetAwaiter().GetResult();
             }
         }
     }
