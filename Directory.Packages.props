@@ -1,6 +1,7 @@
 <Project>
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
 
   <ItemGroup>
@@ -8,10 +9,11 @@
     <PackageVersion Include="Autofac.Extensions.DependencyInjection" Version="9.0.0" />
     <PackageVersion Include="AutoFixture" Version="4.17" />
     <PackageVersion Include="Be.Vlaanderen.Basisregisters.AggregateSource" Version="11.0.0" />
+    <PackageVersion Include="Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore" Version="11.0.0" />
     <PackageVersion Include="Be.Vlaanderen.Basisregisters.Api" Version="23.2.0" />
     <PackageVersion Include="Be.Vlaanderen.Basisregisters.Aws.DistributedMutex" Version="4.0.1" />
     <PackageVersion Include="Be.Vlaanderen.Basisregisters.Converters.Timestamp" Version="3.0" />
-    <PackageVersion Include="Be.Vlaanderen.Basisregisters.Converters.TrimString" Version="3.0" />
+    <PackageVersion Include="Be.Vlaanderen.Basisregisters.Converters.TrimString" Version="5.1.0" />
     <PackageVersion Include="Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql" Version="5.0" />
     <PackageVersion Include="CsvHelper" Version="27.2.1" />
     <PackageVersion Include="Dapper" Version="2.0.123" />
@@ -27,7 +29,7 @@
     <PackageVersion Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="10.0.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.0" />
     <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="10.0.0" />
-    <PackageVersion Include="Microsoft.Data.SqlClient" Version="6.1.1" />
+    <PackageVersion Include="Microsoft.Data.SqlClient" Version="7.0.1" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.0" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.0" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.0" />
