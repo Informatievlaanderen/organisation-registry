@@ -12,7 +12,6 @@ using Be.Vlaanderen.Basisregisters.Api;
 using Be.Vlaanderen.Basisregisters.Api.Search.Filtering;
 using Be.Vlaanderen.Basisregisters.Api.Search.Pagination;
 using Be.Vlaanderen.Basisregisters.Api.Search.Sorting;
-using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
 using Configuration;
 using global::OpenTelemetry.Trace;
 using HostedServices;
@@ -370,34 +369,11 @@ public class Startup
         IHostApplicationLifetime appLifetime,
         ILoggerFactory loggerFactory,
         IApiVersionDescriptionProvider apiVersionProvider,
-        ApiDataDogToggle datadogToggle,
-        ApiDebugDataDogToggle debugDataDogToggle,
         HealthCheckService healthCheckService)
     {
         StartupHelpers.CheckDatabases(healthCheckService, DatabaseTag, loggerFactory).GetAwaiter().GetResult();
 
         app
-            .UseDataDog<Startup>(
-                new DataDogOptions
-                {
-                    Common =
-                    {
-                        ServiceProvider = serviceProvider,
-                        LoggerFactory = loggerFactory,
-                    },
-                    Toggles =
-                    {
-                        Enable = datadogToggle,
-                        Debug = debugDataDogToggle,
-                    },
-                    Tracing =
-                    {
-                        TraceIdHeaderName = "traceid",
-                        ParentSpanIdHeaderName = "traceparent",
-                        ServiceName = _configuration["DataDog:ServiceName"],
-                        LogForwardedForEnabled = true,
-                    },
-                })
             .UseDefaultForApi(
                 new StartupUseOptions
                 {
