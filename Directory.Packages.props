@@ -6,12 +6,12 @@
 
   <ItemGroup>
     <PackageVersion Include="AspNetCore.HealthChecks.SqlServer" Version="8.0.2" />
-    <PackageVersion Include="Autofac.Extensions.DependencyInjection" Version="9.0.0" />
+    <PackageVersion Include="Autofac.Extensions.DependencyInjection" Version="11.0.0" />
     <PackageVersion Include="AutoFixture" Version="4.17" />
     <PackageVersion Include="Be.Vlaanderen.Basisregisters.AggregateSource" Version="11.0.0" />
     <PackageVersion Include="Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore" Version="11.0.0" />
     <PackageVersion Include="Be.Vlaanderen.Basisregisters.Api" Version="23.2.0" />
-    <PackageVersion Include="Be.Vlaanderen.Basisregisters.Aws.DistributedMutex" Version="4.0.1" />
+    <PackageVersion Include="Be.Vlaanderen.Basisregisters.Aws.DistributedMutex" Version="5.1.0" />
     <PackageVersion Include="Be.Vlaanderen.Basisregisters.Converters.Timestamp" Version="3.0" />
     <PackageVersion Include="Be.Vlaanderen.Basisregisters.Converters.TrimString" Version="5.1.0" />
     <PackageVersion Include="Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql" Version="5.0" />
@@ -20,7 +20,7 @@
     <PackageVersion Include="Duende.IdentityServer" Version="6.0.0" />
     <PackageVersion Include="FluentAssertions" Version="6.5.1" />
     <PackageVersion Include="FluentFTP" Version="33.0.3" />
-    <PackageVersion Include="FluentValidation.AspNetCore" Version="11.3.0" />
+    <PackageVersion Include="FluentValidation.AspNetCore" Version="11.3.1" />
     <PackageVersion Include="IdentityModel" Version="6.0" />
     <PackageVersion Include="IdentityModel.AspNetCore.OAuth2Introspection" Version="6.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.8" />
