@@ -33,7 +33,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.FeatureManagement;
 using Microsoft.Net.Http.Headers;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Newtonsoft.Json;
 using OpenTelemetry.Extensions;
 using OrganisationRegistry.Infrastructure;

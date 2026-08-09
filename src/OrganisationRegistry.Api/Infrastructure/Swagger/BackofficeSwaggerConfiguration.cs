@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Asp.Versioning.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Be.Vlaanderen.Basisregisters.Api;
 
 /// <summary>

@@ -10,7 +10,7 @@
     <PackageVersion Include="AutoFixture" Version="4.17" />
     <PackageVersion Include="Be.Vlaanderen.Basisregisters.AggregateSource" Version="11.0.0" />
     <PackageVersion Include="Be.Vlaanderen.Basisregisters.AggregateSource.SqlStreamStore" Version="11.0.0" />
-    <PackageVersion Include="Be.Vlaanderen.Basisregisters.Api" Version="23.2.0" />
+    <PackageVersion Include="Be.Vlaanderen.Basisregisters.Api" Version="27.0.0" />
     <PackageVersion Include="Be.Vlaanderen.Basisregisters.Aws.DistributedMutex" Version="5.1.0" />
     <PackageVersion Include="Be.Vlaanderen.Basisregisters.Converters.Timestamp" Version="3.0" />
     <PackageVersion Include="Be.Vlaanderen.Basisregisters.Converters.TrimString" Version="5.1.0" />

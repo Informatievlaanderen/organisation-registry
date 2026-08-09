@@ -2,7 +2,7 @@ namespace OrganisationRegistry.Api.Infrastructure.Swagger;
 
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 /// <summary>

@@ -5,14 +5,14 @@
       "opensearch.net": {
         "type": "Project",
         "dependencies": {
-          "System.Diagnostics.DiagnosticSource": "[10.0.0, )"
+          "System.Diagnostics.DiagnosticSource": "[10.0.8, )"
         }
       },
       "System.Diagnostics.DiagnosticSource": {
         "type": "CentralTransitive",
-        "requested": "[10.0.0, )",
-        "resolved": "10.0.0",
-        "contentHash": "0KdBK+h7G13PuOSC2R/DalAoFMvdYMznvGRuICtkdcUMXgl/gYXsG6z4yUvTxHSMACorWgHCU1Faq0KUHU6yAQ=="
+        "requested": "[10.0.8, )",
+        "resolved": "10.0.8",
+        "contentHash": "rQHsK7Xr8Uz3449860ayVXp/CaLmrhHlMPxbpT/ibOPtp/dTTsr6+f/SxaGO2NzxHf+0siLE0UfdVN5z1I0EgQ=="
       }
     },
     "net8.0/linux-x64": {},
