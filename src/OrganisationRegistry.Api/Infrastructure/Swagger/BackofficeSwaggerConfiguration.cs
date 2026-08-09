@@ -3,6 +3,7 @@ namespace OrganisationRegistry.Api.Infrastructure.Swagger;
 using System;
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
+using Asp.Versioning.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
