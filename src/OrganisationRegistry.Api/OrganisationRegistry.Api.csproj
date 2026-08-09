@@ -44,8 +44,6 @@
   <ItemGroup>
     <PackageReference Include="Be.Vlaanderen.Basisregisters.Api" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" />
-    <PackageReference Include="System.Interactive.Async" />
-    <PackageReference Include="System.Linq.Async" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" />
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" />
