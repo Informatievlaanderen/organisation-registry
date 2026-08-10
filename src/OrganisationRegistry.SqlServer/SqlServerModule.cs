@@ -18,6 +18,11 @@ using OrganisationRegistry.Infrastructure.Events;
 
 public class SqlServerModule : Autofac.Module
 {
+    private IConfiguration _configuration = null!;
+    private IServiceCollection _services = null!;
+    private ILoggerFactory _loggerFactory = null!;
+    private bool _useSqlServer;
+
     public SqlServerModule(
         IConfiguration configuration,
         IServiceCollection services,
@@ -27,8 +32,12 @@ public class SqlServerModule : Autofac.Module
         var sqlConfiguration = configuration.GetSection(SqlServerConfiguration.Section).Get<SqlServerConfiguration>();
         var connectionString = sqlConfiguration.ConnectionString;
 
-        var hasConnectionString = !string.IsNullOrWhiteSpace(connectionString);
-        if (hasConnectionString)
+        _configuration = configuration;
+        _services = services;
+        _loggerFactory = loggerFactory;
+        _useSqlServer = !string.IsNullOrWhiteSpace(connectionString);
+
+        if (_useSqlServer)
             RunOnSqlServer(configuration, services, loggerFactory, connectionString);
         else
             RunInMemoryDb(services, loggerFactory, logger);
@@ -75,6 +84,46 @@ public class SqlServerModule : Autofac.Module
 
     protected override void Load(ContainerBuilder builder)
     {
+        // Register OrganisationRegistryContext natively in Autofac for Owned<T> support.
+        // This is needed for ContextFactory to resolve Func<Owned<OrganisationRegistryContext>>.
+        if (_useSqlServer)
+        {
+            var sqlConfiguration = _configuration.GetSection(SqlServerConfiguration.Section).Get<SqlServerConfiguration>();
+            builder.Register<OrganisationRegistryContext>(c =>
+            {
+                var options = new DbContextOptionsBuilder<OrganisationRegistryContext>();
+                options
+                    .UseLoggerFactory(_loggerFactory)
+                    .UseSqlServer(
+                        new TraceDbConnection<OrganisationRegistryContext>(
+                            new SqlConnection(sqlConfiguration.ConnectionString),
+                            _configuration["DataDog:ServiceName"]),
+                        sqlServerOptions =>
+                        {
+                            sqlServerOptions
+                                .EnableRetryOnFailure()
+                                .MigrationsAssembly("OrganisationRegistry.SqlServer")
+                                .MigrationsHistoryTable(MigrationTables.Default, WellknownSchemas.BackofficeSchema);
+                        });
+
+                return new OrganisationRegistryContext(options.Options);
+            })
+            .InstancePerDependency();
+        }
+        else
+        {
+            builder.Register<OrganisationRegistryContext>(c =>
+            {
+                var options = new DbContextOptionsBuilder<OrganisationRegistryContext>();
+                options
+                    .UseLoggerFactory(_loggerFactory)
+                    .UseInMemoryDatabase(Guid.NewGuid().ToString(), _ => { });
+
+                return new OrganisationRegistryContext(options.Options);
+            })
+            .InstancePerDependency();
+        }
+
         builder.RegisterType<ProjectionStates>()
             .As<IProjectionStates>()
             .SingleInstance();
