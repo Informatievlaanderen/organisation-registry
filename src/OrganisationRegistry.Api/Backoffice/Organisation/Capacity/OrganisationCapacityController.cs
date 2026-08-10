@@ -31,6 +31,7 @@ public class OrganisationCapacityController : OrganisationRegistryController
     [HttpGet]
     [ProducesResponseType(typeof(List<OrganisationCapacityListItem>), StatusCodes.Status200OK)]
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(OrganisationCapacityListExamples))]
+    [ActionName("List")]
     public async Task<IActionResult> Get(
         [FromServices] OrganisationRegistryContext context,
         [FromServices] IOrganisationRegistryConfiguration configuration,

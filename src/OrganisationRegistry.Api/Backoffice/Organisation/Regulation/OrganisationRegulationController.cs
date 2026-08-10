@@ -29,6 +29,7 @@ public class OrganisationRegulationController : OrganisationRegistryController
     [HttpGet]
     [ProducesResponseType(typeof(List<OrganisationRegulationListItem>), StatusCodes.Status200OK)]
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(OrganisationRegulationListExamples))]
+    [ActionName("List")]
     public async Task<IActionResult> Get(
         [FromServices] OrganisationRegistryContext context,
         [FromServices] ISecurityService securityService,

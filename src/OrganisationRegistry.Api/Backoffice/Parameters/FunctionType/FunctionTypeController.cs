@@ -28,6 +28,7 @@ public class FunctionTypeController : OrganisationRegistryController
     [HttpGet]
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(FunctionTypeListExamples))]
     [ProducesResponseType(typeof(List<FunctionTypeListItem>), StatusCodes.Status200OK)]
+    [ActionName("List")]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<FunctionTypeListItem>();

@@ -34,6 +34,7 @@ public class LabelTypeController : OrganisationRegistryController
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(LabelTypeListExamples))]
     [ProducesResponseType(typeof(List<LabelTypeListItem>), StatusCodes.Status200OK)]
     [OrganisationRegistryAuthorize]
+    [ActionName("List")]
     public async Task<IActionResult> Get(
         [FromServices] OrganisationRegistryContext context,
         [FromServices] IMemoryCaches memoryCaches,

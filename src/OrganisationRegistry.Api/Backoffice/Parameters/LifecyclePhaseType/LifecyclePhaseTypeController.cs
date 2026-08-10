@@ -28,6 +28,7 @@ public class LifecyclePhaseTypeController : OrganisationRegistryController
     [HttpGet]
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(LifecyclePhaseTypeListExamples))]
     [ProducesResponseType(typeof(List<LifecyclePhaseTypeListItem>), StatusCodes.Status200OK)]
+    [ActionName("List")]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<LifecyclePhaseTypeListItem>();

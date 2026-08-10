@@ -27,6 +27,7 @@ public class BodySeatController : OrganisationRegistryController
     [HttpGet]
     [ProducesResponseType(typeof(List<BodySeatListItem>), StatusCodes.Status200OK)]
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(BodySeatListExamples))]
+    [ActionName("List")]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid bodyId)
     {
         var filtering = Request.ExtractFilteringRequest<BodySeatListItemFilter>();

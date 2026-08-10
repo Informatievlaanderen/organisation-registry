@@ -32,6 +32,7 @@ public class DelegationController : OrganisationRegistryController
     [HttpGet]
     [ProducesResponseType(typeof(List<DelegationListItem>), StatusCodes.Status200OK)]
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(DelegationListExamples))]
+    [ActionName("List")]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromServices] ISecurityService securityService)
     {
         var filtering = Request.ExtractFilteringRequest<DelegationListItemFilter>();

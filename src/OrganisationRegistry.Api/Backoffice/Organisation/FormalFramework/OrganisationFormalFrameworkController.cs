@@ -30,6 +30,7 @@ public class OrganisationFormalFrameworkController : OrganisationRegistryControl
     [HttpGet]
     [ProducesResponseType(typeof(List<OrganisationFormalFrameworkListItem>), StatusCodes.Status200OK)]
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(OrganisationFormalFrameworkListExamples))]
+    [ActionName("List")]
     public async Task<IActionResult> Get(
         [FromServices] OrganisationRegistryContext context,
         [FromServices] IOrganisationRegistryConfiguration configuration,

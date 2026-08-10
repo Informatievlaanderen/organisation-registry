@@ -28,6 +28,7 @@ public class SeatTypeController : OrganisationRegistryController
     [HttpGet]
     [ProducesResponseType(typeof(List<SeatTypeListItem>), StatusCodes.Status200OK)]
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(SeatTypeListExamples))]
+    [ActionName("List")]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<SeatTypeListItem>();

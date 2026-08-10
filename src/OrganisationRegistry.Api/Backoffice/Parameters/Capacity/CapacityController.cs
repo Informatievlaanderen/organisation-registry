@@ -28,6 +28,7 @@ public class CapacityController : OrganisationRegistryController
     [HttpGet]
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(CapacityListExamples))]
     [ProducesResponseType(typeof(List<CapacityListItem>), StatusCodes.Status200OK)]
+    [ActionName("List")]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<CapacityListQuery.CapacityListFilter>();

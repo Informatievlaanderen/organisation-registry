@@ -21,6 +21,7 @@ public class OrganisationDetailController : OrganisationRegistryController
     [HttpGet("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ActionName("List")]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid id)
     {
         var organisation = await context.OrganisationDetail.FirstOrDefaultAsync(x => x.Id == id);

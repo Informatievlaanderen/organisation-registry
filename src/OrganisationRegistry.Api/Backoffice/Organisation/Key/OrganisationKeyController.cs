@@ -35,6 +35,7 @@ public class OrganisationKeyController : OrganisationRegistryController
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(OrganisationKeyListExamples))]
     [OrganisationRegistryAuthorize]
     [AllowAnonymous]
+    [ActionName("List")]
     public async Task<IActionResult> Get(
         [FromServices] OrganisationRegistryContext context,
         [FromServices] IMemoryCaches memoryCaches,
