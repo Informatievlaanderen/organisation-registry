@@ -225,19 +225,6 @@ jobs:
       semver: ${{ needs.set-release-version.outputs.version }}
     secrets: inherit
 
-  build-acm-idm:
-    name: Build acm idm
-    uses: ./.github/workflows/build-image.yml
-    if: github.repository_owner == 'Informatievlaanderen' && needs.set-release-version.outputs.version != 'none'
-    needs: [ set-release-version ]
-    with:
-      build-target: Containerize_AcmIdm
-      build-project: IdentityServer
-      image-file: acmidm.tar
-      image-name: acmidm
-      semver: ${{ needs.set-release-version.outputs.version }}
-    secrets: inherit
-
   release:
     if: github.repository_owner == 'Informatievlaanderen' && needs.set-release-version.outputs.version != 'none'
     name: Release
