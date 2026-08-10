@@ -4,7 +4,6 @@ using System;
 using System.Linq;
 using System.Reflection;
 using Autofac;
-using Autofac.Extensions.DependencyInjection;
 using Be.Vlaanderen.Basisregisters.Api.Exceptions;
 using Configuration.Database;
 using ElasticSearch;
@@ -86,9 +85,6 @@ public class ApiModule : Module
                             .Get<HostedServicesConfigurationSection>()))
             .As<IOrganisationRegistryConfiguration>()
             .SingleInstance();
-
-        builder
-            .Populate(_services);
     }
 
     private static Func<IServiceProvider> ProvideScopedServiceProvider(IComponentContext context)

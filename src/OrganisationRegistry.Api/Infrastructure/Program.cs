@@ -2,6 +2,7 @@ namespace OrganisationRegistry.Api.Infrastructure;
 
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
+using Autofac.Extensions.DependencyInjection;
 using Be.Vlaanderen.Basisregisters.Api;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -16,6 +17,7 @@ public class Program
 
     public static IHostBuilder CreateHostBuilder(string[] args)
         => Host.CreateDefaultBuilder(args)
+            .UseServiceProviderFactory(new AutofacServiceProviderFactory())
             .UseDefaultForApi<Startup>(
                 new ProgramOptions
                 {
