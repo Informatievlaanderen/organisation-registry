@@ -54,7 +54,7 @@
     <PackageReference Include="Microsoft.Data.SqlClient" />
     <PackageReference Include="Microsoft.FeatureManagement.AspNetCore" />
     <PackageReference Include="IdentityModel" />
-    <PackageReference Include="FluentValidation.AspNetCore" />
+    <PackageReference Include="FluentValidation" />
     <PackageReference Include="Autofac.Extensions.DependencyInjection" />
     <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="CsvHelper" />
