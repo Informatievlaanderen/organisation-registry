@@ -35,7 +35,7 @@ public class ContactTypeCommandController : OrganisationRegistryCommandControlle
 
         await CommandSender.Send(CreateContactTypeRequestMapping.Map(message));
 
-        return CreatedWithLocation(nameof(ContactTypeController),nameof(ContactTypeController.Get), new { id = message.Id });
+        return CreatedWithLocation(nameof(ContactTypeController), "Get", new { id = message.Id });
     }
 
     /// <summary>Pas een contacttype aan.</summary>
@@ -53,6 +53,6 @@ public class ContactTypeCommandController : OrganisationRegistryCommandControlle
 
         await CommandSender.Send(UpdateContactTypeRequestMapping.Map(internalMessage));
 
-        return OkWithLocationHeader(nameof(ContactTypeController),nameof(ContactTypeController.Get), new { id = internalMessage.ContactTypeId });
+        return OkWithLocationHeader(nameof(ContactTypeController), "Get", new { id = internalMessage.ContactTypeId });
     }
 }

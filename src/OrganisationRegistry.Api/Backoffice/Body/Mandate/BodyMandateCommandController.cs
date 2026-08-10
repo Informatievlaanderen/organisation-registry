@@ -51,7 +51,7 @@ public class BodyMandateCommandController : OrganisationRegistryCommandControlle
                 break;
         }
 
-        return CreatedWithLocation(nameof(BodyMandateController), nameof(BodyMandateController.Get), new { id = message.BodyMandateId });
+        return CreatedWithLocation(nameof(BodyMandateController), "Get", new { id = message.BodyMandateId });
     }
 
     /// <summary>Pas een mandaat aan voor een orgaan.</summary>
@@ -84,6 +84,6 @@ public class BodyMandateCommandController : OrganisationRegistryCommandControlle
                 break;
         }
 
-        return OkWithLocationHeader(nameof(BodyMandateController), nameof(BodyMandateController.Get), new { id = internalMessage.BodyId });
+        return OkWithLocationHeader(nameof(BodyMandateController), "Get", new { id = internalMessage.BodyId });
     }
 }

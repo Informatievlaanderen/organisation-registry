@@ -35,7 +35,7 @@ public class FunctionTypeCommandController : OrganisationRegistryCommandControll
 
         await CommandSender.Send(CreateFunctionTypeRequestMapping.Map(message));
 
-        return CreatedWithLocation(nameof(FunctionTypeController), nameof(FunctionTypeController.Get), new { id = message.Id });
+        return CreatedWithLocation(nameof(FunctionTypeController), "Get", new { id = message.Id });
     }
 
     /// <summary>Pas een functietype aan.</summary>
@@ -53,6 +53,6 @@ public class FunctionTypeCommandController : OrganisationRegistryCommandControll
 
         await CommandSender.Send(UpdateFunctionTypeRequestMapping.Map(internalMessage));
 
-        return OkWithLocationHeader(nameof(FunctionTypeController), nameof(FunctionTypeController.Get), new { id = internalMessage.FunctionId });
+        return OkWithLocationHeader(nameof(FunctionTypeController), "Get", new { id = internalMessage.FunctionId });
     }
 }

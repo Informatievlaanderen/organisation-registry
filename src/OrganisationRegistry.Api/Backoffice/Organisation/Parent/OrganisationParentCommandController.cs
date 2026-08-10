@@ -36,7 +36,7 @@ public class OrganisationParentCommandController : OrganisationRegistryCommandCo
 
         await CommandSender.Send(AddOrganisationParentRequestMapping.Map(internalMessage));
 
-        return CreatedWithLocation(nameof(OrganisationParentController), nameof(OrganisationParentController.Get), new { id = message.OrganisationOrganisationParentId });
+        return CreatedWithLocation(nameof(OrganisationParentController), "Get", new { id = message.OrganisationOrganisationParentId });
     }
 
     /// <summary>Pas de bovenliggende organisatie aan.</summary>

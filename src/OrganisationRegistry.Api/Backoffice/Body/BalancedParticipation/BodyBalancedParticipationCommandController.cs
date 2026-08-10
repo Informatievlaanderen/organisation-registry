@@ -36,6 +36,6 @@ public class BodyBalancedParticipationCommandController : OrganisationRegistryCo
 
         await CommandSender.Send(UpdateBodyBalancedParticipationRequestMapping.Map(internalMessage));
 
-        return OkWithLocationHeader(nameof(BodyBalancedParticipationController), nameof(BodyBalancedParticipationController.Get), new { id = internalMessage.BodyId });
+        return OkWithLocationHeader(nameof(BodyBalancedParticipationController), "Get", new { id = internalMessage.BodyId });
     }
 }

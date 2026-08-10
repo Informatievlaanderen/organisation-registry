@@ -36,7 +36,7 @@ public class OrganisationClassificationCommandController : OrganisationRegistryC
 
         await CommandSender.Send(CreateOrganisationClassificationRequestMapping.Map(message));
 
-        return CreatedWithLocation(nameof(OrganisationClassificationController), nameof(OrganisationClassificationController.Get), new { id = message.Id });
+        return CreatedWithLocation(nameof(OrganisationClassificationController), "Get", new { id = message.Id });
     }
 
     /// <summary>Pas een organisatieclassificatie aan.</summary>
@@ -54,6 +54,6 @@ public class OrganisationClassificationCommandController : OrganisationRegistryC
 
         await CommandSender.Send(UpdateOrganisationClassificationRequestMapping.Map(internalMessage));
 
-        return OkWithLocationHeader(nameof(OrganisationClassificationController), nameof(OrganisationClassificationController.Get), new { id = internalMessage.OrganisationClassificationId });
+        return OkWithLocationHeader(nameof(OrganisationClassificationController), "Get", new { id = internalMessage.OrganisationClassificationId });
     }
 }

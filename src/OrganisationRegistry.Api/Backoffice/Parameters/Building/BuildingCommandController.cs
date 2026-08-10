@@ -35,7 +35,7 @@ public class BuildingCommandController : OrganisationRegistryCommandController
 
         await CommandSender.Send(CreateBuildingRequestMapping.Map(message));
 
-        return CreatedWithLocation(nameof(BuildingController),nameof(BuildingController.Get), new { id = message.Id });
+        return CreatedWithLocation(nameof(BuildingController), "Get", new { id = message.Id });
     }
 
     /// <summary>Pas een gebouw aan.</summary>
@@ -53,6 +53,6 @@ public class BuildingCommandController : OrganisationRegistryCommandController
 
         await CommandSender.Send(UpdateBuildingRequestMapping.Map(internalMessage));
 
-        return OkWithLocationHeader(nameof(BuildingController),nameof(BuildingController.Get), new { id = internalMessage.BuildingId });
+        return OkWithLocationHeader(nameof(BuildingController), "Get", new { id = internalMessage.BuildingId });
     }
 }

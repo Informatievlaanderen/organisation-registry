@@ -37,7 +37,7 @@ public class OrganisationBankAccountCommandController : OrganisationRegistryComm
 
         await CommandSender.Send(AddOrganisationBankAccountRequestMapping.Map(internalMessage));
 
-        return CreatedWithLocation(nameof(OrganisationBankAccountController), nameof(OrganisationBankAccountController.Get), new { id = message.OrganisationBankAccountId });
+        return CreatedWithLocation(nameof(OrganisationBankAccountController), "Get", new { id = message.OrganisationBankAccountId });
     }
 
     /// <summary>Pas een bankrekeningnummer aan voor een organisatie.</summary>

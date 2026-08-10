@@ -36,7 +36,7 @@ public class BodyLifecyclePhaseCommandController : OrganisationRegistryCommandCo
 
         await CommandSender.Send(AddBodyLifecyclePhaseRequestMapping.Map(internalMessage));
 
-        return CreatedWithLocation(nameof(BodyLifecyclePhaseController), nameof(BodyLifecyclePhaseController.Get), new { id = message.BodyLifecyclePhaseId });
+        return CreatedWithLocation(nameof(BodyLifecyclePhaseController), "Get", new { id = message.BodyLifecyclePhaseId });
     }
 
     /// <summary>Pas een levensloopfase aan voor een orgaan.</summary>
@@ -55,6 +55,6 @@ public class BodyLifecyclePhaseCommandController : OrganisationRegistryCommandCo
 
         await CommandSender.Send(UpdateBodyLifecyclePhaseRequestMapping.Map(internalMessage));
 
-        return OkWithLocationHeader(nameof(BodyLifecyclePhaseController), nameof(BodyLifecyclePhaseController.Get), new { id = internalMessage.BodyId });
+        return OkWithLocationHeader(nameof(BodyLifecyclePhaseController), "Get", new { id = internalMessage.BodyId });
     }
 }

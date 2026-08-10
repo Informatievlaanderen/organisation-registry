@@ -35,7 +35,7 @@ public class CapacityCommandController : OrganisationRegistryCommandController
 
         await CommandSender.Send(CreateCapacityRequestMapping.Map(message));
 
-        return CreatedWithLocation(nameof(CapacityController),nameof(CapacityController.Get), new { id = message.Id });
+        return CreatedWithLocation(nameof(CapacityController), "Get", new { id = message.Id });
     }
 
     /// <summary>Pas een hoedanigheid aan.</summary>
@@ -53,7 +53,7 @@ public class CapacityCommandController : OrganisationRegistryCommandController
 
         await CommandSender.Send(UpdateCapacityRequestMapping.Map(internalMessage));
 
-        return OkWithLocationHeader(nameof(CapacityController),nameof(CapacityController.Get), new { id = internalMessage.CapacityId });
+        return OkWithLocationHeader(nameof(CapacityController), "Get", new { id = internalMessage.CapacityId });
     }
 
     /// <summary>Verwijder een hoedanigheid.</summary>

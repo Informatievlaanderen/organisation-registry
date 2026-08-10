@@ -35,7 +35,7 @@ public class RegulationThemeCommandController : OrganisationRegistryCommandContr
 
         await CommandSender.Send(CreateRegulationThemeRequestMapping.Map(message));
 
-        return CreatedWithLocation(nameof(RegulationThemeController), nameof(RegulationThemeController.Get), new { id = message.Id });
+        return CreatedWithLocation(nameof(RegulationThemeController), "Get", new { id = message.Id });
     }
 
     /// <summary>Pas een regelgevingthema aan.</summary>
@@ -53,6 +53,6 @@ public class RegulationThemeCommandController : OrganisationRegistryCommandContr
 
         await CommandSender.Send(UpdateRegulationThemeRequestMapping.Map(internalMessage));
 
-        return OkWithLocationHeader(nameof(RegulationThemeController), nameof(RegulationThemeController.Get), new { id = internalMessage.RegulationThemeId });
+        return OkWithLocationHeader(nameof(RegulationThemeController), "Get", new { id = internalMessage.RegulationThemeId });
     }
 }

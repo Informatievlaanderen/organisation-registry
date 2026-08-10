@@ -36,7 +36,7 @@ public class OrganisationKeyCommandController : OrganisationRegistryCommandContr
 
         await CommandSender.Send(AddOrganisationKeyRequestMapping.Map(internalMessage));
 
-        return CreatedWithLocation(nameof(OrganisationKeyController), nameof(OrganisationKeyController.Get), new { id = message.OrganisationKeyId });
+        return CreatedWithLocation(nameof(OrganisationKeyController), "Get", new { id = message.OrganisationKeyId });
     }
 
     /// <summary>Pas een sleutel aan voor een organisatie.</summary>

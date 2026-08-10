@@ -39,7 +39,7 @@ public class OrganisationOpeningHourCommandController : OrganisationRegistryComm
 
         await CommandSender.Send(AddOrganisationOpeningHourRequestMapping.Map(internalMessage));
 
-        return CreatedWithLocation(nameof(OrganisationOpeningHourController), nameof(OrganisationOpeningHourController.Get), new { id = message.OrganisationOpeningHourId });
+        return CreatedWithLocation(nameof(OrganisationOpeningHourController), "Get", new { id = message.OrganisationOpeningHourId });
     }
 
     /// <summary>Pas een openingsuur aan voor een organisatie.</summary>

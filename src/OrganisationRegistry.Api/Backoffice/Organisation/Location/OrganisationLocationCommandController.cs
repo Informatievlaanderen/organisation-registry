@@ -37,7 +37,7 @@ public class OrganisationLocationCommandController : OrganisationRegistryCommand
 
         await CommandSender.Send(AddOrganisationLocationRequestMapping.Map(internalMessage));
 
-        return CreatedWithLocation(nameof(OrganisationLocationController), nameof(OrganisationLocationController.Get), new { id = message.OrganisationLocationId });
+        return CreatedWithLocation(nameof(OrganisationLocationController), "Get", new { id = message.OrganisationLocationId });
     }
 
     /// <summary>Pas een locatie aan voor een organisatie.</summary>

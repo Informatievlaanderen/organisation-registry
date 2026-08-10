@@ -36,7 +36,7 @@ public class OrganisationContactCommandController : OrganisationRegistryCommandC
 
         await CommandSender.Send(AddOrganisationContactRequestMapping.Map(internalMessage));
 
-        return CreatedWithLocation(nameof(OrganisationContactController), nameof(OrganisationContactController.Get), new { id = message.OrganisationContactId });
+        return CreatedWithLocation(nameof(OrganisationContactController), "Get", new { id = message.OrganisationContactId });
     }
 
     /// <summary>Pas een contact aan voor een organisatie.</summary>

@@ -36,7 +36,7 @@ public class OrganisationLabelCommandController : OrganisationRegistryCommandCon
 
         await CommandSender.Send(AddOrganisationLabelRequestMapping.Map(internalMessage));
 
-        return CreatedWithLocation(nameof(OrganisationLabelController), nameof(OrganisationLabelController.Get), new { id = message.OrganisationLabelId });
+        return CreatedWithLocation(nameof(OrganisationLabelController), "Get", new { id = message.OrganisationLabelId });
     }
 
     /// <summary>Pas een label aan voor een organisatie.</summary>

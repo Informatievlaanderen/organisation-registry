@@ -35,7 +35,7 @@ public class LocationTypeCommandController : OrganisationRegistryCommandControll
 
         await CommandSender.Send(CreateLocationTypeRequestMapping.Map(message));
 
-        return CreatedWithLocation(nameof(LocationTypeController), nameof(LocationTypeController.Get), new { id = message.Id });
+        return CreatedWithLocation(nameof(LocationTypeController), "Get", new { id = message.Id });
     }
 
     /// <summary>Pas een locatietype aan.</summary>
@@ -53,6 +53,6 @@ public class LocationTypeCommandController : OrganisationRegistryCommandControll
 
         await CommandSender.Send(UpdateLocationTypeRequestMapping.Map(internalMessage));
 
-        return OkWithLocationHeader(nameof(LocationTypeController), nameof(LocationTypeController.Get), new { id = internalMessage.LocationTypeId });
+        return OkWithLocationHeader(nameof(LocationTypeController), "Get", new { id = internalMessage.LocationTypeId });
     }
 }

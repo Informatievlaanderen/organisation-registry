@@ -37,7 +37,7 @@ public class OrganisationFormalFrameworkCommandController : OrganisationRegistry
 
         await CommandSender.Send(AddOrganisationFormalFrameworkRequestMapping.Map(internalMessage));
 
-        return CreatedWithLocation(nameof( OrganisationFormalFrameworkController), nameof( OrganisationFormalFrameworkController.Get), new { id = message.OrganisationFormalFrameworkId });
+        return CreatedWithLocation(nameof( OrganisationFormalFrameworkController), "Get", new { id = message.OrganisationFormalFrameworkId });
     }
 
     /// <summary>Pas een toepassingsgebied aan voor een organisatie.</summary>

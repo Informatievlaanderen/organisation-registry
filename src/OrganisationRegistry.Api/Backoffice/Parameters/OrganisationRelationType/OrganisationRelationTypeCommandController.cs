@@ -35,7 +35,7 @@ public class OrganisationRelationTypeCommandController : OrganisationRegistryCom
 
         await CommandSender.Send(CreateOrganisationRelationTypeRequestMapping.Map(message));
 
-        return CreatedWithLocation(nameof(OrganisationRelationTypeController), nameof(OrganisationRelationTypeController.Get), new { id = message.Id });
+        return CreatedWithLocation(nameof(OrganisationRelationTypeController), "Get", new { id = message.Id });
     }
 
     /// <summary>Pas een organisatierelatietype aan.</summary>
@@ -53,6 +53,6 @@ public class OrganisationRelationTypeCommandController : OrganisationRegistryCom
 
         await CommandSender.Send(UpdateOrganisationRelationTypeRequestMapping.Map(internalMessage));
 
-        return OkWithLocationHeader(nameof(OrganisationRelationTypeController), nameof(OrganisationRelationTypeController.Get), new { id = internalMessage.OrganisationRelationTypeId });
+        return OkWithLocationHeader(nameof(OrganisationRelationTypeController), "Get", new { id = internalMessage.OrganisationRelationTypeId });
     }
 }

@@ -37,7 +37,7 @@ public class OrganisationFunctionCommandController : OrganisationRegistryCommand
 
         await CommandSender.Send(AddOrganisationFunctionRequestMapping.Map(internalMessage));
 
-        return CreatedWithLocation(nameof(OrganisationFunctionController), nameof(OrganisationFunctionController.Get), new { id = message.OrganisationFunctionId });
+        return CreatedWithLocation(nameof(OrganisationFunctionController), "Get", new { id = message.OrganisationFunctionId });
     }
 
     /// <summary>Pas een functie aan voor een organisatie.</summary>

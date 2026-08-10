@@ -36,7 +36,7 @@ public class BodyOrganisationCommandController : OrganisationRegistryCommandCont
 
         await CommandSender.Send(AddBodyOrganisationRequestMapping.Map(internalMessage));
 
-        return CreatedWithLocation(nameof(BodyOrganisationController), nameof(BodyOrganisationController.Get), new { id = message.BodyOrganisationId });
+        return CreatedWithLocation(nameof(BodyOrganisationController), "Get", new { id = message.BodyOrganisationId });
     }
 
     /// <summary>Pas een organisatie aan voor een orgaan.</summary>
@@ -55,6 +55,6 @@ public class BodyOrganisationCommandController : OrganisationRegistryCommandCont
 
         await CommandSender.Send(UpdateBodyOrganisationRequestMapping.Map(internalMessage));
 
-        return OkWithLocationHeader(nameof(BodyOrganisationController), nameof(BodyOrganisationController.Get), new { id = internalMessage.BodyId });
+        return OkWithLocationHeader(nameof(BodyOrganisationController), "Get", new { id = internalMessage.BodyId });
     }
 }

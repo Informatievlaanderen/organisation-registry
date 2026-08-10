@@ -35,7 +35,7 @@ public class SeatTypeCommandController : OrganisationRegistryCommandController
 
         await CommandSender.Send(CreateSeatTypeRequestMapping.Map(message));
 
-        return CreatedWithLocation(nameof(SeatTypeController), nameof(SeatTypeController.Get), new { id = message.Id });
+        return CreatedWithLocation(nameof(SeatTypeController), "Get", new { id = message.Id });
     }
 
     /// <summary>Pas een zeteltype aan.</summary>
@@ -53,6 +53,6 @@ public class SeatTypeCommandController : OrganisationRegistryCommandController
 
         await CommandSender.Send(UpdateSeatTypeRequestMapping.Map(internalMessage));
 
-        return OkWithLocationHeader(nameof(SeatTypeController), nameof(SeatTypeController.Get), new { id = internalMessage.SeatTypeId });
+        return OkWithLocationHeader(nameof(SeatTypeController), "Get", new { id = internalMessage.SeatTypeId });
     }
 }

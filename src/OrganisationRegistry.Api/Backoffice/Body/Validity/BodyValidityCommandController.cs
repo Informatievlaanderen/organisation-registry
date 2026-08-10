@@ -36,6 +36,6 @@ public class BodyValidityCommandController : OrganisationRegistryCommandControll
 
         await CommandSender.Send(UpdateBodyValidityRequestMapping.Map(internalMessage));
 
-        return OkWithLocationHeader(nameof(BodyValidityController), nameof(BodyValidityController.Get), new { id = internalMessage.BodyId });
+        return OkWithLocationHeader(nameof(BodyValidityController), "Get", new { id = internalMessage.BodyId });
     }
 }

@@ -35,7 +35,7 @@ public class LabelTypeCommandController : OrganisationRegistryCommandController
 
         await CommandSender.Send(CreateLabelTypeRequestMapping.Map(message));
 
-        return CreatedWithLocation(nameof(LabelTypeController), nameof(LabelTypeController.Get), new { id = message.Id });
+        return CreatedWithLocation(nameof(LabelTypeController), "Get", new { id = message.Id });
     }
 
     /// <summary>Pas een labeltype aan.</summary>
@@ -53,6 +53,6 @@ public class LabelTypeCommandController : OrganisationRegistryCommandController
 
         await CommandSender.Send(UpdateLabelTypeRequestMapping.Map(internalMessage));
 
-        return OkWithLocationHeader(nameof(LabelTypeController), nameof(LabelTypeController.Get), new { id = internalMessage.LabelTypeId });
+        return OkWithLocationHeader(nameof(LabelTypeController), "Get", new { id = internalMessage.LabelTypeId });
     }
 }
