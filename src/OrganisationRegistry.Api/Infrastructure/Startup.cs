@@ -417,6 +417,8 @@ public class Startup
                     },
                     MiddlewareHooks =
                     {
+                        EnableAuthorization = true,
+
                         AfterMiddleware = x => x
                             .UseMiddleware<ApplicationStatusMiddleware>()
                             .UseMiddleware<AddNoCacheHeadersMiddleware>()
