@@ -110,12 +110,8 @@ namespace OrganisationRegistry.Import.Piavo
 
             try
             {
-                if (ImportAlreadyCompleted(client))
-                {
-                    Console.WriteLine("PIAVO import data is already present; skipping import.");
-                    return;
-                }
-
+                // Guard verwijderd: elke import-fase is idempotent via Try() dat duplicate-errors
+                // van de backend swallowt. Zo overlaat een gecrashte eerdere run niet de rest.
                 BuildDatabase();
                 ImportKeys(client);
                 ImportLabels(client);
@@ -142,22 +138,31 @@ namespace OrganisationRegistry.Import.Piavo
             }
         }
 
-        private static bool ImportAlreadyCompleted(OrganisationRegistryAPI client)
+        // Voert een POST-call uit en tolereert duplicate-errors zodat een re-run niet crasht op
+        // reeds geïmporteerde entiteiten. Andere fouten worden gewoon doorgegooid.
+        private static void Try(Action call)
         {
             try
             {
-                using var response = client.HttpClient
-                    .GetAsync(new Uri(client.BaseUri, "organisations/OVO000001"))
-                    .GetAwaiter()
-                    .GetResult();
-
-                return response.IsSuccessStatusCode;
+                call();
             }
-            catch (Exception exception)
+            catch (HttpOperationException httpEx) when (IsDuplicate(httpEx))
             {
-                Console.WriteLine($"Could not determine whether PIAVO import already ran: {exception.Message}");
-                return false;
+                // Reeds aanwezig: skip stil.
             }
+        }
+
+        private static bool IsDuplicate(HttpOperationException httpEx)
+        {
+            var status = (int)httpEx.Response.StatusCode;
+            if (status != 400 && status != 409)
+                return false;
+
+            var body = httpEx.Response.Content ?? string.Empty;
+            return body.Contains("bestaat reeds", StringComparison.OrdinalIgnoreCase)
+                || body.Contains("already exists", StringComparison.OrdinalIgnoreCase)
+                || body.Contains("duplicate", StringComparison.OrdinalIgnoreCase)
+                || body.Contains("PK_", StringComparison.OrdinalIgnoreCase);
         }
 
         private static void ImportOrganisations(IOrganisationRegistryAPI client)
@@ -172,7 +177,7 @@ namespace OrganisationRegistry.Import.Piavo
                 var organisation = sortedOrgs[i];
 
                 Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{organisation.Name}] '{organisation.NewId}'...");
-                client.OrganisationsPost(new CreateOrganisationRequest
+                Try(() => client.OrganisationsPost(new CreateOrganisationRequest
                 {
                     Id = organisation.NewId,
                     Name = organisation.Name,
@@ -181,60 +186,60 @@ namespace OrganisationRegistry.Import.Piavo
                     Description = organisation.Description,
                     ValidFrom = string.IsNullOrWhiteSpace(organisation.StartDate) ? new DateTime?() : DateTime.ParseExact(organisation.StartDate, "yyyy-MM-dd", CultureInfo.InvariantCulture),
                     ValidTo = string.IsNullOrWhiteSpace(organisation.EndDate) ? new DateTime?() : DateTime.ParseExact(organisation.EndDate, "yyyy-MM-dd", CultureInfo.InvariantCulture),
-                }).CheckBadRequest();
+                }));
 
                 Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{organisation.Name}] Keys...");
                 foreach (var key in organisation.OrganisationKeys)
                 {
                     Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{organisation.Name}] Key [{key.Key.Name}] = [{key.KeyValue}]...");
-                    client.OrganisationsByOrganisationIdKeysPost(organisation.NewId, new AddOrganisationKeyRequest
+                    Try(() => client.OrganisationsByOrganisationIdKeysPost(organisation.NewId, new AddOrganisationKeyRequest
                     {
                         OrganisationKeyId = key.NewId,
                         KeyTypeId = key.Key.NewId,
                         KeyValue = key.KeyValue,
                         ValidFrom = string.IsNullOrWhiteSpace(key.StartDate) ? new DateTime?() : DateTime.ParseExact(key.StartDate, "yyyy-MM-dd", CultureInfo.InvariantCulture),
                         ValidTo = string.IsNullOrWhiteSpace(key.EndDate) ? new DateTime?() : DateTime.ParseExact(key.EndDate, "yyyy-MM-dd", CultureInfo.InvariantCulture),
-                    }).CheckBadRequest();
+                    }));
                 }
 
                 Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{organisation.Name}] Labels...");
                 foreach (var label in organisation.OrganisationLabels)
                 {
                     Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{organisation.Name}] Label [{label.Type.Name}] = [{label.Label}]...");
-                    client.OrganisationsByOrganisationIdLabelsPost(organisation.NewId, new AddOrganisationLabelRequest
+                    Try(() => client.OrganisationsByOrganisationIdLabelsPost(organisation.NewId, new AddOrganisationLabelRequest
                     {
                         OrganisationLabelId = label.NewId,
                         LabelTypeId = label.Type.NewId,
                         LabelValue = label.Label,
                         ValidFrom = string.IsNullOrWhiteSpace(label.StartDate) ? new DateTime?() : DateTime.ParseExact(label.StartDate, "yyyy-MM-dd", CultureInfo.InvariantCulture),
                         ValidTo = string.IsNullOrWhiteSpace(label.EndDate) ? new DateTime?() : DateTime.ParseExact(label.EndDate, "yyyy-MM-dd", CultureInfo.InvariantCulture),
-                    }).CheckBadRequest();
+                    }));
                 }
 
                 Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{organisation.Name}] Classifications...");
                 foreach (var classification in organisation.OrganisationClassifications)
                 {
                     Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{organisation.Name}] Classification [{classification.OrganisationClassification.OrganisationClassificationType.Name}] = [{classification.OrganisationClassification.Name}]...");
-                    client.OrganisationsByOrganisationIdClassificationsPost(organisation.NewId, new AddOrganisationOrganisationClassificationRequest
+                    Try(() => client.OrganisationsByOrganisationIdClassificationsPost(organisation.NewId, new AddOrganisationOrganisationClassificationRequest
                     {
                         OrganisationOrganisationClassificationId = classification.NewId,
                         OrganisationClassificationTypeId = classification.OrganisationClassification.OrganisationClassificationType.NewId,
                         OrganisationClassificationId = classification.OrganisationClassification.NewId,
                         ValidFrom = string.IsNullOrWhiteSpace(classification.StartDate) ? new DateTime?() : DateTime.ParseExact(classification.StartDate, "yyyy-MM-dd", CultureInfo.InvariantCulture),
                         ValidTo = string.IsNullOrWhiteSpace(classification.EndDate) ? new DateTime?() : DateTime.ParseExact(classification.EndDate, "yyyy-MM-dd", CultureInfo.InvariantCulture),
-                    }).CheckBadRequest();
+                    }));
                 }
 
                 Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{organisation.Name}] Contacts...");
                 foreach (var contact in organisation.OrganisationContacts)
                 {
                     Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{organisation.Name}] Contact [{contact.ContactType.Name.UpperCaseFirstLetter()}] = [{contact.Contact}]...");
-                    client.OrganisationsByOrganisationIdContactsPost(organisation.NewId, new AddOrganisationContactRequest
+                    Try(() => client.OrganisationsByOrganisationIdContactsPost(organisation.NewId, new AddOrganisationContactRequest
                     {
                         OrganisationContactId = contact.NewId,
                         ContactTypeId = contact.ContactType.NewId,
                         ContactValue = contact.Contact,
-                    }).CheckBadRequest();
+                    }));
                 }
 
                 Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{organisation.Name}] Capacities...");
@@ -242,7 +247,7 @@ namespace OrganisationRegistry.Import.Piavo
                 {
                     var contacts = BuildCapacityContacts(capacity);
                     Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{organisation.Name}] Capacity [{capacity.CapacityType.Name.UpperCaseFirstLetter()}] = [{capacity.Person.FirstName} {capacity.Person.Name}] with {contacts.Count} contacts...");
-                    client.OrganisationsByOrganisationIdCapacitiesPost(organisation.NewId, new AddOrganisationCapacityRequest
+                    Try(() => client.OrganisationsByOrganisationIdCapacitiesPost(organisation.NewId, new AddOrganisationCapacityRequest
                     {
                         OrganisationCapacityId = capacity.NewId,
                         CapacityId = capacity.CapacityType.NewId,
@@ -250,49 +255,49 @@ namespace OrganisationRegistry.Import.Piavo
                         Contacts = contacts,
                         ValidFrom = string.IsNullOrWhiteSpace(capacity.StartDate) ? new DateTime?() : DateTime.ParseExact(capacity.StartDate, "yyyy-MM-dd", CultureInfo.InvariantCulture),
                         ValidTo = string.IsNullOrWhiteSpace(capacity.EndDate) ? new DateTime?() : DateTime.ParseExact(capacity.EndDate, "yyyy-MM-dd", CultureInfo.InvariantCulture),
-                    }).CheckBadRequest();
+                    }));
                 }
 
                 Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{organisation.Name}] Buildings...");
                 foreach (var building in organisation.OrganisationBuildings)
                 {
                     Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{organisation.Name}] Building [{building.Building.Name}]...");
-                    client.OrganisationsByOrganisationIdBuildingsPost(organisation.NewId, new AddOrganisationBuildingRequest
+                    Try(() => client.OrganisationsByOrganisationIdBuildingsPost(organisation.NewId, new AddOrganisationBuildingRequest
                     {
                         OrganisationBuildingId = building.NewId,
                         BuildingId = building.Building.NewId,
                         IsMainBuilding = building.IsMainBuilding == "on",
                         ValidFrom = string.IsNullOrWhiteSpace(building.StartDate) ? new DateTime?() : DateTime.ParseExact(building.StartDate, "yyyy-MM-dd", CultureInfo.InvariantCulture),
                         ValidTo = string.IsNullOrWhiteSpace(building.EndDate) ? new DateTime?() : DateTime.ParseExact(building.EndDate, "yyyy-MM-dd", CultureInfo.InvariantCulture),
-                    }).CheckBadRequest();
+                    }));
                 }
 
                 Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{organisation.Name}] Locations...");
                 foreach (var location in organisation.OrganisationLocations)
                 {
                     Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{organisation.Name}] Location [{location.Location.Street} {location.Location.Number}, {location.Location.PostalCode} {location.Location.PostalCode} {location.Location.Country}]...");
-                    client.OrganisationsByOrganisationIdLocationsPost(organisation.NewId, new AddOrganisationLocationRequest
+                    Try(() => client.OrganisationsByOrganisationIdLocationsPost(organisation.NewId, new AddOrganisationLocationRequest
                     {
                         OrganisationLocationId = location.NewId,
                         LocationId = location.Location.NewId,
                         IsMainLocation = location.IsMainLocation == "1",
                         ValidFrom = string.IsNullOrWhiteSpace(location.StartDate) ? new DateTime?() : DateTime.ParseExact(location.StartDate, "yyyy-MM-dd", CultureInfo.InvariantCulture),
                         ValidTo = string.IsNullOrWhiteSpace(location.EndDate) ? new DateTime?() : DateTime.ParseExact(location.EndDate, "yyyy-MM-dd", CultureInfo.InvariantCulture),
-                    }).CheckBadRequest();
+                    }));
                 }
 
                 Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{organisation.Name}] Functions...");
                 foreach (var function in organisation.OrganisationFunctions)
                 {
                     Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{organisation.Name}] Function [{function.Function.Name.UpperCaseFirstLetter()}] = [{function.Person.FirstName} {function.Person.Name}]...");
-                    client.OrganisationsByOrganisationIdFunctionsPost(organisation.NewId, new AddOrganisationFunctionRequest
+                    Try(() => client.OrganisationsByOrganisationIdFunctionsPost(organisation.NewId, new AddOrganisationFunctionRequest
                     {
                         OrganisationFunctionId = function.NewId,
                         FunctionId = function.Function.NewId,
                         PersonId = function.Person.NewId,
                         ValidFrom = string.IsNullOrWhiteSpace(function.StartDate) ? new DateTime?() : DateTime.ParseExact(function.StartDate, "yyyy-MM-dd", CultureInfo.InvariantCulture),
                         ValidTo = string.IsNullOrWhiteSpace(function.EndDate) ? new DateTime?() : DateTime.ParseExact(function.EndDate, "yyyy-MM-dd", CultureInfo.InvariantCulture),
-                    }).CheckBadRequest();
+                    }));
                 }
 
                 Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{organisation.Name}] Formal Frameworks...");
@@ -302,14 +307,14 @@ namespace OrganisationRegistry.Import.Piavo
                         continue;
 
                     Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{organisation.Name}] Formal Framework [{formalFramework.FormalFramework.Name}] = [{formalFramework.Organisation.Name}]...");
-                    client.OrganisationsByOrganisationIdFormalframeworksPost(organisation.NewId, new AddOrganisationFormalFrameworkRequest
+                    Try(() => client.OrganisationsByOrganisationIdFormalframeworksPost(organisation.NewId, new AddOrganisationFormalFrameworkRequest
                     {
                         OrganisationFormalFrameworkId = formalFramework.NewId,
                         FormalFrameworkId = formalFramework.FormalFramework.NewId,
                         ParentOrganisationId = formalFramework.Organisation.NewId,
                         ValidFrom = string.IsNullOrWhiteSpace(formalFramework.StartDate) ? new DateTime?() : DateTime.ParseExact(formalFramework.StartDate, "yyyy-MM-dd", CultureInfo.InvariantCulture),
                         ValidTo = string.IsNullOrWhiteSpace(formalFramework.EndDate) ? new DateTime?() : DateTime.ParseExact(formalFramework.EndDate, "yyyy-MM-dd", CultureInfo.InvariantCulture),
-                    }).CheckBadRequest();
+                    }));
                 }
             }
             Console.WriteLine();
@@ -343,13 +348,13 @@ namespace OrganisationRegistry.Import.Piavo
                 var organisation = organisationsWithParents[i];
 
                 Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{organisation.Name}] Parents...");
-                client.OrganisationsByOrganisationIdParentsPost(organisation.NewId, new AddOrganisationParentRequest
+                Try(() => client.OrganisationsByOrganisationIdParentsPost(organisation.NewId, new AddOrganisationParentRequest
                 {
                     OrganisationOrganisationParentId = Guid.NewGuid(),
                     ParentOrganisationId = organisation.ParentOrganisation.NewId,
                     ValidFrom = string.IsNullOrWhiteSpace(organisation.ParentOrganisationStartDate) ? new DateTime?() : DateTime.ParseExact(organisation.ParentOrganisationStartDate, "yyyy-MM-dd", CultureInfo.InvariantCulture),
                     ValidTo = string.IsNullOrWhiteSpace(organisation.ParentOrganisationEndDate) ? new DateTime?() : DateTime.ParseExact(organisation.ParentOrganisationEndDate, "yyyy-MM-dd", CultureInfo.InvariantCulture),
-                }).CheckBadRequest();
+                }));
             }
 
             Console.WriteLine();
@@ -366,14 +371,14 @@ namespace OrganisationRegistry.Import.Piavo
                 var organisationClassification = _organisationClassifications[i];
 
                 Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{organisationClassification.Name}]...");
-                client.OrganisationclassificationsPost(new CreateOrganisationClassificationRequest
+                Try(() => client.OrganisationclassificationsPost(new CreateOrganisationClassificationRequest
                 {
                     Id = organisationClassification.NewId,
                     Name = organisationClassification.Name,
                     Order = organisationClassification.Order,
                     Active = organisationClassification.Active.ToLowerInvariant().Trim() == "on",
                     OrganisationClassificationTypeId = organisationClassification.OrganisationClassificationType.NewId,
-                }).CheckBadRequest();
+                }));
             }
             Console.WriteLine();
         }
@@ -389,11 +394,11 @@ namespace OrganisationRegistry.Import.Piavo
                 var organisationClassificationType = _organisationClassificationTypes[i];
 
                 Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{organisationClassificationType.Name}]...");
-                client.OrganisationclassificationtypesPost(new CreateOrganisationClassificationTypeRequest
+                Try(() => client.OrganisationclassificationtypesPost(new CreateOrganisationClassificationTypeRequest
                 {
                     Id = organisationClassificationType.NewId,
                     Name = organisationClassificationType.Name,
-                }).CheckBadRequest();
+                }));
             }
             Console.WriteLine();
         }
@@ -409,11 +414,11 @@ namespace OrganisationRegistry.Import.Piavo
                 var function = _functions[i];
 
                 Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{function.Name.UpperCaseFirstLetter()}]...");
-                client.FunctiontypesPost(new CreateFunctionTypeRequest()
+                Try(() => client.FunctiontypesPost(new CreateFunctionTypeRequest()
                 {
                     Id = function.NewId,
                     Name = function.Name.UpperCaseFirstLetter(),
-                }).CheckBadRequest();
+                }));
             }
             Console.WriteLine();
         }
@@ -434,7 +439,7 @@ namespace OrganisationRegistry.Import.Piavo
                 if (person.Sex == "V") sex = "Female";
                 if (person.Sex == "M") sex = "Male";
 
-                client.PeoplePost(new CreatePersonRequest
+                Try(() => client.PeoplePost(new CreatePersonRequest
                 {
                     Id = person.NewId,
                     FirstName = person.FirstName,
@@ -444,7 +449,7 @@ namespace OrganisationRegistry.Import.Piavo
                         string.IsNullOrWhiteSpace(person.BirthDate)
                             ? new DateTime?()
                             : DateTime.ParseExact(person.BirthDate, "yyyy-MM-dd", CultureInfo.InvariantCulture),
-                }).CheckBadRequest();
+                }));
             }
             Console.WriteLine();
         }
@@ -460,14 +465,14 @@ namespace OrganisationRegistry.Import.Piavo
                 var location = _locations[i];
 
                 Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{location.Street} {location.Number}, {location.PostalCode} {location.City} {location.Country}]...");
-                client.LocationsPost(new CreateLocationRequest
+                Try(() => client.LocationsPost(new CreateLocationRequest
                 {
                     Id = location.NewId,
                     Street = $"{location.Street} {location.Number}",
                     ZipCode = location.PostalCode,
                     City = location.City,
                     Country = location.Country,
-                }).CheckBadRequest();
+                }));
             }
             Console.WriteLine();
         }
@@ -483,12 +488,12 @@ namespace OrganisationRegistry.Import.Piavo
                 var building = _buildings[i];
 
                 Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{building.Name}]...");
-                client.BuildingsPost(new CreateBuildingRequest
+                Try(() => client.BuildingsPost(new CreateBuildingRequest
                 {
                     Id = building.NewId,
                     Name = building.Name,
                     VimId = building.Id,
-                }).CheckBadRequest();
+                }));
             }
             Console.WriteLine();
         }
@@ -504,11 +509,11 @@ namespace OrganisationRegistry.Import.Piavo
                 var key = _keys[i];
 
                 Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{key.Name}]...");
-                client.KeytypesPost(new CreateKeyTypeRequest
+                Try(() => client.KeytypesPost(new CreateKeyTypeRequest
                 {
                     Id = key.NewId,
                     Name = key.Name,
-                }).CheckBadRequest();
+                }));
             }
             Console.WriteLine();
         }
@@ -524,11 +529,11 @@ namespace OrganisationRegistry.Import.Piavo
                 var label = _labels[i];
 
                 Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{label.Name}]...");
-                client.LabeltypesPost(new CreateLabelTypeRequest
+                Try(() => client.LabeltypesPost(new CreateLabelTypeRequest
                 {
                     Id = label.NewId,
                     Name = label.Name,
-                }).CheckBadRequest();
+                }));
             }
             Console.WriteLine();
         }
@@ -541,24 +546,24 @@ namespace OrganisationRegistry.Import.Piavo
             Console.WriteLine($"[{0.ToString().PadLeft(padLength, '0')}/{total}] Importing FormalFrameworks...");
 
             var formalFrameworkCategoryId = Guid.NewGuid();
-            client.FormalframeworkcategoriesPost(new CreateFormalFrameworkCategoryRequest
+            Try(() => client.FormalframeworkcategoriesPost(new CreateFormalFrameworkCategoryRequest
             {
                 Id = formalFrameworkCategoryId,
                 Name = "Organisatie",
-            }).CheckBadRequest();
+            }));
 
             for (var i = 0; i < _formalFramework.Count; i++)
             {
                 var formalFramework = _formalFramework[i];
 
                 Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{formalFramework.Name}]...");
-                client.FormalframeworksPost(new CreateFormalFrameworkRequest
+                Try(() => client.FormalframeworksPost(new CreateFormalFrameworkRequest
                 {
                     Id = formalFramework.NewId,
                     Code = formalFramework.Code,
                     Name = formalFramework.Name,
                     FormalFrameworkCategoryId = formalFrameworkCategoryId,
-                }).CheckBadRequest();
+                }));
             }
             Console.WriteLine();
         }
@@ -574,11 +579,11 @@ namespace OrganisationRegistry.Import.Piavo
                 var contactType = _contactTypes[i];
 
                 Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{contactType.Name.UpperCaseFirstLetter()}]...");
-                client.ContacttypesPost(new CreateContactTypeRequest
+                Try(() => client.ContacttypesPost(new CreateContactTypeRequest
                 {
                     Id = contactType.NewId,
                     Name = contactType.Name.UpperCaseFirstLetter(),
-                }).CheckBadRequest();
+                }));
             }
             Console.WriteLine();
         }
@@ -594,11 +599,11 @@ namespace OrganisationRegistry.Import.Piavo
                 var capacity = _capacities[i];
 
                 Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{capacity.Name.UpperCaseFirstLetter()}]...");
-                client.CapacitiesPost(new CreateCapacityRequest
+                Try(() => client.CapacitiesPost(new CreateCapacityRequest
                 {
                     Id = capacity.NewId,
                     Name = capacity.Name.UpperCaseFirstLetter(),
-                }).CheckBadRequest();
+                }));
             }
             Console.WriteLine();
         }
@@ -718,7 +723,11 @@ namespace OrganisationRegistry.Import.Piavo
 
             List<OrganisationKey> organisationKeys;
             using (var f = File.OpenRead(Path.Combine("ImportFiles", "orgKeys.txt")))
-                organisationKeys = ReadCsv<OrganisationKey>(f, true, "|");//.Distinct(new OrganisationKeyComparer()).ToList();
+                organisationKeys = ReadCsv<OrganisationKey>(f, true, "|")
+                    // Dedupe op business key: bron-CSV bevat dubbele rijen die een duplicate-key
+                    // constraint violation triggeren op OrganisationKeyList (PK_OrganisationKeyList).
+                    .DistinctBy(x => (x.OvoNumber, x.KeyTypeId, x.KeyValue))
+                    .ToList();
 
             var keys = _keys.ToDictionary(x => x.Id, x => x);
             foreach (var organisationKey in organisationKeys)
@@ -1161,15 +1170,6 @@ namespace OrganisationRegistry.Import.Piavo
         public static string UpperCaseFirstLetter(this string str)
         {
             return str.Substring(0, 1).ToUpper() + str.Substring(1);
-        }
-    }
-
-    public static class ResultHelper
-    {
-        public static void CheckBadRequest(this object response)
-        {
-            if (response is BadRequestResult)
-                throw new Exception($"Bad request, import data is crap!");
         }
     }
 }
