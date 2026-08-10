@@ -216,6 +216,25 @@ k8s_yaml('demo/k8s/m2m.yaml')
 k8s_yaml('demo/k8s/nuxt-bff.yaml')
 k8s_yaml('demo/k8s/ingress.yaml')
 
+# Group all Traefik IngressRoutes into a single Tilt resource so they are
+# always applied on `tilt up`, survive `tilt down`/re-up cycles, and are
+# visible/manageable in the Tilt UI. Without this, the IngressRoute objects
+# are loaded silently and can appear to "disappear" after cluster restarts.
+k8s_resource(
+    objects=[
+        'keycloak:ingressroute',
+        'api:ingressroute',
+        'ui:ingressroute',
+        'app:ingressroute',
+        'm2m:ingressroute',
+        'seq:ingressroute',
+        'opensearch:ingressroute',
+        'mock:ingressroute',
+    ],
+    new_name='ingress-routes',
+    labels=['infrastructure'],
+)
+
 k8s_resource('api',
     labels=['applications'],
     resource_deps=['mssql', 'opensearch', 'keycloak', 'wiremock', 'otel-collector'],
