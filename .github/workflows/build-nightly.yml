@@ -37,10 +37,6 @@ jobs:
           MSSQL_TCP_PORT: 21433
         ports:
           - 21433:21433
-      acm:
-        image: ghcr.io/informatievlaanderen/acmidm:1.253.0
-        ports:
-          - 5050:80
       wiremock:
         image: ghcr.io/informatievlaanderen/wiremock:main
         ports:
