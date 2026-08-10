@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
 # Kopieer tool manifest en source
@@ -17,7 +17,7 @@ RUN --mount=type=cache,target=/root/.nuget/packages \
     dotnet publish src/OrganisationRegistry.Api/OrganisationRegistry.Api.csproj \
     -c Release -o /out -p:PublishReadyToRun=false
 
-FROM mcr.microsoft.com/dotnet/aspnet:8.0
+FROM mcr.microsoft.com/dotnet/aspnet:10.0
 WORKDIR /app/src/OrganisationRegistry.Api
 COPY --from=build /out .
 COPY --from=build /src/organisationregistry-api.pfx /app/organisationregistry-api.pfx
