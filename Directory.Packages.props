@@ -21,8 +21,8 @@
     <PackageVersion Include="FluentAssertions" Version="6.5.1" />
     <PackageVersion Include="FluentFTP" Version="33.0.3" />
     <PackageVersion Include="FluentValidation" Version="12.1.1" />
-    <PackageVersion Include="IdentityModel" Version="6.0" />
-    <PackageVersion Include="IdentityModel.AspNetCore.OAuth2Introspection" Version="6.0" />
+    <PackageVersion Include="Duende.IdentityModel" Version="7.0.0" />
+    <PackageVersion Include="IdentityModel.AspNetCore.OAuth2Introspection" Version="6.2.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.8" />
     <PackageVersion Include="Microsoft.AspNetCore.Authorization" Version="10.0.8" />
     <PackageVersion Include="Microsoft.AspNetCore.Connections.Abstractions" Version="10.0.8" />

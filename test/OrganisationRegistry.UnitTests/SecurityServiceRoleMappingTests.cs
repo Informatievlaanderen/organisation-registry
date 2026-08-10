@@ -5,7 +5,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using FluentAssertions;
-using IdentityModel;
+using Duende.IdentityModel;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using OrganisationRegistry.Api.Security;
 using OrganisationRegistry.Infrastructure.Authorization;

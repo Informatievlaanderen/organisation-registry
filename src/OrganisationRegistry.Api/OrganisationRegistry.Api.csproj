@@ -53,7 +53,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
     <PackageReference Include="Microsoft.Data.SqlClient" />
     <PackageReference Include="Microsoft.FeatureManagement.AspNetCore" />
-    <PackageReference Include="IdentityModel" />
+    <PackageReference Include="Duende.IdentityModel" />
     <PackageReference Include="FluentValidation" />
     <PackageReference Include="Autofac.Extensions.DependencyInjection" />
     <PackageReference Include="Newtonsoft.Json" />

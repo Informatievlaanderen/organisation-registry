@@ -6,7 +6,7 @@ using System.Net.Http;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using IdentityModel.Client;
+using Duende.IdentityModel.Client;
 using Infrastructure;
 using Infrastructure.Security;
 using Microsoft.AspNetCore.Mvc;
