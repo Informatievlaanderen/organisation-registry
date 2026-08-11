@@ -44,10 +44,10 @@ namespace OrganisationRegistry.Import.Piavo
             var jwt = args.Length > 1
                 ? args[1]
                 : null;
-            
+
             Console.WriteLine("=== PIAVO Import ===");
             Console.WriteLine($"API: {apiBase}");
-            
+
             try
             {
                 var token = jwt;
@@ -57,7 +57,7 @@ namespace OrganisationRegistry.Import.Piavo
                     token = MintBackofficeJwt(jwtSigningKey, jwtIssuer, jwtAudience, developerVoId);
                     Console.WriteLine("JWT token created successfully");
                 }
-                
+
                 Console.WriteLine("Starting PIAVO import...");
                 Import(apiBase, token);
                 Console.WriteLine("PIAVO import completed successfully!");
@@ -69,7 +69,7 @@ namespace OrganisationRegistry.Import.Piavo
                 Environment.Exit(1);
             }
         }
-        
+
         private static string MintBackofficeJwt(string jwtSigningKey, string jwtIssuer, string jwtAudience, string developerVoId)
         {
             var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSigningKey));
@@ -110,8 +110,8 @@ namespace OrganisationRegistry.Import.Piavo
 
             try
             {
-                // Guard verwijderd: elke import-fase is idempotent via Try() dat duplicate-errors
-                // van de backend swallowt. Zo overlaat een gecrashte eerdere run niet de rest.
+                // Elke import-fase is idempotent via TryCreate(): eerst exists-check, dan create.
+                // Zo crasht een herstart van Tilt niet op reeds geïmporteerde entiteiten.
                 BuildDatabase();
                 ImportKeys(client);
                 ImportLabels(client);
@@ -138,17 +138,116 @@ namespace OrganisationRegistry.Import.Piavo
             }
         }
 
-        // Voert een POST-call uit en tolereert duplicate-errors zodat een re-run niet crasht op
-        // reeds geïmporteerde entiteiten. Andere fouten worden gewoon doorgegooid.
+        // Voert een POST-call uit. Echte duplicates worden geskipped; andere fouten worden
+        // doorgeschoten zodat een echt probleem zichtbaar is.
         private static void Try(Action call)
         {
             try
             {
                 call();
+                Console.WriteLine($"  [Try] POST OK");
             }
             catch (HttpOperationException httpEx) when (IsDuplicate(httpEx))
             {
-                // Reeds aanwezig: skip stil.
+                Console.WriteLine($"  [Try] duplicate ({(int)httpEx.Response.StatusCode}), skipping");
+            }
+        }
+
+        // Checkt eerst of de entiteit al bestaat; zo niet, wordt create uitgevoerd.
+        // Indien create faalt met een duplicate-fout, wordt deze genegeerd.
+        private static void TryCreate(Func<object> existsCheck, Action create)
+        {
+            try
+            {
+                existsCheck();
+                Console.WriteLine($"  [TryCreate] already exists, skipping");
+                return;
+            }
+            catch (HttpOperationException httpEx) when (IsNotFound(httpEx))
+            {
+                // Bestaat nog niet; doorgaan met create.
+            }
+            catch (HttpOperationException httpEx)
+            {
+                // Onverwachte fout bij exists-check; probeer create toch (best-effort).
+                Console.WriteLine($"  [TryCreate] exists-check failed status={(int)httpEx.Response.StatusCode}, trying create anyway");
+            }
+
+            try
+            {
+                create();
+                Console.WriteLine($"  [TryCreate] created");
+            }
+            catch (HttpOperationException httpEx) when (IsDuplicate(httpEx))
+            {
+                Console.WriteLine($"  [TryCreate] duplicate on create ({(int)httpEx.Response.StatusCode}), skipping");
+            }
+        }
+
+        // Deterministic Guid via MD5(salt + natuurlijke sleutel). Zorgt dat re-runs dezelfde
+        // NewId genereren voor dezelfde entity, zodat TryCreate() correct dedupliceert i.p.v.
+        // steeds nieuwe UUIDs te posten (wat leidde tot dubbele rijen bij hernieuwde imports).
+        private static Guid DeterministicGuid(string salt, string naturalKey)
+        {
+            var input = $"piavo:{salt}:{(naturalKey ?? string.Empty).Trim().ToLowerInvariant()}";
+            using var md5 = System.Security.Cryptography.MD5.Create();
+            var hash = md5.ComputeHash(Encoding.UTF8.GetBytes(input));
+            return new Guid(hash);
+        }
+
+        // Reassign NewIds op alle geladen entities zodat ze deterministisch worden per import-run.
+        // Master-data: op naam. Organisaties: op OvoNumber. Nested associaties: parent+child+startdate.
+        private static void AssignDeterministicIds()
+        {
+            foreach (var x in _keys) x.NewId = DeterministicGuid("keytype", x.Name);
+            foreach (var x in _contactTypes) x.NewId = DeterministicGuid("contacttype", x.Name);
+            foreach (var x in _buildings) x.NewId = DeterministicGuid("building", x.Name);
+            foreach (var x in _locations) x.NewId = DeterministicGuid("location", $"{x.Street}|{x.Number}|{x.PostalCode}|{x.City}|{x.Country}");
+            foreach (var x in _people) x.NewId = DeterministicGuid("person", $"{x.FirstName}|{x.Name}|{x.BirthDate}");
+            foreach (var x in _functions) x.NewId = DeterministicGuid("function", x.Name);
+            foreach (var x in _formalFramework) x.NewId = DeterministicGuid("formalframework", x.Name);
+            foreach (var x in _organisationClassificationTypes) x.NewId = DeterministicGuid("classificationtype", x.Name);
+            foreach (var x in _organisationClassifications) x.NewId = DeterministicGuid("classification", $"{x.OrganisationClassificationType?.Name}|{x.Name}");
+            foreach (var x in _labels) x.NewId = DeterministicGuid("labeltype", x.Name);
+            foreach (var x in _capacities) x.NewId = DeterministicGuid("capacitytype", x.Name);
+
+            foreach (var org in _organisations)
+            {
+                org.NewId = DeterministicGuid("organisation", org.OvoNumber);
+                foreach (var k in org.OrganisationKeys)
+                    k.NewId = DeterministicGuid("orgkey", $"{org.OvoNumber}|{k.KeyTypeId}|{k.KeyValue}|{k.StartDate}");
+                foreach (var l in org.OrganisationLabels)
+                    l.NewId = DeterministicGuid("orglabel", $"{org.OvoNumber}|{l.LabelType}|{l.Label}|{l.StartDate}");
+                foreach (var c in org.OrganisationClassifications)
+                    c.NewId = DeterministicGuid("orgclassification", $"{org.OvoNumber}|{c.ClassificationId}|{c.StartDate}");
+                foreach (var c in org.OrganisationContacts)
+                    c.NewId = DeterministicGuid("orgcontact", $"{org.OvoNumber}|{c.Type}|{c.Contact}");
+                foreach (var c in org.OrganisationCapacities)
+                    c.NewId = DeterministicGuid("orgcapacity", $"{org.OvoNumber}|{c.Type}|{c.PersonId}|{c.StartDate}");
+                foreach (var b in org.OrganisationBuildings)
+                    b.NewId = DeterministicGuid("orgbuilding", $"{org.OvoNumber}|{b.BuildingId}|{b.StartDate}");
+                foreach (var l in org.OrganisationLocations)
+                    l.NewId = DeterministicGuid("orglocation", $"{org.OvoNumber}|{l.LocationId}|{l.StartDate}");
+                foreach (var f in org.OrganisationFunctions)
+                    f.NewId = DeterministicGuid("orgfunction", $"{org.OvoNumber}|{f.PersonId}|{f.FunctionId}|{f.StartDate}");
+                foreach (var f in org.OrganisationFormalFrameworks)
+                    f.NewId = DeterministicGuid("orgformalframework", $"{org.OvoNumber}|{f.FormalFrameworkId}|{f.StartDate}");
+            }
+
+            // Dedupe nested collections per organisatie op NewId — bronrijen kunnen dubbel voorkomen
+            // (zelfde OvoNumber|KeyTypeId|KeyValue|StartDate) waardoor deterministische Guid samenvalt.
+            // Zonder dedupe zou TryCreate() dezelfde POST meerdere keren doen en onnodige duplicate-fouten loggen.
+            foreach (var org in _organisations)
+            {
+                org.OrganisationKeys = org.OrganisationKeys.GroupBy(x => x.NewId).Select(g => g.First()).ToList();
+                org.OrganisationLabels = org.OrganisationLabels.GroupBy(x => x.NewId).Select(g => g.First()).ToList();
+                org.OrganisationClassifications = org.OrganisationClassifications.GroupBy(x => x.NewId).Select(g => g.First()).ToList();
+                org.OrganisationContacts = org.OrganisationContacts.GroupBy(x => x.NewId).Select(g => g.First()).ToList();
+                org.OrganisationCapacities = org.OrganisationCapacities.GroupBy(x => x.NewId).Select(g => g.First()).ToList();
+                org.OrganisationBuildings = org.OrganisationBuildings.GroupBy(x => x.NewId).Select(g => g.First()).ToList();
+                org.OrganisationLocations = org.OrganisationLocations.GroupBy(x => x.NewId).Select(g => g.First()).ToList();
+                org.OrganisationFunctions = org.OrganisationFunctions.GroupBy(x => x.NewId).Select(g => g.First()).ToList();
+                org.OrganisationFormalFrameworks = org.OrganisationFormalFrameworks.GroupBy(x => x.NewId).Select(g => g.First()).ToList();
             }
         }
 
@@ -162,7 +261,28 @@ namespace OrganisationRegistry.Import.Piavo
             return body.Contains("bestaat reeds", StringComparison.OrdinalIgnoreCase)
                 || body.Contains("already exists", StringComparison.OrdinalIgnoreCase)
                 || body.Contains("duplicate", StringComparison.OrdinalIgnoreCase)
+                || body.Contains("reeds gekoppeld", StringComparison.OrdinalIgnoreCase)
+                || body.Contains("already coupled", StringComparison.OrdinalIgnoreCase)
+                || body.Contains("niet uniek", StringComparison.OrdinalIgnoreCase)
+                || body.Contains("not unique", StringComparison.OrdinalIgnoreCase)
                 || body.Contains("PK_", StringComparison.OrdinalIgnoreCase);
+        }
+
+        // De API geeft AggregateNotFoundException als 400 BadRequest (niet 404), dus we herkennen
+        // zowel 404 als 400 met een "niet gevonden"-message als "bestaat niet".
+        private static bool IsNotFound(HttpOperationException httpEx)
+        {
+            var status = (int)httpEx.Response.StatusCode;
+            if (status == 404)
+                return true;
+
+            if (status != 400)
+                return false;
+
+            var body = httpEx.Response.Content ?? string.Empty;
+            return body.Contains("werd niet gevonden", StringComparison.OrdinalIgnoreCase)
+                || body.Contains("was not found", StringComparison.OrdinalIgnoreCase)
+                || body.Contains("not found", StringComparison.OrdinalIgnoreCase);
         }
 
         private static void ImportOrganisations(IOrganisationRegistryAPI client)
@@ -177,7 +297,7 @@ namespace OrganisationRegistry.Import.Piavo
                 var organisation = sortedOrgs[i];
 
                 Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{organisation.Name}] '{organisation.NewId}'...");
-                Try(() => client.OrganisationsPost(new CreateOrganisationRequest
+                TryCreate(() => client.OrganisationsByIdGet(organisation.NewId), () => client.OrganisationsPost(new CreateOrganisationRequest
                 {
                     Id = organisation.NewId,
                     Name = organisation.Name,
@@ -192,7 +312,7 @@ namespace OrganisationRegistry.Import.Piavo
                 foreach (var key in organisation.OrganisationKeys)
                 {
                     Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{organisation.Name}] Key [{key.Key.Name}] = [{key.KeyValue}]...");
-                    Try(() => client.OrganisationsByOrganisationIdKeysPost(organisation.NewId, new AddOrganisationKeyRequest
+                    TryCreate(() => client.OrganisationsByOrganisationIdKeysByIdGet(organisation.NewId, key.NewId), () => client.OrganisationsByOrganisationIdKeysPost(organisation.NewId, new AddOrganisationKeyRequest
                     {
                         OrganisationKeyId = key.NewId,
                         KeyTypeId = key.Key.NewId,
@@ -206,7 +326,7 @@ namespace OrganisationRegistry.Import.Piavo
                 foreach (var label in organisation.OrganisationLabels)
                 {
                     Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{organisation.Name}] Label [{label.Type.Name}] = [{label.Label}]...");
-                    Try(() => client.OrganisationsByOrganisationIdLabelsPost(organisation.NewId, new AddOrganisationLabelRequest
+                    TryCreate(() => client.OrganisationsByOrganisationIdLabelsByIdGet(organisation.NewId, label.NewId), () => client.OrganisationsByOrganisationIdLabelsPost(organisation.NewId, new AddOrganisationLabelRequest
                     {
                         OrganisationLabelId = label.NewId,
                         LabelTypeId = label.Type.NewId,
@@ -220,7 +340,7 @@ namespace OrganisationRegistry.Import.Piavo
                 foreach (var classification in organisation.OrganisationClassifications)
                 {
                     Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{organisation.Name}] Classification [{classification.OrganisationClassification.OrganisationClassificationType.Name}] = [{classification.OrganisationClassification.Name}]...");
-                    Try(() => client.OrganisationsByOrganisationIdClassificationsPost(organisation.NewId, new AddOrganisationOrganisationClassificationRequest
+                    TryCreate(() => client.OrganisationsByOrganisationIdClassificationsByIdGet(organisation.NewId, classification.NewId), () => client.OrganisationsByOrganisationIdClassificationsPost(organisation.NewId, new AddOrganisationOrganisationClassificationRequest
                     {
                         OrganisationOrganisationClassificationId = classification.NewId,
                         OrganisationClassificationTypeId = classification.OrganisationClassification.OrganisationClassificationType.NewId,
@@ -234,7 +354,7 @@ namespace OrganisationRegistry.Import.Piavo
                 foreach (var contact in organisation.OrganisationContacts)
                 {
                     Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{organisation.Name}] Contact [{contact.ContactType.Name.UpperCaseFirstLetter()}] = [{contact.Contact}]...");
-                    Try(() => client.OrganisationsByOrganisationIdContactsPost(organisation.NewId, new AddOrganisationContactRequest
+                    TryCreate(() => client.OrganisationsByOrganisationIdContactsByIdGet(organisation.NewId, contact.NewId), () => client.OrganisationsByOrganisationIdContactsPost(organisation.NewId, new AddOrganisationContactRequest
                     {
                         OrganisationContactId = contact.NewId,
                         ContactTypeId = contact.ContactType.NewId,
@@ -247,7 +367,7 @@ namespace OrganisationRegistry.Import.Piavo
                 {
                     var contacts = BuildCapacityContacts(capacity);
                     Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{organisation.Name}] Capacity [{capacity.CapacityType.Name.UpperCaseFirstLetter()}] = [{capacity.Person.FirstName} {capacity.Person.Name}] with {contacts.Count} contacts...");
-                    Try(() => client.OrganisationsByOrganisationIdCapacitiesPost(organisation.NewId, new AddOrganisationCapacityRequest
+                    TryCreate(() => client.OrganisationsByOrganisationIdCapacitiesByIdGet(organisation.NewId, capacity.NewId), () => client.OrganisationsByOrganisationIdCapacitiesPost(organisation.NewId, new AddOrganisationCapacityRequest
                     {
                         OrganisationCapacityId = capacity.NewId,
                         CapacityId = capacity.CapacityType.NewId,
@@ -262,7 +382,7 @@ namespace OrganisationRegistry.Import.Piavo
                 foreach (var building in organisation.OrganisationBuildings)
                 {
                     Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{organisation.Name}] Building [{building.Building.Name}]...");
-                    Try(() => client.OrganisationsByOrganisationIdBuildingsPost(organisation.NewId, new AddOrganisationBuildingRequest
+                    TryCreate(() => client.OrganisationsByOrganisationIdBuildingsByIdGet(organisation.NewId, building.NewId), () => client.OrganisationsByOrganisationIdBuildingsPost(organisation.NewId, new AddOrganisationBuildingRequest
                     {
                         OrganisationBuildingId = building.NewId,
                         BuildingId = building.Building.NewId,
@@ -276,7 +396,7 @@ namespace OrganisationRegistry.Import.Piavo
                 foreach (var location in organisation.OrganisationLocations)
                 {
                     Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{organisation.Name}] Location [{location.Location.Street} {location.Location.Number}, {location.Location.PostalCode} {location.Location.PostalCode} {location.Location.Country}]...");
-                    Try(() => client.OrganisationsByOrganisationIdLocationsPost(organisation.NewId, new AddOrganisationLocationRequest
+                    TryCreate(() => client.OrganisationsByOrganisationIdLocationsByIdGet(organisation.NewId, location.NewId), () => client.OrganisationsByOrganisationIdLocationsPost(organisation.NewId, new AddOrganisationLocationRequest
                     {
                         OrganisationLocationId = location.NewId,
                         LocationId = location.Location.NewId,
@@ -290,7 +410,7 @@ namespace OrganisationRegistry.Import.Piavo
                 foreach (var function in organisation.OrganisationFunctions)
                 {
                     Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{organisation.Name}] Function [{function.Function.Name.UpperCaseFirstLetter()}] = [{function.Person.FirstName} {function.Person.Name}]...");
-                    Try(() => client.OrganisationsByOrganisationIdFunctionsPost(organisation.NewId, new AddOrganisationFunctionRequest
+                    TryCreate(() => client.OrganisationsByOrganisationIdFunctionsByIdGet(organisation.NewId, function.NewId), () => client.OrganisationsByOrganisationIdFunctionsPost(organisation.NewId, new AddOrganisationFunctionRequest
                     {
                         OrganisationFunctionId = function.NewId,
                         FunctionId = function.Function.NewId,
@@ -307,7 +427,7 @@ namespace OrganisationRegistry.Import.Piavo
                         continue;
 
                     Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{organisation.Name}] Formal Framework [{formalFramework.FormalFramework.Name}] = [{formalFramework.Organisation.Name}]...");
-                    Try(() => client.OrganisationsByOrganisationIdFormalframeworksPost(organisation.NewId, new AddOrganisationFormalFrameworkRequest
+                    TryCreate(() => client.OrganisationsByOrganisationIdFormalframeworksByIdGet(organisation.NewId, formalFramework.NewId), () => client.OrganisationsByOrganisationIdFormalframeworksPost(organisation.NewId, new AddOrganisationFormalFrameworkRequest
                     {
                         OrganisationFormalFrameworkId = formalFramework.NewId,
                         FormalFrameworkId = formalFramework.FormalFramework.NewId,
@@ -348,9 +468,10 @@ namespace OrganisationRegistry.Import.Piavo
                 var organisation = organisationsWithParents[i];
 
                 Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{organisation.Name}] Parents...");
-                Try(() => client.OrganisationsByOrganisationIdParentsPost(organisation.NewId, new AddOrganisationParentRequest
+                var parentLinkId = DeterministicGuid("orgparent", $"{organisation.OvoNumber}|{organisation.ParentOrganisation?.OvoNumber}|{organisation.ParentOrganisationStartDate}");
+                TryCreate(() => client.OrganisationsByOrganisationIdParentsByIdGet(organisation.NewId, parentLinkId), () => client.OrganisationsByOrganisationIdParentsPost(organisation.NewId, new AddOrganisationParentRequest
                 {
-                    OrganisationOrganisationParentId = Guid.NewGuid(),
+                    OrganisationOrganisationParentId = parentLinkId,
                     ParentOrganisationId = organisation.ParentOrganisation.NewId,
                     ValidFrom = string.IsNullOrWhiteSpace(organisation.ParentOrganisationStartDate) ? new DateTime?() : DateTime.ParseExact(organisation.ParentOrganisationStartDate, "yyyy-MM-dd", CultureInfo.InvariantCulture),
                     ValidTo = string.IsNullOrWhiteSpace(organisation.ParentOrganisationEndDate) ? new DateTime?() : DateTime.ParseExact(organisation.ParentOrganisationEndDate, "yyyy-MM-dd", CultureInfo.InvariantCulture),
@@ -371,7 +492,7 @@ namespace OrganisationRegistry.Import.Piavo
                 var organisationClassification = _organisationClassifications[i];
 
                 Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{organisationClassification.Name}]...");
-                Try(() => client.OrganisationclassificationsPost(new CreateOrganisationClassificationRequest
+                TryCreate(() => client.OrganisationclassificationsByIdGet(organisationClassification.NewId), () => client.OrganisationclassificationsPost(new CreateOrganisationClassificationRequest
                 {
                     Id = organisationClassification.NewId,
                     Name = organisationClassification.Name,
@@ -394,7 +515,7 @@ namespace OrganisationRegistry.Import.Piavo
                 var organisationClassificationType = _organisationClassificationTypes[i];
 
                 Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{organisationClassificationType.Name}]...");
-                Try(() => client.OrganisationclassificationtypesPost(new CreateOrganisationClassificationTypeRequest
+                TryCreate(() => client.OrganisationclassificationtypesByIdGet(organisationClassificationType.NewId), () => client.OrganisationclassificationtypesPost(new CreateOrganisationClassificationTypeRequest
                 {
                     Id = organisationClassificationType.NewId,
                     Name = organisationClassificationType.Name,
@@ -414,7 +535,7 @@ namespace OrganisationRegistry.Import.Piavo
                 var function = _functions[i];
 
                 Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{function.Name.UpperCaseFirstLetter()}]...");
-                Try(() => client.FunctiontypesPost(new CreateFunctionTypeRequest()
+                TryCreate(() => client.FunctiontypesByIdGet(function.NewId), () => client.FunctiontypesPost(new CreateFunctionTypeRequest()
                 {
                     Id = function.NewId,
                     Name = function.Name.UpperCaseFirstLetter(),
@@ -439,7 +560,7 @@ namespace OrganisationRegistry.Import.Piavo
                 if (person.Sex == "V") sex = "Female";
                 if (person.Sex == "M") sex = "Male";
 
-                Try(() => client.PeoplePost(new CreatePersonRequest
+                TryCreate(() => client.PeopleByIdGet(person.NewId), () => client.PeoplePost(new CreatePersonRequest
                 {
                     Id = person.NewId,
                     FirstName = person.FirstName,
@@ -465,7 +586,7 @@ namespace OrganisationRegistry.Import.Piavo
                 var location = _locations[i];
 
                 Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{location.Street} {location.Number}, {location.PostalCode} {location.City} {location.Country}]...");
-                Try(() => client.LocationsPost(new CreateLocationRequest
+                TryCreate(() => client.LocationsByIdGet(location.NewId), () => client.LocationsPost(new CreateLocationRequest
                 {
                     Id = location.NewId,
                     Street = $"{location.Street} {location.Number}",
@@ -488,7 +609,7 @@ namespace OrganisationRegistry.Import.Piavo
                 var building = _buildings[i];
 
                 Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{building.Name}]...");
-                Try(() => client.BuildingsPost(new CreateBuildingRequest
+                TryCreate(() => client.BuildingsByIdGet(building.NewId), () => client.BuildingsPost(new CreateBuildingRequest
                 {
                     Id = building.NewId,
                     Name = building.Name,
@@ -509,7 +630,7 @@ namespace OrganisationRegistry.Import.Piavo
                 var key = _keys[i];
 
                 Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{key.Name}]...");
-                Try(() => client.KeytypesPost(new CreateKeyTypeRequest
+                TryCreate(() => client.KeytypesByIdGet(key.NewId), () => client.KeytypesPost(new CreateKeyTypeRequest
                 {
                     Id = key.NewId,
                     Name = key.Name,
@@ -529,7 +650,7 @@ namespace OrganisationRegistry.Import.Piavo
                 var label = _labels[i];
 
                 Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{label.Name}]...");
-                Try(() => client.LabeltypesPost(new CreateLabelTypeRequest
+                TryCreate(() => client.LabeltypesByIdGet(label.NewId), () => client.LabeltypesPost(new CreateLabelTypeRequest
                 {
                     Id = label.NewId,
                     Name = label.Name,
@@ -545,8 +666,8 @@ namespace OrganisationRegistry.Import.Piavo
 
             Console.WriteLine($"[{0.ToString().PadLeft(padLength, '0')}/{total}] Importing FormalFrameworks...");
 
-            var formalFrameworkCategoryId = Guid.NewGuid();
-            Try(() => client.FormalframeworkcategoriesPost(new CreateFormalFrameworkCategoryRequest
+            var formalFrameworkCategoryId = DeterministicGuid("formalframeworkcategory", "Organisatie");
+            TryCreate(() => client.FormalframeworkcategoriesByIdGet(formalFrameworkCategoryId), () => client.FormalframeworkcategoriesPost(new CreateFormalFrameworkCategoryRequest
             {
                 Id = formalFrameworkCategoryId,
                 Name = "Organisatie",
@@ -557,7 +678,7 @@ namespace OrganisationRegistry.Import.Piavo
                 var formalFramework = _formalFramework[i];
 
                 Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{formalFramework.Name}]...");
-                Try(() => client.FormalframeworksPost(new CreateFormalFrameworkRequest
+                TryCreate(() => client.FormalframeworksByIdGet(formalFramework.NewId), () => client.FormalframeworksPost(new CreateFormalFrameworkRequest
                 {
                     Id = formalFramework.NewId,
                     Code = formalFramework.Code,
@@ -579,7 +700,7 @@ namespace OrganisationRegistry.Import.Piavo
                 var contactType = _contactTypes[i];
 
                 Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{contactType.Name.UpperCaseFirstLetter()}]...");
-                Try(() => client.ContacttypesPost(new CreateContactTypeRequest
+                TryCreate(() => client.ContacttypesByIdGet(contactType.NewId), () => client.ContacttypesPost(new CreateContactTypeRequest
                 {
                     Id = contactType.NewId,
                     Name = contactType.Name.UpperCaseFirstLetter(),
@@ -599,7 +720,7 @@ namespace OrganisationRegistry.Import.Piavo
                 var capacity = _capacities[i];
 
                 Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{capacity.Name.UpperCaseFirstLetter()}]...");
-                Try(() => client.CapacitiesPost(new CreateCapacityRequest
+                TryCreate(() => client.CapacitiesByIdGet(capacity.NewId), () => client.CapacitiesPost(new CreateCapacityRequest
                 {
                     Id = capacity.NewId,
                     Name = capacity.Name.UpperCaseFirstLetter(),
@@ -723,11 +844,7 @@ namespace OrganisationRegistry.Import.Piavo
 
             List<OrganisationKey> organisationKeys;
             using (var f = File.OpenRead(Path.Combine("ImportFiles", "orgKeys.txt")))
-                organisationKeys = ReadCsv<OrganisationKey>(f, true, "|")
-                    // Dedupe op business key: bron-CSV bevat dubbele rijen die een duplicate-key
-                    // constraint violation triggeren op OrganisationKeyList (PK_OrganisationKeyList).
-                    .DistinctBy(x => (x.OvoNumber, x.KeyTypeId, x.KeyValue))
-                    .ToList();
+                organisationKeys = ReadCsv<OrganisationKey>(f, true, "|").ToList();
 
             var keys = _keys.ToDictionary(x => x.Id, x => x);
             foreach (var organisationKey in organisationKeys)
@@ -782,6 +899,8 @@ namespace OrganisationRegistry.Import.Piavo
 
             foreach (var organisationFormalFramework in organisationFormalFrameworks)
                 organisations[organisationFormalFramework.SourceOrganisationId].OrganisationFormalFrameworks.Add(organisationFormalFramework);
+
+            AssignDeterministicIds();
         }
 
         private static List<T> ReadCsv<T>(Stream stream, bool useSingleLineHeaderInCsv, string csvDelimiter)
