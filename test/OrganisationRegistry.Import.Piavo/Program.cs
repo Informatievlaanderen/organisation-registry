@@ -126,6 +126,7 @@ namespace OrganisationRegistry.Import.Piavo
                 ImportFormalFrameworks(client);
                 ImportContactTypes(client);
                 ImportCapacityTypes(client);
+                ImportPurposes(client);
                 ImportBuildings(client);
                 ImportLocations(client);
                 ImportLocationTypes(client, MaatschappelijkeZetelGuid);
@@ -676,7 +677,16 @@ namespace OrganisationRegistry.Import.Piavo
             }
             Console.WriteLine();
         }
-
+        private static void ImportPurposes(IOrganisationRegistryAPI client)
+        {
+            var id = Guid.NewGuid();
+            client.PurposesPost(new CreatePurposeRequest
+            {
+                Id = id,
+                Name = id.ToString(),
+            }).CheckBadRequest();
+            Console.WriteLine();
+        }
         private static void BuildDatabase()
         {
             using (var f = File.OpenRead(Path.Combine("ImportFiles", "Keys.txt")))
