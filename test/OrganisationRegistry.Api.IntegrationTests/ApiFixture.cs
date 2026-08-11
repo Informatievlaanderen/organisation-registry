@@ -35,7 +35,7 @@ public class ApiFixture : IDisposable, IAsyncLifetime
     private const string DefaultKeycloakAuthority = "http://keycloak.localhost:9080/realms/wegwijs";
     private const string ApiBaseUrlConfigurationKey = "ApiIntegrationTests:ApiBaseUrl";
     private static readonly string[] DateResponseKeys = { "date", "validFrom", "validTo" };
-    private static readonly TimeSpan ImportReadinessTimeout = TimeSpan.FromMinutes(3);
+    private static readonly TimeSpan ImportReadinessTimeout = TimeSpan.FromSeconds(30);
     private static readonly TimeSpan ReadinessPollInterval = TimeSpan.FromSeconds(2);
     private Guid? _importedParentOrganisationId;
     private Guid? _importedChildOrganisationId;
@@ -241,15 +241,18 @@ public class ApiFixture : IDisposable, IAsyncLifetime
 
     private async Task EnsureTiltApiIsAvailable()
     {
+        var statusUri = "/v1/status";
         try
         {
-            using var response = await HttpClient.GetAsync("/v1/status");
+            using var response = await HttpClient.GetAsync(statusUri);
             response.EnsureSuccessStatusCode();
         }
         catch (Exception exception)
         {
             throw new InvalidOperationException(
-                $"API integration tests verwachten een draaiende Tilt-omgeving op '{ApiEndpoint}'. " +
+                $"API integration tests verwachten een draaiende Tilt-omgeving op '{new UriBuilder(HttpClient.BaseAddress)
+                {
+                    Path = statusUri}}'. " +
                 "Start Tilt eerst, bijvoorbeeld met 'tilt up'.",
                 exception);
         }

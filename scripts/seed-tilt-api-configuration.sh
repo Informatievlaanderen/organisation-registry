@@ -16,6 +16,9 @@ MSSQL_PASSWORD="$(
     -o jsonpath='{.data.mssql-sa-password}' | base64 --decode
 )"
 KBO_CERTIFICATE="$(
+  # The secret value is the base64-encoded PFX string, which Kubernetes then
+  # base64-encodes again for storage. Decode once to recover the original
+  # base64 string that the API expects for Api:KboCertificate.
   "${KUBECTL}" get secret demo-secrets \
     -n "${NAMESPACE}" \
     -o jsonpath='{.data.kbo-certificate}' | base64 --decode
