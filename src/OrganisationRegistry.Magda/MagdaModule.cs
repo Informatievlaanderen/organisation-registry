@@ -52,7 +52,7 @@ public class MagdaModule : Module
 public class MagdaConfiguration
 {
     public MagdaClientCertificate? ClientCertificate { get; }
-    public int Timeout { get; }
+    public int Timeout { get; init; }
 
     public string Sender { get; }
     public string Capacity { get; }
@@ -73,7 +73,7 @@ public class MagdaConfiguration
         string repertoriumCapacity)
     {
         ClientCertificate = clientCertificate;
-        Timeout = timeout;
+        Timeout = timeout == 0 ? 30 : timeout;
         Sender = sender;
         Capacity = capacity;
         Recipient = recipient;

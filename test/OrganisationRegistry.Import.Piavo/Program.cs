@@ -15,6 +15,8 @@ namespace OrganisationRegistry.Import.Piavo
 
     public class Program
     {
+        // scripts/seed-tilt-api-configuration.sh
+        private static readonly Guid MaatschappelijkeZetelGuid = Guid.Parse("a7e93f04-0004-0000-0000-000000000001");
         private static List<Key> _keys;
         private static List<ContactType> _contactTypes;
         private static List<Building> _buildings;
@@ -44,10 +46,10 @@ namespace OrganisationRegistry.Import.Piavo
             var jwt = args.Length > 1
                 ? args[1]
                 : null;
-            
+
             Console.WriteLine("=== PIAVO Import ===");
             Console.WriteLine($"API: {apiBase}");
-            
+
             try
             {
                 var token = jwt;
@@ -57,7 +59,7 @@ namespace OrganisationRegistry.Import.Piavo
                     token = MintBackofficeJwt(jwtSigningKey, jwtIssuer, jwtAudience, developerVoId);
                     Console.WriteLine("JWT token created successfully");
                 }
-                
+
                 Console.WriteLine("Starting PIAVO import...");
                 Import(apiBase, token);
                 Console.WriteLine("PIAVO import completed successfully!");
@@ -69,7 +71,7 @@ namespace OrganisationRegistry.Import.Piavo
                 Environment.Exit(1);
             }
         }
-        
+
         private static string MintBackofficeJwt(string jwtSigningKey, string jwtIssuer, string jwtAudience, string developerVoId)
         {
             var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSigningKey));
@@ -100,7 +102,6 @@ namespace OrganisationRegistry.Import.Piavo
             var tokenHandler = new JwtSecurityTokenHandler();
             return tokenHandler.WriteToken(tokenHandler.CreateToken(descriptor));
         }
-
         public static void Import(string endpoint, string jwt)
         {
             var baseAddress = new Uri($"{endpoint}/v1/");
@@ -115,7 +116,6 @@ namespace OrganisationRegistry.Import.Piavo
                     Console.WriteLine("PIAVO import data is already present; skipping import.");
                     return;
                 }
-
                 BuildDatabase();
                 AssignDeterministicIds();
                 ImportKeys(client);
@@ -126,6 +126,7 @@ namespace OrganisationRegistry.Import.Piavo
                 ImportCapacityTypes(client);
                 ImportBuildings(client);
                 ImportLocations(client);
+                ImportLocationTypes(client, MaatschappelijkeZetelGuid);
                 ImportOrganisationClassificationTypes(client);
                 ImportOrganisationClassifications(client);
 
@@ -516,6 +517,20 @@ namespace OrganisationRegistry.Import.Piavo
                     Country = location.Country,
                 }).CheckBadRequest();
             }
+            Console.WriteLine();
+        }
+
+        private static void ImportLocationTypes(IOrganisationRegistryAPI client, Guid maatschappelijkeZetelLocationType)
+        {
+            var total = _locations.Count;
+            var padLength = total.ToString().Length;
+            Console.WriteLine($"[{0.ToString().PadLeft(padLength, '0')}/{total}] Importing LocationTypes...");
+            client.LocationtypesPost(new CreateLocationTypeRequest
+            {
+                Id = maatschappelijkeZetelLocationType,
+                Name = "Maatschappelijke zetel volgens KBO"
+            }).CheckBadRequest();
+
             Console.WriteLine();
         }
 
