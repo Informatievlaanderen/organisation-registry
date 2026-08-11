@@ -1,3 +1,11 @@
+# [1.331.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.330.0...v1.331.0) (2026-08-11)
+
+
+### Features
+
+* or-3304 throw KboOrganisationNotFound when organisation not found in magda ([71dc9ab](https://github.com/informatievlaanderen/organisation-registry/commit/71dc9ab94f18caabe5b2b2f231ff4ef2f00a57fe))
+* or-3304 Validate KBO number input in backoffice ([e21d59d](https://github.com/informatievlaanderen/organisation-registry/commit/e21d59dd5fc44d31f8fbe8e5b4d928b0a82a569b))
+
 # [1.330.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.329.3...v1.330.0) (2026-07-30)
 
 
