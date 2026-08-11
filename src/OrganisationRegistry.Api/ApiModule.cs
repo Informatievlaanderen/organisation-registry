@@ -4,8 +4,8 @@ using System;
 using System.Linq;
 using System.Reflection;
 using Autofac;
+using Autofac.Extensions.DependencyInjection;
 using Be.Vlaanderen.Basisregisters.Api.Exceptions;
-using Configuration.Database;
 using ElasticSearch;
 using Infrastructure.Search;
 using Infrastructure.Security;
@@ -47,8 +47,7 @@ public class ApiModule : Module
             .RegisterModule(new InfrastructureModule(_configuration, ProvideScopedServiceProvider, _services))
             .RegisterModule(new OrganisationRegistryModule())
             .RegisterModule(new ElasticSearchModule(_configuration, _services))
-            .RegisterModule(new SqlServerModule(_configuration, _services, _loggerFactory))
-            .RegisterModule(new ConfigurationDatabaseModule(_configuration, _services, _loggerFactory));
+            .RegisterModule(new SqlServerModule(_configuration, _services, _loggerFactory));
 
         builder
             .RegisterType<SearchConstants>().SingleInstance();

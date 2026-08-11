@@ -45,6 +45,10 @@ spec:
           value: "http://wiremock:8080"
         - name: Api__KboV2RegisteredOfficeLocationTypeId
           value: "a7e93f04-0004-0000-0000-000000000001"
+        - name: Api__KboV2LegalFormOrganisationClassificationTypeId
+          value: "a7e93f06-0006-0000-0000-000000000001"
+        - name: Api__KboV2FormalNameLabelTypeId
+          value: "a7e93f02-0002-0000-0000-000000000004"
         - name: Api__KboCertificate
           valueFrom:
             secretKeyRef:

@@ -17,10 +17,10 @@ namespace OrganisationRegistry.SqlServer.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.8")
+                .HasAnnotation("ProductVersion", "6.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Body.BodyBodyClassificationListItem", b =>
                 {
@@ -1178,7 +1178,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Number"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Number"), 1L, 1);
 
                     b.Property<DateTime>("Timestamp")
                         .HasColumnType("datetime2");
@@ -1877,7 +1877,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<Guid>("OrganisationClassificationId")
                         .HasColumnType("uniqueidentifier");
@@ -2110,7 +2110,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<Guid>("OrganisationFormalFrameworkId")
                         .HasColumnType("uniqueidentifier");
@@ -2290,7 +2290,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<Guid?>("FormalFrameworkId")
                         .HasColumnType("uniqueidentifier");
@@ -2918,7 +2918,8 @@ namespace OrganisationRegistry.SqlServer.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<Guid>("PersonId")
+                    b.Property<Guid?>("PersonId")
+                        .IsRequired()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("ValidFrom")

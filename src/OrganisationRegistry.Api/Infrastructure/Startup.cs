@@ -23,6 +23,7 @@ using Microsoft.AspNetCore.Hosting;
 using Asp.Versioning.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -31,6 +32,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.FeatureManagement;
+using OrganisationRegistry.Configuration.Database;
+using OrganisationRegistry.Configuration.Database.Configuration;
 using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi;
 using Newtonsoft.Json;
@@ -85,7 +88,23 @@ public class Startup
             .Configure<TogglesConfigurationSection>(_configuration.GetSection(TogglesConfigurationSection.Name))
             .Configure<SqlServer.Configuration.SqlServerConfiguration>(_configuration.GetSection(SqlServer.Configuration.SqlServerConfiguration.Section))
             .Configure<OrganisationRegistry.ElasticSearch.Configuration.ElasticSearchConfiguration>(_configuration.GetSection(OrganisationRegistry.ElasticSearch.Configuration.ElasticSearchConfiguration.Section))
-            .Configure<OrganisationRegistry.Configuration.Database.Configuration.ConfigurationDatabaseConfiguration>(_configuration.GetSection(OrganisationRegistry.Configuration.Database.Configuration.ConfigurationDatabaseConfiguration.Section));
+            .Configure<ConfigurationDatabaseConfiguration>(_configuration.GetSection(ConfigurationDatabaseConfiguration.Section));
+
+        var configurationDatabaseConfiguration = _configuration.GetSection(ConfigurationDatabaseConfiguration.Section).Get<ConfigurationDatabaseConfiguration>();
+        if (!string.IsNullOrWhiteSpace(configurationDatabaseConfiguration?.ConnectionString))
+        {
+            services.AddDbContext<ConfigurationContext>(options => options
+                .UseSqlServer(configurationDatabaseConfiguration.ConnectionString, sqlServerOptions =>
+                {
+                    sqlServerOptions
+                        .EnableRetryOnFailure()
+                        .MigrationsHistoryTable(MigrationTables.Default, WellknownSchemas.BackofficeSchema);
+                }));
+        }
+        else
+        {
+            services.AddDbContext<ConfigurationContext>(options => options.UseInMemoryDatabase(Guid.NewGuid().ToString()));
+        }
 
         JsonConvert.DefaultSettings =
             () => JsonSerializerSettingsProvider.CreateSerializerSettings().ConfigureForOrganisationRegistry();
