@@ -17,6 +17,8 @@ namespace OrganisationRegistry.Import.Piavo
     {
         // scripts/seed-tilt-api-configuration.sh
         private static readonly Guid MaatschappelijkeZetelGuid = Guid.Parse("a7e93f04-0004-0000-0000-000000000001");
+        private static readonly Guid RechtsvormGuid = Guid.Parse("a7e93f06-0006-0000-0000-000000000001");
+        private static readonly Guid FormeleBenamingGuid = Guid.Parse("a7e93f02-0002-0000-0000-000000000004");
         private static List<Key> _keys;
         private static List<ContactType> _contactTypes;
         private static List<Building> _buildings;
@@ -443,6 +445,11 @@ namespace OrganisationRegistry.Import.Piavo
                     Name = organisationClassificationType.Name,
                 }).CheckBadRequest();
             }
+            client.OrganisationclassificationtypesPost(new CreateOrganisationClassificationTypeRequest
+            {
+                Id = RechtsvormGuid,
+                Name = "Rechtsvorm",
+            }).CheckBadRequest();
             Console.WriteLine();
         }
 
@@ -592,6 +599,11 @@ namespace OrganisationRegistry.Import.Piavo
                     Name = label.Name,
                 }).CheckBadRequest();
             }
+            client.LabeltypesPost(new CreateLabelTypeRequest
+            {
+                Id = FormeleBenamingGuid,
+                Name =  "Formele Benaming",
+            }).CheckBadRequest();
             Console.WriteLine();
         }
 
