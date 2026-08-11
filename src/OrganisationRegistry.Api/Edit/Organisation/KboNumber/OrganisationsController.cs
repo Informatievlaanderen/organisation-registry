@@ -79,18 +79,14 @@ public class OrganisationsController : EditApiController
 
     private IActionResult ExistingOrganisationResponse(OrganisationDetailItem organisation)
     {
-        var foundLocation = Action<OrganisationDetailController>(
-            nameof(OrganisationDetailController.Get),
-            new { id = organisation.Id })!;
+        var foundLocation = $"/v1/organisations/{organisation.Id}";
         var foundResponse = new CreateOrganisationByKboNumberResponse(organisation.OvoNumber);
         return OkValueWithLocationHeader(foundLocation, foundResponse);
     }
 
     private async Task<IActionResult> CreatedResponse(Guid organisationId, string ovoNumber)
     {
-        var createdLocation = Action<OrganisationDetailController>(
-            nameof(OrganisationDetailController.Get),
-            new { id = organisationId })!;
+        var createdLocation = $"/v1/organisations/{organisationId}";
         var createdResponse = new CreateOrganisationByKboNumberResponse(ovoNumber);
         return await CreatedAsync(createdLocation, createdResponse);
     }

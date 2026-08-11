@@ -21,7 +21,7 @@ public class OrganisationDetailController : OrganisationRegistryController
     [HttpGet("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid id)
+    public async Task<IActionResult> GetById([FromServices] OrganisationRegistryContext context, [FromRoute] Guid id)
     {
         var organisation = await context.OrganisationDetail.FirstOrDefaultAsync(x => x.Id == id);
 
@@ -37,7 +37,7 @@ public class OrganisationDetailController : OrganisationRegistryController
     [HttpGet("{ovoNumber}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] string ovoNumber)
+    public async Task<IActionResult> GetByOvoNumber([FromServices] OrganisationRegistryContext context, [FromRoute] string ovoNumber)
     {
         var organisation = await context.OrganisationDetail.FirstOrDefaultAsync(x => x.OvoNumber == ovoNumber);
 
