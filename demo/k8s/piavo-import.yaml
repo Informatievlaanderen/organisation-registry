@@ -4,10 +4,11 @@ metadata:
   name: piavo-import
   namespace: wegwijs-demo
 spec:
-  ttlSecondsAfterFinished: 300
+  ttlSecondsAfterFinished: 3600
+  backoffLimit: 0
   template:
     spec:
-      restartPolicy: OnFailure
+      restartPolicy: Never
       initContainers:
       - name: wait-for-api
         image: busybox
