@@ -22,7 +22,7 @@ echo "Clearing OrganisationRegistry database..."
     -S localhost \
     -U sa \
     -P "${MSSQL_PASSWORD}" \
-    -Q "ALTER DATABASE [OrganisationRegistry] SET SINGLE_USER WITH ROLLBACK IMMEDIATE; DROP DATABASE [OrganisationRegistry]; CREATE DATABASE [OrganisationRegistry];" \
+    -Q "IF EXISTS (SELECT 1 FROM sys.databases WHERE name = 'OrganisationRegistry') BEGIN ALTER DATABASE [OrganisationRegistry] SET SINGLE_USER WITH ROLLBACK IMMEDIATE; DROP DATABASE [OrganisationRegistry]; END; CREATE DATABASE [OrganisationRegistry];" \
     -b
 
 echo "Database cleared."
