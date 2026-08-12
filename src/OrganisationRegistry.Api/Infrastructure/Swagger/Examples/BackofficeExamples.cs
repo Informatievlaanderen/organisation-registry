@@ -737,3 +737,8 @@ public class ConfigurationListExamples : IExamplesProvider<List<ConfigurationLis
             },
         };
 }
+
+public class MeResponsOkExamples: IExamplesProvider<object>
+{
+    public object GetExamples() => Auth.Responses.MeResponse.Create("John Do", "AlgemeenBeheerder", []);
+}
