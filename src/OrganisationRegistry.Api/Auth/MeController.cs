@@ -7,6 +7,7 @@ using Be.Vlaanderen.Basisregisters.Api.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Infrastructure;
 using Infrastructure.Swagger.Examples;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using OrganisationRegistry.Api.Infrastructure.Security;
 using OrganisationRegistry.Infrastructure;
@@ -22,7 +23,6 @@ using ForbiddenResponseExamples = Infrastructure.Swagger.Examples.ForbiddenRespo
 [ApiExplorerSettings(GroupName = "Authorization")]
 [Consumes("application/json")]
 [Produces("application/json")]
-[OrganisationRegistryAuthorize(Role.AlgemeenBeheerder, Role.VlimpersBeheerder, Role.DecentraalBeheerder, Role.OrgaanBeheerder, Role.RegelgevingBeheerder, Role.Orafin, Role.CjmBeheerder, Role.Developer, Role.AutomatedTask)]
 public class MeController(ISecurityService securityService) : OrganisationRegistryController
 {
     /// <summary>In Flemish</summary>
