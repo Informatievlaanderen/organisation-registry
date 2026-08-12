@@ -22,10 +22,6 @@ services:
       - "9600:9600"
     volumes:
       - opensearch-data:/usr/share/opensearch/data
-  acm:
-    build: src/IdentityServer/
-    ports:
-      - "5050:80"
   wiremock:
     image: wiremock/wiremock:2.32.0
     container_name: or_wiremock

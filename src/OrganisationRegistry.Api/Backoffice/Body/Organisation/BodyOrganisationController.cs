@@ -27,6 +27,7 @@ public class BodyOrganisationController : OrganisationRegistryController
     [HttpGet]
     [ProducesResponseType(typeof(List<BodyOrganisationListItem>), StatusCodes.Status200OK)]
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(BodyOrganisationListExamples))]
+    [ActionName("List")]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid bodyId)
     {
         var filtering = Request.ExtractFilteringRequest<BodyOrganisationListItemFilter>();

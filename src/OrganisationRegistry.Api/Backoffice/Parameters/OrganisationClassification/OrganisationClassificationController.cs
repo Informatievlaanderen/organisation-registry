@@ -28,6 +28,7 @@ public class OrganisationClassificationController : OrganisationRegistryControll
     [HttpGet]
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(OrganisationClassificationListExamples))]
     [ProducesResponseType(typeof(List<OrganisationClassificationListItem>), StatusCodes.Status200OK)]
+    [ActionName("List")]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<OrganisationClassificationListItemFilter>();

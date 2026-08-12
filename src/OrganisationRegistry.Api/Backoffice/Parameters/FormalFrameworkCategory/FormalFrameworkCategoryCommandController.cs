@@ -35,7 +35,7 @@ public class FormalFrameworkCategoryCommandController : OrganisationRegistryComm
 
         await CommandSender.Send(CreateFormalFrameworkCategoryRequestMapping.Map(message));
 
-        return CreatedWithLocation(nameof(FormalFrameworkCategoryController), nameof(FormalFrameworkCategoryController.Get), new { id = message.Id });
+        return CreatedWithLocation(nameof(FormalFrameworkCategoryController), "Get", new { id = message.Id });
     }
 
     /// <summary>Pas een toepassingsgebiedcategorie aan.</summary>
@@ -53,6 +53,6 @@ public class FormalFrameworkCategoryCommandController : OrganisationRegistryComm
 
         await CommandSender.Send(UpdateFormalFrameworkCategoryRequestMapping.Map(internalMessage));
 
-        return OkWithLocationHeader(nameof(FormalFrameworkCategoryController), nameof(FormalFrameworkCategoryController.Get), new { id = internalMessage.FormalFrameworkCategoryId });
+        return OkWithLocationHeader(nameof(FormalFrameworkCategoryController), "Get", new { id = internalMessage.FormalFrameworkCategoryId });
     }
 }

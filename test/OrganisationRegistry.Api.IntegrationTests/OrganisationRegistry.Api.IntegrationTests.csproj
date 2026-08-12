@@ -44,7 +44,6 @@
   </Target>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
-    <PackageReference Include="Microsoft.DotNet.InternalAbstractions" />
     <PackageReference Include="Microsoft.AspNetCore.TestHost" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
     <PackageReference Include="Newtonsoft.Json" />
@@ -61,7 +60,6 @@
     <PackageReference Include="AutoFixture" />
     <PackageReference Include="FluentAssertions" />
     <PackageReference Include="Moq" />
-    <PackageReference Include="System.Diagnostics.DiagnosticSource" />
   </ItemGroup>
 
 </Project>

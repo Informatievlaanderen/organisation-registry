@@ -28,7 +28,7 @@ public class ImportOrganisationsController : OrganisationRegistryController
         [FromServices] OrganisationRegistryContext context,
         [FromServices] ISecurityService securityService,
         [FromServices] ILogger<ImportOrganisationsController> logger,
-        [FromForm] IFormFile bulkimportfile)
+        IFormFile bulkimportfile)
     {
         var content = await ImportHelper.GetFileData(bulkimportfile);
         var user = await securityService.GetRequiredUser(User);
@@ -67,7 +67,7 @@ public class ImportOrganisationsController : OrganisationRegistryController
         [FromServices] OrganisationRegistryContext context,
         [FromServices] ISecurityService securityService,
         [FromServices] ILogger<ImportOrganisationsController> logger,
-        [FromForm] IFormFile bulkimportfile)
+        IFormFile bulkimportfile)
     {
         var content = await ImportHelper.GetFileData(bulkimportfile);
         var user = await securityService.GetRequiredUser(User);

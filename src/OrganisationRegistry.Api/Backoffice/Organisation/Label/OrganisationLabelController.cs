@@ -35,6 +35,7 @@ public class OrganisationLabelController : OrganisationRegistryController
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(OrganisationLabelListExamples))]
     [OrganisationRegistryAuthorize]
     [AllowAnonymous]
+    [ActionName("List")]
     public async Task<IActionResult> Get(
         [FromServices] OrganisationRegistryContext context,
         [FromServices] IOrganisationRegistryConfiguration configuration,

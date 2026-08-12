@@ -37,10 +37,6 @@ jobs:
           MSSQL_TCP_PORT: 21433
         ports:
           - 21433:21433
-      acm:
-        image: ghcr.io/informatievlaanderen/acmidm:1.253.0
-        ports:
-          - 5050:80
       wiremock:
         image: ghcr.io/informatievlaanderen/wiremock:main
         ports:
@@ -190,19 +186,6 @@ jobs:
       semver: ${{ needs.set-release-version.outputs.version }}
     secrets: inherit
 
-  build-acm-idm:
-    name: Build acm idm
-    uses: ./.github/workflows/build-image.yml
-    if: github.repository_owner == 'Informatievlaanderen' && needs.set-release-version.outputs.version != 'none'
-    needs: [ set-release-version ]
-    with:
-      build-target: Containerize_AcmIdm
-      build-project: IdentityServer
-      image-file: acmidm.tar
-      image-name: acmidm
-      semver: ${{ needs.set-release-version.outputs.version }}
-    secrets: inherit
-
   notify-success:
     if: ${{ success() }}
     name: Notify Slack of Success
@@ -218,7 +201,6 @@ jobs:
       - build-kbo-mutations
       - build-rebuilder
       - build-ui
-      - build-acm-idm
     steps:
       - name: Post to Slack
         id: slack
@@ -256,7 +238,6 @@ jobs:
       - build-kbo-mutations
       - build-rebuilder
       - build-ui
-      - build-acm-idm
     steps:
       - name: Post to Slack
         id: slack
@@ -278,7 +259,6 @@ jobs:
           ${{format('{0}: {1}', 'build-kbo-mutations', needs.build-kbo-mutations.result) }}\n
           ${{format('{0}: {1}', 'build-rebuilder', needs.build-rebuilder.result) }}\n
           ${{format('{0}: {1}', 'build-ui', needs.build-ui.result) }}\n
-          ${{format('{0}: {1}', 'build-acm-idm', needs.build-acm-idm.result) }}\n
           ${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}

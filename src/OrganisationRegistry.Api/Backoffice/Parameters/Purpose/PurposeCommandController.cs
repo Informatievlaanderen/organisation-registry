@@ -35,7 +35,7 @@ public class PurposeCommandController : OrganisationRegistryCommandController
 
         await CommandSender.Send(CreatePurposeRequestMapping.Map(message));
 
-        return CreatedWithLocation(nameof(PurposeController), nameof(PurposeController.Get), new { id = message.Id });
+        return CreatedWithLocation(nameof(PurposeController), "Get", new { id = message.Id });
     }
 
     /// <summary>Pas een doeleinde aan.</summary>
@@ -53,6 +53,6 @@ public class PurposeCommandController : OrganisationRegistryCommandController
 
         await CommandSender.Send(UpdatePurposeRequestMapping.Map(internalMessage));
 
-        return OkWithLocationHeader(nameof(PurposeController), nameof(PurposeController.Get), new { id = internalMessage.PurposeId });
+        return OkWithLocationHeader(nameof(PurposeController), "Get", new { id = internalMessage.PurposeId });
     }
 }

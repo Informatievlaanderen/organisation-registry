@@ -34,7 +34,7 @@ public class OrganisationCapacityCommandController : OrganisationRegistryCommand
 
         await CommandSender.Send(AddOrganisationCapacityRequestMapping.Map(organisationId, message));
 
-        return CreatedWithLocation(nameof(OrganisationCapacityController), nameof(OrganisationCapacityController.Get), new { id = message.OrganisationCapacityId });
+        return CreatedWithLocation(nameof(OrganisationCapacityController), "Get", new { id = message.OrganisationCapacityId });
     }
 
     /// <summary>Pas een hoedanigheid aan voor een organisatie.</summary>

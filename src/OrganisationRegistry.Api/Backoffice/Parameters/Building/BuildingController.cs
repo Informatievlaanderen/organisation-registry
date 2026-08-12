@@ -28,6 +28,7 @@ public class BuildingController : OrganisationRegistryController
     [HttpGet]
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(BuildingListExamples))]
     [ProducesResponseType(typeof(List<BuildingListItem>), StatusCodes.Status200OK)]
+    [ActionName("List")]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<BuildingListItemFilter>();

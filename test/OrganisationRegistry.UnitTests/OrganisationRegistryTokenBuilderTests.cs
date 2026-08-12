@@ -8,7 +8,7 @@ using System.Security.Claims;
 using OrganisationRegistry.Api.Security;
 using AutoFixture;
 using FluentAssertions;
-using IdentityModel;
+using Duende.IdentityModel;
 using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Configuration;
 using Xunit;

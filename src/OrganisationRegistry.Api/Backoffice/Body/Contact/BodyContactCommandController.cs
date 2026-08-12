@@ -36,7 +36,7 @@ public class BodyContactCommandController : OrganisationRegistryCommandControlle
 
         await CommandSender.Send(AddBodyContactRequestMapping.Map(internalMessage));
 
-        return CreatedWithLocation(nameof(BodyContactController), nameof(BodyContactController.Get), new { id = message.BodyContactId });
+        return CreatedWithLocation(nameof(BodyContactController), "Get", new { id = message.BodyContactId });
     }
 
     /// <summary>Pas een contact aan voor een orgaan.</summary>

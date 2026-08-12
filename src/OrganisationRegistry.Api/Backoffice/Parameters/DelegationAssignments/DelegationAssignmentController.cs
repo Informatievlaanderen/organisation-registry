@@ -32,6 +32,7 @@ public class DelegationAssignmentController : OrganisationRegistryController
     [HttpGet("{delegationId}/assignments")]
     [ProducesResponseType(typeof(List<DelegationAssignmentListItem>), StatusCodes.Status200OK)]
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(DelegationAssignmentListExamples))]
+    [ActionName("List")]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromServices] ISecurityService securityService, [FromRoute] Guid delegationId)
     {
         var delegation = await context.DelegationList.FirstOrDefaultAsync(x => x.Id == delegationId);

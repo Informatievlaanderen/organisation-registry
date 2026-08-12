@@ -2,7 +2,7 @@ namespace OrganisationRegistry.Api.Infrastructure.Swagger;
 
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 /// <summary>
@@ -16,7 +16,7 @@ public class ProblemJsonResponseFilter : IOperationFilter
                      (entry.Key.StartsWith("4") && entry.Key != "400") ||
                      entry.Key.StartsWith("5")))
         {
-            if (!value.Content.Any())
+            if (value.Content is null || !value.Content.Any())
                 return;
 
             var openApiMediaType = value.Content.First().Value;

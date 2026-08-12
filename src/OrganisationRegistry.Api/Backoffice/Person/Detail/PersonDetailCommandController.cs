@@ -34,7 +34,7 @@ public class PersonDetailCommandController : OrganisationRegistryCommandControll
 
         await CommandSender.Send(CreatePersonRequestMapping.Map(message));
 
-        return CreatedWithLocation(nameof(PersonDetailController), nameof(PersonDetailController.Get), new { id = message.Id });
+        return CreatedWithLocation(nameof(PersonDetailController), "Get", new { id = message.Id });
     }
 
     /// <summary>Pas een persoon aan.</summary>
@@ -52,6 +52,6 @@ public class PersonDetailCommandController : OrganisationRegistryCommandControll
 
         await CommandSender.Send(UpdatePersonRequestMapping.Map(internalMessage));
 
-        return OkWithLocationHeader(nameof(PersonDetailController), nameof(PersonDetailController.Get), new { id = internalMessage.PersonId });
+        return OkWithLocationHeader(nameof(PersonDetailController), "Get", new { id = internalMessage.PersonId });
     }
 }

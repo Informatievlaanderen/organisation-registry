@@ -22,11 +22,7 @@ public abstract class EditApiController : Controller
     [NonAction]
     protected OkResult OkWithLocationHeader(string action, object? parameters)
     {
-        var maybeLocationHeader = Url.Action(action, parameters);
-        if (maybeLocationHeader is not { } locationHeader)
-            throw new ApiException($"Action {action} does not exist");
-
-        Response.Headers.Add("Location", locationHeader);
+        Response.Headers.Add("Location", Request.Path.ToString());
         return Ok();
     }
 
@@ -40,24 +36,26 @@ public abstract class EditApiController : Controller
     [NonAction]
     protected CreatedResult CreatedWithLocation(string action, object? parameters)
     {
-        var maybeLocationHeader = Url.Action(action, parameters);
-        if (maybeLocationHeader is not { } locationHeader)
-            throw new ApiException($"Action {action} does not exist");
-
+        var locationHeader = BuildCreatedLocationHeader(parameters);
         return Created(locationHeader, null);
     }
 
     [NonAction]
     protected CreatedResult CreatedWithLocation(string controller, string action, object? parameters)
     {
-        if (controller.EndsWith("Controller"))
-            controller = controller.Replace("Controller", string.Empty);
-
-        var maybeLocationHeader = Url.Action(action, controller, parameters);
-        if (maybeLocationHeader is not { } locationHeader)
-            throw new ApiException($"Action {action} does not exist");
-
+        var locationHeader = BuildCreatedLocationHeader(parameters);
         return Created(locationHeader, null);
+    }
+
+    // Url.Action faalt met Asp.Versioning 10 + convention-based routing op verschillende plekken
+    // (ambiguous action names, ontbrekende route values). Bij een POST is de resource-locatie de
+    // huidige request path met de nieuwe id erachter.
+    private string BuildCreatedLocationHeader(object? parameters)
+    {
+        var id = parameters?.GetType().GetProperty("id")?.GetValue(parameters);
+        return id is not null
+            ? $"{Request.Path}/{id}"
+            : Request.Path.ToString();
     }
 
     [NonAction]
@@ -76,12 +74,14 @@ public abstract class EditApiController : Controller
     protected Task<IActionResult> ContentAsync(string value)
         => Task.FromResult((IActionResult)Content(value));
 
+    [NonAction]
+    [Obsolete("Use Request.Path or a hardcoded route instead of Url.Action")]
     protected string? Action<T>(string actionName, object? parameters = null)
         where T : Controller
     {
-        var name = typeof(T).Name;
-        var controllerName = name.EndsWith("Controller")
-            ? name[..^10] : name;
-        return Url.Action(actionName, controllerName, parameters);
+        var id = parameters?.GetType().GetProperty("id")?.GetValue(parameters);
+        return id is not null
+            ? $"{Request.Path}/{id}"
+            : Request.Path.ToString();
     }
 }

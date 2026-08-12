@@ -36,6 +36,6 @@ public class BodyInfoCommandController : OrganisationRegistryCommandController
 
         await CommandSender.Send(UpdateBodyInfoRequestMapping.Map(internalMessage));
 
-        return OkWithLocationHeader(nameof(BodyInfoController), nameof(BodyInfoController.Get), new { id = internalMessage.BodyId });
+        return OkWithLocationHeader(nameof(BodyInfoController), "Get", new { id = internalMessage.BodyId });
     }
 }

@@ -36,7 +36,7 @@ public class OrganisationBuildingCommandController : OrganisationRegistryCommand
 
         await CommandSender.Send(AddOrganisationBuildingRequestMapping.Map(internalMessage));
 
-        return CreatedWithLocation(nameof(OrganisationBuildingController), nameof(OrganisationBuildingController.Get), new { id = message.OrganisationBuildingId });
+        return CreatedWithLocation(nameof(OrganisationBuildingController), "Get", new { id = message.OrganisationBuildingId });
     }
 
     /// <summary>Pas een gebouw aan voor een organisatie.</summary>

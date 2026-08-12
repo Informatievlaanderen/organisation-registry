@@ -3,7 +3,6 @@ namespace OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump
     using System;
     using System.IO;
     using System.Threading;
-    using Amazon;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
@@ -88,7 +87,6 @@ namespace OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump
             var distributedLock = new DistributedLock<T>(
                 new DistributedLockOptions
                 {
-                    Region = RegionEndpoint.GetBySystemName(options.LockRegionEndPoint),
                     AwsAccessKeyId = options.LockAccessKeyId,
                     AwsSecretAccessKey = options.LockAccessKeySecret,
                     TableName = options.LockTableName,
@@ -102,7 +100,7 @@ namespace OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump
             try
             {
                 logger.LogInformation("Trying to acquire lock.");
-                acquiredLock = distributedLock.AcquireLock();
+                acquiredLock = distributedLock.AcquireLockAsync().GetAwaiter().GetResult();
 
                 if (!acquiredLock)
                 {
@@ -132,7 +130,7 @@ namespace OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump
             finally
             {
                 if (acquiredLock)
-                    distributedLock.ReleaseLock();
+                    distributedLock.ReleaseLockAsync().GetAwaiter().GetResult();
             }
         }
 

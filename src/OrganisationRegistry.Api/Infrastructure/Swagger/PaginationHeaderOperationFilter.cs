@@ -4,7 +4,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using Infrastructure.Search.Pagination;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 /// <summary>

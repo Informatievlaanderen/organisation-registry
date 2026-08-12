@@ -28,6 +28,7 @@ public class MandateRoleTypeController : OrganisationRegistryController
     [HttpGet]
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(MandateRoleTypeListExamples))]
     [ProducesResponseType(typeof(List<MandateRoleTypeListItem>), StatusCodes.Status200OK)]
+    [ActionName("List")]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<MandateRoleTypeListItem>();

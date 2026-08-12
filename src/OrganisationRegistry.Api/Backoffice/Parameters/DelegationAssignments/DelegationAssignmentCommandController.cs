@@ -48,7 +48,7 @@ public class DelegationAssignmentCommandController : OrganisationRegistryCommand
 
         await CommandSender.Send(AddDelegationAssignmentRequestMapping.Map(internalMessage, delegation.OrganisationId));
 
-        return CreatedWithLocation(nameof(DelegationAssignmentController),nameof(DelegationAssignmentController.Get), new { delegationId, id = message.DelegationAssignmentId });
+        return CreatedWithLocation(nameof(DelegationAssignmentController), "Get", new { delegationId, id = message.DelegationAssignmentId });
     }
 
     /// <summary>Pas een toewijzing aan.</summary>
@@ -76,7 +76,7 @@ public class DelegationAssignmentCommandController : OrganisationRegistryCommand
 
         await CommandSender.Send(UpdateDelegationAssignmentRequestMapping.Map(internalMessage,delegation.OrganisationId));
 
-        return OkWithLocationHeader(nameof(DelegationAssignmentController),nameof(DelegationAssignmentController.Get), new { delegationId, id });
+        return OkWithLocationHeader(nameof(DelegationAssignmentController), "Get", new { delegationId, id });
     }
 
     /// <summary>Verwijder een toewijzing.</summary>
@@ -112,6 +112,6 @@ public class DelegationAssignmentCommandController : OrganisationRegistryCommand
 
         await CommandSender.Send(RemoveDelegationAssignmentRequestMapping.Map(internalMessage));
 
-        return OkWithLocationHeader(nameof(DelegationAssignmentController),nameof(DelegationAssignmentController.Get), new { delegationId, id = delegationAssignmentId });
+        return OkWithLocationHeader(nameof(DelegationAssignmentController), "Get", new { delegationId, id = delegationAssignmentId });
     }
 }

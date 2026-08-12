@@ -35,7 +35,7 @@ public class KeyTypeCommandController : OrganisationRegistryCommandController
 
         await CommandSender.Send(CreateKeyTypeRequestMapping.Map(message));
 
-        return CreatedWithLocation(nameof(KeyTypeController), nameof(KeyTypeController.Get), new { id = message.Id });
+        return CreatedWithLocation(nameof(KeyTypeController), "Get", new { id = message.Id });
     }
 
     /// <summary>Pas een sleuteltype aan.</summary>
@@ -53,7 +53,7 @@ public class KeyTypeCommandController : OrganisationRegistryCommandController
 
         await CommandSender.Send(UpdateKeyTypeRequestMapping.Map(internalMessage));
 
-        return OkWithLocationHeader(nameof(KeyTypeController), nameof(KeyTypeController.Get), new { id = internalMessage.KeyTypeId });
+        return OkWithLocationHeader(nameof(KeyTypeController), "Get", new { id = internalMessage.KeyTypeId });
     }
 
     /// <summary>Verwijder een sleuteltype.</summary>

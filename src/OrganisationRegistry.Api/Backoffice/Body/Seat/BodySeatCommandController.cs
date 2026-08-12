@@ -36,7 +36,7 @@ public class BodySeatCommandController : OrganisationRegistryCommandController
 
         await CommandSender.Send(AddBodySeatRequestMapping.Map(internalMessage));
 
-        return CreatedWithLocation(nameof(BodySeatController), nameof(BodySeatController.Get), new { id = message.BodySeatId });
+        return CreatedWithLocation(nameof(BodySeatController), "Get", new { id = message.BodySeatId });
     }
 
     /// <summary>Pas een zetel aan voor een orgaan.</summary>
@@ -54,6 +54,6 @@ public class BodySeatCommandController : OrganisationRegistryCommandController
 
         await CommandSender.Send(UpdateBodySeatRequestMapping.Map(internalMessage));
 
-        return OkWithLocationHeader(nameof(BodySeatController), nameof(BodySeatController.Get), new { id = internalMessage.BodyId });
+        return OkWithLocationHeader(nameof(BodySeatController), "Get", new { id = internalMessage.BodyId });
     }
 }

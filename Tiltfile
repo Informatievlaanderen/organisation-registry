@@ -58,6 +58,14 @@ local_resource(
 )
 
 local_resource(
+    'clear-database',
+    './scripts/clear-database.sh',
+    deps=['scripts/clear-database.sh'],
+    labels=['setup'],
+    resource_deps=['mssql'],
+)
+
+local_resource(
     'api-configuration',
     './scripts/seed-tilt-api-configuration.sh',
     deps=['scripts/seed-tilt-api-configuration.sh'],
@@ -216,9 +224,28 @@ k8s_yaml('demo/k8s/m2m.yaml')
 k8s_yaml('demo/k8s/nuxt-bff.yaml')
 k8s_yaml('demo/k8s/ingress.yaml')
 
+# Group all Traefik IngressRoutes into a single Tilt resource so they are
+# always applied on `tilt up`, survive `tilt down`/re-up cycles, and are
+# visible/manageable in the Tilt UI. Without this, the IngressRoute objects
+# are loaded silently and can appear to "disappear" after cluster restarts.
+k8s_resource(
+    objects=[
+        'keycloak:ingressroute',
+        'api:ingressroute',
+        'ui:ingressroute',
+        'app:ingressroute',
+        'm2m:ingressroute',
+        'seq:ingressroute',
+        'opensearch:ingressroute',
+        'mock:ingressroute',
+    ],
+    new_name='ingress-routes',
+    labels=['infrastructure'],
+)
+
 k8s_resource('api',
     labels=['applications'],
-    resource_deps=['mssql', 'opensearch', 'keycloak', 'wiremock', 'otel-collector'],
+    resource_deps=['clear-database', 'mssql', 'opensearch', 'keycloak', 'wiremock', 'otel-collector'],
     links=[link('http://api.localhost:9080/v1', 'API')])
 
 k8s_resource('ui',
@@ -228,7 +255,9 @@ k8s_resource('ui',
 
 k8s_resource('piavo-import',
     labels=['setup'],
-    resource_deps=['api-configuration'])
+    resource_deps=['api-configuration'],
+    auto_init=True,
+    trigger_mode=TRIGGER_MODE_MANUAL)
 
 k8s_resource('m2m-demo',
     labels=['demo'],

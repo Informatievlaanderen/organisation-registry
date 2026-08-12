@@ -32,6 +32,7 @@ public class ConfigurationController : OrganisationRegistryController
     [HttpGet]
     [ProducesResponseType(typeof(List<ConfigurationListItem>), StatusCodes.Status200OK)]
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(ConfigurationListExamples))]
+    [ActionName("List")]
     public async Task<IActionResult> Get([FromServices] ConfigurationContext context)
     {
         var filtering = Request.ExtractFilteringRequest<ConfigurationValue>();

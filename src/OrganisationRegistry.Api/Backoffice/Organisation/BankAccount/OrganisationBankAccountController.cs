@@ -29,6 +29,7 @@ public class OrganisationBankAccountController : OrganisationRegistryController
     [HttpGet]
     [ProducesResponseType(typeof(List<OrganisationBankAccountListItem>), StatusCodes.Status200OK)]
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(OrganisationBankAccountListExamples))]
+    [ActionName("List")]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid organisationId)
     {
         var filtering = Request.ExtractFilteringRequest<OrganisationBankAccountListItemFilter>();

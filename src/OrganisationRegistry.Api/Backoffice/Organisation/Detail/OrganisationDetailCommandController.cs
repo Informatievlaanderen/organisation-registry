@@ -54,7 +54,7 @@ public class OrganisationDetailCommandController : OrganisationRegistryCommandCo
             await CommandSender.Send(CreateOrganisationRequestMapping.Map(message));
         }
 
-        return CreatedWithLocation(nameof(OrganisationDetailController),nameof(OrganisationDetailController.Get), new { id = message.Id });
+        return CreatedWithLocation(nameof(OrganisationDetailController), "GetById", new { id = message.Id });
     }
 
     /// <summary>Pas een organisatie aan.</summary>
@@ -74,7 +74,7 @@ public class OrganisationDetailCommandController : OrganisationRegistryCommandCo
 
         await CommandSender.Send(UpdateOrganisationInfoRequestMapping.Map(internalMessage));
 
-        return OkWithLocationHeader(nameof(OrganisationDetailController),nameof(OrganisationDetailController.Get), new { id = internalMessage.OrganisationId });
+        return OkWithLocationHeader(nameof(OrganisationDetailController), "GetById", new { id = internalMessage.OrganisationId });
     }
 
     /// <summary>Pas de organisatiegegevens aan die beperkt zijn tot Vlimpers.</summary>
@@ -94,7 +94,7 @@ public class OrganisationDetailCommandController : OrganisationRegistryCommandCo
 
         await CommandSender.Send(UpdateOrganisationInfoLimitedToVlimpersRequestMapping.Map(internalMessage));
 
-        return OkWithLocationHeader(nameof(OrganisationDetailController),nameof(OrganisationDetailController.Get), new { id = internalMessage.OrganisationId });
+        return OkWithLocationHeader(nameof(OrganisationDetailController), "GetById", new { id = internalMessage.OrganisationId });
     }
 
     /// <summary>Pas de organisatiegegevens aan die niet beperkt zijn tot Vlimpers.</summary>
@@ -114,7 +114,7 @@ public class OrganisationDetailCommandController : OrganisationRegistryCommandCo
 
         await CommandSender.Send(UpdateOrganisationInfoNotLimitedToVlimpersRequestMapping.Map(internalMessage));
 
-        return OkWithLocationHeader(nameof(OrganisationDetailController),nameof(OrganisationDetailController.Get), new { id = internalMessage.OrganisationId });
+        return OkWithLocationHeader(nameof(OrganisationDetailController), "GetById", new { id = internalMessage.OrganisationId });
     }
 
     /// <summary>Beëindig een organisatie.</summary>

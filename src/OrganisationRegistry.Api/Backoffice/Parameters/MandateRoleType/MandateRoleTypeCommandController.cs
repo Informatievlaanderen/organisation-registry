@@ -35,7 +35,7 @@ public class MandateRoleTypeCommandController : OrganisationRegistryCommandContr
 
         await CommandSender.Send(CreateMandateRoleTypeRequestMapping.Map(message));
 
-        return CreatedWithLocation(nameof(MandateRoleTypeController), nameof(MandateRoleTypeController.Get), new { id = message.Id });
+        return CreatedWithLocation(nameof(MandateRoleTypeController), "Get", new { id = message.Id });
     }
 
     /// <summary>Pas een mandaat rol type aan.</summary>
@@ -53,6 +53,6 @@ public class MandateRoleTypeCommandController : OrganisationRegistryCommandContr
 
         await CommandSender.Send(UpdateMandateRoleTypeRequestMapping.Map(internalMessage));
 
-        return OkWithLocationHeader(nameof(MandateRoleTypeController), nameof(MandateRoleTypeController.Get), new { id = internalMessage.MandateRoleTypeId });
+        return OkWithLocationHeader(nameof(MandateRoleTypeController), "Get", new { id = internalMessage.MandateRoleTypeId });
     }
 }

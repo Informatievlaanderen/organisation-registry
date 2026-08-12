@@ -27,6 +27,7 @@ public class BodyLifecyclePhaseController : OrganisationRegistryController
     [HttpGet]
     [ProducesResponseType(typeof(List<BodyLifecyclePhaseListItem>), StatusCodes.Status200OK)]
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(BodyLifecyclePhaseListExamples))]
+    [ActionName("List")]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid bodyId)
     {
         var filtering = Request.ExtractFilteringRequest<BodyLifecyclePhaseListItem>();

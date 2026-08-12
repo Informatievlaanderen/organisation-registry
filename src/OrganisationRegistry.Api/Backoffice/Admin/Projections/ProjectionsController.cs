@@ -31,6 +31,7 @@ public class ProjectionsController : OrganisationRegistryController
     [HttpGet]
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(ProjectionNameListExamples))]
     [ProducesResponseType(typeof(List<string>), StatusCodes.Status200OK)]
+    [ActionName("List")]
     public async Task<IActionResult> Get()
     {
         var projections = typeof(OrganisationRegistrySqlServerAssemblyTokenClass)
@@ -104,6 +105,6 @@ public class ProjectionsController : OrganisationRegistryController
 
         await context.SaveChangesAsync();
 
-        return OkWithLocationHeader(nameof(ProjectionsController), nameof(ProjectionsController.Get), new { id });
+        return OkWithLocationHeader(nameof(ProjectionsController), "Get", new { id });
     }
 }

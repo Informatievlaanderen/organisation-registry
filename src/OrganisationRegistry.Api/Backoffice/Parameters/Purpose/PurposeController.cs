@@ -28,6 +28,7 @@ public class PurposeController : OrganisationRegistryController
     [HttpGet]
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(PurposeListExamples))]
     [ProducesResponseType(typeof(List<PurposeListItem>), StatusCodes.Status200OK)]
+    [ActionName("List")]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<PurposeListItem>();

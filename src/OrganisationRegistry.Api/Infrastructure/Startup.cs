@@ -7,12 +7,10 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Api.Security;
 using Autofac;
-using Autofac.Extensions.DependencyInjection;
 using Be.Vlaanderen.Basisregisters.Api;
 using Be.Vlaanderen.Basisregisters.Api.Search.Filtering;
 using Be.Vlaanderen.Basisregisters.Api.Search.Pagination;
 using Be.Vlaanderen.Basisregisters.Api.Search.Sorting;
-using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
 using Configuration;
 using global::OpenTelemetry.Trace;
 using HostedServices;
@@ -22,8 +20,10 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Asp.Versioning.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -32,8 +32,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.FeatureManagement;
+using OrganisationRegistry.Configuration.Database;
+using OrganisationRegistry.Configuration.Database.Configuration;
 using Microsoft.Net.Http.Headers;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Newtonsoft.Json;
 using OpenTelemetry.Extensions;
 using OrganisationRegistry.Infrastructure;
@@ -56,22 +58,54 @@ public class Startup
     private readonly IConfiguration _configuration;
     private readonly ILoggerFactory _loggerFactory;
 
-    private IContainer? _applicationContainer;
+    private IServiceCollection? _services;
     private readonly ILogger<Startup> _logger;
 
-    public Startup(
-        IConfiguration configuration,
-        ILoggerFactory loggerFactory)
+    public Startup(IConfiguration configuration)
     {
         _configuration = configuration;
-        _loggerFactory = loggerFactory;
+        // .NET 10 no longer resolves ILoggerFactory during Startup activation.
+        // Bootstrap a Serilog-backed factory manually; Serilog is configured by UseDefaultForApi.
+        _loggerFactory = new Serilog.Extensions.Logging.SerilogLoggerFactory(Serilog.Log.Logger, dispose: false);
         _logger = _loggerFactory.CreateLogger<Startup>();
     }
 
     /// <summary>Configures services for the application.</summary>
     /// <param name="services">The collection of services to configure the application with.</param>
-    public IServiceProvider ConfigureServices(IServiceCollection services)
+    public void ConfigureServices(IServiceCollection services)
     {
+        _services = services;
+
+        // .NET 10: IOptions<T> bindings must be registered here (during ConfigureServices) so they
+        // are picked up by AutofacServiceProviderFactory.Populate. Registering them later inside
+        // Autofac module ctors is too late — Populate has already run.
+        services
+            .Configure<ApiConfigurationSection>(_configuration.GetSection(ApiConfigurationSection.Name))
+            .Configure<EditApiConfigurationSection>(_configuration.GetSection(EditApiConfigurationSection.Name))
+            .Configure<OpenIdConnectConfigurationSection>(_configuration.GetSection(OpenIdConnectConfigurationSection.Name))
+            .Configure<AuthorizationConfigurationSection>(_configuration.GetSection(AuthorizationConfigurationSection.Name))
+            .Configure<InfrastructureConfigurationSection>(_configuration.GetSection(InfrastructureConfigurationSection.Name))
+            .Configure<TogglesConfigurationSection>(_configuration.GetSection(TogglesConfigurationSection.Name))
+            .Configure<SqlServer.Configuration.SqlServerConfiguration>(_configuration.GetSection(SqlServer.Configuration.SqlServerConfiguration.Section))
+            .Configure<OrganisationRegistry.ElasticSearch.Configuration.ElasticSearchConfiguration>(_configuration.GetSection(OrganisationRegistry.ElasticSearch.Configuration.ElasticSearchConfiguration.Section))
+            .Configure<ConfigurationDatabaseConfiguration>(_configuration.GetSection(ConfigurationDatabaseConfiguration.Section));
+
+        var configurationDatabaseConfiguration = _configuration.GetSection(ConfigurationDatabaseConfiguration.Section).Get<ConfigurationDatabaseConfiguration>();
+        if (!string.IsNullOrWhiteSpace(configurationDatabaseConfiguration?.ConnectionString))
+        {
+            services.AddDbContext<ConfigurationContext>(options => options
+                .UseSqlServer(configurationDatabaseConfiguration.ConnectionString, sqlServerOptions =>
+                {
+                    sqlServerOptions
+                        .EnableRetryOnFailure()
+                        .MigrationsHistoryTable(MigrationTables.Default, WellknownSchemas.BackofficeSchema);
+                }));
+        }
+        else
+        {
+            services.AddDbContext<ConfigurationContext>(options => options.UseInMemoryDatabase(Guid.NewGuid().ToString()));
+        }
+
         JsonConvert.DefaultSettings =
             () => JsonSerializerSettingsProvider.CreateSerializerSettings().ConfigureForOrganisationRegistry();
 
@@ -354,13 +388,12 @@ public class Startup
             builder => builder
                 .AddHttpClientInstrumentation()
                 .AddAspNetCoreWithDistributedTracing());
+    }
 
-        var containerBuilder = new ContainerBuilder();
+    public void ConfigureContainer(ContainerBuilder containerBuilder)
+    {
         containerBuilder.RegisterModule(new MagdaModule(_configuration));
-        containerBuilder.RegisterModule(new ApiModule(_configuration, services, _loggerFactory));
-        _applicationContainer = containerBuilder.Build();
-
-        return new AutofacServiceProvider(_applicationContainer);
+        containerBuilder.RegisterModule(new ApiModule(_configuration, _services!, _loggerFactory));
     }
 
     public void Configure(
@@ -370,40 +403,18 @@ public class Startup
         IHostApplicationLifetime appLifetime,
         ILoggerFactory loggerFactory,
         IApiVersionDescriptionProvider apiVersionProvider,
-        ApiDataDogToggle datadogToggle,
-        ApiDebugDataDogToggle debugDataDogToggle,
-        HealthCheckService healthCheckService)
+        HealthCheckService healthCheckService,
+        ILifetimeScope applicationContainer)
     {
         StartupHelpers.CheckDatabases(healthCheckService, DatabaseTag, loggerFactory).GetAwaiter().GetResult();
 
         app
-            .UseDataDog<Startup>(
-                new DataDogOptions
-                {
-                    Common =
-                    {
-                        ServiceProvider = serviceProvider,
-                        LoggerFactory = loggerFactory,
-                    },
-                    Toggles =
-                    {
-                        Enable = datadogToggle,
-                        Debug = debugDataDogToggle,
-                    },
-                    Tracing =
-                    {
-                        TraceIdHeaderName = "traceid",
-                        ParentSpanIdHeaderName = "traceparent",
-                        ServiceName = _configuration["DataDog:ServiceName"],
-                        LogForwardedForEnabled = true,
-                    },
-                })
             .UseDefaultForApi(
                 new StartupUseOptions
                 {
                     Common =
                     {
-                        ApplicationContainer = _applicationContainer!, // if _applicationContainer is null here, something is off
+                        ApplicationContainer = applicationContainer,
                         ServiceProvider = serviceProvider,
                         HostingEnvironment = env,
                         ApplicationLifetime = appLifetime,
@@ -425,6 +436,8 @@ public class Startup
                     },
                     MiddlewareHooks =
                     {
+                        EnableAuthorization = true,
+
                         AfterMiddleware = x => x
                             .UseMiddleware<ApplicationStatusMiddleware>()
                             .UseMiddleware<AddNoCacheHeadersMiddleware>()

@@ -38,6 +38,7 @@ public class FormalFrameworkController : OrganisationRegistryController
     [HttpGet]
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(FormalFrameworkListExamples))]
     [ProducesResponseType(typeof(List<FormalFrameworkListItem>), StatusCodes.Status200OK)]
+    [ActionName("List")]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<FormalFrameworkListItemFilter>();

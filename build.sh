@@ -145,9 +145,6 @@ case "${target}" in
     vue_build
     containerize_path "${build_dir}/OrganisationRegistry.UI/linux" "ui"
     ;;
-  Containerize_AcmIdm)
-    containerize_path "src/IdentityServer" "acmidm"
-    ;;
   *)
     echo "Unknown build target: ${target}" >&2
     exit 1

@@ -37,7 +37,7 @@ public class FormalFrameworkCommandController : OrganisationRegistryCommandContr
         var command = CreateFormalFrameworkRequestMapping.Map(message);
         await CommandSender.Send(command);
 
-        return CreatedWithLocation(nameof(FormalFrameworkController), nameof(FormalFrameworkController.Get), new { id = command.Id });
+        return CreatedWithLocation(nameof(FormalFrameworkController), "Get", new { id = command.Id });
     }
 
     /// <summary>Pas een toepassingsgebied aan.</summary>
@@ -55,6 +55,6 @@ public class FormalFrameworkCommandController : OrganisationRegistryCommandContr
 
         await CommandSender.Send(UpdateFormalFrameworkRequestMapping.Map(internalMessage));
 
-        return OkWithLocationHeader(nameof(FormalFrameworkController), nameof(FormalFrameworkController.Get), new { id = internalMessage.FormalFrameworkId });
+        return OkWithLocationHeader(nameof(FormalFrameworkController), "Get", new { id = internalMessage.FormalFrameworkId });
     }
 }

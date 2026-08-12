@@ -30,7 +30,6 @@
     <PackageReference Include="Microsoft.Rest.ClientRuntime" />
     <PackageReference Include="SourceLink.Embed.AllSourceFiles" />
     <PackageReference Include="SourceLink.Copy.PdbFiles" />
-    <PackageReference Include="IdentityModel" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" />
   </ItemGroup>
 

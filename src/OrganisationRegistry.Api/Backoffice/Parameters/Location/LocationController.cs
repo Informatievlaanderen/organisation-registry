@@ -29,6 +29,7 @@ public class LocationController : OrganisationRegistryController
     [HttpGet]
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(LocationListExamples))]
     [ProducesResponseType(typeof(List<LocationListItem>), StatusCodes.Status200OK)]
+    [ActionName("List")]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<LocationListItemFilter>();

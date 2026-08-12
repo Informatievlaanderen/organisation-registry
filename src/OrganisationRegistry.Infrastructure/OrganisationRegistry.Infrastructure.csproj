@@ -9,12 +9,7 @@
     <Compile Include="..\..\SolutionInfo.cs" Link="Properties\SolutionInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="System.Dynamic.Runtime" />
     <PackageReference Include="System.Runtime.Caching" />
-    <PackageReference Include="System.Reflection.TypeExtensions" />
-    <PackageReference Include="System.ComponentModel" />
-    <PackageReference Include="System.Security.Claims" />
-    <PackageReference Include="Microsoft.CSharp" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" />

@@ -35,7 +35,7 @@ public class BodyClassificationTypeCommandController : OrganisationRegistryComma
 
         await CommandSender.Send(CreateBodyClassificationTypeRequestMapping.Map(message));
 
-        return CreatedWithLocation(nameof(BodyClassificationTypeController),nameof(BodyClassificationTypeController.Get), new { id = message.Id });
+        return CreatedWithLocation(nameof(BodyClassificationTypeController), "Get", new { id = message.Id });
     }
 
     /// <summary>Pas een orgaanclassificatietype aan.</summary>
@@ -53,6 +53,6 @@ public class BodyClassificationTypeCommandController : OrganisationRegistryComma
 
         await CommandSender.Send(UpdateBodyClassificationTypeRequestMapping.Map(internalMessage));
 
-        return OkWithLocationHeader(nameof(BodyClassificationTypeController),nameof(BodyClassificationTypeController.Get), new { id = internalMessage.BodyClassificationTypeId });
+        return OkWithLocationHeader(nameof(BodyClassificationTypeController), "Get", new { id = internalMessage.BodyClassificationTypeId });
     }
 }

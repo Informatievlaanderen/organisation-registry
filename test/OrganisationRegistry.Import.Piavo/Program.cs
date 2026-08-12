@@ -15,6 +15,10 @@ namespace OrganisationRegistry.Import.Piavo
 
     public class Program
     {
+        // scripts/seed-tilt-api-configuration.sh
+        private static readonly Guid MaatschappelijkeZetelGuid = Guid.Parse("a7e93f04-0004-0000-0000-000000000001");
+        private static readonly Guid RechtsvormGuid = Guid.Parse("a7e93f06-0006-0000-0000-000000000001");
+        private static readonly Guid FormeleBenamingGuid = Guid.Parse("a7e93f02-0002-0000-0000-000000000004");
         private static List<Key> _keys;
         private static List<ContactType> _contactTypes;
         private static List<Building> _buildings;
@@ -44,10 +48,10 @@ namespace OrganisationRegistry.Import.Piavo
             var jwt = args.Length > 1
                 ? args[1]
                 : null;
-            
+
             Console.WriteLine("=== PIAVO Import ===");
             Console.WriteLine($"API: {apiBase}");
-            
+
             try
             {
                 var token = jwt;
@@ -57,7 +61,7 @@ namespace OrganisationRegistry.Import.Piavo
                     token = MintBackofficeJwt(jwtSigningKey, jwtIssuer, jwtAudience, developerVoId);
                     Console.WriteLine("JWT token created successfully");
                 }
-                
+
                 Console.WriteLine("Starting PIAVO import...");
                 Import(apiBase, token);
                 Console.WriteLine("PIAVO import completed successfully!");
@@ -69,7 +73,7 @@ namespace OrganisationRegistry.Import.Piavo
                 Environment.Exit(1);
             }
         }
-        
+
         private static string MintBackofficeJwt(string jwtSigningKey, string jwtIssuer, string jwtAudience, string developerVoId)
         {
             var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSigningKey));
@@ -100,7 +104,6 @@ namespace OrganisationRegistry.Import.Piavo
             var tokenHandler = new JwtSecurityTokenHandler();
             return tokenHandler.WriteToken(tokenHandler.CreateToken(descriptor));
         }
-
         public static void Import(string endpoint, string jwt)
         {
             var baseAddress = new Uri($"{endpoint}/v1/");
@@ -115,16 +118,18 @@ namespace OrganisationRegistry.Import.Piavo
                     Console.WriteLine("PIAVO import data is already present; skipping import.");
                     return;
                 }
-
                 BuildDatabase();
+                AssignDeterministicIds();
                 ImportKeys(client);
                 ImportLabels(client);
                 ImportFunctions(client);
                 ImportFormalFrameworks(client);
                 ImportContactTypes(client);
                 ImportCapacityTypes(client);
+                ImportPurposes(client);
                 ImportBuildings(client);
                 ImportLocations(client);
+                ImportLocationTypes(client, MaatschappelijkeZetelGuid);
                 ImportOrganisationClassificationTypes(client);
                 ImportOrganisationClassifications(client);
 
@@ -139,6 +144,52 @@ namespace OrganisationRegistry.Import.Piavo
                 Console.WriteLine(httpEx.Response.StatusCode);
                 Console.WriteLine(httpEx.Response.Content);
                 throw;
+            }
+        }
+
+        private static Guid DeterministicGuid(string salt, string naturalKey)
+        {
+            var input = $"piavo:{salt}:{(naturalKey ?? string.Empty).Trim().ToLowerInvariant()}";
+            using var md5 = System.Security.Cryptography.MD5.Create();
+            var hash = md5.ComputeHash(Encoding.UTF8.GetBytes(input));
+            return new Guid(hash);
+        }
+
+        private static void AssignDeterministicIds()
+        {
+            foreach (var x in _keys) x.NewId = DeterministicGuid("keytype", x.Name);
+            foreach (var x in _contactTypes) x.NewId = DeterministicGuid("contacttype", x.Name);
+            foreach (var x in _buildings) x.NewId = DeterministicGuid("building", x.Name);
+            foreach (var x in _locations) x.NewId = DeterministicGuid("location", $"{x.Street}|{x.Number}|{x.PostalCode}|{x.City}|{x.Country}");
+            foreach (var x in _people) x.NewId = DeterministicGuid("person", $"{x.FirstName}|{x.Name}|{x.BirthDate}");
+            foreach (var x in _functions) x.NewId = DeterministicGuid("function", x.Name);
+            foreach (var x in _formalFramework) x.NewId = DeterministicGuid("formalframework", x.Name);
+            foreach (var x in _organisationClassificationTypes) x.NewId = DeterministicGuid("classificationtype", x.Name);
+            foreach (var x in _organisationClassifications) x.NewId = DeterministicGuid("classification", $"{x.OrganisationClassificationType?.Name}|{x.Name}");
+            foreach (var x in _labels) x.NewId = DeterministicGuid("labeltype", x.Name);
+            foreach (var x in _capacities) x.NewId = DeterministicGuid("capacitytype", x.Name);
+
+            foreach (var org in _organisations)
+            {
+                org.NewId = DeterministicGuid("organisation", org.OvoNumber);
+                foreach (var k in org.OrganisationKeys)
+                    k.NewId = DeterministicGuid("orgkey", $"{org.OvoNumber}|{k.KeyTypeId}|{k.KeyValue}|{k.StartDate}");
+                foreach (var l in org.OrganisationLabels)
+                    l.NewId = DeterministicGuid("orglabel", $"{org.OvoNumber}|{l.LabelType}|{l.Label}|{l.StartDate}");
+                foreach (var c in org.OrganisationClassifications)
+                    c.NewId = DeterministicGuid("orgclassification", $"{org.OvoNumber}|{c.ClassificationId}|{c.StartDate}");
+                foreach (var c in org.OrganisationContacts)
+                    c.NewId = DeterministicGuid("orgcontact", $"{org.OvoNumber}|{c.Type}|{c.Contact}");
+                foreach (var c in org.OrganisationCapacities)
+                    c.NewId = DeterministicGuid("orgcapacity", $"{org.OvoNumber}|{c.Type}|{c.PersonId}|{c.StartDate}");
+                foreach (var b in org.OrganisationBuildings)
+                    b.NewId = DeterministicGuid("orgbuilding", $"{org.OvoNumber}|{b.BuildingId}|{b.StartDate}");
+                foreach (var l in org.OrganisationLocations)
+                    l.NewId = DeterministicGuid("orglocation", $"{org.OvoNumber}|{l.LocationId}|{l.StartDate}");
+                foreach (var f in org.OrganisationFunctions)
+                    f.NewId = DeterministicGuid("orgfunction", $"{org.OvoNumber}|{f.PersonId}|{f.FunctionId}|{f.StartDate}");
+                foreach (var f in org.OrganisationFormalFrameworks)
+                    f.NewId = DeterministicGuid("orgformalframework", $"{org.OvoNumber}|{f.FormalFrameworkId}|{f.StartDate}");
             }
         }
 
@@ -395,6 +446,11 @@ namespace OrganisationRegistry.Import.Piavo
                     Name = organisationClassificationType.Name,
                 }).CheckBadRequest();
             }
+            client.OrganisationclassificationtypesPost(new CreateOrganisationClassificationTypeRequest
+            {
+                Id = RechtsvormGuid,
+                Name = "Rechtsvorm",
+            }).CheckBadRequest();
             Console.WriteLine();
         }
 
@@ -472,6 +528,20 @@ namespace OrganisationRegistry.Import.Piavo
             Console.WriteLine();
         }
 
+        private static void ImportLocationTypes(IOrganisationRegistryAPI client, Guid maatschappelijkeZetelLocationType)
+        {
+            var total = _locations.Count;
+            var padLength = total.ToString().Length;
+            Console.WriteLine($"[{0.ToString().PadLeft(padLength, '0')}/{total}] Importing LocationTypes...");
+            client.LocationtypesPost(new CreateLocationTypeRequest
+            {
+                Id = maatschappelijkeZetelLocationType,
+                Name = "Maatschappelijke zetel volgens KBO"
+            }).CheckBadRequest();
+
+            Console.WriteLine();
+        }
+
         private static void ImportBuildings(IOrganisationRegistryAPI client)
         {
             var total = _buildings.Count;
@@ -530,6 +600,11 @@ namespace OrganisationRegistry.Import.Piavo
                     Name = label.Name,
                 }).CheckBadRequest();
             }
+            client.LabeltypesPost(new CreateLabelTypeRequest
+            {
+                Id = FormeleBenamingGuid,
+                Name =  "Formele Benaming",
+            }).CheckBadRequest();
             Console.WriteLine();
         }
 
@@ -602,7 +677,16 @@ namespace OrganisationRegistry.Import.Piavo
             }
             Console.WriteLine();
         }
-
+        private static void ImportPurposes(IOrganisationRegistryAPI client)
+        {
+            var id = Guid.NewGuid();
+            client.PurposesPost(new CreatePurposeRequest
+            {
+                Id = id,
+                Name = id.ToString(),
+            }).CheckBadRequest();
+            Console.WriteLine();
+        }
         private static void BuildDatabase()
         {
             using (var f = File.OpenRead(Path.Combine("ImportFiles", "Keys.txt")))

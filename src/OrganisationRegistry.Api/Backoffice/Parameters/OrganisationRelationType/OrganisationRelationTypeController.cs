@@ -28,6 +28,7 @@ public class OrganisationRelationTypeController : OrganisationRegistryController
     [HttpGet]
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(OrganisationRelationTypeListExamples))]
     [ProducesResponseType(typeof(List<OrganisationRelationTypeListItem>), StatusCodes.Status200OK)]
+    [ActionName("List")]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<OrganisationRelationTypeListItem>();

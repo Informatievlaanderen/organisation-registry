@@ -35,7 +35,7 @@ public class LifecyclePhaseTypeCommandController : OrganisationRegistryCommandCo
 
         await CommandSender.Send(CreateLifecyclePhaseTypeRequestMapping.Map(message));
 
-        return CreatedWithLocation(nameof(LifecyclePhaseTypeController), nameof(LifecyclePhaseTypeController.Get), new { id = message.Id });
+        return CreatedWithLocation(nameof(LifecyclePhaseTypeController), "Get", new { id = message.Id });
     }
 
     /// <summary>Pas een levensloopfasetype aan.</summary>
@@ -53,6 +53,6 @@ public class LifecyclePhaseTypeCommandController : OrganisationRegistryCommandCo
 
         await CommandSender.Send(UpdateLifecyclePhaseTypeRequestMapping.Map(internalMessage));
 
-        return OkWithLocationHeader(nameof(LifecyclePhaseTypeController), nameof(LifecyclePhaseTypeController.Get), new { id = internalMessage.LifecyclePhaseTypeId });
+        return OkWithLocationHeader(nameof(LifecyclePhaseTypeController), "Get", new { id = internalMessage.LifecyclePhaseTypeId });
     }
 }

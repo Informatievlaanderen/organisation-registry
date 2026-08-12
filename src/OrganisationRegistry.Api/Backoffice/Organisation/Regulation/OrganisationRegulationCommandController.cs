@@ -38,7 +38,7 @@ public class OrganisationRegulationCommandController : OrganisationRegistryComma
 
         await CommandSender.Send(AddOrganisationRegulationRequestMapping.Map(internalMessage));
 
-        return CreatedWithLocation(nameof(OrganisationRegulationController), nameof(OrganisationRegulationController.Get), new { id = message.OrganisationRegulationId });
+        return CreatedWithLocation(nameof(OrganisationRegulationController), "Get", new { id = message.OrganisationRegulationId });
     }
 
     /// <summary>Pas een regelgeving aan voor een organisatie.</summary>

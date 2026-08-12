@@ -36,7 +36,7 @@ public class OrganisationRelationCommandController : OrganisationRegistryCommand
 
         await CommandSender.Send(AddOrganisationRelationRequestMapping.Map(internalMessage));
 
-        return CreatedWithLocation(nameof(OrganisationRelationController), nameof(OrganisationRelationController.Get), new { id = message.OrganisationRelationId });
+        return CreatedWithLocation(nameof(OrganisationRelationController), "Get", new { id = message.OrganisationRelationId });
     }
 
     /// <summary>Pas een relatie aan voor een organisatie.</summary>

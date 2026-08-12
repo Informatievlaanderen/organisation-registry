@@ -45,6 +45,6 @@ public class BodyDetailCommandController : OrganisationRegistryCommandController
                 context.LifecyclePhaseTypeList.Single(x => x.RepresentsActivePhase && x.IsDefaultPhase),
                 context.LifecyclePhaseTypeList.Single(x => !x.RepresentsActivePhase && x.IsDefaultPhase)));
 
-        return CreatedWithLocation(nameof(BodyDetailController),nameof(BodyDetailController.Get), new { id = message.Id });
+        return CreatedWithLocation(nameof(BodyDetailController), "Get", new { id = message.Id });
     }
 }

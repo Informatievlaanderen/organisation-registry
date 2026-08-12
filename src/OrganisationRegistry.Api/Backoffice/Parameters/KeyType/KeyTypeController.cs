@@ -34,6 +34,7 @@ public class KeyTypeController : OrganisationRegistryController
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(KeyTypeListExamples))]
     [ProducesResponseType(typeof(List<KeyTypeListItem>), StatusCodes.Status200OK)]
     [OrganisationRegistryAuthorize]
+    [ActionName("List")]
     public async Task<IActionResult> Get(
         [FromServices] OrganisationRegistryContext context,
         [FromServices] IMemoryCaches memoryCaches,

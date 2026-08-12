@@ -6,7 +6,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using FluentAssertions;
-using IdentityModel;
+using Duende.IdentityModel;
 using Microsoft.IdentityModel.Tokens;
 using OrganisationRegistry.Api.Security;
 using OrganisationRegistry.Infrastructure.Authorization;

@@ -36,7 +36,7 @@ public class OrganisationOrganisationClassificationCommandController : Organisat
 
         await CommandSender.Send(AddOrganisationOrganisationClassificationRequestMapping.Map(internalMessage));
 
-        return CreatedWithLocation(nameof(OrganisationOrganisationClassificationController), nameof(OrganisationOrganisationClassificationController.Get), new { id = message.OrganisationOrganisationClassificationId });
+        return CreatedWithLocation(nameof(OrganisationOrganisationClassificationController), "Get", new { id = message.OrganisationOrganisationClassificationId });
     }
 
     /// <summary>Pas een classificatie aan voor een organisatie.</summary>

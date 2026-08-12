@@ -28,6 +28,7 @@ public class RegulationSubThemeController : OrganisationRegistryController
     [HttpGet]
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(RegulationSubThemeListExamples))]
     [ProducesResponseType(typeof(List<RegulationSubThemeListItem>), StatusCodes.Status200OK)]
+    [ActionName("List")]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<RegulationSubThemeListItemFilter>();

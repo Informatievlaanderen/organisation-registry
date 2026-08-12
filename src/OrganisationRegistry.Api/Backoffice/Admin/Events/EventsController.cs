@@ -30,6 +30,7 @@ public class EventsController : OrganisationRegistryController
     [HttpGet]
     [ProducesResponseType(typeof(List<EventListItem>), StatusCodes.Status200OK)]
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(EventListExamples))]
+    [ActionName("List")]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<EventListItemFilter>();

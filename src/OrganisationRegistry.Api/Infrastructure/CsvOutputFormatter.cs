@@ -77,7 +77,9 @@ public class CsvOutputFormatter : OutputFormatter
             parent = parent.BaseType;
         }
 
-        return type.GetProperties().OrderByDescending(prop => prop.DeclaringType is { } declaringType ? lookup[declaringType] : int.MaxValue);
+        return type.GetProperties()
+            .Where(pi => pi.GetIndexParameters().Length == 0)
+            .OrderByDescending(prop => prop.DeclaringType is { } declaringType ? lookup[declaringType] : int.MaxValue);
     }
 
     public override async Task WriteResponseBodyAsync(OutputFormatterWriteContext context)

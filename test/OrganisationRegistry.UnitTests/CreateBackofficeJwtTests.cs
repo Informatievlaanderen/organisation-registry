@@ -4,7 +4,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using FluentAssertions;
-using IdentityModel;
+using Duende.IdentityModel;
 using OrganisationRegistry.Api.Security;
 using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Configuration;

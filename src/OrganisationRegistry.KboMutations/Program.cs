@@ -3,7 +3,6 @@ namespace OrganisationRegistry.KboMutations;
 using System;
 using System.IO;
 using System.Threading;
-using Amazon;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
@@ -86,7 +85,6 @@ internal class Program
         var distributedLock = new DistributedLock<Program>(
             new DistributedLockOptions
             {
-                Region = RegionEndpoint.GetBySystemName(kboMutationsConfiguration.LockRegionEndPoint),
                 AwsAccessKeyId = kboMutationsConfiguration.LockAccessKeyId,
                 AwsSecretAccessKey = kboMutationsConfiguration.LockAccessKeySecret,
                 TableName = kboMutationsConfiguration.LockTableName,
@@ -100,7 +98,7 @@ internal class Program
         try
         {
             logger.LogInformation("[KboMutations] Trying to acquire lock");
-            acquiredLock = distributedLock.AcquireLock();
+            acquiredLock = distributedLock.AcquireLockAsync().GetAwaiter().GetResult();
 
             if (!acquiredLock)
             {
@@ -128,7 +126,7 @@ internal class Program
         finally
         {
             if (acquiredLock)
-                distributedLock.ReleaseLock();
+                distributedLock.ReleaseLockAsync().GetAwaiter().GetResult();
         }
     }
 

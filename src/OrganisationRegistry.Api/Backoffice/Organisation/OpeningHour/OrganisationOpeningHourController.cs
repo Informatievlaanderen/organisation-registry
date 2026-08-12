@@ -28,6 +28,7 @@ public class OrganisationOpeningHourController : OrganisationRegistryController
     [HttpGet]
     [ProducesResponseType(typeof(List<OrganisationOpeningHourListItem>), StatusCodes.Status200OK)]
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(OrganisationOpeningHourListExamples))]
+    [ActionName("List")]
     public async Task<IActionResult> Get(
         [FromServices] OrganisationRegistryContext context,
         [FromRoute] Guid organisationId)

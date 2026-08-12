@@ -6,7 +6,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using IdentityModel;
+using Duende.IdentityModel;
 using Microsoft.IdentityModel.Tokens;
 using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Configuration;

@@ -19,3 +19,9 @@ options:
       - arg: --kubelet-arg=eviction-hard=nodefs.available<1%,imagefs.available<1%,nodefs.inodesFree<1%
         nodeFilters:
           - server:*
+      - arg: --kubelet-arg=image-gc-high-threshold=99
+        nodeFilters:
+          - server:*
+      - arg: --kubelet-arg=image-gc-low-threshold=95
+        nodeFilters:
+          - server:*

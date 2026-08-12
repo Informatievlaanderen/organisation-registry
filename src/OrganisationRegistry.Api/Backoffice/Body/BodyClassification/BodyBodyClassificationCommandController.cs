@@ -36,7 +36,7 @@ public class BodyBodyClassificationCommandController : OrganisationRegistryComma
 
         await CommandSender.Send(AddBodyBodyClassificationRequestMapping.Map(internalMessage));
 
-        return CreatedWithLocation(nameof(BodyBodyClassificationController), nameof(BodyBodyClassificationController.Get), new { id = message.BodyBodyClassificationId });
+        return CreatedWithLocation(nameof(BodyBodyClassificationController), "Get", new { id = message.BodyBodyClassificationId });
     }
 
     /// <summary>Pas een classificatie aan voor een orgaan.</summary>
