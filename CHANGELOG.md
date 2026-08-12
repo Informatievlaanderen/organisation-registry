@@ -1,3 +1,10 @@
+## [1.331.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.331.0...v1.331.1) (2026-08-12)
+
+
+### Bug Fixes
+
+* remove structurizr from readme ([0ce618e](https://github.com/informatievlaanderen/organisation-registry/commit/0ce618e528bf76059435ff9454f9813cfa1d0bd1))
+
 # [1.331.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.330.0...v1.331.0) (2026-08-11)
 
 
