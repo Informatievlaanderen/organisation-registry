@@ -7,7 +7,6 @@ using Be.Vlaanderen.Basisregisters.Api.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Infrastructure;
 using Infrastructure.Swagger.Examples;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using OrganisationRegistry.Api.Infrastructure.Security;
 using OrganisationRegistry.Infrastructure;
@@ -19,15 +18,16 @@ using ForbiddenResponseExamples = Infrastructure.Swagger.Examples.ForbiddenRespo
 
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
-[OrganisationRegistryRoute("me")]
 [ApiExplorerSettings(GroupName = "Authorization")]
+[OrganisationRegistryRoute("me")]
+[OrganisationRegistryAuthorize]
 [Consumes("application/json")]
 [Produces("application/json")]
 public class MeController(ISecurityService securityService) : OrganisationRegistryController
 {
-    /// <summary>In Flemish</summary>
-    /// <remarks>In Flemish</remarks>
-    /// <response code="200">.</response>
+    /// <summary>Gegevens van de huidige gebruiker.</summary>
+    /// <remarks>Haalt de gegevens op van de gebruiker die momenteel aangemeld is.</remarks>
+    /// <response code="200">De gegevens van de aangemelde gebruiker zijn opgehaald.</response>
     /// <response code="401">De authenticatie is ongeldig of verlopen.</response>
     /// <response code="403">De gebruiker beschikt niet over een geldige Wegwijs-rol.</response>
     /// <response code="500">Er is een interne fout opgetreden.</response>
