@@ -6,19 +6,25 @@ using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Body;
 using Client;
 using Configuration;
 using ElasticSearch.Bodies;
 using ElasticSearch.Organisations;
+using ElasticSearch.People;
 using Infrastructure;
 using Infrastructure.Change;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OpenTelemetry;
+using Organisation.Events;
 using Osc;
 using OrganisationRegistry.Infrastructure.Events;
+using Organisations;
 using SqlServer;
 using SqlServer.ElasticSearchProjections;
+using SqlServer.Event;
+using SqlServer.Infrastructure;
 using SqlServer.ProjectionState;
 
 public record ProjectionName(string ElasticSearchProjectionsProjectionName, string FullName, string Name);
@@ -129,22 +135,33 @@ public abstract class BaseRunner<T> where T: class, IDocument, new()
             _metrics.NumberOfEnvelopesHandledGauge = envelopes.Count;
             _metrics.NumberOfEnvelopesHandledCounter = envelopes.Count;
         }
-        catch (ElasticsearchAggregateNotFoundException organisationNotFoundException)
+        catch (ElasticsearchAggregateNotFoundException aggregateNotFoundException)
         {
             await using var organisationRegistryContext = ContextFactory.Create();
 
-            organisationRegistryContext.OrganisationsToRebuild.Add(
-                new OrganisationToRebuild
-                {
-                    OrganisationId = Guid.Parse(organisationNotFoundException.AggregateId)
-                });
+            var aggregateId = Guid.Parse(aggregateNotFoundException.AggregateId);
+
+            Action<OrganisationRegistryContext, Guid>? handle = aggregateNotFoundException.AggregateType switch
+            {
+                { } t when t == typeof(OrganisationDocument) => HandleOrganisation,
+                { } t when t == typeof(BodyDocument) => HandleBody,
+                { } t when t == typeof(PersonDocument) => HandlePerson,
+                _ => null,
+            };
+
+            if (handle is null)
+                throw;
+
+            handle(organisationRegistryContext, aggregateId);
+
             await organisationRegistryContext.SaveChangesAsync();
+
             _logger.LogWarning(
                 0,
-                organisationNotFoundException,
-                "[{ProjectionName}] Could not find {OrganisationId} in ES while processing envelope #{EnvelopeNumber}, adding it to organisations to rebuild",
+                aggregateNotFoundException,
+                "[{ProjectionName}] Could not find {AggregateId} in ES while processing envelope #{EnvelopeNumber}, adding it to entities to rebuild",
                 ProjectionName,
-                organisationNotFoundException.AggregateId,
+                aggregateNotFoundException.AggregateId,
                 newLastProcessedEventNumber);
             throw;
         }
@@ -154,6 +171,15 @@ public abstract class BaseRunner<T> where T: class, IDocument, new()
             throw;
         }
     }
+
+    private static void HandleOrganisation(OrganisationRegistryContext context, Guid aggregateId)
+        => context.OrganisationsToRebuild.Add(new OrganisationToRebuild { OrganisationId = aggregateId });
+
+    private static void HandleBody(OrganisationRegistryContext context, Guid aggregateId)
+        => context.BodiesToRebuild.Add(new BodyToRebuild { BodyId = aggregateId });
+
+    private static void HandlePerson(OrganisationRegistryContext context, Guid aggregateId)
+        => context.PeopleToRebuild.Add(new PersonToRebuild { PersonId = aggregateId });
 
     private async Task ProcessChange(IElasticChange? changeSetChange, Dictionary<Guid, T> documentCache, int? eventNumber, bool isLastChangeInSet)
     {
