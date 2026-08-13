@@ -1,3 +1,18 @@
+# [1.332.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.331.1...v1.332.0) (2026-08-13)
+
+
+### Bug Fixes
+
+* add swagger docs ([46ae3d7](https://github.com/informatievlaanderen/organisation-registry/commit/46ae3d7d4cb6f18bf8aecf7d407b3f41ec864640))
+* finalize ticket #OR-3297 ([e97edf6](https://github.com/informatievlaanderen/organisation-registry/commit/e97edf69d7de81b4adead196527f1d420691d246)), closes [#OR-3297](https://github.com/informatievlaanderen/organisation-registry/issues/OR-3297)
+* missing orafin role mapping ([d5eaa91](https://github.com/informatievlaanderen/organisation-registry/commit/d5eaa91ac958d98cfbd93e9400517ca575bb3bfa))
+* swagger ([be1f7b1](https://github.com/informatievlaanderen/organisation-registry/commit/be1f7b1b971132fa9b5cbe77a212007c39bbefb3))
+
+
+### Features
+
+* add me endpoint (WIP) ([e702bc4](https://github.com/informatievlaanderen/organisation-registry/commit/e702bc47ac0c97536964c452f49cf31e95a81935))
+
 ## [1.331.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.331.0...v1.331.1) (2026-08-12)
 
 
