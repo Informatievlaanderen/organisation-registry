@@ -9,6 +9,7 @@ using Infrastructure;
 using Infrastructure.Swagger.Examples;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Models;
 using OrganisationRegistry.Api.Infrastructure.Security;
 using OrganisationRegistry.Infrastructure;
 using OrganisationRegistry.Infrastructure.Authorization;
@@ -50,15 +51,11 @@ public class MeController : OrganisationRegistryController
                 throw new ApiException("De gebruiker beschikt niet over een geldige Wegwijs-rol.", 403);
 
             var fullname = $"{user.FirstName} {user.LastName}".Trim();
-            var roles = user.Roles.Select(i => i.ToString());
+            var role = user.Roles.First();
 
-            //? TODO: Rolemapping
-            var role = string.Join(';', roles);
+            var permissions = RolePermissions.Resolve(role);
 
-            //! TODO: Permissions
-            var permissions = Array.Empty<string>();
-
-            return Ok(MeResponse.Create(fullname, role, permissions));
+            return Ok(MeResponse.Create(fullname, role.ToString(), permissions));
         }
         catch(ApiException) { throw; }
         catch (Exception)
