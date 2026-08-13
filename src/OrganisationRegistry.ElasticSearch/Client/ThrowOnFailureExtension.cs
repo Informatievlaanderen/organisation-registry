@@ -23,7 +23,7 @@ public static class ThrowOnFailureExtension
         if (response.IsValid) return response;
 
         if (response.ApiCall.HttpStatusCode == 404)
-            throw new ElasticsearchAggregateNotFoundException(((GetResponse<T>)response).Id);
+            throw new ElasticsearchAggregateNotFoundException<T>(((GetResponse<T>)response).Id);
 
         throw new ElasticsearchException(response.DebugInformation, response.OriginalException);
     }
@@ -76,13 +76,23 @@ public static class ThrowOnFailureExtension
     }
 }
 
-public class ElasticsearchAggregateNotFoundException : ElasticsearchException
+public abstract class ElasticsearchAggregateNotFoundException : ElasticsearchException
 {
     public string AggregateId { get; }
+    public Type AggregateType { get; }
 
-    public ElasticsearchAggregateNotFoundException(string aggregateId)
+    protected ElasticsearchAggregateNotFoundException(string aggregateId, Type aggregateType)
     {
         AggregateId = aggregateId;
+        AggregateType = aggregateType;
+    }
+}
+
+public class ElasticsearchAggregateNotFoundException<T> : ElasticsearchAggregateNotFoundException
+{
+    public ElasticsearchAggregateNotFoundException(string aggregateId)
+        : base(aggregateId, typeof(T))
+    {
     }
 }
 
