@@ -1,3 +1,10 @@
+# [1.333.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.332.0...v1.333.0) (2026-08-13)
+
+
+### Features
+
+* or-3296 get global permissions based on role ([8781dff](https://github.com/informatievlaanderen/organisation-registry/commit/8781dfffd173b0614de00e4bb33e835b35bef589))
+
 # [1.332.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.331.1...v1.332.0) (2026-08-13)
 
 
