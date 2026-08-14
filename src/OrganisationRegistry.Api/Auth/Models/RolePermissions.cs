@@ -10,40 +10,40 @@ public static class RolePermissions
     {
         [Role.AlgemeenBeheerder] =
         [
-            new GlobalPermission("org.organisations", CrudOperation.Create),
-            new GlobalPermission("body.info", CrudOperation.Create),
-            new GlobalPermission("reports", CrudOperation.Read),
-            new GlobalPermission("ref.parameters", CrudOperation.Read | CrudOperation.Write),
-            new GlobalPermission("imports", CrudOperation.Write),
-            new GlobalPermission("delegations", CrudOperation.Read | CrudOperation.Write | CrudOperation.Delete),
+            new GlobalPermission(ResourceDefinition.OrgOrganisations, CrudOperation.Create),
+            new GlobalPermission(ResourceDefinition.BodyInfo, CrudOperation.Create),
+            new GlobalPermission(ResourceDefinition.Reports, CrudOperation.Read),
+            new GlobalPermission(ResourceDefinition.RefParameters, CrudOperation.Read | CrudOperation.Write),
+            new GlobalPermission(ResourceDefinition.Imports, CrudOperation.Write),
+            new GlobalPermission(ResourceDefinition.Delegations, CrudOperation.Read | CrudOperation.Write | CrudOperation.Delete),
         ],
 
         [Role.DecentraalBeheerder] =
         [
-            new GlobalPermission("reports", CrudOperation.Read),
+            new GlobalPermission(ResourceDefinition.Reports, CrudOperation.Read),
         ],
 
         [Role.VlimpersBeheerder] =
         [
-            new GlobalPermission("reports", CrudOperation.Read),
-            new GlobalPermission("imports", CrudOperation.Write),
+            new GlobalPermission(ResourceDefinition.Reports, CrudOperation.Read),
+            new GlobalPermission(ResourceDefinition.Imports, CrudOperation.Write),
         ],
 
         [Role.OrgaanBeheerder] =
         [
-            new GlobalPermission("reports", CrudOperation.Read),
+            new GlobalPermission(ResourceDefinition.Reports, CrudOperation.Read),
         ],
 
         [Role.RegelgevingBeheerder] =
         [
-            new GlobalPermission("reports", CrudOperation.Read),
+            new GlobalPermission(ResourceDefinition.Reports, CrudOperation.Read),
         ],
     };
 
     public static IEnumerable<string> Resolve(Role role) =>
         Map.TryGetValue(role, out var permissions)
             ? permissions.SelectMany(p => p.ToPermissionStrings()).Distinct()
-            : Enumerable.Empty<string>();
+            : [];
 
     public static bool IsConfigured(Role role) => Map.ContainsKey(role);
 }

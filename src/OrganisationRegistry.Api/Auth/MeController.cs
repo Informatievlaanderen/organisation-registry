@@ -23,14 +23,11 @@ using ApiException = Be.Vlaanderen.Basisregisters.Api.Exceptions.ApiException;
 [OrganisationRegistryRoute("me")]
 [Consumes("application/json")]
 [Produces("application/json")]
-public class MeController : OrganisationRegistryController
+public class MeController(
+    ILogger<MeController> logger,
+    ISecurityService securityService
+) : OrganisationRegistryController
 {
-    private readonly ILogger<MeController> _logger;
-
-    public MeController(ILogger<MeController> logger)
-    {
-        _logger = logger;
-    }
     /// <summary>Gegevens van de huidige gebruiker.</summary>
     /// <remarks>Haalt de gegevens op van de gebruiker die momenteel aangemeld is.</remarks>
     /// <response code="200">De gegevens van de aangemelde gebruiker zijn opgehaald.</response>
@@ -41,7 +38,7 @@ public class MeController : OrganisationRegistryController
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(MeResponsOkExamples))]
     [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples))]
-    public async Task<ActionResult<MeResponse>> Get([FromServices]ISecurityService securityService)
+    public async Task<ActionResult<MeResponse>> Get()
     {
         try
         {
@@ -57,7 +54,10 @@ public class MeController : OrganisationRegistryController
 
             return Ok(MeResponse.Create(fullname, role.ToString(), permissions));
         }
-        catch(ApiException) { throw; }
+        catch (ApiException)
+        {
+            throw;
+        }
         catch (Exception)
         {
             //No user
