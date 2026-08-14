@@ -6,6 +6,8 @@ using Infrastructure;
 using Infrastructure.Security;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using OrganisationRegistry.Api.Auth.CustomAttributes;
+using OrganisationRegistry.Api.Auth.Models;
 using OrganisationRegistry.Infrastructure;
 using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Commands;
@@ -30,6 +32,7 @@ public class OrganisationDetailCommandController : OrganisationRegistryCommandCo
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [GlobalResource(ResourceDefinition.OrgOrganisations, CrudOperation.Create)]
     public async Task<IActionResult> Post(
         [FromServices] ISecurityService securityService,
         [FromBody] CreateOrganisationRequest message)

@@ -4,6 +4,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Be.Vlaanderen.Basisregisters.Api.Exceptions;
+using CustomAttributes;
 using Microsoft.AspNetCore.Mvc;
 using Infrastructure;
 using Infrastructure.Swagger.Examples;
@@ -23,14 +24,11 @@ using ApiException = Be.Vlaanderen.Basisregisters.Api.Exceptions.ApiException;
 [OrganisationRegistryRoute("me")]
 [Consumes("application/json")]
 [Produces("application/json")]
-public class MeController : OrganisationRegistryController
+public class MeController(
+    ILogger<MeController> logger,
+    ISecurityService securityService
+) : OrganisationRegistryController
 {
-    private readonly ILogger<MeController> _logger;
-
-    public MeController(ILogger<MeController> logger)
-    {
-        _logger = logger;
-    }
     /// <summary>Gegevens van de huidige gebruiker.</summary>
     /// <remarks>Haalt de gegevens op van de gebruiker die momenteel aangemeld is.</remarks>
     /// <response code="200">De gegevens van de aangemelde gebruiker zijn opgehaald.</response>
@@ -41,7 +39,7 @@ public class MeController : OrganisationRegistryController
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(MeResponsOkExamples))]
     [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples))]
-    public async Task<ActionResult<MeResponse>> Get([FromServices]ISecurityService securityService)
+    public async Task<ActionResult<MeResponse>> Get()
     {
         try
         {
@@ -57,11 +55,44 @@ public class MeController : OrganisationRegistryController
 
             return Ok(MeResponse.Create(fullname, role.ToString(), permissions));
         }
-        catch(ApiException) { throw; }
+        catch (ApiException)
+        {
+            throw;
+        }
         catch (Exception)
         {
             //No user
             throw new ApiException("De gebruiker is niet geauthenticeerd.", 401);
         }
     }
+
+    // [HttpGet("sample")]
+    // [OrProtected]
+    // [GlobalResource(ResourceDefinition.RefParameters, CrudOperation.Delete)]
+    // public async Task<ActionResult<MeResponse>> GetSample()
+    // {
+    //     try
+    //     {
+    //         var user = await securityService.GetUser(User);
+
+    //         if (user == WellknownUsers.Nobody)
+    //             throw new ApiException("De gebruiker beschikt niet over een geldige Wegwijs-rol.", 403);
+
+    //         var fullname = $"{user.FirstName} {user.LastName}".Trim();
+    //         var role = user.Roles.First();
+
+    //         var permissions = RolePermissions.Resolve(role);
+
+    //         return Ok(MeResponse.Create(fullname, role.ToString(), permissions));
+    //     }
+    //     catch (ApiException)
+    //     {
+    //         throw;
+    //     }
+    //     catch (Exception)
+    //     {
+    //         //No user
+    //         throw new ApiException("De gebruiker is niet geauthenticeerd.", 401);
+    //     }
+    // }
 }
