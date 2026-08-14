@@ -1,6 +1,7 @@
 namespace OrganisationRegistry.ElasticSearch.Projections.People;
 
 using System;
+using System.Threading.Tasks;
 using Cache;
 using Client;
 using Configuration;
@@ -11,11 +12,12 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrganisationRegistry.Infrastructure.Events;
 using SqlServer;
+using SqlServer.ElasticSearchProjections;
 using SqlServer.ProjectionState;
 
 public class PeopleRunner : BaseRunner<PersonDocument>
 {
-    private const string ElasticSearchProjectionsProjectionName = "ElasticSearchPeopleProjection";
+    public const string ElasticSearchProjectionsProjectionName = "ElasticSearchPeopleProjection";
     private static readonly string ProjectionFullName = typeof(Person).FullName!;
     private new const string ProjectionName = nameof(Person);
 

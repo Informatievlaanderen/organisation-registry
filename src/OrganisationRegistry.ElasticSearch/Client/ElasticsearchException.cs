@@ -4,9 +4,9 @@ using System;
 
 public class ElasticsearchException : Exception
 {
-    public ElasticsearchException() { }
+    protected ElasticsearchException() { }
 
-    public ElasticsearchException(string message) : base(message) { }
+    protected ElasticsearchException(string message) : base(message) { }
 
     public ElasticsearchException(string message, Exception inner) : base(message, inner) { }
 }
