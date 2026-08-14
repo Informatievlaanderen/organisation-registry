@@ -220,6 +220,20 @@ public class Program
                                 bus,
                                 provider.GetRequiredService<Func<IServiceProvider>>())
                         );
+                    })              .AddSingleton(provider =>
+                    {
+                        var bus = new ElasticBus(provider.GetRequiredService<ILogger<ElasticBus>>());
+                        return new IndividualPersonRebuildRunner(
+                            provider.GetRequiredService<ILogger<IndividualPersonRebuildRunner>>(),
+                            provider.GetRequiredService<IEventStore>(),
+                            provider.GetRequiredService<IContextFactory>(),
+                            provider.GetRequiredService<IProjectionStates>(),
+                            bus,
+                            provider.GetRequiredService<Elastic>(),
+                            new ElasticBusRegistrar(provider.GetRequiredService<ILogger<ElasticBusRegistrar>>(),
+                                bus,
+                                provider.GetRequiredService<Func<IServiceProvider>>())
+                        );
                     })
                     .AddSingleton(provider =>
                     {
@@ -321,8 +335,6 @@ public class Program
             })
             .Build();
 
-        var configuration = host.Services.GetRequiredService<IConfiguration>();
-
         var logger = host.Services.GetRequiredService<ILogger<Program>>();
 
         try
@@ -339,5 +351,3 @@ public class Program
         }
     }
 }
-
-
