@@ -17,7 +17,6 @@ public static class RolePermissions
             new GlobalPermission(ResourceDefinition.Imports, CrudOperation.Write),
             new GlobalPermission(ResourceDefinition.Delegations, CrudOperation.Read | CrudOperation.Write | CrudOperation.Delete),
         ],
-
         [Role.DecentraalBeheerder] =
         [
             new GlobalPermission(ResourceDefinition.Reports, CrudOperation.Read),
@@ -44,6 +43,23 @@ public static class RolePermissions
         Map.TryGetValue(role, out var permissions)
             ? permissions.SelectMany(p => p.ToPermissionStrings()).Distinct()
             : [];
+
+    public static bool HasPermission(
+    Role role,
+    ResourceDefinition resourceDefinition,
+    CrudOperation requiredOperations)
+{
+    if (!Map.TryGetValue(role, out var permissions))
+        return false;
+
+    var grantedOperations = permissions
+        .Where(p => p.Resource == resourceDefinition)
+        .Aggregate(
+            CrudOperation.None,
+            (current, permission) => current | permission.Operations);
+
+    return grantedOperations.HasFlag(requiredOperations);
+}
 
     public static bool IsConfigured(Role role) => Map.ContainsKey(role);
 }

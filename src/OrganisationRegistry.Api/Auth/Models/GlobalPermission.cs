@@ -8,10 +8,10 @@ using System.Linq;
 public enum CrudOperation
 {
     None = 0,
-    Read = 1 << 0,
-    Create = 1 << 1,
-    Write = 1 << 2,
-    Delete = 1 << 3,
+    Read   = 1 << 0, // 0001
+    Create = 1 << 1, // 0010
+    Write  = 1 << 2, // 0100
+    Delete = 1 << 3, // 1000
 }
 
 public readonly struct GlobalPermission(ResourceDefinition resource, CrudOperation operations)

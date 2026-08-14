@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Be.Vlaanderen.Basisregisters.Api.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Infrastructure;
+using Infrastructure.Configuration;
 using Infrastructure.Swagger.Examples;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -23,6 +24,7 @@ using ApiException = Be.Vlaanderen.Basisregisters.Api.Exceptions.ApiException;
 [OrganisationRegistryRoute("me")]
 [Consumes("application/json")]
 [Produces("application/json")]
+[GlobalResource(ResourceDefinition.Imports, CrudOperation.Read)]
 public class MeController(
     ILogger<MeController> logger,
     ISecurityService securityService

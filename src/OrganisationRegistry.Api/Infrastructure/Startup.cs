@@ -439,6 +439,7 @@ public class Startup
                         EnableAuthorization = true,
 
                         AfterMiddleware = x => x
+                            .UseMiddleware<OrAuthMiddleware>()
                             .UseMiddleware<ApplicationStatusMiddleware>()
                             .UseMiddleware<AddNoCacheHeadersMiddleware>()
                             .UseMiddleware<ConfigureClaimsPrincipalSelectorMiddleware>(),
