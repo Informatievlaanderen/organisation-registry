@@ -439,7 +439,6 @@ public class Startup
                         EnableAuthorization = true,
 
                         AfterMiddleware = x => x
-                            .UseMiddleware<OrAuthMiddleware>()
                             .UseMiddleware<ApplicationStatusMiddleware>()
                             .UseMiddleware<AddNoCacheHeadersMiddleware>()
                             .UseMiddleware<ConfigureClaimsPrincipalSelectorMiddleware>(),
@@ -451,6 +450,7 @@ public class Startup
                             //.UseOrganisationRegistryCookieAuthentication(tokenValidationParameters)
                             //.UseOrganisationRegistryJwtBearerAuthentication(tokenValidationParameters)
                             .UseAuthentication(),
+                        AfterAuthorization = x=> x.UseMiddleware<OrAuthMiddleware>(),
                     },
                 });
     }

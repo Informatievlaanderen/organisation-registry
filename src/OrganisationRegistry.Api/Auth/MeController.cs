@@ -4,9 +4,9 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Be.Vlaanderen.Basisregisters.Api.Exceptions;
+using CustomAttributes;
 using Microsoft.AspNetCore.Mvc;
 using Infrastructure;
-using Infrastructure.Configuration;
 using Infrastructure.Swagger.Examples;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -24,7 +24,6 @@ using ApiException = Be.Vlaanderen.Basisregisters.Api.Exceptions.ApiException;
 [OrganisationRegistryRoute("me")]
 [Consumes("application/json")]
 [Produces("application/json")]
-[GlobalResource(ResourceDefinition.Imports, CrudOperation.Read)]
 public class MeController(
     ILogger<MeController> logger,
     ISecurityService securityService
@@ -66,4 +65,34 @@ public class MeController(
             throw new ApiException("De gebruiker is niet geauthenticeerd.", 401);
         }
     }
+
+    // [HttpGet("sample")]
+    // [OrProtected]
+    // [GlobalResource(ResourceDefinition.RefParameters, CrudOperation.Delete)]
+    // public async Task<ActionResult<MeResponse>> GetSample()
+    // {
+    //     try
+    //     {
+    //         var user = await securityService.GetUser(User);
+
+    //         if (user == WellknownUsers.Nobody)
+    //             throw new ApiException("De gebruiker beschikt niet over een geldige Wegwijs-rol.", 403);
+
+    //         var fullname = $"{user.FirstName} {user.LastName}".Trim();
+    //         var role = user.Roles.First();
+
+    //         var permissions = RolePermissions.Resolve(role);
+
+    //         return Ok(MeResponse.Create(fullname, role.ToString(), permissions));
+    //     }
+    //     catch (ApiException)
+    //     {
+    //         throw;
+    //     }
+    //     catch (Exception)
+    //     {
+    //         //No user
+    //         throw new ApiException("De gebruiker is niet geauthenticeerd.", 401);
+    //     }
+    // }
 }

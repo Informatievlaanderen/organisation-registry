@@ -19,8 +19,8 @@ spec:
         env:
         - name: ACCEPT_EULA
           value: "Y"
-        - name: SEQ_FIRSTRUN_ADMINPASSWORD
-          value: "admin"
+        - name: SEQ_FIRSTRUN_NOAUTHENTICATION
+          value: "true"
         ports:
         - containerPort: 80    # UI
         - containerPort: 5341  # ingestion (HTTP + OTLP/HTTP)
