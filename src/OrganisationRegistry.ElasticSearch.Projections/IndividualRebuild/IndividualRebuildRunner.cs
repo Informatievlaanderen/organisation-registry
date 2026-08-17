@@ -1,31 +1,20 @@
-namespace OrganisationRegistry.ElasticSearch.Projections;
+namespace OrganisationRegistry.ElasticSearch.Projections.IndividualRebuild;
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Client;
-using Infrastructure;
-using Infrastructure.Change;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using OrganisationRegistry.ElasticSearch.Client;
+using OrganisationRegistry.ElasticSearch.Projections.Infrastructure;
+using OrganisationRegistry.ElasticSearch.Projections.Infrastructure.Change;
 using OrganisationRegistry.Infrastructure.Events;
+using OrganisationRegistry.SqlServer;
+using OrganisationRegistry.SqlServer.ProjectionState;
 using Osc;
-using SqlServer;
-using SqlServer.Infrastructure;
-using SqlServer.ProjectionState;
 
-/// <summary>
-/// Shared skeleton for the three IndividualRebuildRunner variants
-/// (Organisations, Bodies, People). Subclasses only supply the type parameters
-/// and a handful of small hooks (which DbSet, which event handlers, which
-/// projection state key, how to obtain the aggregate id, how to remove the
-/// pending-rebuild row).
-/// </summary>
-/// <typeparam name="TAggregate">Aggregate root type used to fetch envelopes from the event store.</typeparam>
-/// <typeparam name="TDocument">Elastic document type produced by this projection.</typeparam>
-/// <typeparam name="TToRebuild">EF entity type in the *ToRebuild table.</typeparam>
-public abstract class IndividualRebuildRunnerBase<TAggregate, TDocument, TToRebuild>
+public class IndividualRebuildRunner<TAggregate, TDocument, TToRebuild>
     where TDocument : class, IDocument
     where TToRebuild : class
 {
@@ -38,14 +27,17 @@ public abstract class IndividualRebuildRunnerBase<TAggregate, TDocument, TToRebu
     private readonly ElasticBus _bus;
     private readonly Elastic _elastic;
 
-    protected IndividualRebuildRunnerBase(
+    private readonly IndividualRebuildRunnerConfig<TAggregate, TDocument, TToRebuild> _config;
+
+    public IndividualRebuildRunner(
         ILogger logger,
         IEventStore store,
         IContextFactory contextFactory,
         IProjectionStates projectionStates,
         ElasticBus bus,
         Elastic elastic,
-        ElasticBusRegistrar busRegistrar)
+        ElasticBusRegistrar busRegistrar,
+        IndividualRebuildRunnerConfig<TAggregate, TDocument, TToRebuild> config)
     {
         _logger = logger;
         _store = store;
@@ -53,23 +45,19 @@ public abstract class IndividualRebuildRunnerBase<TAggregate, TDocument, TToRebu
         _projectionStates = projectionStates;
         _bus = bus;
         _elastic = elastic;
+        _config = config;
 
-        busRegistrar.RegisterEventHandlers(EventHandlers);
+        busRegistrar.RegisterEventHandlers(config.EventHandlers);
     }
-
-    protected abstract string ProjectionStateKey { get; }
-    protected abstract Type[] EventHandlers { get; }
-    protected abstract DbSet<TToRebuild> DataToRebuildSet(OrganisationRegistryContext context);
-    protected abstract Guid GetAggregateId(TToRebuild item);
 
     public async Task Run()
     {
         await using var context = _contextFactory.Create();
 
         var lastProcessedEventNumber =
-            await _projectionStates.GetLastProcessedEventNumber(ProjectionStateKey);
+            await _projectionStates.GetLastProcessedEventNumber(_config.ProjectionStateKey);
 
-        var toRebuildSet = DataToRebuildSet(context);
+        var toRebuildSet = _config.GetToRebuildSet(context);
         var toRebuild = await toRebuildSet.ToListAsync();
 
         if (toRebuild.Count > 0)
@@ -81,7 +69,7 @@ public abstract class IndividualRebuildRunnerBase<TAggregate, TDocument, TToRebu
         {
             foreach (var item in toRebuild)
             {
-                var aggregateId = GetAggregateId(item);
+                var aggregateId = _config.GetAggregateId(item);
 
                 var envelopes = _store
                     .GetEventEnvelopesUntil<TAggregate>(aggregateId, lastProcessedEventNumber)

@@ -39,8 +39,13 @@ using OrganisationRegistry.Infrastructure.EventStore;
 using Organisations;
 using People;
 using People.Cache;
+using ElasticSearch.Bodies;
+using ElasticSearch.Organisations;
+using ElasticSearch.People;
+using IndividualRebuild;
 using SqlServer;
 using SqlServer.Configuration;
+using SqlServer.ElasticSearchProjections;
 using SqlServer.Infrastructure;
 using SqlServer.ProjectionState;
 using IClock = NodaTime.IClock;
@@ -194,8 +199,8 @@ public class Program
                     .AddSingleton(provider =>
                     {
                         var bus = new ElasticBus(provider.GetRequiredService<ILogger<ElasticBus>>());
-                        return new IndividualRebuildRunner(
-                            provider.GetRequiredService<ILogger<IndividualRebuildRunner>>(),
+                        return new IndividualRebuildRunner<OrganisationRegistry.Organisation.Organisation, OrganisationDocument, OrganisationToRebuild>(
+                            provider.GetRequiredService<ILogger<IndividualRebuildRunner<OrganisationRegistry.Organisation.Organisation, OrganisationDocument, OrganisationToRebuild>>>(),
                             provider.GetRequiredService<IEventStore>(),
                             provider.GetRequiredService<IContextFactory>(),
                             provider.GetRequiredService<IProjectionStates>(),
@@ -203,14 +208,15 @@ public class Program
                             provider.GetRequiredService<Elastic>(),
                             new ElasticBusRegistrar(provider.GetRequiredService<ILogger<ElasticBusRegistrar>>(),
                                 bus,
-                                provider.GetRequiredService<Func<IServiceProvider>>())
+                                provider.GetRequiredService<Func<IServiceProvider>>()),
+                            IndividualRebuildRunnerConfigs.Organisation
                         );
                     })
                     .AddSingleton(provider =>
                     {
                         var bus = new ElasticBus(provider.GetRequiredService<ILogger<ElasticBus>>());
-                        return new IndividualBodyRebuildRunner(
-                            provider.GetRequiredService<ILogger<IndividualBodyRebuildRunner>>(),
+                        return new IndividualRebuildRunner<OrganisationRegistry.Body.Body, BodyDocument, BodyToRebuild>(
+                            provider.GetRequiredService<ILogger<IndividualRebuildRunner<OrganisationRegistry.Body.Body, BodyDocument, BodyToRebuild>>>(),
                             provider.GetRequiredService<IEventStore>(),
                             provider.GetRequiredService<IContextFactory>(),
                             provider.GetRequiredService<IProjectionStates>(),
@@ -218,13 +224,15 @@ public class Program
                             provider.GetRequiredService<Elastic>(),
                             new ElasticBusRegistrar(provider.GetRequiredService<ILogger<ElasticBusRegistrar>>(),
                                 bus,
-                                provider.GetRequiredService<Func<IServiceProvider>>())
+                                provider.GetRequiredService<Func<IServiceProvider>>()),
+                            IndividualRebuildRunnerConfigs.Body
                         );
-                    })              .AddSingleton(provider =>
+                    })
+                    .AddSingleton(provider =>
                     {
                         var bus = new ElasticBus(provider.GetRequiredService<ILogger<ElasticBus>>());
-                        return new IndividualPersonRebuildRunner(
-                            provider.GetRequiredService<ILogger<IndividualPersonRebuildRunner>>(),
+                        return new IndividualRebuildRunner<OrganisationRegistry.Person.Person, PersonDocument, PersonToRebuild>(
+                            provider.GetRequiredService<ILogger<IndividualRebuildRunner<OrganisationRegistry.Person.Person, PersonDocument, PersonToRebuild>>>(),
                             provider.GetRequiredService<IEventStore>(),
                             provider.GetRequiredService<IContextFactory>(),
                             provider.GetRequiredService<IProjectionStates>(),
@@ -232,7 +240,8 @@ public class Program
                             provider.GetRequiredService<Elastic>(),
                             new ElasticBusRegistrar(provider.GetRequiredService<ILogger<ElasticBusRegistrar>>(),
                                 bus,
-                                provider.GetRequiredService<Func<IServiceProvider>>())
+                                provider.GetRequiredService<Func<IServiceProvider>>()),
+                            IndividualRebuildRunnerConfigs.Person
                         );
                     })
                     .AddSingleton(provider =>
