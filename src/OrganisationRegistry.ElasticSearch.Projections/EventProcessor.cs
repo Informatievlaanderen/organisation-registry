@@ -6,6 +6,10 @@ using System.Threading.Channels;
 using System.Threading.Tasks;
 using Body;
 using Cache;
+using ElasticSearch.Bodies;
+using ElasticSearch.Organisations;
+using ElasticSearch.People;
+using IndividualRebuild;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -13,6 +17,8 @@ using OrganisationRegistry.Infrastructure.Configuration;
 using Organisations;
 using People;
 using SqlServer;
+using SqlServer.ElasticSearchProjections;
+using SqlServer.Infrastructure;
 
 public class EventProcessor : IHostedService
 {
@@ -33,8 +39,9 @@ public class EventProcessor : IHostedService
         BodyRunner bodyRunner,
         PeopleRunner peopleRunner,
         CacheRunner cacheRunner,
-        IndividualRebuildRunner individualRebuildRunner,
-        IndividualBodyRebuildRunner individualBodyRebuildRunner,
+        IndividualRebuildRunner<OrganisationRegistry.Organisation.Organisation, OrganisationDocument, OrganisationToRebuild> individualRebuildRunner,
+        IndividualRebuildRunner<OrganisationRegistry.Body.Body, BodyDocument, BodyToRebuild> individualBodyRebuildRunner,
+        IndividualRebuildRunner<OrganisationRegistry.Person.Person, PersonDocument, PersonToRebuild> individualPersonRebuildRunner,
         OrganisationsRunner organisationsRunner,
         IContextFactory contextFactory)
     {
@@ -52,7 +59,7 @@ public class EventProcessor : IHostedService
         _messagePump = Task.Factory.StartNew(
             async () =>
             {
-                var elasticRunners = new ElasticRunners(bodyRunner, peopleRunner, cacheRunner, individualRebuildRunner, individualBodyRebuildRunner, organisationsRunner);
+                var elasticRunners = new ElasticRunners(bodyRunner, peopleRunner, cacheRunner, individualRebuildRunner, individualBodyRebuildRunner, individualPersonRebuildRunner, organisationsRunner);
                 await PumpMessages(scheduler, logger, elasticRunners, contextFactory);
             },
             _messagePumpCancellation.Token,
@@ -103,6 +110,7 @@ public class EventProcessor : IHostedService
             await runners.CacheRunner.Run();
             await runners.IndividualRebuildRunner.Run();
             await runners.IndividualBodyRebuildRunner.Run();
+            await runners.IndividualPersonRebuildRunner.Run();
             await runners.PeopleRunner.Run();
             await runners.BodyRunner.Run();
             await runners.OrganisationsRunner.Run();
@@ -170,7 +178,14 @@ public class EventProcessor : IHostedService
         public int BatchSize { get; }
     }
 
-    private record ElasticRunners(BodyRunner BodyRunner, PeopleRunner PeopleRunner, CacheRunner CacheRunner, IndividualRebuildRunner IndividualRebuildRunner, IndividualBodyRebuildRunner IndividualBodyRebuildRunner, OrganisationsRunner OrganisationsRunner);
+    private record ElasticRunners(
+        BodyRunner BodyRunner,
+        PeopleRunner PeopleRunner,
+        CacheRunner CacheRunner,
+        IndividualRebuildRunner<OrganisationRegistry.Organisation.Organisation, OrganisationDocument, OrganisationToRebuild> IndividualRebuildRunner,
+        IndividualRebuildRunner<OrganisationRegistry.Body.Body, BodyDocument, BodyToRebuild> IndividualBodyRebuildRunner,
+        IndividualRebuildRunner<OrganisationRegistry.Person.Person, PersonDocument, PersonToRebuild> IndividualPersonRebuildRunner,
+        OrganisationsRunner OrganisationsRunner);
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
