@@ -1,3 +1,16 @@
+# [1.334.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.333.0...v1.334.0) (2026-08-18)
+
+
+### Bug Fixes
+
+* nuxt-bff fix ([408aed7](https://github.com/informatievlaanderen/organisation-registry/commit/408aed750d9a4848e883605efc92155a8b693d46))
+
+
+### Features
+
+* dispatch aggregate rebuild by document type in BaseRunner ([93248eb](https://github.com/informatievlaanderen/organisation-registry/commit/93248ebd9bdad91fe7ae43db8b81f5b2d4cb1b79))
+* or-3414 rebuild people when in queue ([49fb1ab](https://github.com/informatievlaanderen/organisation-registry/commit/49fb1aba379932a1e047e485a0a84020e8a74832))
+
 # [1.333.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.332.0...v1.333.0) (2026-08-13)
 
 
