@@ -17,6 +17,11 @@ using OrganisationRegistry.Infrastructure.Authorization;
 using Responses;
 using Swashbuckle.AspNetCore.Filters;
 using ApiException = Be.Vlaanderen.Basisregisters.Api.Exceptions.ApiException;
+using Microsoft.AspNetCore.Authorization;
+using OrganisationRegistry.Api.Auth.Authorization;
+using OrganisationRegistry.Handling.Authorization;
+
+using OrganisationResource = Models.Resource<Models.OrganisationResources>;
 
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
@@ -34,7 +39,7 @@ public class MeController(
     /// <response code="200">De gegevens van de aangemelde gebruiker zijn opgehaald.</response>
     /// <response code="500">Er is een interne fout opgetreden.</response>
     [HttpGet]
-    [OrProtected]
+    [OrProtected] // unchanged: /v1/me stays gated by the coarse allow-list, not the matrix
     [ProducesResponseType(typeof(MeResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(MeResponsOkExamples))]
@@ -66,33 +71,58 @@ public class MeController(
         }
     }
 
-    // [HttpGet("sample")]
-    // [OrProtected]
-    // [GlobalResource(ResourceDefinition.RefParameters, CrudOperation.Delete)]
-    // public async Task<ActionResult<MeResponse>> GetSample()
-    // {
-    //     try
-    //     {
-    //         var user = await securityService.GetUser(User);
+    [HttpGet("sample")]
+    [GlobalResource(GlobalResources.RefParameters, CrudOperation.Delete)]
+    public async Task<ActionResult<MeResponse>> GetSample()
+    {
+        var user = await securityService.GetUser(User);
+        var fullname = $"{user.FirstName} {user.LastName}".Trim();
+        var role = user.Roles.First();
+        var permissions = RolePermissions.Resolve(role);
 
-    //         if (user == WellknownUsers.Nobody)
-    //             throw new ApiException("De gebruiker beschikt niet over een geldige Wegwijs-rol.", 403);
+        return Ok(MeResponse.Create(fullname, role.ToString(), permissions));
+    }
 
-    //         var fullname = $"{user.FirstName} {user.LastName}".Trim();
-    //         var role = user.Roles.First();
+    [HttpGet("sample2")]
+    [GlobalResource(GlobalResources.RefParameters, CrudOperation.Write | CrudOperation.Read)]
+    public async Task<ActionResult<MeResponse>> GetSample2()
+    {
+        var user = await securityService.GetUser(User);
+        var fullname = $"{user.FirstName} {user.LastName}".Trim();
+        var role = user.Roles.First();
+        var permissions = RolePermissions.Resolve(role);
 
-    //         var permissions = RolePermissions.Resolve(role);
+        return Ok(MeResponse.Create(fullname, role.ToString(), permissions));
+    }
 
-    //         return Ok(MeResponse.Create(fullname, role.ToString(), permissions));
-    //     }
-    //     catch (ApiException)
-    //     {
-    //         throw;
-    //     }
-    //     catch (Exception)
-    //     {
-    //         //No user
-    //         throw new ApiException("De gebruiker is niet geauthenticeerd.", 401);
-    //     }
-    // }
+    [HttpGet("sample3")]
+    [GlobalResource(GlobalResources.RefParameters, CrudOperation.Write | CrudOperation.Read)]
+    public async Task<ActionResult<MeResponse>> GetSample3(
+        Guid organisationId,
+        Guid capacityId,
+        [FromServices] IAuthorizationService authorizationService)
+    {
+        //Current
+        var result = await authorizationService.AuthorizeAsync(User, (ctx) =>
+        {
+            var policy = new CapacityPolicy(
+            ctx.MemoryCaches.OvoNumbers[organisationId],
+            ctx.Configuration,
+            capacityId);
+
+            return policy;
+        });
+
+        //GOALS
+        // var result = await authorizationService.AuthorizeAsync(User, OrganisationResources.CanManageRegulations ,c => c)
+        // result.Succeeded()
+
+        // ignore
+        var user = await securityService.GetUser(User);
+        var fullname = $"{user.FirstName} {user.LastName}".Trim();
+        var role = user.Roles.First();
+        var permissions = RolePermissions.Resolve(role);
+
+        return Ok(MeResponse.Create(fullname, role.ToString(), permissions));
+    }
 }

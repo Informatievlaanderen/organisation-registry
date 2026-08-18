@@ -50,6 +50,7 @@ using Serilog;
 using SqlServer.Configuration;
 using SqlServer.Infrastructure;
 using Swagger;
+using OrganisationRegistry.Api.Auth.Authorization;
 
 public class Startup
 {
@@ -239,6 +240,7 @@ public class Startup
                         .Get<HostedServicesConfigurationSection>()))
             .AddFeatureManagement()
             .Services
+            .AddOrResourceAuthorization()
             .ConfigureDefaultForApi<Startup>(
                 new StartupConfigureOptions
                 {
@@ -450,7 +452,6 @@ public class Startup
                             //.UseOrganisationRegistryCookieAuthentication(tokenValidationParameters)
                             //.UseOrganisationRegistryJwtBearerAuthentication(tokenValidationParameters)
                             .UseAuthentication(),
-                        AfterAuthorization = x=> x.UseMiddleware<OrAuthMiddleware>(),
                     },
                 });
     }

@@ -4,53 +4,40 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using OrganisationRegistry.Infrastructure.Authorization;
+using Resource = Resource<GlobalResources>;
 
-/// <summary>
-/// Source of truth for role -> permission mapping. Each <see cref="Role"/> maps to a
-/// fixed set of <see cref="GlobalPermission"/> entries, each pairing a
-/// <see cref="ResourceDefinition"/> with the <see cref="CrudOperation"/> flags that
-/// role is allowed to perform on it. Consumed by <see cref="OrganisationRegistry.Api.Infrastructure.Configuration.OrAuthMiddleware"/>
-/// (via <see cref="Validate"/>) to authorize requests, and by <c>MeController</c>
-/// (via <see cref="Resolve"/>) to expose a user's permissions as strings.
-/// </summary>
-/// <remarks>
-/// Convention: within a role's array, each <see cref="ResourceDefinition"/> appears at
-/// most once, with all its granted operations OR'd together into a single
-/// <see cref="GlobalPermission"/>. <see cref="Validate"/> relies on this - it does not
-/// aggregate multiple entries for the same resource.
-/// </remarks>
 public static class RolePermissions
 {
-    private static readonly Dictionary<Role, GlobalPermission[]> Map = new()
+    private static readonly Dictionary<Role, Resource[]> Map = new()
     {
         [Role.AlgemeenBeheerder] =
         [
-            new GlobalPermission(ResourceDefinition.OrgOrganisations, CrudOperation.Create),
-            new GlobalPermission(ResourceDefinition.BodyInfo, CrudOperation.Create),
-            new GlobalPermission(ResourceDefinition.Reports, CrudOperation.Read),
-            new GlobalPermission(ResourceDefinition.RefParameters, CrudOperation.Read | CrudOperation.Write),
-            new GlobalPermission(ResourceDefinition.Imports, CrudOperation.Write),
-            new GlobalPermission(ResourceDefinition.Delegations, CrudOperation.Read | CrudOperation.Write | CrudOperation.Delete),
+            Resource.Create(GlobalResources.OrgOrganisations, CrudOperation.Create),
+            Resource.Create(GlobalResources.BodyInfo, CrudOperation.Create),
+            Resource.Create(GlobalResources.Reports, CrudOperation.Read),
+            Resource.Create(GlobalResources.RefParameters, CrudOperation.Read | CrudOperation.Write),
+            Resource.Create(GlobalResources.Imports, CrudOperation.Write),
+            Resource.Create(GlobalResources.Delegations, CrudOperation.Read | CrudOperation.Write | CrudOperation.Delete),
         ],
         [Role.DecentraalBeheerder] =
         [
-            new GlobalPermission(ResourceDefinition.Reports, CrudOperation.Read),
+            Resource.Create(GlobalResources.Reports, CrudOperation.Read),
         ],
 
         [Role.VlimpersBeheerder] =
         [
-            new GlobalPermission(ResourceDefinition.Reports, CrudOperation.Read),
-            new GlobalPermission(ResourceDefinition.Imports, CrudOperation.Write),
+            Resource.Create(GlobalResources.Reports, CrudOperation.Read),
+            Resource.Create(GlobalResources.Imports, CrudOperation.Write),
         ],
 
         [Role.OrgaanBeheerder] =
         [
-            new GlobalPermission(ResourceDefinition.Reports, CrudOperation.Read),
+            Resource.Create(GlobalResources.Reports, CrudOperation.Read),
         ],
 
         [Role.RegelgevingBeheerder] =
         [
-            new GlobalPermission(ResourceDefinition.Reports, CrudOperation.Read),
+            Resource.Create(GlobalResources.Reports, CrudOperation.Read),
         ],
     };
 
@@ -75,7 +62,7 @@ public static class RolePermissions
     /// </summary>
     public static bool Validate(
         Role role,
-        ResourceDefinition resource,
+        GlobalResources resource,
         CrudOperation requiredOperations,
         ILogger? logger = null)
     {
@@ -83,7 +70,7 @@ public static class RolePermissions
             return false;
 
         var ret = permissions.Any(p =>
-            p.Resource == resource &&
+            p.Name == resource &&
             p.Operations.HasFlag(requiredOperations));
 
         logger?.LogInformation($"Role: {role} | Resource: {resource} | OPS: {requiredOperations} | permissions: {permissions}");

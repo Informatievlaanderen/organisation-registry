@@ -1,33 +1,70 @@
 namespace OrganisationRegistry.Api.Auth.Models;
 
-using System.Collections.Generic;
+using System;
+using System.Collections.Concurrent;
+using System.ComponentModel;
+using System.Reflection;
 
-public enum ResourceDefinition
+public enum GlobalResources
 {
-    OrgOrganisations,
-    BodyInfo,
-    Reports,
-    RefParameters,
-    Imports,
-    Delegations,
+    [Description("org.organisations")] OrgOrganisations,
+    [Description("body.info")] BodyInfo,
+    [Description("reports")] Reports,
+    [Description("ref.parameters")] RefParameters,
+    [Description("imports")] Imports,
+    [Description("delegations")] Delegations,
 }
 
-public static class ResourceDefinitionExtensions
+public enum OrganisationResources
 {
-    private static readonly Dictionary<ResourceDefinition, string> PermissionNames = new()
-    {
-        [ResourceDefinition.OrgOrganisations] = "org.organisations",
-        [ResourceDefinition.BodyInfo] = "body.info",
-        [ResourceDefinition.Reports] = "reports",
-        [ResourceDefinition.RefParameters] = "ref.parameters",
-        [ResourceDefinition.Imports] = "imports",
-        [ResourceDefinition.Delegations] = "delegations",
-    };
+    [Description("canEdit")] CanEdit,
+    [Description("canDelete")] CanDelete,
+    [Description("canManageChildren")] CanManageChildren,
+    [Description("canManageContacts")] CanManageContacts,
+    [Description("canViewFunctions")] CanViewFunctions,
+    [Description("canManageFunctions")] CanManageFunctions,
+    [Description("canViewCapacities")] CanViewCapacities,
+    [Description("canManageCapacities")] CanManageCapacities,
+    [Description("canManageLocations")] CanManageLocations,
+    [Description("canManageBuildings")] CanManageBuildings,
+    [Description("canManageLabels")] CanManageLabels,
+    [Description("canManageClassifications")] CanManageClassifications,
+    [Description("canManageFormalFrameworks")] CanManageFormalFrameworks,
+    [Description("canManageKeys")] CanManageKeys,
+    [Description("canManageRegulations")] CanManageRegulations,
+    [Description("canManageBodies")] CanManageBodies,
+    [Description("canManageRelations")] CanManageRelations,
+    [Description("canViewKbo")] CanViewKbo,
+    [Description("canManageKbo")] CanManageKbo,
+    [Description("canViewVlimpers")] CanViewVlimpers,
+    [Description("canManageVlimpers")] CanManageVlimpers
+}
 
-    extension(ResourceDefinition resource)
+public enum BodyResources
+{
+    [Description("canEdit")] CanEdit,
+    [Description("canDelete")] CanDelete,
+    [Description("canManageContacts")] CanManageContacts,
+    [Description("canManageSeats")] CanManageSeats,
+    [Description("canManageMandates")] CanManageMandates,
+    [Description("canManageLifecycles")] CanManageLifecycles,
+    [Description("canManageOrganisations")] CanManageOrganisations,
+    [Description("canManageFormalFrameworks")] CanManageFormalFrameworks,
+    [Description("canManageMep")] CanManageMep,
+    [Description("canManageClassifications")] CanManageClassifications
+}
+
+public static class ResourceExtensions
+{
+    private static readonly ConcurrentDictionary<Enum, string> _cache = new();
+
+    extension<TEnum>(TEnum resource) where TEnum : struct, Enum
     {
-        public string PermissionName
-            => PermissionNames[resource];
+        public string PermissionName => _cache.GetOrAdd(resource, static e =>
+        {
+            var member = e.GetType().GetMember(e.ToString())[0];
+            var description = member.GetCustomAttribute<DescriptionAttribute>();
+            return description?.Description ?? e.ToString();
+        });
     }
 }
-
