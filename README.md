@@ -11,9 +11,10 @@ Please see our [contributing guidelines](CONTRIBUTING.md) before contributing.
 
 ## Required tools
 - dotnet sdk (see `global.json` for exact version)
-- nvm
-- k3d
-- tilt
+- [nvm](https://github.com/nvm-sh/nvm#install--update-script)
+- [k3d](https://k3d.io/stable/#releases)
+- [kubectl](https://kubernetes.io/docs/tasks/tools/)
+- [tilt](https://docs.tilt.dev/index.html)
 
 ### Useful commands
 
