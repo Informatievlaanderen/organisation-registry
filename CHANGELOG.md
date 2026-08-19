@@ -1,3 +1,10 @@
+# [1.335.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.334.0...v1.335.0) (2026-08-19)
+
+
+### Features
+
+* or-3414 log actual index names for elasticsearch ([7c2d669](https://github.com/informatievlaanderen/organisation-registry/commit/7c2d669962bbd10f78aa3c30731d4ca8a53dff7e))
+
 # [1.334.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.333.0...v1.334.0) (2026-08-18)
 
 
