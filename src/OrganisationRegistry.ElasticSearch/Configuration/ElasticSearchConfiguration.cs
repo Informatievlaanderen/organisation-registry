@@ -1,6 +1,7 @@
 namespace OrganisationRegistry.ElasticSearch.Configuration;
 
 using System;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -77,4 +78,22 @@ public class ElasticSearchConfiguration
             BodyWriteIndex = BodyWriteIndex,
             BodyType = BodyType,
         };
+
+    public void FormatStartupInfo(ILogger logger)
+    {
+        logger.LogInformation("ElasticSearch configuration is reading from " +
+                              "\n\t{OrganisationsReadIndex} " +
+                              "\n\t{BodyReadIndex} " +
+                              "\n\t{PeopleReadIndex} " +
+                              "\n and writing to " +
+                              "\n\t{OrganisationsWriteIndex} " +
+                              "\n\t{BodyWriteIndex} " +
+                              "\n\t{PeopleWriteIndex}",
+            OrganisationsReadIndex,
+            BodyReadIndex,
+            PeopleReadIndex,
+            OrganisationsWriteIndex,
+            BodyWriteIndex,
+            PeopleWriteIndex);
+    }
 }

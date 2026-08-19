@@ -21,6 +21,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Asp.Versioning.ApiExplorer;
+using ElasticSearch.Configuration;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
@@ -452,6 +453,9 @@ public class Startup
                             .UseAuthentication(),
                     },
                 });
+
+        appLifetime.ApplicationStarted.Register(() =>
+            app.ApplicationServices.GetRequiredService<IOptions<ElasticSearchConfiguration>>().Value.FormatStartupInfo(app.ApplicationServices.GetRequiredService<ILogger<Startup>>()));
     }
 
     private const string SchermApiIntro =
