@@ -9,19 +9,15 @@ ports:
     nodeFilters:
       - loadbalancer
 registries:
+  config: |
+    mirrors:
+      docker.io:
+        endpoint:
+          - "http://host.k3d.internal:5000"
+      mcr.microsoft.com:
+        endpoint:
+          - "http://host.k3d.internal:5001"
   create:
     name: k3d-wegwijs-registry
     host: "0.0.0.0"
     hostPort: "5051"
-options:
-  k3s:
-    extraArgs:
-      - arg: --kubelet-arg=eviction-hard=nodefs.available<1%,imagefs.available<1%,nodefs.inodesFree<1%
-        nodeFilters:
-          - server:*
-      - arg: --kubelet-arg=image-gc-high-threshold=99
-        nodeFilters:
-          - server:*
-      - arg: --kubelet-arg=image-gc-low-threshold=95
-        nodeFilters:
-          - server:*
