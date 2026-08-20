@@ -8,8 +8,8 @@
     "start": "node .output/server/index.mjs"
   },
   "dependencies": {
-    "nuxt": "^3.11.0",
-    "h3": "^1.11.0",
-    "ofetch": "^1.3.3"
+    "nuxt": "^3.21.0",
+    "h3": "^1.15.0",
+    "ofetch": "^1.5.1"
   }
 }
