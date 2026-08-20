@@ -207,11 +207,27 @@ custom_build(
 )
 
 # Nuxt BFF
-custom_build(
+# custom_build(
+#     'k3d-wegwijs-registry:5051/wegwijs-nuxt-bff:local',
+#     'docker build -t $EXPECTED_REF demo/nuxt-bff && docker push $EXPECTED_REF',
+#     deps=['demo/nuxt-bff/'],
+# )
+docker_build(
     'k3d-wegwijs-registry:5051/wegwijs-nuxt-bff:local',
-    'docker build -t $EXPECTED_REF demo/nuxt-bff && docker push $EXPECTED_REF',
-    deps=['demo/nuxt-bff/'],
+    context='demo/nuxt-bff',
+    target='dev',
+    live_update=[
+        fall_back_on([
+            'demo/nuxt-bff/package.json',
+            'demo/nuxt-bff/package-lock.json',
+            'demo/nuxt-bff/nuxt.config.ts',
+            'demo/nuxt-bff/Dockerfile'
+        ]),
+        sync('demo/nuxt-bff/pages',      '/workspace/pages'),
+        sync('demo/nuxt-bff/server',     '/workspace/server'),
+    ],
 )
+
 
 # =============================================================================
 # Applications
