@@ -1,11 +1,11 @@
 /**
  * Sessie-utilities — sla tokens op in encrypted cookies.
- * 
+ *
  * Omdat JWT tokens groot zijn (vaak >2KB elk), splitsen we de sessie
  * over twee cookies om binnen browser limieten te blijven:
  *   - bff_session: bevat accessToken + metadata
  *   - bff_session_ex: bevat exchangedToken (van token exchange)
- * 
+ *
  * Beide cookies zijn HttpOnly en encrypted met AES-256-CBC.
  */
 
@@ -71,10 +71,10 @@ function decrypt<T>(token: string, secret: string): T | null {
 export function getSession(event: H3Event, secret: string): Session {
   const cookie1 = getCookie(event, COOKIE_NAME)
   const cookie2 = getCookie(event, COOKIE_NAME_EX)
-  
+
   const part1 = cookie1 ? decrypt<SessionPart1>(cookie1, secret) : null
   const part2 = cookie2 ? decrypt<SessionPart2>(cookie2, secret) : null
-  
+
   return {
     accessToken: part1?.accessToken,
     idToken: part1?.idToken,
@@ -91,7 +91,7 @@ export function saveSession(event: H3Event, session: Session, secret: string): v
     maxAge: COOKIE_MAX_AGE,
     path: '/',
   }
-  
+
   // Part 1: accessToken + idToken + metadata (in main cookie)
   const part1: SessionPart1 = {
     accessToken: session.accessToken,
@@ -101,7 +101,7 @@ export function saveSession(event: H3Event, session: Session, secret: string): v
   const encrypted1 = encrypt(part1, secret)
   console.log('[session] Part 1 (accessToken) length:', encrypted1.length)
   setCookie(event, COOKIE_NAME, encrypted1, cookieOptions)
-  
+
   // Part 2: exchangedToken (in separate cookie, may be empty)
   if (session.exchangedToken) {
     const part2: SessionPart2 = {

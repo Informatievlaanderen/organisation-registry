@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: seq
-        image: datalust/seq:latest
+        image: datalust/seq:2026.1
         env:
         - name: ACCEPT_EULA
           value: "Y"
