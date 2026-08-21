@@ -451,6 +451,7 @@ public class Startup
                             //.UseOrganisationRegistryCookieAuthentication(tokenValidationParameters)
                             //.UseOrganisationRegistryJwtBearerAuthentication(tokenValidationParameters)
                             .UseAuthentication(),
+                        AfterAuthorization = x=> x.UseMiddleware<OrAuthMiddleware>(),
                     },
                 });
 
