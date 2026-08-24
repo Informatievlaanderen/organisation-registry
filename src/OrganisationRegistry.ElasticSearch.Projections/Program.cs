@@ -297,6 +297,7 @@ public class Program
                     .AddSingleton<Elastic>()
                     .AddSingleton<IProjectionStates, ProjectionStates>()
                     .AddSingleton<IPersonHandlerCache, PersonHandlerCache>()
+                    .AddHttpClient()
                     .AddSingleton<IExternalIpFetcher, ExternalIpFetcher>()
                     .AddSingleton<IRepository, Repository>()
                     .AddSingleton<IEventStore, SqlServerEventStore>()

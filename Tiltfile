@@ -141,6 +141,33 @@ docker_build(
     ignore=['**/bin', '**/obj'],
 )
 
+
+# Elasticsearch Projections — build context is repo root
+docker_build(
+    'k3d-wegwijs-registry:5051/wegwijs-elasticsearch-projections:local',
+    '.',
+    dockerfile='elasticsearchprojections/Dockerfile',
+    only=[
+        'elasticsearchprojections/Dockerfile',
+        '.config/dotnet-tools.json',
+        'SolutionInfo.cs',
+        'Directory.Build.props',
+        'Directory.Packages.props',
+        'global.json',
+        'OrganisationRegistry.sln',
+        'src/OrganisationRegistry',
+        'src/OrganisationRegistry.ElasticSearch.Projections',
+        'src/OrganisationRegistry.Configuration.Database',
+        'src/OrganisationRegistry.ElasticSearch',
+        'src/OrganisationRegistry.Infrastructure',
+        'src/OrganisationRegistry.OpenTelemetry',
+        'src/OrganisationRegistry.SqlServer',
+        'src/Osc',
+        'src/OpenSearch.Net',
+    ],
+    ignore=['**/bin', '**/obj'],
+)
+
 # UI — Angular frontend matching exact GitHub Actions CI process
 custom_build(
     'k3d-wegwijs-registry:5051/wegwijs-ui:local',
@@ -218,6 +245,7 @@ custom_build(
 # =============================================================================
 
 k8s_yaml('demo/k8s/api.yaml')
+k8s_yaml('demo/k8s/elasticsearchprojections.yaml')
 k8s_yaml('demo/k8s/ui.yaml')
 k8s_yaml('demo/k8s/piavo-import.yaml')
 k8s_yaml('demo/k8s/m2m.yaml')
@@ -247,6 +275,11 @@ k8s_resource('api',
     labels=['applications'],
     resource_deps=['clear-database', 'mssql', 'opensearch', 'keycloak', 'wiremock', 'otel-collector'],
     links=[link('http://api.localhost:9080/v1', 'API')])
+
+k8s_resource('elasticsearch-projections',
+    labels=['applications'],
+    resource_deps=['api-configuration'],
+    links=[])
 
 k8s_resource('ui',
     labels=['applications'],
