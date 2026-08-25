@@ -183,6 +183,8 @@ public class SearchController : OrganisationRegistryController
 
                 foreach (var organisation in organisations)
                 {
+                    organisation.BankAccounts = [];
+
                     if (organisation.Parents.IsNullOrEmpty())
                         continue;
 
