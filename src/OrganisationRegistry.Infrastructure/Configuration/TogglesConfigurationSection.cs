@@ -20,7 +20,7 @@ public class TogglesConfigurationSection
     public bool ApiAvailable { get; set; }
     public bool ElasticSearchProjectionsAvailable { get; set; }
     public bool VlaanderenBeNotifierAvailable { get; set; }
-    public bool DelegationsRunnerAvailable { get; set; }
+    public bool DelegationsRunnerAvailable { get; set; } = true;
     public bool AgentschapZorgEnGezondheidFtpDumpAvailable { get; set; }
 
     // Vlaanderen.be Notifier
