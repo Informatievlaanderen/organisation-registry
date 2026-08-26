@@ -121,9 +121,11 @@ public abstract class BaseRunner<T> where T: class, IDocument, new()
             foreach (var changeSet in allChanges)
             {
                 newLastProcessedEventNumber = changeSet.EnvelopeNumber;
-                foreach (var changeSetChange in changeSet.Changes.Select((value, i) => new { i, value }))
+
+                var changes = changeSet.Changes.ToList();
+                for (var i = 0; i < changes.Count; i++)
                 {
-                    await ProcessChange(changeSetChange.value, documentCache, newLastProcessedEventNumber, changeSetChange.i == changeSet.Changes.Count());
+                    await ProcessChange(changes[i], documentCache, newLastProcessedEventNumber, i == changes.Count - 1);
                 }
             }
 
