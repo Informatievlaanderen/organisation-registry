@@ -1,7 +1,6 @@
 namespace OrganisationRegistry.ElasticSearch.Projections.Body;
 
 using System;
-using System.Threading.Tasks;
 using Client;
 using Configuration;
 using Bodies;

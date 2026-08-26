@@ -137,30 +137,19 @@ public abstract class BaseRunner<T> where T: class, IDocument, new()
         }
         catch (ElasticsearchAggregateNotFoundException aggregateNotFoundException)
         {
-            await using var organisationRegistryContext = ContextFactory.Create();
-
-            var aggregateId = Guid.Parse(aggregateNotFoundException.AggregateId);
-
-            Action<OrganisationRegistryContext, Guid>? handle = aggregateNotFoundException.AggregateType switch
-            {
-                { } t when t == typeof(OrganisationDocument) => HandleOrganisation,
-                { } t when t == typeof(BodyDocument) => HandleBody,
-                { } t when t == typeof(PersonDocument) => HandlePerson,
-                _ => null,
-            };
-
-            if (handle is null)
+            // The document type that was missing decides which rebuild queue it goes in: a person
+            // that 404s while we're projecting body events has to be rebuilt as a person, not as a body.
+            if (!await QueueForRebuild(
+                    aggregateNotFoundException.AggregateType,
+                    Guid.Parse(aggregateNotFoundException.AggregateId)))
                 throw;
-
-            handle(organisationRegistryContext, aggregateId);
-
-            await organisationRegistryContext.SaveChangesAsync();
 
             _logger.LogWarning(
                 0,
                 aggregateNotFoundException,
-                "[{ProjectionName}] Could not find {AggregateId} in ES while processing envelope #{EnvelopeNumber}, adding it to entities to rebuild",
+                "[{ProjectionName}] Could not find {DocumentType} {AggregateId} in ES while processing envelope #{EnvelopeNumber}, adding it to entities to rebuild",
                 ProjectionName,
+                aggregateNotFoundException.AggregateType.Name,
                 aggregateNotFoundException.AggregateId,
                 newLastProcessedEventNumber);
             throw;
@@ -180,6 +169,30 @@ public abstract class BaseRunner<T> where T: class, IDocument, new()
 
     private static void HandlePerson(OrganisationRegistryContext context, Guid aggregateId)
         => context.PeopleToRebuild.Add(new PersonToRebuild { PersonId = aggregateId });
+
+    /// <summary>
+    /// Queues <paramref name="aggregateId"/> in the rebuild table belonging to <paramref name="documentType"/>.
+    /// Returns false when the document type has no rebuild queue, so the caller can rethrow instead.
+    /// </summary>
+    private async Task<bool> QueueForRebuild(Type documentType, Guid aggregateId)
+    {
+        Action<OrganisationRegistryContext, Guid>? handle = documentType switch
+        {
+            { } t when t == typeof(OrganisationDocument) => HandleOrganisation,
+            { } t when t == typeof(BodyDocument) => HandleBody,
+            { } t when t == typeof(PersonDocument) => HandlePerson,
+            _ => null,
+        };
+
+        if (handle is null)
+            return false;
+
+        await using var organisationRegistryContext = ContextFactory.Create();
+        handle(organisationRegistryContext, aggregateId);
+        await organisationRegistryContext.SaveChangesAsync();
+
+        return true;
+    }
 
     private async Task ProcessChange(IElasticChange? changeSetChange, Dictionary<Guid, T> documentCache, int? eventNumber, bool isLastChangeInSet)
     {
@@ -243,21 +256,21 @@ public abstract class BaseRunner<T> where T: class, IDocument, new()
         }
         catch (ElasticsearchPerDocumentChangeException e)
         {
-            await HandlePerDocumentChangeException(e);
+            // A failed change always concerns this runner's own document type.
+            await QueueForRebuild(typeof(T), e.AggregateId);
+
             _logger.LogWarning(
                 0,
                 e,
-                "[{ProjectionName}] Error occured for {AggregateId} in ES while processing envelope #{EnvelopeNumber}, adding it to entities to rebuild",
+                "[{ProjectionName}] Error occured for {DocumentType} {AggregateId} in ES while processing envelope #{EnvelopeNumber}, adding it to entities to rebuild",
                 ProjectionName,
+                typeof(T).Name,
                 e.AggregateId,
                 e.EnvelopeNumber);
 
             throw;
         }
     }
-
-    protected virtual Task HandlePerDocumentChangeException(ElasticsearchPerDocumentChangeException e)
-        => Task.CompletedTask;
 
     private async Task FlushDocuments(Dictionary<Guid, T> documentCache)
     {

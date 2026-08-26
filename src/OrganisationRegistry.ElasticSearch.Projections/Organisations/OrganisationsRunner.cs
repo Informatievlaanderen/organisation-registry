@@ -1,7 +1,6 @@
 namespace OrganisationRegistry.ElasticSearch.Projections.Organisations;
 
 using System;
-using System.Threading.Tasks;
 using Client;
 using Configuration;
 using ElasticSearch.Organisations;
@@ -60,17 +59,5 @@ public class OrganisationsRunner : BaseRunner<OrganisationDocument>
             new ProjectionName(ElasticSearchProjectionsProjectionName, ProjectionFullName, ProjectionName))
     {
         busRegistrar.RegisterEventHandlers(EventHandlers);
-    }
-
-    protected override async Task HandlePerDocumentChangeException(ElasticsearchPerDocumentChangeException e)
-    {
-        await using var organisationRegistryContext = ContextFactory.Create();
-
-        organisationRegistryContext.OrganisationsToRebuild.Add(
-            new OrganisationToRebuild
-            {
-                OrganisationId = e.AggregateId,
-            });
-        await organisationRegistryContext.SaveChangesAsync();
     }
 }
