@@ -107,10 +107,7 @@ public class TestEventProcessor
     {
         if (documentCache.Any())
         {
-            if (documentCache.Any(x => x.Key == Guid.Empty || string.IsNullOrEmpty(x.Value.Name)))
-            {
-                throw new Exception("Found document without key or name.");
-            }
+            documentCache.ThrowOnDocumentsWithoutKeyOrName(typeof(T).Name);
 
             await elastic.TryAsync(
                 () =>
