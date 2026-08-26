@@ -5,7 +5,7 @@ public class OpenIdConnectConfigurationSection
     public static string Name = "OIDCAuth";
 
     public string Authority { get; set; } = null!;
-    
+
     public string? InternalAuthorityOverride { get; set; }
 
     public string AuthorizationRedirectUri { get; set; } = null!;
@@ -31,6 +31,7 @@ public class OpenIdConnectConfigurationSection
     public string JwtSharedSigningKey { get; set; } = null!;
 
     public string JwtIssuer { get; set; } = null!;
+    public string? JwtIssuers { get; set; } = null!;
 
     public string JwtAudience { get; set; } = null!;
 

@@ -1,6 +1,7 @@
 namespace OrganisationRegistry.Api.Infrastructure.Security;
 
 using System;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Options;
@@ -26,6 +27,8 @@ public class OrganisationRegistryTokenValidationParameters : TokenValidationPara
         // Validate the JWT Issuer (iss) claim
         ValidateIssuer = true;
         ValidIssuer = auth.JwtIssuer;
+        ValidIssuers = auth.JwtIssuers?
+            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
         // Validate the JWT Audience (aud) claim
         ValidateAudience = true;
