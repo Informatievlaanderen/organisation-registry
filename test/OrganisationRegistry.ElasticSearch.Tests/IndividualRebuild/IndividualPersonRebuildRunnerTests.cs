@@ -17,23 +17,22 @@ using Person.Events;
 using SqlServer;
 using SqlServer.ElasticSearchProjections;
 using OrganisationRegistry.SqlServer.Infrastructure;
-using Projections.IndividualRebuild;
 using SqlServer.ProjectionState;
 using Xunit;
 
 [Collection(nameof(ElasticSearchFixture))]
 public class IndividualPersonRebuildRunnerTests
-    : IndividualRebuildRunnerTestBase<OrganisationRegistry.Person.Person, PersonDocument, PersonToRebuild>
+    : IndividualRebuildRunnerTestBase<OrganisationRegistry.Person.Person>
 {
     public IndividualPersonRebuildRunnerTests(ElasticSearchFixture fixture) : base(fixture) { }
 
-    protected override IndividualRebuildRunnerConfig<OrganisationRegistry.Person.Person, PersonDocument, PersonToRebuild> Config
-        => IndividualRebuildRunnerConfigs.Person;
+    protected override Type[] EventHandlers => PeopleRunner.EventHandlers;
 
-    protected override IndividualRebuildRunner<OrganisationRegistry.Person.Person, PersonDocument, PersonToRebuild> CreateRunner(
+    protected override Func<Task> CreateRunner(
         IEventStore eventStore, IContextFactory contextFactory, IProjectionStates projectionStates,
         ElasticBus bus, Elastic elastic, ElasticBusRegistrar busRegistrar)
-        => new(NullLogger.Instance, eventStore, contextFactory, projectionStates, bus, elastic, busRegistrar, Config);
+        => new IndividualPersonRebuildRunner(
+            new NullLogger<IndividualPersonRebuildRunner>(), eventStore, contextFactory, projectionStates, bus, elastic, busRegistrar).Run;
 
     protected override List<IEnvelope> CreateEnvelopes(Guid aggregateId)
     {
