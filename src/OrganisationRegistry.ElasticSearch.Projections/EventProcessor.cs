@@ -6,10 +6,6 @@ using System.Threading.Channels;
 using System.Threading.Tasks;
 using Body;
 using Cache;
-using ElasticSearch.Bodies;
-using ElasticSearch.Organisations;
-using ElasticSearch.People;
-using IndividualRebuild;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -17,8 +13,6 @@ using OrganisationRegistry.Infrastructure.Configuration;
 using Organisations;
 using People;
 using SqlServer;
-using SqlServer.ElasticSearchProjections;
-using SqlServer.Infrastructure;
 
 public class EventProcessor : IHostedService
 {
@@ -39,9 +33,9 @@ public class EventProcessor : IHostedService
         BodyRunner bodyRunner,
         PeopleRunner peopleRunner,
         CacheRunner cacheRunner,
-        IndividualRebuildRunner<OrganisationRegistry.Organisation.Organisation, OrganisationDocument, OrganisationToRebuild> individualRebuildRunner,
-        IndividualRebuildRunner<OrganisationRegistry.Body.Body, BodyDocument, BodyToRebuild> individualBodyRebuildRunner,
-        IndividualRebuildRunner<OrganisationRegistry.Person.Person, PersonDocument, PersonToRebuild> individualPersonRebuildRunner,
+        IndividualRebuildRunner individualRebuildRunner,
+        IndividualBodyRebuildRunner individualBodyRebuildRunner,
+        IndividualPersonRebuildRunner individualPersonRebuildRunner,
         OrganisationsRunner organisationsRunner,
         IContextFactory contextFactory)
     {
@@ -182,9 +176,9 @@ public class EventProcessor : IHostedService
         BodyRunner BodyRunner,
         PeopleRunner PeopleRunner,
         CacheRunner CacheRunner,
-        IndividualRebuildRunner<OrganisationRegistry.Organisation.Organisation, OrganisationDocument, OrganisationToRebuild> IndividualRebuildRunner,
-        IndividualRebuildRunner<OrganisationRegistry.Body.Body, BodyDocument, BodyToRebuild> IndividualBodyRebuildRunner,
-        IndividualRebuildRunner<OrganisationRegistry.Person.Person, PersonDocument, PersonToRebuild> IndividualPersonRebuildRunner,
+        IndividualRebuildRunner IndividualRebuildRunner,
+        IndividualBodyRebuildRunner IndividualBodyRebuildRunner,
+        IndividualPersonRebuildRunner IndividualPersonRebuildRunner,
         OrganisationsRunner OrganisationsRunner);
 
     public async Task StartAsync(CancellationToken cancellationToken)
