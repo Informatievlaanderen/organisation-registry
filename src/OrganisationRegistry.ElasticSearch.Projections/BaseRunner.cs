@@ -276,10 +276,7 @@ public abstract class BaseRunner<T> where T: class, IDocument, new()
     {
         if (documentCache.Any())
         {
-            if (documentCache.Any(x => x.Key == Guid.Empty || string.IsNullOrEmpty(x.Value.Name)))
-            {
-                throw new Exception("Found document without key or name.");
-            }
+            documentCache.ThrowOnDocumentsWithoutKeyOrName(ProjectionName);
 
             await _elastic.TryAsync(
                 () =>
