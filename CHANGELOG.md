@@ -1,3 +1,11 @@
+# [1.336.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.335.0...v1.336.0) (2026-08-26)
+
+
+### Features
+
+* or-3293 disable searching on bankaccounts ([3394ad4](https://github.com/informatievlaanderen/organisation-registry/commit/3394ad4a48023b961bf5dc884633322dfb76ef63))
+* or-3414 allow multiple issuers ([0bdfdb9](https://github.com/informatievlaanderen/organisation-registry/commit/0bdfdb90402465cf4e1df7d6ea5f1cb77230a65d))
+
 # [1.335.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.334.0...v1.335.0) (2026-08-19)
 
 
