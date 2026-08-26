@@ -1,3 +1,10 @@
+## [1.336.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.336.0...v1.336.1) (2026-08-26)
+
+
+### Bug Fixes
+
+* remove unused using ([bb95e6e](https://github.com/informatievlaanderen/organisation-registry/commit/bb95e6eeb60cc778400dc6589509cc6c5b39faa7))
+
 # [1.336.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.335.0...v1.336.0) (2026-08-26)
 
 
