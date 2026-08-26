@@ -1,6 +1,5 @@
 namespace OrganisationRegistry.Api.Security;
 
-using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http;
 using System.Security.Claims;
@@ -30,7 +29,7 @@ public class SecurityController : OrganisationRegistryController
         _openIdConnectConfiguration = openIdConnectConfiguration.Value;
         _logger = logger;
     }
-    
+
     /// <summary>
     /// Gets the effective authority for server-to-server OAuth2 calls.
     /// Uses InternalAuthorityOverride when available for container networking,
@@ -41,13 +40,13 @@ public class SecurityController : OrganisationRegistryController
         var authority = !string.IsNullOrWhiteSpace(_openIdConnectConfiguration.InternalAuthorityOverride)
             ? _openIdConnectConfiguration.InternalAuthorityOverride
             : _openIdConnectConfiguration.Authority;
-            
-        _logger.LogDebug("Using effective authority for OAuth2 calls: {Authority} (Internal override: {InternalOverride})", 
+
+        _logger.LogDebug("Using effective authority for OAuth2 calls: {Authority} (Internal override: {InternalOverride})",
             authority, _openIdConnectConfiguration.InternalAuthorityOverride ?? "not configured");
-            
+
         return authority;
     }
-    
+
     /// <summary>
     /// Determines if the OAuth2 client is configured as a confidential client (has ClientSecret).
     /// Public clients (SPAs) don't have secrets, confidential clients (server apps) do.
@@ -95,7 +94,7 @@ public class SecurityController : OrganisationRegistryController
 
         var tokenEndpointAddress = $"{GetEffectiveAuthority()}{_openIdConnectConfiguration.TokenEndPoint}";
 
-        _logger.LogDebug("Exchanging authorization code at endpoint: {TokenEndpointAddress} using {ClientType} client", 
+        _logger.LogDebug("Exchanging authorization code at endpoint: {TokenEndpointAddress} using {ClientType} client",
             tokenEndpointAddress, GetClientType());
 
         var tokenRequest = new AuthorizationCodeTokenRequest
@@ -122,9 +121,9 @@ public class SecurityController : OrganisationRegistryController
 
         if (tokenResponse.IsError)
         {
-            _logger.LogError("OAuth2 authorization code exchange failed. Error: {Error}, ErrorDescription: {ErrorDescription}, TokenEndpoint: {TokenEndpointAddress}", 
+            _logger.LogError("OAuth2 authorization code exchange failed. Error: {Error}, ErrorDescription: {ErrorDescription}, TokenEndpoint: {TokenEndpointAddress}",
                 tokenResponse.Error, tokenResponse.ErrorDescription, tokenEndpointAddress);
-            
+
             return tokenResponse.Error switch
             {
                 "invalid_grant" => BadRequest($"Invalid authorization code: {tokenResponse.ErrorDescription}"),
