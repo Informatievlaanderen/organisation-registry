@@ -17,12 +17,16 @@ using OrganisationRegistry.Tests.Shared.Stubs;
 /// Registers a runner's event handlers the way Program.cs does -- hand the types to the container and
 /// let it do the constructor injection -- but against test infrastructure. A handler that grows a new
 /// dependency needs one registration here, and the container names the type it cannot resolve.
+/// The caller passes in the event store the runner itself reads from: a handler that goes back to the
+/// stream (OrganisationLocation does, to resolve the location's last event) has to see the same events
+/// the test appended, not an empty store of its own.
 /// </summary>
 public static class ProjectionHandlerServiceProvider
 {
     public static IServiceProvider Build(
         IContextFactory contextFactory,
         ElasticSearchFixture fixture,
+        IEventStore eventStore,
         Type[] eventHandlers)
     {
         var services = new ServiceCollection()
@@ -30,7 +34,7 @@ public static class ProjectionHandlerServiceProvider
             .AddSingleton(fixture.Elastic)
             .AddSingleton(fixture.ElasticSearchOptions)
             .AddSingleton(contextFactory)
-            .AddSingleton<IEventStore>(new InMemoryEventStore())
+            .AddSingleton(eventStore)
             .AddSingleton<IOrganisationManagementConfiguration>(new OrganisationManagementConfigurationStub())
             .AddSingleton<IPersonHandlerCache>(new PersonHandlerCacheStub())
             .AddSingleton(new MemoryCachesMaintainer(new MemoryCaches(contextFactory), contextFactory));

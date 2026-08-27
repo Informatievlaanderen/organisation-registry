@@ -103,7 +103,7 @@ public class MassChangeFlushTests
         TestContextFactory contextFactory)
     {
         var serviceProvider = ProjectionHandlerServiceProvider.Build(
-            contextFactory, _fixture, PeopleRunner.EventHandlers);
+            contextFactory, _fixture, eventStore, PeopleRunner.EventHandlers);
 
         var bus = new ElasticBus(new NullLogger<ElasticBus>());
         var busRegistrar = new ElasticBusRegistrar(
