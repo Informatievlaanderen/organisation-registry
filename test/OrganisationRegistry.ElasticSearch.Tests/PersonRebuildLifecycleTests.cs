@@ -107,6 +107,37 @@ public class PersonRebuildLifecycleTests
         ReadPerson(personId).Source.Mandates.Should().ContainSingle();
     }
 
+    [Fact]
+    public async Task QueuedPersonWithoutEnvelopes_IsDroppedInsteadOfStallingTheRunner()
+    {
+        var personId = Guid.NewGuid();
+
+        var eventStore = new InMemoryEventStore();
+        var projectionStates = new InMemoryProjectionStates();
+
+        var dbContextOptions = new DbContextOptionsBuilder<OrganisationRegistryContext>()
+            .UseInMemoryDatabase($"org-es-test-{Guid.NewGuid()}", _ => { }).Options;
+        var contextFactory = new TestContextFactory(dbContextOptions);
+
+        // The person is queued but the projection has not advanced far enough to see any of its events,
+        // so a replay has nothing to work with. That happens when the aggregate is created later in the
+        // same batch that fails: the projection state is still behind the creating envelope.
+        await using (var seedContext = contextFactory.Create())
+        {
+            seedContext.PeopleToRebuild.Add(new PersonToRebuild { PersonId = personId });
+            await seedContext.SaveChangesAsync();
+        }
+
+        var rebuildRunner = CreateRebuildRunner(eventStore, projectionStates, contextFactory);
+
+        await rebuildRunner.Run();
+
+        await using (var context = contextFactory.Create())
+        {
+            (await context.PeopleToRebuild.ToListAsync()).Should().BeEmpty();
+        }
+    }
+
     private Osc.IGetResponse<PersonDocument> ReadPerson(Guid personId)
         => _fixture.Elastic.ReadClient.Get<PersonDocument>(personId);
 
