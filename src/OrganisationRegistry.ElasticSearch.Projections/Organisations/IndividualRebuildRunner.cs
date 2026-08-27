@@ -132,9 +132,7 @@ public class IndividualRebuildRunner
             {
                 foreach (var documentChange in perDocumentChange.Changes)
                 {
-                    OrganisationDocument? document;
-
-                    if (!documentCache.ContainsKey(documentChange.Key))
+                    if (!documentCache.TryGetValue(documentChange.Key, out var document))
                     {
                         document = (await _elastic.TryGetAsync(async () =>
                                 (await _elastic.WriteClient.GetAsync<OrganisationDocument>(documentChange.Key))
@@ -142,10 +140,6 @@ public class IndividualRebuildRunner
                             .Source;
 
                         documentCache.Add(documentChange.Key, document);
-                    }
-                    else
-                    {
-                        document = documentCache[documentChange.Key];
                     }
 
                     await documentChange.Value(document);
@@ -164,14 +158,15 @@ public class IndividualRebuildRunner
         }
     }
 
-
     private async Task FlushDocuments(Dictionary<Guid, OrganisationDocument> documentCache)
     {
-        if (documentCache.Any())
-        {
-            documentCache.ThrowOnDocumentsWithoutKeyOrName(ProjectionName);
+        if (documentCache.Count == 0)
+            return;
 
-            await _elastic.TryAsync(async () =>
+        documentCache.ThrowOnDocumentsWithoutKeyOrName(ProjectionName);
+
+        await _elastic.TryAsync(
+            () =>
             {
                 _elastic.WriteClient.BulkAll(documentCache.Values, b => b
                         .BackOffTime("30s")
@@ -180,17 +175,13 @@ public class IndividualRebuildRunner
                         .MaxDegreeOfParallelism(Environment.ProcessorCount)
                         .Size(1000)
                     )
-                    .Wait(TimeSpan.FromMinutes(15), next =>
-                    {
-                        _logger.LogInformation("Wrote page {PageNumber}", next.Page);
-                    });
+                    .Wait(TimeSpan.FromMinutes(15), next => _logger.LogInformation("Wrote page {PageNumber}", next.Page));
 
-                await Task.CompletedTask;
+                return Task.CompletedTask;
             });
-            documentCache.Clear();
-        }
-    }
 
+        documentCache.Clear();
+    }
 
     private async Task<ElasticChanges> ProcessEnvelope(IEnvelope envelope)
     {
