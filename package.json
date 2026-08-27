@@ -60,7 +60,7 @@
     "postinstall": "patch-package"
   },
   "dependencies": {
-    "@angular/common": "2.4.10",
+    "@angular/common": "19.2.16",
     "@angular/compiler": "2.4.10",
     "@angular/compiler-cli": "2.4.10",
     "@angular/core": "2.4.10",
