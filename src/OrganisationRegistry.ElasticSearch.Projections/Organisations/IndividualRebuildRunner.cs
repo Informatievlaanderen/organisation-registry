@@ -18,7 +18,7 @@ using SqlServer.ProjectionState;
 
 public class IndividualRebuildRunner
 {
-    public string ProjectionName => "IndividualRebuild";
+    public string ProjectionName => "IndividualOrganisationRebuild";
 
     private readonly ILogger<IndividualRebuildRunner> _logger;
     private readonly IEventStore _store;
