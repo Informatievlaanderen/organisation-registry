@@ -17,7 +17,7 @@ using Osc;
 
 public class IndividualPersonRebuildRunner
 {
-    public string ProjectionName => "IndividualRebuild";
+    public string ProjectionName => "IndividualPersonRebuild";
 
     private readonly ILogger<IndividualPersonRebuildRunner> _logger;
     private readonly IEventStore _store;
