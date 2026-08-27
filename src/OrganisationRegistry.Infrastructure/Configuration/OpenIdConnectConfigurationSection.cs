@@ -31,7 +31,12 @@ public class OpenIdConnectConfigurationSection
     public string JwtSharedSigningKey { get; set; } = null!;
 
     public string JwtIssuer { get; set; } = null!;
-    public string? JwtIssuers { get; set; } = null!;
+
+    /// <summary>
+    /// Additional issuers to accept next to <see cref="JwtIssuer"/>, comma separated so a deployment
+    /// can pass them as a single environment variable.
+    /// </summary>
+    public string? JwtIssuers { get; set; }
 
     public string JwtAudience { get; set; } = null!;
 

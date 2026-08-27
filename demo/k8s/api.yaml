@@ -93,6 +93,11 @@ spec:
             secretKeyRef:
               name: demo-secrets
               key: jwt-issuer
+        - name: OIDCAuth__JwtIssuers
+          valueFrom:
+            secretKeyRef:
+              name: demo-secrets
+              key: jwt-issuers
         - name: OIDCAuth__JwtAudience
           valueFrom:
             secretKeyRef:
