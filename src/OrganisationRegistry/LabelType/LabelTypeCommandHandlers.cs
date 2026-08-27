@@ -8,6 +8,7 @@ using Infrastructure.Authorization;
 using Infrastructure.Commands;
 using Infrastructure.Domain;
 using Microsoft.Extensions.Logging;
+using OrganisationRegistry.Handling.Authorization;
 
 public class LabelTypeCommandHandlers :
     BaseCommandHandler<LabelTypeCommandHandlers>,
