@@ -68,6 +68,21 @@ public class IndividualRebuildRunner
                         lastProcessedEventNumber)
                     .ToList();
 
+                if (envelopes.Count == 0)
+                {
+                    // Nothing left to replay up to the projection's own position, so a rebuild cannot
+                    // produce a document. Keeping the row queued would fail this runner on every pass,
+                    // and the event processor stops at the first runner that throws.
+                    _logger.LogWarning(
+                        "[{ProjectionName}] Found no envelopes (until #{MaxEventNumber}) to process for Organisation {OrganisationId}, dropping it from the rebuild queue",
+                        ProjectionName, lastProcessedEventNumber, organisation.OrganisationId);
+
+                    context.OrganisationsToRebuild.Remove(organisation);
+                    await context.SaveChangesAsync();
+
+                    continue;
+                }
+
                 _logger.LogDebug("[{ProjectionName}] Found {NumberOfEnvelopes} envelopes (until #{MaxEventNumber}) to process for Organisation {OrgId}",
                     ProjectionName, envelopes.Count, envelopes.Last().Number, organisation.OrganisationId);
 
