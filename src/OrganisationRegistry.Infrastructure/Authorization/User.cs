@@ -3,8 +3,9 @@ namespace OrganisationRegistry.Infrastructure.Authorization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using OrganisationRegistry.Acl.Internals;
 
-public class User : IUser
+public record User : IUser
 {
     public User(
         string firstName,
@@ -34,6 +35,7 @@ public class User : IUser
     public string UserId { get; set; }
     public Role[] Roles { get; set; }
     public IEnumerable<Guid> Bodies { get; }
+    public IAclRunnable? AclRunner {get;set;}
 
     public bool IsAuthorizedForVlimpersOrganisations
         => IsInAnyOf(

@@ -7,6 +7,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
 using Microsoft.EntityFrameworkCore;
+using OrganisationRegistry.Acl.Internals;
 using OrganisationRegistry.Infrastructure;
 using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Authorization.Cache;
@@ -107,7 +108,7 @@ public class SecurityService : ISecurityService
 
         var firstName = user.GetRequiredClaim(ClaimTypes.GivenName);
         var name = user.GetRequiredClaim(ClaimTypes.Surname);
-        
+
         // Support both JWT Bearer (ACM-IDM) and OAuth2Introspection (TokenExchange) authentication
         string cacheKey;
         if (user.Identity.AuthenticationType == "OAuth2Introspection")
@@ -216,15 +217,18 @@ public class SecurityService : ISecurityService
 
         var securityInformation = await GetSecurityInformation(principal);
 
-        return new User(
+        var user =  new User(
             firstName,
             lastName,
             acmId,
             ip,
-            securityInformation.Roles.ToArray(),
+            [.. securityInformation.Roles],
             securityInformation.OvoNumbers,
             securityInformation.BodyIds,
             securityInformation.OrganisationIds);
+        user.AclRunner = CreateAclRuntime(principal, user);
+
+        return user;
     }
 
     // TODO: see how we can make SecurityService use IUser everywhere, io ClaimsPrincipal.
@@ -323,5 +327,14 @@ public class SecurityService : ISecurityService
         return user.GetClaims(ClaimOrganisation)
             .Select(s => s.ToUpperInvariant())
             .ToImmutableArray();
+    }
+
+    private IAclRunnable? CreateAclRuntime(ClaimsPrincipal? principal, User user)
+    {
+        //BUILD ACL BUILDER SEE Verify.cs (its a sample file)
+
+        //Improvement use Lazy   () => IUser as ContextData in IAclRunner
+
+        return null;
     }
 }
