@@ -79,7 +79,8 @@ public abstract class IndividualRebuildRunnerTestBase<TAggregate>
             await seedContext.SaveChangesAsync();
         }
 
-        var serviceProvider = ProjectionHandlerServiceProvider.Build(contextFactory, _fixture, EventHandlers);
+        var serviceProvider = ProjectionHandlerServiceProvider.Build(
+            contextFactory, _fixture, eventStoreMock.Object, EventHandlers);
         var bus = new ElasticBus(new NullLogger<ElasticBus>());
         var busRegistrar = new ElasticBusRegistrar(
             new NullLogger<ElasticBusRegistrar>(), bus, () => serviceProvider);

@@ -146,7 +146,7 @@ public class PersonRebuildLifecycleTests
         InMemoryProjectionStates projectionStates,
         TestContextFactory contextFactory)
     {
-        var (bus, busRegistrar) = CreateBus(contextFactory);
+        var (bus, busRegistrar) = CreateBus(contextFactory, eventStore);
 
         return new PeopleRunner(
             new NullLogger<PeopleRunner>(),
@@ -164,7 +164,7 @@ public class PersonRebuildLifecycleTests
         InMemoryProjectionStates projectionStates,
         TestContextFactory contextFactory)
     {
-        var (bus, busRegistrar) = CreateBus(contextFactory);
+        var (bus, busRegistrar) = CreateBus(contextFactory, eventStore);
 
         return new IndividualPersonRebuildRunner(
             new NullLogger<IndividualPersonRebuildRunner>(),
@@ -176,10 +176,12 @@ public class PersonRebuildLifecycleTests
             busRegistrar);
     }
 
-    private (ElasticBus Bus, ElasticBusRegistrar BusRegistrar) CreateBus(TestContextFactory contextFactory)
+    private (ElasticBus Bus, ElasticBusRegistrar BusRegistrar) CreateBus(
+        TestContextFactory contextFactory,
+        InMemoryEventStore eventStore)
     {
         var serviceProvider = ProjectionHandlerServiceProvider.Build(
-            contextFactory, _fixture, PeopleRunner.EventHandlers);
+            contextFactory, _fixture, eventStore, PeopleRunner.EventHandlers);
 
         var bus = new ElasticBus(new NullLogger<ElasticBus>());
 

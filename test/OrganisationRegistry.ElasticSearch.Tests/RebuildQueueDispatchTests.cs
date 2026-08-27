@@ -148,7 +148,8 @@ public class RebuildQueueDispatchTests
             .UseInMemoryDatabase($"org-es-test-{Guid.NewGuid()}", _ => { }).Options;
         contextFactory = new TestContextFactory(dbContextOptions);
 
-        var serviceProvider = ProjectionHandlerServiceProvider.Build(contextFactory, _fixture, eventHandlers);
+        var serviceProvider = ProjectionHandlerServiceProvider.Build(
+            contextFactory, _fixture, eventStore.Object, eventHandlers);
         var bus = new ElasticBus(new NullLogger<ElasticBus>());
         var busRegistrar = new ElasticBusRegistrar(
             new NullLogger<ElasticBusRegistrar>(), bus, () => serviceProvider);
