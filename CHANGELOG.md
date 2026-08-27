@@ -1,3 +1,18 @@
+# [1.337.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.336.1...v1.337.0) (2026-08-27)
+
+
+### Bug Fixes
+
+* or-3414 wire up and cover the extra issuers ([7612bf8](https://github.com/informatievlaanderen/organisation-registry/commit/7612bf824b4815ab9fa6407b1097082fa4eae08a))
+* or-3513 drop rebuild queue entries that have no envelopes to replay ([12e1052](https://github.com/informatievlaanderen/organisation-registry/commit/12e1052a82a1f104dc9843dd5a67396ab91a6ec7))
+* or-3513 queue the rebuild by missing document type ([917d0da](https://github.com/informatievlaanderen/organisation-registry/commit/917d0da8896c3bcb30ac8ccf1b46be0b7c05b803))
+* or-3513 update projection state on the last change in a set ([5cd481b](https://github.com/informatievlaanderen/organisation-registry/commit/5cd481b04c2716ad4222292c8da4f6466a96bb07))
+
+
+### Features
+
+* or-3513 name the offending documents when a flush is refused ([eb0ca98](https://github.com/informatievlaanderen/organisation-registry/commit/eb0ca9817824a7f5781df6400af596562f61c46b))
+
 ## [1.336.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.336.0...v1.336.1) (2026-08-26)
 
 
