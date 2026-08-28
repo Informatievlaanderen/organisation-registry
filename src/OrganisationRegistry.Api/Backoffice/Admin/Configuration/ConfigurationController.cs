@@ -22,7 +22,7 @@ using Swashbuckle.AspNetCore.Filters;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("configuration")]
-[OrganisationRegistryAuthorize(Role.Developer)]
+[OrganisationRegistryAuthorize(RequiredPermissions = new[] { Permission.CanReadConfiguration })]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Scherm APIs: Administratie")]
 public class ConfigurationController : OrganisationRegistryController

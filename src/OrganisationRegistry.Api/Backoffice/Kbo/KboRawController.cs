@@ -32,7 +32,7 @@ public class KboRawController : OrganisationRegistryController
     /// <response code="200">Het ruwe resultaat van een MAGDA KBO-opzoeking.</response>
     /// <response code="400">Er was een probleem met de doorgestuurde waarden.</response>
     [HttpGet("{kboNumberInput}")]
-    [OrganisationRegistryAuthorize(Role.AlgemeenBeheerder, Role.Developer)]
+    [OrganisationRegistryAuthorize(RequiredPermissions = new[] { Permission.CanEditAll })]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get(
         [FromServices] ISecurityService securityService,
