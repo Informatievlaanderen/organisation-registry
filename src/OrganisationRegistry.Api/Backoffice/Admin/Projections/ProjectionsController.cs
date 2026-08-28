@@ -20,7 +20,7 @@ using Swashbuckle.AspNetCore.Filters;
 
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
-[OrganisationRegistryAuthorize(Role.Developer)]
+[OrganisationRegistryAuthorize(RequiredPermissions = new[] { Permission.CanEditAll })]
 [OrganisationRegistryRoute("projections")]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Scherm APIs: Administratie")]

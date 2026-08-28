@@ -14,7 +14,8 @@ public class User : IUser
         Role[] roles,
         IEnumerable<string> organisations,
         IEnumerable<Guid> bodies,
-        IEnumerable<Guid> organisationIds)
+        IEnumerable<Guid> organisationIds,
+        PermissionSet? permissions = null)
     {
         Organisations = organisations.ToList();
         FirstName = firstName;
@@ -24,6 +25,7 @@ public class User : IUser
         Roles = roles;
         Bodies = bodies;
         OrganisationIds = organisationIds.ToList();
+        Permissions = permissions ?? RolePermissionMap.For(roles);
     }
 
     public List<string> Organisations { get; }
@@ -34,6 +36,7 @@ public class User : IUser
     public string UserId { get; set; }
     public Role[] Roles { get; set; }
     public IEnumerable<Guid> Bodies { get; }
+    public PermissionSet Permissions { get; }
 
     public bool IsAuthorizedForVlimpersOrganisations
         => IsInAnyOf(
@@ -43,6 +46,12 @@ public class User : IUser
 
     public bool IsInAnyOf(params Role[] roles)
         => Roles.Any(roles.Contains);
+
+    public bool HasPermission(Permission permission)
+        => Permissions.Contains(permission);
+
+    public bool HasAnyPermission(params Permission[] permissions)
+        => permissions.Any(Permissions.Contains);
 
     public bool IsDecentraalBeheerderForOrganisation(string ovoNumber)
         => IsInAnyOf(Role.DecentraalBeheerder) &&
