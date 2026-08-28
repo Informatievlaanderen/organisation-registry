@@ -6,6 +6,7 @@ using Infrastructure;
 using Infrastructure.Security;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Commands;
 
 [ApiVersion("1.0")]
@@ -27,6 +28,7 @@ public class OrganisationContactCommandController : OrganisationRegistryCommandC
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [OrganisationRegistryAuthorize(RequiredPermissions = [Permission.CanAddContacts])]
     public async Task<IActionResult> Post([FromRoute] Guid organisationId, [FromBody] AddOrganisationContactRequest message)
     {
         var internalMessage = new AddOrganisationContactInternalRequest(organisationId, message);

@@ -13,7 +13,7 @@ using ISession = OrganisationRegistry.Infrastructure.Domain.ISession;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("debug")]
-[OrganisationRegistryAuthorize(Role.AlgemeenBeheerder, Role.Developer)]
+[OrganisationRegistryAuthorize(RequiredPermissions = new[] { Permission.CanEditAll })]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Scherm APIs: Administratie")]
 public class DebugController : OrganisationRegistryController
