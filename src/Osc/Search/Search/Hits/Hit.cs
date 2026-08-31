@@ -196,7 +196,7 @@ namespace Osc
 		/// <inheritdoc />
 		public IReadOnlyCollection<object> Sorts { get; internal set; } = EmptyReadOnly<object>.Collection;
 		/// <inheritdoc />
-		public TDocument Source { get; internal set; }
+		public TDocument Source { get;  set; }
 		/// <inheritdoc />
 		public string Type { get; internal set; }
 		/// <inheritdoc />

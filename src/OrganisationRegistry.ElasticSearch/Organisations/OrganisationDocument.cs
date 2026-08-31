@@ -181,8 +181,7 @@ public partial class OrganisationDocument : IDocument
                     .Nested<OrganisationBankAccount>(
                         n => n
                             .Name(p => p.BankAccounts)
-                            .IncludeInRoot()
-                            .Properties(OrganisationBankAccount.Mapping))
+                            .Enabled(false))
                     .Nested<OrganisationOpeningHour>(
                         n => n
                             .Name(p => p.OpeningHours)
