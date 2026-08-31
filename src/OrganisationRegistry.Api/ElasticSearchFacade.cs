@@ -290,7 +290,7 @@ public class ElasticSearchFacade
 
             _logger.LogCritical(logMessage + " {Error}", searchResults.FormatError());
 
-            throw searchResults.ServerError.Error.Type.Equals("search_phase_execution_exception")
+            throw searchResults.ServerError?.Error?.Type == "search_phase_execution_exception"
             // throw searchResults.Hits.Count.Equals(0) && string.IsNullOrEmpty(searchResults.ScrollId) // Parameters for identifying a timed out scroll
                 ? new ElasticsearchScrollTimeoutException(logMessage)
                 : new ApiException(logMessage);
