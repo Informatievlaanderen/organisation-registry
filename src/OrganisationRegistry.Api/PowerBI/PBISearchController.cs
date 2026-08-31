@@ -29,10 +29,12 @@ using Newtonsoft.Json;
 [ApiExplorerSettings(GroupName = "PowerBI")]
 public class PBISearchController : OrganisationRegistryController
 {
+    private readonly IElasticSearchFacade _elasticSearchFacade;
     private readonly ILogger<PBISearchController> _logger;
 
-    public PBISearchController(ILogger<PBISearchController> logger)
+    public PBISearchController(IElasticSearchFacade elasticSearchFacade, ILogger<PBISearchController> logger)
     {
+        _elasticSearchFacade = elasticSearchFacade;
         _logger = logger;
     }
 
@@ -43,18 +45,13 @@ public class PBISearchController : OrganisationRegistryController
     /// <br /><br />
     /// </remarks>
     /// <param name="elastic"></param>
-    /// <param name="elasticSearchConfiguration"></param>
     /// <param name="cancellationToken"></param>
     [HttpGet("organisations")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public IActionResult StreamOrganisations(
         [FromServices] Elastic elastic,
-        [FromServices] IOptions<ElasticSearchConfiguration> elasticSearchConfiguration,
         CancellationToken cancellationToken)
-    {
-        var esFacade = new ElasticSearchFacade(HttpContext, _logger, elasticSearchConfiguration.Value);
-        return ToFile(SearchOrganisations(esFacade, elastic, cancellationToken), "organisations_zoekresultaten.json", _logger);
-    }
+        => ToFile(SearchOrganisations(_elasticSearchFacade, elastic, cancellationToken), "organisations_zoekresultaten.json", _logger);
 
     /// <summary>Personen exporteren (als bestand).</summary>
     /// <remarks>Dit endpoint laat toe een export bestand te maken van alle personen op een ElasticSearch index.
@@ -63,18 +60,13 @@ public class PBISearchController : OrganisationRegistryController
     /// <br /><br />
     /// </remarks>
     /// <param name="elastic"></param>
-    /// <param name="elasticSearchConfiguration"></param>
     /// <param name="cancellationToken"></param>
     [HttpGet("people")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public IActionResult StreamPeople(
         [FromServices] Elastic elastic,
-        [FromServices] IOptions<ElasticSearchConfiguration> elasticSearchConfiguration,
         CancellationToken cancellationToken)
-    {
-        var esFacade = new ElasticSearchFacade(HttpContext, _logger, elasticSearchConfiguration.Value);
-        return ToFile(SearchPeople(esFacade, elastic, cancellationToken), "people_zoekresultaten.json", _logger);
-    }
+        => ToFile(SearchPeople(_elasticSearchFacade, elastic, cancellationToken), "people_zoekresultaten.json", _logger);
 
     /// <summary>Organen exporteren (als bestand).</summary>
     /// <remarks>Dit endpoint laat toe een export bestand te maken van alle organen op een ElasticSearch index.
@@ -83,18 +75,13 @@ public class PBISearchController : OrganisationRegistryController
     /// <br /><br />
     /// </remarks>
     /// <param name="elastic"></param>
-    /// <param name="elasticSearchConfiguration"></param>
     /// <param name="cancellationToken"></param>
     [HttpGet("bodies")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public IActionResult StreamBodies(
         [FromServices] Elastic elastic,
-        [FromServices] IOptions<ElasticSearchConfiguration> elasticSearchConfiguration,
         CancellationToken cancellationToken)
-    {
-        var esFacade = new ElasticSearchFacade(HttpContext, _logger, elasticSearchConfiguration.Value);
-        return ToFile(SearchBodies(esFacade, elastic, cancellationToken), "bodies_zoekresultaten.json", _logger);
-    }
+        => ToFile(SearchBodies(_elasticSearchFacade, elastic, cancellationToken), "bodies_zoekresultaten.json", _logger);
 
     private static FileCallbackResult ToFile(IAsyncEnumerable<IDocument> searchResult, string fileName, ILogger logger)
         => new(
@@ -129,7 +116,7 @@ public class PBISearchController : OrganisationRegistryController
         };
 
     private static async IAsyncEnumerable<IDocument> SearchBodies(
-        ElasticSearchFacade esFacade,
+        IElasticSearchFacade esFacade,
         Elastic elastic,
        [EnumeratorCancellation] CancellationToken cancellationToken)
     {
@@ -158,7 +145,7 @@ public class PBISearchController : OrganisationRegistryController
     }
 
     private static async IAsyncEnumerable<IDocument> SearchPeople(
-        ElasticSearchFacade esFacade,
+        IElasticSearchFacade esFacade,
         Elastic elastic,
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
@@ -187,7 +174,7 @@ public class PBISearchController : OrganisationRegistryController
     }
 
     private static async IAsyncEnumerable<IDocument> SearchOrganisations(
-        ElasticSearchFacade esFacade,
+        IElasticSearchFacade esFacade,
         Elastic elastic,
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {

@@ -4,29 +4,68 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using ElasticSearch;
 using ElasticSearch.Bodies;
 using ElasticSearch.Client;
-using ElasticSearch.Common;
 using ElasticSearch.Configuration;
 using ElasticSearch.Organisations;
 using ElasticSearch.People;
-using Infrastructure;
 using Infrastructure.Helpers;
-using Infrastructure.Search;
-using Infrastructure.Security;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
-using OrganisationRegistry.Infrastructure.Infrastructure.Json;
 using Osc;
 
-public class ElasticSearchFacade
+public interface IElasticSearchFacade
+{
+    Task<ISearchResponse<OrganisationDocument>?> SearchOrganisationsWithDefaultScrolling(Elastic elastic, string q, string fields, string sort, CancellationToken cancellationToken);
+    Task<ISearchResponse<PersonDocument>?> SearchPeopleWithDefaultScrolling(Elastic elastic, string q, string fields, string sort, CancellationToken cancellationToken);
+    Task<ISearchResponse<BodyDocument>?> SearchBodiesWithDefaultScrolling(Elastic elastic, string q, string fields, string sort, CancellationToken cancellationToken);
+    Task<ISearchResponse<OrganisationDocument>> SearchOrganisations(Elastic elastic, string q, int? offset, int? limit, string fields, string sort, bool? scroll, CancellationToken cancellationToken = default);
+
+    Task<ISearchResponse<T>> GetApiSearch<T>(
+        Elastic elastic,
+        string q,
+        int? offset,
+        int? limit,
+        string fields,
+        string sort,
+        bool? scroll)
+        where T : class, IDocument;
+
+    Task<ISearchResponse<T>> GetSearch<T>(
+        Elastic elastic,
+        string q,
+        int? offset,
+        int? limit,
+        string fields,
+        string sort,
+        bool? scroll,
+        CancellationToken cancellationToken = default)
+        where T : class, IDocument;
+
+    Task<ISearchResponse<T>> PostApiSearch<T>(
+        Elastic elastic,
+        JObject q,
+        int? offset,
+        int? limit,
+        string fields,
+        string sort,
+        bool? scroll)
+        where T : class, IDocument;
+
+    Task<ISearchResponse<OrganisationDocument>> PostApiSearchOrganisations(Elastic elastic, JObject q, int? offset, int? limit, string fields, string sort, bool? scroll);
+
+    Task<ISearchResponse<T>> ScrollApiSearch<T>(
+        Elastic elastic,
+        string id) where T : class, IDocument;
+
+    Task<ISearchResponse<TDocument>> ScrollSearch<TDocument>(Elastic elastic, string id, CancellationToken cancellationToken = default) where TDocument : class, IDocument;
+}
+
+public class ElasticSearchFacade : IElasticSearchFacade
 {
     public const string OrganisationsIndexName = "organisations";
     public const string PeopleIndexName = "people";
@@ -38,25 +77,14 @@ public class ElasticSearchFacade
 
     private const int DefaultResponseLimit = 100;
 
-    private readonly HttpContext _httpContext;
     private readonly ILogger _logger;
     private readonly ElasticSearchConfiguration _configuration;
 
-    public ElasticSearchFacade(HttpContext httpContext, ILogger logger, ElasticSearchConfiguration configuration)
+    public ElasticSearchFacade(ILogger logger, IOptions<ElasticSearchConfiguration> elasticSearchConfiguration)
     {
-        _httpContext = httpContext;
         _logger = logger;
-        _configuration = configuration;
+        _configuration = elasticSearchConfiguration.Value;
     }
-
-    public async Task<ISearchResponse<IDocument>?> Search(string indexName, Elastic elastic, string q, int? offset, int? limit, string fields, string sort, bool? scroll)
-        => indexName.ToLower() switch
-        {
-            OrganisationsIndexName => await SearchOrganisations(elastic, q, offset, limit, fields, sort, scroll),
-            PeopleIndexName => await GetSearch<PersonDocument>(elastic, q, offset, limit, fields, sort, scroll),
-            BodiesIndexName => await GetSearch<BodyDocument>(elastic, q, offset, limit, fields, sort, scroll),
-            _ => default,
-        };
 
     public async Task<ISearchResponse<OrganisationDocument>?> SearchOrganisationsWithDefaultScrolling(Elastic elastic, string q, string fields, string sort, CancellationToken cancellationToken)
         => await SearchOrganisations(elastic, q, _configuration.ScrollSize, DefaultResponseLimit, fields, sort, true, cancellationToken);
@@ -73,43 +101,35 @@ public class ElasticSearchFacade
             q,
             offset,
             limit,
-            FilterOrganisationFields(fields, (await _httpContext.GetAuthenticateInfoAsync())?.Succeeded ?? false),
+            RemoveBankAccountFields(fields),
             sort,
             scroll,
             cancellationToken);
 
-    private static string FilterOrganisationFields(string fields, bool isAuthenticated)
+    private static string RemoveBankAccountFields(string fields)
     {
         if (!string.IsNullOrWhiteSpace(fields))
-            fields = isAuthenticated
-                ? fields
-                : string.Join(
-                    ',',
-                    fields.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries)
-                        .Select(y => y.Trim())
-                        .Except(new List<string> { BankaccountsFieldName })
-                        .Distinct());
+            fields = string.Join(
+                ',',
+                fields.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(y => y.Trim())
+                    .Except(new List<string> { BankaccountsFieldName })
+                    .Distinct());
 
         if (!string.IsNullOrWhiteSpace(fields)) return fields;
 
-        //if the user made a request to fetch only field 'bankAccounts', but is not authenticated,
+        //if the user made a request to fetch only field 'bankAccounts',
         //the fields parameter will be empty and default to all fields, so second validation is needed
 
-        return isAuthenticated
-            ? string.Join(
-                ',',
-                typeof(OrganisationDocument)
-                    .GetProperties()
-                    .Select(x => x.Name.ToCamelCase()))
-            : string.Join(
-                ',',
-                typeof(OrganisationDocument)
-                    .GetProperties()
-                    .Select(x => x.Name.ToCamelCase())
-                    .Except(new List<string> { BankaccountsFieldName }).ToList());
+        return string.Join(
+            ',',
+            typeof(OrganisationDocument)
+                .GetProperties()
+                .Select(x => x.Name.ToCamelCase())
+                .Except(new List<string> { BankaccountsFieldName }).ToList());
     }
 
-    public async Task<IActionResult> GetApiSearch<T>(
+    public async Task<ISearchResponse<T>> GetApiSearch<T>(
         Elastic elastic,
         string q,
         int? offset,
@@ -121,7 +141,7 @@ public class ElasticSearchFacade
     {
         var searchResults = await GetSearch<T>(elastic, q, offset, limit, fields, sort, scroll);
 
-        return BuildApiSearchResult(searchResults);
+        return searchResults.ThrowIfInvalid(_logger);
     }
 
     public async Task<ISearchResponse<T>> GetSearch<T>(
@@ -162,7 +182,7 @@ public class ElasticSearchFacade
         return searchResponse;
     }
 
-    public async Task<IActionResult> PostApiSearch<T>(
+    public async Task<ISearchResponse<T>> PostApiSearch<T>(
         Elastic elastic,
         JObject q,
         int? offset,
@@ -192,26 +212,26 @@ public class ElasticSearchFacade
                     query => query.Raw(q.ToString()),
                     _configuration.ScrollTimeout));
 
-        return BuildApiSearchResult(searchResults);
+        return searchResults.ThrowIfInvalid(_logger);
     }
 
-    public async Task<IActionResult> PostApiSearchOrganisations(Elastic elastic, JObject q, int? offset, int? limit, string fields, string sort, bool? scroll)
+    public async Task<ISearchResponse<OrganisationDocument>> PostApiSearchOrganisations(Elastic elastic, JObject q, int? offset, int? limit, string fields, string sort, bool? scroll)
         => await PostApiSearch<OrganisationDocument>(
             elastic,
             q,
             offset,
             limit,
-            FilterOrganisationFields(fields, (await _httpContext.GetAuthenticateInfoAsync())?.Succeeded ?? false),
+            RemoveBankAccountFields(fields),
             sort,
             scroll);
 
-    public async Task<IActionResult> ScrollApiSearch<T>(
+    public async Task<ISearchResponse<T>> ScrollApiSearch<T>(
         Elastic elastic,
         string id) where T : class, IDocument
     {
         var searchResults = await ScrollSearch<T>(elastic, id);
 
-        return BuildApiSearchResult(searchResults);
+        return searchResults.ThrowIfInvalid(_logger);
     }
 
     public async Task<ISearchResponse<TDocument>> ScrollSearch<TDocument>(Elastic elastic, string id, CancellationToken cancellationToken = default) where TDocument : class, IDocument
@@ -278,51 +298,5 @@ public class ElasticSearchFacade
             search = search.Scroll(scrollTimeout);
 
         return search.Query(queryFunc);
-    }
-
-    public IActionResult BuildApiSearchResult<T>(ISearchResponse<T> searchResults) where T : class
-    {
-        var jsonSerializerSettings = GetJsonSerializerSettings();
-
-        if (!searchResults.IsValid)
-        {
-            const string logMessage = "Er is een probleem opgetreden bij het uitvoeren van de zoekopdracht.";
-
-            _logger.LogCritical(logMessage + " {Error}", searchResults.FormatError());
-
-            throw searchResults.ServerError?.Error?.Type == "search_phase_execution_exception"
-            // throw searchResults.Hits.Count.Equals(0) && string.IsNullOrEmpty(searchResults.ScrollId) // Parameters for identifying a timed out scroll
-                ? new ElasticsearchScrollTimeoutException(logMessage)
-                : new ApiException(logMessage);
-        }
-
-        _httpContext.Response.AddElasticsearchMetaDataResponse(new ElasticsearchMetaData<T>(searchResults));
-
-        return new ContentResult
-        {
-            ContentType = "application/json",
-            StatusCode = (int)HttpStatusCode.OK,
-            Content = JsonConvert.SerializeObject(
-                searchResults.Hits.Select(x => x.Source),
-                Formatting.Indented,
-                jsonSerializerSettings),
-        };
-    }
-
-    public static JsonSerializerSettings GetJsonSerializerSettings()
-    {
-        var getSerializerSettings = JsonConvert.DefaultSettings ?? (() => new JsonSerializerSettings());
-        var jsonSerializerSettings = getSerializerSettings();
-        jsonSerializerSettings.NullValueHandling = NullValueHandling.Ignore;
-        jsonSerializerSettings.DefaultValueHandling = DefaultValueHandling.Ignore;
-
-        var maybeResolver = (OrganisationRegistryContractResolver?)jsonSerializerSettings.ContractResolver;
-        if (maybeResolver is not { } resolver)
-            throw new NullReferenceException("Resolver should not be null");
-
-        resolver.SetStringDefaultValueToEmptyString = true;
-        resolver.RemoveEmptyArrays = true;
-
-        return jsonSerializerSettings;
     }
 }
