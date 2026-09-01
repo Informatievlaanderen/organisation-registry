@@ -20,7 +20,7 @@ using Swashbuckle.AspNetCore.Filters;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("events")]
-[OrganisationRegistryAuthorize(RequiredPermissions = new[] { Permission.CanEditAll })]
+[OrganisationRegistryAuthorize(RequiredPermissions = [Permission.CanReadEvents])]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Scherm APIs: Administratie")]
 public class EventsController : OrganisationRegistryController

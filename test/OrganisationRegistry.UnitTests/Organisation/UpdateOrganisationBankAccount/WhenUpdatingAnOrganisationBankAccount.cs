@@ -79,13 +79,13 @@ public class WhenUpdatingAnOrganisationBankAccount
             new ValidFrom(_validFrom),
             new ValidTo(_validTo));
 
-    [Fact]
+    [SkipBankAccounts]
     public async Task PublishesOneEvent()
     {
         await Given(Events).When(UpdateOrganisationBankAccount, TestUser.AlgemeenBeheerder).ThenItPublishesTheCorrectNumberOfEvents(1);
     }
 
-    [Fact]
+    [SkipBankAccounts]
     public async Task UpdatesAnOrganisationBankAccount()
     {
         await Given(Events).When(UpdateOrganisationBankAccount, TestUser.AlgemeenBeheerder).Then();

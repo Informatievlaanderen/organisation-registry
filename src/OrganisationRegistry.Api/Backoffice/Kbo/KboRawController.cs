@@ -10,49 +10,49 @@ using Newtonsoft.Json;
 using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Organisation;
 
-[ApiVersion("1.0")]
-[AdvertiseApiVersions("1.0")]
-[OrganisationRegistryRoute("kboraw")]
-[ApiController]
-[ApiExplorerSettings(GroupName = "Scherm APIs: Administratie")]
-public class KboRawController : OrganisationRegistryController
-{
-    private readonly IRegistreerInschrijvingCommand _registerInscriptionCommand;
-    private readonly IGeefOndernemingQuery _geefOndernemingQuery;
-
-    public KboRawController(
-        IRegistreerInschrijvingCommand registerInscriptionCommand,
-        IGeefOndernemingQuery geefOndernemingQuery)
-    {
-        _registerInscriptionCommand = registerInscriptionCommand;
-        _geefOndernemingQuery = geefOndernemingQuery;
-    }
-
-    /// <summary>Vraag het ruwe resultaat van een MAGDA KBO-opzoeking op.</summary>
-    /// <response code="200">Het ruwe resultaat van een MAGDA KBO-opzoeking.</response>
-    /// <response code="400">Er was een probleem met de doorgestuurde waarden.</response>
-    [HttpGet("{kboNumberInput}")]
-    [OrganisationRegistryAuthorize(RequiredPermissions = new[] { Permission.CanEditAll })]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Get(
-        [FromServices] ISecurityService securityService,
-        [FromRoute] string kboNumberInput)
-    {
-        KboNumber.Validate(kboNumberInput);
-
-        var kboNumber = new KboNumber(kboNumberInput);
-        var digitsOnly = kboNumber.ToDigitsOnly();
-
-        var user = await securityService.GetRequiredUser(User);
-        var registerInscription = await _registerInscriptionCommand.Execute(user, digitsOnly);
-        var giveOrganisation = await _geefOndernemingQuery.Execute(user, digitsOnly);
-
-        return Ok(
-            JsonConvert.SerializeObject(
-                new
-                {
-                    registerInscription,
-                    giveOrganisation,
-                }));
-    }
-}
+// [ApiVersion("1.0")]
+// [AdvertiseApiVersions("1.0")]
+// [OrganisationRegistryRoute("kboraw")]
+// [ApiController]
+// [ApiExplorerSettings(GroupName = "Scherm APIs: Administratie")]
+// public class KboRawController : OrganisationRegistryController
+// {
+//     private readonly IRegistreerInschrijvingCommand _registerInscriptionCommand;
+//     private readonly IGeefOndernemingQuery _geefOndernemingQuery;
+//
+//     public KboRawController(
+//         IRegistreerInschrijvingCommand registerInscriptionCommand,
+//         IGeefOndernemingQuery geefOndernemingQuery)
+//     {
+//         _registerInscriptionCommand = registerInscriptionCommand;
+//         _geefOndernemingQuery = geefOndernemingQuery;
+//     }
+//
+//     /// <summary>Vraag het ruwe resultaat van een MAGDA KBO-opzoeking op.</summary>
+//     /// <response code="200">Het ruwe resultaat van een MAGDA KBO-opzoeking.</response>
+//     /// <response code="400">Er was een probleem met de doorgestuurde waarden.</response>
+//     [HttpGet("{kboNumberInput}")]
+//     [OrganisationRegistryAuthorize(RequiredPermissions = new[] { Permission.Can })]
+//     [ProducesResponseType(StatusCodes.Status404NotFound)]
+//     public async Task<IActionResult> Get(
+//         [FromServices] ISecurityService securityService,
+//         [FromRoute] string kboNumberInput)
+//     {
+//         KboNumber.Validate(kboNumberInput);
+//
+//         var kboNumber = new KboNumber(kboNumberInput);
+//         var digitsOnly = kboNumber.ToDigitsOnly();
+//
+//         var user = await securityService.GetRequiredUser(User);
+//         var registerInscription = await _registerInscriptionCommand.Execute(user, digitsOnly);
+//         var giveOrganisation = await _geefOndernemingQuery.Execute(user, digitsOnly);
+//
+//         return Ok(
+//             JsonConvert.SerializeObject(
+//                 new
+//                 {
+//                     registerInscription,
+//                     giveOrganisation,
+//                 }));
+//     }
+// }
