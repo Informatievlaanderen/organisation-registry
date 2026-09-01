@@ -1,3 +1,10 @@
+## [1.338.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.338.0...v1.338.1) (2026-09-01)
+
+
+### Bug Fixes
+
+* or-3293 inject right logger in elastic facade ([e8649be](https://github.com/informatievlaanderen/organisation-registry/commit/e8649be2a97ad77d95df4b5d164343a80131eb25))
+
 # [1.338.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.337.0...v1.338.0) (2026-09-01)
 
 
