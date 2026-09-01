@@ -9,7 +9,6 @@ Infrastructure types only. No aggregates, no events, no persisted state — all 
 Closed set of technical capability identifiers. PascalCase C# enum members; identifiers referenced identically in docs and UI (no camelCase variants).
 
 ```
-CanEditAll                            // admin bypass, replaces AlgemeenBeheerder short-circuit
 CanEditChildren
 CanEditVlimpers
 CanEditDelegations

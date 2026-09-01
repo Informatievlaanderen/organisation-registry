@@ -48,7 +48,7 @@ Skip if the capability is user-only (interactive login). Automated processes nev
 public class WidgetController : OrganisationRegistryController { ... }
 ```
 
-OR semantics: any listed permission satisfies. `CanEditAll` always satisfies.
+OR semantics: any listed permission satisfies.
 
 ### 5. Guard the domain (if needed)
 
