@@ -24,15 +24,14 @@ De organisation-registry stapt af van **rol-gebaseerde** autorisatie in de codeb
 |---|---|---|
 | **`Role`** | Wat ACM/IDM (interactieve login) doorgeeft. Blijft bestaan in tokens, maar niet in de business logic. | `AlgemeenBeheerder`, `DecentraalBeheerder` |
 | **Scope** | Wat Keycloak (Client Credentials, machine-to-machine) doorgeeft in het `scope` claim. Space-separated. **Geen rol.** | `dv_organisatieregister_cjmbeheerder`, `dv_organisatieregister_orafinbeheerder` |
-| **`Permission`** | Interne enum. **Enige** waarheidsbron voor "mag deze user X?". | `CanEditAll`, `CanRunScheduledJobs` |
-| **`PermissionSet`** | Immutable set van `Permission`s, geattacheerd aan `IUser`. | `{CanEditAll, CanEditDelegations, ...}` |
+| **`Permission`** | Interne enum. **Enige** waarheidsbron voor "mag deze user X?". | `CanEditChildren`, `CanRunScheduledJobs` |
+| **`PermissionSet`** | Immutable set van `Permission`s, geattacheerd aan `IUser`. | `{CanEditChildren, CanEditDelegations, ...}` |
 | **`RolePermissionMap`** | Statische map `Role → PermissionSet`. | `AlgemeenBeheerder → 15 permissions` |
 | **`ScopePermissionMap`** | Statische map `scope-string → PermissionSet`. | `dv_organisatieregister_info → {CanReadInfoEndpoints}` |
 
-### 2.1 De 18 permissions
+### 2.1 De permissions
 
 ```
-CanEditAll                         (superuser)
 CanEditChildren                    (edit sub-organisaties)
 CanEditVlimpers                    (Vlimpers-organisaties)
 CanEditDelegations                 (mandaten/delegaties)
@@ -154,7 +153,7 @@ Deze mapping geldt voor gebruikers die interactief inloggen. Alleen de rollen hi
 
 ```mermaid
 graph LR
-    AB[AlgemeenBeheerder] --> P_ALL[CanEditAll<br/>+ 14 andere]
+    AB[AlgemeenBeheerder] --> P_ALL[14 permissions<br/>explicit granular grant]
     VB[VlimpersBeheerder] --> P_V[CanEditVlimpers<br/>CanEditChildren]
     DB[DecentraalBeheerder] --> P_D[CanEditChildren<br/>CanAddLocations<br/>CanManageKeys<br/>CanAddBodies<br/>CanEditBodies<br/>+CanEditDelegations*]
     OB[OrgaanBeheerder] --> P_O[CanAddBodies<br/>CanEditBodies<br/>CanRegisterBodies]
@@ -248,7 +247,7 @@ public class BodyController : OrganisationRegistryController
 }
 ```
 
-**Semantiek:** OR — user moet **minstens één** van de opgegeven permissions hebben. `CanEditAll` short-circuit: superusers passeren altijd.
+**Semantiek:** OR — user moet **minstens één** van de opgegeven permissions hebben. Er is geen admin-bypass in deze laag; superuser-rollen zoals `AlgemeenBeheerder` krijgen granulair alle relevante permissions via `RolePermissionMap`.
 
 **Parameterloze variant:**
 
@@ -266,7 +265,8 @@ public class BodyPolicy : ISecurityPolicy
     public AuthorizationResult Check(IUser user)
     {
         // scope/OVO/vlimpers restrictions — géén rol-checks meer
-        if (user.HasPermission(Permission.CanEditAll)) return AuthorizationResult.Success();
+        // Geen admin-short-circuit: elke rol krijgt de benodigde permissions
+        // granulair via RolePermissionMap; de policy checkt puur resource-scope.
         // ... resource-specific logic
     }
 }
@@ -318,10 +318,10 @@ sequenceDiagram
 
 | Oud (verboden) | Nieuw |
 |---|---|
-| `if (user.Roles.Contains(Role.AlgemeenBeheerder))` | `if (user.HasPermission(Permission.CanEditAll))` |
+| `if (user.Roles.Contains(Role.AlgemeenBeheerder))` | `if (user.HasPermission(Permission.<Specifieke>))` (elke rol krijgt de benodigde permission granulair via `RolePermissionMap`) |
 | `[OrganisationRegistryAuthorize(Role = Role.OrgaanBeheerder)]` | `[OrganisationRegistryAuthorize(RequiredPermissions = new[] {Permission.CanEditBodies})]` |
 | `if (scopes.Contains("dv_organisatieregister_orafinbeheerder"))` | `if (user.HasPermission(Permission.CanReadOrafin))` |
-| `if (user.Roles.Any(r => r == Role.CjmBeheerder \|\| r == Role.AlgemeenBeheerder))` | `if (user.HasAnyPermission(Permission.CanEditChildren, Permission.CanEditAll))` |
+| `if (user.Roles.Any(r => r == Role.CjmBeheerder \|\| r == Role.AlgemeenBeheerder))` | `if (user.HasAnyPermission(Permission.CanEditChildren, Permission.CanAddBodies))` (kies de permissions die de oude rol-check afdekte) |
 
 De `Role`-property op `OrganisationRegistryAuthorizeAttribute` is `[Obsolete]` — build genereert CS0618 warnings tot alle callsites zijn omgezet. Zie T026a/b/c in `tasks.md` voor de sweep.
 
