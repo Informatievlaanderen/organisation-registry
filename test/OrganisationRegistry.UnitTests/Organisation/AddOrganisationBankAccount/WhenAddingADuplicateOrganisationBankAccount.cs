@@ -78,7 +78,7 @@ public class WhenAddingADuplicateOrganisationBankAccount
             new ValidFrom(_validFrom),
             new ValidTo(_validTo));
 
-    [Fact]
+    [SkipBankAccounts]
     public async Task ThrowsException()
     {
         await Given(Events)

@@ -14,7 +14,6 @@ public class RolePermissionMapTests
     public RolePermissionMapTests() => RolePermissionMap.ResetThrottleState();
 
     [Theory]
-    [InlineData(Role.AlgemeenBeheerder, Permission.CanEditAll)]
     [InlineData(Role.AlgemeenBeheerder, Permission.CanReadConfiguration)]
     [InlineData(Role.AlgemeenBeheerder, Permission.CanEditOrganisationLabels)]
     [InlineData(Role.VlimpersBeheerder, Permission.CanEditVlimpers)]
@@ -26,7 +25,6 @@ public class RolePermissionMapTests
     [InlineData(Role.CjmBeheerder, Permission.CanEditBodies)]
     [InlineData(Role.CjmBeheerder, Permission.CanEditOrganisationLabels)]
     [InlineData(Role.Orafin, Permission.CanReadOrafin)]
-    [InlineData(Role.Developer, Permission.CanEditAll)]
     [InlineData(Role.Developer, Permission.CanReadConfiguration)]
     [InlineData(Role.Developer, Permission.CanEditOrganisationLabels)]
     [InlineData(Role.AutomatedTask, Permission.CanRunScheduledJobs)]

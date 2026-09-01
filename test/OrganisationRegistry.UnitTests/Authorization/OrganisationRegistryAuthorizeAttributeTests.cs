@@ -59,21 +59,6 @@ public class OrganisationRegistryAuthorizeAttributeTests
     }
 
     [Fact]
-    public async Task Attribute_with_CanEditAll_short_circuits_and_allows()
-    {
-        var user = UserWith(PermissionSet.Of(Permission.CanEditAll));
-        var context = BuildContext(user);
-        var attribute = new OrganisationRegistryAuthorizeAttribute
-        {
-            RequiredPermissions = new[] { Permission.CanManageKeys },
-        };
-
-        await ((IAsyncAuthorizationFilter)attribute).OnAuthorizationAsync(context);
-
-        context.Result.Should().BeNull();
-    }
-
-    [Fact]
     public async Task Attribute_allows_when_identity_has_any_required_permission()
     {
         var user = UserWith(PermissionSet.Of(Permission.CanManageKeys, Permission.CanAddLocations));

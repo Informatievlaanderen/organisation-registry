@@ -46,9 +46,6 @@ public class OrganisationRegistryAuthorizeAttribute : AuthorizeAttribute, IAsync
 
         var user = await securityService.GetRequiredUser(context.HttpContext.User);
 
-        if (user.HasPermission(Permission.CanEditAll))
-            return;
-
         if (user.HasAnyPermission(RequiredPermissions))
             return;
 

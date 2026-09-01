@@ -14,8 +14,8 @@ public class BeheerderForOrganisationRegardlessOfVlimpersPolicy : ISecurityPolic
 
     public AuthorizationResult Check(IUser user)
     {
-        if (user.HasPermission(Permission.CanEditAll))
-            return AuthorizationResult.Success();
+        // if (user.HasPermission(Permission.CanEditAll))
+        //     return AuthorizationResult.Success();
 
         if (user.IsDecentraalBeheerderForOrganisation(_ovoNumber))
             return AuthorizationResult.Success();

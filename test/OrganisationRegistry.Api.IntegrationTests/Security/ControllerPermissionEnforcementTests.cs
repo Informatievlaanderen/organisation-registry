@@ -40,17 +40,6 @@ public class ControllerPermissionEnforcementTests
         _apiFixture = apiFixture;
     }
 
-    // -----------------------------------------------------------------------
-    // CanEditAll — universal short-circuit. Verified indirectly by every other
-    // fact when the seeded AlgemeenBeheerder identity accesses gated endpoints.
-    // -----------------------------------------------------------------------
-
-    [Fact(Skip = T026)]
-    public Task CanEditAll_ShortCircuits_AnyGatedEndpoint()
-        => AssertPermissionGate(
-            endpoint: "/v1/organisations",
-            requiredPermission: Permission.CanEditAll,
-            expectedForAlgemeenBeheerder: HttpStatusCode.OK);
 
     // -----------------------------------------------------------------------
     // Organisation editing family
