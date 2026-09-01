@@ -357,8 +357,10 @@ public class SearchController : OrganisationRegistryController
 
     private static JsonSerializerSettings GetJsonSerializerSettings()
     {
-        var getSerializerSettings = JsonConvert.DefaultSettings ?? (() => new JsonSerializerSettings());
-        var jsonSerializerSettings = getSerializerSettings();
+        var jsonSerializerSettings = JsonSerializerSettingsProvider
+            .CreateSerializerSettings()
+            .ConfigureForOrganisationRegistry();
+
         jsonSerializerSettings.NullValueHandling = NullValueHandling.Ignore;
         jsonSerializerSettings.DefaultValueHandling = DefaultValueHandling.Ignore;
 
