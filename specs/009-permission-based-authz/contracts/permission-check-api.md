@@ -7,7 +7,7 @@ Internal boundary between authorization plumbing and consumers (controllers, pol
 **Signature**: `bool HasPermission(Permission permission)`
 
 **Contract**:
-- Returns `true` iff `permission` is contained in `Permissions` OR `CanEditAll` is contained.
+- Returns `true` iff `permission` is contained in `Permissions`.
 - Pure, side-effect-free, O(1).
 - Never throws.
 
@@ -75,7 +75,7 @@ Key methods:
 
 ## `OrganisationRegistryAuthorizeAttribute` (usage contract)
 
-New parameter: `Permission[] RequiredPermissions`. Semantics: user must have at least one of the listed permissions (OR). `CanEditAll` always satisfies.
+New parameter: `Permission[] RequiredPermissions`. Semantics: user must have at least one of the listed permissions (OR).
 
 Old parameter (`Role[] Roles`): **removed** at cutover.
 
@@ -88,8 +88,7 @@ public class SomeController : Controller { ... }
 ## `ISecurityPolicy` (unchanged signature)
 
 `AuthorizationResult Check(IUser user)` — implementations refactored to:
-1. Short-circuit on `user.HasPermission(Permission.CanEditAll)`.
-2. Check specific permission(s) via `HasPermission`.
-3. Apply resource-level scope restrictions via `IUserRestrictionsProvider` (injected).
+1. Check specific permission(s) via `HasPermission`.
+2. Apply resource-level scope restrictions via `IUserRestrictionsProvider` (injected).
 
 No breaking change to the `ISecurityPolicy` interface itself.

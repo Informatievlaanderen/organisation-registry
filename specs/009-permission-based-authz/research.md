@@ -38,7 +38,7 @@ Derived from observed usage in policies. Permission ids are PascalCase C# enum m
 
 | Role | Permissions | Scope Restriction |
 |---|---|---|
-| `AlgemeenBeheerder` | `CanEditAll`, `CanEditChildren`, `CanAddBodies`, `CanEditBodies`, `CanRegisterBodies`, `CanAddLocations`, `CanManageKeys`, `CanManageLabels`, `CanManageCapacities`, `CanManageFormalFrameworks`, `CanManageOrganisationClassifications`, `CanManageRegulations`, `CanImport`, `CanEditVlimpers`, `CanEditDelegations` | none (global) |
+| `AlgemeenBeheerder` | `CanEditChildren`, `CanAddBodies`, `CanEditBodies`, `CanRegisterBodies`, `CanAddLocations`, `CanManageKeys`, `CanManageLabels`, `CanManageCapacities`, `CanManageFormalFrameworks`, `CanManageOrganisationClassifications`, `CanManageRegulations`, `CanImport`, `CanEditVlimpers`, `CanEditDelegations` | none (global) |
 | `VlimpersBeheerder` | `CanEditVlimpers`, `CanEditChildren` (vlimpers-scoped) | vlimpers organisations only |
 | `DecentraalBeheerder` | `CanEditChildren`, `CanAddLocations`, `CanManageKeys`, `CanAddBodies`, `CanEditBodies` | own organisations / bodies (JIT) |
 | `OrgaanBeheerder` | `CanAddBodies`, `CanEditBodies`, `CanRegisterBodies` | none (global for body ops) |
@@ -48,7 +48,7 @@ Derived from observed usage in policies. Permission ids are PascalCase C# enum m
 | `Developer` | superset (equivalent to `AlgemeenBeheerder` + vlimpers) | none |
 | ~~`AutomatedTask`~~ | **removed** — use CC scope instead | — |
 
-**Decision**: `AlgemeenBeheerder` admin-bypass short-circuit becomes an explicit `CanEditAll` permission that every check consults first.
+**Decision**: `AlgemeenBeheerder` is granted each capability permission explicitly (no admin-bypass short-circuit). Any future admin-bypass model is out of scope for this feature.
 
 **Unknown role**: fail-closed — empty `PermissionSet`, Serilog error `Unmapped role: {Role}` (once per role per process).
 
