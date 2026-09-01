@@ -1,3 +1,17 @@
+# [1.338.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.337.0...v1.338.0) (2026-09-01)
+
+
+### Bug Fixes
+
+* or-3293 add nullcheck for server error in elastic facade ([a2080b3](https://github.com/informatievlaanderen/organisation-registry/commit/a2080b323e92f27532fe33180ab434a5f388128a))
+* or-3293 stop the search tests from mutating JsonConvert.DefaultSettings ([800e3b9](https://github.com/informatievlaanderen/organisation-registry/commit/800e3b92787351b7642b43ec4e325dfcbe9a2d8e))
+
+
+### Features
+
+* or-3293 dont return bankaccounts when searching ([562485b](https://github.com/informatievlaanderen/organisation-registry/commit/562485bc3a6e288b21656bcb145fa599b5276a90))
+* or-3293 register IElasticSearchFacade ([c0b33ed](https://github.com/informatievlaanderen/organisation-registry/commit/c0b33edfbec126b1c5b98d6d24aa6b9b8325cb5b))
+
 # [1.337.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.336.1...v1.337.0) (2026-08-27)
 
 
