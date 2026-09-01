@@ -12,9 +12,7 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using OrganisationRegistry.Infrastructure.Infrastructure.Json;
 using Xunit;
 
 public class When_Searching_Organisations_Should_Not_Return_BankAccounts
@@ -25,9 +23,6 @@ public class When_Searching_Organisations_Should_Not_Return_BankAccounts
 
     public When_Searching_Organisations_Should_Not_Return_BankAccounts()
     {
-        JsonConvert.DefaultSettings =
-            () => JsonSerializerSettingsProvider.CreateSerializerSettings().ConfigureForOrganisationRegistry();
-
         _fixture = new Fixture();
 
         var organisationBankAccounts = _fixture.CreateMany<OrganisationDocument.OrganisationBankAccount>().ToList();
