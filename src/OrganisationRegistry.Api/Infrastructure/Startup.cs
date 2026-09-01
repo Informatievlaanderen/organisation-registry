@@ -238,6 +238,7 @@ public class Startup
                     _configuration
                         .GetSection(HostedServicesConfigurationSection.Name)
                         .Get<HostedServicesConfigurationSection>()))
+            .AddScoped<IElasticSearchFacade, ElasticSearchFacade>()
             .AddFeatureManagement()
             .Services
             .ConfigureDefaultForApi<Startup>(
