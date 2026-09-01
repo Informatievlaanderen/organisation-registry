@@ -8,8 +8,6 @@ namespace OrganisationRegistry.Infrastructure.Authorization;
 /// </summary>
 public enum Permission
 {
-    /// <summary>Admin bypass — replaces the historical AlgemeenBeheerder short-circuit.</summary>
-    CanEditAll,
     CanEditChildren,
     CanEditVlimpers,
     CanEditDelegations,
@@ -53,4 +51,6 @@ public enum Permission
     /// permission only opens the controller-level general check.
     /// </summary>
     CanEditOrganisationLabels,
+    CanReadEvents,
+    CanViewProjections
 }
