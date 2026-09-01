@@ -113,7 +113,7 @@ jobs:
     name: Build api
     uses: ./.github/workflows/build-image.yml
     if: github.repository_owner == 'Informatievlaanderen' && needs.set-release-version.outputs.version != 'none'
-    needs: [ test, set-release-version ]
+    needs: [ set-release-version ]
     with:
       build-target: Containerize_Api
       build-project: OrganisationRegistry.Api
@@ -126,7 +126,7 @@ jobs:
     name: Build batch-agentschapzorgengezondheidftpdump
     uses: ./.github/workflows/build-image.yml
     if: github.repository_owner == 'Informatievlaanderen' && needs.set-release-version.outputs.version != 'none'
-    needs: [ test, set-release-version ]
+    needs: [ set-release-version ]
     with:
       build-target: Containerize_AgentschapZorgEnGezondheid
       build-project: OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump
@@ -139,7 +139,7 @@ jobs:
     name: Build batch-vlaanderenbe
     uses: ./.github/workflows/build-image.yml
     if: github.repository_owner == 'Informatievlaanderen' && needs.set-release-version.outputs.version != 'none'
-    needs: [ test, set-release-version ]
+    needs: [ set-release-version ]
     with:
       build-target: Containerize_VlaanderenBeNotifier
       build-project: OrganisationRegistry.VlaanderenBeNotifier
@@ -152,7 +152,7 @@ jobs:
     name: Build elasticsearch projections
     uses: ./.github/workflows/build-image.yml
     if: github.repository_owner == 'Informatievlaanderen' && needs.set-release-version.outputs.version != 'none'
-    needs: [ test, set-release-version ]
+    needs: [ set-release-version ]
     with:
       build-target: Containerize_ElasticSearch
       build-project: OrganisationRegistry.ElasticSearch.Projections
@@ -165,7 +165,7 @@ jobs:
     name: Build delegations
     uses: ./.github/workflows/build-image.yml
     if: github.repository_owner == 'Informatievlaanderen' && needs.set-release-version.outputs.version != 'none'
-    needs: [ test, set-release-version ]
+    needs: [ set-release-version ]
     with:
       build-target: Containerize_Delegations
       build-project: OrganisationRegistry.Projections.Delegations
@@ -178,7 +178,7 @@ jobs:
     name: Build reporting
     uses: ./.github/workflows/build-image.yml
     if: github.repository_owner == 'Informatievlaanderen' && needs.set-release-version.outputs.version != 'none'
-    needs: [ test, set-release-version ]
+    needs: [ set-release-version ]
     with:
       build-target: Containerize_Reporting
       build-project: OrganisationRegistry.Projections.Reporting
@@ -191,7 +191,7 @@ jobs:
     name: Build kbo-mutations
     uses: ./.github/workflows/build-image.yml
     if: github.repository_owner == 'Informatievlaanderen' && needs.set-release-version.outputs.version != 'none'
-    needs: [ test, set-release-version ]
+    needs: [ set-release-version ]
     with:
       build-target: Containerize_KboMutations
       build-project: OrganisationRegistry.KboMutations
@@ -204,7 +204,7 @@ jobs:
     name: Build rebuilder
     uses: ./.github/workflows/build-image.yml
     if: github.repository_owner == 'Informatievlaanderen' && needs.set-release-version.outputs.version != 'none'
-    needs: [ test, set-release-version ]
+    needs: [ set-release-version ]
     with:
       build-target: Containerize_Rebuilder
       build-project: OrganisationRegistry.Rebuilder
@@ -230,6 +230,7 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
     needs:
+      - test
       - build-api
       - build-agentschapzorgengezondheidftpdump
       - build-vlaanderenbe
