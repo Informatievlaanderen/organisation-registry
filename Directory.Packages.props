@@ -66,7 +66,7 @@
     <PackageVersion Include="Serilog.Enrichers.Thread" Version="4.0.0" />
     <PackageVersion Include="Serilog.Extensions.Logging" Version="10.0.0" />
     <PackageVersion Include="Serilog.Formatting.Compact" Version="3.0.0" />
-    <PackageVersion Include="Serilog.Settings.Configuration" Version="10.0.0" />
+    <PackageVersion Include="Serilog.Settings.Configuration" Version="10.0.1" />
     <PackageVersion Include="Serilog.Sinks.Literate" Version="3.0" />
     <PackageVersion Include="SourceLink.Copy.PdbFiles" Version="2.8.3" />
     <PackageVersion Include="SourceLink.Embed.AllSourceFiles" Version="2.8.3" />
