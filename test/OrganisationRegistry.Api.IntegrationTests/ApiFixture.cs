@@ -59,6 +59,26 @@ public class ApiFixture : IDisposable, IAsyncLifetime
     }
 
     /// <summary>
+    /// Interactieve backoffice-gebruikers uit de Keycloak wegwijs-realm. Tokens worden
+    /// opgehaald met de direct access grant op de <c>nuxt-bff</c> client, zodat het token
+    /// exact dezelfde vorm heeft als het token dat de BFF na een browserlogin doorgeeft.
+    /// In de demo-realm is het wachtwoord gelijk aan de gebruikersnaam.
+    /// </summary>
+    public struct Backoffice
+    {
+        public const string Client = "nuxt-bff";
+        public const string Scope = "openid";
+
+        public const string Algemeenbeheerder = "algemeenbeheerder";
+        public const string Vlimpersbeheerder = "vlimpers";
+        public const string Decentraalbeheerder = "decentraalbeheerder";
+        public const string Orgaanbeheerder = "organen";
+        public const string Regelgevingbeheerder = "regelgeving";
+        public const string Cjmbeheerder = "cjmbeheerder";
+        public const string Orafinbeheerder = "orafinbeheerder";
+    }
+
+    /// <summary>
     /// Gets the client secret for the specified client ID.
     /// Centralizes client secret mapping for all integration tests.
     /// </summary>
@@ -68,6 +88,7 @@ public class ApiFixture : IDisposable, IAsyncLifetime
             CJM.Client => "cjm-client-secret-2024",
             Orafin.Client => "orafin-client-secret-2024",
             Test.Client => "test-client-secret-2024",
+            Backoffice.Client => "nuxt-bff-secret",
             _ => "secret"
         };
 
@@ -150,6 +171,23 @@ public class ApiFixture : IDisposable, IAsyncLifetime
     public async Task<HttpClient> CreateMachine2MachineClientFor(string clientId, string scope)
     {
         var httpClientFor = CreateApiClient(await GetMachineToMachineToken(clientId, scope));
+        httpClientFor.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        return httpClientFor;
+    }
+
+    public async Task<HttpClient> CreateAlgemeenbeheerderClient()
+        => await CreateBackofficeUserClientFor(Backoffice.Algemeenbeheerder);
+
+    /// <summary>
+    /// Bouwt een <see cref="HttpClient" /> die authenticeert als een interactieve
+    /// backoffice-gebruiker. Het token komt van Keycloak via de direct access grant
+    /// (resource owner password credentials) en wordt door de API gevalideerd met de
+    /// TokenExchange-introspectie, net zoals een token dat via de BFF binnenkomt.
+    /// Het wachtwoord van de demo-gebruikers is gelijk aan hun gebruikersnaam.
+    /// </summary>
+    public async Task<HttpClient> CreateBackofficeUserClientFor(string username, string? password = null)
+    {
+        var httpClientFor = CreateApiClient(await GetDirectGrantToken(username, password ?? username));
         httpClientFor.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         return httpClientFor;
     }
@@ -458,16 +496,55 @@ public class ApiFixture : IDisposable, IAsyncLifetime
         await VerifyStatusCode(response, HttpStatusCode.Created);
     }
 
+    private string KeycloakAuthority
+    {
+        get
+        {
+            var editApiConfiguration = _configurationRoot.GetSection(EditApiConfigurationSection.Name)
+                .Get<EditApiConfigurationSection>();
+
+            return string.IsNullOrWhiteSpace(editApiConfiguration?.Authority)
+                ? DefaultKeycloakAuthority
+                : editApiConfiguration.Authority;
+        }
+    }
+
+    private string KeycloakTokenEndpoint
+        => $"{KeycloakAuthority.TrimEnd('/')}/protocol/openid-connect/token";
+
+    private async Task<string> GetDirectGrantToken(string username, string password)
+    {
+        var tokenClient = new TokenClient(
+            () => new HttpClient(),
+            new TokenClientOptions
+            {
+                Address = KeycloakTokenEndpoint,
+                ClientId = Backoffice.Client,
+                ClientSecret = GetClientSecret(Backoffice.Client),
+            });
+
+        var response = await tokenClient.RequestTokenAsync(
+            OidcConstants.GrantTypes.Password,
+            new Parameters(
+                new[]
+                {
+                    new KeyValuePair<string, string>(OidcConstants.TokenRequest.UserName, username),
+                    new KeyValuePair<string, string>(OidcConstants.TokenRequest.Password, password),
+                    new KeyValuePair<string, string>(OidcConstants.TokenRequest.Scope, Backoffice.Scope),
+                }));
+
+        if (response.IsError || string.IsNullOrWhiteSpace(response.AccessToken))
+            throw new InvalidOperationException(
+                $"Could not retrieve Keycloak direct grant token for user '{username}' " +
+                $"via client '{Backoffice.Client}' from '{KeycloakTokenEndpoint}'. " +
+                $"Error: {response.Error}. Description: {response.ErrorDescription}.");
+
+        return response.AccessToken;
+    }
+
     private async Task<string> GetMachineToMachineToken(string clientId, string scope)
     {
-        var editApiConfiguration = _configurationRoot.GetSection(EditApiConfigurationSection.Name)
-            .Get<EditApiConfigurationSection>();
-
-        var authority = string.IsNullOrWhiteSpace(editApiConfiguration?.Authority)
-            ? DefaultKeycloakAuthority
-            : editApiConfiguration.Authority;
-
-        var address = $"{authority.TrimEnd('/')}/protocol/openid-connect/token";
+        var address = KeycloakTokenEndpoint;
         var tokenClient = new TokenClient(
             () => new HttpClient(),
             new TokenClientOptions
@@ -486,7 +563,7 @@ public class ApiFixture : IDisposable, IAsyncLifetime
 
         if (response.IsError || string.IsNullOrWhiteSpace(response.AccessToken))
             throw new InvalidOperationException(
-                $"Could not retrieve Keycloak M2M token for '{clientId}' from '{authority} ({address})'. " +
+                $"Could not retrieve Keycloak M2M token for '{clientId}' from '{address}'. " +
                 $"Error: {response.Error}. Description: {response.ErrorDescription}.");
 
         return response.AccessToken;

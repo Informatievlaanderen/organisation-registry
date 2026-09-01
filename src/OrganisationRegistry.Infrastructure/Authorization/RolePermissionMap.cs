@@ -37,12 +37,12 @@ public static class RolePermissionMap
             [Role.VlimpersBeheerder] = PermissionSet.Of(
                 Permission.CanEditVlimpers,
                 Permission.CanEditChildren,
+                Permission.CanManageKeys,
                 Permission.CanEditOrganisationLabels),
 
             [Role.DecentraalBeheerder] = PermissionSet.Of(
                 Permission.CanEditChildren,
                 Permission.CanAddLocations,
-                Permission.CanManageKeys,
                 Permission.CanAddBodies,
                 Permission.CanEditBodies,
                 Permission.CanEditDelegations,
@@ -70,7 +70,6 @@ public static class RolePermissionMap
                 Permission.CanEditBodies,
                 Permission.CanRegisterBodies,
                 Permission.CanAddLocations,
-                Permission.CanManageKeys,
                 Permission.CanManageLabels,
                 Permission.CanManageCapacities,
                 Permission.CanManageFormalFrameworks,

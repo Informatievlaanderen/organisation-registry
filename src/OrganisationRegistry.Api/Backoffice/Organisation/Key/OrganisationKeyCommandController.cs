@@ -6,12 +6,13 @@ using Infrastructure;
 using Infrastructure.Security;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Commands;
 
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("organisations/{organisationId}/keys")]
-[OrganisationRegistryAuthorize]
+[OrganisationRegistryAuthorize(RequiredPermissions = [Permission.CanManageKeys])]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Scherm APIs: Organisaties")]
 public class OrganisationKeyCommandController : OrganisationRegistryCommandController
