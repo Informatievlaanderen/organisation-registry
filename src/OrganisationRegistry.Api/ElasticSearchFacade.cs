@@ -77,10 +77,10 @@ public class ElasticSearchFacade : IElasticSearchFacade
 
     private const int DefaultResponseLimit = 100;
 
-    private readonly ILogger _logger;
+    private readonly ILogger<ElasticSearchFacade> _logger;
     private readonly ElasticSearchConfiguration _configuration;
 
-    public ElasticSearchFacade(ILogger logger, IOptions<ElasticSearchConfiguration> elasticSearchConfiguration)
+    public ElasticSearchFacade(ILogger<ElasticSearchFacade> logger, IOptions<ElasticSearchConfiguration> elasticSearchConfiguration)
     {
         _logger = logger;
         _configuration = elasticSearchConfiguration.Value;
