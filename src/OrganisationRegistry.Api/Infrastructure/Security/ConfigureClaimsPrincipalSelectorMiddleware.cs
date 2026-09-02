@@ -23,15 +23,21 @@ public class ConfigureClaimsPrincipalSelectorMiddleware
 
     public Task Invoke(HttpContext context, IHttpContextAccessor httpContextAccessor)
     {
+        // The selector is a process-global static, so it must not capture the current request's
+        // HttpContext. Resolve the already-authenticated principal from the request-scoped
+        // (AsyncLocal-backed) IHttpContextAccessor instead, which is concurrency-safe under
+        // parallel requests. Re-running authentication here (e.g. token introspection) is both
+        // unnecessary and flaky under load.
         ClaimsPrincipal.ClaimsPrincipalSelector = () =>
         {
             try
             {
                 if (TryGetAuthInfo(httpContextAccessor) is not { Principal: { } principal }) return null!;
 
+                if (principal.Identity is not { IsAuthenticated: true }) return null!;
                 if (principal.Identity is not ClaimsIdentity user) return principal;
 
-                var ip = context.Request.HttpContext.Connection.RemoteIpAddress;
+                var ip = httpContextAccessor.HttpContext?.Connection.RemoteIpAddress;
 
                 if (!user.HasClaim(x => x.Type == AcmIdmConstants.Claims.Ip))
                     user.AddClaim(new Claim(AcmIdmConstants.Claims.Ip, ip?.ToString() ?? "Unknown", ClaimValueTypes.String));
@@ -67,4 +73,3 @@ public class ConfigureClaimsPrincipalSelectorMiddleware
         return null;
     }
 }
-
