@@ -39,6 +39,7 @@ public static class ScopePermissionMap
                 Permission.CanEditBodies,
                 Permission.CanRegisterBodies,
                 Permission.CanAddLocations,
+                Permission.CanAddContacts,
                 Permission.CanManageKeys,
                 Permission.CanManageLabels,
                 Permission.CanManageCapacities,
