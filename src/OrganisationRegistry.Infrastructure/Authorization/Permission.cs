@@ -12,7 +12,7 @@ public enum Permission
     CanEditVlimpers,
     CanEditDelegations,
     CanAddLocations,
-    CanAddContacts,
+    CanManageContacts,
     CanAddBodies,
     CanEditBodies,
     CanRegisterBodies,

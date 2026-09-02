@@ -30,7 +30,7 @@ public class Given_Roles_With_CanManageKeys
     /// <see cref="Permission.CanManageKeys" /> en mag dus een organisatiesleutel aanmaken.
     /// </summary>
     [Fact]
-    public async Task For_Algemeenbeheerder_Then_Returns_Created()
+    public async Task For_Algemeenbeheerder_Then_Returns_OK()
     {
         var client = await _apiFixture.CreateAlgemeenbeheerderClient();
 
