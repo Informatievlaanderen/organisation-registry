@@ -6,13 +6,18 @@ using System.Collections.Immutable;
 using System.Linq;
 
 /// <summary>
-/// Allows the operation when every <see cref="IRestrictionContext{TSelf}.RelevantIds"/>
-/// id is in the configured allow list. An empty relevant-id set yields vacuous truth,
-/// mirroring "no ids to check means nothing to reject".
+/// Allows the operation when every <see cref="IRestrictionContext.RelevantIds"/>
+/// id is in the configured allow list. An empty relevant-id set yields vacuous
+/// truth, mirroring "no ids to check means nothing to reject".
+///
+/// The <typeparamref name="TContext"/> type parameter is a compile-time tag that
+/// documents which context this allow list is meant for and keeps factories
+/// readable. At runtime the restriction fails closed when handed a context that
+/// is not a <typeparamref name="TContext"/>.
 /// </summary>
 public sealed class AllowListRestriction<TContext>
-    : IRestriction<TContext>, IEquatable<AllowListRestriction<TContext>>
-    where TContext : IRestrictionContext<TContext>
+    : IRestriction, IEquatable<AllowListRestriction<TContext>>
+    where TContext : IRestrictionContext
 {
     private readonly ImmutableHashSet<Guid> _allowed;
 
@@ -23,13 +28,8 @@ public sealed class AllowListRestriction<TContext>
             : ImmutableHashSet.CreateRange(allowed);
     }
 
-    public string Domain => TContext.Domain;
-
-    public bool IsOkWith(TContext context)
-    {
-        if (context is null) return false;
-        return context.RelevantIds.All(_allowed.Contains);
-    }
+    public bool IsOkWith(IRestrictionContext context)
+        => context is TContext typed && typed.RelevantIds.All(_allowed.Contains);
 
     public bool Equals(AllowListRestriction<TContext>? other)
     {

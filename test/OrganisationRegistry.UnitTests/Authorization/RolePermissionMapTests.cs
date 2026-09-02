@@ -6,6 +6,8 @@ using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
 using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Authorization.Restrictions;
+using Tests.Shared.Stubs;
 using Xunit;
 
 [Collection("PermissionMapThrottleState")]
@@ -147,5 +149,83 @@ public class RolePermissionMapTests
                 It.IsAny<Exception?>(),
                 It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
             Times.Exactly(2));
+    }
+
+    [Fact]
+    public void Static_For_VlimpersBeheerder_does_not_grant_CanManageKeys()
+    {
+        // Regression guard: the static map must not grant unrestricted CanManageKeys
+        // to VlimpersBeheerder — that grant is only added by the config-aware overload
+        // (data-driven, restricted to Vlimpers-allowed keytypes on Vlimpers-managed orgs).
+        RolePermissionMap.For(Role.VlimpersBeheerder)
+            .Contains(Permission.CanManageKeys).Should().BeFalse();
+    }
+
+    [Fact]
+    public void For_config_null_roles_returns_Empty()
+    {
+        var config = new OrganisationRegistryConfigurationStub();
+
+        RolePermissionMap.For((IEnumerable<Role>?)null, config)
+            .Should().BeSameAs(PermissionSet.Empty);
+    }
+
+    [Fact]
+    public void For_config_VlimpersBeheerder_grants_restricted_CanManageKeys()
+    {
+        var allowedKeyType = Guid.NewGuid();
+        var otherKeyType = Guid.NewGuid();
+        var config = new OrganisationRegistryConfigurationStub();
+        ((AuthorizationConfigurationStub)config.Authorization).KeyIdsAllowedForVlimpers
+            = new[] { allowedKeyType };
+
+        var set = RolePermissionMap.For(new[] { Role.VlimpersBeheerder }, config);
+
+        set.IsSatisfiedFor(
+                Permission.CanManageKeys,
+                new KeyContext(isUnderVlimpersManagement: true, allowedKeyType))
+            .Should().BeTrue();
+
+        set.IsSatisfiedFor(
+                Permission.CanManageKeys,
+                new KeyContext(isUnderVlimpersManagement: true, otherKeyType))
+            .Should().BeFalse();
+
+        set.IsSatisfiedFor(
+                Permission.CanManageKeys,
+                new KeyContext(isUnderVlimpersManagement: false, allowedKeyType))
+            .Should().BeFalse();
+    }
+
+    [Fact]
+    public void For_config_unions_across_roles_and_unrestricted_absorbs_restricted()
+    {
+        var allowedKeyType = Guid.NewGuid();
+        var otherKeyType = Guid.NewGuid();
+        var config = new OrganisationRegistryConfigurationStub();
+        ((AuthorizationConfigurationStub)config.Authorization).KeyIdsAllowedForVlimpers
+            = new[] { allowedKeyType };
+
+        var set = RolePermissionMap.For(
+            new[] { Role.VlimpersBeheerder, Role.AlgemeenBeheerder },
+            config);
+
+        // AlgemeenBeheerder holds unrestricted CanManageKeys; must absorb the
+        // VlimpersBeheerder restricted grant regardless of context.
+        set.IsSatisfiedFor(
+                Permission.CanManageKeys,
+                new KeyContext(isUnderVlimpersManagement: false, otherKeyType))
+            .Should().BeTrue();
+    }
+
+    [Fact]
+    public void For_config_non_vlimpers_role_matches_static_For()
+    {
+        var config = new OrganisationRegistryConfigurationStub();
+
+        var staticSet = RolePermissionMap.For(Role.CjmBeheerder);
+        var configSet = RolePermissionMap.For(new[] { Role.CjmBeheerder }, config);
+
+        ((object)configSet).Should().Be(staticSet);
     }
 }

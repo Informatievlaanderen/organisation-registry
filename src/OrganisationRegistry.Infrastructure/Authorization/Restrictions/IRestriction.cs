@@ -1,21 +1,17 @@
 namespace OrganisationRegistry.Infrastructure.Authorization.Restrictions;
 
 /// <summary>
-/// Non-generic marker for restriction values so <see cref="PermissionEntry"/>
-/// can store them without leaking generics. Concrete restrictions always
-/// implement the typed <see cref="IRestriction{TContext}"/> variant.
+/// A restriction decides whether a specific <see cref="IRestrictionContext"/> is
+/// allowed. Restrictions are stored non-generically inside a
+/// <see cref="PermissionEntry"/> and evaluated by the
+/// <see cref="PermissionSet.IsSatisfiedFor"/> engine.
+///
+/// Composition follows a simple algebra: an AND of restrictions lives inside a
+/// single grant (see <see cref="CompositeAndRestriction"/>); OR across grants is
+/// the union of a <see cref="PermissionSet"/>. A restriction must fail closed
+/// when it receives a context type it does not understand.
 /// </summary>
 public interface IRestriction
 {
-    string Domain { get; }
-}
-
-/// <summary>
-/// A restriction that can decide whether a specific context is allowed.
-/// Contravariant on TContext so derived-context readers stay compatible.
-/// </summary>
-public interface IRestriction<in TContext> : IRestriction
-    where TContext : IRestrictionContext<TContext>
-{
-    bool IsOkWith(TContext context);
+    bool IsOkWith(IRestrictionContext context);
 }

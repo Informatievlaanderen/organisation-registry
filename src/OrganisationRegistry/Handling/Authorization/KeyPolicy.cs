@@ -1,63 +1,37 @@
 namespace OrganisationRegistry.Handling.Authorization;
 
 using System;
-using System.Linq;
 using Infrastructure.Authorization;
-using Infrastructure.Configuration;
+using Infrastructure.Authorization.Restrictions;
 using Organisation.Exceptions;
 
+/// <summary>
+/// Role-independent authorization for managing organisation keys. Access is
+/// driven entirely by the <see cref="Permission.CanManageKeys"/> permission and
+/// its (optional) restriction, evaluated against a two-axis <see cref="KeyContext"/>:
+/// the organisation's Vlimpers-management status and the keytype ids involved.
+///
+/// A holder of an unrestricted <c>CanManageKeys</c> grant (e.g. AlgemeenBeheerder)
+/// always passes; a restricted holder (e.g. VlimpersBeheerder) only passes when the
+/// organisation is under Vlimpers management AND every keytype is on the allow-list.
+/// </summary>
 public class KeyPolicy : ISecurityPolicy
 {
-    private readonly IOrganisationRegistryConfiguration _configuration;
+    private readonly bool _isUnderVlimpersManagement;
     private readonly Guid[] _keyTypeIds;
-    private readonly string _ovoNumber;
 
-    public KeyPolicy(
-        string ovoNumber,
-        IOrganisationRegistryConfiguration configuration,
-        params Guid[] keyTypeIds)
+    public KeyPolicy(bool isUnderVlimpersManagement, params Guid[] keyTypeIds)
     {
-        _ovoNumber = ovoNumber;
+        _isUnderVlimpersManagement = isUnderVlimpersManagement;
         _keyTypeIds = keyTypeIds;
-        _configuration = configuration;
     }
 
     public AuthorizationResult Check(IUser user)
-    {
-        if (user.IsInAnyOf(Role.AlgemeenBeheerder, Role.CjmBeheerder))
-            return AuthorizationResult.Success();
-
-        var containsVlimpersKey = ContainsVlimpersKey(_keyTypeIds);
-        var containsOrafinKey = ContainsOrafinKey(_keyTypeIds);
-
-        if (containsOrafinKey && user.IsInAnyOf(Role.Orafin, Role.CjmBeheerder))
-            return AuthorizationResult.Success();
-
-        if (containsVlimpersKey && user.IsInAnyOf(Role.VlimpersBeheerder))
-            return AuthorizationResult.Success();
-
-        if (!containsOrafinKey && !containsVlimpersKey &&
-            user.IsDecentraalBeheerderForOrganisation(_ovoNumber))
-            return AuthorizationResult.Success();
-
-        return AuthorizationResult.Fail(InsufficientRights.CreateFor(this));
-    }
-
-    private bool ContainsOrafinKey(Guid[] keyTypeIds)
-    {
-        var keyTypeIdsAllowedByVlimpers = _configuration.Authorization.KeyIdsAllowedOnlyForOrafin;
-        return keyTypeIds.Any(
-            labelTypeId =>
-                keyTypeIdsAllowedByVlimpers.Contains(labelTypeId));
-    }
-
-    private bool ContainsVlimpersKey(Guid[] keyTypeIds)
-    {
-        var keyTypeIdsAllowedByVlimpers = _configuration.Authorization.KeyIdsAllowedForVlimpers;
-        return keyTypeIds.Any(
-            labelTypeId =>
-                keyTypeIdsAllowedByVlimpers.Contains(labelTypeId));
-    }
+        => user.IsSatisfiedFor(
+            Permission.CanManageKeys,
+            new KeyContext(_isUnderVlimpersManagement, _keyTypeIds))
+            ? AuthorizationResult.Success()
+            : AuthorizationResult.Fail(InsufficientRights.CreateFor(this));
 
     public override string ToString()
         => "Geen machtiging op sleutel";

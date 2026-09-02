@@ -15,7 +15,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OrganisationRegistry.Infrastructure.AppSpecific;
 using OrganisationRegistry.Infrastructure.Authorization;
-using OrganisationRegistry.Infrastructure.Configuration;
 using Queries;
 using SqlServer.Infrastructure;
 using SqlServer.KeyType;
@@ -39,7 +38,6 @@ public class KeyTypeController : OrganisationRegistryController
         [FromServices] OrganisationRegistryContext context,
         [FromServices] IMemoryCaches memoryCaches,
         [FromServices] ISecurityService securityService,
-        [FromServices] IOrganisationRegistryConfiguration configuration,
         [FromQuery] Guid? forOrganisationId)
     {
         var filtering = Request.ExtractFilteringRequest<KeyTypeListQuery.KeyTypeListItemFilter>();
@@ -52,8 +50,7 @@ public class KeyTypeController : OrganisationRegistryController
         Func<Guid, bool> isAuthorizedForKeyType = keyTypeId =>
             !forOrganisationId.HasValue ||
             new KeyPolicy(
-                    memoryCaches.OvoNumbers[forOrganisationId.Value],
-                    configuration,
+                    memoryCaches.UnderVlimpersManagement.Contains(forOrganisationId.Value),
                     keyTypeId)
                 .Check(user)
                 .IsSuccessful;

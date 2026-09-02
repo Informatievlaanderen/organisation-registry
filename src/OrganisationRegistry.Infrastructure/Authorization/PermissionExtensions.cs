@@ -9,14 +9,11 @@ using OrganisationRegistry.Infrastructure.Authorization.Restrictions;
 public static class PermissionExtensions
 {
     /// <summary>
-    /// Pairs a <see cref="Permission"/> with a typed restriction. The domain
-    /// on the entry is taken from the context type via
-    /// <see cref="IRestrictionContext{TSelf}.Domain"/> so it stays in sync
-    /// with the restriction itself.
+    /// Pairs a <see cref="Permission"/> with a restriction that the operation's
+    /// <see cref="IRestrictionContext"/> must satisfy for the grant to apply.
     /// </summary>
-    public static PermissionEntry RestrictedTo<TContext>(
+    public static PermissionEntry RestrictedTo(
         this Permission permission,
-        IRestriction<TContext> restriction)
-        where TContext : IRestrictionContext<TContext>
-        => new(permission, TContext.Domain, restriction);
+        IRestriction restriction)
+        => new(permission, restriction);
 }

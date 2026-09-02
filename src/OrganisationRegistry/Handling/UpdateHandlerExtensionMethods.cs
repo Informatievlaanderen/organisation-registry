@@ -50,22 +50,18 @@ public static class UpdateHandlerExtensionMethods
 
     public static UpdateHandler<Organisation> WithKeyPolicy(
         this UpdateHandler<Organisation> source,
-        IOrganisationRegistryConfiguration configuration,
         AddOrganisationKey message)
         => source.WithPolicy(
             organisation => new KeyPolicy(
-                organisation.State.OvoNumber,
-                configuration,
+                organisation.State.UnderVlimpersManagement,
                 message.KeyTypeId));
 
     public static UpdateHandler<Organisation> WithKeyPolicy(
         this UpdateHandler<Organisation> source,
-        IOrganisationRegistryConfiguration configuration,
         UpdateOrganisationKey message)
         => source.WithPolicy(
             organisation => new KeyPolicy(
-                organisation.State.OvoNumber,
-                configuration,
+                organisation.State.UnderVlimpersManagement,
                 message.KeyTypeId));
 
     public static UpdateHandler<Organisation> WithOrganisationClassificationTypePolicy(

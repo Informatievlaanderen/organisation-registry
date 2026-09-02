@@ -65,11 +65,6 @@ public class User : IUser
         => IsInAnyOf(Role.DecentraalBeheerder) &&
            Bodies.Contains(bodyId);
 
-    public bool IsRestrictedTo<TContext>()
-        where TContext : IRestrictionContext<TContext>
-        => Permissions.IsRestrictedTo<TContext>();
-
-    public IRestriction<TContext> GetRestriction<TContext>()
-        where TContext : IRestrictionContext<TContext>
-        => Permissions.GetRestriction<TContext>();
+    public bool IsSatisfiedFor(Permission permission, IRestrictionContext context)
+        => Permissions.IsSatisfiedFor(permission, context);
 }
