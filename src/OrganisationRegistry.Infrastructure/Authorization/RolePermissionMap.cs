@@ -70,6 +70,7 @@ public static class RolePermissionMap
                 Permission.CanEditBodies,
                 Permission.CanRegisterBodies,
                 Permission.CanAddLocations,
+                Permission.CanManageKeys,
                 Permission.CanManageLabels,
                 Permission.CanManageCapacities,
                 Permission.CanManageFormalFrameworks,
