@@ -35,7 +35,7 @@ public class CreateBankAccountNumberTests
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
-    [SkipBankAccounts]
+    [Theory(Skip = "Skip Bankaccounts")]
     [InlineData(ApiFixture.CJM.Client, ApiFixture.CJM.Scope)]
     [InlineData(ApiFixture.Test.Client, ApiFixture.Test.Scope)]
     public async Task CanCreateAndUpdateAs(string client, string scope)
