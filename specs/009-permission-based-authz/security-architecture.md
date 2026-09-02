@@ -1,7 +1,7 @@
 # Security Architecture — Permission-Based Authorization
 
 **Feature:** 009-permission-based-authz
-**Status:** In Progress (US1 klaar, US2/US3 pending)
+**Status:** Model C shipped (Keys MVP done; US1 complete, US2/US3 pending for other resources)
 **Audience:** Developers, reviewers, integrators
 
 ---
@@ -32,10 +32,12 @@ De organisation-registry stapt af van **rol-gebaseerde** autorisatie in de codeb
 ### 2.1 De permissions
 
 ```
+CanEditAll                         (admin bypass, replaces AlgemeenBeheerder short-circuit)
 CanEditChildren                    (edit sub-organisaties)
 CanEditVlimpers                    (Vlimpers-organisaties)
 CanEditDelegations                 (mandaten/delegaties)
 CanAddLocations
+CanAddContacts
 CanAddBodies
 CanEditBodies
 CanRegisterBodies
@@ -49,6 +51,10 @@ CanImport
 CanRunScheduledJobs                (Developer / AutomatedTask)
 CanReadOrafin                      (Orafin CC integration)
 CanReadInfoEndpoints               (info-scope CC integration)
+CanReadConfiguration               (read-only config access, AB + Developer only)
+CanEditOrganisationLabels          (edit labels on individual organisation)
+CanReadEvents
+CanViewProjections
 ```
 
 ---
@@ -77,7 +83,7 @@ flowchart TB
     H -.blocks/allows.-> Response
 ```
 
-**Kernregel:** ná `ClaimsExtension.ToPermissionSet` wordt er **nooit** meer naar `IUser.Roles` of scope-strings gekeken. Wie dat toch doet, faalt de code review.
+**Kernregel:** ná `ClaimsExtension.ToPermissionSet` wordt de **initiële permission-gate** (controller-attribute) gebaseerd op `PermissionSet`. Resource-level policies kunnen nog steeds role-checks doen voor fijnkorrelige resource-scope constraints (bijv. "alleen CJM mag bepaalde labeltype aanpassen"), maar dat is een later stadium van enforcement, niet de primaire access-control-laag. Niemand mag rol-checks doen in plaats van permission-checks voor grof toegangsbeheer.
 
 ---
 
@@ -119,18 +125,22 @@ sequenceDiagram
     CE-->>User: attach as claims
 ```
 
-### 4.1 Multi-role & multi-scope: UNION
+### 4.1 Multi-role & multi-scope: UNION (met restriction-aware deduplication)
 
 Een user met meerdere rollen (of een token met meerdere scopes) krijgt de **union** van alle mappings:
 
 ```csharp
-// Voorbeeld: user is zowel VlimpersBeheerder als OrgaanBeheerder
+// Voorbeeld: user is zowel VlimpersBeheerder als DecentraalBeheerder
 var perms = RolePermissionMap.For(new[] {
-    Role.VlimpersBeheerder,   // → {CanEditVlimpers, CanEditChildren}
-    Role.OrgaanBeheerder      // → {CanAddBodies, CanEditBodies, CanRegisterBodies}
+    Role.VlimpersBeheerder,   // → {CanEditVlimpers, CanEditChildren, CanManageKeys(restricted)}
+    Role.DecentraalBeheerder  // → {CanEditChildren, CanAddLocations, CanAddBodies, CanEditBodies, CanEditDelegations}
 });
-// perms = {CanEditVlimpers, CanEditChildren, CanAddBodies, CanEditBodies, CanRegisterBodies}
+// perms = union van beide, resulterend in:
+// {CanEditVlimpers, CanEditChildren, CanManageKeys(restricted), CanAddLocations, 
+//  CanAddBodies, CanEditBodies, CanEditDelegations}
 ```
+
+**Opmerking:** Bij multi-role UNION gebeurt automatische absorptie: een **onbeperkt** grant voor `CanManageKeys` absorbeert een **beperkt** grant voor dezelfde permission. Sinds DecentraalBeheerder geen CanManageKeys heeft, kunnen alleen AlgemeenBeheerder/Developer/VlimpersBeheerder (met restriction) de key-functie gebruiken.
 
 ### 4.2 Fail-closed op onbekende rollen/scopes
 
@@ -153,36 +163,39 @@ Deze mapping geldt voor gebruikers die interactief inloggen. Alleen de rollen hi
 
 ```mermaid
 graph LR
-    AB[AlgemeenBeheerder] --> P_ALL[14 permissions<br/>explicit granular grant]
-    VB[VlimpersBeheerder] --> P_V[CanEditVlimpers<br/>CanEditChildren]
-    DB[DecentraalBeheerder] --> P_D[CanEditChildren<br/>CanAddLocations<br/>CanManageKeys<br/>CanAddBodies<br/>CanEditBodies<br/>+CanEditDelegations*]
-    OB[OrgaanBeheerder] --> P_O[CanAddBodies<br/>CanEditBodies<br/>CanRegisterBodies]
-    RB[RegelgevingBeheerder] --> P_R[CanManageRegulations]
-    CJM[CjmBeheerder] --> P_C[CanEditChildren<br/>...]
-    DEV[Developer] --> P_DEV[CanRunScheduledJobs*<br/>+ dev tooling]
+    AB[AlgemeenBeheerder] --> P_AB["CanEditAll<br/>CanEditChildren<br/>CanAddBodies<br/>CanEditBodies<br/>CanRegisterBodies<br/>CanAddLocations<br/>CanManageKeys<br/>CanManageLabels<br/>CanManageCapacities<br/>CanManageFormalFrameworks<br/>CanManageOrganisationClassifications<br/>CanManageRegulations<br/>CanImport<br/>CanEditVlimpers<br/>CanEditDelegations<br/>+ others"]
+    VB[VlimpersBeheerder] --> P_V["CanEditVlimpers<br/>CanEditChildren<br/>CanManageKeys*<br/>CanEditOrganisationLabels"]
+    DB[DecentraalBeheerder] --> P_D["CanEditChildren<br/>CanAddLocations<br/>CanAddBodies<br/>CanEditBodies<br/>CanEditDelegations<br/>CanEditOrganisationLabels"]
+    OB[OrgaanBeheerder] --> P_O["CanAddBodies<br/>CanEditBodies<br/>CanRegisterBodies"]
+    RB[RegelgevingBeheerder] --> P_R["CanManageRegulations"]
+    CJM[CjmBeheerder] --> P_C["CanAddBodies<br/>CanEditBodies<br/>CanEditOrganisationLabels"]
+    DEV[Developer] --> P_DEV["CanEditAll<br/>CanEditChildren<br/>CanAddBodies<br/>CanEditBodies<br/>CanRegisterBodies<br/>CanAddLocations<br/>CanManageKeys<br/>CanManageLabels<br/>CanManageCapacities<br/>CanManageFormalFrameworks<br/>CanManageOrganisationClassifications<br/>CanManageRegulations<br/>CanImport<br/>CanEditVlimpers<br/>CanEditDelegations<br/>+ CanRunScheduledJobs"]
 
-    classDef pending fill:#ffe4b5
-    class P_D,P_DEV pending
+    classDef restricted fill:#ffe4b5
+    classDef note fill:#f0f0f0
+    class P_V restricted
+    class P_AB note
+    class P_DEV note
 ```
 
-**\* Pending T026a deltas** (nog niet gemerged, wachten op approval).
+**\* Restricted:** VlimpersBeheerder's `CanManageKeys` is restricted to Vlimpers-managed organisations + keytype allowlist (see RolePermissionMap.RestrictedGrantsFor). Developer's `CanManageKeys` is **unrestricted**.
 
-> **Historisch artefact:** `Role.Orafin`, `Role.CjmBeheerder` (in Wellknown-context) en `Role.AutomatedTask` staan óók in het `Role` enum en de `RolePermissionMap`, maar dat is een **synthetische omweg** uit de oude architectuur — zie §5.3. Feature #009 werkt die weg.
+> **Historisch artefact:** `Role.Orafin` en `Role.AutomatedTask` staan in het `Role` enum en de `RolePermissionMap`, maar dat is een **transitional bridge** — zie §5.3. Feature #009 werkt die progressief weg via T035/T036.
 
 ### 5.2 `ScopePermissionMap` — Client Credentials (machine-to-machine)
 
-Deze scopes zitten in het `scope` claim van een CC-token. Géén rol.
+Deze scopes zitten in het `scope` claim van een CC-token. Gén rol.
 
 | Scope | Permissions |
 |---|---|
-| `dv_organisatieregister_cjmbeheerder` | `CanEditChildren`, ... (mirrort semantisch de CJM-flow) |
-| `dv_organisatieregister_orafinbeheerder` | `CanReadOrafin` |
+| `dv_organisatieregister_cjmbeheerder` | `CanAddBodies`, `CanEditBodies` |
+| `dv_organisatieregister_orafinbeheerder` | `CanReadOrafin` (read-only) |
 | `dv_organisatieregister_info` | `CanReadInfoEndpoints` |
-| `dv_organisatieregister_testclient` | *(integration tests only)* |
+| `dv_organisatieregister_testclient` | `CanEditAll` + full admin-equivalent permissions (integration tests only) |
 
-### 5.3 Historisch: de synthetische-rol-omweg (wordt weggewerkt)
+### 5.3 Transitional: de synthetische-rol-omweg (T035 pending)
 
-**Vóór feature #009** deed `SecurityService.GetUser` (`SecurityService.cs:162-163`) dit:
+**Vóór feature #009** deed `SecurityService.GetUser` dit:
 
 ```csharp
 if (scopes.Contains(AcmIdmConstants.Scopes.OrafinBeheerder))
@@ -193,7 +206,7 @@ if (scopes.Contains(AcmIdmConstants.Scopes.TestClient))
     return WellknownUsers.TestClient; // een User met synthetisch Role.AlgemeenBeheerder
 ```
 
-De scope werd dus eerst omgezet naar een **`WellknownUsers` object met een synthetische rol**, en die rol werd daarna pas naar permissions gemapt. Dat is de reden dat `Role.Orafin` (waarde 13), `Role.AutomatedTask` en de Wellknown-rol-toewijzingen in de codebase staan — niet omdat ACM/IDM zulke rollen uitgeeft, maar omdat de oude code een scope-naar-rol-omweg deed.
+De scope werd dus eerst omgezet naar een **`WellknownUsers` object met een synthetische rol**, en die rol werd daarna pas naar permissions gemapt.
 
 **Ná feature #009:**
 
@@ -202,17 +215,15 @@ flowchart LR
     subgraph Voor["Vóór #009 (2 hops)"]
         S1[scope: orafinbeheerder] --> W1[WellknownUsers.Orafin<br/>Role.Orafin] --> P1[CanReadOrafin]
     end
-    subgraph Na["Ná #009 (1 hop)"]
+    subgraph Na["Ná #009 (1 hop, direct via ScopePermissionMap)"]
         S2[scope: orafinbeheerder] --> P2[CanReadOrafin]
     end
 ```
 
-- Scope wordt **direct** door `ScopePermissionMap` gemapt.
-- Geen `WellknownUsers.Orafin` / `Cjm` / `TestClient` scope-dispatch meer nodig.
-- **T035** verwijdert die dispatch uit `SecurityService.GetUser`.
-- `Role.Orafin` blijft in het enum (event-sourcing: enum-waarden zijn immutable), maar wordt `[Obsolete]` en niet meer intern gebruikt.
-- `Role.AutomatedTask` idem — vervangen door direct `CanRunScheduledJobs` in de wellknown-service-users (**T036**).
-
+- **DONE:** Scope wordt direct door `ScopePermissionMap` gemapt → geen omweg meer nodig.
+- **PENDING T035:** `SecurityService.GetUser` verwijdert nog steeds de `WellknownUsers.Orafin` / `Cjm` / `TestClient` dispatch — dit zal na T035 wegvallen en de `SecurityService` volledig permission-driven worden.
+- `Role.Orafin` en `Role.AutomatedTask` blijven in het enum (event-sourcing: enum-waarden zijn immutable), maar worden intern niet meer gebruikt nadat T035/T036 mergen.
+- `Role.AutomatedTask` wordt vervangen door direct `CanRunScheduledJobs` in de wellknown-service-users (**T036 pending**).
 ---
 
 ## 6. Enforcement
@@ -260,17 +271,21 @@ public class BodyController : OrganisationRegistryController
 **Verantwoordelijkheid:** fijnkorrelige checks die de **resource** kennen — bijvoorbeeld: "mag deze DecentraalBeheerder deze specifieke OVO-organisatie bewerken?".
 
 ```csharp
-public class BodyPolicy : ISecurityPolicy
+public class KeyPolicy : ISecurityPolicy
 {
     public AuthorizationResult Check(IUser user)
     {
-        // scope/OVO/vlimpers restrictions — géén rol-checks meer
-        // Geen admin-short-circuit: elke rol krijgt de benodigde permissions
-        // granulair via RolePermissionMap; de policy checkt puur resource-scope.
-        // ... resource-specific logic
+        // Enforcement via permission + restriction context
+        return user.IsSatisfiedFor(
+            Permission.CanManageKeys,
+            new KeyContext(isUnderVlimpersManagement, keyTypeIds))
+            ? AuthorizationResult.Success()
+            : AuthorizationResult.Fail(...);
     }
 }
 ```
+
+**Notitie:** sommige policies (LabelPolicy, VlimpersPolicy) checken nog steeds **rollen** voor specifieke resource-scope constrains (bijv. "alleen CJM mag labeltypes van CJM aanpassen"). Dit is **niet** drift — het zijn fijnkorrelige resource-level checks, niet permission-gates. Feature #010 (resource-level permissions) zal die refactor naar per-resource permission strings.
 
 ### 6.3 Laag 3: `IUser.HasPermission(...)` / `HasAnyPermission(...)`
 

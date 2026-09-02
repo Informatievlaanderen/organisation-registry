@@ -1,8 +1,8 @@
 # Restrictions Architecture — Handler-Policy Migration
 
 **Feature:** 009-permission-based-authz
-**Status:** Proposal — pending user go-ahead
-**Scope:** MVP focuses on **`KeyPolicy`** as the reference implementation. Other
+**Status:** DONE — Keys policy implemented (commit c3b0d4af5)
+**Scope:** MVP completes **`KeyPolicy`** as the reference implementation. Other
 policies (Label, Capacity, FormalFramework, OrganisationClassificationType,
 Regulation) follow the same pattern with per-domain context types.
 **Related docs:**
@@ -29,7 +29,7 @@ call `ISecurityService` live for OVO scope, orthogonal to restrictions.
 - **Data-driven per role.** Restrictions live in `RolePermissionMap`, next to
   the `Permission` they qualify. No code branch per role in policies.
 - **Type-safe per resource domain.** Each restriction domain has its own
-  context record (e.g. `KeyRestrictionContext`), so policies can't accidentally
+  context record (e.g. `KeyContext`), so policies can't accidentally
   pass the wrong shape.
 - **Union across multi-role users.** If any of the user's entries for the same
   permission says YES, access is granted.
@@ -40,219 +40,240 @@ call `ISecurityService` live for OVO scope, orthogonal to restrictions.
 - **Permission-first call-site.** Role mapping reads
   `Permission.X.RestrictedTo(...)` — the permission stays visually first, the
   restriction hangs off it. No hidden coupling via separate factory names.
-- **Domain identity lives on the context type.** Each `TContext` implements
-  `IRestrictionContext` with a `static abstract string Domain`, so
-  `IUser.GetRestriction<TContext>()` needs no string argument and the domain
-  key cannot drift from the context shape.
+- **Non-generic restriction interface.** All restrictions implement `IRestriction`,
+  and all contexts implement `IRestrictionContext`. Type safety within a grant
+  is enforced via generics on `AllowListRestriction<TContext>` and
+  `CompositeAndRestriction` composition.
 
 ## 3. Core Types
 
-### 3.1 `IRestriction<TContext>` and `AllowListRestriction<TContext>`
+### 3.1 `IRestriction` and `AllowListRestriction<TContext>`
 
 ```csharp
 namespace OrganisationRegistry.Infrastructure.Authorization.Restrictions;
 
-public interface IRestriction<in TContext>
+public interface IRestriction
 {
-    bool IsOkWith(TContext context);
+    bool IsOkWith(IRestrictionContext context);
 }
 
-public sealed class AllowListRestriction<TContext> : IRestriction<TContext>
+public sealed class AllowListRestriction<TContext> : IRestriction
+    where TContext : IRestrictionContext
 {
-    private readonly IReadOnlySet<Guid> _allowedIds;
-    private readonly Func<TContext, IEnumerable<Guid>> _extractIds;
+    private readonly ImmutableHashSet<Guid> _allowed;
 
-    public AllowListRestriction(
-        IEnumerable<Guid> allowedIds,
-        Func<TContext, IEnumerable<Guid>> extractIds)
+    public AllowListRestriction(IEnumerable<Guid>? allowed)
     {
-        _allowedIds = new HashSet<Guid>(allowedIds);
-        _extractIds = extractIds;
+        _allowed = allowed is null
+            ? ImmutableHashSet<Guid>.Empty
+            : ImmutableHashSet.CreateRange(allowed);
     }
 
-    public bool IsOkWith(TContext context)
-        => _extractIds(context).All(_allowedIds.Contains);
+    public bool IsOkWith(IRestrictionContext context)
+        => context is TContext typed && typed.RelevantIds.All(_allowed.Contains);
 }
 ```
 
-**Semantics:** the restriction says YES iff *every* id extracted from the
-context is in the allowlist. Empty context (no ids requested) → YES.
+**Semantics:** the restriction says YES iff *every* id in `context.RelevantIds`
+is in the allowlist. Empty relevant-id set yields vacuous truth ("nothing to
+check").
 
-### 3.2 `CompositeOrRestriction<TContext>`
+**Type-safety:** the generic `TContext` tag documents which context this
+allow-list expects (e.g., `AllowListRestriction<KeyContext>` for keys). At
+runtime, it fails closed when handed a context that does not implement
+`TContext`.
 
-For multi-role users we union permission entries. When two entries carry
-different restrictions for the same permission, we combine them:
+### 3.2 `CompositeAndRestriction`
+
+Within a single grant, multiple restrictions combine as AND — the context must
+satisfy *every* component restriction. This allows expressing compound guards
+like "keytype must be in the allowed set AND organisation must be under Vlimpers
+management" within one permission entry:
 
 ```csharp
-public sealed class CompositeOrRestriction<TContext> : IRestriction<TContext>
+public sealed class CompositeAndRestriction : IRestriction
 {
-    private readonly IReadOnlyList<IRestriction<TContext>> _inner;
-    public CompositeOrRestriction(IEnumerable<IRestriction<TContext>> inner)
-        => _inner = inner.ToList();
+    private readonly ImmutableHashSet<IRestriction> _restrictions;
 
-    public bool IsOkWith(TContext context)
-        => _inner.Any(r => r.IsOkWith(context));
+    public CompositeAndRestriction(IEnumerable<IRestriction> restrictions)
+    {
+        _restrictions = restrictions is null
+            ? ImmutableHashSet<IRestriction>.Empty
+            : ImmutableHashSet.CreateRange(restrictions);
+    }
+
+    public bool IsOkWith(IRestrictionContext context)
+        => _restrictions.All(r => r.IsOkWith(context));
 }
 ```
 
-The unrestricted case (permission held without restriction) is represented by
-`UnrestrictedRestriction<TContext>` which always returns `true`. Union of any
-restriction with `Unrestricted` collapses to `Unrestricted`.
+**When to use AND-composition:** within a single grant (one permission for one
+role), when you need both conditions to pass. **OR semantics** live at the
+`PermissionSet` level: different roles contribute separate grants, and a
+permission is satisfied if *any* grant applies (see §4).
 
-### 3.3 `IRestrictionContext` and Per-Domain Context Records
+### 3.3 `IRestrictionContext` — Non-Generic Marker
 
-Each resource domain defines its own context record, which carries its own
-domain identifier as a static-abstract member:
+The restriction algebra is non-generic at the interface level for simplicity.
+All contexts implement the base marker:
 
 ```csharp
-public interface IRestrictionContext<TSelf>
-    where TSelf : IRestrictionContext<TSelf>
+public interface IRestrictionContext
 {
-    static abstract string Domain { get; }
+    /// <summary>
+    /// The ids that must all be allowed for the operation to be permitted.
+    /// An empty enumerable means "nothing to check" and yields vacuous truth.
+    /// </summary>
+    IEnumerable<Guid> RelevantIds { get; }
+}
+
+/// <summary>
+/// Capability a context exposes when it can report whether the organisation
+/// the operation targets is under Vlimpers management.
+/// </summary>
+public interface IVlimpersManagedContext : IRestrictionContext
+{
+    bool IsUnderVlimpersManagement { get; }
 }
 ```
 
-MVP context:
+Per-domain contexts are concrete records implementing `IRestrictionContext` or
+`IVlimpersManagedContext`:
 
 ```csharp
-public sealed record KeyRestrictionContext(IReadOnlyList<Guid> KeyTypeIds)
-    : IRestrictionContext<KeyRestrictionContext>
+// MVP key context
+public sealed record KeyContext(bool IsUnderVlimpersManagement, IReadOnlyCollection<Guid> KeyTypeIds)
+    : IVlimpersManagedContext
 {
-    public static string Domain => "OrganisationKeys";
+    public KeyContext(bool isUnderVlimpersManagement, Guid keyTypeId)
+        : this(isUnderVlimpersManagement, new[] { keyTypeId }) { }
+
+    public IEnumerable<Guid> RelevantIds => KeyTypeIds;
 }
 ```
 
-Future domains sketched (not implemented yet):
-
-```csharp
-public sealed record LabelRestrictionContext(
-    IReadOnlyList<Guid> LabelTypeIds,
-    bool IsUnderVlimpersManagement)
-    : IRestrictionContext<LabelRestrictionContext>
-{
-    public static string Domain => "OrganisationLabels";
-}
-
-public sealed record CapacityRestrictionContext(IReadOnlyList<Guid> CapacityIds)
-    : IRestrictionContext<CapacityRestrictionContext>
-{
-    public static string Domain => "OrganisationCapacities";
-}
-
-public sealed record FormalFrameworkRestrictionContext(IReadOnlyList<Guid> FormalFrameworkIds)
-    : IRestrictionContext<FormalFrameworkRestrictionContext>
-{
-    public static string Domain => "OrganisationFormalFrameworks";
-}
-
-public sealed record OrganisationClassificationTypeRestrictionContext(
-    IReadOnlyList<Guid> OrganisationClassificationTypeIds)
-    : IRestrictionContext<OrganisationClassificationTypeRestrictionContext>
-{
-    public static string Domain => "OrganisationClassifications";
-}
-```
-
-**Design note:** contexts contain *only* resource-id data. OVO/org-scope is not
-part of the context; policies handle that via `ISecurityService` live lookup.
-
-### 3.4 Domain Keys
-
-Domain keys are **not** centralised in a separate constants class. The single
-source of truth is `TContext.Domain` on each context record. `PermissionEntry`
-stores the string (§4) so union/lookup across the heterogeneous
-`PermissionSet` stays simple, but call sites never type a raw string.
+**Design note:** contexts contain *only* resource-id data and capability flags
+(like `IsUnderVlimpersManagement`). OVO/org-scope is not part of the context;
+policies handle that via `ISecurityService` live lookup.
 
 ## 4. Storage: `PermissionEntry` inside `PermissionSet`
 
 Restrictions live inside `PermissionSet` — no parallel channel:
 
 ```csharp
-public readonly record struct PermissionEntry(
+public sealed record PermissionEntry(
     Permission Permission,
-    string? RestrictionDomain,   // null = unrestricted
-    object? Restriction);        // IRestriction<TContext> boxed; null if unrestricted
+    IRestriction? Restriction)    // null = unrestricted
 ```
 
-`PermissionSet` becomes `IReadOnlyCollection<PermissionEntry>`. Union across
-roles/scopes preserves entries; consumers (`HasPermission`, `GetRestriction`)
-walk them.
+**Unrestricted case:** when `Restriction` is `null`, the grant is unrestricted.
+This is the natural way to express "permission held without any resource
+constraint".
 
-**Why `object?` for `Restriction`:** the set is heterogeneous across domains.
-Type safety is recovered at the `GetRestriction<TContext>` call site (see §5).
+**Absorbing logic:** `PermissionSet.IsSatisfiedFor(permission, context)` returns
+true if *any* entry for that permission applies. An unrestricted entry (`Restriction`
+is `null`) always applies, so it naturally absorbs restricted entries for the
+same permission. Example:
+
+```csharp
+// Scenario: AlgemeenBeheerder has CanManageKeys unrestricted,
+// VlimpersBeheerder has CanManageKeys restricted to their keytype set.
+// Union produces both entries. IsSatisfiedFor checks:
+// - Is there an entry for CanManageKeys whose restriction is satisfied?
+// - If any entry has null Restriction (unrestricted) → YES
+// - Otherwise, check each restricted entry's IsOkWith(context)
+
+set.IsSatisfiedFor(Permission.CanManageKeys, context)
+    => entries.Any(e =>
+        e.Permission == permission &&
+        (e.Restriction is null || e.Restriction.IsOkWith(context)));
+```
+
+This means multi-role users automatically get the union: each role contributes
+its own entries, and if any entry says YES, access is granted.
 
 ## 5. `IUser` Surface
 
-Three new members on `IUser`, all generic — no string domain arguments at call
-sites:
+The core authorization decision is simple and non-generic:
 
 ```csharp
 bool HasPermission(Permission permission);
 
-bool IsRestrictedTo<TContext>()
-    where TContext : IRestrictionContext<TContext>;
-
-IRestriction<TContext> GetRestriction<TContext>()
-    where TContext : IRestrictionContext<TContext>;
+bool IsSatisfiedFor(Permission permission, IRestrictionContext context);
 ```
-
-Internally these read `TContext.Domain` and match against
-`PermissionEntry.RestrictionDomain`.
 
 **Semantics:**
 
-- `HasPermission(p)` — YES if the user has any entry for `p`, restricted or not.
-- `IsRestrictedTo<TContext>()` — YES if the user has at least one entry whose
-  `RestrictionDomain == TContext.Domain` **and no unrestricted entry for the
-  same permission** in that domain. Callers use this to decide "do I need to
-  walk the restriction path?".
-- `GetRestriction<TContext>()` — returns the effective restriction for
-  `TContext.Domain`. If multiple entries carry restrictions for the same
-  domain, they are combined into `CompositeOrRestriction<TContext>`. If the
-  user has no entry for the domain, returns a `DenyAllRestriction<TContext>`
-  (always `false`). Never returns null (avoids null checks in policies).
+- `HasPermission(permission)` — YES if the user has any entry for the
+  permission, restricted or not. Used by controllers for early gates.
+- `IsSatisfiedFor(permission, context)` — core enforcement. YES when there is
+  at least one grant for the permission whose restriction (if any) is satisfied
+  by the context. Returns false if no entry for the permission exists (fail-closed).
 
-**Fail-closed:** missing domain → `DenyAll`, not `Unrestricted`.
+**Example:**
+
+```csharp
+public interface IUser
+{
+    PermissionSet Permissions { get; }
+    bool HasPermission(Permission permission);
+    bool IsSatisfiedFor(Permission permission, IRestrictionContext context);
+}
+
+public class User : IUser
+{
+    public PermissionSet Permissions { get; }
+
+    public bool HasPermission(Permission permission)
+        => Permissions.Contains(permission);
+
+    public bool IsSatisfiedFor(Permission permission, IRestrictionContext context)
+        => Permissions.IsSatisfiedFor(permission, context);
+}
+```
+
+The `PermissionSet` itself handles all the hard work:
+
+```csharp
+public bool IsSatisfiedFor(Permission permission, IRestrictionContext context)
+    => _entries.Any(e =>
+        e.Permission == permission &&
+        (e.Restriction is null || e.Restriction.IsOkWith(context)));
+```
 
 ## 6. Reference: `KeyPolicy` After Migration
 
 ```csharp
 public class KeyPolicy : ISecurityPolicy
 {
+    private readonly bool _isUnderVlimpersManagement;
     private readonly Guid[] _keyTypeIds;
-    private readonly string _ovoNumber;
 
-    public KeyPolicy(string ovoNumber, params Guid[] keyTypeIds)
+    public KeyPolicy(bool isUnderVlimpersManagement, params Guid[] keyTypeIds)
     {
-        _ovoNumber = ovoNumber;
+        _isUnderVlimpersManagement = isUnderVlimpersManagement;
         _keyTypeIds = keyTypeIds;
     }
 
     public AuthorizationResult Check(IUser user)
-    {
-        if (!user.HasPermission(Permission.CanManageKeys))
-            return Fail();
-
-        if (!user.IsRestrictedTo<KeyRestrictionContext>())
-            return AuthorizationResult.Success();
-
-        var restriction = user.GetRestriction<KeyRestrictionContext>();
-
-        if (restriction.IsOkWith(new KeyRestrictionContext(_keyTypeIds)))
-            return AuthorizationResult.Success();
-
-        return Fail();
-    }
-
-    private AuthorizationResult Fail()
-        => AuthorizationResult.Fail(InsufficientRights.CreateFor(this));
+        => user.IsSatisfiedFor(
+            Permission.CanManageKeys,
+            new KeyContext(_isUnderVlimpersManagement, _keyTypeIds))
+            ? AuthorizationResult.Success()
+            : AuthorizationResult.Fail(InsufficientRights.CreateFor(this));
 
     public override string ToString() => "Geen machtiging op sleutel";
 }
 ```
 
-Note: `IOrganisationRegistryConfiguration` drops out of `KeyPolicy` entirely.
-The allowlist moves to `RolePermissionMap` construction time.
+**Key observations:**
+
+1. The policy is permission-first: it checks `Permission.CanManageKeys` directly.
+2. The restriction is evaluated via `user.IsSatisfiedFor(permission, context)`.
+3. The context bundles both the organisation's Vlimpers-management status and
+   the keytype ids, so the restriction can enforce both checks in one pass.
+4. No `IOrganisationRegistryConfiguration` parameter — the allowlist is baked
+   into the permission mapping at startup (see §7.3).
 
 ## 7. Role Mapping: Permission-First Syntax
 
@@ -264,55 +285,120 @@ every call site.
 ### 7.1 `RestrictedTo` Extension
 
 ```csharp
-public static class PermissionRestrictionExtensions
+public static class PermissionExtensions
 {
-    public static PermissionEntry RestrictedTo<TContext>(
+    /// <summary>
+    /// Pairs a Permission with a restriction that the operation's
+    /// IRestrictionContext must satisfy for the grant to apply.
+    /// </summary>
+    public static PermissionEntry RestrictedTo(
         this Permission permission,
-        IRestriction<TContext> restriction)
-        where TContext : IRestrictionContext<TContext>
-        => new(permission, TContext.Domain, restriction);
+        IRestriction restriction)
+        => new(permission, restriction);
 }
 ```
 
-The domain string is read from `TContext.Domain` — call sites never type it.
+**Usage:** `Permission.CanManageKeys.RestrictedTo(someRestriction)`
 
 ### 7.2 Per-Domain Helpers
 
 To keep the allowlist source obvious, each domain exposes a small helper class
-that returns `IRestriction<TContext>`. This is a thin convenience layer over
-`AllowListRestriction<TContext>` — no factories for `PermissionEntry`, only for
-the restriction itself:
+that returns `IRestriction`. This is a thin convenience layer over
+`AllowListRestriction<TContext>`:
 
 ```csharp
 public static class KeyRestrictions
 {
-    public static IRestriction<KeyRestrictionContext> AllowList(
-        IEnumerable<Guid> allowedKeyTypeIds)
-        => new AllowListRestriction<KeyRestrictionContext>(
-            allowedKeyTypeIds,
-            ctx => ctx.KeyTypeIds);
+    /// <summary>
+    /// The keytype ids the caller may touch must all be in keyTypeIds.
+    /// </summary>
+    public static IRestriction AllowList(IEnumerable<Guid> keyTypeIds)
+        => new AllowListRestriction<KeyContext>(keyTypeIds);
+
+    /// <summary>
+    /// Vlimpers grant for keys: the organisation must be under Vlimpers management
+    /// AND every touched keytype must be in the Vlimpers-allowed set. Both
+    /// conditions live in a single grant (AND); other roles express their own key
+    /// access as separate grants (OR).
+    /// </summary>
+    public static IRestriction VlimpersManaged(IEnumerable<Guid> keyTypeIds)
+        => new CompositeAndRestriction(
+            RequireUnderVlimpersManagementRestriction.Instance,
+            new AllowListRestriction<KeyContext>(keyTypeIds));
 }
 ```
 
-Analogous helpers per domain (`LabelRestrictions.AllowList(...)`,
+Analogous helpers per domain (e.g., `LabelRestrictions.AllowList(...)`,
 `CapacityRestrictions.AllowList(...)`, etc.).
 
 ### 7.3 Call Site in `RolePermissionMap`
 
+`RolePermissionMap` has two static methods:
+
 ```csharp
-[Role.VlimpersBeheerder] = PermissionSet.Of(
-    Permission.CanEditVlimpers,
-    Permission.CanEditChildren,
-    Permission.CanManageKeys.RestrictedTo(
-        KeyRestrictions.AllowList(configuration.Authorization.KeyIdsAllowedForVlimpers)),
-    Permission.CanEditOrganisationLabels),
+/// Config-less: just unions the static base permissions per role.
+public static PermissionSet For(IEnumerable<Role>? roles, ILogger? logger = null)
+{
+    var union = PermissionSet.Empty;
+    foreach (var role in roles)
+        union = union.Union(For(role, logger));
+    return union;
+}
+
+/// Config-aware: adds data-driven restricted grants.
+public static PermissionSet For(
+    IEnumerable<Role>? roles,
+    IOrganisationRegistryConfiguration configuration,
+    ILogger? logger = null)
+{
+    var roleList = roles as IReadOnlyCollection<Role> ?? roles.ToList();
+    var union = For(roleList, logger);  // Start with static base
+
+    // Layer in config-dependent restricted grants per role
+    foreach (var role in roleList)
+        union = union.Union(RestrictedGrantsFor(role, configuration));
+
+    return union;
+}
+
+private static PermissionSet RestrictedGrantsFor(
+    Role role,
+    IOrganisationRegistryConfiguration configuration)
+    => role switch
+    {
+        Role.VlimpersBeheerder => PermissionSet.Of(
+            Permission.CanManageKeys.RestrictedTo(
+                KeyRestrictions.VlimpersManaged(
+                    configuration.Authorization.KeyIdsAllowedForVlimpers))),
+        _ => PermissionSet.Empty,
+    };
+```
+
+**Call site in `User.cs`:**
+
+```csharp
+public User(
+    ...,
+    PermissionSet? permissions = null)
+{
+    ...
+    Permissions = permissions ?? RolePermissionMap.For(roles);
+}
+```
+
+When config is available (e.g., in `SecurityService`):
+
+```csharp
+return new User(
+    ...,
+    RolePermissionMap.For(securityInformation.Roles, _configuration));
 ```
 
 The `Permission → RestrictedTo → helper` chain reads left-to-right as
-"CanManageKeys, restricted to the Vlimpers key allowlist". The
-`PermissionSet.Of(...)` builder accepts both `Permission` and
-`PermissionEntry` (via `implicit operator PermissionEntry(Permission)`), so
-unrestricted permissions stay one-word.
+"CanManageKeys, restricted to the VlimpersManaged keytypes". The
+`PermissionSet.Of(...)` builder accepts both `Permission` and `PermissionEntry`
+(via `implicit operator PermissionEntry(Permission)`), so unrestricted
+permissions stay one-word.
 
 ## 8. Decisions Recap (from summary)
 
@@ -320,22 +406,26 @@ unrestricted permissions stay one-word.
 |---|---|
 | `Permission` source-of-truth | Enum stays (option b) |
 | Restriction storage | Inside `PermissionSet` via `PermissionEntry` — no parallel channel |
-| Domain identifier | `static abstract string Domain` on `IRestrictionContext<TSelf>` per context record |
-| Context shape | Named record per domain, resource-ids only, no OVO |
+| Unrestricted representation | `Restriction` field is `null` (not a wrapper class) |
+| Restriction logic within a grant | `CompositeAndRestriction` — AND composition |
+| Multi-role union | OR across grants: each role contributes entries to `PermissionSet`; any entry that says YES grants access |
+| Context shape | Named record per domain, resource-ids + capability flags (e.g., `IsUnderVlimpersManagement`), no OVO |
 | OVO-scope | Stays in policy code via `ISecurityService` live |
 | MVP restriction type | `AllowListRestriction` only (no DenyList) |
-| Multi-role union | `CompositeOrRestriction` (ANY entry may say YES) |
-| Missing domain | `DenyAllRestriction` (fail-closed) |
+| `KeyRestrictions.VlimpersManaged` | `CompositeAndRestriction` of `RequireUnderVlimpersManagementRestriction` AND `AllowListRestriction<KeyContext>` |
 | DecentraalBeheerder + Keys | **No** `CanManageKeys` (target-state per matrix) |
-| `LabelPolicy` `_isUnderVlimpersManagement` | Field on `LabelRestrictionContext` |
 
-## 9. Retirement List
+## 9. Retirement Checklist
 
-Once `KeyPolicy` migrates, the following can be removed or deprecated:
+Once a policy migrates to the restriction model, confirm these cleanups:
 
-- `SecurityService.CanUseKeyType` (L231-245 in `SecurityService.cs`)
-- `KeyPolicy` constructor param `IOrganisationRegistryConfiguration`
-- Dead code L37+ in `KeyPolicy.cs`
+- `SecurityService.CanUseLabelType` remains (L233-243 in `SecurityService.cs`) —
+  this is a special-case gate for Vlimpers-only label types, **not** replaced by
+  the restriction model. Left in place for now (deferred cleanup: see AGENTS.md
+  note "TODO: see how we can make SecurityService use IUser everywhere").
+- `KeyPolicy` no longer takes `IOrganisationRegistryConfiguration` parameter
+  (moved to `RolePermissionMap` construction).
+- `SecurityService.CanUseKeyType` — removed (no longer needed).
 
 Analogous cleanups follow for each subsequent policy migration.
 
@@ -357,65 +447,72 @@ These need product confirmation before their respective policy migrates
 - **RDB Classificaties `*`.** `OrganisationClassificationTypeIdsOwnedByRegelgevingDbBeheerder`
   whitelist confirmed; Cjm via CC scope open.
 
-## 11. Migration Order
+## 11. Rollout Status
 
-Per-policy, each in its own commit:
+| Resource | Policy | Handler | Projection | Status |
+|---|---|---|---|---|
+| **Organisation Key** | `KeyPolicy` | `AddOrganisationKeyCommandHandler`, `UpdateOrganisationKeyCommandHandler` | `OrganisationKeyController`, `KeyTypeController` | ✅ DONE (commit c3b0d4af5) |
+| Organisation Label | `LabelPolicy` | `AddOrganisationLabelCommandHandler`, `UpdateOrganisationLabelCommandHandler` | — | 🔄 Deferred (depends on DB Benamingen `*` clarification) |
+| Organisation Capacity | `CapacityPolicy` | `AddOrganisationCapacityCommandHandler`, `UpdateOrganisationCapacityCommandHandler` | — | 🔄 Deferred (depends on DB Hoedanigheden `*` clarification) |
+| Organisation FormalFramework | `FormalFrameworkPolicy` | `AddOrganisationFormalFrameworkCommandHandler`, `UpdateOrganisationFormalFrameworkCommandHandler` | — | 🔄 Deferred (depends on DB Toepassingsgebieden `*` clarification) |
+| Organisation OrganisationClassificationType | `OrganisationClassificationTypePolicy` | `AddOrganisationOrganisationClassificationCommandHandler`, `UpdateOrganisationOrganisationClassificationCommandHandler` | — | 🔄 Deferred (depends on RDB Cjm scope clarification) |
+| Organisation Regulation | `RegulationPolicy` | — | — | 🔄 Deferred (pure permission check, no restriction needed) |
 
-1. **Infrastructure** — types from §§3-5 and §7 (`IRestriction<TContext>`,
-   `IRestrictionContext<TSelf>`, `PermissionEntry`, per-domain
-   `*RestrictionContext` records, `AllowListRestriction<TContext>`,
-   `CompositeOrRestriction<TContext>`, `DenyAllRestriction<TContext>`,
-   `UnrestrictedRestriction<TContext>`, `PermissionRestrictionExtensions.RestrictedTo`,
-   per-domain helper (`KeyRestrictions`), `PermissionSet` refactor,
-   `IUser` generic members).
-2. **KeyPolicy** — reference migration. Drops config param. Adds Vlimpers
-   entry in `RolePermissionMap` via
-   `Permission.CanManageKeys.RestrictedTo(KeyRestrictions.AllowList(...))`.
-   Removes dead code + `SecurityService.CanUseKeyType`.
-3. **LabelPolicy** — with `IsUnderVlimpersManagement` on context. Requires
-   DB-labels ambiguity resolved.
-4. **CapacityPolicy** — needs DB `*` interpretation.
-5. **FormalFrameworkPolicy** — needs DB `*` interpretation.
-6. **OrganisationClassificationTypePolicy** — needs RDB Cjm decision.
-7. **RegulationPolicy** — pure permission check (no restriction), simplest.
-
-Each step includes: types → `RolePermissionMap` entry → policy rewrite → tests →
-retire dead code / `SecurityService.CanUse*`.
+**Keys implementation:** `AddOrganisationKeyCommandHandler` and `UpdateOrganisationKeyCommandHandler`
+send commands that trigger `KeyPolicy`. The controller (`OrganisationKeyController`) and
+key-type controller (`KeyTypeController`) are fully wired.
 
 ## 12. FluentAssertions Gotcha
 
-`PermissionSet : IEnumerable<Permission>` (existing) or the new
-`IEnumerable<PermissionEntry>` shape will trigger FluentAssertions' collection
-overload on `.Should().Be(other)`. Use `((object)set).Should().Be(other)` when
-comparing whole sets for equality in tests.
+`PermissionSet : IEnumerable<PermissionEntry>` will trigger FluentAssertions'
+collection overload on `.Should().Be(other)`. Use `((object)set).Should().Be(other)`
+when comparing whole sets for equality in tests.
 
-## 13. File Plan (Infrastructure Step)
+## 13. Restriction Types & Special Cases
 
-All new files live under
-`src/OrganisationRegistry.Infrastructure/Authorization/Restrictions/`.
+### 13.1 `RequireUnderVlimpersManagementRestriction`
+
+A stateless singleton that passes only when the context carries the
+`IVlimpersManagedContext` capability and reports the organisation is under
+Vlimpers management:
+
+```csharp
+public sealed class RequireUnderVlimpersManagementRestriction : IRestriction
+{
+    public static readonly RequireUnderVlimpersManagementRestriction Instance = new();
+
+    private RequireUnderVlimpersManagementRestriction() { }
+
+    public bool IsOkWith(IRestrictionContext context)
+        => context is IVlimpersManagedContext vlimpers && vlimpers.IsUnderVlimpersManagement;
+
+    public override string ToString() => "RequireUnderVlimpersManagement";
+}
+```
+
+**Usage:** Combined with `AllowListRestriction<KeyContext>` via
+`CompositeAndRestriction` to form `KeyRestrictions.VlimpersManaged(keyTypeIds)`.
+
+### 13.2 Core Files in `Restrictions/`
 
 | File | Contents |
 |---|---|
-| `IRestrictionContext.cs` | `IRestrictionContext<TSelf>` interface (static-abstract `Domain`) |
-| `IRestriction.cs` | `IRestriction<in TContext>` interface (`IsOkWith`) |
-| `AllowListRestriction.cs` | `AllowListRestriction<TContext>` generic sealed class |
-| `CompositeOrRestriction.cs` | `CompositeOrRestriction<TContext>` union combinator |
-| `DenyAllRestriction.cs` | `DenyAllRestriction<TContext>` (returned when domain missing) |
-| `UnrestrictedRestriction.cs` | `UnrestrictedRestriction<TContext>` (permission held without restriction) |
-| `PermissionEntry.cs` | `PermissionEntry(Permission, string?, object?)` readonly record struct + `implicit operator PermissionEntry(Permission)` |
-| `PermissionRestrictionExtensions.cs` | `RestrictedTo<TContext>(this Permission, IRestriction<TContext>)` |
-| `Contexts/KeyRestrictionContext.cs` | MVP context record, implements `IRestrictionContext<KeyRestrictionContext>` |
-| `Contexts/KeyRestrictions.cs` | `KeyRestrictions.AllowList(IEnumerable<Guid>)` helper |
+| `IRestrictionContext.cs` | `IRestrictionContext` and `IVlimpersManagedContext` marker interfaces |
+| `IRestriction.cs` | `IRestriction` interface with `IsOkWith(context)` |
+| `AllowListRestriction.cs` | Generic `AllowListRestriction<TContext>` with `ImmutableHashSet` internals |
+| `CompositeAndRestriction.cs` | AND-composition of multiple restrictions |
+| `RequireUnderVlimpersManagementRestriction.cs` | Singleton gate for Vlimpers-managed organisations |
+| `KeyContext.cs` | `KeyContext` record, carries keytype ids and `IsUnderVlimpersManagement` flag |
+| `KeyRestrictions.cs` | `KeyRestrictions.AllowList(ids)` and `KeyRestrictions.VlimpersManaged(ids)` factories |
 
 Files touched (not new):
 
 | File | Change |
 |---|---|
-| `Authorization/IUser.cs` | Add `HasPermission`, `IsRestrictedTo<TContext>`, `GetRestriction<TContext>` |
-| `Authorization/PermissionSet.cs` | Backing store becomes `IReadOnlyCollection<PermissionEntry>`; `Of(...)` accepts both `Permission` and `PermissionEntry` |
-| `Authorization/RolePermissionMap.cs` | Rewrite Vlimpers `Restricted(...)` scaffold (L127-153) to `Permission.CanManageKeys.RestrictedTo(KeyRestrictions.AllowList(configuration.Authorization.KeyIdsAllowedForVlimpers))` |
-| `Handling/Authorization/KeyPolicy.cs` (core project) | Rewrite per §6; drop `IOrganisationRegistryConfiguration` param; delete dead code L37+ |
-| `Api/Infrastructure/Security/SecurityService.cs` | Delete `CanUseKeyType` (L231-245) |
-
-Future domains reuse the pattern — each adds one `*RestrictionContext` +
-one `*Restrictions` helper file, plus its own policy migration.
+| `Authorization/IUser.cs` | Already has `IsSatisfiedFor(permission, context)` |
+| `Authorization/PermissionSet.cs` | `IEnumerable<PermissionEntry>`, `Of(...)` accepts both `Permission` and `PermissionEntry`; core decision is `IsSatisfiedFor` |
+| `Authorization/PermissionEntry.cs` | `PermissionEntry(Permission, IRestriction?)` record with `implicit operator` |
+| `Authorization/PermissionExtensions.cs` | `RestrictedTo(this Permission, IRestriction)` extension |
+| `Authorization/RolePermissionMap.cs` | Two overloads: `For(roles)` and `For(roles, config, logger)`; config-less version in `User.cs` ctor |
+| `Handling/Authorization/KeyPolicy.cs` | Takes `isUnderVlimpersManagement` flag and `keyTypeIds`, calls `user.IsSatisfiedFor` with `KeyContext` |
+| `Api/Security/SecurityService.cs` | Calls `RolePermissionMap.For(roles, _configuration)` in `GetRequiredUser` and `GetUser`; `CanUseLabelType` remains (special-case gate) |
