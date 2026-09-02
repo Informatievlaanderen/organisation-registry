@@ -1,8 +1,8 @@
 # UI Permission Matrix — Target State
 
 **Feature:** 009-permission-based-authz
-**Status:** Provided by product/user (2026-09-02)
-**Purpose:** Canonical target-state per role/resource. Drives `RolePermissionMap` and restriction design.
+**Status:** Provided by product/user (2026-09-02) — Keys row implemented in commit `c3b0d4af5` (Model C). Overige resources: DEFERRED (zelfde pattern).
+**Purpose:** Canonical target-state per role/resource. Drives `RolePermissionMap` en restriction design.
 
 **Legenda:**
 - `R` = Read
@@ -48,8 +48,8 @@
 | **DB Toepassingsgebieden CRUD\*** | Alleen eigen org — id-restrictie te verhelderen. |
 | **VB Toepassingsgebieden CRUD\*** | `FormalFrameworkIdsOwnedByVlimpers` whitelist. |
 | **RDB Toepassingsgebieden CRUD\*** | `FormalFrameworkIdsOwnedByRegelgevingDbBeheerder` whitelist. |
-| **VB Sleutels CRUD\*** | `KeyIdsAllowedForVlimpers` whitelist. |
-| **DB Sleutels R** | **Geen `CanManageKeys`** — verandering vs huidig gedrag (nu heeft DB write op non-Vlimpers/Orafin keytypes). Product-beslissing. |
+| **VB Sleutels CRUD\*** | **2-assig (Model C, shipped)**: `KeyIdsAllowedForVlimpers` allowlist **AND** organisatie moet onder Vlimpers-beheer staan. Beide moeten passen. Zie `KeyRestrictions.VlimpersManaged` + `RequireUnderVlimpersManagementRestriction`. |
+| **DB Sleutels R** | **Geen `CanManageKeys`** — verandering vs oud gedrag (DB had write op non-Vlimpers/Orafin keytypes). **Beslist en geïmplementeerd** in `c3b0d4af5`. |
 
 ## Verandering vs huidig gedrag
 
