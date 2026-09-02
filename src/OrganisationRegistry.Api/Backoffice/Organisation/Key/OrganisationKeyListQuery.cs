@@ -19,6 +19,7 @@ public class OrganisationKeyListQueryResult
     public DateTime? ValidTo { get; }
     public bool IsActive { get; }
     public bool IsEditable { get; }
+    public bool CanEdit { get; }
 
     public OrganisationKeyListQueryResult(Guid organisationKeyId,
         string keyTypeName,
@@ -34,6 +35,7 @@ public class OrganisationKeyListQueryResult
         ValidFrom = validFrom;
         ValidTo = validTo;
         IsEditable = isAuthorizedForKeyType(keyTypeId);
+        CanEdit = IsEditable;
 
         IsActive = new Period(new ValidFrom(validFrom), new ValidTo(validTo)).OverlapsWith(DateTime.Today);
     }
