@@ -14,10 +14,11 @@ using OrganisationRegistry.Infrastructure.Authorization.Restrictions;
 /// credentials).
 ///
 /// A grant is either unrestricted (bare permission) or restricted (permission
-/// paired with an <see cref="IRestriction"/> for a specific domain). Union
-/// semantics across roles/scopes: an unrestricted grant for a permission
-/// absorbs any restricted grants for the same permission when queried through
-/// <see cref="IsRestrictedTo{TContext}"/> and <see cref="GetRestriction{TContext}"/>.
+/// paired with an <see cref="IRestriction"/>). Evaluation is OR across grants:
+/// a permission is satisfied for a context when <em>any</em> grant for that
+/// permission applies. An unrestricted grant always applies, so it naturally
+/// absorbs restricted grants for the same permission. AND within a single grant
+/// is expressed with <see cref="CompositeAndRestriction"/>.
 /// </summary>
 public sealed class PermissionSet : IReadOnlyCollection<PermissionEntry>, IEquatable<PermissionSet>
 {
@@ -83,80 +84,18 @@ public sealed class PermissionSet : IReadOnlyCollection<PermissionEntry>, IEquat
         => _entries.Any(e => e.Permission == permission);
 
     /// <summary>
-    /// True when the caller has at least one restricted grant for the given
-    /// context's domain <em>and</em> no unrestricted grant that would absorb
-    /// those restrictions. Handler policies use this to skip restriction
-    /// enforcement when the user is allowed to do anything.
+    /// Core authorization decision. True when there is at least one grant for
+    /// <paramref name="permission"/> that applies to <paramref name="context"/>.
+    /// Evaluation is OR across grants: an unrestricted grant always applies (and
+    /// so absorbs any restricted grant for the same permission); a restricted
+    /// grant applies only when its <see cref="IRestriction"/> is satisfied by the
+    /// context. An empty set — or a set without any grant for the permission —
+    /// yields <c>false</c> (fail-closed).
     /// </summary>
-    public bool IsRestrictedTo<TContext>()
-        where TContext : IRestrictionContext<TContext>
-    {
-        var domain = TContext.Domain;
-        var hasRestricted = false;
-        var restrictedPermissions = new HashSet<Permission>();
-
-        foreach (var entry in _entries)
-        {
-            if (entry.RestrictionDomain != domain)
-                continue;
-            hasRestricted = true;
-            restrictedPermissions.Add(entry.Permission);
-        }
-
-        if (!hasRestricted)
-            return false;
-
-        // If any of the restricted permissions is also granted unrestricted
-        // (anywhere in the set), the unrestricted grant absorbs the restriction.
-        foreach (var entry in _entries)
-        {
-            if (entry.RestrictionDomain is null &&
-                restrictedPermissions.Contains(entry.Permission))
-                return false;
-        }
-
-        return true;
-    }
-
-    /// <summary>
-    /// Resolves the effective restriction for a context domain. Fail-closed:
-    /// missing entries return <see cref="DenyAllRestriction{TContext}"/>.
-    /// If any unrestricted grant exists for a restricted permission in this
-    /// domain, returns <see cref="UnrestrictedRestriction{TContext}"/>. A
-    /// single typed restriction is returned directly; multiple are combined
-    /// via <see cref="CompositeOrRestriction{TContext}"/>.
-    /// </summary>
-    public IRestriction<TContext> GetRestriction<TContext>()
-        where TContext : IRestrictionContext<TContext>
-    {
-        var domain = TContext.Domain;
-        var typed = new List<IRestriction<TContext>>();
-        var restrictedPermissions = new HashSet<Permission>();
-
-        foreach (var entry in _entries)
-        {
-            if (entry.RestrictionDomain != domain)
-                continue;
-            restrictedPermissions.Add(entry.Permission);
-            if (entry.Restriction is IRestriction<TContext> t)
-                typed.Add(t);
-        }
-
-        if (typed.Count == 0)
-            return DenyAllRestriction<TContext>.Instance;
-
-        // Unrestricted absorbs restricted for the same permission.
-        foreach (var entry in _entries)
-        {
-            if (entry.RestrictionDomain is null &&
-                restrictedPermissions.Contains(entry.Permission))
-                return UnrestrictedRestriction<TContext>.Instance;
-        }
-
-        return typed.Count == 1
-            ? typed[0]
-            : new CompositeOrRestriction<TContext>(typed);
-    }
+    public bool IsSatisfiedFor(Permission permission, IRestrictionContext context)
+        => _entries.Any(e =>
+            e.Permission == permission &&
+            (e.Restriction is null || e.Restriction.IsOkWith(context)));
 
     public PermissionSet Union(PermissionSet other)
     {

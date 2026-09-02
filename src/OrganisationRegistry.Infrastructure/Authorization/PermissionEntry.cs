@@ -4,9 +4,9 @@ using OrganisationRegistry.Infrastructure.Authorization.Restrictions;
 
 /// <summary>
 /// A single grant inside a <see cref="PermissionSet"/>. A grant is either
-/// unrestricted (both <see cref="RestrictionDomain"/> and
-/// <see cref="Restriction"/> are <c>null</c>) or restricted (both are set,
-/// with the domain string matching the paired restriction).
+/// unrestricted (<see cref="Restriction"/> is <c>null</c>) or restricted
+/// (paired with an <see cref="IRestriction"/> that the operation's context must
+/// satisfy).
 ///
 /// The record's structural equality lets <see cref="PermissionSet"/> use an
 /// <see cref="System.Collections.Immutable.ImmutableHashSet{T}"/> for
@@ -14,7 +14,6 @@ using OrganisationRegistry.Infrastructure.Authorization.Restrictions;
 /// </summary>
 public sealed record PermissionEntry(
     Permission Permission,
-    string? RestrictionDomain,
     IRestriction? Restriction)
 {
     /// <summary>
@@ -23,7 +22,7 @@ public sealed record PermissionEntry(
     /// <see cref="PermissionEntry"/> is expected. The result is unrestricted.
     /// </summary>
     public static implicit operator PermissionEntry(Permission permission)
-        => new(permission, null, null);
+        => new(permission, null);
 
-    public bool IsRestricted => RestrictionDomain is not null;
+    public bool IsRestricted => Restriction is not null;
 }

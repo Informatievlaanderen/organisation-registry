@@ -9,8 +9,6 @@ using Infrastructure.Tests.Extensions.TestHelpers;
 using OrganisationRegistry.Infrastructure.Events;
 using Microsoft.Extensions.Logging;
 using Moq;
-using OrganisationRegistry.Infrastructure.Authorization;
-using OrganisationRegistry.Infrastructure.Configuration;
 using OrganisationRegistry.Infrastructure.Domain;
 using OrganisationRegistry.KeyTypes;
 using OrganisationRegistry.KeyTypes.Events;
@@ -42,17 +40,9 @@ public class WhenUpdatingAnOrganisationKey : Specification<UpdateOrganisationKey
     }
 
     protected override UpdateOrganisationKeyCommandHandler BuildHandler(ISession session)
-    {
-        var securityServiceMock = new Mock<ISecurityService>();
-        securityServiceMock
-            .Setup(service => service.CanUseKeyType(It.IsAny<IUser>(), It.IsAny<Guid>()))
-            .Returns(true);
-
-        return new UpdateOrganisationKeyCommandHandler(
+        => new(
             new Mock<ILogger<UpdateOrganisationKeyCommandHandler>>().Object,
-            session,
-            Mock.Of<IOrganisationRegistryConfiguration>());
-    }
+            session);
 
     private IEvent[] Events
         => new IEvent[]

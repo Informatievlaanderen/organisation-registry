@@ -36,9 +36,6 @@ public class NotImplementedSecurityService : ISecurityService
     public Task<IUser> GetUser(ClaimsPrincipal? principal)
         => throw new NotImplementedException();
 
-    public bool CanUseKeyType(IUser user, Guid keyTypeId)
-        => throw new NotImplementedException();
-
     public bool CanUseLabelType(IUser user, Guid labelTypeId)
         => throw new NotImplementedException();
 

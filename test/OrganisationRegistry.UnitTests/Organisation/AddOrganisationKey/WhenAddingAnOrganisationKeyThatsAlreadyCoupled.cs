@@ -10,8 +10,6 @@ using OrganisationRegistry.Infrastructure.Events;
 using OrganisationRegistry.KeyTypes.Events;
 using Microsoft.Extensions.Logging;
 using Moq;
-using OrganisationRegistry.Infrastructure.Authorization;
-using OrganisationRegistry.Infrastructure.Configuration;
 using OrganisationRegistry.Infrastructure.Domain;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Events;
@@ -29,7 +27,6 @@ public class
     private readonly string _value;
     private readonly DateTime _validTo;
     private readonly DateTime _validFrom;
-    private readonly Mock<ISecurityService> _securityServiceMock;
 
     public WhenAddingAnOrganisationKeyThatsAlreadyCoupled(ITestOutputHelper helper) : base(helper)
     {
@@ -39,22 +36,12 @@ public class
         _validTo = DateTime.Now.AddDays(2);
         _organisationId = Guid.NewGuid();
         _value = "12345ABC-@#$";
-
-        _securityServiceMock = new Mock<ISecurityService>();
-        _securityServiceMock
-            .Setup(
-                service =>
-                    service.CanUseKeyType(
-                        It.IsAny<IUser>(),
-                        It.IsAny<Guid>()))
-            .Returns(true);
     }
 
     protected override AddOrganisationKeyCommandHandler BuildHandler(ISession session)
         => new(
             new Mock<ILogger<AddOrganisationKeyCommandHandler>>().Object,
-            session,
-            Mock.Of<IOrganisationRegistryConfiguration>());
+            session);
 
     private IEvent[] Events
         => new IEvent[]

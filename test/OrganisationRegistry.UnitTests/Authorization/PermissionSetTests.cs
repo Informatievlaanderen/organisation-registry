@@ -1,8 +1,11 @@
 namespace OrganisationRegistry.UnitTests.Authorization;
 
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Authorization.Restrictions;
 using Xunit;
 
 
@@ -79,5 +82,81 @@ public class PermissionSetTests
     {
         PermissionSet.Of((System.Collections.Generic.IEnumerable<Permission>?)null!)
             .Should().BeSameAs(PermissionSet.Empty);
+    }
+
+    [Fact]
+    public void IsSatisfiedFor_returns_false_on_empty_set()
+    {
+        PermissionSet.Empty
+            .IsSatisfiedFor(Permission.CanManageKeys, StubContext.Empty)
+            .Should().BeFalse();
+    }
+
+    [Fact]
+    public void IsSatisfiedFor_returns_false_when_permission_is_missing()
+    {
+        var set = PermissionSet.Of(Permission.CanReadEvents);
+
+        set.IsSatisfiedFor(Permission.CanManageKeys, StubContext.Empty).Should().BeFalse();
+    }
+
+    [Fact]
+    public void Unrestricted_grant_satisfies_any_context()
+    {
+        var set = PermissionSet.Of(Permission.CanManageKeys);
+
+        set.IsSatisfiedFor(Permission.CanManageKeys, StubContext.Empty).Should().BeTrue();
+        set.IsSatisfiedFor(Permission.CanManageKeys, StubContext.AlwaysDenied).Should().BeTrue();
+    }
+
+    [Fact]
+    public void Restricted_grant_defers_to_restriction()
+    {
+        var okSet = PermissionSet.Of(
+            Permission.CanManageKeys.RestrictedTo(AlwaysOk.Instance));
+        var denySet = PermissionSet.Of(
+            Permission.CanManageKeys.RestrictedTo(AlwaysDeny.Instance));
+
+        okSet.IsSatisfiedFor(Permission.CanManageKeys, StubContext.Empty).Should().BeTrue();
+        denySet.IsSatisfiedFor(Permission.CanManageKeys, StubContext.Empty).Should().BeFalse();
+    }
+
+    [Fact]
+    public void Unrestricted_grant_absorbs_restricted_grant_for_same_permission()
+    {
+        var set = PermissionSet.Of(
+            (PermissionEntry)Permission.CanManageKeys,
+            Permission.CanManageKeys.RestrictedTo(AlwaysDeny.Instance));
+
+        set.IsSatisfiedFor(Permission.CanManageKeys, StubContext.Empty).Should().BeTrue();
+    }
+
+    [Fact]
+    public void Multiple_restricted_grants_for_same_permission_or_together()
+    {
+        var set = PermissionSet.Of(
+            Permission.CanManageKeys.RestrictedTo(AlwaysDeny.Instance),
+            Permission.CanManageKeys.RestrictedTo(AlwaysOk.Instance));
+
+        set.IsSatisfiedFor(Permission.CanManageKeys, StubContext.Empty).Should().BeTrue();
+    }
+
+    private sealed class AlwaysOk : IRestriction
+    {
+        public static readonly AlwaysOk Instance = new();
+        public bool IsOkWith(IRestrictionContext context) => true;
+    }
+
+    private sealed class AlwaysDeny : IRestriction
+    {
+        public static readonly AlwaysDeny Instance = new();
+        public bool IsOkWith(IRestrictionContext context) => false;
+    }
+
+    private sealed class StubContext : IRestrictionContext
+    {
+        public static readonly StubContext Empty = new();
+        public static readonly StubContext AlwaysDenied = new();
+        public IEnumerable<Guid> RelevantIds => Array.Empty<Guid>();
     }
 }
