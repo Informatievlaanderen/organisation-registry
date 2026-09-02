@@ -82,10 +82,12 @@ public class KeyTypeListItemResult
         Name = name;
         IsRemoved = isRemoved;
         UserPermitted = isAuthorizedForKeyType(id);
+        CanSelect = UserPermitted;
     }
 
     public Guid Id { get; set; }
     public string Name { get; set; }
     public bool IsRemoved { get; set; }
     public bool UserPermitted { get; set; }
+    public bool CanSelect { get; set; }
 }
