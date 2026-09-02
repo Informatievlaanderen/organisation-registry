@@ -52,6 +52,7 @@ public class BeheerderForOrganisationRegardlessOfVlimpersPolicyTests
 
     [Theory]
     [InlineData(Role.AlgemeenBeheerder)]
+    [InlineData(Role.Developer)]
     public void OrganisationRegistryBeheerderIsAlwaysAuthorized(Role role, params string[] organisationOvos)
     {
         var user = new UserBuilder()

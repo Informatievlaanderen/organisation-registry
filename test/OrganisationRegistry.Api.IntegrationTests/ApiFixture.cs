@@ -177,6 +177,16 @@ public class ApiFixture : IDisposable, IAsyncLifetime
 
     public async Task<HttpClient> CreateAlgemeenbeheerderClient()
         => await CreateBackofficeUserClientFor(Backoffice.Algemeenbeheerder);
+    public async Task<HttpClient> CreateDecentraalBeheerderClient()
+        => await CreateBackofficeUserClientFor(Backoffice.Decentraalbeheerder);
+    public async Task<HttpClient> CreateRegelgevingClient()
+        => await CreateBackofficeUserClientFor(Backoffice.Regelgevingbeheerder);
+    public async Task<HttpClient> CreateOrganenClient()
+        => await CreateBackofficeUserClientFor(Backoffice.Orgaanbeheerder);
+
+    public async Task<HttpClient> CreateDynamicClient(string role)
+        => await CreateBackofficeUserClientFor(role);
+
 
     /// <summary>
     /// Bouwt een <see cref="HttpClient" /> die authenticeert als een interactieve
