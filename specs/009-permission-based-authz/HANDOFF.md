@@ -34,7 +34,7 @@ Current source-of-truth: `Permission.cs`. Verify count/list via:
 grep -c "^\s*Can" /code/aiv/organisation-registry/src/OrganisationRegistry.Infrastructure/Authorization/Permission.cs
 ```
 
-**`CanEditAll` is gone from the spec direction.** As of `293d15f84` the code may still contain a `CanEditAll` entry in `Permission.cs` and `RolePermissionMap[AlgemeenBeheerder]` — removing that from code is a follow-up cleanup task, not blocking.
+**`CanEditAll` is gone.** Removed from both spec direction and code as of `acae14c16` — no `CanEditAll` entry remains in `Permission.cs`, `RolePermissionMap`, or `ScopePermissionMap`. `AlgemeenBeheerder` carries every permission granularly; the domain policy `BeheerderForOrganisationRegardlessOfVlimpersPolicy` uses a role check (`AlgemeenBeheerder`, `CjmBeheerder`).
 
 ## Tasks Progress (`tasks.md`)
 
@@ -50,7 +50,7 @@ grep -c "^\s*Can" /code/aiv/organisation-registry/src/OrganisationRegistry.Infra
 
 ## RolePermissionMap Post-`293d15f84`
 
-- `AlgemeenBeheerder`: 17 permissies (nog incl. `CanEditAll` in code — spec-verwijdering in progress).
+- `AlgemeenBeheerder`: 17 permissies, granulair (geen `CanEditAll` meer in code — verwijderd in `acae14c16`).
 - `CjmBeheerder`: `{CanAddBodies, CanEditBodies, CanEditOrganisationLabels}` — reverted naar minimaal na bankaccount-descope.
 - `DecentraalBeheerder`: 7
 - `VlimpersBeheerder`: 3

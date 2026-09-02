@@ -32,7 +32,6 @@ De organisation-registry stapt af van **rol-gebaseerde** autorisatie in de codeb
 ### 2.1 De permissions
 
 ```
-CanEditAll                         (admin bypass, replaces AlgemeenBeheerder short-circuit)
 CanEditChildren                    (edit sub-organisaties)
 CanEditVlimpers                    (Vlimpers-organisaties)
 CanEditDelegations                 (mandaten/delegaties)
@@ -163,13 +162,13 @@ Deze mapping geldt voor gebruikers die interactief inloggen. Alleen de rollen hi
 
 ```mermaid
 graph LR
-    AB[AlgemeenBeheerder] --> P_AB["CanEditAll<br/>CanEditChildren<br/>CanAddBodies<br/>CanEditBodies<br/>CanRegisterBodies<br/>CanAddLocations<br/>CanManageKeys<br/>CanManageLabels<br/>CanManageCapacities<br/>CanManageFormalFrameworks<br/>CanManageOrganisationClassifications<br/>CanManageRegulations<br/>CanImport<br/>CanEditVlimpers<br/>CanEditDelegations<br/>+ others"]
+    AB[AlgemeenBeheerder] --> P_AB["CanEditChildren<br/>CanAddBodies<br/>CanEditBodies<br/>CanRegisterBodies<br/>CanAddLocations<br/>CanAddContacts<br/>CanManageKeys<br/>CanManageLabels<br/>CanManageCapacities<br/>CanManageFormalFrameworks<br/>CanManageOrganisationClassifications<br/>CanManageRegulations<br/>CanImport<br/>CanEditVlimpers<br/>CanEditDelegations<br/>+ others"]
     VB[VlimpersBeheerder] --> P_V["CanEditVlimpers<br/>CanEditChildren<br/>CanManageKeys*<br/>CanEditOrganisationLabels"]
     DB[DecentraalBeheerder] --> P_D["CanEditChildren<br/>CanAddLocations<br/>CanAddBodies<br/>CanEditBodies<br/>CanEditDelegations<br/>CanEditOrganisationLabels"]
     OB[OrgaanBeheerder] --> P_O["CanAddBodies<br/>CanEditBodies<br/>CanRegisterBodies"]
     RB[RegelgevingBeheerder] --> P_R["CanManageRegulations"]
     CJM[CjmBeheerder] --> P_C["CanAddBodies<br/>CanEditBodies<br/>CanEditOrganisationLabels"]
-    DEV[Developer] --> P_DEV["CanEditAll<br/>CanEditChildren<br/>CanAddBodies<br/>CanEditBodies<br/>CanRegisterBodies<br/>CanAddLocations<br/>CanManageKeys<br/>CanManageLabels<br/>CanManageCapacities<br/>CanManageFormalFrameworks<br/>CanManageOrganisationClassifications<br/>CanManageRegulations<br/>CanImport<br/>CanEditVlimpers<br/>CanEditDelegations<br/>+ CanRunScheduledJobs"]
+    DEV[Developer] --> P_DEV["CanEditChildren<br/>CanAddBodies<br/>CanEditBodies<br/>CanRegisterBodies<br/>CanAddLocations<br/>CanAddContacts<br/>CanManageKeys<br/>CanManageLabels<br/>CanManageCapacities<br/>CanManageFormalFrameworks<br/>CanManageOrganisationClassifications<br/>CanManageRegulations<br/>CanImport<br/>CanEditVlimpers<br/>CanEditDelegations<br/>+ CanRunScheduledJobs"]
 
     classDef restricted fill:#ffe4b5
     classDef note fill:#f0f0f0
@@ -191,7 +190,7 @@ Deze scopes zitten in het `scope` claim van een CC-token. Gén rol.
 | `dv_organisatieregister_cjmbeheerder` | `CanAddBodies`, `CanEditBodies` |
 | `dv_organisatieregister_orafinbeheerder` | `CanReadOrafin` (read-only) |
 | `dv_organisatieregister_info` | `CanReadInfoEndpoints` |
-| `dv_organisatieregister_testclient` | `CanEditAll` + full admin-equivalent permissions (integration tests only) |
+| `dv_organisatieregister_testclient` | full admin-equivalent permissions, aligned with `AlgemeenBeheerder` (integration tests only) |
 
 ### 5.3 Transitional: de synthetische-rol-omweg (T035 pending)
 
