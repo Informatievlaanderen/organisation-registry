@@ -2,8 +2,6 @@ namespace OrganisationRegistry.Api.Infrastructure.Security;
 
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using OrganisationRegistry.Infrastructure.Authorization;
 
@@ -18,18 +16,27 @@ public class ConfigureClaimsPrincipalSelectorMiddleware
 
     public Task Invoke(HttpContext context, IHttpContextAccessor httpContextAccessor)
     {
+        // The selector is a process-global static, so it must not capture the current request's
+        // HttpContext. Resolve the already-authenticated principal from the request-scoped
+        // (AsyncLocal-backed) IHttpContextAccessor instead, which is concurrency-safe under
+        // parallel requests. Re-running authentication here (e.g. token introspection) is both
+        // unnecessary and flaky under load.
         ClaimsPrincipal.ClaimsPrincipalSelector = () =>
         {
             try
             {
-                if (TryGetAuthInfo(httpContextAccessor) is not { Principal: { } principal }) return null!;
+                var httpContext = httpContextAccessor.HttpContext;
+                if (httpContext?.User.Identity is not { IsAuthenticated: true })
+                    return null!;
 
-                if (principal.Identity is not ClaimsIdentity user) return principal;
+                var principal = httpContext.User;
 
-                var ip = context.Request.HttpContext.Connection.RemoteIpAddress;
-
-                if (!user.HasClaim(x => x.Type == AcmIdmConstants.Claims.Ip))
+                if (principal.Identity is ClaimsIdentity user
+                    && !user.HasClaim(x => x.Type == AcmIdmConstants.Claims.Ip))
+                {
+                    var ip = httpContext.Connection.RemoteIpAddress;
                     user.AddClaim(new Claim(AcmIdmConstants.Claims.Ip, ip?.ToString() ?? "Unknown", ClaimValueTypes.String));
+                }
 
                 return principal;
             }
@@ -40,28 +47,5 @@ public class ConfigureClaimsPrincipalSelectorMiddleware
         };
 
         return _next(context);
-    }
-
-    private static AuthenticateResult? TryGetAuthInfo(IHttpContextAccessor httpContextAccessor)
-    {
-        var httpContext = httpContextAccessor.HttpContext;
-        if (httpContext == null)
-            return null;
-
-        var schemes = new[]
-        {
-            JwtBearerDefaults.AuthenticationScheme,
-            AuthenticationSchemes.EditApi,
-            AuthenticationSchemes.TokenExchange,
-        };
-
-        foreach (var scheme in schemes)
-        {
-            var result = httpContext.GetAuthenticateInfo(scheme);
-            if (result?.Succeeded == true && result.Principal != null)
-                return result;
-        }
-
-        return null;
     }
 }
