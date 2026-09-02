@@ -26,6 +26,7 @@ public static class RolePermissionMap
                 Permission.CanEditBodies,
                 Permission.CanRegisterBodies,
                 Permission.CanAddLocations,
+                Permission.CanAddContacts,
                 Permission.CanManageKeys,
                 Permission.CanManageLabels,
                 Permission.CanManageCapacities,
@@ -46,6 +47,7 @@ public static class RolePermissionMap
             [Role.DecentraalBeheerder] = PermissionSet.Of(
                 Permission.CanEditChildren,
                 Permission.CanAddLocations,
+                Permission.CanAddContacts,
                 Permission.CanAddBodies,
                 Permission.CanEditBodies,
                 Permission.CanEditDelegations,
@@ -74,6 +76,7 @@ public static class RolePermissionMap
                 Permission.CanEditBodies,
                 Permission.CanRegisterBodies,
                 Permission.CanAddLocations,
+                Permission.CanAddContacts,
                 Permission.CanManageKeys,
                 Permission.CanManageLabels,
                 Permission.CanManageCapacities,
