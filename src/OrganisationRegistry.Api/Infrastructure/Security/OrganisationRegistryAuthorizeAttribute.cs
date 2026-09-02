@@ -27,8 +27,7 @@ public class OrganisationRegistryAuthorizeAttribute : AuthorizeAttribute, IAsync
     /// <summary>
     /// One or more permissions required to access the endpoint. Any-of semantics: the
     /// identity is allowed if its <see cref="IUser.Permissions"/> contains at least one
-    /// of these. Identities with <see cref="Permission.CanEditAll"/> short-circuit to allow.
-    /// When null or empty, no permission check is performed (policy-only authorization).
+    /// of these. When null or empty, no permission check is performed (policy-only authorization).
     /// </summary>
     public Permission[]? RequiredPermissions { get; set; }
 

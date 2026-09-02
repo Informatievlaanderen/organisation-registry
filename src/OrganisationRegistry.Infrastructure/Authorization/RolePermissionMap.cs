@@ -20,7 +20,6 @@ public static class RolePermissionMap
         new Dictionary<Role, PermissionSet>
         {
             [Role.AlgemeenBeheerder] = PermissionSet.Of(
-                Permission.CanEditAll,
                 Permission.CanEditChildren,
                 Permission.CanAddBodies,
                 Permission.CanEditBodies,
@@ -70,7 +69,6 @@ public static class RolePermissionMap
                 Permission.CanReadOrafin),
 
             [Role.Developer] = PermissionSet.Of(
-                Permission.CanEditAll,
                 Permission.CanEditChildren,
                 Permission.CanAddBodies,
                 Permission.CanEditBodies,

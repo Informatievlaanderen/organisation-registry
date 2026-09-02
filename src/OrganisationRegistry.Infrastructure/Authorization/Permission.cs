@@ -8,8 +8,6 @@ namespace OrganisationRegistry.Infrastructure.Authorization;
 /// </summary>
 public enum Permission
 {
-    /// <summary>Admin bypass — replaces the historical AlgemeenBeheerder short-circuit.</summary>
-    CanEditAll,
     CanEditChildren,
     CanEditVlimpers,
     CanEditDelegations,
@@ -35,9 +33,8 @@ public enum Permission
     /// Read-only access to the configuration values endpoint
     /// (<c>ConfigurationController</c>). Granted to <see cref="Role.AlgemeenBeheerder"/>
     /// and <see cref="Role.Developer"/>, and to the <c>dv_organisatieregister_testclient</c>
-    /// scope. Kept as a dedicated permission (rather than gating on
-    /// <see cref="CanEditAll"/>) so future read-only roles can be granted
-    /// visibility without also granting edit access.
+    /// scope. Kept as a dedicated permission so future read-only roles can be
+    /// granted visibility without also granting edit access.
     /// </summary>
     CanReadConfiguration,
 

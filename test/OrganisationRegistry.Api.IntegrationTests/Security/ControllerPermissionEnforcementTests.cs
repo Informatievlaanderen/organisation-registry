@@ -13,16 +13,16 @@ using Xunit;
 ///
 /// Verifies that after the T026 controller sweep, every endpoint gated by
 /// <c>[OrganisationRegistryAuthorize(RequiredPermissions = new[] { Permission.X })]</c>
-/// returns 200 for identities carrying that permission (or <c>CanEditAll</c>) and
+/// returns 200 for identities carrying that permission and
 /// 403 for identities that do not.
 ///
 /// Currently all facts are <c>Skip</c>ped because:
 ///   1. T026 (controller sweep) has not run — controllers still gate on <c>Role[]</c>,
 ///      so a permission-based assertion would validate the wrong contract.
 ///   2. <see cref="ApiFixture.HttpClient"/> authenticates as <c>AlgemeenBeheerder</c>,
-///      which short-circuits every permission via <c>CanEditAll</c>. A limited-
-///      permission interactive identity is not yet provisioned in the fixture and
-///      will be added alongside T026.
+///      which carries every permission granularly via <c>RolePermissionMap</c>. A
+///      limited-permission interactive identity is not yet provisioned in the
+///      fixture and will be added alongside T026.
 ///
 /// Structure: one <c>[Fact]</c> per Permission enum value, naming the representative
 /// endpoint the T026 sweep must migrate. When T026 lands, unskip in the same commit
@@ -181,8 +181,8 @@ public class ControllerPermissionEnforcementTests
 
     // -----------------------------------------------------------------------
     // CanReadConfiguration — ConfigurationController migrated ahead of the
-    // rest of T026a. AlgemeenBeheerder carries both CanReadConfiguration and
-    // CanEditAll (short-circuit), so 200 is expected via the seeded identity.
+    // rest of T026a. AlgemeenBeheerder carries CanReadConfiguration explicitly
+    // via RolePermissionMap, so 200 is expected via the seeded identity.
     // Per-role negative facts remain deferred until ApiFixture exposes a
     // limited-permission HttpClient.
     // -----------------------------------------------------------------------
@@ -220,10 +220,10 @@ public class ControllerPermissionEnforcementTests
         HttpStatusCode expectedForAlgemeenBeheerder,
         HttpStatusCode? expectedForLimitedIdentity = null)
     {
-        // AlgemeenBeheerder identity — CanEditAll short-circuit must admit.
+        // AlgemeenBeheerder identity — carries the required permission explicitly.
         var algemeenResponse = await _apiFixture.HttpClient.GetAsync(endpoint);
         algemeenResponse.StatusCode.Should().Be(expectedForAlgemeenBeheerder,
-            $"AlgemeenBeheerder must access endpoint gated by {requiredPermission} via CanEditAll short-circuit.");
+            $"AlgemeenBeheerder must access endpoint gated by {requiredPermission}, which it carries explicitly via RolePermissionMap.");
 
         if (expectedForLimitedIdentity.HasValue)
         {
