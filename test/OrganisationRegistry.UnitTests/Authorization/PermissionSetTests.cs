@@ -70,7 +70,8 @@ public class PermissionSetTests
     public void Enumeration_yields_all_permissions()
     {
         var set = PermissionSet.Of(Permission.CanReadEvents, Permission.CanReadOrafin);
-        set.ToList().Should().BeEquivalentTo(new[] { Permission.CanReadEvents, Permission.CanReadOrafin });
+        set.Select(e => e.Permission).Should()
+            .BeEquivalentTo(new[] { Permission.CanReadEvents, Permission.CanReadOrafin });
     }
 
     [Fact]

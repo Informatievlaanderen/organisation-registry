@@ -2,6 +2,7 @@ namespace OrganisationRegistry.Infrastructure.Authorization;
 
 using System;
 using System.Collections.Generic;
+using OrganisationRegistry.Infrastructure.Authorization.Restrictions;
 
 public interface IUser
 {
@@ -19,4 +20,20 @@ public interface IUser
     bool IsDecentraalBeheerderForOrganisation(string ovoNumber);
     bool IsDecentraalBeheerderForOrganisation(Guid organisationId);
     bool IsDecentraalBeheerderForBody(Guid bodyId);
+
+    /// <summary>
+    /// Shorthand for <c>Permissions.IsRestrictedTo&lt;TContext&gt;()</c>.
+    /// True when the caller carries at least one restricted grant for the
+    /// context's domain and no unrestricted grant absorbs it.
+    /// </summary>
+    bool IsRestrictedTo<TContext>()
+        where TContext : IRestrictionContext<TContext>;
+
+    /// <summary>
+    /// Shorthand for <c>Permissions.GetRestriction&lt;TContext&gt;()</c>.
+    /// Never returns null; missing entries yield
+    /// <see cref="DenyAllRestriction{TContext}"/> (fail-closed).
+    /// </summary>
+    IRestriction<TContext> GetRestriction<TContext>()
+        where TContext : IRestrictionContext<TContext>;
 }

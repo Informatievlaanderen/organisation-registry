@@ -3,6 +3,7 @@ namespace OrganisationRegistry.Infrastructure.Authorization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using OrganisationRegistry.Infrastructure.Authorization.Restrictions;
 
 public class User : IUser
 {
@@ -63,4 +64,12 @@ public class User : IUser
     public bool IsDecentraalBeheerderForBody(Guid bodyId)
         => IsInAnyOf(Role.DecentraalBeheerder) &&
            Bodies.Contains(bodyId);
+
+    public bool IsRestrictedTo<TContext>()
+        where TContext : IRestrictionContext<TContext>
+        => Permissions.IsRestrictedTo<TContext>();
+
+    public IRestriction<TContext> GetRestriction<TContext>()
+        where TContext : IRestrictionContext<TContext>
+        => Permissions.GetRestriction<TContext>();
 }
