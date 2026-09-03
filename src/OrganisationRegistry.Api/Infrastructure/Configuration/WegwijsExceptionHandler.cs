@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Organisation.Exceptions;
 using OrganisationRegistry.Infrastructure.Domain.Exception;
 
 public class OrganisationRegistryApiExceptionHandler { }
@@ -62,7 +63,11 @@ public static class OrganisationRegistryExceptionHandler
         var exceptionNumber = GetExceptionNumber();
         logger.LogInformation(0, exception, "[{ErrorNumber}] DomainException handled: {ExceptionMessage}", exceptionNumber, message);
 
-        context.Response.StatusCode = (int) HttpStatusCode.BadRequest;
+        var statusCode = IsInsufficientRights(exception)
+            ? HttpStatusCode.Forbidden
+            : HttpStatusCode.BadRequest;
+
+        context.Response.StatusCode = (int) statusCode;
         await context.Response.WriteAsync(JsonConvert.SerializeObject(new BasicApiProblem
         {
             HttpStatus = context.Response.StatusCode.ToString(),
@@ -70,6 +75,13 @@ public static class OrganisationRegistryExceptionHandler
             Detail = message,
             Reference = exceptionNumber,
         })).ConfigureAwait(false);
+    }
+
+    private static bool IsInsufficientRights(Exception exception)
+    {
+        var exceptionType = exception.GetType();
+        return exceptionType.IsGenericType &&
+               exceptionType.GetGenericTypeDefinition() == typeof(OrganisationRegistry.Organisation.Exceptions.InsufficientRights<>);
     }
 
     private static async Task HandleApiException(Exception exception, HttpContext context, ILogger<OrganisationRegistryApiExceptionHandler> logger)
