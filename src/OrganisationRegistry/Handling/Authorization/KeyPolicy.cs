@@ -29,6 +29,7 @@ public class KeyPolicy : ISecurityPolicy
     public AuthorizationResult Check(IUser user)
         => user.IsSatisfiedFor(
             Permission.CanManageKeys,
+            new UserContext(user),
             new KeyContext(_isUnderVlimpersManagement, _keyTypeIds))
             ? AuthorizationResult.Success()
             : AuthorizationResult.Fail(InsufficientRights.CreateFor(this));

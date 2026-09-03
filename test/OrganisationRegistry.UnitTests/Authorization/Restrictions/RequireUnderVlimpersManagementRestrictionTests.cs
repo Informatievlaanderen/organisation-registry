@@ -33,6 +33,28 @@ public class RequireUnderVlimpersManagementRestrictionTests
     }
 
     [Fact]
+    public void Finds_vlimpers_context_among_multiple_contexts()
+    {
+        var restriction = RequireUnderVlimpersManagementRestriction.Instance;
+
+        restriction.IsOkWith(
+                new NonVlimpersContext(),
+                new KeyContext(true, Array.Empty<Guid>()))
+            .Should().BeTrue();
+    }
+
+    [Fact]
+    public void Fails_closed_when_no_vlimpers_context_among_multiple_contexts()
+    {
+        var restriction = RequireUnderVlimpersManagementRestriction.Instance;
+
+        restriction.IsOkWith(
+                new NonVlimpersContext(),
+                new NonVlimpersContext())
+            .Should().BeFalse();
+    }
+
+    [Fact]
     public void Instance_is_a_shared_singleton()
     {
         RequireUnderVlimpersManagementRestriction.Instance

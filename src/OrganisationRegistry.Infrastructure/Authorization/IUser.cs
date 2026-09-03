@@ -22,10 +22,10 @@ public interface IUser
     bool IsDecentraalBeheerderForBody(Guid bodyId);
 
     /// <summary>
-    /// Shorthand for <c>Permissions.IsSatisfiedFor(permission, context)</c>.
+    /// Shorthand for <c>Permissions.IsSatisfiedFor(permission, contexts)</c>.
     /// Core authorization decision used by handler policies: true when a grant
-    /// for <paramref name="permission"/> applies to <paramref name="context"/>.
+    /// for <paramref name="permission"/> applies to the supplied contexts.
     /// Fail-closed when no grant applies.
     /// </summary>
-    bool IsSatisfiedFor(Permission permission, IRestrictionContext context);
+    bool IsSatisfiedFor(Permission permission, params IRestrictionContext[] contexts);
 }

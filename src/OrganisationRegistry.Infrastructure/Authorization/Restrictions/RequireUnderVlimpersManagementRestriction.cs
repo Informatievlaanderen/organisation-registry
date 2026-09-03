@@ -1,5 +1,7 @@
 namespace OrganisationRegistry.Infrastructure.Authorization.Restrictions;
 
+using System.Linq;
+
 /// <summary>
 /// Passes only when the target organisation is under Vlimpers management. Requires
 /// the context to carry the <see cref="IVlimpersManagedContext"/> capability and
@@ -14,8 +16,9 @@ public sealed class RequireUnderVlimpersManagementRestriction : IRestriction
 
     private RequireUnderVlimpersManagementRestriction() { }
 
-    public bool IsOkWith(IRestrictionContext context)
-        => context is IVlimpersManagedContext vlimpers && vlimpers.IsUnderVlimpersManagement;
+    public bool IsOkWith(params IRestrictionContext[] contexts)
+        => contexts.OfType<IVlimpersManagedContext>().FirstOrDefault() is { } vlimpers &&
+           vlimpers.IsUnderVlimpersManagement;
 
     public override string ToString() => "RequireUnderVlimpersManagement";
 }

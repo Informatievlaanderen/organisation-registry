@@ -65,6 +65,6 @@ public class User : IUser
         => IsInAnyOf(Role.DecentraalBeheerder) &&
            Bodies.Contains(bodyId);
 
-    public bool IsSatisfiedFor(Permission permission, IRestrictionContext context)
-        => Permissions.IsSatisfiedFor(permission, context);
+    public bool IsSatisfiedFor(Permission permission, params IRestrictionContext[] contexts)
+        => Permissions.IsSatisfiedFor(permission, contexts);
 }

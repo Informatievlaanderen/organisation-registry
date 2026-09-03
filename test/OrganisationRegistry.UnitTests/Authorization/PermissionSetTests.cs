@@ -144,13 +144,13 @@ public class PermissionSetTests
     private sealed class AlwaysOk : IRestriction
     {
         public static readonly AlwaysOk Instance = new();
-        public bool IsOkWith(IRestrictionContext context) => true;
+        public bool IsOkWith(params IRestrictionContext[] contexts) => true;
     }
 
     private sealed class AlwaysDeny : IRestriction
     {
         public static readonly AlwaysDeny Instance = new();
-        public bool IsOkWith(IRestrictionContext context) => false;
+        public bool IsOkWith(params IRestrictionContext[] contexts) => false;
     }
 
     private sealed class StubContext : IRestrictionContext
