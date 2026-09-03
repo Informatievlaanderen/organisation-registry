@@ -33,17 +33,23 @@ public static class ScopePermissionMap
             // impersonate a full admin. Kept aligned with the historical
             // WellknownUsers.TestClient → Role.AlgemeenBeheerder mapping.
             [AcmIdmConstants.Scopes.TestClient] = PermissionSet.Of(
-                Permission.CanEditChildren,
+                Permission.CanManageChildren,
+                Permission.CanManageContacts,
+                Permission.CanManageFunctions,
                 Permission.CanManageBodies,
                 Permission.CanManageKeys,
                 Permission.CanManageLabels,
                 Permission.CanManageCapacities,
+                Permission.CanManageLocations,
+                Permission.CanManageBuildings,
                 Permission.CanManageFormalFrameworks,
                 Permission.CanManageOrganisationClassifications,
                 Permission.CanManageRegulations,
+                Permission.CanManageRelations,
+                Permission.CanManageKbo,
                 Permission.CanImport,
-                Permission.CanEditVlimpers,
-                Permission.CanEditDelegations,
+                Permission.CanManageVlimpers,
+               // Permission.CanManageDelegations, // TODO ?
                 Permission.CanReadConfiguration,
                 Permission.CanEditOrganisationLabels),
         };

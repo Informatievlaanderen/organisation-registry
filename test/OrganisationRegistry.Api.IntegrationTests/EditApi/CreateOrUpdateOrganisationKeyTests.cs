@@ -48,7 +48,7 @@ public class CreateOrUpdateOrganisationKeyTests
 
         var response = await CreateKey(organisationId, httpClient, _orafinKeyType);
 
-        await ApiFixture.VerifyStatusCode(response, HttpStatusCode.BadRequest);
+        await ApiFixture.VerifyStatusCode(response, HttpStatusCode.Forbidden);
     }
 
     private static async Task<HttpResponseMessage> UpdateKey(Guid organisationId, Guid organisationKeyId, HttpClient httpClient, Guid orafinKeyType)

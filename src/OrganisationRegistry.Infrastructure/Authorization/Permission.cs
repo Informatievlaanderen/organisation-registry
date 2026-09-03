@@ -8,21 +8,23 @@ namespace OrganisationRegistry.Infrastructure.Authorization;
 /// </summary>
 public enum Permission
 {
-    CanEditChildren,
-    CanEditVlimpers,
-    CanEditDelegations,
+    CanManageChildren,
     CanManageContacts,
-    CanManageKeys,
-    CanManageLabels,
-    CanManageCapacities,
-    CanManageFormalFrameworks,
-    CanManageOrganisationClassifications,
-    CanManageRegulations,
     CanManageFunctions,
+    CanManageCapacities,
     CanManageLocations,
     CanManageBuildings,
-    CanManageRelations,
+    CanManageLabels,
+    CanManageOrganisationClassifications,
+    CanManageFormalFrameworks,
+    CanManageKeys,
+    CanManageRegulations,
     CanManageBodies,
+    CanManageRelations,
+    CanManageKbo,
+    CanManageVlimpers,
+
+    // TODO check below
     CanImport,
     CanRunScheduledJobs,
     CanReadOrafin,
@@ -52,5 +54,5 @@ public enum Permission
     /// </summary>
     CanEditOrganisationLabels,
     CanReadEvents,
-    CanViewProjections
+    CanViewProjections,
 }

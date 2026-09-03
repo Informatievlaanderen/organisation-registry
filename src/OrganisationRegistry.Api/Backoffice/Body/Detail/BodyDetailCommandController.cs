@@ -14,7 +14,7 @@ using OrganisationRegistry.SqlServer.Infrastructure;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("bodies")]
-[OrganisationRegistryAuthorize]
+[OrganisationRegistryAuthorize(RequiredPermissions = [Permission.CanManageBodies])]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Scherm APIs: Organen")]
 public class BodyDetailCommandController : OrganisationRegistryCommandController

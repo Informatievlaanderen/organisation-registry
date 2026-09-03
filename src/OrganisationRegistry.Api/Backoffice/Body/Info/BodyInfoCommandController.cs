@@ -6,11 +6,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Infrastructure;
 using OrganisationRegistry.Api.Infrastructure.Security;
+using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Commands;
 
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("bodies")]
+[OrganisationRegistryAuthorize(RequiredPermissions = [Permission.CanManageBodies])]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Scherm APIs: Organen")]
 public class BodyInfoCommandController : OrganisationRegistryCommandController
@@ -24,7 +26,6 @@ public class BodyInfoCommandController : OrganisationRegistryCommandController
     /// <response code="200">Als de orgaaninfo succesvol aangepast is.</response>
     /// <response code="400">Als de validatie voor het orgaan mislukt is.</response>
     [HttpPut("{id}/info")]
-    [OrganisationRegistryAuthorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Put([FromRoute] Guid id, [FromBody] UpdateBodyInfoRequest message)

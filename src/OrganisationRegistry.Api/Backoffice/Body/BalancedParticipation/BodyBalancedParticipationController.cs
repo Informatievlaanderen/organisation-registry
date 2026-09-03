@@ -13,7 +13,7 @@ using OrganisationRegistry.SqlServer.Infrastructure;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("bodies")]
-[OrganisationRegistryAuthorize(RequiredPermissions = new[] { Permission.CanEditBodies })]
+[OrganisationRegistryAuthorize(RequiredPermissions = new[] { Permission.CanManageBodies })] //TODO
 [ApiController]
 [ApiExplorerSettings(GroupName = "Scherm APIs: Organen")]
 public class BodyBalancedParticipationController : OrganisationRegistryController
