@@ -12,6 +12,7 @@ using OrganisationRegistry.Infrastructure.Domain;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Events;
 using Tests.Shared;
+using Tests.Shared.Stubs;
 using Tests.Shared.TestDataBuilders;
 using Xunit;
 using Xunit.Abstractions;
@@ -30,7 +31,10 @@ public class WhenRemovingAnOrganisationCapacity : Specification<RemoveOrganisati
     }
 
     protected override RemoveOrganisationCapacityCommandHandler BuildHandler(ISession session)
-        => new(Mock.Of<ILogger<RemoveOrganisationCapacityCommandHandler>>(), session);
+        => new(
+            Mock.Of<ILogger<RemoveOrganisationCapacityCommandHandler>>(),
+            session,
+            new OrganisationRegistryConfigurationStub());
 
     private RemoveOrganisationCapacity RemoveOrganisationCapacityCommand
         => new(

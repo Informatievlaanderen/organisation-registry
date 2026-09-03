@@ -108,6 +108,20 @@ public static class UpdateHandlerExtensionMethods
                     configuration,
                     message.CapacityId));
 
+    public static UpdateHandler<Organisation> WithCapacityPolicy(
+        this UpdateHandler<Organisation> source,
+        IOrganisationRegistryConfiguration configuration,
+        RemoveOrganisationCapacity message)
+        => source.WithPolicy(
+            organisation =>
+                new CapacityPolicy(
+                    organisation.State.OvoNumber,
+                    configuration,
+                    organisation.State.OrganisationCapacities
+                        .Where(capacity => capacity.OrganisationCapacityId == message.OrganisationCapacityId)
+                        .Select(capacity => capacity.CapacityId)
+                        .FirstOrDefault()));
+
     public static UpdateHandler<Organisation> RequiresBeheerderForOrganisationButNotUnderVlimpersManagement(
         this UpdateHandler<Organisation> source)
         => source.WithPolicy(
@@ -128,6 +142,12 @@ public static class UpdateHandlerExtensionMethods
         params Role[] roles)
         where TAggregate : AggregateRoot
         => source.WithPolicy(_ => new RequiresRolesPolicy(roles));
+
+    public static UpdateHandler<TAggregate> RequiresPermission<TAggregate>(
+        this UpdateHandler<TAggregate> source,
+        Permission permission)
+        where TAggregate : AggregateRoot
+        => source.WithPolicy(_ => new RequiresPermissionPolicy(permission));
 
     public static UpdateHandler<Body> WithEditBodyPolicy(this UpdateHandler<Body> source)
         => source.WithPolicy(body => new EditBodyPolicy(body.Id));

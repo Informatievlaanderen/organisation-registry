@@ -26,7 +26,7 @@ public class FunctionTypeCommandHandlers :
 
     public async Task Handle(ICommandEnvelope<CreateFunctionType> envelope)
         => await Handler.For(envelope.User, Session)
-            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .RequiresPermission(Permission.CanManageFunctions)
             .Handle(
                 session =>
                 {
@@ -40,7 +40,7 @@ public class FunctionTypeCommandHandlers :
 
     public async Task Handle(ICommandEnvelope<UpdateFunctionType> envelope)
         => await UpdateHandler<FunctionType>.For(envelope.Command, envelope.User, Session)
-            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .RequiresPermission(Permission.CanManageFunctions)
             .Handle(
                 session =>
                 {

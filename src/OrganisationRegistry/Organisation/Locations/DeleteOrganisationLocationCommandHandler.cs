@@ -2,7 +2,6 @@
 
 using System.Threading.Tasks;
 using Handling;
-using Infrastructure.Authorization;
 using Infrastructure.Commands;
 using Infrastructure.Domain;
 using Microsoft.Extensions.Logging;
@@ -20,7 +19,7 @@ public class DeleteOrganisationLocationCommandHandler : BaseCommandHandler<Delet
 
     public Task Handle(ICommandEnvelope<DeleteOrganisationLocation> envelope)
         => UpdateHandler<Organisation>.For(envelope.Command, envelope.User, Session)
-            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .RequiresBeheerderForOrganisationRegardlessOfVlimpers()
             .Handle(
                 session =>
                 {

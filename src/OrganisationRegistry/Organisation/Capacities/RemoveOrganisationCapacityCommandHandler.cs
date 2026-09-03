@@ -2,8 +2,8 @@
 
 using System.Threading.Tasks;
 using Handling;
-using Infrastructure.Authorization;
 using Infrastructure.Commands;
+using Infrastructure.Configuration;
 using Infrastructure.Domain;
 using Microsoft.Extensions.Logging;
 
@@ -11,13 +11,19 @@ public class RemoveOrganisationCapacityCommandHandler:
     BaseCommandHandler<RemoveOrganisationCapacityCommandHandler>,
     ICommandEnvelopeHandler<RemoveOrganisationCapacity>
 {
-    public RemoveOrganisationCapacityCommandHandler(ILogger<RemoveOrganisationCapacityCommandHandler> logger, ISession session) : base(logger, session)
+    private readonly IOrganisationRegistryConfiguration _organisationRegistryConfiguration;
+
+    public RemoveOrganisationCapacityCommandHandler(
+        ILogger<RemoveOrganisationCapacityCommandHandler> logger,
+        ISession session,
+        IOrganisationRegistryConfiguration organisationRegistryConfiguration) : base(logger, session)
     {
+        _organisationRegistryConfiguration = organisationRegistryConfiguration;
     }
 
     public Task Handle(ICommandEnvelope<RemoveOrganisationCapacity> envelope)
         => UpdateHandler<Organisation>.For(envelope.Command, envelope.User, Session)
-            .RequiresOneOfRole(Role.AutomatedTask, Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .WithCapacityPolicy(_organisationRegistryConfiguration, envelope.Command)
             .Handle(
                 session =>
                 {

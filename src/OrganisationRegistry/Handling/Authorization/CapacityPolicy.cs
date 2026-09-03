@@ -24,7 +24,7 @@ public class CapacityPolicy : ISecurityPolicy
 
     public AuthorizationResult Check(IUser user)
     {
-        if (user.IsInAnyOf(Role.AlgemeenBeheerder, Role.CjmBeheerder))
+        if (user.IsInAnyOf(Role.AlgemeenBeheerder, Role.CjmBeheerder, Role.AutomatedTask))
             return AuthorizationResult.Success();
 
         var organisationCapacityIdsOwnedByRegelgevingDbBeheerder = _configuration.Authorization.CapacityIdsOwnedByRegelgevingDbBeheerder;

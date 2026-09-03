@@ -28,7 +28,7 @@ public class CapacityCommandHandlers :
     public async Task Handle(ICommandEnvelope<CreateCapacity> envelope)
     {
         await Handler.For(envelope.User, Session)
-            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .RequiresPermission(Permission.CanManageCapacities)
             .Handle(
                 session =>
                 {
@@ -45,7 +45,7 @@ public class CapacityCommandHandlers :
     public async Task Handle(ICommandEnvelope<UpdateCapacity> envelope)
     {
         await UpdateHandler<Capacity>.For(envelope.Command, envelope.User, Session)
-            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .RequiresPermission(Permission.CanManageCapacities)
             .Handle(
                 session =>
                 {
@@ -62,7 +62,7 @@ public class CapacityCommandHandlers :
     public async Task Handle(ICommandEnvelope<RemoveCapacity> envelope)
     {
         await UpdateHandler<Capacity>.For(envelope.Command, envelope.User, Session)
-            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .RequiresPermission(Permission.CanManageCapacities)
             .Handle(
                 session =>
                 {

@@ -2,6 +2,7 @@
 
 using System;
 using System.Net;
+using System.Net.Http;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using AutoFixture;
@@ -38,8 +39,8 @@ public class CreationHelpers
     }
 
     // Organisation:
-    public async Task Organisation(Guid organisationId, string organisationName, string? ovoNumber = null)
-        => await ApiFixture.Post(_fixture.HttpClient, "/v1/organisations", new { id = organisationId, name = organisationName, ovoNumber });
+    public async Task Organisation(Guid organisationId, string organisationName, string? ovoNumber = null, HttpClient? client = null)
+        => await ApiFixture.Post(client ?? _fixture.HttpClient, "/v1/organisations", new { id = organisationId, name = organisationName, ovoNumber });
 
     public async Task<Guid> CreateOrganisationClassificationType(bool allowDifferentClassificationsToOverlap)
         => await Create<Guid>(

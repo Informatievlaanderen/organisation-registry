@@ -2,6 +2,7 @@ namespace OrganisationRegistry.Api.IntegrationTests.Security.PermissionMatrix.Ca
 
 using System;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
@@ -25,53 +26,43 @@ public class Given_Roles_With_CanManageCapacities
 
         var organisationId = _apiFixture.Fixture.Create<Guid>();
         await _apiFixture.Create.Organisation(organisationId, _apiFixture.Fixture.Create<string>());
-        var entityId = _apiFixture.Fixture.Create<Guid>();
-        var capacityId = await _apiFixture.Create.Capacity();
 
-        var response = await ApiFixture.Post(
-            client,
-            $"/v1/organisations/{organisationId}/capacities",
-            new AddOrganisationCapacityRequest()
-            {
-                OrganisationCapacityId = entityId,
-                CapacityId = capacityId,
-                PersonId = null,
-                FunctionId = null,
-                LocationId = null,
-                Contacts = null,
-                ValidFrom = null,
-                ValidTo = null,
-            });
+        var response = await AddCapacity(client, organisationId);
 
         response.StatusCode.Should().Be(HttpStatusCode.Created);
     }
 
-    [Fact(Skip = "TODO: scoped role 'Decentraalbeheerder' is allowed by the permission matrix but the domain authorization policy requires the organisation (or entity) to be within the role's own scope (BeheerderForOrganisation / configured owned-ids). No fixture precedent exists for creating an organisation inside a scoped role's Keycloak OVO scope, so this positive cannot yet assert a 2xx. Enable once scoped-org test setup is available.")]
-    public async Task For_Decentraalbeheerder_Then_Returns_Created()
+    [Fact]
+    public async Task For_Decentraalbeheerder_WithOwnOrganisation_Then_Returns_Created()
+    {
+        var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Decentraalbeheerder);
+
+        var response = await AddCapacity(client, _apiFixture.DecentraalbeheerderOrganisationId);
+
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
+    }
+
+    [Fact]
+    public async Task For_Decentraalbeheerder_WithChildOrganisationInScope_Then_Returns_Created()
+    {
+        var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Decentraalbeheerder);
+
+        var response = await AddCapacity(client, _apiFixture.DecentraalbeheerderChildOrganisationId);
+
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
+    }
+
+    [Fact]
+    public async Task For_Decentraalbeheerder_WithOrganisationOutsideScope_Then_Returns_Forbidden()
     {
         var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Decentraalbeheerder);
 
         var organisationId = _apiFixture.Fixture.Create<Guid>();
         await _apiFixture.Create.Organisation(organisationId, _apiFixture.Fixture.Create<string>());
-        var entityId = _apiFixture.Fixture.Create<Guid>();
-        var capacityId = await _apiFixture.Create.Capacity();
 
-        var response = await ApiFixture.Post(
-            client,
-            $"/v1/organisations/{organisationId}/capacities",
-            new AddOrganisationCapacityRequest()
-            {
-                OrganisationCapacityId = entityId,
-                CapacityId = capacityId,
-                PersonId = null,
-                FunctionId = null,
-                LocationId = null,
-                Contacts = null,
-                ValidFrom = null,
-                ValidTo = null,
-            });
+        var response = await AddCapacity(client, organisationId);
 
-        response.StatusCode.Should().Be(HttpStatusCode.Created);
+        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
 
     [Fact(Skip = "TODO: scoped role 'Regelgevingbeheerder' is allowed by the permission matrix but the domain authorization policy requires the organisation (or entity) to be within the role's own scope (BeheerderForOrganisation / configured owned-ids). No fixture precedent exists for creating an organisation inside a scoped role's Keycloak OVO scope, so this positive cannot yet assert a 2xx. Enable once scoped-org test setup is available.")]
@@ -100,5 +91,26 @@ public class Given_Roles_With_CanManageCapacities
             });
 
         response.StatusCode.Should().Be(HttpStatusCode.Created);
+    }
+
+    private async Task<HttpResponseMessage> AddCapacity(HttpClient client, Guid organisationId)
+    {
+        var entityId = _apiFixture.Fixture.Create<Guid>();
+        var capacityId = await _apiFixture.Create.Capacity();
+
+        return await ApiFixture.Post(
+            client,
+            $"/v1/organisations/{organisationId}/capacities",
+            new AddOrganisationCapacityRequest()
+            {
+                OrganisationCapacityId = entityId,
+                CapacityId = capacityId,
+                PersonId = null,
+                FunctionId = null,
+                LocationId = null,
+                Contacts = null,
+                ValidFrom = null,
+                ValidTo = null,
+            });
     }
 }

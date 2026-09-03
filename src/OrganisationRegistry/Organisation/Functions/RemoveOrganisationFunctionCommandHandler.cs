@@ -2,7 +2,6 @@
 
 using System.Threading.Tasks;
 using Handling;
-using Infrastructure.Authorization;
 using Infrastructure.Commands;
 using Infrastructure.Domain;
 using Microsoft.Extensions.Logging;
@@ -17,7 +16,7 @@ public class RemoveOrganisationFunctionCommandHandler
 
     public async Task Handle(ICommandEnvelope<RemoveOrganisationFunction> envelope)
         => await UpdateHandler<Organisation>.For(envelope.Command, envelope.User, Session)
-            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .WithBeheerderForOrganisationPolicy()
             .Handle(
                 session =>
                 {

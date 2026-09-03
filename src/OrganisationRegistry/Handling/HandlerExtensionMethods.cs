@@ -21,6 +21,9 @@ public static class HandlerExtensionMethods
     public static Handler RequiresOneOfRole(this Handler source, params Role[] roles)
         => source.WithPolicy(new RequiresRolesPolicy(roles));
 
+    public static Handler RequiresPermission(this Handler source, Permission permission)
+        => source.WithPolicy(new RequiresPermissionPolicy(permission));
+
     public static Handler WithAddBodyPolicy(this Handler source)
         => source.WithPolicy(new AddBodyPolicy());
 }

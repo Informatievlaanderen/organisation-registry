@@ -39,6 +39,11 @@ public class ApiFixture : IDisposable, IAsyncLifetime
     private static readonly TimeSpan ReadinessPollInterval = TimeSpan.FromSeconds(2);
     private Guid? _importedParentOrganisationId;
     private Guid? _importedChildOrganisationId;
+    private Guid? _decentraalbeheerderOrganisationId;
+    private Guid? _decentraalbeheerderChildOrganisationId;
+
+    private const string DecentraalbeheerderOvoNumber = "OVO000002";
+    private const string DecentraalbeheerderChildOvoNumber = "OVO000102";
 
     public struct Orafin
     {
@@ -104,7 +109,27 @@ public class ApiFixture : IDisposable, IAsyncLifetime
     public Guid ImportedChildOrganisationId
         => _importedChildOrganisationId ?? throw new InvalidOperationException("Imported child organisation is not ready.");
 
+    /// <summary>
+    /// Organisatie (OVO000002) waarvoor de decentraalbeheerder-persona beheerder is.
+    /// </summary>
+    public Guid DecentraalbeheerderOrganisationId
+        => _decentraalbeheerderOrganisationId ?? throw new InvalidOperationException("Decentraalbeheerder organisation is not ready.");
+
+    /// <summary>
+    /// Dochterorganisatie van OVO000002 en dus binnen de scope van de decentraalbeheerder-persona.
+    /// </summary>
+    public Guid DecentraalbeheerderChildOrganisationId
+        => _decentraalbeheerderChildOrganisationId ?? throw new InvalidOperationException("Decentraalbeheerder child organisation is not ready.");
+
     public HttpClient HttpClient { get; }
+
+    /// <summary>
+    /// Client die authenticeert als <see cref="Role.Developer" />. Enkel de developer-rol mag bij het
+    /// aanmaken van een organisatie een vast OVO-nummer opgeven (zie OrganisationDetailCommandController);
+    /// alle andere rollen krijgen een automatisch gegenereerd OVO-nummer. Wordt gebruikt om de
+    /// scope-organisaties (OVO000002 / OVO000102) met een gekend OVO-nummer aan te maken.
+    /// </summary>
+    public HttpClient DeveloperHttpClient { get; }
 
     public Fixture Fixture { get; } = new();
 
@@ -136,6 +161,7 @@ public class ApiFixture : IDisposable, IAsyncLifetime
             ?? throw new InvalidOperationException($"Missing '{OpenIdConnectConfigurationSection.Name}' configuration.");
         Jwt = CreateBackofficeJwt(_openIdConnectConfiguration);
         HttpClient = CreateApiClient(Jwt);
+        DeveloperHttpClient = CreateApiClient(CreateDeveloperJwt(_openIdConnectConfiguration));
         Configuration = CreateOrganisationRegistryConfiguration(_configurationRoot);
     }
 
@@ -250,6 +276,26 @@ public class ApiFixture : IDisposable, IAsyncLifetime
         return tokenBuilder.BuildJwt(tokenBuilder.ParseRoles(identity));
     }
 
+    private static string CreateDeveloperJwt(OpenIdConnectConfigurationSection openIdConnectConfiguration)
+    {
+        var developerAcmId = (openIdConnectConfiguration.Developers ?? string.Empty)
+            .Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
+            .FirstOrDefault()
+            ?? throw new InvalidOperationException(
+                "Geen developer geconfigureerd in 'OpenIdConnect:Developers'. De developer-rol is nodig om " +
+                "organisaties met een vast OVO-nummer (OVO000002 / OVO000102) aan te maken.");
+
+        var identity = new ClaimsIdentity();
+        identity.AddClaim(new Claim(JwtClaimTypes.Subject, "api-integration-tests-developer"));
+        identity.AddClaim(new Claim(JwtClaimTypes.GivenName, "Developer"));
+        identity.AddClaim(new Claim(JwtClaimTypes.FamilyName, "Persona"));
+        identity.AddClaim(new Claim(AcmIdmConstants.Claims.AcmId, developerAcmId));
+        identity.AddClaim(new Claim(AcmIdmConstants.Claims.Role, "WegwijsBeheerder-algemeenbeheerder:OVO002949"));
+
+        var tokenBuilder = new OrganisationRegistryTokenBuilder(openIdConnectConfiguration);
+        return tokenBuilder.BuildJwt(tokenBuilder.ParseRoles(identity));
+    }
+
     private async Task ConfigureExternalDependencies()
     {
         await Task.CompletedTask;
@@ -264,6 +310,8 @@ public class ApiFixture : IDisposable, IAsyncLifetime
             "Controleer of de Piavo-import gelopen heeft en of de projecties afgewerkt zijn.");
 
         await EnsureImportedOrganisationCoverage();
+
+        await EnsureDecentraalbeheerderScopeIsReady();
 
         await WaitUntilAsync(
             HasImportedReadModelCoverageAsync,
@@ -393,6 +441,49 @@ public class ApiFixture : IDisposable, IAsyncLifetime
         await EnsureImportedOrganisationHasContact();
         await EnsureImportedOrganisationHasChild();
         await EnsureImportedOrganisationHasClassification();
+    }
+
+    /// <summary>
+    /// Zorgt ervoor dat de decentraalbeheerder-organisatie (OVO000002) een gekende dochterorganisatie heeft.
+    /// Dit gebeurt idempotent tijdens de fixture-initialisatie, vóór de eerste geauthenticeerde request van de
+    /// decentraalbeheerder-persona, zodat de dochter in de OrganisationTree (en dus in de scope-cache) zit.
+    /// </summary>
+    private async Task EnsureDecentraalbeheerderScopeIsReady()
+    {
+        _decentraalbeheerderOrganisationId = await GetOrCreateOrganisationWithOvoNumber(DecentraalbeheerderOvoNumber);
+        _decentraalbeheerderChildOrganisationId = await GetOrCreateOrganisationWithOvoNumber(DecentraalbeheerderChildOvoNumber);
+
+        if (!await HasAnyItems($"/v1/organisations/{_decentraalbeheerderChildOrganisationId}/parents"))
+        {
+            using var response = await Post(
+                HttpClient,
+                $"/v1/organisations/{_decentraalbeheerderChildOrganisationId}/parents",
+                new
+                {
+                    OrganisationOrganisationParentId = Guid.NewGuid(),
+                    ParentOrganisationId = _decentraalbeheerderOrganisationId,
+                    ValidFrom = (DateTime?)null,
+                    ValidTo = (DateTime?)null,
+                });
+
+            await VerifyStatusCode(response, HttpStatusCode.Created);
+        }
+
+        await WaitUntilAsync(
+            () => OrganisationHasChildWithOvoNumber(DecentraalbeheerderOrganisationId, DecentraalbeheerderChildOvoNumber),
+            ImportReadinessTimeout,
+            "De decentraalbeheerder-organisatie (OVO000002) heeft nog geen gekende dochterorganisatie. " +
+            "Controleer of de OrganisationTree-projectie afgewerkt is.");
+    }
+
+    private async Task<bool> OrganisationHasChildWithOvoNumber(Guid parentOrganisationId, string childOvoNumber)
+    {
+        using var response = await GetWithoutPagination($"/v1/organisations/{parentOrganisationId}/children");
+        if (!response.IsSuccessStatusCode)
+            return false;
+
+        var children = await DeserializeAsList(response);
+        return children.Any(child => TryGetString(child, "ovoNumber", out var ovoNumber) && ovoNumber == childOvoNumber);
     }
 
     private async Task EnsureImportedOrganisationHasKey()
@@ -671,7 +762,9 @@ public class ApiFixture : IDisposable, IAsyncLifetime
         catch (InvalidOperationException)
         {
             var organisationId = Fixture.Create<Guid>();
-            await Create.Organisation(organisationId, Fixture.Create<string>(), ovoNumber);
+            // Enkel de developer-rol mag een vast OVO-nummer opgeven bij het aanmaken; andere rollen
+            // krijgen een automatisch gegenereerd OVO-nummer (zie OrganisationDetailCommandController).
+            await Create.Organisation(organisationId, Fixture.Create<string>(), ovoNumber, DeveloperHttpClient);
             return organisationId;
         }
     }
