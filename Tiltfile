@@ -62,7 +62,7 @@ local_resource(
     './scripts/clear-database.sh',
     deps=['scripts/clear-database.sh'],
     labels=['setup'],
-    resource_deps=['mssql'],
+    resource_deps=['mssql', 'opensearch'],
 )
 
 local_resource(
