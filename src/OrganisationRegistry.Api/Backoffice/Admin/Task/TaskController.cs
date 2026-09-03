@@ -34,7 +34,7 @@ public class TaskController : OrganisationRegistryCommandController
     /// <response code="200">Als de taak uitgevoerd is.</response>
     /// <response code="400">Als de validatie voor de taak mislukt is.</response>
     [HttpPost]
-    [OrganisationRegistryAuthorize(Role.AutomatedTask, Role.Developer)]
+    [OrganisationRegistryAuthorize(RequiredPermissions = new[] { Permission.CanRunScheduledJobs })]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Post(

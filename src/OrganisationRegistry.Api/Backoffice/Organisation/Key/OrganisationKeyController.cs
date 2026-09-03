@@ -16,7 +16,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OrganisationRegistry.Infrastructure.AppSpecific;
 using OrganisationRegistry.Infrastructure.Authorization;
-using OrganisationRegistry.Infrastructure.Configuration;
 using SqlServer.Infrastructure;
 using SqlServer.Organisation;
 using Swashbuckle.AspNetCore.Filters;
@@ -39,7 +38,6 @@ public class OrganisationKeyController : OrganisationRegistryController
     public async Task<IActionResult> Get(
         [FromServices] OrganisationRegistryContext context,
         [FromServices] IMemoryCaches memoryCaches,
-        [FromServices] IOrganisationRegistryConfiguration configuration,
         [FromServices] ISecurityService securityService,
         [FromRoute] Guid organisationId)
     {
@@ -49,8 +47,7 @@ public class OrganisationKeyController : OrganisationRegistryController
 
         var user = await securityService.GetUser(User);
         Func<Guid, bool> isAuthorizedForKeyType = keyTypeId => new KeyPolicy(
-                memoryCaches.OvoNumbers[organisationId],
-                configuration,
+                memoryCaches.UnderVlimpersManagement.Contains(organisationId),
                 keyTypeId)
             .Check(user)
             .IsSuccessful;

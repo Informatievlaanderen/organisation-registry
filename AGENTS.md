@@ -217,3 +217,10 @@ Security policies are defined in `OrganisationRegistry.Api/Security/`.
 - **MAGDA**: Government data exchange platform
 - **Wegwijs**: Directory services
 - **VlaanderenBe**: Public website notifications
+
+## Active Technologies
+- C# / .NET 8, nullable reference types enabled + ASP.NET Core, Be.Vlaanderen.Basisregisters.AggregateSource, FluentValidation, Serilog, AutoFixture (009-permission-based-authz)
+- SQL Server (event store + read models); ElasticSearch (search projections) — not touched by this feature (009-permission-based-authz)
+
+## Recent Changes
+- 009-permission-based-authz: Added C# / .NET 8, nullable reference types enabled + ASP.NET Core, Be.Vlaanderen.Basisregisters.AggregateSource, FluentValidation, Serilog, AutoFixture

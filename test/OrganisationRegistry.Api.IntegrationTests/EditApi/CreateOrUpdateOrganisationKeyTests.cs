@@ -39,7 +39,7 @@ public class CreateOrUpdateOrganisationKeyTests
     [EnvVarIgnoreTheory]
     [InlineData(ApiFixture.Orafin.Client, ApiFixture.Orafin.Scope)]
     [InlineData(ApiFixture.CJM.Client, ApiFixture.CJM.Scope)]
-    public async Task CanCreateAndUpdateAs(string client, string scope)
+    public async Task CannotCreateAndUpdateAs(string client, string scope)
     {
         var organisationId = Guid.NewGuid();
         await _apiFixture.Create.Organisation(organisationId, TestOrganisationName);
@@ -48,11 +48,7 @@ public class CreateOrUpdateOrganisationKeyTests
 
         var response = await CreateKey(organisationId, httpClient, _orafinKeyType);
 
-        await ApiFixture.VerifyStatusCode(response, HttpStatusCode.Created);
-
-        var updateResponse = await UpdateKey(organisationId, ApiFixture.GetIdFrom(response.Headers), httpClient, _orafinKeyType);
-
-        await ApiFixture.VerifyStatusCode(updateResponse, HttpStatusCode.OK);
+        await ApiFixture.VerifyStatusCode(response, HttpStatusCode.BadRequest);
     }
 
     private static async Task<HttpResponseMessage> UpdateKey(Guid organisationId, Guid organisationKeyId, HttpClient httpClient, Guid orafinKeyType)

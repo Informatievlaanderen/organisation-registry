@@ -8,8 +8,6 @@ using Infrastructure.Tests.Extensions.TestHelpers;
 using OrganisationRegistry.Infrastructure.Events;
 using Microsoft.Extensions.Logging;
 using Moq;
-using OrganisationRegistry.Infrastructure.Authorization;
-using OrganisationRegistry.Infrastructure.Configuration;
 using OrganisationRegistry.Infrastructure.Domain;
 using OrganisationRegistry.KeyTypes;
 using OrganisationRegistry.KeyTypes.Events;
@@ -27,19 +25,10 @@ public class
     private readonly Guid _organisationId;
     private readonly Guid _keyAId;
     private readonly Guid _keyBId;
-    private readonly Mock<ISecurityService> _securityServiceMock;
     private readonly Guid _organisationKeyBId;
 
     public WhenUpdatingAnOrganisationKeyToAnAlreadyCoupledKey(ITestOutputHelper helper) : base(helper)
     {
-        _securityServiceMock = new Mock<ISecurityService>();
-        _securityServiceMock.Setup(
-                service =>
-                    service.CanUseKeyType(
-                        It.IsAny<IUser>(),
-                        It.IsAny<Guid>()))
-            .Returns(true);
-
         _organisationId = Guid.NewGuid();
         _keyAId = Guid.NewGuid();
         _organisationKeyBId = Guid.NewGuid();
@@ -49,8 +38,7 @@ public class
     protected override UpdateOrganisationKeyCommandHandler BuildHandler(ISession session)
         => new(
             new Mock<ILogger<UpdateOrganisationKeyCommandHandler>>().Object,
-            session,
-            Mock.Of<IOrganisationRegistryConfiguration>());
+            session);
 
     private IEvent[] Events
         => new IEvent[]

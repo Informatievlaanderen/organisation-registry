@@ -33,18 +33,11 @@ public class WhenRemovingAKeyTypeToAnAlreadyRemovedKeyType
             .Build();
 
     protected override KeyTypeCommandHandlers BuildHandler(ISession session)
-    {
-        var securityServiceMock = new Mock<ISecurityService>();
-        securityServiceMock
-            .Setup(service => service.CanUseKeyType(It.IsAny<IUser>(), It.IsAny<Guid>()))
-            .Returns(true);
-
-        return new KeyTypeCommandHandlers(
+        => new(
             new Mock<ILogger<KeyTypeCommandHandlers>>().Object,
             session,
             Mock.Of<IUniqueNameValidator<KeyType>>()
         );
-    }
 
     private IEvent[] Events
         => new IEvent[]

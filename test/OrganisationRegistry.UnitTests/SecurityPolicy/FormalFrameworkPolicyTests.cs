@@ -5,6 +5,7 @@ using AutoFixture;
 using FluentAssertions;
 using Handling.Authorization;
 using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Configuration;
 using OrganisationRegistry.Organisation.Exceptions;
 using Tests.Shared;
 using Tests.Shared.Stubs;
@@ -15,7 +16,8 @@ public class FormalFrameworkPolicyTests
     private readonly Fixture _fixture;
     private readonly Guid _regelgevingDbFormalFrameworkId;
     private readonly Guid _vlimpersFormalFrameworkId;
-    private readonly OrganisationRegistryConfigurationStub _configuration;
+    private readonly Guid _otherFormalFrameworkId;
+    private readonly IOrganisationRegistryConfiguration _configuration;
 
     public FormalFrameworkPolicyTests()
     {
@@ -23,6 +25,7 @@ public class FormalFrameworkPolicyTests
 
         _regelgevingDbFormalFrameworkId = _fixture.Create<Guid>();
         _vlimpersFormalFrameworkId = _fixture.Create<Guid>();
+        _otherFormalFrameworkId = _fixture.Create<Guid>();
         _configuration = new OrganisationRegistryConfigurationStub
         {
             Authorization = new AuthorizationConfigurationStub
@@ -33,137 +36,147 @@ public class FormalFrameworkPolicyTests
         };
     }
 
+    private IUser UserWithRoles(params Role[] roles)
+        => new UserBuilder()
+            .AddRoles(roles)
+            .WithPermissions(RolePermissionMap.For(roles, _configuration))
+            .Build();
+
+    private IUser DecentraalBeheerderFor(string ovoNumber)
+        => new UserBuilder()
+            .AddRoles(Role.DecentraalBeheerder)
+            .AddOrganisations(ovoNumber)
+            .WithPermissions(
+                RolePermissionMap.For(
+                    new[] { Role.DecentraalBeheerder },
+                    _configuration))
+            .Build();
+
     public FormalFrameworkPolicy CreatePolicy(string ovoNumber, Guid formalFrameworkId)
-        => new(ovoNumber, formalFrameworkId, _configuration);
+        => new(ovoNumber, formalFrameworkId);
 
     [Theory]
-    [InlineData(Role.RegelgevingBeheerder)]
     [InlineData(Role.AlgemeenBeheerder)]
-    public void RegelgevingDbBeheerderAndAdminIsAuthorized(Role role)
+    [InlineData(Role.Developer)]
+    public void UnrestrictedRolesAreAuthorizedForAnyFormalFramework(Role role)
     {
-        var user = new UserBuilder()
-            .AddRoles(role)
-            .Build();
+        var user = UserWithRoles(role);
 
-        var authorizationResult =
-            CreatePolicy(_fixture.Create<string>(), _regelgevingDbFormalFrameworkId)
-                .Check(user);
-
-        authorizationResult.Should().Be(AuthorizationResult.Success());
-    }
-
-    [Theory]
-    [InlineData(Role.DecentraalBeheerder)]
-    [InlineData(Role.VlimpersBeheerder)]
-    [InlineData(Role.Orafin)]
-    [InlineData(Role.OrgaanBeheerder)]
-    public void NonRegelgevingDbBeheerderIsNotAuthorized(Role role)
-    {
-        var user = new UserBuilder()
-            .AddRoles(role)
-            .Build();
-
-        var authorizationResult =
-            CreatePolicy(_fixture.Create<string>(), _regelgevingDbFormalFrameworkId)
-                .Check(user);
-
-        authorizationResult.ShouldFailWith<InsufficientRights<FormalFrameworkPolicy>>();
-    }
-
-    [Theory]
-    [InlineData(Role.VlimpersBeheerder)]
-    [InlineData(Role.AlgemeenBeheerder)]
-    public void VlimpersBeheerderAndAdminIsAuthorizedForVlimpersFormalFramework(Role role)
-    {
-        var user = new UserBuilder()
-            .AddRoles(role)
-            .Build();
-
-        var authorizationResult =
-            CreatePolicy(_fixture.Create<string>(), _vlimpersFormalFrameworkId)
-                .Check(user);
-
-        authorizationResult.Should().Be(AuthorizationResult.Success());
-    }
-
-    [Theory]
-    [InlineData(Role.Orafin)]
-    [InlineData(Role.DecentraalBeheerder)]
-    [InlineData(Role.OrgaanBeheerder)]
-    [InlineData(Role.RegelgevingBeheerder)]
-    public void NonVlimpersBeheerderIsNotAuthorizedForVlimpersFormalFramework(Role role)
-    {
-        var user = new UserBuilder()
-            .AddRoles(role)
-            .Build();
-
-        var authorizationResult =
-            CreatePolicy(_fixture.Create<string>(), _vlimpersFormalFrameworkId)
-                .Check(user);
-
-        authorizationResult.ShouldFailWith<InsufficientRights<FormalFrameworkPolicy>>();
+        CreatePolicy(_fixture.Create<string>(), _vlimpersFormalFrameworkId)
+            .Check(user)
+            .Should().Be(AuthorizationResult.Success());
     }
 
     [Fact]
-    public void BeheerderIsAuthorizedForOtherFormalFrameworksForTheirOrganisation()
+    public void CjmBeheerderIsNotAuthorizedForFormalFrameworks()
+    {
+        var user = UserWithRoles(Role.CjmBeheerder);
+
+        CreatePolicy(_fixture.Create<string>(), _otherFormalFrameworkId)
+            .Check(user)
+            .ShouldFailWith<InsufficientRights<FormalFrameworkPolicy>>();
+    }
+
+    [Fact]
+    public void RegelgevingDbBeheerderIsAuthorizedForRegelgevingDbOwnedFormalFramework()
+    {
+        var user = UserWithRoles(Role.RegelgevingBeheerder);
+
+        CreatePolicy(_fixture.Create<string>(), _regelgevingDbFormalFrameworkId)
+            .Check(user)
+            .Should().Be(AuthorizationResult.Success());
+    }
+
+    [Fact]
+    public void RegelgevingDbBeheerderIsNotAuthorizedForVlimpersOwnedFormalFramework()
+    {
+        var user = UserWithRoles(Role.RegelgevingBeheerder);
+
+        CreatePolicy(_fixture.Create<string>(), _vlimpersFormalFrameworkId)
+            .Check(user)
+            .ShouldFailWith<InsufficientRights<FormalFrameworkPolicy>>();
+    }
+
+    [Fact]
+    public void RegelgevingDbBeheerderIsNotAuthorizedForOtherFormalFramework()
+    {
+        var user = UserWithRoles(Role.RegelgevingBeheerder);
+
+        CreatePolicy(_fixture.Create<string>(), _otherFormalFrameworkId)
+            .Check(user)
+            .ShouldFailWith<InsufficientRights<FormalFrameworkPolicy>>();
+    }
+
+    [Fact]
+    public void VlimpersBeheerderIsAuthorizedForVlimpersOwnedFormalFramework()
+    {
+        var user = UserWithRoles(Role.VlimpersBeheerder);
+
+        CreatePolicy(_fixture.Create<string>(), _vlimpersFormalFrameworkId)
+            .Check(user)
+            .Should().Be(AuthorizationResult.Success());
+    }
+
+    [Fact]
+    public void VlimpersBeheerderIsNotAuthorizedForRegelgevingDbOwnedFormalFramework()
+    {
+        var user = UserWithRoles(Role.VlimpersBeheerder);
+
+        CreatePolicy(_fixture.Create<string>(), _regelgevingDbFormalFrameworkId)
+            .Check(user)
+            .ShouldFailWith<InsufficientRights<FormalFrameworkPolicy>>();
+    }
+
+    [Fact]
+    public void VlimpersBeheerderIsNotAuthorizedForOtherFormalFramework()
+    {
+        var user = UserWithRoles(Role.VlimpersBeheerder);
+
+        CreatePolicy(_fixture.Create<string>(), _otherFormalFrameworkId)
+            .Check(user)
+            .ShouldFailWith<InsufficientRights<FormalFrameworkPolicy>>();
+    }
+
+    [Fact]
+    public void DecentraalBeheerderIsAuthorizedForOtherFormalFrameworksForTheirOrganisation()
     {
         var ovoNumber = _fixture.Create<string>();
-        var user = new UserBuilder()
-            .AddRoles(Role.DecentraalBeheerder)
-            .AddOrganisations(ovoNumber)
-            .Build();
+        var user = DecentraalBeheerderFor(ovoNumber);
 
-        var authorizationResult =
-            CreatePolicy(ovoNumber, _fixture.Create<Guid>())
-                .Check(user);
-
-        authorizationResult.Should().Be(AuthorizationResult.Success());
+        CreatePolicy(ovoNumber, _otherFormalFrameworkId)
+            .Check(user)
+            .Should().Be(AuthorizationResult.Success());
     }
 
     [Fact]
-    public void BeheerderIsNotAuthorizedForVlimpersOwnedFormalFrameworksForTheirOrganisation()
+    public void DecentraalBeheerderIsAuthorizedForRegelgevingDbOwnedFormalFrameworksForTheirOrganisation()
     {
         var ovoNumber = _fixture.Create<string>();
-        var user = new UserBuilder()
-            .AddRoles(Role.DecentraalBeheerder)
-            .AddOrganisations(ovoNumber)
-            .Build();
+        var user = DecentraalBeheerderFor(ovoNumber);
 
-        var authorizationResult =
-            CreatePolicy(ovoNumber, _vlimpersFormalFrameworkId)
-                .Check(user);
-
-        authorizationResult.ShouldFailWith<InsufficientRights<FormalFrameworkPolicy>>();
+        CreatePolicy(ovoNumber, _regelgevingDbFormalFrameworkId)
+            .Check(user)
+            .Should().Be(AuthorizationResult.Success());
     }
 
     [Fact]
-    public void BeheerderIsNotAuthorizedForRegelgevingDbOwnedFormalFrameworksForTheirOrganisation()
+    public void DecentraalBeheerderIsNotAuthorizedForVlimpersOwnedFormalFrameworksForTheirOrganisation()
     {
         var ovoNumber = _fixture.Create<string>();
-        var user = new UserBuilder()
-            .AddRoles(Role.DecentraalBeheerder)
-            .AddOrganisations(ovoNumber)
-            .Build();
+        var user = DecentraalBeheerderFor(ovoNumber);
 
-        var authorizationResult =
-            CreatePolicy(ovoNumber, _regelgevingDbFormalFrameworkId)
-                .Check(user);
-
-        authorizationResult.ShouldFailWith<InsufficientRights<FormalFrameworkPolicy>>();
+        CreatePolicy(ovoNumber, _vlimpersFormalFrameworkId)
+            .Check(user)
+            .ShouldFailWith<InsufficientRights<FormalFrameworkPolicy>>();
     }
 
     [Fact]
-    public void BeheerderIsNotAuthorizedForOtherFormalFrameworksForOtherOrganisations()
+    public void DecentraalBeheerderIsNotAuthorizedForOtherFormalFrameworksForOtherOrganisations()
     {
-        var user = new UserBuilder()
-            .AddRoles(Role.DecentraalBeheerder)
-            .AddOrganisations(_fixture.Create<string>())
-            .Build();
+        var user = DecentraalBeheerderFor(_fixture.Create<string>());
 
-        var authorizationResult =
-            CreatePolicy(_fixture.Create<string>(), _fixture.Create<Guid>())
-                .Check(user);
-
-        authorizationResult.ShouldFailWith<InsufficientRights<FormalFrameworkPolicy>>();
+        CreatePolicy(_fixture.Create<string>(), _otherFormalFrameworkId)
+            .Check(user)
+            .ShouldFailWith<InsufficientRights<FormalFrameworkPolicy>>();
     }
 }

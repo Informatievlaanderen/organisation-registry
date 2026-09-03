@@ -36,8 +36,8 @@ public class CreationHelpers
     }
 
     // Organisation:
-    public async Task Organisation(Guid organisationId, string organisationName)
-        => await ApiFixture.Post(_fixture.HttpClient, "/v1/organisations", new { id = organisationId, name = organisationName });
+    public async Task Organisation(Guid organisationId, string organisationName, string? ovoNumber = null)
+        => await ApiFixture.Post(_fixture.HttpClient, "/v1/organisations", new { id = organisationId, name = organisationName, ovoNumber });
 
     public async Task<Guid> CreateOrganisationClassificationType(bool allowDifferentClassificationsToOverlap)
         => await Create<Guid>(
@@ -193,14 +193,32 @@ public class CreationHelpers
             });
 
     public async Task<Guid> FormalFramework(Guid formalFrameworkCategoryId)
-        => await Create<Guid>(
+        => await FormalFramework(_fixture.Fixture.Create<Guid>(), formalFrameworkCategoryId);
+
+    public async Task<Guid> FormalFramework(Guid formalFrameworkId, Guid formalFrameworkCategoryId)
+    {
+        using var getResponse = await ApiFixture.Get(_fixture.HttpClient, $"/v1/formalframeworks/{formalFrameworkId}");
+        if (getResponse.StatusCode == HttpStatusCode.OK)
+            return formalFrameworkId;
+
+        using var postResponse = await ApiFixture.Post(
+            _fixture.HttpClient,
             "/v1/formalframeworks",
             new CreateFormalFrameworkRequest
             {
+                Id = formalFrameworkId,
                 Name = _fixture.Fixture.Create<string>(),
                 Code = _fixture.Fixture.Create<string>(),
                 FormalFrameworkCategoryId = formalFrameworkCategoryId,
             });
+
+        if (postResponse.StatusCode is HttpStatusCode.Created or HttpStatusCode.OK)
+            return formalFrameworkId;
+
+        throw new InvalidOperationException(
+            $"Could not ensure formal framework '{formalFrameworkId}'. " +
+            $"Status: {postResponse.StatusCode}. Body: {await postResponse.Content.ReadAsStringAsync()}");
+    }
 
     public async Task<Guid> FormalFrameworkCategory()
         => await Create<Guid>(

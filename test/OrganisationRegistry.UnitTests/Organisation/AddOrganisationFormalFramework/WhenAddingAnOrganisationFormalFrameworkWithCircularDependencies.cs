@@ -41,8 +41,7 @@ public class WhenAddingAnOrganisationFormalFrameworkWithCircularDependencies : S
         => new(
             new Mock<ILogger<AddOrganisationFormalFrameworkCommandHandler>>().Object,
             session,
-            new DateTimeProviderStub(DateTime.Now),
-            Mock.Of<IOrganisationRegistryConfiguration>());
+            new DateTimeProviderStub(DateTime.Now));
 
     private IEvent[] Events
         => new IEvent[]

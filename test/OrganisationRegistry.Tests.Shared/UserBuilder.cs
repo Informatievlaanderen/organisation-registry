@@ -14,6 +14,7 @@ public class UserBuilder
     private readonly List<string> _organisations;
     private readonly List<Guid> _bodies;
     private readonly List<Guid> _organisationIds;
+    private PermissionSet? _permissions;
 
     public UserBuilder()
     {
@@ -25,6 +26,7 @@ public class UserBuilder
         _organisations = new List<string>();
         _bodies = new List<Guid>();
         _organisationIds = new List<Guid>();
+        _permissions = null;
     }
 
     public UserBuilder WithFirstName(string firstName)
@@ -78,6 +80,18 @@ public class UserBuilder
         return this;
     }
 
+    /// <summary>
+    /// Injects an explicit <see cref="PermissionSet"/>, bypassing role-based
+    /// derivation. Use this to test permission/restriction semantics directly
+    /// (e.g. a restricted CanManageKeys grant) without depending on the
+    /// config-less <see cref="RolePermissionMap"/> role mapping.
+    /// </summary>
+    public UserBuilder WithPermissions(PermissionSet permissions)
+    {
+        _permissions = permissions;
+        return this;
+    }
+
     public User Build()
         => new(
             _firstName,
@@ -87,7 +101,8 @@ public class UserBuilder
             _roles.ToArray(),
             _organisations,
             _bodies,
-            _organisationIds);
+            _organisationIds,
+            _permissions);
 
     public UserBuilder AsDecentraalBeheerder()
     {

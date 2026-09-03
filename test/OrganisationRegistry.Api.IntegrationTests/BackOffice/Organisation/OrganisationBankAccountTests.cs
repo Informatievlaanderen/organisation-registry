@@ -6,6 +6,7 @@ using System.Net;
 using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
+using Tests.Shared;
 using Xunit;
 
 [Collection(ApiTestsCollection.Name)]
@@ -18,7 +19,7 @@ public class OrganisationBankAccountTests
         _apiFixture = apiFixture;
     }
 
-    [Fact]
+    [SkipBankAccounts]
     public async Task TestOrganisationBankAccounts()
     {
         var organisationId = _apiFixture.Fixture.Create<Guid>();

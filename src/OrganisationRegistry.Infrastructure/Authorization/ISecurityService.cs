@@ -20,7 +20,6 @@ public interface ISecurityService
 
     Task<IUser> GetRequiredUser(ClaimsPrincipal? principal);
     Task<IUser> GetUser(ClaimsPrincipal? principal);
-    bool CanUseKeyType(IUser user, Guid keyTypeId);
     bool CanUseLabelType(IUser user, Guid labelTypeId);
     void ExpireUserCache(string acmId);
 }
