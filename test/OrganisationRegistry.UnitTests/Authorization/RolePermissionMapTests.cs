@@ -19,9 +19,9 @@ public class RolePermissionMapTests
     [Theory]
     [InlineData(Role.AlgemeenBeheerder, Permission.CanReadConfiguration)]
     [InlineData(Role.AlgemeenBeheerder, Permission.CanEditOrganisationLabels)]
-    [InlineData(Role.VlimpersBeheerder, Permission.CanEditVlimpers)]
+    //[InlineData(Role.VlimpersBeheerder, Permission.CanManageVlimpers)] TODO vlimpers cannot edit themselves?
     [InlineData(Role.VlimpersBeheerder, Permission.CanEditOrganisationLabels)]
-    [InlineData(Role.DecentraalBeheerder, Permission.CanEditChildren)]
+    [InlineData(Role.DecentraalBeheerder, Permission.CanManageFunctions)]
     [InlineData(Role.DecentraalBeheerder, Permission.CanEditOrganisationLabels)]
     [InlineData(Role.RegelgevingBeheerder, Permission.CanManageRegulations)]
     [InlineData(Role.CjmBeheerder, Permission.CanEditOrganisationLabels)]

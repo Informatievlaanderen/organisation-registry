@@ -80,7 +80,7 @@ public class OrganisationRegistryAuthorizeAttributeTests
         var context = BuildContext(user);
         var attribute = new OrganisationRegistryAuthorizeAttribute
         {
-            RequiredPermissions = new[] { Permission.CanManageBodies, Permission.CanEditChildren },
+            RequiredPermissions = new[] { Permission.CanManageBodies, Permission.CanManageChildren },
         };
 
         await ((IAsyncAuthorizationFilter)attribute).OnAuthorizationAsync(context);

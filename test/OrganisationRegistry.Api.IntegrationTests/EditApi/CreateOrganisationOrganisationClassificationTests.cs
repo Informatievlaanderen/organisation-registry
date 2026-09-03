@@ -83,7 +83,7 @@ public class CreateOrganisationOrganisationClassificationTests
         var organisationClassificationId = await _apiFixture.Create.OrganisationClassification(organisationClassificationTypeId);
 
         var response = await Create(await _apiFixture.CreateCjmClient(), organisationClassificationTypeId, organisationClassificationId);
-        await ApiFixture.VerifyStatusCode(response, HttpStatusCode.BadRequest);
+        await ApiFixture.VerifyStatusCode(response, HttpStatusCode.Forbidden);
     }
 
     [EnvVarIgnoreFact]
@@ -96,7 +96,7 @@ public class CreateOrganisationOrganisationClassificationTests
         var organisationOrganisationClassificationId = await _apiFixture.Create.OrganisationOrganisationClassification(_organisationId, organisationClassificationTypeId, organisationClassificationId);
 
         var response = await Update(await _apiFixture.CreateCjmClient(), organisationOrganisationClassificationId, organisationClassificationTypeId, organisationClassificationId);
-        await ApiFixture.VerifyStatusCode(response, HttpStatusCode.BadRequest);
+        await ApiFixture.VerifyStatusCode(response, HttpStatusCode.Forbidden);
     }
 
     private async Task<Guid> CreateAndVerify(HttpClient httpClient, Guid organisationClassificationTypeId, Guid organisationClassificationId)

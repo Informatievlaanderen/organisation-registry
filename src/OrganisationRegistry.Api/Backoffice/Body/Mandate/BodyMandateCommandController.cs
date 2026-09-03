@@ -7,12 +7,13 @@ using Microsoft.AspNetCore.Mvc;
 using Infrastructure;
 using OrganisationRegistry.Api.Infrastructure.Security;
 using OrganisationRegistry.Body;
+using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Commands;
 
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("bodies/{bodyId}/mandates")]
-[OrganisationRegistryAuthorize]
+[OrganisationRegistryAuthorize(RequiredPermissions = [Permission.CanManageBodies])]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Scherm APIs: Organen")]
 public class BodyMandateCommandController : OrganisationRegistryCommandController

@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
 using OrganisationRegistry.Import.Piavo.Models;
@@ -26,7 +27,9 @@ public class WhenTheImportHasRun : IAsyncLifetime
 
     private async Task<IEnumerable<T>> Get<T>(string requestUri)
     {
-        var items = await _fixture.HttpClient.GetStringAsync($"/v1/{requestUri}");
+        var request = new HttpRequestMessage(HttpMethod.Get, $"/v1/{requestUri}");
+        request.Headers.Add("x-pagination", "none");
+        var items = await (await _fixture.HttpClient.SendAsync(request)).Content.ReadAsStringAsync();
         return JsonConvert.DeserializeObject<IEnumerable<T>>(items) ?? new List<T>();
     }
 

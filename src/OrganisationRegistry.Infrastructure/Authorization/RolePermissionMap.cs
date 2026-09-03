@@ -20,49 +20,54 @@ public static class RolePermissionMap
         new Dictionary<Role, PermissionSet>
         {
             [Role.AlgemeenBeheerder] = PermissionSet.Of(
-                Permission.CanEditChildren,
+                Permission.CanManageChildren,
                 Permission.CanManageContacts,
-                Permission.CanManageKeys,
-                Permission.CanManageLabels,
-                Permission.CanManageCapacities,
-                Permission.CanManageFormalFrameworks,
-                Permission.CanManageOrganisationClassifications,
-                Permission.CanManageRegulations,
                 Permission.CanManageFunctions,
+                Permission.CanManageCapacities,
                 Permission.CanManageLocations,
                 Permission.CanManageBuildings,
-                Permission.CanManageRelations,
+                Permission.CanManageLabels,
+                Permission.CanManageOrganisationClassifications,
+                Permission.CanManageFormalFrameworks,
+                Permission.CanManageKeys,
+                Permission.CanManageRegulations,
                 Permission.CanManageBodies,
+                Permission.CanManageRelations,
+                Permission.CanManageKbo,
+                Permission.CanManageVlimpers,
+
                 Permission.CanImport,
-                Permission.CanEditVlimpers,
-                Permission.CanEditDelegations,
                 Permission.CanReadConfiguration,
                 Permission.CanEditOrganisationLabels),
 
             [Role.VlimpersBeheerder] = PermissionSet.Of(
-                Permission.CanEditVlimpers,
-                Permission.CanEditChildren,
+                Permission.CanManageChildren,
+                Permission.CanManageLabels,
+
+                // CanManageFormalFrameworks and CanManageKeys are only granted as
+                // restricted grants via the config-aware overload (RestrictedGrantsFor).
                 Permission.CanEditOrganisationLabels),
 
             [Role.DecentraalBeheerder] = PermissionSet.Of(
-                Permission.CanEditChildren,
-                Permission.CanEditDelegations,
-                Permission.CanEditOrganisationLabels,
                 Permission.CanManageFunctions,
                 Permission.CanManageCapacities,
                 Permission.CanManageLocations,
                 Permission.CanManageBuildings,
                 Permission.CanManageLabels,
                 Permission.CanManageOrganisationClassifications,
-                Permission.CanManageFormalFrameworks,
                 Permission.CanManageRelations,
-                Permission.CanManageBodies),
+                Permission.CanManageBodies,
+
+                // CanManageFormalFrameworks is only granted as a restricted grant
+                // (own organisation, not Vlimpers-owned) via RestrictedGrantsFor.
+                Permission.CanEditOrganisationLabels),
 
             [Role.RegelgevingBeheerder] = PermissionSet.Of(
                 Permission.CanManageRegulations,
                 Permission.CanManageCapacities,
-                Permission.CanManageOrganisationClassifications,
-                Permission.CanManageFormalFrameworks),
+                Permission.CanManageOrganisationClassifications),
+                // CanManageFormalFrameworks is only granted as a restricted grant
+                // (Regelgeving-owned frameworks) via RestrictedGrantsFor.
 
             [Role.CjmBeheerder] = PermissionSet.Of(
                 Permission.CanEditOrganisationLabels),
@@ -71,24 +76,26 @@ public static class RolePermissionMap
                 Permission.CanReadOrafin),
 
             [Role.Developer] = PermissionSet.Of(
-                Permission.CanEditChildren,
+                Permission.CanManageChildren,
                 Permission.CanManageContacts,
-                Permission.CanManageLabels,
-                Permission.CanManageCapacities,
-                Permission.CanManageFormalFrameworks,
-                Permission.CanManageOrganisationClassifications,
-                Permission.CanManageRegulations,
                 Permission.CanManageFunctions,
+                Permission.CanManageCapacities,
                 Permission.CanManageLocations,
                 Permission.CanManageBuildings,
-                Permission.CanManageRelations,
+                Permission.CanManageLabels,
+                Permission.CanManageOrganisationClassifications,
+                Permission.CanManageFormalFrameworks,
+                Permission.CanManageKeys,
+                Permission.CanManageRegulations,
                 Permission.CanManageBodies,
+                Permission.CanManageRelations,
+                Permission.CanManageKbo,
+                Permission.CanManageVlimpers,
+
                 Permission.CanImport,
-                Permission.CanEditVlimpers,
-                Permission.CanEditDelegations,
+                Permission.CanRunScheduledJobs,
                 Permission.CanReadConfiguration,
-                Permission.CanEditOrganisationLabels,
-                Permission.CanRunScheduledJobs),
+                Permission.CanEditOrganisationLabels),
 
             // Transitional: AutomatedTask keeps CanRunScheduledJobs until the
             // scheduled-job / sync services migrate to Client Credentials

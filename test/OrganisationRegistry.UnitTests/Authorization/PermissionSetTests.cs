@@ -31,11 +31,11 @@ public class PermissionSetTests
         var set = PermissionSet.Of(
             Permission.CanReadEvents,
             Permission.CanReadEvents,
-            Permission.CanEditChildren);
+            Permission.CanManageChildren);
 
         set.Count.Should().Be(2);
         set.Contains(Permission.CanReadEvents).Should().BeTrue();
-        set.Contains(Permission.CanEditChildren).Should().BeTrue();
+        set.Contains(Permission.CanManageChildren).Should().BeTrue();
     }
 
     [Fact]
@@ -51,8 +51,8 @@ public class PermissionSetTests
     [Fact]
     public void Union_is_commutative_and_deduplicates()
     {
-        var a = PermissionSet.Of(Permission.CanReadEvents, Permission.CanEditChildren);
-        var b = PermissionSet.Of(Permission.CanEditChildren, Permission.CanManageBodies);
+        var a = PermissionSet.Of(Permission.CanReadEvents, Permission.CanManageChildren);
+        var b = PermissionSet.Of(Permission.CanManageChildren, Permission.CanManageBodies);
 
         var ab = a.Union(b);
         var ba = b.Union(a);
