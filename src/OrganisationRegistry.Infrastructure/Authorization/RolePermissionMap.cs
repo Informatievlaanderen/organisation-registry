@@ -21,10 +21,6 @@ public static class RolePermissionMap
         {
             [Role.AlgemeenBeheerder] = PermissionSet.Of(
                 Permission.CanEditChildren,
-                Permission.CanAddBodies,
-                Permission.CanEditBodies,
-                Permission.CanRegisterBodies,
-                Permission.CanAddLocations,
                 Permission.CanManageContacts,
                 Permission.CanManageKeys,
                 Permission.CanManageLabels,
@@ -32,6 +28,11 @@ public static class RolePermissionMap
                 Permission.CanManageFormalFrameworks,
                 Permission.CanManageOrganisationClassifications,
                 Permission.CanManageRegulations,
+                Permission.CanManageFunctions,
+                Permission.CanManageLocations,
+                Permission.CanManageBuildings,
+                Permission.CanManageRelations,
+                Permission.CanManageBodies,
                 Permission.CanImport,
                 Permission.CanEditVlimpers,
                 Permission.CanEditDelegations,
@@ -45,23 +46,25 @@ public static class RolePermissionMap
 
             [Role.DecentraalBeheerder] = PermissionSet.Of(
                 Permission.CanEditChildren,
-                Permission.CanAddLocations,
-                Permission.CanAddBodies,
-                Permission.CanEditBodies,
                 Permission.CanEditDelegations,
-                Permission.CanEditOrganisationLabels),
-
-            [Role.OrgaanBeheerder] = PermissionSet.Of(
-                Permission.CanAddBodies,
-                Permission.CanEditBodies,
-                Permission.CanRegisterBodies),
+                Permission.CanEditOrganisationLabels,
+                Permission.CanManageFunctions,
+                Permission.CanManageCapacities,
+                Permission.CanManageLocations,
+                Permission.CanManageBuildings,
+                Permission.CanManageLabels,
+                Permission.CanManageOrganisationClassifications,
+                Permission.CanManageFormalFrameworks,
+                Permission.CanManageRelations,
+                Permission.CanManageBodies),
 
             [Role.RegelgevingBeheerder] = PermissionSet.Of(
-                Permission.CanManageRegulations),
+                Permission.CanManageRegulations,
+                Permission.CanManageCapacities,
+                Permission.CanManageOrganisationClassifications,
+                Permission.CanManageFormalFrameworks),
 
             [Role.CjmBeheerder] = PermissionSet.Of(
-                Permission.CanAddBodies,
-                Permission.CanEditBodies,
                 Permission.CanEditOrganisationLabels),
 
             [Role.Orafin] = PermissionSet.Of(
@@ -69,16 +72,17 @@ public static class RolePermissionMap
 
             [Role.Developer] = PermissionSet.Of(
                 Permission.CanEditChildren,
-                Permission.CanAddBodies,
-                Permission.CanEditBodies,
-                Permission.CanRegisterBodies,
-                Permission.CanAddLocations,
                 Permission.CanManageContacts,
                 Permission.CanManageLabels,
                 Permission.CanManageCapacities,
                 Permission.CanManageFormalFrameworks,
                 Permission.CanManageOrganisationClassifications,
                 Permission.CanManageRegulations,
+                Permission.CanManageFunctions,
+                Permission.CanManageLocations,
+                Permission.CanManageBuildings,
+                Permission.CanManageRelations,
+                Permission.CanManageBodies,
                 Permission.CanImport,
                 Permission.CanEditVlimpers,
                 Permission.CanEditDelegations,

@@ -71,34 +71,6 @@ public class ControllerPermissionEnforcementTests
     // -----------------------------------------------------------------------
 
     [Fact(Skip = T026)]
-    public Task CanAddLocations_Gates_LocationCommandController()
-        => AssertPermissionGate(
-            endpoint: "/v1/locations",
-            requiredPermission: Permission.CanAddLocations,
-            expectedForAlgemeenBeheerder: HttpStatusCode.OK);
-
-    [Fact(Skip = T026)]
-    public Task CanAddBodies_Gates_BodyCreateEndpoint()
-        => AssertPermissionGate(
-            endpoint: "/v1/bodies",
-            requiredPermission: Permission.CanAddBodies,
-            expectedForAlgemeenBeheerder: HttpStatusCode.OK);
-
-    [Fact(Skip = T026)]
-    public Task CanEditBodies_Gates_BodyDetailCommandController()
-        => AssertPermissionGate(
-            endpoint: "/v1/bodies/{id}",
-            requiredPermission: Permission.CanEditBodies,
-            expectedForAlgemeenBeheerder: HttpStatusCode.OK);
-
-    [Fact(Skip = T026)]
-    public Task CanRegisterBodies_Gates_BodyRegistrationEndpoint()
-        => AssertPermissionGate(
-            endpoint: "/v1/bodies/{id}/register",
-            requiredPermission: Permission.CanRegisterBodies,
-            expectedForAlgemeenBeheerder: HttpStatusCode.OK);
-
-    [Fact(Skip = T026)]
     public Task CanManageKeys_Gates_KeyTypeCommandController()
         => AssertPermissionGate(
             endpoint: "/v1/keytypes",
