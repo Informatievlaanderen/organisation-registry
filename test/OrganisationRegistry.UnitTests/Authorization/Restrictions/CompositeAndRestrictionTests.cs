@@ -2,8 +2,11 @@ namespace OrganisationRegistry.UnitTests.Authorization.Restrictions;
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using FluentAssertions;
+using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Authorization.Restrictions;
+using Tests.Shared;
 using Xunit;
 
 public class CompositeAndRestrictionTests
@@ -68,20 +71,59 @@ public class CompositeAndRestrictionTests
         first.Should().NotBe(second);
     }
 
+    [Fact]
+    public void Passes_multiple_contexts_to_all_components()
+    {
+        var userAware = new RequiresUserContext();
+        var keyAware = new RequiresKeyContext();
+
+        var composite = new CompositeAndRestriction(userAware, keyAware);
+
+        composite.IsOkWith(
+                new UserContext(new UserBuilder().Build()),
+                new KeyContext(true, Array.Empty<Guid>()))
+            .Should().BeTrue();
+
+        userAware.WasCalled.Should().BeTrue();
+        keyAware.WasCalled.Should().BeTrue();
+    }
+
     private sealed class AlwaysOk : IRestriction
     {
         public static readonly AlwaysOk Instance = new();
-        public bool IsOkWith(IRestrictionContext context) => true;
+        public bool IsOkWith(params IRestrictionContext[] contexts) => true;
     }
 
     private sealed class AlwaysDeny : IRestriction
     {
         public static readonly AlwaysDeny Instance = new();
-        public bool IsOkWith(IRestrictionContext context) => false;
+        public bool IsOkWith(params IRestrictionContext[] contexts) => false;
     }
 
     private sealed record StubTagged(string Tag) : IRestriction
     {
-        public bool IsOkWith(IRestrictionContext context) => true;
+        public bool IsOkWith(params IRestrictionContext[] contexts) => true;
+    }
+
+    private sealed class RequiresUserContext : IRestriction
+    {
+        public bool WasCalled { get; private set; }
+
+        public bool IsOkWith(params IRestrictionContext[] contexts)
+        {
+            WasCalled = true;
+            return contexts.OfType<UserContext>().Any();
+        }
+    }
+
+    private sealed class RequiresKeyContext : IRestriction
+    {
+        public bool WasCalled { get; private set; }
+
+        public bool IsOkWith(params IRestrictionContext[] contexts)
+        {
+            WasCalled = true;
+            return contexts.OfType<KeyContext>().Any();
+        }
     }
 }

@@ -85,17 +85,17 @@ public sealed class PermissionSet : IReadOnlyCollection<PermissionEntry>, IEquat
 
     /// <summary>
     /// Core authorization decision. True when there is at least one grant for
-    /// <paramref name="permission"/> that applies to <paramref name="context"/>.
+    /// <paramref name="permission"/> that applies to the supplied contexts.
     /// Evaluation is OR across grants: an unrestricted grant always applies (and
     /// so absorbs any restricted grant for the same permission); a restricted
     /// grant applies only when its <see cref="IRestriction"/> is satisfied by the
-    /// context. An empty set — or a set without any grant for the permission —
+    /// contexts. An empty set — or a set without any grant for the permission —
     /// yields <c>false</c> (fail-closed).
     /// </summary>
-    public bool IsSatisfiedFor(Permission permission, IRestrictionContext context)
+    public bool IsSatisfiedFor(Permission permission, params IRestrictionContext[] contexts)
         => _entries.Any(e =>
             e.Permission == permission &&
-            (e.Restriction is null || e.Restriction.IsOkWith(context)));
+            (e.Restriction is null || e.Restriction.IsOkWith(contexts)));
 
     public PermissionSet Union(PermissionSet other)
     {

@@ -55,6 +55,28 @@ public class AllowListRestrictionTests
     }
 
     [Fact]
+    public void Finds_matching_context_among_multiple_contexts()
+    {
+        var restriction = new AllowListRestriction<KeyContext>(new[] { A });
+
+        restriction.IsOkWith(
+                new OtherContext(C),
+                new KeyContext(false, A))
+            .Should().BeTrue();
+    }
+
+    [Fact]
+    public void Fails_closed_when_matching_context_is_missing_among_multiple_contexts()
+    {
+        var restriction = new AllowListRestriction<KeyContext>(new[] { A });
+
+        restriction.IsOkWith(
+                new OtherContext(A),
+                new OtherContext(C))
+            .Should().BeFalse();
+    }
+
+    [Fact]
     public void Equality_is_by_allowed_contents_regardless_of_order()
     {
         var first = new AllowListRestriction<KeyContext>(new[] { A, B });

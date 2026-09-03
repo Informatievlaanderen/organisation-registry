@@ -29,8 +29,8 @@ public sealed class CompositeAndRestriction
             : ImmutableHashSet.CreateRange(restrictions);
     }
 
-    public bool IsOkWith(IRestrictionContext context)
-        => _restrictions.All(r => r.IsOkWith(context));
+    public bool IsOkWith(params IRestrictionContext[] contexts)
+        => _restrictions.All(r => r.IsOkWith(contexts));
 
     public bool Equals(CompositeAndRestriction? other)
     {
