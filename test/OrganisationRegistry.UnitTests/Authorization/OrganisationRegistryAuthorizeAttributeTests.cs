@@ -61,7 +61,7 @@ public class OrganisationRegistryAuthorizeAttributeTests
     [Fact]
     public async Task Attribute_allows_when_identity_has_any_required_permission()
     {
-        var user = UserWith(PermissionSet.Of(Permission.CanManageKeys, Permission.CanAddLocations));
+        var user = UserWith(PermissionSet.Of(Permission.CanManageKeys, Permission.CanManageLocations));
         var context = BuildContext(user);
         var attribute = new OrganisationRegistryAuthorizeAttribute
         {
@@ -76,11 +76,11 @@ public class OrganisationRegistryAuthorizeAttributeTests
     [Fact]
     public async Task Attribute_allows_when_any_of_multiple_required_permissions_matches()
     {
-        var user = UserWith(PermissionSet.Of(Permission.CanEditBodies));
+        var user = UserWith(PermissionSet.Of(Permission.CanManageBodies));
         var context = BuildContext(user);
         var attribute = new OrganisationRegistryAuthorizeAttribute
         {
-            RequiredPermissions = new[] { Permission.CanRegisterBodies, Permission.CanEditBodies },
+            RequiredPermissions = new[] { Permission.CanManageBodies, Permission.CanEditChildren },
         };
 
         await ((IAsyncAuthorizationFilter)attribute).OnAuthorizationAsync(context);
