@@ -51,8 +51,7 @@ public class WhenAddingAnOrganisationFormalFramework : Specification<AddOrganisa
         => new(
             new Mock<ILogger<AddOrganisationFormalFrameworkCommandHandler>>().Object,
             session,
-            new DateTimeProviderStub(DateTime.Now),
-            Mock.Of<IOrganisationRegistryConfiguration>()
+            new DateTimeProviderStub(DateTime.Now)
         );
 
     private IEvent[] Events
@@ -96,13 +95,11 @@ public class WhenAddingAnOrganisationFormalFramework : Specification<AddOrganisa
             .ThenItPublishesTheCorrectNumberOfEvents(2);
     }
 
-    [Theory]
-    [InlineData(Role.AlgemeenBeheerder)]
-    [InlineData(Role.CjmBeheerder)]
-    public async Task AddsAnOrganisationParent(Role role)
+    [Fact]
+    public async Task AddsAnOrganisationParent()
     {
         await Given(Events)
-            .When(AddOrganisationFormalFrameworkCommand, new UserBuilder().AddRoles(role).Build())
+            .When(AddOrganisationFormalFrameworkCommand, TestUser.AlgemeenBeheerder)
             .Then();
 
         PublishedEvents[0]

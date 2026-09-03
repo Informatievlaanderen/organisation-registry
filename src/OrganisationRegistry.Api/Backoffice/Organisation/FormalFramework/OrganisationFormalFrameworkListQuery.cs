@@ -10,7 +10,6 @@ using Infrastructure.Search.Filtering;
 using Infrastructure.Search.Sorting;
 using OrganisationRegistry.Infrastructure.AppSpecific;
 using OrganisationRegistry.Infrastructure.Authorization;
-using OrganisationRegistry.Infrastructure.Configuration;
 using SqlServer.Infrastructure;
 using SqlServer.Organisation;
 
@@ -32,7 +31,7 @@ public class OrganisationFormalFrameworkListQueryResult
         Guid parentOrganisationId, string? parentOrganisationName,
         DateTime? validFrom, DateTime? validTo,
         string ovoNumber,
-        IOrganisationRegistryConfiguration configuration, IUser user)
+        IUser user)
     {
         OrganisationFormalFrameworkId = organisationFormalFrameworkId;
         FormalFrameworkId = formalFrameworkId;
@@ -44,7 +43,7 @@ public class OrganisationFormalFrameworkListQueryResult
 
         IsActive = new Period(new ValidFrom(validFrom), new ValidTo(validTo)).OverlapsWith(DateTime.Today);
         IsEditable =
-            new FormalFrameworkPolicy(ovoNumber, formalFrameworkId, configuration)
+            new FormalFrameworkPolicy(ovoNumber, formalFrameworkId)
                 .Check(user)
                 .IsSuccessful;
     }
@@ -54,7 +53,6 @@ public class OrganisationFormalFrameworkListQuery : Query<OrganisationFormalFram
 {
     private readonly OrganisationRegistryContext _context;
     private readonly IMemoryCaches _memoryCaches;
-    private readonly IOrganisationRegistryConfiguration _configuration;
     private readonly IUser _user;
     private readonly Guid _organisationId;
 
@@ -70,19 +68,16 @@ public class OrganisationFormalFrameworkListQuery : Query<OrganisationFormalFram
             x.ValidFrom,
             x.ValidTo,
             _memoryCaches.OvoNumbers[x.OrganisationId],
-            _configuration,
             _user);
 
     public OrganisationFormalFrameworkListQuery(
         OrganisationRegistryContext context,
         IMemoryCaches memoryCaches,
-        IOrganisationRegistryConfiguration configuration,
         IUser user,
         Guid organisationId)
     {
         _context = context;
         _memoryCaches = memoryCaches;
-        _configuration = configuration;
         _user = user;
         _organisationId = organisationId;
     }

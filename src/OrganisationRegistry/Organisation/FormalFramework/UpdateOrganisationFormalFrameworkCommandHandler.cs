@@ -8,7 +8,6 @@ using FormalFramework;
 using Handling;
 using Handling.Authorization;
 using Infrastructure.Commands;
-using Infrastructure.Configuration;
 using Infrastructure.Domain;
 using Microsoft.Extensions.Logging;
 
@@ -16,12 +15,10 @@ public class UpdateOrganisationFormalFrameworkCommandHandler
 :BaseCommandHandler<UpdateOrganisationFormalFrameworkCommandHandler>
 ,ICommandEnvelopeHandler<UpdateOrganisationFormalFramework>
 {
-    private readonly IOrganisationRegistryConfiguration _organisationRegistryConfiguration;
     private readonly IDateTimeProvider _dateTimeProvider;
 
-    public UpdateOrganisationFormalFrameworkCommandHandler(ILogger<UpdateOrganisationFormalFrameworkCommandHandler> logger, ISession session, IDateTimeProvider dateTimeProvider, IOrganisationRegistryConfiguration organisationRegistryConfiguration) : base(logger, session)
+    public UpdateOrganisationFormalFrameworkCommandHandler(ILogger<UpdateOrganisationFormalFrameworkCommandHandler> logger, ISession session, IDateTimeProvider dateTimeProvider) : base(logger, session)
     {
-        _organisationRegistryConfiguration = organisationRegistryConfiguration;
         _dateTimeProvider = dateTimeProvider;
     }
 
@@ -30,8 +27,7 @@ public class UpdateOrganisationFormalFrameworkCommandHandler
             .WithPolicy(
                 organisation => new FormalFrameworkPolicy(
                     organisation.State.OvoNumber,
-                    envelope.Command.FormalFrameworkId,
-                    _organisationRegistryConfiguration))
+                    envelope.Command.FormalFrameworkId))
             .Handle(
                 session =>
                 {
