@@ -38,8 +38,8 @@ public class PermissionSetTests
     [Fact]
     public void Equality_is_by_contents_not_reference()
     {
-        var a = PermissionSet.Of(Permission.CanAddBodies, Permission.CanEditBodies);
-        var b = PermissionSet.Of(Permission.CanEditBodies, Permission.CanAddBodies);
+        var a = PermissionSet.Of(Permission.CanManageBodies, Permission.CanManageBuildings);
+        var b = PermissionSet.Of(Permission.CanManageBuildings, Permission.CanManageBodies);
 
         ((object)a).Should().Be(b);
         a.GetHashCode().Should().Be(b.GetHashCode());
@@ -49,7 +49,7 @@ public class PermissionSetTests
     public void Union_is_commutative_and_deduplicates()
     {
         var a = PermissionSet.Of(Permission.CanReadEvents, Permission.CanEditChildren);
-        var b = PermissionSet.Of(Permission.CanEditChildren, Permission.CanAddBodies);
+        var b = PermissionSet.Of(Permission.CanEditChildren, Permission.CanManageBodies);
 
         var ab = a.Union(b);
         var ba = b.Union(a);

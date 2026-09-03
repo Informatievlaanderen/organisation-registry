@@ -9,6 +9,8 @@ using Backoffice.Body.Detail;
 using Backoffice.Body.Seat;
 using Backoffice.Organisation.OrganisationClassification;
 using Backoffice.Parameters.BodyClassification.Requests;
+using Backoffice.Parameters.Building.Requests;
+using Backoffice.Parameters.LabelType.Requests;
 using Backoffice.Parameters.BodyClassificationType.Requests;
 using Backoffice.Parameters.Capacity.Requests;
 using Backoffice.Parameters.ContactType.Requests;
@@ -234,6 +236,25 @@ public class CreationHelpers
             "/v1/capacities",
             new CreateCapacityRequest
             {
+                Name = _fixture.Fixture.Create<string>(),
+            });
+
+    public async Task<Guid> Building()
+        => await Create<Guid>(
+            "/v1/buildings",
+            new CreateBuildingRequest
+            {
+                Id = _fixture.Fixture.Create<Guid>(),
+                Name = _fixture.Fixture.Create<string>(),
+                VimId = null,
+            });
+
+    public async Task<Guid> LabelType()
+        => await Create<Guid>(
+            "/v1/labeltypes",
+            new CreateLabelTypeRequest
+            {
+                Id = _fixture.Fixture.Create<Guid>(),
                 Name = _fixture.Fixture.Create<string>(),
             });
 

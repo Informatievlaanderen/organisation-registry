@@ -6,13 +6,14 @@ using Infrastructure;
 using Infrastructure.Security;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Commands;
 using OrganisationRegistry.Organisation;
 
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("organisations/{organisationId}/formalframeworks")]
-[OrganisationRegistryAuthorize]
+[OrganisationRegistryAuthorize(RequiredPermissions = [Permission.CanManageFormalFrameworks])]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Scherm APIs: Organisaties")]
 public class OrganisationFormalFrameworkCommandController : OrganisationRegistryCommandController

@@ -12,7 +12,7 @@ using OrganisationRegistry.Infrastructure.Commands;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("organisations/{organisationId}/labels")]
-[OrganisationRegistryAuthorize(RequiredPermissions = new[] { Permission.CanEditOrganisationLabels })]
+[OrganisationRegistryAuthorize(RequiredPermissions = [Permission.CanManageLabels])]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Scherm APIs: Organisaties")]
 public class OrganisationLabelCommandController : OrganisationRegistryCommandController

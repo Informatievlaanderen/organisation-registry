@@ -20,8 +20,8 @@ public static class ScopePermissionMap
         new Dictionary<string, PermissionSet>(StringComparer.Ordinal)
         {
             [AcmIdmConstants.Scopes.CjmBeheerder] = PermissionSet.Of(
-                Permission.CanAddBodies,
-                Permission.CanEditBodies),
+                Permission.CanManageBodies
+            ),
 
             [AcmIdmConstants.Scopes.OrafinBeheerder] = PermissionSet.Of(
                 Permission.CanReadOrafin),
@@ -34,10 +34,7 @@ public static class ScopePermissionMap
             // WellknownUsers.TestClient → Role.AlgemeenBeheerder mapping.
             [AcmIdmConstants.Scopes.TestClient] = PermissionSet.Of(
                 Permission.CanEditChildren,
-                Permission.CanAddBodies,
-                Permission.CanEditBodies,
-                Permission.CanRegisterBodies,
-                Permission.CanAddLocations,
+                Permission.CanManageBodies,
                 Permission.CanManageKeys,
                 Permission.CanManageLabels,
                 Permission.CanManageCapacities,
