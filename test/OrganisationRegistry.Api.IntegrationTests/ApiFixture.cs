@@ -635,6 +635,37 @@ public class ApiFixture : IDisposable, IAsyncLifetime
         await VerifyStatusCode(getResponse, HttpStatusCode.NotFound);
     }
 
+    public async Task<Guid> GetOrganisationIdByOvoNumber(string ovoNumber)
+    {
+        using var response = await GetWithoutPagination("/v1/organisations");
+        if (!response.IsSuccessStatusCode)
+            throw new InvalidOperationException($"Could not list organisations to find '{ovoNumber}'.");
+
+        var organisations = await DeserializeAsList(response);
+        var organisation = organisations.FirstOrDefault(org =>
+            TryGetString(org, "ovoNumber", out var orgOvoNumber) &&
+            string.Equals(orgOvoNumber, ovoNumber, StringComparison.OrdinalIgnoreCase));
+
+        if (organisation == null || !TryGetGuid(organisation, "id", out var organisationId))
+            throw new InvalidOperationException($"Could not find organisation with OVO number '{ovoNumber}'.");
+
+        return organisationId;
+    }
+
+    public async Task<Guid> GetOrCreateOrganisationWithOvoNumber(string ovoNumber)
+    {
+        try
+        {
+            return await GetOrganisationIdByOvoNumber(ovoNumber);
+        }
+        catch (InvalidOperationException)
+        {
+            var organisationId = Fixture.Create<Guid>();
+            await Create.Organisation(organisationId, Fixture.Create<string>(), ovoNumber);
+            return organisationId;
+        }
+    }
+
     public async Task GetListAndVerify(string route)
     {
         var getResponse = await Get(HttpClient, $"{route}");

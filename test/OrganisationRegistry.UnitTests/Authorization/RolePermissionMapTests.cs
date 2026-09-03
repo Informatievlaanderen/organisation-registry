@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Authorization.Restrictions;
+using Tests.Shared;
 using Tests.Shared.Stubs;
 using Xunit;
 
@@ -227,5 +228,81 @@ public class RolePermissionMapTests
         var configSet = RolePermissionMap.For(new[] { Role.CjmBeheerder }, config);
 
         ((object)configSet).Should().Be(staticSet);
+    }
+
+    [Fact]
+    public void For_config_VlimpersBeheerder_grants_restricted_CanManageFormalFrameworks()
+    {
+        var vlimpersFormalFrameworkId = Guid.NewGuid();
+        var otherFormalFrameworkId = Guid.NewGuid();
+        var config = new OrganisationRegistryConfigurationStub();
+        ((AuthorizationConfigurationStub)config.Authorization).FormalFrameworkIdsOwnedByVlimpers
+            = new[] { vlimpersFormalFrameworkId };
+
+        var set = RolePermissionMap.For(new[] { Role.VlimpersBeheerder }, config);
+
+        set.IsSatisfiedFor(
+                Permission.CanManageFormalFrameworks,
+                new FormalFrameworkContext(vlimpersFormalFrameworkId))
+            .Should().BeTrue();
+
+        set.IsSatisfiedFor(
+                Permission.CanManageFormalFrameworks,
+                new FormalFrameworkContext(otherFormalFrameworkId))
+            .Should().BeFalse();
+    }
+
+    [Fact]
+    public void For_config_DecentraalBeheerder_grants_restricted_CanManageFormalFrameworks()
+    {
+        var ovoNumber = "OVO123456";
+        var vlimpersFormalFrameworkId = Guid.NewGuid();
+        var otherFormalFrameworkId = Guid.NewGuid();
+        var config = new OrganisationRegistryConfigurationStub();
+        ((AuthorizationConfigurationStub)config.Authorization).FormalFrameworkIdsOwnedByVlimpers
+            = new[] { vlimpersFormalFrameworkId };
+
+        var user = new UserBuilder()
+            .AddRoles(Role.DecentraalBeheerder)
+            .AddOrganisations(ovoNumber)
+            .Build();
+
+        var set = RolePermissionMap.For(new[] { Role.DecentraalBeheerder }, config);
+
+        set.IsSatisfiedFor(
+                Permission.CanManageFormalFrameworks,
+                new UserContext(user),
+                new OrganisationContext(ovoNumber),
+                new FormalFrameworkContext(otherFormalFrameworkId))
+            .Should().BeTrue();
+
+        set.IsSatisfiedFor(
+                Permission.CanManageFormalFrameworks,
+                new UserContext(user),
+                new OrganisationContext(ovoNumber),
+                new FormalFrameworkContext(vlimpersFormalFrameworkId))
+            .Should().BeFalse();
+    }
+
+    [Fact]
+    public void For_config_RegelgevingBeheerder_grants_restricted_CanManageFormalFrameworks()
+    {
+        var regelgevingDbFormalFrameworkId = Guid.NewGuid();
+        var otherFormalFrameworkId = Guid.NewGuid();
+        var config = new OrganisationRegistryConfigurationStub();
+        ((AuthorizationConfigurationStub)config.Authorization).FormalFrameworkIdsOwnedByRegelgevingDbBeheerder
+            = new[] { regelgevingDbFormalFrameworkId };
+
+        var set = RolePermissionMap.For(new[] { Role.RegelgevingBeheerder }, config);
+
+        set.IsSatisfiedFor(
+                Permission.CanManageFormalFrameworks,
+                new FormalFrameworkContext(regelgevingDbFormalFrameworkId))
+            .Should().BeTrue();
+
+        set.IsSatisfiedFor(
+                Permission.CanManageFormalFrameworks,
+                new FormalFrameworkContext(otherFormalFrameworkId))
+            .Should().BeFalse();
     }
 }

@@ -1,54 +1,39 @@
 namespace OrganisationRegistry.Handling.Authorization;
 
 using System;
-using System.Linq;
 using Infrastructure.Authorization;
-using Infrastructure.Configuration;
+using Infrastructure.Authorization.Restrictions;
 using Organisation.Exceptions;
 
+/// <summary>
+/// Role-independent authorization for managing organisation formal frameworks.
+/// Access is driven entirely by the <see cref="Permission.CanManageFormalFrameworks"/>
+/// permission and its (optional) restrictions, evaluated against a
+/// <see cref="FormalFrameworkContext"/> and an <see cref="OrganisationContext"/>.
+///
+/// A holder of an unrestricted <c>CanManageFormalFrameworks</c> grant (e.g.
+/// AlgemeenBeheerder) always passes; a restricted holder only passes when the
+/// organisation and formal framework id match the configured rules for that role.
+/// </summary>
 public class FormalFrameworkPolicy : ISecurityPolicy
 {
     private readonly string _ovoNumber;
     private readonly Guid _formalFrameworkId;
-    private readonly IOrganisationRegistryConfiguration _configuration;
 
-    public FormalFrameworkPolicy(
-        string ovoNumber,
-        Guid formalFrameworkId,
-        IOrganisationRegistryConfiguration configuration)
+    public FormalFrameworkPolicy(string ovoNumber, Guid formalFrameworkId)
     {
         _ovoNumber = ovoNumber;
         _formalFrameworkId = formalFrameworkId;
-        _configuration = configuration;
     }
 
     public AuthorizationResult Check(IUser user)
-    {
-        if(user.IsInAnyOf(Role.AlgemeenBeheerder, Role.CjmBeheerder))
-            return AuthorizationResult.Success();
-
-        var formalFrameworkIdsOwnedByVlimpers = _configuration.Authorization.FormalFrameworkIdsOwnedByVlimpers;
-        var formalFrameworkIdsOwnedByAuditVlaanderen = _configuration.Authorization.FormalFrameworkIdsOwnedByAuditVlaanderen;
-        var formalFrameworkIdsOwnedByRegelgevingDbBeheerder = _configuration.Authorization.FormalFrameworkIdsOwnedByRegelgevingDbBeheerder;
-
-        var formalFrameworkIdsExcludedForOrganisatieBeheerder = formalFrameworkIdsOwnedByVlimpers
-            .Union(formalFrameworkIdsOwnedByAuditVlaanderen)
-            .Union(formalFrameworkIdsOwnedByRegelgevingDbBeheerder);
-
-        if (user.IsInAnyOf(Role.RegelgevingBeheerder) &&
-            formalFrameworkIdsOwnedByRegelgevingDbBeheerder.Contains(_formalFrameworkId))
-            return AuthorizationResult.Success();
-
-        if (user.IsInAnyOf(Role.VlimpersBeheerder) &&
-            formalFrameworkIdsOwnedByVlimpers.Contains(_formalFrameworkId))
-            return AuthorizationResult.Success();
-
-        if(user.IsDecentraalBeheerderForOrganisation(_ovoNumber) &&
-           !formalFrameworkIdsExcludedForOrganisatieBeheerder.Contains(_formalFrameworkId))
-            return AuthorizationResult.Success();
-
-        return AuthorizationResult.Fail(InsufficientRights.CreateFor(this));
-    }
+        => user.IsSatisfiedFor(
+            Permission.CanManageFormalFrameworks,
+            new UserContext(user),
+            new OrganisationContext(_ovoNumber),
+            new FormalFrameworkContext(_formalFrameworkId))
+            ? AuthorizationResult.Success()
+            : AuthorizationResult.Fail(InsufficientRights.CreateFor(this));
 
     public override string ToString()
         => "Geen machtiging op toepassingsgebied";

@@ -159,7 +159,18 @@ public static class RolePermissionMap
             Role.VlimpersBeheerder => PermissionSet.Of(
                 Permission.CanManageKeys.RestrictedTo(
                     KeyRestrictions.VlimpersManaged(
-                        configuration.Authorization.KeyIdsAllowedForVlimpers))),
+                        configuration.Authorization.KeyIdsAllowedForVlimpers)),
+                Permission.CanManageFormalFrameworks.RestrictedTo(
+                    FormalFrameworkRestrictions.OwnedByVlimpers(
+                        configuration.Authorization.FormalFrameworkIdsOwnedByVlimpers))),
+            Role.DecentraalBeheerder => PermissionSet.Of(
+                Permission.CanManageFormalFrameworks.RestrictedTo(
+                    FormalFrameworkRestrictions.DecentraalOrganisationAndNotOwnedByVlimpers(
+                        configuration.Authorization.FormalFrameworkIdsOwnedByVlimpers))),
+            Role.RegelgevingBeheerder => PermissionSet.Of(
+                Permission.CanManageFormalFrameworks.RestrictedTo(
+                    FormalFrameworkRestrictions.OwnedByRegelgevingDb(
+                        configuration.Authorization.FormalFrameworkIdsOwnedByRegelgevingDbBeheerder))),
             _ => PermissionSet.Empty,
         };
 

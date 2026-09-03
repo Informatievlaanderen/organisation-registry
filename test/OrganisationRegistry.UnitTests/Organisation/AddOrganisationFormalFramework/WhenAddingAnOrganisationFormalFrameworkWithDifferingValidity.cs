@@ -50,8 +50,7 @@ public class WhenAddingAnOrganisationFormalFrameworkWithDifferingValidity : Spec
         => new(
             new Mock<ILogger<AddOrganisationFormalFrameworkCommandHandler>>().Object,
             session,
-            _dateTimeProviderStub,
-            Mock.Of<IOrganisationRegistryConfiguration>());
+            _dateTimeProviderStub);
 
     private IEvent[] Events
         => new IEvent[]
