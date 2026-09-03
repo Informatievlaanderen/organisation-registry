@@ -30,7 +30,7 @@ public class FormalFrameworkCommandHandlers :
 
     public async Task Handle(ICommandEnvelope<CreateFormalFramework> envelope)
         => await Handler.For(envelope.User, Session)
-            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .RequiresPermission(Permission.CanManageFormalFrameworks)
             .Handle(
                 session =>
                 {
@@ -48,7 +48,7 @@ public class FormalFrameworkCommandHandlers :
 
     public async Task Handle(ICommandEnvelope<UpdateFormalFramework> envelope)
         => await UpdateHandler<FormalFramework>.For(envelope.Command, envelope.User, Session)
-            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .RequiresPermission(Permission.CanManageFormalFrameworks)
             .Handle(
                 session =>
                 {

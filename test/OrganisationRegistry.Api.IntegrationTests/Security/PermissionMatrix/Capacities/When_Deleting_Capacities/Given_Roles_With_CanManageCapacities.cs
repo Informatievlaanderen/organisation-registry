@@ -2,6 +2,7 @@ namespace OrganisationRegistry.Api.IntegrationTests.Security.PermissionMatrix.Ca
 
 using System;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
@@ -25,61 +26,52 @@ public class Given_Roles_With_CanManageCapacities
 
         var organisationId = _apiFixture.Fixture.Create<Guid>();
         await _apiFixture.Create.Organisation(organisationId, _apiFixture.Fixture.Create<string>());
-        var entityId = _apiFixture.Fixture.Create<Guid>();
-        var capacityId = await _apiFixture.Create.Capacity();
+        var entityId = await AddCapacity(client, organisationId);
 
-        await ApiFixture.Post(
-            client,
-            $"/v1/organisations/{organisationId}/capacities",
-            new AddOrganisationCapacityRequest()
-            {
-                OrganisationCapacityId = entityId,
-                CapacityId = capacityId,
-                PersonId = null,
-                FunctionId = null,
-                LocationId = null,
-                Contacts = null,
-                ValidFrom = null,
-                ValidTo = null,
-            });
-
-        var response = await ApiFixture.Delete(
-            client,
-            $"/v1/organisations/{organisationId}/capacities/{entityId}");
+        var response = await DeleteCapacity(client, organisationId, entityId);
 
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
 
-    [Fact(Skip = "TODO: scoped role 'Decentraalbeheerder' is allowed by the permission matrix but the domain authorization policy requires the organisation (or entity) to be within the role's own scope (BeheerderForOrganisation / configured owned-ids). No fixture precedent exists for creating an organisation inside a scoped role's Keycloak OVO scope, so this positive cannot yet assert a 2xx. Enable once scoped-org test setup is available.")]
-    public async Task For_Decentraalbeheerder_Then_Returns_NoContent()
+    [Fact]
+    public async Task For_Decentraalbeheerder_WithOwnOrganisation_Then_Returns_NoContent()
     {
+        var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Decentraalbeheerder);
+
+        var organisationId = _apiFixture.DecentraalbeheerderOrganisationId;
+        var entityId = await AddCapacity(client, organisationId);
+
+        var response = await DeleteCapacity(client, organisationId, entityId);
+
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+    }
+
+    [Fact]
+    public async Task For_Decentraalbeheerder_WithChildOrganisationInScope_Then_Returns_NoContent()
+    {
+        var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Decentraalbeheerder);
+
+        var organisationId = _apiFixture.DecentraalbeheerderChildOrganisationId;
+        var entityId = await AddCapacity(client, organisationId);
+
+        var response = await DeleteCapacity(client, organisationId, entityId);
+
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+    }
+
+    [Fact]
+    public async Task For_Decentraalbeheerder_WithOrganisationOutsideScope_Then_Returns_Forbidden()
+    {
+        var privilegedClient = await _apiFixture.CreateAlgemeenbeheerderClient();
         var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Decentraalbeheerder);
 
         var organisationId = _apiFixture.Fixture.Create<Guid>();
         await _apiFixture.Create.Organisation(organisationId, _apiFixture.Fixture.Create<string>());
-        var entityId = _apiFixture.Fixture.Create<Guid>();
-        var capacityId = await _apiFixture.Create.Capacity();
+        var entityId = await AddCapacity(privilegedClient, organisationId);
 
-        await ApiFixture.Post(
-            client,
-            $"/v1/organisations/{organisationId}/capacities",
-            new AddOrganisationCapacityRequest()
-            {
-                OrganisationCapacityId = entityId,
-                CapacityId = capacityId,
-                PersonId = null,
-                FunctionId = null,
-                LocationId = null,
-                Contacts = null,
-                ValidFrom = null,
-                ValidTo = null,
-            });
+        var response = await DeleteCapacity(client, organisationId, entityId);
 
-        var response = await ApiFixture.Delete(
-            client,
-            $"/v1/organisations/{organisationId}/capacities/{entityId}");
-
-        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
 
     [Fact(Skip = "TODO: scoped role 'Regelgevingbeheerder' is allowed by the permission matrix but the domain authorization policy requires the organisation (or entity) to be within the role's own scope (BeheerderForOrganisation / configured owned-ids). No fixture precedent exists for creating an organisation inside a scoped role's Keycloak OVO scope, so this positive cannot yet assert a 2xx. Enable once scoped-org test setup is available.")]
@@ -112,5 +104,36 @@ public class Given_Roles_With_CanManageCapacities
             $"/v1/organisations/{organisationId}/capacities/{entityId}");
 
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+    }
+
+    private async Task<Guid> AddCapacity(HttpClient client, Guid organisationId)
+    {
+        var entityId = _apiFixture.Fixture.Create<Guid>();
+        var capacityId = await _apiFixture.Create.Capacity();
+
+        await ApiFixture.Post(
+            client,
+            $"/v1/organisations/{organisationId}/capacities",
+            new AddOrganisationCapacityRequest()
+            {
+                OrganisationCapacityId = entityId,
+                CapacityId = capacityId,
+                PersonId = null,
+                FunctionId = null,
+                LocationId = null,
+                Contacts = null,
+                ValidFrom = null,
+                ValidTo = null,
+            });
+
+        return entityId;
+    }
+
+
+    private async Task<HttpResponseMessage> DeleteCapacity(HttpClient client, Guid organisationId, Guid entityId)
+    {
+        return await ApiFixture.Delete(
+            client,
+            $"/v1/organisations/{organisationId}/capacities/{entityId}");
     }
 }

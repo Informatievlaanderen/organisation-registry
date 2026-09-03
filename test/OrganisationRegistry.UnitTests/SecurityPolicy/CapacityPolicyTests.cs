@@ -49,6 +49,20 @@ public class CapacityPolicyTests
         authorizationResult.Should().Be(AuthorizationResult.Success());
     }
 
+    [Fact]
+    public void AutomatedTaskIsAuthorized()
+    {
+        var user = new UserBuilder()
+            .AddRoles(Role.AutomatedTask)
+            .Build();
+
+        var authorizationResult =
+            CreatePolicy(_fixture.Create<string>(), _regelgevingDbCapacityId)
+                .Check(user);
+
+        authorizationResult.Should().Be(AuthorizationResult.Success());
+    }
+
     [Theory]
     [InlineData(Role.DecentraalBeheerder)]
     [InlineData(Role.VlimpersBeheerder)]
