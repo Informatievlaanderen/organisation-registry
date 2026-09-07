@@ -24,6 +24,6 @@ public static class HandlerExtensionMethods
     public static Handler RequiresPermission(this Handler source, Permission permission)
         => source.WithPolicy(new RequiresPermissionPolicy(permission));
 
-    public static Handler WithAddBodyPolicy(this Handler source)
-        => source.WithPolicy(new AddBodyPolicy());
+    public static Handler WithBodyPolicy(this Handler source, Permission permission, System.Guid bodyId)
+        => source.WithPolicy(new BodyPolicy(permission, bodyId));
 }

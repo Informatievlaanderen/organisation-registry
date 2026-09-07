@@ -2,6 +2,7 @@
 
 using System.Threading.Tasks;
 using Handling;
+using Infrastructure.Authorization;
 using Infrastructure.Commands;
 using Infrastructure.Domain;
 using Microsoft.Extensions.Logging;
@@ -17,7 +18,7 @@ public class ReassignOrganisationToBodySeatCommandHandler
 
     public async Task Handle(ICommandEnvelope<ReassignOrganisationToBodySeat> envelope)
         => await UpdateHandler<Body>.For(envelope.Command, envelope.User, Session)
-            .WithEditBodyPolicy()
+            .WithBodyPolicy(Permission.BodiesCanManageMandates)
             .Handle(
                 session =>
                 {

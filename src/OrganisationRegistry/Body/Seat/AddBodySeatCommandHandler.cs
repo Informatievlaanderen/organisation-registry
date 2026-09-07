@@ -2,6 +2,7 @@
 
 using System.Threading.Tasks;
 using Handling;
+using Infrastructure.Authorization;
 using Infrastructure.Commands;
 using Infrastructure.Domain;
 using Microsoft.Extensions.Logging;
@@ -23,7 +24,7 @@ public class AddBodySeatCommandHandler
 
     public async Task Handle(ICommandEnvelope<AddBodySeat> envelope)
         => await UpdateHandler<Body>.For(envelope.Command, envelope.User, Session)
-            .WithEditBodyPolicy()
+            .WithBodyPolicy(Permission.BodiesCanManageSeats)
             .Handle(
                 session =>
                 {

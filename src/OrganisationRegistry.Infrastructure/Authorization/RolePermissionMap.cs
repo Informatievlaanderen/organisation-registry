@@ -32,6 +32,14 @@ public static class RolePermissionMap
                 Permission.CanManageKeys,
                 Permission.CanManageRegulations,
                 Permission.CanManageBodies,
+                Permission.BodiesCanManageContacts,
+                Permission.BodiesCanManageSeats,
+                Permission.BodiesCanManageMandates,
+                Permission.BodiesCanManageLifecycles,
+                Permission.BodiesCanManageOrganisations,
+                Permission.BodiesCanManageClassifications,
+                Permission.BodiesCanManageFormalFrameworks,
+                Permission.BodiesCanManageMep,
                 Permission.CanManageRelations,
                 Permission.CanManageKbo,
                 Permission.CanManageVlimpers,
@@ -39,37 +47,43 @@ public static class RolePermissionMap
                 Permission.CanImport,
                 Permission.CanReadConfiguration),
 
+            [Role.OrgaanBeheerder] = PermissionSet.Of(
+                Permission.CanManageBodies,
+                Permission.BodiesCanManageContacts,
+                Permission.BodiesCanManageSeats,
+                Permission.BodiesCanManageMandates,
+                Permission.BodiesCanManageLifecycles,
+                Permission.BodiesCanManageOrganisations,
+                Permission.BodiesCanManageClassifications,
+                Permission.BodiesCanManageFormalFrameworks,
+                Permission.BodiesCanManageMep),
+
             [Role.VlimpersBeheerder] = PermissionSet.Of(
                 Permission.CanManageChildren),
 
-                // CanManageFormalFrameworks, CanManageKeys and CanManageLabels are
-                // only granted as restricted grants via the config-aware overload
-                // (RestrictedGrantsFor). CanManageLabels is restricted to
-                // Vlimpers-managed organisations with Vlimpers-allowed labeltypes.
-
-            [Role.DecentraalBeheerder] = PermissionSet.Of(
-                Permission.CanManageBodies),
-
-                // CanManageFunctions, CanManageLocations, CanManageBuildings and
-                // CanManageRelations are only granted as restricted grants (own
-                // organisation / child organisation) via RestrictedGrantsFor.
-                // CanManageFormalFrameworks, CanManageCapacities,
-                // CanManageOrganisationClassifications and CanManageLabels are only
-                // granted as restricted grants (own organisation / child organisation,
-                // not owned by another party) via RestrictedGrantsFor.
+            // DecentraalBeheerder holds no unrestricted grants: every permission it
+            // has (organisation-scoped edits and body management) is granted as a
+            // data-driven restricted grant (own / child organisation or body) via
+            // the config-aware overload (RestrictedGrantsFor).
+            [Role.DecentraalBeheerder] = PermissionSet.Empty,
 
             [Role.RegelgevingBeheerder] = PermissionSet.Of(
                 Permission.CanManageRegulations),
-                // CanManageFormalFrameworks, CanManageCapacities and
-                // CanManageOrganisationClassifications are only granted as restricted
-                // grants (Regelgeving-owned ids) via RestrictedGrantsFor.
 
             [Role.CjmBeheerder] = PermissionSet.Of(
                 Permission.CanManageRegulations,
                 Permission.CanManageCapacities,
-                Permission.CanManageLabels),
-                // CanManageOrganisationClassifications is only granted as a restricted
-                // grant (Cjm-owned classificationtypes) via RestrictedGrantsFor.
+                Permission.CanManageLabels,
+                Permission.CanManageBodies,
+                Permission.BodiesCanManageContacts,
+                Permission.BodiesCanManageSeats,
+                Permission.BodiesCanManageMandates,
+                Permission.BodiesCanManageLifecycles,
+                Permission.BodiesCanManageOrganisations,
+                Permission.BodiesCanManageClassifications,
+                Permission.BodiesCanManageFormalFrameworks,
+                Permission.BodiesCanManageMep),
+
 
             [Role.Orafin] = PermissionSet.Of(
                 Permission.CanReadOrafin),
@@ -87,6 +101,14 @@ public static class RolePermissionMap
                 Permission.CanManageKeys,
                 Permission.CanManageRegulations,
                 Permission.CanManageBodies,
+                Permission.BodiesCanManageContacts,
+                Permission.BodiesCanManageSeats,
+                Permission.BodiesCanManageMandates,
+                Permission.BodiesCanManageLifecycles,
+                Permission.BodiesCanManageOrganisations,
+                Permission.BodiesCanManageClassifications,
+                Permission.BodiesCanManageFormalFrameworks,
+                Permission.BodiesCanManageMep,
                 Permission.CanManageRelations,
                 Permission.CanManageKbo,
                 Permission.CanManageVlimpers,
@@ -197,7 +219,27 @@ public static class RolePermissionMap
                 // labeltypes which are reserved for the VlimpersBeheerder.
                 Permission.CanManageLabels.RestrictedTo(
                     LabelRestrictions.DecentraalOrganisationAndNotOwnedByVlimpers(
-                        configuration.Authorization.LabelIdsAllowedForVlimpers))),
+                        configuration.Authorization.LabelIdsAllowedForVlimpers)),
+                // Body management: DecentraalBeheerder may only manage a body that
+                // belongs to their own organisation or a child organisation
+                // (i.e. one present in the user's Bodies). MEP-decreet
+                // (BodiesCanManageMep) is intentionally never granted.
+                Permission.CanManageBodies.RestrictedTo(
+                    DecentraalBodyRestriction.Instance),
+                Permission.BodiesCanManageContacts.RestrictedTo(
+                    DecentraalBodyRestriction.Instance),
+                Permission.BodiesCanManageSeats.RestrictedTo(
+                    DecentraalBodyRestriction.Instance),
+                Permission.BodiesCanManageMandates.RestrictedTo(
+                    DecentraalBodyRestriction.Instance),
+                Permission.BodiesCanManageLifecycles.RestrictedTo(
+                    DecentraalBodyRestriction.Instance),
+                Permission.BodiesCanManageOrganisations.RestrictedTo(
+                    DecentraalBodyRestriction.Instance),
+                Permission.BodiesCanManageClassifications.RestrictedTo(
+                    DecentraalBodyRestriction.Instance),
+                Permission.BodiesCanManageFormalFrameworks.RestrictedTo(
+                    DecentraalBodyRestriction.Instance)),
             Role.RegelgevingBeheerder => PermissionSet.Of(
                 Permission.CanManageFormalFrameworks.RestrictedTo(
                     FormalFrameworkRestrictions.OwnedByRegelgevingDb(

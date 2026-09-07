@@ -27,6 +27,7 @@ using Backoffice.Parameters.RegulationSubTheme.Requests;
 using Backoffice.Parameters.RegulationTheme.Requests;
 using Backoffice.Person.Detail;
 using OrganisationRegistry.Api.Backoffice.Parameters.KeyType.Requests;
+using OrganisationRegistry.Api.Backoffice.Parameters.SeatType.Requests;
 using Person;
 
 public class CreationHelpers
@@ -92,11 +93,11 @@ public class CreationHelpers
             });
 
     // Body
-    public async Task Body(Guid bodyId, string bodyName)
+    public async Task Body(Guid bodyId, string bodyName, HttpClient? client = null)
     {
         await DefaultLifecyclePhaseTypes();
         await ApiFixture.Post(
-            _fixture.HttpClient,
+            client ?? _fixture.HttpClient,
             "/v1/bodies",
             new RegisterBodyRequest
             {
@@ -104,6 +105,45 @@ public class CreationHelpers
                 Name = bodyName,
             });
     }
+
+    /// <summary>
+    /// Registreert een orgaan voor een organisatie via de meegegeven client.
+    /// Doordat het orgaan meteen aan de organisatie toegewezen wordt, komt het in de scope
+    /// van de decentraalbeheerder van die organisatie terecht (na projectie).
+    /// </summary>
+    public async Task<Guid> BodyForOrganisation(Guid organisationId, HttpClient client, DateTime? validFrom = null)
+    {
+        await DefaultLifecyclePhaseTypes();
+
+        var bodyId = _fixture.Fixture.Create<Guid>();
+        using var response = await ApiFixture.Post(
+            client,
+            "/v1/bodies",
+            new RegisterBodyRequest
+            {
+                Id = bodyId,
+                Name = _fixture.Fixture.Create<string>(),
+                OrganisationId = organisationId,
+                ValidFrom = validFrom,
+            });
+
+        if (response.StatusCode is not HttpStatusCode.Created)
+            throw new InvalidOperationException(
+                $"Could not register body for organisation '{organisationId}'. " +
+                $"Status: {response.StatusCode}. Body: {await response.Content.ReadAsStringAsync()}");
+
+        return bodyId;
+    }
+
+    public async Task<Guid> SeatType()
+        => await Create<Guid>(
+            "/v1/seattypes",
+            new CreateSeatTypeRequest
+            {
+                Name = _fixture.Fixture.Create<string>(),
+                Order = _fixture.Fixture.Create<int>(),
+                IsEffective = _fixture.Fixture.Create<bool>(),
+            });
 
     public async Task<Guid> BodyClassificationType()
         => await Create<Guid>(
@@ -135,7 +175,7 @@ public class CreationHelpers
                 ZipCode = _fixture.Fixture.Create<string>(),
             });
 
-    private async Task DefaultLifecyclePhaseTypes()
+    public async Task DefaultLifecyclePhaseTypes()
     {
         await EnsureDefaultLifecyclePhaseType(representsActivePhase: true);
         await EnsureDefaultLifecyclePhaseType(representsActivePhase: false);
@@ -321,17 +361,25 @@ public class CreationHelpers
     public async Task<Guid> BodySeat(Guid bodyId, Guid seatTypeId)
     {
         var id = _fixture.Fixture.Create<Guid>();
-        return await Create<Guid>(
+        using var response = await ApiFixture.Post(
+            _fixture.HttpClient,
             $"/v1/bodies/{bodyId}/seats",
             new AddBodySeatRequest
             {
-                // cannot use _fixture.Create<> because no 'Id' property
+                // cannot use Create<> because the request uses 'BodySeatId', not 'Id'
                 BodySeatId = id,
                 Name = _fixture.Fixture.Create<string>(),
                 PaidSeat = _fixture.Fixture.Create<bool>(),
                 EntitledToVote = _fixture.Fixture.Create<bool>(),
                 SeatTypeId = seatTypeId,
             });
+
+        if (response.StatusCode is not (HttpStatusCode.Created or HttpStatusCode.OK))
+            throw new InvalidOperationException(
+                $"Could not create test body seat at '/v1/bodies/{bodyId}/seats'. " +
+                $"Status: {response.StatusCode}. Body: {await response.Content.ReadAsStringAsync()}");
+
+        return id;
     }
 
     private async Task<TId> Create<TId>(string route, dynamic body)

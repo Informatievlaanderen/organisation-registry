@@ -3,6 +3,7 @@
 using System.Threading.Tasks;
 using FormalFramework;
 using Handling;
+using Infrastructure.Authorization;
 using Infrastructure.Commands;
 using Infrastructure.Domain;
 using Microsoft.Extensions.Logging;
@@ -17,7 +18,7 @@ public class AddBodyFormalFrameworkCommandHandler
 
     public async Task Handle(ICommandEnvelope<AddBodyFormalFramework> envelope)
         => await Handler.For(envelope.User, Session)
-            .WithAddBodyPolicy()
+            .WithBodyPolicy(Permission.BodiesCanManageFormalFrameworks, (System.Guid)envelope.Command.BodyId)
             .Handle(
                 session =>
                 {

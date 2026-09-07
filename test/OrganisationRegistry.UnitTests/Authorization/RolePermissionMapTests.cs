@@ -20,7 +20,7 @@ public class RolePermissionMapTests
     [InlineData(Role.AlgemeenBeheerder, Permission.CanReadConfiguration)]
     [InlineData(Role.AlgemeenBeheerder, Permission.CanManageLabels)]
     //[InlineData(Role.VlimpersBeheerder, Permission.CanManageVlimpers)] TODO vlimpers cannot edit themselves?
-    [InlineData(Role.DecentraalBeheerder, Permission.CanManageBodies)]
+    [InlineData(Role.OrgaanBeheerder, Permission.CanManageBodies)]
     [InlineData(Role.RegelgevingBeheerder, Permission.CanManageRegulations)]
     [InlineData(Role.Orafin, Permission.CanReadOrafin)]
     [InlineData(Role.Developer, Permission.CanReadConfiguration)]
@@ -92,6 +92,80 @@ public class RolePermissionMapTests
                 permission,
                 new UserContext(user),
                 new OrganisationContext(otherOvoNumber))
+            .Should().BeFalse();
+    }
+
+    [Theory]
+    [InlineData(Permission.CanManageBodies)]
+    [InlineData(Permission.BodiesCanManageContacts)]
+    [InlineData(Permission.BodiesCanManageSeats)]
+    [InlineData(Permission.BodiesCanManageMandates)]
+    [InlineData(Permission.BodiesCanManageLifecycles)]
+    [InlineData(Permission.BodiesCanManageOrganisations)]
+    [InlineData(Permission.BodiesCanManageClassifications)]
+    [InlineData(Permission.BodiesCanManageFormalFrameworks)]
+    public void DecentraalBeheerder_does_not_grant_body_permissions_unrestricted(Permission permission)
+    {
+        // Body management is only granted as a data-driven restricted grant (own /
+        // child organisation body) via the config-aware overload; the static map
+        // must not grant it unrestricted (which would allow managing any body).
+        RolePermissionMap.For(Role.DecentraalBeheerder).Contains(permission).Should().BeFalse();
+    }
+
+    [Theory]
+    [InlineData(Permission.CanManageBodies)]
+    [InlineData(Permission.BodiesCanManageContacts)]
+    [InlineData(Permission.BodiesCanManageSeats)]
+    [InlineData(Permission.BodiesCanManageMandates)]
+    [InlineData(Permission.BodiesCanManageLifecycles)]
+    [InlineData(Permission.BodiesCanManageOrganisations)]
+    [InlineData(Permission.BodiesCanManageClassifications)]
+    [InlineData(Permission.BodiesCanManageFormalFrameworks)]
+    public void For_config_DecentraalBeheerder_grants_body_permissions_restricted_to_own_body(
+        Permission permission)
+    {
+        var ownBodyId = Guid.NewGuid();
+        var otherBodyId = Guid.NewGuid();
+        var config = new OrganisationRegistryConfigurationStub();
+
+        var user = new UserBuilder()
+            .AddRoles(Role.DecentraalBeheerder)
+            .AddBodies(ownBodyId)
+            .Build();
+
+        var set = RolePermissionMap.For(new[] { Role.DecentraalBeheerder }, config);
+
+        set.IsSatisfiedFor(
+                permission,
+                new UserContext(user),
+                new BodyContext(ownBodyId))
+            .Should().BeTrue();
+
+        set.IsSatisfiedFor(
+                permission,
+                new UserContext(user),
+                new BodyContext(otherBodyId))
+            .Should().BeFalse();
+    }
+
+    [Fact]
+    public void For_config_DecentraalBeheerder_never_grants_body_mep()
+    {
+        var ownBodyId = Guid.NewGuid();
+        var config = new OrganisationRegistryConfigurationStub();
+
+        var user = new UserBuilder()
+            .AddRoles(Role.DecentraalBeheerder)
+            .AddBodies(ownBodyId)
+            .Build();
+
+        var set = RolePermissionMap.For(new[] { Role.DecentraalBeheerder }, config);
+
+        set.Contains(Permission.BodiesCanManageMep).Should().BeFalse();
+        set.IsSatisfiedFor(
+                Permission.BodiesCanManageMep,
+                new UserContext(user),
+                new BodyContext(ownBodyId))
             .Should().BeFalse();
     }
 

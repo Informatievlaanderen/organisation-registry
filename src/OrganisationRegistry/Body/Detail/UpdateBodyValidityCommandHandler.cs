@@ -2,6 +2,7 @@
 
 using System.Threading.Tasks;
 using Handling;
+using Infrastructure.Authorization;
 using Infrastructure.Commands;
 using Infrastructure.Domain;
 using Microsoft.Extensions.Logging;
@@ -18,7 +19,7 @@ public class UpdateBodyValidityCommandHandler
 
     public async Task Handle(ICommandEnvelope<UpdateBodyValidity> envelope)
         => await UpdateHandler<Body>.For(envelope.Command, envelope.User, Session)
-            .WithEditBodyPolicy()
+            .WithBodyPolicy(Permission.CanManageBodies)
             .Handle(
                 session =>
                 {

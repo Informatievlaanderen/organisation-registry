@@ -13,7 +13,7 @@ using OrganisationRegistry.Infrastructure.Commands;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("bodies/{bodyId}/mandates")]
-[OrganisationRegistryAuthorize(RequiredPermissions = [Permission.CanManageBodies])]
+[OrganisationRegistryAuthorize(RequiredPermissions = [Permission.BodiesCanManageMandates])]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Scherm APIs: Organen")]
 public class BodyMandateCommandController : OrganisationRegistryCommandController
