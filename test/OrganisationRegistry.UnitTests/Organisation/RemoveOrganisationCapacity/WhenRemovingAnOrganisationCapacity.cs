@@ -33,8 +33,7 @@ public class WhenRemovingAnOrganisationCapacity : Specification<RemoveOrganisati
     protected override RemoveOrganisationCapacityCommandHandler BuildHandler(ISession session)
         => new(
             Mock.Of<ILogger<RemoveOrganisationCapacityCommandHandler>>(),
-            session,
-            new OrganisationRegistryConfigurationStub());
+            session);
 
     private RemoveOrganisationCapacity RemoveOrganisationCapacityCommand
         => new(

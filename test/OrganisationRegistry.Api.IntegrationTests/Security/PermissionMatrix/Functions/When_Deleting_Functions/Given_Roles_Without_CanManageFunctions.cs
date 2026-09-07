@@ -28,8 +28,6 @@ public class Given_Roles_Without_CanManageFunctions
         var organisationId = _apiFixture.Fixture.Create<Guid>();
         await _apiFixture.Create.Organisation(organisationId, _apiFixture.Fixture.Create<string>());
         var entityId = _apiFixture.Fixture.Create<Guid>();
-        var functionTypeId = await _apiFixture.Create.Function();
-        var personId = await _apiFixture.Create.Person();
 
         var response = await ApiFixture.Delete(
             client,

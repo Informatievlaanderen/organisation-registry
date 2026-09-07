@@ -11,6 +11,7 @@ using Location.Events;
 using Microsoft.Extensions.Logging;
 using Moq;
 using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Authorization.Restrictions;
 using OrganisationRegistry.Infrastructure.Domain;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Events;
@@ -47,7 +48,14 @@ public class WhenUpdatingAnOrganisationLocationToAnAlreadyCoupledLocation :
         );
 
     private IUser User
-        => new UserBuilder().AddRoles(Role.DecentraalBeheerder).AddOrganisations(_ovoNumber).Build();
+        => new UserBuilder()
+            .AddRoles(Role.DecentraalBeheerder)
+            .AddOrganisations(_ovoNumber)
+            .WithPermissions(
+                PermissionSet.Of(
+                    Permission.CanManageLocations.RestrictedTo(
+                        DecentraalOrganisationRestriction.Instance)))
+            .Build();
 
     private IEvent[] Events
         => new IEvent[] {

@@ -37,40 +37,39 @@ public static class RolePermissionMap
                 Permission.CanManageVlimpers,
 
                 Permission.CanImport,
-                Permission.CanReadConfiguration,
-                Permission.CanEditOrganisationLabels),
+                Permission.CanReadConfiguration),
 
             [Role.VlimpersBeheerder] = PermissionSet.Of(
-                Permission.CanManageChildren,
-                Permission.CanManageLabels,
+                Permission.CanManageChildren),
 
-                // CanManageFormalFrameworks and CanManageKeys are only granted as
-                // restricted grants via the config-aware overload (RestrictedGrantsFor).
-                Permission.CanEditOrganisationLabels),
+                // CanManageFormalFrameworks, CanManageKeys and CanManageLabels are
+                // only granted as restricted grants via the config-aware overload
+                // (RestrictedGrantsFor). CanManageLabels is restricted to
+                // Vlimpers-managed organisations with Vlimpers-allowed labeltypes.
 
             [Role.DecentraalBeheerder] = PermissionSet.Of(
-                Permission.CanManageFunctions,
-                Permission.CanManageCapacities,
-                Permission.CanManageLocations,
-                Permission.CanManageBuildings,
-                Permission.CanManageLabels,
-                Permission.CanManageOrganisationClassifications,
-                Permission.CanManageRelations,
-                Permission.CanManageBodies,
+                Permission.CanManageBodies),
 
-                // CanManageFormalFrameworks is only granted as a restricted grant
-                // (own organisation, not Vlimpers-owned) via RestrictedGrantsFor.
-                Permission.CanEditOrganisationLabels),
+                // CanManageFunctions, CanManageLocations, CanManageBuildings and
+                // CanManageRelations are only granted as restricted grants (own
+                // organisation / child organisation) via RestrictedGrantsFor.
+                // CanManageFormalFrameworks, CanManageCapacities,
+                // CanManageOrganisationClassifications and CanManageLabels are only
+                // granted as restricted grants (own organisation / child organisation,
+                // not owned by another party) via RestrictedGrantsFor.
 
             [Role.RegelgevingBeheerder] = PermissionSet.Of(
-                Permission.CanManageRegulations,
-                Permission.CanManageCapacities,
-                Permission.CanManageOrganisationClassifications),
-                // CanManageFormalFrameworks is only granted as a restricted grant
-                // (Regelgeving-owned frameworks) via RestrictedGrantsFor.
+                Permission.CanManageRegulations),
+                // CanManageFormalFrameworks, CanManageCapacities and
+                // CanManageOrganisationClassifications are only granted as restricted
+                // grants (Regelgeving-owned ids) via RestrictedGrantsFor.
 
             [Role.CjmBeheerder] = PermissionSet.Of(
-                Permission.CanEditOrganisationLabels),
+                Permission.CanManageRegulations,
+                Permission.CanManageCapacities,
+                Permission.CanManageLabels),
+                // CanManageOrganisationClassifications is only granted as a restricted
+                // grant (Cjm-owned classificationtypes) via RestrictedGrantsFor.
 
             [Role.Orafin] = PermissionSet.Of(
                 Permission.CanReadOrafin),
@@ -94,14 +93,14 @@ public static class RolePermissionMap
 
                 Permission.CanImport,
                 Permission.CanRunScheduledJobs,
-                Permission.CanReadConfiguration,
-                Permission.CanEditOrganisationLabels),
+                Permission.CanReadConfiguration),
 
             // Transitional: AutomatedTask keeps CanRunScheduledJobs until the
             // scheduled-job / sync services migrate to Client Credentials
             // (see WellknownUsers.ScheduledCommandsService / KboSyncService / Magda).
             // T036 will remove or [Obsolete] this once migration completes.
             [Role.AutomatedTask] = PermissionSet.Of(
+                Permission.CanManageCapacities,
                 Permission.CanRunScheduledJobs),
         };
 
@@ -171,15 +170,48 @@ public static class RolePermissionMap
                         configuration.Authorization.KeyIdsAllowedForVlimpers)),
                 Permission.CanManageFormalFrameworks.RestrictedTo(
                     FormalFrameworkRestrictions.OwnedByVlimpers(
-                        configuration.Authorization.FormalFrameworkIdsOwnedByVlimpers))),
+                        configuration.Authorization.FormalFrameworkIdsOwnedByVlimpers)),
+                Permission.CanManageLabels.RestrictedTo(
+                    LabelRestrictions.VlimpersManaged(
+                        configuration.Authorization.LabelIdsAllowedForVlimpers))),
             Role.DecentraalBeheerder => PermissionSet.Of(
+                Permission.CanManageFunctions.RestrictedTo(
+                    DecentraalOrganisationRestriction.Instance),
+                Permission.CanManageLocations.RestrictedTo(
+                    DecentraalOrganisationRestriction.Instance),
+                Permission.CanManageBuildings.RestrictedTo(
+                    DecentraalOrganisationRestriction.Instance),
+                Permission.CanManageRelations.RestrictedTo(
+                    DecentraalOrganisationRestriction.Instance),
                 Permission.CanManageFormalFrameworks.RestrictedTo(
                     FormalFrameworkRestrictions.DecentraalOrganisationAndNotOwnedByVlimpers(
-                        configuration.Authorization.FormalFrameworkIdsOwnedByVlimpers))),
+                        configuration.Authorization.FormalFrameworkIdsOwnedByVlimpers)),
+                Permission.CanManageCapacities.RestrictedTo(
+                    CapacityRestrictions.DecentraalOrganisationAndNotOwnedByRegelgevingDb(
+                        configuration.Authorization.CapacityIdsOwnedByRegelgevingDbBeheerder)),
+                Permission.CanManageOrganisationClassifications.RestrictedTo(
+                    ClassificationTypeRestrictions.DecentraalOrganisationAndNotOwned(
+                        configuration.Authorization.OrganisationClassificationTypeIdsOwnedByRegelgevingDbBeheerder,
+                        configuration.Authorization.OrganisationClassificationTypeIdsOwnedByCjm)),
+                // Own organisation labels are allowed, except Vlimpers-owned
+                // labeltypes which are reserved for the VlimpersBeheerder.
+                Permission.CanManageLabels.RestrictedTo(
+                    LabelRestrictions.DecentraalOrganisationAndNotOwnedByVlimpers(
+                        configuration.Authorization.LabelIdsAllowedForVlimpers))),
             Role.RegelgevingBeheerder => PermissionSet.Of(
                 Permission.CanManageFormalFrameworks.RestrictedTo(
                     FormalFrameworkRestrictions.OwnedByRegelgevingDb(
-                        configuration.Authorization.FormalFrameworkIdsOwnedByRegelgevingDbBeheerder))),
+                        configuration.Authorization.FormalFrameworkIdsOwnedByRegelgevingDbBeheerder)),
+                Permission.CanManageCapacities.RestrictedTo(
+                    CapacityRestrictions.OwnedByRegelgevingDb(
+                        configuration.Authorization.CapacityIdsOwnedByRegelgevingDbBeheerder)),
+                Permission.CanManageOrganisationClassifications.RestrictedTo(
+                    ClassificationTypeRestrictions.OwnedByRegelgevingDb(
+                        configuration.Authorization.OrganisationClassificationTypeIdsOwnedByRegelgevingDbBeheerder))),
+            Role.CjmBeheerder => PermissionSet.Of(
+                Permission.CanManageOrganisationClassifications.RestrictedTo(
+                    ClassificationTypeRestrictions.OwnedByCjm(
+                        configuration.Authorization.OrganisationClassificationTypeIdsOwnedByCjm))),
             _ => PermissionSet.Empty,
         };
 

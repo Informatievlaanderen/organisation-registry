@@ -234,6 +234,9 @@ public class ApiFixture : IDisposable, IAsyncLifetime
     public static async Task<HttpResponseMessage> Put(HttpClient httpClient, string route, object body)
         => await httpClient.PutAsync(route, ToJson(body));
 
+    public static async Task<HttpResponseMessage> Patch(HttpClient httpClient, string route, object body)
+        => await httpClient.PatchAsync(route, ToJson(body));
+
     public static async Task<HttpResponseMessage> Get(HttpClient httpClient, string route)
         => await httpClient.GetAsync(route);
 

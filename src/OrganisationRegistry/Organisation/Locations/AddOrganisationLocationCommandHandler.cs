@@ -24,7 +24,7 @@ public class AddOrganisationLocationCommandHandler:
 
     public Task Handle(ICommandEnvelope<AddOrganisationLocation> envelope)
         => UpdateHandler<Organisation>.For(envelope.Command, envelope.User, Session)
-            .RequiresBeheerderForOrganisationRegardlessOfVlimpers()
+            .WithLocationPolicy()
             .Handle(
                 session =>
                 {

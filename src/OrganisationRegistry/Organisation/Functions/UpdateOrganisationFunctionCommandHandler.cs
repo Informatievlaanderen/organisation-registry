@@ -20,7 +20,7 @@ public class UpdateOrganisationFunctionCommandHandler
 
     public Task Handle(ICommandEnvelope<UpdateOrganisationFunction> envelope)
         => UpdateHandler<Organisation>.For(envelope.Command,envelope.User, Session)
-            .WithBeheerderForOrganisationPolicy()
+            .WithFunctionPolicy()
             .Handle(
                 session =>
                 {

@@ -19,7 +19,7 @@ public class DeleteOrganisationLocationCommandHandler : BaseCommandHandler<Delet
 
     public Task Handle(ICommandEnvelope<DeleteOrganisationLocation> envelope)
         => UpdateHandler<Organisation>.For(envelope.Command, envelope.User, Session)
-            .RequiresBeheerderForOrganisationRegardlessOfVlimpers()
+            .WithLocationPolicy()
             .Handle(
                 session =>
                 {

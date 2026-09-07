@@ -21,7 +21,7 @@ public class UpdateOrganisationLabelCommandHandler
 
     public Task Handle(ICommandEnvelope<UpdateOrganisationLabel> envelope)
         => UpdateHandler<Organisation>.For(envelope.Command,envelope.User, Session)
-            .WithLabelPolicy(_organisationRegistryConfiguration, envelope.Command)
+            .WithLabelPolicy(envelope.Command)
             .Handle(
                 session =>
                 {

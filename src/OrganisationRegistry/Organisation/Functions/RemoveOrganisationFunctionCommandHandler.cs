@@ -16,7 +16,7 @@ public class RemoveOrganisationFunctionCommandHandler
 
     public async Task Handle(ICommandEnvelope<RemoveOrganisationFunction> envelope)
         => await UpdateHandler<Organisation>.For(envelope.Command, envelope.User, Session)
-            .WithBeheerderForOrganisationPolicy()
+            .WithFunctionPolicy()
             .Handle(
                 session =>
                 {

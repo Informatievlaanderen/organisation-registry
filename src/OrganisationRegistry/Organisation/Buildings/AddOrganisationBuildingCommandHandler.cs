@@ -21,7 +21,7 @@ public class AddOrganisationBuildingCommandHandler:
 
     public Task Handle(ICommandEnvelope<AddOrganisationBuilding> envelope)
         => UpdateHandler<Organisation>.For(envelope.Command,envelope.User, Session)
-            .WithBeheerderForOrganisationPolicy()
+            .WithBuildingPolicy()
             .Handle(
                 session =>
                 {

@@ -5,6 +5,7 @@ using AutoFixture;
 using FluentAssertions;
 using Handling.Authorization;
 using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Configuration;
 using OrganisationRegistry.Organisation.Exceptions;
 using Tests.Shared;
 using Tests.Shared.Stubs;
@@ -14,7 +15,7 @@ public class OrganisationClassificationTypePolicyTests
 {
     private readonly Fixture _fixture;
     private readonly Guid _regelgevingDbClassificationTypeId;
-    private readonly OrganisationRegistryConfigurationStub _configuration;
+    private readonly IOrganisationRegistryConfiguration _configuration;
     private readonly Guid _cjmClassificationTypeId;
 
     public OrganisationClassificationTypePolicyTests()
@@ -33,17 +34,28 @@ public class OrganisationClassificationTypePolicyTests
         };
     }
 
-    public OrganisationClassificationTypePolicy CreatePolicy(string ovoNumber, Guid organisationClassificationTypeId)
-        => new(ovoNumber, _configuration, organisationClassificationTypeId);
+    private IUser UserWithRoles(params Role[] roles)
+        => new UserBuilder()
+            .AddRoles(roles)
+            .WithPermissions(RolePermissionMap.For(roles, _configuration))
+            .Build();
+
+    private IUser UserWithRolesFor(string ovoNumber, params Role[] roles)
+        => new UserBuilder()
+            .AddRoles(roles)
+            .AddOrganisations(ovoNumber)
+            .WithPermissions(RolePermissionMap.For(roles, _configuration))
+            .Build();
+
+    private static OrganisationClassificationTypePolicy CreatePolicy(string ovoNumber, Guid organisationClassificationTypeId)
+        => new(ovoNumber, organisationClassificationTypeId);
 
     [Theory]
     [InlineData(Role.RegelgevingBeheerder)]
     [InlineData(Role.AlgemeenBeheerder)]
     public void RegelgevingDbBeheerderAndAdminIsAuthorizedForRegelgeving(Role role)
     {
-        var user = new UserBuilder()
-            .AddRoles(role)
-            .Build();
+        var user = UserWithRoles(role);
 
         var authorizationResult =
             CreatePolicy(_fixture.Create<string>(), _regelgevingDbClassificationTypeId)
@@ -60,9 +72,7 @@ public class OrganisationClassificationTypePolicyTests
     [InlineData(Role.CjmBeheerder)]
     public void NonRegelgevingDbBeheerderIsNotAuthorizedForRegelgeving(Role role)
     {
-        var user = new UserBuilder()
-            .AddRoles(role)
-            .Build();
+        var user = UserWithRoles(role);
 
         var authorizationResult =
             CreatePolicy(_fixture.Create<string>(), _regelgevingDbClassificationTypeId)
@@ -76,9 +86,7 @@ public class OrganisationClassificationTypePolicyTests
     [InlineData(Role.AlgemeenBeheerder)]
     public void CjmClientAndAdminIsAuthorizedForCjm(Role role)
     {
-        var user = new UserBuilder()
-            .AddRoles(role)
-            .Build();
+        var user = UserWithRoles(role);
 
         var authorizationResult =
             CreatePolicy(_fixture.Create<string>(), _cjmClassificationTypeId)
@@ -95,9 +103,7 @@ public class OrganisationClassificationTypePolicyTests
     [InlineData(Role.RegelgevingBeheerder)]
     public void NonCjmClientIsNotAuthorizedForCjm(Role role)
     {
-        var user = new UserBuilder()
-            .AddRoles(role)
-            .Build();
+        var user = UserWithRoles(role);
 
         var authorizationResult =
             CreatePolicy(_fixture.Create<string>(), _cjmClassificationTypeId)
@@ -110,10 +116,7 @@ public class OrganisationClassificationTypePolicyTests
     public void CjmClientIsNotAuthorizedForNonCjmClassificationTypes()
     {
         var ovoNumber = _fixture.Create<string>();
-        var user = new UserBuilder()
-            .AddRoles(Role.CjmBeheerder)
-            .AddOrganisations(ovoNumber)
-            .Build();
+        var user = UserWithRolesFor(ovoNumber, Role.CjmBeheerder);
 
         var authorizationResult =
             CreatePolicy(ovoNumber, _fixture.Create<Guid>())
@@ -126,10 +129,7 @@ public class OrganisationClassificationTypePolicyTests
     public void BeheerderIsAuthorizedForOtherOrganisationClassificationTypesForTheirOrganisation()
     {
         var ovoNumber = _fixture.Create<string>();
-        var user = new UserBuilder()
-            .AddRoles(Role.DecentraalBeheerder)
-            .AddOrganisations(ovoNumber)
-            .Build();
+        var user = UserWithRolesFor(ovoNumber, Role.DecentraalBeheerder);
 
         var authorizationResult =
             CreatePolicy(ovoNumber, _fixture.Create<Guid>())
@@ -142,10 +142,7 @@ public class OrganisationClassificationTypePolicyTests
     public void BeheerderIsNotAuthorizedForRegelgevingDbOwnedOrganisationClassificationTypesForTheirOrganisation()
     {
         var ovoNumber = _fixture.Create<string>();
-        var user = new UserBuilder()
-            .AddRoles(Role.DecentraalBeheerder)
-            .AddOrganisations(ovoNumber)
-            .Build();
+        var user = UserWithRolesFor(ovoNumber, Role.DecentraalBeheerder);
 
         var authorizationResult =
             CreatePolicy(ovoNumber, _regelgevingDbClassificationTypeId)
@@ -157,10 +154,7 @@ public class OrganisationClassificationTypePolicyTests
     [Fact]
     public void BeheerderIsNotAuthorizedForOtherOrganisationClassificationTypesForOtherOrganisations()
     {
-        var user = new UserBuilder()
-            .AddRoles(Role.DecentraalBeheerder)
-            .AddOrganisations(_fixture.Create<string>())
-            .Build();
+        var user = UserWithRolesFor(_fixture.Create<string>(), Role.DecentraalBeheerder);
 
         var authorizationResult =
             CreatePolicy(_fixture.Create<string>(), _fixture.Create<Guid>())

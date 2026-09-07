@@ -22,7 +22,7 @@ public class UpdateOrganisationOrganisationClassificationCommandHandler
 
     public Task Handle(ICommandEnvelope<UpdateOrganisationOrganisationClassification> envelope)
         => UpdateHandler<Organisation>.For(envelope.Command,envelope.User, Session)
-            .WithOrganisationClassificationTypePolicy(_organisationRegistryConfiguration, envelope.Command)
+            .WithOrganisationClassificationTypePolicy(envelope.Command)
             .Handle(
                 session =>
                 {

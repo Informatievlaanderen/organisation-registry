@@ -18,16 +18,13 @@ public class RolePermissionMapTests
 
     [Theory]
     [InlineData(Role.AlgemeenBeheerder, Permission.CanReadConfiguration)]
-    [InlineData(Role.AlgemeenBeheerder, Permission.CanEditOrganisationLabels)]
+    [InlineData(Role.AlgemeenBeheerder, Permission.CanManageLabels)]
     //[InlineData(Role.VlimpersBeheerder, Permission.CanManageVlimpers)] TODO vlimpers cannot edit themselves?
-    [InlineData(Role.VlimpersBeheerder, Permission.CanEditOrganisationLabels)]
-    [InlineData(Role.DecentraalBeheerder, Permission.CanManageFunctions)]
-    [InlineData(Role.DecentraalBeheerder, Permission.CanEditOrganisationLabels)]
+    [InlineData(Role.DecentraalBeheerder, Permission.CanManageBodies)]
     [InlineData(Role.RegelgevingBeheerder, Permission.CanManageRegulations)]
-    [InlineData(Role.CjmBeheerder, Permission.CanEditOrganisationLabels)]
     [InlineData(Role.Orafin, Permission.CanReadOrafin)]
     [InlineData(Role.Developer, Permission.CanReadConfiguration)]
-    [InlineData(Role.Developer, Permission.CanEditOrganisationLabels)]
+    [InlineData(Role.Developer, Permission.CanManageLabels)]
     [InlineData(Role.AutomatedTask, Permission.CanRunScheduledJobs)]
     public void Every_role_maps_to_a_non_empty_permission_set_containing_expected_permission(
         Role role, Permission expected)
@@ -42,9 +39,60 @@ public class RolePermissionMapTests
     [InlineData(Role.RegelgevingBeheerder)]
     [InlineData(Role.Orafin)]
     [InlineData(Role.AutomatedTask)]
-    public void Roles_without_org_label_editing_do_not_grant_CanEditOrganisationLabels(Role role)
+    [InlineData(Role.VlimpersBeheerder)]
+    [InlineData(Role.DecentraalBeheerder)]
+    public void Roles_without_unrestricted_label_management_do_not_grant_CanManageLabels(Role role)
     {
-        RolePermissionMap.For(role).Contains(Permission.CanEditOrganisationLabels).Should().BeFalse();
+        // VlimpersBeheerder and DecentraalBeheerder only receive CanManageLabels
+        // as a data-driven restricted grant via the config-aware overload; the static map
+        // must not grant it unrestricted.
+        RolePermissionMap.For(role).Contains(Permission.CanManageLabels).Should().BeFalse();
+    }
+
+    [Theory]
+    [InlineData(Permission.CanManageFunctions)]
+    [InlineData(Permission.CanManageLocations)]
+    [InlineData(Permission.CanManageBuildings)]
+    [InlineData(Permission.CanManageRelations)]
+    public void DecentraalBeheerder_does_not_grant_organisation_scoped_permissions_unrestricted(
+        Permission permission)
+    {
+        // These are only granted as data-driven restricted grants (own / child
+        // organisation) via the config-aware overload; the static map must not
+        // grant them unrestricted (which would allow editing any organisation).
+        RolePermissionMap.For(Role.DecentraalBeheerder).Contains(permission).Should().BeFalse();
+    }
+
+    [Theory]
+    [InlineData(Permission.CanManageFunctions)]
+    [InlineData(Permission.CanManageLocations)]
+    [InlineData(Permission.CanManageBuildings)]
+    [InlineData(Permission.CanManageRelations)]
+    public void For_config_DecentraalBeheerder_grants_organisation_scoped_permissions_restricted_to_own_organisation(
+        Permission permission)
+    {
+        var ownOvoNumber = "OVO123456";
+        var otherOvoNumber = "OVO654321";
+        var config = new OrganisationRegistryConfigurationStub();
+
+        var user = new UserBuilder()
+            .AddRoles(Role.DecentraalBeheerder)
+            .AddOrganisations(ownOvoNumber)
+            .Build();
+
+        var set = RolePermissionMap.For(new[] { Role.DecentraalBeheerder }, config);
+
+        set.IsSatisfiedFor(
+                permission,
+                new UserContext(user),
+                new OrganisationContext(ownOvoNumber))
+            .Should().BeTrue();
+
+        set.IsSatisfiedFor(
+                permission,
+                new UserContext(user),
+                new OrganisationContext(otherOvoNumber))
+            .Should().BeFalse();
     }
 
     [Fact]
@@ -223,8 +271,8 @@ public class RolePermissionMapTests
     {
         var config = new OrganisationRegistryConfigurationStub();
 
-        var staticSet = RolePermissionMap.For(Role.CjmBeheerder);
-        var configSet = RolePermissionMap.For(new[] { Role.CjmBeheerder }, config);
+        var staticSet = RolePermissionMap.For(Role.Orafin);
+        var configSet = RolePermissionMap.For(new[] { Role.Orafin }, config);
 
         ((object)configSet).Should().Be(staticSet);
     }

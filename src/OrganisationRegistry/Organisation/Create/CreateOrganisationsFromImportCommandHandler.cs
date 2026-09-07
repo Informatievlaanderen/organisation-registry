@@ -118,7 +118,6 @@ public class CreateOrganisationsFromImportCommandHandler :
         var labelPolicy = LabelPolicy.ForCreate(
             organisation.State.OvoNumber,
             organisation.State.UnderVlimpersManagement,
-            _organisationRegistryConfiguration,
             labelsToAdd.Select(l => l.LabelTypeId).ToArray());
 
         var result = labelPolicy.Check(user);
