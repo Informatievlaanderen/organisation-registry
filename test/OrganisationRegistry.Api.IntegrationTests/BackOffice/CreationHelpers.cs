@@ -185,6 +185,30 @@ public class CreationHelpers
                 Name = _fixture.Fixture.Create<string>(),
             });
 
+    public async Task<Guid> KeyType(Guid keyTypeId)
+    {
+        using var getResponse = await ApiFixture.Get(_fixture.HttpClient, $"/v1/keytypes/{keyTypeId}");
+        if (getResponse.StatusCode == HttpStatusCode.OK)
+            return keyTypeId;
+
+        using var postResponse = await ApiFixture.Post(
+            _fixture.HttpClient,
+            "/v1/keytypes",
+            new CreateKeyTypeRequest
+            {
+                Id = keyTypeId,
+                Name = _fixture.Fixture.Create<string>(),
+            });
+
+        if (postResponse.StatusCode is not (HttpStatusCode.Created or HttpStatusCode.OK))
+            throw new InvalidOperationException(
+                $"Could not create keytype '{keyTypeId}'. " +
+                $"Status: {postResponse.StatusCode}. Body: {await postResponse.Content.ReadAsStringAsync()}");
+
+        await WaitUntilCreated("/v1/keytypes", keyTypeId);
+        return keyTypeId;
+    }
+
     public async Task<Guid> ContactType(string? contactTypeName = null)
         => await Create<Guid>(
             "/v1/contacttypes",

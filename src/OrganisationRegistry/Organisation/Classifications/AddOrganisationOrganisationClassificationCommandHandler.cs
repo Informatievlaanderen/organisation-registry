@@ -25,7 +25,7 @@ public class AddOrganisationOrganisationClassificationCommandHandler
 
     public Task Handle(ICommandEnvelope<AddOrganisationOrganisationClassification> envelope)
         => UpdateHandler<Organisation>.For(envelope.Command, envelope.User, Session)
-            .WithOrganisationClassificationTypePolicy(_organisationRegistryConfiguration, envelope.Command)
+            .WithOrganisationClassificationTypePolicy(envelope.Command)
             .Handle(
                 session =>
                 {

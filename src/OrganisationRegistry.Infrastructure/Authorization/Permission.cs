@@ -52,7 +52,7 @@ public enum Permission
     /// are still enforced by <c>LabelPolicy</c> in the domain handler; this
     /// permission only opens the controller-level general check.
     /// </summary>
-    CanEditOrganisationLabels,
+    //CanEditOrganisationLabels,
     CanReadEvents,
     CanViewProjections,
 }

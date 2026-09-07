@@ -21,29 +21,40 @@ public static class UpdateHandlerExtensionMethods
             organisation => new BeheerderForOrganisationRegardlessOfVlimpersPolicy(
                 organisation.State.OvoNumber));
 
+    public static UpdateHandler<Organisation> WithContactPolicy(this UpdateHandler<Organisation> source)
+        => source.WithPolicy(_ => new ContactPolicy());
+
+    public static UpdateHandler<Organisation> WithFunctionPolicy(this UpdateHandler<Organisation> source)
+        => source.WithPolicy(organisation => new FunctionPolicy(organisation.State.OvoNumber));
+
+    public static UpdateHandler<Organisation> WithBuildingPolicy(this UpdateHandler<Organisation> source)
+        => source.WithPolicy(organisation => new BuildingPolicy(organisation.State.OvoNumber));
+
+    public static UpdateHandler<Organisation> WithRelationPolicy(this UpdateHandler<Organisation> source)
+        => source.WithPolicy(organisation => new RelationPolicy(organisation.State.OvoNumber));
+
+    public static UpdateHandler<Organisation> WithLocationPolicy(this UpdateHandler<Organisation> source)
+        => source.WithPolicy(organisation => new LocationPolicy(organisation.State.OvoNumber));
+
     public static UpdateHandler<Organisation> WithVlimpersOnlyPolicy(this UpdateHandler<Organisation> source)
         => source.WithPolicy(organisation => new VlimpersOnlyPolicy(organisation.State.UnderVlimpersManagement));
 
     public static UpdateHandler<Organisation> WithLabelPolicy(
         this UpdateHandler<Organisation> source,
-        IOrganisationRegistryConfiguration configuration,
         AddOrganisationLabel message)
         => source.WithPolicy(
             organisation => LabelPolicy.ForCreate(
                 organisation.State.OvoNumber,
                 organisation.State.UnderVlimpersManagement,
-                configuration,
                 message.LabelTypeId));
 
     public static UpdateHandler<Organisation> WithLabelPolicy(
         this UpdateHandler<Organisation> source,
-        IOrganisationRegistryConfiguration configuration,
         UpdateOrganisationLabel message)
         => source.WithPolicy(
             organisation => LabelPolicy.ForUpdate(
                 organisation.State.OvoNumber,
                 organisation.State.UnderVlimpersManagement,
-                configuration,
                 organisation.State.OrganisationLabels
                     .Single(x => x.OrganisationLabelId == message.OrganisationLabelId).LabelTypeId,
                 message.LabelTypeId));
@@ -66,57 +77,47 @@ public static class UpdateHandlerExtensionMethods
 
     public static UpdateHandler<Organisation> WithOrganisationClassificationTypePolicy(
         this UpdateHandler<Organisation> source,
-        IOrganisationRegistryConfiguration configuration,
         AddOrganisationOrganisationClassification message)
         => source.WithPolicy(
             organisation =>
                 new OrganisationClassificationTypePolicy(
                     organisation.State.OvoNumber,
-                    configuration,
                     message.OrganisationClassificationTypeId));
 
     public static UpdateHandler<Organisation> WithOrganisationClassificationTypePolicy(
         this UpdateHandler<Organisation> source,
-        IOrganisationRegistryConfiguration configuration,
         UpdateOrganisationOrganisationClassification message)
         => source.WithPolicy(
             organisation =>
                 new OrganisationClassificationTypePolicy(
                     organisation.State.OvoNumber,
-                    configuration,
                     message.OrganisationClassificationTypeId));
 
     public static UpdateHandler<Organisation> WithCapacityPolicy(
         this UpdateHandler<Organisation> source,
-        IOrganisationRegistryConfiguration configuration,
         AddOrganisationCapacity message)
         => source.WithPolicy(
             organisation =>
                 new CapacityPolicy(
                     organisation.State.OvoNumber,
-                    configuration,
                     message.CapacityId));
 
     public static UpdateHandler<Organisation> WithCapacityPolicy(
         this UpdateHandler<Organisation> source,
-        IOrganisationRegistryConfiguration configuration,
         UpdateOrganisationCapacity message)
         => source.WithPolicy(
             organisation =>
                 new CapacityPolicy(
                     organisation.State.OvoNumber,
-                    configuration,
                     message.CapacityId));
 
     public static UpdateHandler<Organisation> WithCapacityPolicy(
         this UpdateHandler<Organisation> source,
-        IOrganisationRegistryConfiguration configuration,
         RemoveOrganisationCapacity message)
         => source.WithPolicy(
             organisation =>
                 new CapacityPolicy(
                     organisation.State.OvoNumber,
-                    configuration,
                     organisation.State.OrganisationCapacities
                         .Where(capacity => capacity.OrganisationCapacityId == message.OrganisationCapacityId)
                         .Select(capacity => capacity.CapacityId)

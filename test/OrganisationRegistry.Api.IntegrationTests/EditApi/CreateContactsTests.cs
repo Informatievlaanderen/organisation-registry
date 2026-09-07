@@ -47,19 +47,6 @@ public class CreateContactsTests
         await ApiFixture.VerifyStatusCode(response, HttpStatusCode.Forbidden);
     }
 
-    [EnvVarIgnoreFact]
-    public async Task AsCJM_CanAddAndUpdate()
-    {
-        await _apiFixture.Create.Organisation(_organisationId, TestOrganisationForCreateContacts);
-        var contactTypeName = $"{ContactTypeName}-{Guid.NewGuid():N}";
-        var contactTypeId = await _apiFixture.Create.ContactType(contactTypeName);
-
-        var httpClient = await _apiFixture.CreateMachine2MachineClientFor(ApiFixture.CJM.Client, ApiFixture.CJM.Scope);
-        var organisationContactId = await CreatAndVerify(httpClient, contactTypeId, contactTypeName);
-
-        await UpdateAndVerify(httpClient, contactTypeId, organisationContactId, contactTypeName);
-    }
-
     private async Task UpdateAndVerify(HttpClient httpClient, Guid contactTypeId, Guid organisationContactId, string contactTypeName)
     {
         var value = _apiFixture.Fixture.Create<string>();

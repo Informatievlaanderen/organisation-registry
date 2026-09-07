@@ -51,7 +51,6 @@ public class WhenUpdatingAnOrganisationCapacity : Specification<UpdateOrganisati
         => new(
             Mock.Of<ILogger<UpdateOrganisationCapacityCommandHandler>>(),
             session,
-            new OrganisationRegistryConfigurationStub(),
             new DateTimeProviderStub(DateTime.Now));
 
     private UpdateOrganisationCapacity UpdateOrganisationCapacityCommand

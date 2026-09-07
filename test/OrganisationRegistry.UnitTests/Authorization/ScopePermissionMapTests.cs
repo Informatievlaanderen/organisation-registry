@@ -19,7 +19,7 @@ public class ScopePermissionMapTests
     [InlineData(AcmIdmConstants.Scopes.OrafinBeheerder, Permission.CanReadOrafin)]
     [InlineData(AcmIdmConstants.Scopes.Info, Permission.CanReadInfoEndpoints)]
     [InlineData(AcmIdmConstants.Scopes.TestClient, Permission.CanReadConfiguration)]
-    [InlineData(AcmIdmConstants.Scopes.TestClient, Permission.CanEditOrganisationLabels)]
+    [InlineData(AcmIdmConstants.Scopes.TestClient, Permission.CanManageLabels)]
     public void Every_registered_scope_grants_expected_permission(string scope, Permission expected)
     {
         ScopePermissionMap.For(scope).Contains(expected).Should().BeTrue();

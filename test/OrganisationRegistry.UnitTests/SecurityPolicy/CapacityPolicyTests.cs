@@ -5,6 +5,7 @@ using AutoFixture;
 using FluentAssertions;
 using Handling.Authorization;
 using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Configuration;
 using OrganisationRegistry.Organisation.Exceptions;
 using Tests.Shared;
 using Tests.Shared.Stubs;
@@ -14,7 +15,7 @@ public class CapacityPolicyTests
 {
     private readonly Fixture _fixture;
     private readonly Guid _regelgevingDbCapacityId;
-    private readonly OrganisationRegistryConfigurationStub _configuration;
+    private readonly IOrganisationRegistryConfiguration _configuration;
 
     public CapacityPolicyTests()
     {
@@ -30,17 +31,29 @@ public class CapacityPolicyTests
         };
     }
 
-    public CapacityPolicy CreatePolicy(string ovoNumber, Guid capacityId)
-        => new(ovoNumber, _configuration, capacityId);
+    private IUser UserWithRoles(params Role[] roles)
+        => new UserBuilder()
+            .AddRoles(roles)
+            .WithPermissions(RolePermissionMap.For(roles, _configuration))
+            .Build();
+
+    private IUser DecentraalBeheerderFor(string ovoNumber)
+        => new UserBuilder()
+            .AddRoles(Role.DecentraalBeheerder)
+            .AddOrganisations(ovoNumber)
+            .WithPermissions(
+                RolePermissionMap.For(new[] { Role.DecentraalBeheerder }, _configuration))
+            .Build();
+
+    private static CapacityPolicy CreatePolicy(string ovoNumber, Guid capacityId)
+        => new(ovoNumber, capacityId);
 
     [Theory]
     [InlineData(Role.RegelgevingBeheerder)]
     [InlineData(Role.AlgemeenBeheerder)]
     public void RegelgevingDbBeheerderAndAdminIsAuthorized(Role role)
     {
-        var user = new UserBuilder()
-            .AddRoles(role)
-            .Build();
+        var user = UserWithRoles(role);
 
         var authorizationResult =
             CreatePolicy(_fixture.Create<string>(), _regelgevingDbCapacityId)
@@ -52,9 +65,7 @@ public class CapacityPolicyTests
     [Fact]
     public void AutomatedTaskIsAuthorized()
     {
-        var user = new UserBuilder()
-            .AddRoles(Role.AutomatedTask)
-            .Build();
+        var user = UserWithRoles(Role.AutomatedTask);
 
         var authorizationResult =
             CreatePolicy(_fixture.Create<string>(), _regelgevingDbCapacityId)
@@ -70,9 +81,7 @@ public class CapacityPolicyTests
     [InlineData(Role.OrgaanBeheerder)]
     public void NonRegelgevingDbBeheerderIsNotAuthorized(Role role)
     {
-        var user = new UserBuilder()
-            .AddRoles(role)
-            .Build();
+        var user = UserWithRoles(role);
 
         var authorizationResult =
             CreatePolicy(_fixture.Create<string>(), _regelgevingDbCapacityId)
@@ -85,10 +94,7 @@ public class CapacityPolicyTests
     public void BeheerderIsAuthorizedForOtherCapacitiesForTheirOrganisation()
     {
         var ovoNumber = _fixture.Create<string>();
-        var user = new UserBuilder()
-            .AddRoles(Role.DecentraalBeheerder)
-            .AddOrganisations(ovoNumber)
-            .Build();
+        var user = DecentraalBeheerderFor(ovoNumber);
 
         var authorizationResult =
             CreatePolicy(ovoNumber, _fixture.Create<Guid>())
@@ -101,10 +107,7 @@ public class CapacityPolicyTests
     public void BeheerderIsNotAuthorizedForRegelgevingDbOwnedCapacitiesForTheirOrganisation()
     {
         var ovoNumber = _fixture.Create<string>();
-        var user = new UserBuilder()
-            .AddRoles(Role.DecentraalBeheerder)
-            .AddOrganisations(ovoNumber)
-            .Build();
+        var user = DecentraalBeheerderFor(ovoNumber);
 
         var authorizationResult =
             CreatePolicy(ovoNumber, _regelgevingDbCapacityId)
@@ -116,10 +119,7 @@ public class CapacityPolicyTests
     [Fact]
     public void BeheerderIsNotAuthorizedForOtherCapacitiesForOtherOrganisations()
     {
-        var user = new UserBuilder()
-            .AddRoles(Role.DecentraalBeheerder)
-            .AddOrganisations(_fixture.Create<string>())
-            .Build();
+        var user = DecentraalBeheerderFor(_fixture.Create<string>());
 
         var authorizationResult =
             CreatePolicy(_fixture.Create<string>(), _fixture.Create<Guid>())

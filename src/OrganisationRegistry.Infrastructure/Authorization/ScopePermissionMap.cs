@@ -50,8 +50,7 @@ public static class ScopePermissionMap
                 Permission.CanImport,
                 Permission.CanManageVlimpers,
                // Permission.CanManageDelegations, // TODO ?
-                Permission.CanReadConfiguration,
-                Permission.CanEditOrganisationLabels),
+                Permission.CanReadConfiguration),
         };
 
     private static readonly ConcurrentDictionary<string, byte> LoggedUnknownScopes =

@@ -28,7 +28,6 @@ public class Given_Roles_Without_CanManageLocations
         var organisationId = _apiFixture.Fixture.Create<Guid>();
         await _apiFixture.Create.Organisation(organisationId, _apiFixture.Fixture.Create<string>());
         var entityId = _apiFixture.Fixture.Create<Guid>();
-        var locationId = await _apiFixture.Create.Location();
 
         var response = await ApiFixture.Delete(
             client,

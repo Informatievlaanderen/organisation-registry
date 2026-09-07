@@ -52,7 +52,6 @@ public class LabelTypeController : OrganisationRegistryController
             LabelPolicy.ForCreate(
                     memoryCaches.OvoNumbers[forOrganisationId.Value],
                     memoryCaches.UnderVlimpersManagement.Contains(forOrganisationId.Value),
-                    configuration,
                     labelTypeId)
                 .Check(user)
                 .IsSuccessful;

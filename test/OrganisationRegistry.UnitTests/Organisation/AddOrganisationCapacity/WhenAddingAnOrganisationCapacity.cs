@@ -59,7 +59,6 @@ public class WhenAddingAnOrganisationCapacity
         => new(
             Mock.Of<ILogger<AddOrganisationCapacityCommandHandler>>(),
             session,
-            new OrganisationRegistryConfigurationStub(),
             _dateTimeProviderStub);
 
     private AddOrganisationCapacity AddOrganisationCapacityCommand
