@@ -150,8 +150,8 @@ public static class UpdateHandlerExtensionMethods
         where TAggregate : AggregateRoot
         => source.WithPolicy(_ => new RequiresPermissionPolicy(permission));
 
-    public static UpdateHandler<Body> WithEditBodyPolicy(this UpdateHandler<Body> source)
-        => source.WithPolicy(body => new EditBodyPolicy(body.Id));
+    public static UpdateHandler<Body> WithBodyPolicy(this UpdateHandler<Body> source, Permission permission)
+        => source.WithPolicy(body => new BodyPolicy(permission, body.Id));
 
     public static UpdateHandler<Body> WithEditDelegationPolicy(this UpdateHandler<Body> source, OrganisationId organisationId)
         => source.WithPolicy(body => new EditDelegationPolicy(organisationId, body.Id));

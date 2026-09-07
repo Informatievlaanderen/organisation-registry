@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using ContactType;
 using Handling;
+using Infrastructure.Authorization;
 using Infrastructure.Commands;
 using Infrastructure.Domain;
 using Microsoft.Extensions.Logging;
@@ -20,7 +21,7 @@ public class ReassignPersonToBodySeatCommandHandler
 
     public async Task Handle(ICommandEnvelope<ReassignPersonToBodySeat> envelope)
         => await UpdateHandler<Body>.For(envelope.Command, envelope.User, Session)
-            .WithEditBodyPolicy()
+            .WithBodyPolicy(Permission.BodiesCanManageMandates)
             .Handle(
                 session =>
                 {

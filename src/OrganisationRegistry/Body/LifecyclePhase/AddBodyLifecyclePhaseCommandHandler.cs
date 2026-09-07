@@ -2,6 +2,7 @@
 
 using System.Threading.Tasks;
 using Handling;
+using Infrastructure.Authorization;
 using Infrastructure.Commands;
 using Infrastructure.Domain;
 using LifecyclePhaseType;
@@ -17,7 +18,7 @@ public class AddBodyLifecyclePhaseCommandHandler
 
     public async Task Handle(ICommandEnvelope<AddBodyLifecyclePhase> envelope)
         => await UpdateHandler<Body>.For(envelope.Command, envelope.User, Session)
-            .WithEditBodyPolicy()
+            .WithBodyPolicy(Permission.BodiesCanManageLifecycles)
             .Handle(
                 session =>
                 {

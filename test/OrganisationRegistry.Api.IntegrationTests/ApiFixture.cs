@@ -673,6 +673,9 @@ public class ApiFixture : IDisposable, IAsyncLifetime
         return response.AccessToken;
     }
 
+    public static Task WaitUntil(Func<Task<bool>> predicate, string timeoutMessage)
+        => WaitUntilAsync(predicate, ImportReadinessTimeout, timeoutMessage);
+
     private static async Task WaitUntilAsync(Func<Task<bool>> predicate, TimeSpan timeout, string timeoutMessage)
     {
         var deadline = DateTime.UtcNow.Add(timeout);

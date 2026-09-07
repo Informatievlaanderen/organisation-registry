@@ -14,6 +14,7 @@ public interface IUser
     PermissionSet Permissions { get; }
     bool IsAuthorizedForVlimpersOrganisations { get; }
     List<string> Organisations { get; }
+    IEnumerable<Guid> Bodies { get; }
     bool IsInAnyOf(params Role[] roles);
     bool HasPermission(Permission permission);
     bool HasAnyPermission(params Permission[] permissions);

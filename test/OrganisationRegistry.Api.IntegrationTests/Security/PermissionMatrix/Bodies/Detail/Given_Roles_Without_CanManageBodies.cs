@@ -1,4 +1,4 @@
-namespace OrganisationRegistry.Api.IntegrationTests.Security.PermissionMatrix.Bodies.When_Adding_Bodies;
+namespace OrganisationRegistry.Api.IntegrationTests.Security.PermissionMatrix.Bodies.Detail;
 
 using System;
 using System.Net;
@@ -20,7 +20,6 @@ public class Given_Roles_Without_CanManageBodies
 
     [Theory]
     [InlineData(ApiFixture.Backoffice.Regelgevingbeheerder)]
-    [InlineData(ApiFixture.Backoffice.Orgaanbeheerder)]
     public async Task Then_Returns_Forbidden(string role)
     {
         var client = await _apiFixture.CreateDynamicClient(role);

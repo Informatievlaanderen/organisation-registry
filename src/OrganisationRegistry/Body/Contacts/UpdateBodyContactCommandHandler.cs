@@ -3,6 +3,7 @@
 using System.Threading.Tasks;
 using ContactType;
 using Handling;
+using Infrastructure.Authorization;
 using Infrastructure.Commands;
 using Infrastructure.Domain;
 using Microsoft.Extensions.Logging;
@@ -17,7 +18,7 @@ public class UpdateBodyContactCommandHandler
 
     public async Task Handle(ICommandEnvelope<UpdateBodyContact> envelope)
         => await UpdateHandler<Body>.For(envelope.Command, envelope.User, Session)
-            .WithEditBodyPolicy()
+            .WithBodyPolicy(Permission.BodiesCanManageContacts)
             .Handle(
                 session =>
                 {

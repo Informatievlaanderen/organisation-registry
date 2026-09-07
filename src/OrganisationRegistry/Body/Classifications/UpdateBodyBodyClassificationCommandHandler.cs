@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using BodyClassification;
 using BodyClassificationType;
 using Handling;
+using Infrastructure.Authorization;
 using Infrastructure.Commands;
 using Infrastructure.Domain;
 using Microsoft.Extensions.Logging;
@@ -18,7 +19,7 @@ public class UpdateBodyBodyClassificationCommandHandler
 
     public async Task Handle(ICommandEnvelope<UpdateBodyBodyClassification> envelope)
         => await UpdateHandler<Body>.For(envelope.Command, envelope.User, Session)
-            .WithEditBodyPolicy()
+            .WithBodyPolicy(Permission.BodiesCanManageClassifications)
             .Handle(
                 session =>
                 {
