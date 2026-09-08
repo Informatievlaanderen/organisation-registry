@@ -24,6 +24,12 @@ public static class UpdateHandlerExtensionMethods
     public static UpdateHandler<Organisation> WithContactPolicy(this UpdateHandler<Organisation> source)
         => source.WithPolicy(_ => new ContactPolicy());
 
+    public static UpdateHandler<Organisation> WithKboPolicy(this UpdateHandler<Organisation> source)
+        => source.WithPolicy(_ => new KboPolicy());
+
+    public static UpdateHandler<Organisation> WithVlimpersManagementPolicy(this UpdateHandler<Organisation> source)
+        => source.WithPolicy(_ => new VlimpersManagementPolicy());
+
     public static UpdateHandler<Organisation> WithFunctionPolicy(this UpdateHandler<Organisation> source)
         => source.WithPolicy(organisation => new FunctionPolicy(organisation.State.OvoNumber));
 

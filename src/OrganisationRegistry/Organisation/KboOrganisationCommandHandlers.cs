@@ -311,7 +311,7 @@ public class KboOrganisationCommandHandlers :
 
     public async Task Handle(ICommandEnvelope<CoupleOrganisationToKbo> envelope)
         => await UpdateHandler<Organisation>.For(envelope.Command, envelope.User, Session)
-            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .WithKboPolicy()
             .Handle(
                 session =>
                 {
@@ -356,7 +356,7 @@ public class KboOrganisationCommandHandlers :
 
     public async Task Handle(ICommandEnvelope<CancelCouplingWithKbo> envelope)
         => await UpdateHandler<Organisation>.For(envelope.Command, envelope.User, Session)
-            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .WithKboPolicy()
             .Handle(
                 session =>
                 {
