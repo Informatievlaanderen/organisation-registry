@@ -6,6 +6,7 @@ using Infrastructure;
 using Infrastructure.Security;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Commands;
 using OrganisationRegistry.Organisation;
 
@@ -24,7 +25,7 @@ public class VlimpersController : OrganisationRegistryCommandController
     /// <summary>Pas aan of een organisatie onder Vlimpersbeheer valt of niet.</summary>
     /// <response code="200">Als de organisatie succesvol aangepast is.</response>
     [HttpPatch("{id}/vlimpers")]
-    [OrganisationRegistryAuthorize]
+    [OrganisationRegistryAuthorize(RequiredPermissions = [Permission.CanManageVlimpers])]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Vlimpers(
         [FromRoute] Guid id,

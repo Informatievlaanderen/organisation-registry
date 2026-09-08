@@ -17,7 +17,7 @@ public class ReleaseFromVlimpersManagementCommandHandler :
 
     public Task Handle(ICommandEnvelope<ReleaseFromVlimpersManagement> envelope)
         => UpdateHandler<Organisation>.For(envelope.Command, envelope.User, Session)
-            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .WithVlimpersManagementPolicy()
             .Handle(
                 session =>
                 {
