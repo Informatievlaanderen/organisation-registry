@@ -1,3 +1,10 @@
+## [1.338.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.338.1...v1.338.2) (2026-09-08)
+
+
+### Bug Fixes
+
+* temp remove me controller ([f72a93e](https://github.com/informatievlaanderen/organisation-registry/commit/f72a93e4989e4d9f0e3a2b4e08f0d9e5a53c728d))
+
 ## [1.338.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.338.0...v1.338.1) (2026-09-01)
 
 
