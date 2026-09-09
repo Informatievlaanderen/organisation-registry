@@ -93,13 +93,22 @@ public class OrganisationTreeView :
     {
         var tree = new Tree<OvoNumber>();
 
-        // Start by just adding all orgs
-        foreach (var organisationParent in organisationParents)
-            tree.AddNode(new OvoNumber(organisationOvoNumbers[organisationParent.Key]));
+        // Start by just adding all orgs. Iterate OvoNumbers because it is authoritative
+        // for the set of known organisations; OrganisationParents may lag for orgs that
+        // were created but never had a parent-related event.
+        foreach (var organisation in organisationOvoNumbers)
+            tree.AddNode(new OvoNumber(organisation.Value));
 
         // And then link up their parents
         foreach (var organisationParent in organisationParents.Where(x => x.Value.HasValue))
-            tree.ChangeNodeParent(new OvoNumber(organisationOvoNumbers[organisationParent.Key]), new OvoNumber(organisationOvoNumbers[organisationParent.Value!.Value]));
+        {
+            if (!organisationOvoNumbers.TryGetValue(organisationParent.Key, out var childOvo))
+                continue;
+            if (!organisationOvoNumbers.TryGetValue(organisationParent.Value!.Value, out var parentOvo))
+                continue;
+
+            tree.ChangeNodeParent(new OvoNumber(childOvo), new OvoNumber(parentOvo));
+        }
 
         return tree;
     }

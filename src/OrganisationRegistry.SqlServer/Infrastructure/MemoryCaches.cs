@@ -322,6 +322,9 @@ public class MemoryCachesMaintainer : IMemoryCachesMaintainer
         _memoryCaches.GetCache<string>(MemoryCacheType.OrganisationNames)
             .UpdateMemoryCache(message.Body.OrganisationId, message.Body.Name);
 
+        _memoryCaches.GetCache<Guid?>(MemoryCacheType.OrganisationParents)
+            .UpdateMemoryCache(message.Body.OrganisationId, (Guid?)null);
+
         _memoryCaches.GetCache<DateTime?>(MemoryCacheType.OrganisationValidFroms)
             .UpdateMemoryCache(message.Body.OrganisationId, message.Body.ValidFrom);
 
@@ -337,6 +340,9 @@ public class MemoryCachesMaintainer : IMemoryCachesMaintainer
 
         _memoryCaches.GetCache<string>(MemoryCacheType.OrganisationNames)
             .UpdateMemoryCache(message.Body.OrganisationId, message.Body.Name);
+
+        _memoryCaches.GetCache<Guid?>(MemoryCacheType.OrganisationParents)
+            .UpdateMemoryCache(message.Body.OrganisationId, (Guid?)null);
 
         _memoryCaches.GetCache<DateTime?>(MemoryCacheType.OrganisationValidFroms)
             .UpdateMemoryCache(message.Body.OrganisationId, message.Body.ValidFrom);
