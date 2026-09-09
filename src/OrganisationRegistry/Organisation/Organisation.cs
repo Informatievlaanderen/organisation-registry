@@ -137,7 +137,11 @@ public partial class Organisation : AggregateRoot
         Period validity,
         Period operationalValidity,
         IDateTimeProvider dateTimeProvider)
-        => new(
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new OrganisationNameIsRequired();
+
+        return new Organisation(
             id,
             name,
             ovoNumber,
@@ -150,6 +154,7 @@ public partial class Organisation : AggregateRoot
             validity,
             operationalValidity,
             dateTimeProvider);
+    }
 
     public static Organisation CreateFromImport(
         OrganisationId id,
