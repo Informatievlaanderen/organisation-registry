@@ -80,7 +80,7 @@ public class CreateOrganisationRequestValidator : AbstractValidator<CreateOrgani
         RuleFor(x => x.Name)
             .NotEmpty()
             .WithMessage("Name is required.")
-            .When(x => string.IsNullOrEmpty(x.KboNumber));
+            .When(x => string.IsNullOrWhiteSpace(x.KboNumber));
 
         RuleFor(x => x.Name)
             .Length(0, OrganisationListConfiguration.NameLength)
