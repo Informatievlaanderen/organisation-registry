@@ -34,6 +34,8 @@ public class BodyDetailController : OrganisationRegistryController
 
         var hasAllSeatsAssigned = BodyParticipationStatus.HasAllSeatsAssigned(context, id);
 
-        return Ok(new BodyResponse(body, hasAllSeatsAssigned, BodyParticipationStatus.IsMepCompliant(context, id), await securityService.GetUser(User)));
+        var user = await securityService.GetUser(User);
+
+        return Ok(new BodyResponse(body, hasAllSeatsAssigned, BodyParticipationStatus.IsMepCompliant(context, id), BodyPermissions.For(user, body.Id)));
     }
 }

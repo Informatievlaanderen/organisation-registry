@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using OrganisationRegistry.Infrastructure.AppSpecific;
 using OrganisationRegistry.Infrastructure.Authorization;
 using SqlServer.Infrastructure;
+using SqlServer.Organisation;
 
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
@@ -34,13 +35,7 @@ public class OrganisationDetailController : OrganisationRegistryController
 
         var user = await securityService.GetUser(User);
 
-        OrganisationPermissions PermissionsFactory(string ovoNumber, Guid organisationId)
-            => OrganisationPermissions.For(
-                user,
-                ovoNumber,
-                memoryCaches.UnderVlimpersManagement.Contains(organisationId));
-
-        return Ok(new OrganisationResponse(organisation, PermissionsFactory));
+        return Ok(new OrganisationResponse(organisation, PermissionsFor(user, organisation, memoryCaches)));
     }
 
     /// <summary>Vraag een organisatie op basis van OVO-nummer op.</summary>
@@ -60,12 +55,12 @@ public class OrganisationDetailController : OrganisationRegistryController
 
         var user = await securityService.GetUser(User);
 
-        OrganisationPermissions PermissionsFactory(string ovo, Guid organisationId)
-            => OrganisationPermissions.For(
-                user,
-                ovo,
-                memoryCaches.UnderVlimpersManagement.Contains(organisationId));
-
-        return Ok(new OrganisationResponse(organisation, PermissionsFactory));
+        return Ok(new OrganisationResponse(organisation, PermissionsFor(user, organisation, memoryCaches)));
     }
+
+    private static OrganisationPermissions PermissionsFor(IUser user, OrganisationDetailItem organisation, IMemoryCaches memoryCaches)
+        => OrganisationPermissions.For(
+            user,
+            organisation.OvoNumber,
+            memoryCaches.UnderVlimpersManagement.Contains(organisation.Id));
 }
