@@ -11,5 +11,14 @@ using System.Collections.Generic;
 /// </summary>
 public sealed record ClassificationTypeContext(Guid OrganisationClassificationTypeId) : IRestrictionContext
 {
-    public IEnumerable<Guid> RelevantIds => new[] { OrganisationClassificationTypeId };
+    private readonly IReadOnlyCollection<Guid>? _organisationClassificationTypeIds;
+
+    /// <summary>
+    /// Multi-id / "any" overload used for organisation-level permission summaries:
+    /// an empty collection yields an empty <see cref="RelevantIds"/> (vacuous truth).
+    /// </summary>
+    public ClassificationTypeContext(IReadOnlyCollection<Guid> organisationClassificationTypeIds) : this(Guid.Empty)
+        => _organisationClassificationTypeIds = organisationClassificationTypeIds;
+
+    public IEnumerable<Guid> RelevantIds => _organisationClassificationTypeIds ?? new[] { OrganisationClassificationTypeId };
 }

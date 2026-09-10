@@ -1,11 +1,13 @@
 namespace OrganisationRegistry.Api.Backoffice.Body.List;
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Infrastructure;
+using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Api.Infrastructure.Search.Filtering;
 using OrganisationRegistry.Api.Infrastructure.Search.Pagination;
 using OrganisationRegistry.Api.Infrastructure.Search.Sorting;
@@ -26,14 +28,21 @@ public class BodyListController : OrganisationRegistryController
     [HttpGet]
     [ProducesResponseType(typeof(List<BodyListItem>), StatusCodes.Status200OK)]
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(BodyListExamples))]
-    public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
+    public async Task<IActionResult> Get(
+        [FromServices] OrganisationRegistryContext context,
+        [FromServices] ISecurityService securityService)
     {
         var filtering = Request.ExtractFilteringRequest<BodyListItemFilter>();
         var sorting = Request.ExtractSortingRequest();
         var pagination = Request.ExtractPaginationRequest();
 
+        var user = await securityService.GetUser(User);
+
+        BodyPermissions PermissionsFactory(Guid bodyId)
+            => BodyPermissions.For(user, bodyId);
+
         var pagedBodies =
-            new BodyListQuery(context).Fetch(filtering, sorting, pagination);
+            new BodyListQuery(context, PermissionsFactory).Fetch(filtering, sorting, pagination);
 
         Response.AddPaginationResponse(pagedBodies.PaginationInfo);
         Response.AddSortingResponse(sorting.SortBy, sorting.SortOrder);

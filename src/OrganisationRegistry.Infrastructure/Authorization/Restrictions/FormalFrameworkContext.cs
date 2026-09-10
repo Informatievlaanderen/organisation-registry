@@ -10,5 +10,14 @@ using System.Collections.Generic;
 /// </summary>
 public sealed record FormalFrameworkContext(Guid FormalFrameworkId) : IRestrictionContext
 {
-    public IEnumerable<Guid> RelevantIds => new[] { FormalFrameworkId };
+    private readonly IReadOnlyCollection<Guid>? _formalFrameworkIds;
+
+    /// <summary>
+    /// Multi-id / "any" overload used for organisation-level permission summaries:
+    /// an empty collection yields an empty <see cref="RelevantIds"/> (vacuous truth).
+    /// </summary>
+    public FormalFrameworkContext(IReadOnlyCollection<Guid> formalFrameworkIds) : this(Guid.Empty)
+        => _formalFrameworkIds = formalFrameworkIds;
+
+    public IEnumerable<Guid> RelevantIds => _formalFrameworkIds ?? new[] { FormalFrameworkId };
 }

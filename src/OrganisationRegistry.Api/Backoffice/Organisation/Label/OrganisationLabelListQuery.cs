@@ -22,6 +22,8 @@ public class OrganisationLabelListQueryResult
 
     public bool IsEditable { get; }
 
+    public ResourceEditPermissions Permissions { get; }
+
     public OrganisationLabelListQueryResult(Guid organisationLabelId,
         string labelTypeName,
         string labelValue,
@@ -39,6 +41,7 @@ public class OrganisationLabelListQueryResult
         IsEditable = isEditable && isAuthorizedForLabelType(labelTypeId);
 
         IsActive = new Period(new ValidFrom(validFrom), new ValidTo(validTo)).OverlapsWith(DateTime.Today);
+        Permissions = new ResourceEditPermissions(IsEditable);
     }
 }
 

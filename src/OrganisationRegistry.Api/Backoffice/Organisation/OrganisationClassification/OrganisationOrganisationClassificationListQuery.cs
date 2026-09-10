@@ -22,6 +22,8 @@ public class OrganisationOrganisationClassificationListQueryResult
 
     public bool IsEditable { get; }
 
+    public ResourceEditPermissions Permissions { get; }
+
     public OrganisationOrganisationClassificationListQueryResult(
         Guid organisationOrganisationClassificationId,
         Guid organisationClassificationTypeId,
@@ -40,6 +42,7 @@ public class OrganisationOrganisationClassificationListQueryResult
         IsEditable = isEditable && isAuthorizedForOrganisationClassificationType(organisationClassificationTypeId);
 
         IsActive = new Period(new ValidFrom(validFrom), new ValidTo(validTo)).OverlapsWith(DateTime.Today);
+        Permissions = new ResourceEditPermissions(IsEditable);
     }
 }
 

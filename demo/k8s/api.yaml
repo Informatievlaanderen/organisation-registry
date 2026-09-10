@@ -155,6 +155,8 @@ spec:
           value: "http://app.localhost:9080"
         - name: Cors__2
           value: "http://localhost:9080"
+        - name: OIDCAuth__Developers
+          value: "9c2f7372-7112-49dc-9771-f127b048b4c7"
         ports:
         - containerPort: 9002
         readinessProbe:
