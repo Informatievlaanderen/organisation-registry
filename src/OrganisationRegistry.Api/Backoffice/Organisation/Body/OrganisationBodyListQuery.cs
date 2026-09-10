@@ -4,9 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using Handling.Authorization;
 using Infrastructure.Search;
 using Infrastructure.Search.Filtering;
 using Infrastructure.Search.Sorting;
+using OrganisationRegistry.Infrastructure.Authorization;
 using SqlServer.Infrastructure;
 using SqlServer.Organisation;
 
@@ -20,12 +22,17 @@ public class OrganisationBodyListQueryResult
 
     public bool IsActive { get; }
 
+    public bool IsEditable { get; }
+
+    public ResourceEditPermissions Permissions { get; }
+
     public OrganisationBodyListQueryResult(
         Guid organisationBodyId,
         Guid bodyId,
         string bodyName,
         DateTime? validFrom,
-        DateTime? validTo)
+        DateTime? validTo,
+        IUser user)
     {
         OrganisationBodyId = organisationBodyId;
         BodyId = bodyId;
@@ -34,6 +41,8 @@ public class OrganisationBodyListQueryResult
         ValidTo = validTo;
 
         IsActive = new Period(new ValidFrom(validFrom), new ValidTo(validTo)).OverlapsWith(DateTime.Today);
+        IsEditable = new BodyPolicy(Permission.BodiesCanManageOrganisations, bodyId).Check(user).IsSuccessful;
+        Permissions = new ResourceEditPermissions(IsEditable);
     }
 }
 
@@ -41,6 +50,7 @@ public class OrganisationBodyListQuery : Query<OrganisationBodyListItem, Organis
 {
     private readonly OrganisationRegistryContext _context;
     private readonly Guid _organisationId;
+    private readonly IUser _user;
 
     protected override ISorting Sorting => new OrganisationBodyListSorting();
 
@@ -50,12 +60,14 @@ public class OrganisationBodyListQuery : Query<OrganisationBodyListItem, Organis
             x.BodyId,
             x.BodyName,
             x.ValidFrom,
-            x.ValidTo);
+            x.ValidTo,
+            _user);
 
-    public OrganisationBodyListQuery(OrganisationRegistryContext context, Guid organisationId)
+    public OrganisationBodyListQuery(OrganisationRegistryContext context, Guid organisationId, IUser user)
     {
         _context = context;
         _organisationId = organisationId;
+        _user = user;
     }
 
     protected override IQueryable<OrganisationBodyListItem> Filter(FilteringHeader<OrganisationBodyListItemFilter> filtering)

@@ -4,9 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using Handling.Authorization;
 using Infrastructure.Search;
 using Infrastructure.Search.Filtering;
 using Infrastructure.Search.Sorting;
+using OrganisationRegistry.Infrastructure.AppSpecific;
+using OrganisationRegistry.Infrastructure.Authorization;
 using SqlServer.Infrastructure;
 using SqlServer.Organisation;
 
@@ -21,13 +24,19 @@ public class OrganisationFunctionListQueryResult
 
     public bool IsActive { get; }
 
+    public bool IsEditable { get; }
+
+    public ResourceEditPermissions Permissions { get; }
+
     public OrganisationFunctionListQueryResult(
         Guid organisationFunctionId,
         Guid personId,
         string personName,
         string functionName,
         DateTime? validFrom,
-        DateTime? validTo)
+        DateTime? validTo,
+        string ovoNumber,
+        IUser user)
     {
         OrganisationFunctionId = organisationFunctionId;
         PersonId = personId;
@@ -37,13 +46,17 @@ public class OrganisationFunctionListQueryResult
         ValidTo = validTo;
 
         IsActive = new Period(new ValidFrom(validFrom), new ValidTo(validTo)).OverlapsWith(DateTime.Today);
+        IsEditable = new FunctionPolicy(ovoNumber).Check(user).IsSuccessful;
+        Permissions = new ResourceEditPermissions(IsEditable);
     }
 }
 
 public class OrganisationFunctionListQuery : Query<OrganisationFunctionListItem, OrganisationFunctionListItemFilter, OrganisationFunctionListQueryResult>
 {
     private readonly OrganisationRegistryContext _context;
+    private readonly IMemoryCaches _memoryCaches;
     private readonly Guid _organisationId;
+    private readonly IUser _user;
 
     protected override ISorting Sorting => new OrganisationFunctionListSorting();
 
@@ -54,12 +67,16 @@ public class OrganisationFunctionListQuery : Query<OrganisationFunctionListItem,
             x.PersonName,
             x.FunctionName,
             x.ValidFrom,
-            x.ValidTo);
+            x.ValidTo,
+            _memoryCaches.OvoNumbers[x.OrganisationId],
+            _user);
 
-    public OrganisationFunctionListQuery(OrganisationRegistryContext context, Guid organisationId)
+    public OrganisationFunctionListQuery(OrganisationRegistryContext context, IMemoryCaches memoryCaches, Guid organisationId, IUser user)
     {
         _context = context;
+        _memoryCaches = memoryCaches;
         _organisationId = organisationId;
+        _user = user;
     }
 
     protected override IQueryable<OrganisationFunctionListItem> Filter(FilteringHeader<OrganisationFunctionListItemFilter> filtering)

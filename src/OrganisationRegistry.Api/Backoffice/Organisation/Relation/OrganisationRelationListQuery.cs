@@ -4,9 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using Handling.Authorization;
 using Infrastructure.Search;
 using Infrastructure.Search.Filtering;
 using Infrastructure.Search.Sorting;
+using OrganisationRegistry.Infrastructure.AppSpecific;
+using OrganisationRegistry.Infrastructure.Authorization;
 using SqlServer.Infrastructure;
 using SqlServer.Organisation;
 
@@ -21,13 +24,19 @@ public class OrganisationRelationListQueryResult
 
     public bool IsActive { get; }
 
+    public bool IsEditable { get; }
+
+    public ResourceEditPermissions Permissions { get; }
+
     public OrganisationRelationListQueryResult(
         Guid organisationRelationId,
         Guid relatedOrganisationId,
         string relatedOrganisationName,
         string functionName,
         DateTime? validFrom,
-        DateTime? validTo)
+        DateTime? validTo,
+        string ovoNumber,
+        IUser user)
     {
         OrganisationRelationId = organisationRelationId;
         RelatedOrganisationId = relatedOrganisationId;
@@ -37,13 +46,17 @@ public class OrganisationRelationListQueryResult
         ValidTo = validTo;
 
         IsActive = new Period(new ValidFrom(validFrom), new ValidTo(validTo)).OverlapsWith(DateTime.Today);
+        IsEditable = new RelationPolicy(ovoNumber).Check(user).IsSuccessful;
+        Permissions = new ResourceEditPermissions(IsEditable);
     }
 }
 
 public class OrganisationRelationListQuery : Query<OrganisationRelationListItem, OrganisationRelationListItemFilter, OrganisationRelationListQueryResult>
 {
     private readonly OrganisationRegistryContext _context;
+    private readonly IMemoryCaches _memoryCaches;
     private readonly Guid _organisationId;
+    private readonly IUser _user;
 
     protected override ISorting Sorting => new OrganisationRelationListSorting();
 
@@ -54,12 +67,16 @@ public class OrganisationRelationListQuery : Query<OrganisationRelationListItem,
             x.RelatedOrganisationName,
             x.RelationName,
             x.ValidFrom,
-            x.ValidTo);
+            x.ValidTo,
+            _memoryCaches.OvoNumbers[x.OrganisationId],
+            _user);
 
-    public OrganisationRelationListQuery(OrganisationRegistryContext context, Guid organisationId)
+    public OrganisationRelationListQuery(OrganisationRegistryContext context, IMemoryCaches memoryCaches, Guid organisationId, IUser user)
     {
         _context = context;
+        _memoryCaches = memoryCaches;
         _organisationId = organisationId;
+        _user = user;
     }
 
     protected override IQueryable<OrganisationRelationListItem> Filter(FilteringHeader<OrganisationRelationListItemFilter> filtering)
