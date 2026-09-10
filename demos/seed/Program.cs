@@ -566,7 +566,7 @@ class Seeder
     {
         Console.WriteLine("\n=== LifecyclePhaseTypes ===");
         await CreateAsync("Actief",   "/v1/lifecyclephasetypes", new { id = "a7e93f0a-000a-0000-0000-000000000001", name = "Actief",   representsActivePhase = true,  isDefaultPhase = true });
-        await CreateAsync("Inactief", "/v1/lifecyclephasetypes", new { id = "a7e93f0a-000a-0000-0000-000000000002", name = "Inactief", representsActivePhase = false, isDefaultPhase = false });
+        await CreateAsync("Inactief", "/v1/lifecyclephasetypes", new { id = "a7e93f0a-000a-0000-0000-000000000002", name = "Inactief", representsActivePhase = false, isDefaultPhase = true });
     }
 
     async Task SeatTypesAsync()

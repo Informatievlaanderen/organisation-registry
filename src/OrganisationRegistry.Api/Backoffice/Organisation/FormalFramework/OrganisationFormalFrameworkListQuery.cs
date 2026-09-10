@@ -26,6 +26,8 @@ public class OrganisationFormalFrameworkListQueryResult
 
     public bool IsEditable { get; }
 
+    public ResourceEditPermissions Permissions { get; }
+
     public OrganisationFormalFrameworkListQueryResult(Guid organisationFormalFrameworkId,
         Guid formalFrameworkId, string? formalFrameworkName,
         Guid parentOrganisationId, string? parentOrganisationName,
@@ -46,6 +48,7 @@ public class OrganisationFormalFrameworkListQueryResult
             new FormalFrameworkPolicy(ovoNumber, formalFrameworkId)
                 .Check(user)
                 .IsSuccessful;
+        Permissions = new ResourceEditPermissions(IsEditable);
     }
 }
 

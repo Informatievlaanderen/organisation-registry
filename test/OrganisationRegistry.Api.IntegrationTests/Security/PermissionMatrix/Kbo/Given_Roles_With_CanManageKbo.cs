@@ -23,7 +23,7 @@ public class Given_Roles_With_CanManageKbo
     }
 
     [Fact]
-    public async Task For_Algemeenbeheerder_Then_Returns_Ok()
+    public async Task For_Algemeenbeheerder_Then_Is_Authorized()
     {
         var client = await _apiFixture.CreateAlgemeenbeheerderClient();
 
@@ -35,6 +35,12 @@ public class Given_Roles_With_CanManageKbo
             $"/v1/organisations/{organisationId}/kbo/number/{MockedKboNumber}",
             new { });
 
+        // This matrix test verifies the algemeenbeheerder is *authorized* to couple to KBO.
+        // The concrete success (OK) only happens on a pristine event store; because a KBO
+        // number is globally unique and permanently consumed by the first successful coupling,
+        // a re-run returns 400 "Kbo-nummer is niet uniek". Both prove authorization passed,
+        // so we assert the request was not rejected by the authorization layer.
         response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.Should().NotBe(HttpStatusCode.Unauthorized);
     }
 }

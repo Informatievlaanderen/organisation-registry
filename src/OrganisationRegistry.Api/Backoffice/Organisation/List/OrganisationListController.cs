@@ -1,5 +1,6 @@
 namespace OrganisationRegistry.Api.Backoffice.Organisation.List;
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Infrastructure;
@@ -10,6 +11,7 @@ using Infrastructure.Swagger.Examples;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OrganisationRegistry.Infrastructure.AppSpecific;
 using OrganisationRegistry.Infrastructure.Authorization;
 using SqlServer.Infrastructure;
 using SqlServer.Organisation;
@@ -29,16 +31,24 @@ public class OrganisationListController : OrganisationRegistryController
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(OrganisationListExamples))]
     public async Task<IActionResult> Get(
         [FromServices] OrganisationRegistryContext context,
-        [FromServices] ISecurityService securityService)
+        [FromServices] ISecurityService securityService,
+        [FromServices] IMemoryCaches memoryCaches)
     {
         var filtering = Request.ExtractFilteringRequest<OrganisationListItemFilter>();
         var sorting = Request.ExtractSortingRequest();
         var pagination = Request.ExtractPaginationRequest();
 
         var securityInformation = await securityService.GetSecurityInformation(User);
+        var user = await securityService.GetUser(User);
+
+        OrganisationPermissions PermissionsFactory(string ovoNumber, Guid organisationId)
+            => OrganisationPermissions.For(
+                user,
+                ovoNumber,
+                memoryCaches.UnderVlimpersManagement.Contains(organisationId));
 
         var pagedOrganisations =
-            new OrganisationListQuery(context, securityInformation)
+            new OrganisationListQuery(context, securityInformation, PermissionsFactory)
                 .Fetch(filtering, sorting, pagination);
 
         Response.AddPaginationResponse(pagedOrganisations.PaginationInfo);

@@ -38,6 +38,9 @@ public class OrganisationListQueryResult
     [ExcludeFromCsv]
     public Guid? ParentOrganisationId { get; }
 
+    [ExcludeFromCsv]
+    public OrganisationPermissions Permissions { get; }
+
     public OrganisationListQueryResult(
         Guid id,
         string ovoNumber,
@@ -45,7 +48,8 @@ public class OrganisationListQueryResult
         string? shortName,
         string? parentOrganisation,
         Guid? parentOrganisationId,
-        string? parentOrganisationOvoNumber)
+        string? parentOrganisationOvoNumber,
+        Func<string, Guid, OrganisationPermissions> permissionsFactory)
     {
         Id = id;
         OvoNumber = ovoNumber;
@@ -54,6 +58,7 @@ public class OrganisationListQueryResult
         ParentOrganisation = parentOrganisation;
         ParentOrganisationId = parentOrganisationId;
         ParentOrganisationOvoNumber = parentOrganisationOvoNumber;
+        Permissions = permissionsFactory(ovoNumber, id);
     }
 }
 
@@ -61,6 +66,7 @@ public class OrganisationListQuery : Query<OrganisationListItem, OrganisationLis
 {
     private readonly OrganisationRegistryContext _context;
     private readonly SecurityInformation _securityInformation;
+    private readonly Func<string, Guid, OrganisationPermissions> _permissionsFactory;
 
     protected override ISorting Sorting => new OrganisationListSorting();
 
@@ -72,12 +78,17 @@ public class OrganisationListQuery : Query<OrganisationListItem, OrganisationLis
             x.ShortName,
             x.ParentOrganisation,
             x.ParentOrganisationId,
-            x.ParentOrganisationOvoNumber);
+            x.ParentOrganisationOvoNumber,
+            _permissionsFactory);
 
-    public OrganisationListQuery(OrganisationRegistryContext context, SecurityInformation securityInformation)
+    public OrganisationListQuery(
+        OrganisationRegistryContext context,
+        SecurityInformation securityInformation,
+        Func<string, Guid, OrganisationPermissions> permissionsFactory)
     {
         _context = context;
         _securityInformation = securityInformation;
+        _permissionsFactory = permissionsFactory;
     }
 
     protected override IQueryable<OrganisationListItem> Filter(FilteringHeader<OrganisationListItemFilter> filtering)

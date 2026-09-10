@@ -10,5 +10,14 @@ using System.Collections.Generic;
 /// </summary>
 public sealed record CapacityContext(Guid CapacityId) : IRestrictionContext
 {
-    public IEnumerable<Guid> RelevantIds => new[] { CapacityId };
+    private readonly IReadOnlyCollection<Guid>? _capacityIds;
+
+    /// <summary>
+    /// Multi-id / "any" overload used for organisation-level permission summaries:
+    /// an empty collection yields an empty <see cref="RelevantIds"/> (vacuous truth).
+    /// </summary>
+    public CapacityContext(IReadOnlyCollection<Guid> capacityIds) : this(Guid.Empty)
+        => _capacityIds = capacityIds;
+
+    public IEnumerable<Guid> RelevantIds => _capacityIds ?? new[] { CapacityId };
 }

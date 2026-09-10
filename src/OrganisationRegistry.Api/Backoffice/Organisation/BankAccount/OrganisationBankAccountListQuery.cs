@@ -24,6 +24,8 @@ public class OrganisationBankAccountListQueryResult
 
     public bool IsEditable { get; }
 
+    public ResourceEditPermissions Permissions { get; }
+
     public OrganisationBankAccountListQueryResult(
         Guid organisationBankAccountId,
         string bankAccountNumber,
@@ -44,6 +46,7 @@ public class OrganisationBankAccountListQueryResult
 
         IsActive = new Period(new ValidFrom(validFrom), new ValidTo(validTo)).OverlapsWith(DateTime.Today);
         IsEditable = isEditable;
+        Permissions = new ResourceEditPermissions(IsEditable);
     }
 }
 

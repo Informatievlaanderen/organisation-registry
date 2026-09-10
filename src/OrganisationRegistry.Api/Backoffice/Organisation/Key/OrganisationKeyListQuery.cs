@@ -18,8 +18,14 @@ public class OrganisationKeyListQueryResult
     public DateTime? ValidFrom { get; }
     public DateTime? ValidTo { get; }
     public bool IsActive { get; }
+
+    [Obsolete("Use Permissions.CanEdit instead.")]
     public bool IsEditable { get; }
+
+    [Obsolete("Use Permissions.CanEdit instead.")]
     public bool CanEdit { get; }
+
+    public ResourceEditPermissions Permissions { get; }
 
     public OrganisationKeyListQueryResult(Guid organisationKeyId,
         string keyTypeName,
@@ -34,8 +40,13 @@ public class OrganisationKeyListQueryResult
         KeyValue = keyValue;
         ValidFrom = validFrom;
         ValidTo = validTo;
-        IsEditable = isAuthorizedForKeyType(keyTypeId);
-        CanEdit = IsEditable;
+
+        var canEdit = isAuthorizedForKeyType(keyTypeId);
+#pragma warning disable CS0618
+        IsEditable = canEdit;
+        CanEdit = canEdit;
+#pragma warning restore CS0618
+        Permissions = new ResourceEditPermissions(canEdit);
 
         IsActive = new Period(new ValidFrom(validFrom), new ValidTo(validTo)).OverlapsWith(DateTime.Today);
     }
