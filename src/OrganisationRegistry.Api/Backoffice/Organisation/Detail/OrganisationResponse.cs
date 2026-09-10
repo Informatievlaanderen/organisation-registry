@@ -36,7 +36,7 @@ public class OrganisationResponse
 
     public OrganisationPermissions? Permissions { get; }
 
-    public OrganisationResponse(OrganisationDetailItem projectionItem, Func<string, Guid, OrganisationPermissions>? permissionsFactory = null)
+    public OrganisationResponse(OrganisationDetailItem projectionItem, OrganisationPermissions? permissions = null)
     {
         Id = projectionItem.Id;
         OvoNumber = projectionItem.OvoNumber;
@@ -60,6 +60,6 @@ public class OrganisationResponse
         IsTerminated = projectionItem.IsTerminated;
         UnderVlimpersManagement = projectionItem.UnderVlimpersManagement;
 
-        Permissions = permissionsFactory?.Invoke(projectionItem.OvoNumber, projectionItem.Id);
+        Permissions = permissions;
     }
 }
