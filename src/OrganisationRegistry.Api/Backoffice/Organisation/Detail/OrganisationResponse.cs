@@ -34,7 +34,9 @@ public class OrganisationResponse
     public bool IsTerminated { get; set; }
     public bool UnderVlimpersManagement { get; set; }
 
-    public OrganisationResponse(OrganisationDetailItem projectionItem)
+    public OrganisationPermissions? Permissions { get; }
+
+    public OrganisationResponse(OrganisationDetailItem projectionItem, Func<string, Guid, OrganisationPermissions>? permissionsFactory = null)
     {
         Id = projectionItem.Id;
         OvoNumber = projectionItem.OvoNumber;
@@ -57,5 +59,7 @@ public class OrganisationResponse
         OperationalValidTo = projectionItem.OperationalValidTo;
         IsTerminated = projectionItem.IsTerminated;
         UnderVlimpersManagement = projectionItem.UnderVlimpersManagement;
+
+        Permissions = permissionsFactory?.Invoke(projectionItem.OvoNumber, projectionItem.Id);
     }
 }

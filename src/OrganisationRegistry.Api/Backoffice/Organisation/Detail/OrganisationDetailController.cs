@@ -6,6 +6,8 @@ using Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OrganisationRegistry.Infrastructure.AppSpecific;
+using OrganisationRegistry.Infrastructure.Authorization;
 using SqlServer.Infrastructure;
 
 [ApiVersion("1.0")]
@@ -21,14 +23,24 @@ public class OrganisationDetailController : OrganisationRegistryController
     [HttpGet("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetById([FromServices] OrganisationRegistryContext context, [FromRoute] Guid id)
+    public async Task<IActionResult> GetById([FromServices] OrganisationRegistryContext context, [FromRoute] Guid id,
+        [FromServices] ISecurityService securityService,
+        [FromServices] IMemoryCaches memoryCaches)
     {
         var organisation = await context.OrganisationDetail.FirstOrDefaultAsync(x => x.Id == id);
 
         if (organisation == null)
             return NotFound();
 
-        return Ok(new OrganisationResponse(organisation));
+        var user = await securityService.GetUser(User);
+
+        OrganisationPermissions PermissionsFactory(string ovoNumber, Guid organisationId)
+            => OrganisationPermissions.For(
+                user,
+                ovoNumber,
+                memoryCaches.UnderVlimpersManagement.Contains(organisationId));
+
+        return Ok(new OrganisationResponse(organisation, PermissionsFactory));
     }
 
     /// <summary>Vraag een organisatie op basis van OVO-nummer op.</summary>
@@ -37,13 +49,23 @@ public class OrganisationDetailController : OrganisationRegistryController
     [HttpGet("{ovoNumber}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetByOvoNumber([FromServices] OrganisationRegistryContext context, [FromRoute] string ovoNumber)
+    public async Task<IActionResult> GetByOvoNumber([FromServices] OrganisationRegistryContext context, [FromRoute] string ovoNumber,
+        [FromServices] ISecurityService securityService,
+        [FromServices] IMemoryCaches memoryCaches)
     {
         var organisation = await context.OrganisationDetail.FirstOrDefaultAsync(x => x.OvoNumber == ovoNumber);
 
         if (organisation == null)
             return NotFound();
 
-        return Ok(new OrganisationResponse(organisation));
+        var user = await securityService.GetUser(User);
+
+        OrganisationPermissions PermissionsFactory(string ovo, Guid organisationId)
+            => OrganisationPermissions.For(
+                user,
+                ovo,
+                memoryCaches.UnderVlimpersManagement.Contains(organisationId));
+
+        return Ok(new OrganisationResponse(organisation, PermissionsFactory));
     }
 }

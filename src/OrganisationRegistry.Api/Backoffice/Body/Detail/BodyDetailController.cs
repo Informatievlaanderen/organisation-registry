@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Infrastructure;
+using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.SqlServer.Infrastructure;
 
 [ApiVersion("1.0")]
@@ -21,7 +22,7 @@ public class BodyDetailController : OrganisationRegistryController
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid id)
+    public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromServices] ISecurityService securityService, [FromRoute] Guid id)
     {
         var body =
             await context.BodyDetail
@@ -33,6 +34,6 @@ public class BodyDetailController : OrganisationRegistryController
 
         var hasAllSeatsAssigned = BodyParticipationStatus.HasAllSeatsAssigned(context, id);
 
-        return Ok(new BodyResponse(body, hasAllSeatsAssigned, BodyParticipationStatus.IsMepCompliant(context, id)));
+        return Ok(new BodyResponse(body, hasAllSeatsAssigned, BodyParticipationStatus.IsMepCompliant(context, id), await securityService.GetUser(User)));
     }
 }
