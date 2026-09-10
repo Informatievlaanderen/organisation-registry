@@ -4,9 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using Handling.Authorization;
 using Infrastructure.Search;
 using Infrastructure.Search.Filtering;
 using Infrastructure.Search.Sorting;
+using OrganisationRegistry.Infrastructure.Authorization;
 using SqlServer.Infrastructure;
 using SqlServer.Organisation;
 
@@ -20,12 +22,17 @@ public class OrganisationContactListQueryResult
 
     public bool IsActive { get; }
 
+    public bool IsEditable { get; }
+
+    public ResourceEditPermissions Permissions { get; }
+
     public OrganisationContactListQueryResult(
         Guid organisationContactId,
         string contactTypeName,
         string contactValue,
         DateTime? validFrom,
-        DateTime? validTo)
+        DateTime? validTo,
+        IUser user)
     {
         OrganisationContactId = organisationContactId;
         ContactTypeName = contactTypeName;
@@ -34,6 +41,8 @@ public class OrganisationContactListQueryResult
         ValidTo = validTo;
 
         IsActive = new Period(new ValidFrom(validFrom), new ValidTo(validTo)).OverlapsWith(DateTime.Today);
+        IsEditable = new ContactPolicy().Check(user).IsSuccessful;
+        Permissions = new ResourceEditPermissions(IsEditable);
     }
 }
 
@@ -41,6 +50,7 @@ public class OrganisationContactListQuery : Query<OrganisationContactListItem, O
 {
     private readonly OrganisationRegistryContext _context;
     private readonly Guid _organisationId;
+    private readonly IUser _user;
 
     protected override ISorting Sorting => new OrganisationContactListSorting();
 
@@ -50,12 +60,14 @@ public class OrganisationContactListQuery : Query<OrganisationContactListItem, O
             x.ContactTypeName,
             x.ContactValue,
             x.ValidFrom,
-            x.ValidTo);
+            x.ValidTo,
+            _user);
 
-    public OrganisationContactListQuery(OrganisationRegistryContext context, Guid organisationId)
+    public OrganisationContactListQuery(OrganisationRegistryContext context, Guid organisationId, IUser user)
     {
         _context = context;
         _organisationId = organisationId;
+        _user = user;
     }
 
     protected override IQueryable<OrganisationContactListItem> Filter(FilteringHeader<OrganisationContactListItemFilter> filtering)
