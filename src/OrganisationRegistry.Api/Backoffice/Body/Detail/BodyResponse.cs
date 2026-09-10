@@ -1,6 +1,7 @@
 ﻿namespace OrganisationRegistry.Api.Backoffice.Body.Detail;
 
 using System;
+using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.SqlServer.Body;
 
 public class BodyResponse
@@ -23,10 +24,13 @@ public class BodyResponse
     public bool HasAllSeatsAssigned { get; }
     public bool IsMepCompliant { get; }
 
+    public BodyPermissions Permissions { get; }
+
     public BodyResponse(
         BodyDetail projectionItem,
         bool hasAllSeatsAssigned,
-        bool isMepCompliant)
+        bool isMepCompliant,
+        IUser user)
     {
         Id = projectionItem.Id;
 
@@ -42,5 +46,7 @@ public class BodyResponse
 
         HasAllSeatsAssigned = hasAllSeatsAssigned;
         IsMepCompliant = isMepCompliant;
+
+        Permissions = BodyPermissions.For(user, projectionItem.Id);
     }
 }
