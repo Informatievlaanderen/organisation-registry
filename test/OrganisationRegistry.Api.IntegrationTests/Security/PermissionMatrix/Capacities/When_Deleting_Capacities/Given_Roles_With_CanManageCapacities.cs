@@ -1,6 +1,7 @@
 namespace OrganisationRegistry.Api.IntegrationTests.Security.PermissionMatrix.Capacities.When_Deleting_Capacities;
 
 using System;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -74,23 +75,29 @@ public class Given_Roles_With_CanManageCapacities
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
 
-    [Fact(Skip = "TODO: scoped role 'Regelgevingbeheerder' is allowed by the permission matrix but the domain authorization policy requires the organisation (or entity) to be within the role's own scope (BeheerderForOrganisation / configured owned-ids). No fixture precedent exists for creating an organisation inside a scoped role's Keycloak OVO scope, so this positive cannot yet assert a 2xx. Enable once scoped-org test setup is available.")]
-    public async Task For_Regelgevingbeheerder_Then_Returns_NoContent()
+    [Fact]
+    public async Task For_Regelgevingbeheerder_WithOwnedCapacity_Then_Returns_NoContent()
     {
+        var privilegedClient = await _apiFixture.CreateAlgemeenbeheerderClient();
         var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Regelgevingbeheerder);
 
         var organisationId = _apiFixture.Fixture.Create<Guid>();
         await _apiFixture.Create.Organisation(organisationId, _apiFixture.Fixture.Create<string>());
-        var entityId = _apiFixture.Fixture.Create<Guid>();
-        var capacityId = await _apiFixture.Create.Capacity();
 
+        // The organisation capacity must be backed by a Regelgeving-owned capacity:
+        // the delete policy resolves the capacity id from the existing entry and
+        // checks it against the configured allow-list.
+        var ownedCapacityId = await _apiFixture.Create.Capacity(
+            _apiFixture.Configuration.Authorization.CapacityIdsOwnedByRegelgevingDbBeheerder.First());
+
+        var entityId = _apiFixture.Fixture.Create<Guid>();
         await ApiFixture.Post(
-            client,
+            privilegedClient,
             $"/v1/organisations/{organisationId}/capacities",
             new AddOrganisationCapacityRequest()
             {
                 OrganisationCapacityId = entityId,
-                CapacityId = capacityId,
+                CapacityId = ownedCapacityId,
                 PersonId = null,
                 FunctionId = null,
                 LocationId = null,
@@ -99,11 +106,27 @@ public class Given_Roles_With_CanManageCapacities
                 ValidTo = null,
             });
 
-        var response = await ApiFixture.Delete(
-            client,
-            $"/v1/organisations/{organisationId}/capacities/{entityId}");
+        var response = await DeleteCapacity(client, organisationId, entityId);
 
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+    }
+
+    [Fact]
+    public async Task For_Regelgevingbeheerder_WithNonOwnedCapacity_Then_Returns_Forbidden()
+    {
+        var privilegedClient = await _apiFixture.CreateAlgemeenbeheerderClient();
+        var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Regelgevingbeheerder);
+
+        var organisationId = _apiFixture.Fixture.Create<Guid>();
+        await _apiFixture.Create.Organisation(organisationId, _apiFixture.Fixture.Create<string>());
+        var entityId = await AddCapacity(privilegedClient, organisationId);
+
+        // Deleting an organisation capacity backed by a freshly created
+        // (non-owned) capacity must be rejected: Regelgevingbeheerder may only
+        // manage the configured Regelgeving-owned capacities.
+        var response = await DeleteCapacity(client, organisationId, entityId);
+
+        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
 
     private async Task<Guid> AddCapacity(HttpClient client, Guid organisationId)

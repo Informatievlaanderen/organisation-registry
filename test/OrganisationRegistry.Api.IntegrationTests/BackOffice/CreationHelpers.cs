@@ -322,6 +322,30 @@ public class CreationHelpers
                 Name = _fixture.Fixture.Create<string>(),
             });
 
+    public async Task<Guid> Capacity(Guid capacityId)
+    {
+        using var getResponse = await ApiFixture.Get(_fixture.HttpClient, $"/v1/capacities/{capacityId}");
+        if (getResponse.StatusCode == HttpStatusCode.OK)
+            return capacityId;
+
+        using var postResponse = await ApiFixture.Post(
+            _fixture.HttpClient,
+            "/v1/capacities",
+            new CreateCapacityRequest
+            {
+                Id = capacityId,
+                Name = _fixture.Fixture.Create<string>(),
+            });
+
+        if (postResponse.StatusCode is not (HttpStatusCode.Created or HttpStatusCode.OK))
+            throw new InvalidOperationException(
+                $"Could not create capacity '{capacityId}'. " +
+                $"Status: {postResponse.StatusCode}. Body: {await postResponse.Content.ReadAsStringAsync()}");
+
+        await WaitUntilCreated("/v1/capacities", capacityId);
+        return capacityId;
+    }
+
     public async Task<Guid> Building()
         => await Create<Guid>(
             "/v1/buildings",

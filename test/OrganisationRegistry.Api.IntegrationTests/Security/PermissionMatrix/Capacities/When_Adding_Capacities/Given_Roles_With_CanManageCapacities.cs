@@ -1,6 +1,7 @@
 namespace OrganisationRegistry.Api.IntegrationTests.Security.PermissionMatrix.Capacities.When_Adding_Capacities;
 
 using System;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -65,23 +66,27 @@ public class Given_Roles_With_CanManageCapacities
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
 
-    [Fact(Skip = "TODO: scoped role 'Regelgevingbeheerder' is allowed by the permission matrix but the domain authorization policy requires the organisation (or entity) to be within the role's own scope (BeheerderForOrganisation / configured owned-ids). No fixture precedent exists for creating an organisation inside a scoped role's Keycloak OVO scope, so this positive cannot yet assert a 2xx. Enable once scoped-org test setup is available.")]
-    public async Task For_Regelgevingbeheerder_Then_Returns_Created()
+    [Fact]
+    public async Task For_Regelgevingbeheerder_WithOwnedCapacity_Then_Returns_Created()
     {
         var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Regelgevingbeheerder);
 
         var organisationId = _apiFixture.Fixture.Create<Guid>();
         await _apiFixture.Create.Organisation(organisationId, _apiFixture.Fixture.Create<string>());
-        var entityId = _apiFixture.Fixture.Create<Guid>();
-        var capacityId = await _apiFixture.Create.Capacity();
+
+        // The Regelgevingbeheerder capacity grant is restricted to the configured
+        // Regelgeving-owned capacities (and is not organisation-scoped), so a
+        // capacity on that allow-list may be added to any organisation.
+        var ownedCapacityId = await _apiFixture.Create.Capacity(
+            _apiFixture.Configuration.Authorization.CapacityIdsOwnedByRegelgevingDbBeheerder.First());
 
         var response = await ApiFixture.Post(
             client,
             $"/v1/organisations/{organisationId}/capacities",
             new AddOrganisationCapacityRequest()
             {
-                OrganisationCapacityId = entityId,
-                CapacityId = capacityId,
+                OrganisationCapacityId = _apiFixture.Fixture.Create<Guid>(),
+                CapacityId = ownedCapacityId,
                 PersonId = null,
                 FunctionId = null,
                 LocationId = null,
@@ -91,6 +96,23 @@ public class Given_Roles_With_CanManageCapacities
             });
 
         response.StatusCode.Should().Be(HttpStatusCode.Created);
+    }
+
+    [Fact]
+    public async Task For_Regelgevingbeheerder_WithNonOwnedCapacity_Then_Returns_Forbidden()
+    {
+        var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Regelgevingbeheerder);
+
+        var organisationId = _apiFixture.Fixture.Create<Guid>();
+        await _apiFixture.Create.Organisation(organisationId, _apiFixture.Fixture.Create<string>());
+
+        // A freshly created capacity is never on the configured
+        // CapacityIdsOwnedByRegelgevingDbBeheerder allow-list, so the handler's
+        // CapacityPolicy must reject it: Regelgevingbeheerder may only manage the
+        // Regelgeving-owned capacities.
+        var response = await AddCapacity(client, organisationId);
+
+        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
 
     private async Task<HttpResponseMessage> AddCapacity(HttpClient client, Guid organisationId)
