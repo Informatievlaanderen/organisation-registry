@@ -448,4 +448,26 @@ public class RolePermissionMapTests
                 new CapacityContext(otherCapacityId))
             .Should().BeFalse();
     }
+
+    [Fact]
+    public void For_config_RegelgevingBeheerder_grants_restricted_CanManageOrganisationClassifications()
+    {
+        var regelgevingDbClassificationTypeId = Guid.NewGuid();
+        var otherClassificationTypeId = Guid.NewGuid();
+        var config = new OrganisationRegistryConfigurationStub();
+        ((AuthorizationConfigurationStub)config.Authorization).OrganisationClassificationTypeIdsOwnedByRegelgevingDbBeheerder
+            = new[] { regelgevingDbClassificationTypeId };
+
+        var set = RolePermissionMap.For(new[] { Role.RegelgevingBeheerder }, config);
+
+        set.IsSatisfiedFor(
+                Permission.CanManageOrganisationClassifications,
+                new ClassificationTypeContext(regelgevingDbClassificationTypeId))
+            .Should().BeTrue();
+
+        set.IsSatisfiedFor(
+                Permission.CanManageOrganisationClassifications,
+                new ClassificationTypeContext(otherClassificationTypeId))
+            .Should().BeFalse();
+    }
 }
