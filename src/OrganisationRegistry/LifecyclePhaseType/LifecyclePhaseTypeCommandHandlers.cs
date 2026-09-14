@@ -29,7 +29,7 @@ public class LifecyclePhaseTypeCommandHandlers :
 
     public async Task Handle(ICommandEnvelope<CreateLifecyclePhaseType> envelope)
         => await Handler.For(envelope.User, Session)
-            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .RequiresPermission(Permission.ParametersLifecyclePhaseTypesWrite)
             .Handle(
                 session =>
                 {
@@ -50,7 +50,7 @@ public class LifecyclePhaseTypeCommandHandlers :
 
     public async Task Handle(ICommandEnvelope<UpdateLifecyclePhaseType> envelope)
         => await UpdateHandler<LifecyclePhaseType>.For(envelope.Command, envelope.User, Session)
-            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .RequiresPermission(Permission.ParametersLifecyclePhaseTypesWrite)
             .Handle(
                 session =>
                 {

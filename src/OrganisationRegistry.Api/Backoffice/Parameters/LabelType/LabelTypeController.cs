@@ -24,6 +24,7 @@ using Swashbuckle.AspNetCore.Filters;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("labeltypes")]
+[OrganisationRegistryAuthorize(RequiredPermissions = [Permission.ParametersLabelTypesRead])]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]
 public class LabelTypeController : OrganisationRegistryController
@@ -33,7 +34,6 @@ public class LabelTypeController : OrganisationRegistryController
     [HttpGet]
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(LabelTypeListExamples))]
     [ProducesResponseType(typeof(List<LabelTypeListItem>), StatusCodes.Status200OK)]
-    [OrganisationRegistryAuthorize]
     [ActionName("List")]
     public async Task<IActionResult> Get(
         [FromServices] OrganisationRegistryContext context,

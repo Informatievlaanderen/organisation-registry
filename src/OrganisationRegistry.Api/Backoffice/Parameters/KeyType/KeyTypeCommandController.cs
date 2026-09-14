@@ -6,13 +6,13 @@ using Infrastructure;
 using Infrastructure.Security;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Commands;
 using Requests;
 
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("keytypes")]
-[OrganisationRegistryAuthorize]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]
 public class KeyTypeCommandController : OrganisationRegistryCommandController
@@ -26,6 +26,7 @@ public class KeyTypeCommandController : OrganisationRegistryCommandController
     /// <response code="201">Als het sleuteltype succesvol aangemaakt is.</response>
     /// <response code="400">Als de validatie voor het sleuteltype mislukt is.</response>
     [HttpPost]
+    [OrganisationRegistryAuthorize(RequiredPermissions = [Permission.ParametersInformationSystemsWrite])]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Post([FromBody] CreateKeyTypeRequest message)
@@ -42,6 +43,7 @@ public class KeyTypeCommandController : OrganisationRegistryCommandController
     /// <response code="200">Als het sleuteltype succesvol aangepast is.</response>
     /// <response code="400">Als de validatie voor het sleuteltype mislukt is.</response>
     [HttpPut("{id}")]
+    [OrganisationRegistryAuthorize(RequiredPermissions = [Permission.ParametersInformationSystemsWrite])]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Put([FromRoute] Guid id, [FromBody] UpdateKeyTypeRequest message)
@@ -60,6 +62,7 @@ public class KeyTypeCommandController : OrganisationRegistryCommandController
     /// <response code="204">Als het sleuteltype succesvol verwijderd is.</response>
     /// <response code="400">Als de validatie voor het sleuteltype mislukt is.</response>
     [HttpDelete("{id}")]
+    [OrganisationRegistryAuthorize(RequiredPermissions = [Permission.ParametersInformationSystemsDelete])]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Delete([FromRoute] Guid id)

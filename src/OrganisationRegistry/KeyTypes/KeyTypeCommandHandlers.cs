@@ -27,7 +27,7 @@ public class KeyTypeCommandHandlers :
 
     public async Task Handle(ICommandEnvelope<CreateKeyType> envelope)
         => await Handler.For(envelope.User, Session)
-            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .RequiresPermission(Permission.ParametersInformationSystemsWrite)
             .Handle(
                 session =>
                 {
@@ -40,7 +40,7 @@ public class KeyTypeCommandHandlers :
 
     public async Task Handle(ICommandEnvelope<UpdateKeyType> envelope)
         => await UpdateHandler<KeyType>.For(envelope.Command, envelope.User, Session)
-            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .RequiresPermission(Permission.ParametersInformationSystemsWrite)
             .Handle(
                 session =>
                 {
@@ -53,7 +53,7 @@ public class KeyTypeCommandHandlers :
 
     public async Task Handle(ICommandEnvelope<RemoveKeyType> envelope)
         => await UpdateHandler<KeyType>.For(envelope.Command, envelope.User, Session)
-            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .RequiresPermission(Permission.ParametersInformationSystemsDelete)
             .Handle(
                 session =>
                 {

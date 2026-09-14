@@ -27,7 +27,7 @@ public class ContactTypeCommandHandlers :
     public async Task Handle(ICommandEnvelope<CreateContactType> envelope)
     {
         await Handler.For(envelope.User, Session)
-            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .RequiresPermission(Permission.ParametersContactTypesWrite)
             .Handle(
                 session =>
                 {
@@ -46,7 +46,7 @@ public class ContactTypeCommandHandlers :
     public async Task Handle(ICommandEnvelope<UpdateContactType> envelope)
     {
         await UpdateHandler<ContactType>.For(envelope.Command, envelope.User, Session)
-            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .RequiresPermission(Permission.ParametersContactTypesWrite)
             .Handle(
                 session =>
                 {

@@ -23,6 +23,7 @@ using Swashbuckle.AspNetCore.Filters;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("keytypes")]
+[OrganisationRegistryAuthorize(RequiredPermissions = [Permission.ParametersInformationSystemsRead])]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]
 public class KeyTypeController : OrganisationRegistryController
@@ -32,7 +33,6 @@ public class KeyTypeController : OrganisationRegistryController
     [HttpGet]
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(KeyTypeListExamples))]
     [ProducesResponseType(typeof(List<KeyTypeListItem>), StatusCodes.Status200OK)]
-    [OrganisationRegistryAuthorize]
     [ActionName("List")]
     public async Task<IActionResult> Get(
         [FromServices] OrganisationRegistryContext context,
@@ -67,7 +67,6 @@ public class KeyTypeController : OrganisationRegistryController
     /// <response code="200">Als het sleuteltype gevonden is.</response>
     /// <response code="404">Als het sleuteltype niet gevonden kan worden.</response>
     [HttpGet("{id}")]
-    [OrganisationRegistryAuthorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid id)

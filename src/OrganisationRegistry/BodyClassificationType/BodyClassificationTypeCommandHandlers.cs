@@ -26,7 +26,7 @@ public class BodyClassificationTypeCommandHandlers :
 
     public async Task Handle(ICommandEnvelope<CreateBodyClassificationType> envelope)
         => await Handler.For(envelope.User, Session)
-            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .RequiresPermission(Permission.ParametersBodyClassificationTypesWrite)
             .Handle(
                 session =>
                 {
@@ -39,7 +39,7 @@ public class BodyClassificationTypeCommandHandlers :
 
     public async Task Handle(ICommandEnvelope<UpdateBodyClassificationType> envelope)
         => await UpdateHandler<BodyClassificationType>.For(envelope.Command, envelope.User, Session)
-            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .RequiresPermission(Permission.ParametersBodyClassificationTypesWrite)
             .Handle(
                 session =>
                 {

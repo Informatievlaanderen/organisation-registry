@@ -26,7 +26,7 @@ public class LocationTypeCommandHandlers :
 
     public async Task Handle(ICommandEnvelope<CreateLocationType> envelope)
         => await Handler.For(envelope.User, Session)
-            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .RequiresPermission(Permission.ParametersLocationTypesWrite)
             .Handle(
                 session =>
                 {
@@ -39,7 +39,7 @@ public class LocationTypeCommandHandlers :
 
     public async Task Handle(ICommandEnvelope<UpdateLocationType> envelope)
         => await UpdateHandler<LocationType>.For(envelope.Command, envelope.User, Session)
-            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .RequiresPermission(Permission.ParametersLocationTypesWrite)
             .Handle(
                 session =>
                 {
