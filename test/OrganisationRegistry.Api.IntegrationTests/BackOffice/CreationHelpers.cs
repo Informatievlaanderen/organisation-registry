@@ -52,6 +52,31 @@ public class CreationHelpers
                 AllowDifferentClassificationsToOverlap = allowDifferentClassificationsToOverlap,
             });
 
+    public async Task<Guid> CreateOrganisationClassificationType(Guid organisationClassificationTypeId)
+    {
+        using var getResponse = await ApiFixture.Get(_fixture.HttpClient, $"/v1/organisationclassificationtypes/{organisationClassificationTypeId}");
+        if (getResponse.StatusCode == HttpStatusCode.OK)
+            return organisationClassificationTypeId;
+
+        using var postResponse = await ApiFixture.Post(
+            _fixture.HttpClient,
+            "/v1/organisationclassificationtypes",
+            new CreateOrganisationClassificationTypeRequest
+            {
+                Id = organisationClassificationTypeId,
+                Name = _fixture.Fixture.Create<string>(),
+                AllowDifferentClassificationsToOverlap = false,
+            });
+
+        if (postResponse.StatusCode is not (HttpStatusCode.Created or HttpStatusCode.OK))
+            throw new InvalidOperationException(
+                $"Could not create organisationclassificationtype '{organisationClassificationTypeId}'. " +
+                $"Status: {postResponse.StatusCode}. Body: {await postResponse.Content.ReadAsStringAsync()}");
+
+        await WaitUntilCreated("/v1/organisationclassificationtypes", organisationClassificationTypeId);
+        return organisationClassificationTypeId;
+    }
+
     public async Task<Guid> OrganisationClassification(Guid organisationClassificationTypeId)
         => await Create<Guid>(
             "/v1/organisationclassifications",
