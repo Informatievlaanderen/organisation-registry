@@ -1,6 +1,7 @@
 namespace OrganisationRegistry.Api.IntegrationTests.Security.PermissionMatrix.FormalFrameworks.When_Adding_FormalFrameworks;
 
 using System;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -65,8 +66,38 @@ public class Given_Roles_With_CanManageFormalFrameworks
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
 
-    [Fact(Skip = "TODO: scoped role 'Regelgevingbeheerder' is allowed by the permission matrix but the domain authorization policy requires the organisation (or entity) to be within the role's own scope (BeheerderForOrganisation / configured owned-ids). No fixture precedent exists for creating an organisation inside a scoped role's Keycloak OVO scope, so this positive cannot yet assert a 2xx. Enable once scoped-org test setup is available.")]
-    public async Task For_Regelgevingbeheerder_Then_Returns_Created()
+    [Fact]
+    public async Task For_Regelgevingbeheerder_WithOwnedFormalFramework_Then_Returns_Created()
+    {
+        var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Regelgevingbeheerder);
+
+        var organisationId = _apiFixture.Fixture.Create<Guid>();
+        await _apiFixture.Create.Organisation(organisationId, _apiFixture.Fixture.Create<string>());
+        var entityId = _apiFixture.Fixture.Create<Guid>();
+        var categoryId = await _apiFixture.Create.FormalFrameworkCategory();
+        var formalFrameworkId = await _apiFixture.Create.FormalFramework(
+            _apiFixture.Configuration.Authorization.FormalFrameworkIdsOwnedByRegelgevingDbBeheerder.First(),
+            categoryId);
+        var parentOrganisationId = _apiFixture.Fixture.Create<Guid>();
+        await _apiFixture.Create.Organisation(parentOrganisationId, _apiFixture.Fixture.Create<string>());
+
+        var response = await ApiFixture.Post(
+            client,
+            $"/v1/organisations/{organisationId}/formalframeworks",
+            new AddOrganisationFormalFrameworkRequest()
+            {
+                OrganisationFormalFrameworkId = entityId,
+                FormalFrameworkId = formalFrameworkId,
+                ParentOrganisationId = parentOrganisationId,
+                ValidFrom = null,
+                ValidTo = null,
+            });
+
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
+    }
+
+    [Fact]
+    public async Task For_Regelgevingbeheerder_WithNonOwnedFormalFramework_Then_Returns_Forbidden()
     {
         var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Regelgevingbeheerder);
 
@@ -90,7 +121,7 @@ public class Given_Roles_With_CanManageFormalFrameworks
                 ValidTo = null,
             });
 
-        response.StatusCode.Should().Be(HttpStatusCode.Created);
+        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
 
     private async Task<HttpResponseMessage> AddFormalFramework(HttpClient client, Guid organisationId)
