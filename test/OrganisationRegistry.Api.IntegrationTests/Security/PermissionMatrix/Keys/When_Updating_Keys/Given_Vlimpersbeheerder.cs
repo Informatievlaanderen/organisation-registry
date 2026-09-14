@@ -1,6 +1,7 @@
 namespace OrganisationRegistry.Api.IntegrationTests.Security.PermissionMatrix.Keys.When_Updating_Keys;
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -28,6 +29,17 @@ public class Given_Vlimpersbeheerder
     public Given_Vlimpersbeheerder(ApiFixture apiFixture)
     {
         _apiFixture = apiFixture;
+    }
+
+    // De nieuwe Vlimpers-sleuteltypes 'business unit' en 'set ID' (zie
+    // KeyIdsAllowedForVlimpers in de test-appsettings).
+    private static readonly Guid BusinessUnitKeyTypeId = Guid.Parse("c661e1df-7622-4b5a-bac1-df951a141e56");
+    private static readonly Guid SetIdKeyTypeId = Guid.Parse("de870cb5-448d-4540-af44-9157e7ba8c0d");
+
+    public static IEnumerable<object[]> BusinessUnitAndSetIdKeyTypes()
+    {
+        yield return new object[] { BusinessUnitKeyTypeId };
+        yield return new object[] { SetIdKeyTypeId };
     }
 
     /// <summary>
@@ -81,6 +93,46 @@ public class Given_Vlimpersbeheerder
         var client = await _apiFixture.CreateBackofficeUserClientFor(ApiFixture.Backoffice.Vlimpersbeheerder);
 
         var response = await UpdateKey(client, organisationId, organisationKeyId, vlimpersKeyTypeId);
+
+        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+    }
+
+    /// <summary>
+    /// De nieuwe Vlimpers-sleuteltypes <b>business unit</b> en <b>set ID</b> mogen
+    /// door de vlimpersbeheerder enkel aangepast worden voor Vlimpers-organisaties.
+    /// Positief: op een organisatie onder Vlimpersbeheer.
+    /// </summary>
+    [Theory]
+    [MemberData(nameof(BusinessUnitAndSetIdKeyTypes))]
+    public async Task For_Vlimpersbeheerder_WithNewVlimpersKeyOnVlimpersManagedOrganisation_Then_Returns_OK(Guid keyTypeId)
+    {
+        var organisationId = await CreateVlimpersManagedOrganisation();
+        await _apiFixture.Create.KeyType(keyTypeId);
+        var organisationKeyId = await CreateKeyAsAlgemeenbeheerder(organisationId, keyTypeId);
+
+        var client = await _apiFixture.CreateBackofficeUserClientFor(ApiFixture.Backoffice.Vlimpersbeheerder);
+
+        var response = await UpdateKey(client, organisationId, organisationKeyId, keyTypeId);
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    /// <summary>
+    /// Negatief: de nieuwe Vlimpers-sleuteltypes <b>business unit</b> en <b>set ID</b>
+    /// mogen niet aangepast worden op een organisatie die niet onder Vlimpersbeheer valt.
+    /// </summary>
+    [Theory]
+    [MemberData(nameof(BusinessUnitAndSetIdKeyTypes))]
+    public async Task For_Vlimpersbeheerder_WithNewVlimpersKeyOnNonVlimpersOrganisation_Then_Returns_Forbidden(Guid keyTypeId)
+    {
+        var organisationId = _apiFixture.Fixture.Create<Guid>();
+        await _apiFixture.Create.Organisation(organisationId, _apiFixture.Fixture.Create<string>());
+        await _apiFixture.Create.KeyType(keyTypeId);
+        var organisationKeyId = await CreateKeyAsAlgemeenbeheerder(organisationId, keyTypeId);
+
+        var client = await _apiFixture.CreateBackofficeUserClientFor(ApiFixture.Backoffice.Vlimpersbeheerder);
+
+        var response = await UpdateKey(client, organisationId, organisationKeyId, keyTypeId);
 
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
