@@ -9,7 +9,7 @@
 
 ---
 
-## 🚢 SHIPPED STATUS (HEAD c3b0d4af5)
+## 🚢 SHIPPED STATUS (HEAD ac598dec3 — bijgewerkt na 12 commits sinds 17cd21335)
 
 **Model C Reality**: Feature 009 shipped a first-class typed `IRestriction` layer (replacing the earlier `IUserRestrictionsProvider` design) with:
 - `IRestrictionContext` marker + `IVlimpersManagedContext` capability
@@ -18,9 +18,9 @@
 - `PermissionEntry` record with optional `IRestriction` storage
 - `PermissionSet.IsSatisfiedFor(permission, context)` evaluation engine
 
-**Shipped scope**: ONLY Keys resource type end-to-end (MVP). Phase 1 (Setup) + Phase 2 (Foundational) + Phase 3 (US1) + **Phase 3.5 (Keys MVP)** complete. All tasks marked `[x]`.
+**Shipped scope (update)**: Keys MVP + brede US2/US3-uitrol. Sinds 17cd21335 leverden 12 commits (35c9f4313…ac598dec3): permission checks op vrijwel alle command controllers (fd22418a9, caf9aecfd, fdefe4ac1), `RequiredPermissions` op het authorize-attribuut met obsolete role-pad (fd22418a9), policy-based handler authorization voor Building/Capacity/Contact/Function/Label/Location/Relation/Regulation/ClassificationType (f15fecbed), Body-policies (fdefe4ac1), Kbo- en VlimpersManagement-policies (cfe994ca9), scope-based permissions incl. `RequiresPermissionPolicy` (fe876c8c9), en read/detail-permissions (`OrganisationPermissions`, `BodyPermissions`, `ResourceEditPermissions`) op lijst- en detailendpoints (e87179270, 13dbbe2f8, ac598dec3). Uitgebreide PermissionMatrix-integratietests per permissie (b4411a30d, 35c9f4313, a32cb1079).
 
-**Deferred**: US2 (full controller sweep), US3 (other 16 policies). Future PRs will apply the same restriction pattern to Labels, Vlimpers, Capacities, etc.
+**Nog open**: restanten controller sweep (OrganisationKboController, ImportOrganisationsController, IsInRole-checks), 8 role-based policies (AdminOnly, EditDelegation, Import, RequiresRoles, Vlimpers, VlimpersOnly, BeheerderFor…×2), WellknownUser-dispatch (T035), docs (T038/T039), en de gaps t.o.v. het analysedocument "Rollen Wegwijs" (T045–T052).
 
 ---
 
@@ -62,9 +62,9 @@
 - [x] T010 [P] Unit tests: `PermissionSetTests` (union, contains, IsSatisfiedFor with contexts, empty). Path: `/code/aiv/organisation-registry/test/OrganisationRegistry.UnitTests/Authorization/PermissionSetTests.cs`.
 - [x] T011 [P] Unit tests: `RolePermissionMapTests` — one theory row per role verifying exact PermissionSet including unrestricted + restricted grants (e.g. VlimpersBeheerder CanManageKeys is restricted) + fail-closed on unknown. Path: `/code/aiv/organisation-registry/test/OrganisationRegistry.UnitTests/Authorization/RolePermissionMapTests.cs`.
 - [x] T012 [P] Unit tests: `ScopePermissionMapTests` — one theory row per scope + fail-closed + `Info`-scope isolation. Path: `/code/aiv/organisation-registry/test/OrganisationRegistry.UnitTests/Authorization/ScopePermissionMapTests.cs`.
-- [x] T012a [P] Unit tests: `AllowListRestrictionTests`, `CompositeAndRestrictionTests`, `RequireUnderVlimpersManagementRestrictionTests`, `KeyRestrictionsTests` — verify restriction evaluation against `KeyContext` with in-scope and out-of-scope keytype ids and Vlimpers-management flags. Paths: `test/OrganisationRegistry.UnitTests/Authorization/Restrictions/`.
-- [x] T012b [P] Unit tests: `PermissionEntryTests` — restricted vs unrestricted entries, implicit conversion from bare `Permission`. Path: `test/OrganisationRegistry.UnitTests/Authorization/PermissionEntryTests.cs`.
-- [x] T012c [P] Unit tests: `PermissionSetRestrictionTests` — `IsSatisfiedFor(permission, context)` with mixed restricted/unrestricted grants, absorbing logic (unrestricted grant absorbs restricted), fail-closed on missing permission or context mismatch. Path: `test/OrganisationRegistry.UnitTests/Authorization/PermissionSetRestrictionTests.cs`.
+- [ ] T012a [P] Unit tests: `AllowListRestrictionTests`, `CompositeAndRestrictionTests`, `RequireUnderVlimpersManagementRestrictionTests`, `KeyRestrictionsTests` — verify restriction evaluation against `KeyContext` with in-scope and out-of-scope keytype ids and Vlimpers-management flags. Paths: `test/OrganisationRegistry.UnitTests/Authorization/Restrictions/`. **CORRECTIE (verificatie ac598dec3)**: eerste drie testklassen bestaan (+ `FormalFrameworkRestrictionTests`, `UserContextRestrictionTests`), maar `KeyRestrictionsTests.cs` ontbreekt — nog toe te voegen.
+- [ ] T012b [P] Unit tests: `PermissionEntryTests` — restricted vs unrestricted entries, implicit conversion from bare `Permission`. Path: `test/OrganisationRegistry.UnitTests/Authorization/PermissionEntryTests.cs`. **CORRECTIE**: bestand bestaat niet; `PermissionEntry`-gedrag wordt deels indirect gedekt in `PermissionSetTests.cs`, maar dedicated tests ontbreken.
+- [ ] T012c [P] Unit tests: `PermissionSetRestrictionTests` — `IsSatisfiedFor(permission, context)` with mixed restricted/unrestricted grants, absorbing logic (unrestricted grant absorbs restricted), fail-closed on missing permission or context mismatch. Path: `test/OrganisationRegistry.UnitTests/Authorization/PermissionSetRestrictionTests.cs`. **CORRECTIE**: bestand bestaat niet; `IsSatisfiedFor`-scenario's zitten gedeeltelijk in `PermissionSetTests.cs` — hernoem of vervolledig.
 
 **Checkpoint**: `dotnet build` green; foundational unit tests green. US1/US2/US3 unblocked.
 
@@ -83,7 +83,7 @@
 - [x] T013 [P] [US1] Integration test `EditApiPermissionTranslationTests` — baseline regression (option B): interactive user JWT via `ApiFixture.HttpClient` → `GET /v1/security` → 200 + `AlgemeenBeheerder` role. Path: `/code/aiv/organisation-registry/test/OrganisationRegistry.Api.IntegrationTests/Security/EditApiPermissionTranslationTests.cs`.
 - [x] T014 [P] [US1] Integration test `TokenExchangePermissionTranslationTests` — baseline regression (option B): Keycloak CC token for CJM/Orafin via token-exchange helper → `GET /v1/security` → 200 + expected role. Path: `/code/aiv/organisation-registry/test/OrganisationRegistry.Api.IntegrationTests/Security/TokenExchangePermissionTranslationTests.cs`.
 - [x] T015 [P] [US1] Integration test `ClientCredentialsScopePermissionTests` — baseline regression (option B): direct bearer for Test/CJM/Orafin CC clients → `GET /v1/security` → 200 + expected role. Path: `/code/aiv/organisation-registry/test/OrganisationRegistry.Api.IntegrationTests/Security/ClientCredentialsScopePermissionTests.cs`.
-- [x] T015a [US1] Integration test `KeyPolicyEndpointTests` — verify KeyPolicy enforcement at `OrganisationKeyController` and `KeyTypeController`. Test AlgemeenBeheerder access to all keytypes + VlimpersBeheerder restricted to Vlimpers-managed orgs + allowed keytype ids + out-of-scope denial. Path: `test/OrganisationRegistry.Api.IntegrationTests/Security/KeyPolicyEndpointTests.cs`.
+- [x] T015a [US1] Integration test `KeyPolicyEndpointTests` — verify KeyPolicy enforcement at `OrganisationKeyController` and `KeyTypeController`. Test AlgemeenBeheerder access to all keytypes + VlimpersBeheerder restricted to Vlimpers-managed orgs + allowed keytype ids + out-of-scope denial. **NOTE (verificatie)**: `KeyPolicyEndpointTests.cs` bestaat niet meer; vervangen door `PermissionMatrix/Keys/Given_Roles_With_CanManageKeys.cs` + `Given_Roles_Without_CanManageKeys.cs` (commits 35c9f4313, a32cb1079 — oude `OrganisationKeysPermissionTests.cs` verwijderd). Dekking equivalent; taak blijft afgevinkt.
 
 ### Implementation for US1
 
@@ -94,7 +94,7 @@
 - [x] T020 [US1] **NO-OP** — same rationale as T018/T019. `WellknownUsers.TestClient/Cjm/Orafin` already produce correct `Permissions` via `User` ctor → `RolePermissionMap.For(roles)`. Direct scope→PermissionSet cutover would break existing `IsInAnyOf(Role.*)` sites (e.g. `SecurityService.CanUseKeyType`) before US2/US3 migrate them. Final `WellknownUser`-based scope dispatch deletion deferred to T035 (US3), which the task text already anticipates. Info-scope dispatch also deferred to US3 alongside T035.
 - [x] T021 [US1] Verified. `TokenExchangeConfiguration.RequiredScopes` is declared but **never consumed** anywhere in the codebase (orphan from feature 008); not this feature's concern. `TokenExchangeClaimsTransformation` has no scope handling — path relies on introspection + role-claim emission (T019 confirmed `AddRoleClaim` at line 91 still emits `ClaimTypes.Role`). Downstream `ToPermissionSet` (T017) consumes those claims correctly. Entry point #2 semantics preserved. No source change.
 - [x] T022 [P] [US1] Unit test class `PermissionMapThrottleTests` — assert (a) unknown role/scope yields empty `PermissionSet` (fail-closed), (b) 100× same unknown value logs exactly 1 Serilog `Error` event, (c) two distinct unknown values log 2 events (per-key isolation). Use `Serilog.Sinks.TestCorrelator` or in-memory `List<LogEvent>` sink. Path: `/code/aiv/organisation-registry/test/OrganisationRegistry.UnitTests/Authorization/PermissionMapThrottleTests.cs`.
-- [x] T022a [P] [US1] Unit test class `KeyPolicyTests` — verify KeyPolicy evaluation against `KeyContext` with in-scope + out-of-scope keytype ids, Vlimpers-management gates, user with unrestricted `CanManageKeys` (e.g. AlgemeenBeheerder), user with restricted grant (VlimpersBeheerder), and user without permission (denial). Path: `test/OrganisationRegistry.UnitTests/Authorization/KeyPolicyTests.cs`.
+- [x] T022a [P] [US1] Unit test class `KeyPolicyTests` — verify KeyPolicy evaluation against `KeyContext` with in-scope + out-of-scope keytype ids, Vlimpers-management gates, user with unrestricted `CanManageKeys` (e.g. AlgemeenBeheerder), user with restricted grant (VlimpersBeheerder), and user without permission (denial). Path (gecorrigeerd): `test/OrganisationRegistry.UnitTests/SecurityPolicy/KeyPolicyTests.cs`.
 
 **Checkpoint**: US1 integration tests green. PermissionSet visible at all three entry points. MVP demoable: mapping table can be inspected by hitting a diagnostic endpoint or by test harness. Keys MVP end-to-end working.
 
@@ -109,8 +109,8 @@
 - [x] T022d [US1] Refactor `KeyPolicy` to use `IUser.IsSatisfiedFor(Permission, KeyContext)` evaluation. Policy constructor takes `isUnderVlimpersManagement` bool and `keyTypeIds` → builds `KeyContext` → evaluates permission + restriction in one pass. Path: `src/OrganisationRegistry/Handling/Authorization/KeyPolicy.cs`.
 - [x] T022e [US1] Wire `AddOrganisationKeyCommandHandler` via `.WithKeyPolicy(command)` → pass `envelope.User` and `organisation.State.UnderVlimpersManagement + keyTypeId` to policy. Verify `KeyPolicy.Check(user).IsSuccessful`. Path: `src/OrganisationRegistry/Organisation/Keys/AddOrganisationKeyCommandHandler.cs`.
 - [x] T022f [US1] Wire `UpdateOrganisationKeyCommandHandler` with same `.WithKeyPolicy(command)` pattern. Path: `src/OrganisationRegistry/Organisation/Keys/UpdateOrganisationKeyCommandHandler.cs`.
-- [x] T022g [US1] Add `[OrganisationRegistryAuthorize(RequiredPermissions = new[] { Permission.CanManageKeys })]` to `OrganisationKeyController` (list, get, post, put, delete actions). Path: `src/OrganisationRegistry.Api/Backoffice/Organisation/Key/OrganisationKeyController.cs`.
-- [x] T022h [US1] Add `[OrganisationRegistryAuthorize(RequiredPermissions = new[] { Permission.CanManageKeys })]` to `KeyTypeController` (list, get, post, put, delete actions). Path: `src/OrganisationRegistry.Api/Backoffice/Parameters/KeyType/KeyTypeController.cs`.
+- [x] T022g [US1] Add `[OrganisationRegistryAuthorize(RequiredPermissions = new[] { Permission.CanManageKeys })]` to `OrganisationKeyController` (list, get, post, put, delete actions). **NOTE (verificatie)**: muterende acties zitten in `OrganisationKeyCommandController.cs` en dragen daar `RequiredPermissions = [Permission.CanManageKeys]`; read-acties op `OrganisationKeyController` blijven bewust `[OrganisationRegistryAuthorize]` (reads publiek/rolvrij, cf. e87179270 read-permissions model). Path: `src/OrganisationRegistry.Api/Backoffice/Organisation/Key/OrganisationKeyCommandController.cs`.
+- [ ] T022h [US1] Add `[OrganisationRegistryAuthorize(RequiredPermissions = new[] { Permission.CanManageKeys })]` to `KeyTypeController`. **CORRECTIE (verificatie ac598dec3)**: `KeyTypeCommandController.cs` draagt enkel kaal `[OrganisationRegistryAuthorize]` — geen `RequiredPermissions`. Nog toe te voegen (of expliciet documenteren waarom keytype-parameterbeheer geen permissiecheck krijgt). Path: `src/OrganisationRegistry.Api/Backoffice/Parameters/KeyType/KeyTypeCommandController.cs`.
 
 ---
 
@@ -122,14 +122,14 @@
 
 ### Tests for US2
 
-- [x] T023 [P] [US2] Integration test class `ControllerPermissionEnforcementTests` — parametrized over a representative sample of endpoints (one per permission), asserting 200 vs 403 based on identity's PermissionSet. Path: `/code/aiv/organisation-registry/test/OrganisationRegistry.Api.IntegrationTests/Security/ControllerPermissionEnforcementTests.cs`.
-- [ ] T024 [P] [US2] Unit test class `OrganisationRegistryAuthorizeAttributeTests` — attribute admits identity when PermissionSet contains any of `RequiredPermissions`; identity without required permission gets 403. Geen admin-short-circuit. Path: `/code/aiv/organisation-registry/test/OrganisationRegistry.UnitTests/Authorization/OrganisationRegistryAuthorizeAttributeTests.cs`.
+- [x] T023 [P] [US2] Integration test class `ControllerPermissionEnforcementTests` — parametrized over a representative sample of endpoints (one per permission), asserting 200 vs 403 based on identity's PermissionSet. **Gedekt door**: b4411a30d + caf9aecfd; aangevuld met `PermissionMatrix/*` mappen (Given_Roles_With/Without_CanManageX per resource: Bodies, Buildings, Capacities, Classifications, Contacts, FormalFrameworks, Functions, Kbo, Keys, Labels, Locations, Regulations, Relations, Vlimpers). Path: `/code/aiv/organisation-registry/test/OrganisationRegistry.Api.IntegrationTests/Security/ControllerPermissionEnforcementTests.cs` + `Security/PermissionMatrix/`.
+- [x] T024 [P] [US2] Unit test class `OrganisationRegistryAuthorizeAttributeTests` — attribute admits identity when PermissionSet contains any of `RequiredPermissions`; identity without required permission gets 403. Geen admin-short-circuit. **Gedekt door**: fd22418a9 (+ caf9aecfd). Path: `/code/aiv/organisation-registry/test/OrganisationRegistry.UnitTests/Authorization/OrganisationRegistryAuthorizeAttributeTests.cs`.
 
 ### Implementation for US2
 
-- [ ] T025 [US2] Extend `OrganisationRegistryAuthorizeAttribute` with `Permission[] RequiredPermissions { get; set; }`. In `OnAuthorization`, after resolving `IUser`: if any of `RequiredPermissions` in `Permissions` → allow; else → `403`. Parameterloos gebruik (geen `RequiredPermissions`) valt terug op enkel policy-checks (`BackofficeUser`). Keep legacy `Roles`-based path only during migration if it exists, but mark obsolete. Path: `/code/aiv/organisation-registry/src/OrganisationRegistry.Api/Infrastructure/Security/OrganisationRegistryAuthorizeAttribute.cs`.
-- [ ] T026 [US2] **Controller sweep — split at execution time into T026a/b/c per controller folder** (Backoffice, Search, Integration/other) for reviewability. Sweep all controllers under `/code/aiv/organisation-registry/src/OrganisationRegistry.Api/`: replace every `[OrganisationRegistryAuthorize(Roles = …)]` (or equivalent role-based check) with `[OrganisationRegistryAuthorize(RequiredPermissions = new[] { Permission.X })]`. Use ast-grep to find all attribute usages; map each per the endpoint's business intent (documented case-by-case in PR description). One commit per folder.
-- [ ] T027 [US2] Remove all direct `IUser.Roles.Contains(...)` / role-string comparisons / `AcmIdmConstants.Scopes.*` comparisons from controller code. Replace with `IUser.HasPermission(...)` when the check must remain, or delete when moving to attribute.
+- [x] T025 [US2] Extend `OrganisationRegistryAuthorizeAttribute` with `Permission[] RequiredPermissions { get; set; }` + fallback op policy-checks bij parameterloos gebruik; legacy role-based ctor gemarkeerd `[Obsolete]`. **Gedekt door**: fd22418a9. Path: `/code/aiv/organisation-registry/src/OrganisationRegistry.Api/Infrastructure/Security/OrganisationRegistryAuthorizeAttribute.cs`.
+- [x] T026 [US2] **Controller sweep** — grotendeels uitgevoerd: organisatie-commandcontrollers (fd22418a9), body/delegation-controllers (caf9aecfd, fdefe4ac1), Kbo/Vlimpers (cfe994ca9), contacts (a32cb1079). **Restanten** (nog role-based, zie T043): `OrganisationKboController` (2× `Role.*`-attribuut), `ImportOrganisationsController` (1×).
+- [ ] T027 [US2] Remove all direct `IUser.Roles.Contains(...)` / role-string comparisons / `AcmIdmConstants.Scopes.*` comparisons from controller code. **Status**: nog ~18 `IsInAnyOf`/`IsInRole`-sites, o.a. `OrganisationDetailCommandController`, `BodyDetailCommandController`, `PersonDetailController` (`IsInRole(RoleMapping.Map(...))`). Zie ook T043.
 - [ ] T028 [US2] Modify `PolicyNames.cs` (if it enumerates authorization policies) to align with permission ids; delete obsolete role-based policy names. Path: `/code/aiv/organisation-registry/src/OrganisationRegistry.Api/Infrastructure/PolicyNames.cs`.
 
 **Checkpoint**: `grep -R "Role\." src/OrganisationRegistry.Api/` returns only edge-translation files (RoleMapping, ClaimsExtension, TokenBuilder, TokenExchange). Controller sweep clean.
@@ -138,26 +138,24 @@
 
 ## Phase 5: User Story 3 — Policies checken enkel restricties/scope (P3)
 
-**Goal**: All resource-type policies remove role/scope-string checks; they gate on resource-level scope only via `IRestrictionContext` evaluation. Note: **ONLY KeyPolicy shipped (MVP)**. All other policies (Label, Vlimpers, Orgaan, Regelgeving) remain DEFERRED to future PRs following the same restriction pattern.
+**Goal**: All resource-type policies remove role/scope-string checks; they gate on resource-level scope only via `IRestrictionContext` evaluation. **Status update (ac598dec3)**: 15 policies gemigreerd naar `IsSatisfiedFor` (Body, Building, Capacity, Contact, FormalFramework, Function, Kbo, Key, Label, Location, OrganisationClassificationType, RegisterBody, Regulation, Relation, VlimpersManagement — f15fecbed, fdefe4ac1, cfe994ca9). Nog role-based: AdminOnly, EditDelegation, Import, RequiresRoles, Vlimpers, VlimpersOnly, BeheerderForOrganisationButNotUnderVlimpersManagement, BeheerderForOrganisationRegardlessOfVlimpers (zie T044).
 
-**Deferred resources** (NOT in MVP): Labels, Capacities, FormalFrameworks, OrganisationClassifications, Regulations, Import, Delegations, Bodies. These will follow the Keys pattern in future PRs.
+**Independent Test**: Policy-unittests per resource in `test/OrganisationRegistry.UnitTests/SecurityPolicy/`.
 
-**Independent Test**: KeyPolicy (shipped) verified by T015a, T022a. Other policies deferred.
+### Tests for US3
 
-### Tests for US3 (Deferred)
+- [x] T029 [P] [US3] Unit test class `LabelPolicyRestrictionTests` — restriction context for label operations. **Gedekt door**: f15fecbed/fe876c8c9 via bestaande `SecurityPolicy/LabelPolicyTests.cs` (LabelPolicy nu op `IsSatisfiedFor` + `LabelContext`). Path (gecorrigeerd): `test/OrganisationRegistry.UnitTests/SecurityPolicy/LabelPolicyTests.cs`.
+- [x] T030 [P] [US3] Unit test class `VlimpersPolicyRestrictionTests` — restriction context for Vlimpers operations. **Gedeeltelijk gedekt door**: cfe994ca9 (`VlimpersManagementPolicyTests.cs` voor `CanManageVlimpers`). Resterende Vlimpers-policies (VlimpersPolicy, VlimpersOnlyPolicy, BeheerderFor…) → T044. Path (gecorrigeerd): `test/OrganisationRegistry.UnitTests/SecurityPolicy/VlimpersManagementPolicyTests.cs`.
 
-- [ ] T029 [P] [US3] Unit test class `LabelPolicyRestrictionTests` — restriction context for label operations (org id, label type). Deferred. Path: `test/OrganisationRegistry.UnitTests/Authorization/LabelPolicyRestrictionTests.cs`.
-- [ ] T030 [P] [US3] Unit test class `VlimpersPolicyRestrictionTests` — restriction context for Vlimpers operations. Deferred. Path: `test/OrganisationRegistry.UnitTests/Authorization/VlimpersPolicyRestrictionTests.cs`.
+### Implementation for US3
 
-### Implementation for US3 (Deferred)
+- [x] T031 [US3] Create policy contexts for non-key resource types. **Gedekt door**: f15fecbed (`LabelContext`, `CapacityContext`, `ClassificationTypeContext`), fdefe4ac1 (`BodyContext`, `DecentraalBodyRestriction`), e87179270 (`FormalFrameworkContext`), plus `OrganisationContext`, `UserContext`, `DecentraalOrganisationRestriction`, `NotAllowListRestriction`. Path: `src/OrganisationRegistry.Infrastructure/Authorization/Restrictions/`.
+- [x] T032 [US3] Refactor label policies (`LabelPolicy`, etc.) to use `IRestrictionContext` evaluation. **Gedekt door**: f15fecbed. Path: `src/OrganisationRegistry/Handling/Authorization/LabelPolicy.cs`.
+- [ ] T033 [US3] Refactor Vlimpers policies (`VlimpersPolicy`, `VlimpersOnlyPolicy`, `BeheerderForOrganisationRegardlessOfVlimpersPolicy`) to use restriction evaluation. **Status**: `VlimpersManagementPolicy` (nieuw, cfe994ca9) gebruikt `IsSatisfiedFor`; de drie genoemde policies zijn nog role-based.
+- [x] T034 [US3] Refactor remaining policies. **Gedekt door**: f15fecbed (Building, Capacity, Contact, Function, Location, Relation, Regulation, ClassificationType), fdefe4ac1 (BodyPolicy vervangt AddBodyPolicy/EditBodyPolicy; RegisterBodyPolicy), cfe994ca9 (KboPolicy), fe876c8c9 (`RequiresPermissionPolicy` + handler-wiring). **Restanten** → T044 (AdminOnly, EditDelegation, Import, RequiresRoles).
+- [ ] T035 [US3] Delete `WellknownUser`-based scope→user dispatch entirely from `SecurityService` (already touched in T020); confirm no residual references. Nog open (`WellknownUsers.cs` bestaat nog; `MeController` vergelijkt met `WellknownUsers.Nobody`).
 
-- [ ] T031 [US3] Create policy contexts for non-key resource types (e.g. `LabelContext`, `VlimpersContext`). Deferred.
-- [ ] T032 [US3] Refactor label policies (`LabelPolicy`, etc.) to use `IRestrictionContext` evaluation. Deferred.
-- [ ] T033 [US3] Refactor Vlimpers policies (`VlimpersPolicy`, `VlimpersOnlyPolicy`, `BeheerderForOrganisationRegardlessOfVlimpersPolicy`) to use restriction evaluation. Deferred.
-- [ ] T034 [US3] Refactor remaining 13 policies. Deferred.
-- [ ] T035 [US3] Delete `WellknownUser`-based scope→user dispatch entirely from `SecurityService` (already touched in T020); confirm no residual references. Deferred (depends on all policies shipped).
-
-**Checkpoint**: Deferred to future PRs. KeyPolicy complete and tested.
+**Checkpoint**: 15/23 policies op permissie/restrictie-model; restanten in T044.
 
 ---
 
@@ -173,6 +171,32 @@
 
 ---
 
+## Phase 6: Follow-up — Restanten na US2/US3-uitrol (nieuw, ac598dec3)
+
+**Purpose**: Afronden van de sweep die de 12 commits sinds 17cd21335 grotendeels leverden.
+
+- [ ] T043 [US2] Vervang de laatste role-based controller-checks door permissies: `[OrganisationRegistryAuthorize(Role.*)]` op `src/OrganisationRegistry.Api/Backoffice/Organisation/Kbo/OrganisationKboController.cs` (2×) en `src/OrganisationRegistry.Api/Import/Organisations/ImportOrganisationsController.cs` (1×); `IsInRole(RoleMapping.Map(...))`-checks in `Backoffice/Organisation/Detail/OrganisationDetailCommandController.cs`, `Backoffice/Body/Detail/BodyDetailCommandController.cs`, `Backoffice/Person/Detail/PersonDetailController.cs`.
+- [ ] T044 [US3] Migreer de resterende 8 role-based policies naar permissie/restrictie-evaluatie: `AdminOnlyPolicy`, `EditDelegationPolicy`, `ImportPolicy`, `RequiresRolesPolicy` (uitfaseren), `VlimpersPolicy`, `VlimpersOnlyPolicy`, `BeheerderForOrganisationButNotUnderVlimpersManagementPolicy`, `BeheerderForOrganisationRegardlessOfVlimpersPolicy`. Path: `src/OrganisationRegistry/Handling/Authorization/`.
+- [ ] T044a [P] Voeg ontbrekende `KeyRestrictionsTests.cs` toe in `test/OrganisationRegistry.UnitTests/Authorization/Restrictions/` (zie T012a-correctie).
+- [ ] T044b [P] Voeg unit tests toe voor nieuwe restriction-contexten zonder dedicated tests: `BodyContext`/`DecentraalBodyRestriction`, `CapacityContext`, `ClassificationTypeContext`, `LabelContext`, `OrganisationContext`, `DecentraalOrganisationRestriction`, `NotAllowListRestriction`. Path: `test/OrganisationRegistry.UnitTests/Authorization/Restrictions/`.
+
+---
+
+## Phase 7: Gaps t.o.v. functionele analyse "Rollen Wegwijs" (nieuw)
+
+**Purpose**: Aansluiting op het analysedocument (Rollen Wegwijs): /v1/me-contract, resource-rechten in responses, referentiedata-canSelect, nieuwe rollen en businessregels.
+
+- [ ] T045 `/v1/me` endpoint afstemmen op analysecontract: response met `name`, `role` (eerste rol volgens vaste rolvolgorde uit de analyse) en `permissions` als `<resource>:<action>`-strings (bv. `organisations:create`, `body.info:create`, `parameters:read/write`, `imports:write`, `reports:read`); enkel globale rechten, geen contextuele afbakeningen; publieke leesrechten niet opnemen. Bestaande `MeController` (`src/OrganisationRegistry.Api/Auth/MeController.cs` + `RolePermissions.Resolve`) reviewen/aanpassen aan dit contract + integratietests.
+- [ ] T046 [P] Resource-permissions (`permissions.can...`) op organisatieresponse vervolledigen conform analyse: `canEdit`, `canDelete`, `canManageChildren`, `canManageContacts`, `canManageLocations`, `canManageBuildings`, `canManageFunctions`, `canManageCapacities`, `canManageNames`, `canManageClassifications`, `canManageFormalFrameworks`, `canManageKeys`, `canManageRelations`. Basis bestaat (`OrganisationPermissions.cs`, ac598dec3/e87179270) — audit tegen de rechtenmatrix en vul gaten aan. Path: `src/OrganisationRegistry.Api/Backoffice/Organisation/OrganisationPermissions.cs` + `Detail/OrganisationResponse.cs`.
+- [ ] T047 [P] Resource-permissions op orgaanresponse conform analyse: `canEdit`, `canDelete`, `canManageContacts`, `canManageSeats`, `canManageMandates`, `canManageLifecycle`, `canManageOrganisations`, `canManageFormalFrameworks`, `canManageMep`, `canManageClassifications`. Basis bestaat (`BodyPermissions.cs`, `BodyResponse.cs`, e87179270/ac598dec3) — audit en vervolledig. Path: `src/OrganisationRegistry.Api/Backoffice/Body/BodyPermissions.cs` + `Detail/BodyResponse.cs`.
+- [ ] T048 [P] `permissions`-object op onderliggende resource-items in lijstresponses: hoedanigheden (`canEdit`,`canDelete`), classificaties (`canEdit`), benamingen/labels (`canEdit`), toepassingsgebieden (`canEdit`,`canDelete`), sleutels (`canEdit`, naast legacy `isEditable`). Basis: `ResourceEditPermissions.cs` + list queries (e87179270, 13dbbe2f8) — vervolledig `canDelete` waar de analyse dat vereist. Paths: `src/OrganisationRegistry.Api/Backoffice/Organisation/{Capacity,OrganisationClassification,Label,FormalFramework,Key}/…ListQuery.cs`.
+- [ ] T049 Referentiedata-rechten `permissions.canSelect` per waarde met `?forOrganisationId=` op `/v1/keytypes`, `/v1/capacitytypes`, `/v1/classificationtypes`, `/v1/labeltypes`, `/v1/formalframeworktypes`; Vlimpers- en typed afbakeningen backend-side; bij opslaan hervalideert de backend het gekozen type. Paths: `src/OrganisationRegistry.Api/Backoffice/Parameters/{KeyType,CapacityType,OrganisationClassificationType,LabelType,FormalFrameworkType}/…Controller.cs`.
+- [ ] T050 Nieuwe rollen uit analyse (beslissing 23 juli 2026): `VoMedewerker` (publieke rol + hoedanigheden) en `DecentraalBeheerderVo` (decentraal beheerder zonder contactgegevens-beheer van lokale besturen; exacte afbakening TBD) toevoegen aan `Role`-enum + `RoleMapping` + `RolePermissionMap` + rechtenmatrix-tests. Paths: `src/OrganisationRegistry.Infrastructure/Authorization/{Role.cs,RoleMapping.cs,RolePermissionMap.cs}`, `test/OrganisationRegistry.UnitTests/Authorization/RolePermissionMapTests.cs`.
+- [ ] T051 Businessregels uit analyse afdwingen als restricties/policies + tests: (a) KBO-data read-only in Wegwijs (Rechtsvorm-classificatie, Maatschappelijke zetel-locatie, Formele naam-benaming, KBO-nummer); (b) OVO-afbakening DecentraalBeheerder (eigen OVO-code + dochters); (c) Vlimpers-afbakening (enkel organisaties met Vlimpers = true); (d) orgaan-afbakening (organen gelinkt aan eigen OVO-code + dochters); (e) delete = beëindigen geldigheidsperiode — echte verwijdering enkel voor AlgemeenBeheerder op: bankrekeningnummers, functies, hoedanigheden, toepassingsgebieden, delegaties, organisatielocatie. Paths: `src/OrganisationRegistry.Infrastructure/Authorization/Restrictions/` + `src/OrganisationRegistry/Handling/Authorization/`.
+- [ ] T052 Consistentieregel "resource-rechten nooit ruimer dan bovenliggend recht": garandeer backend-side dat bv. `sleutel.permissions.canEdit` nooit `true` is wanneer `organisatie.permissions.canManageKeys` `false` is (idem voor alle can…-poorten); voeg unit-/integratietests toe die inconsistente responses aantonen als bug. Paths: `src/OrganisationRegistry.Api/Backoffice/Organisation/OrganisationPermissions.cs`, `ResourceEditPermissions.cs`, tests in `test/OrganisationRegistry.Api.IntegrationTests/Security/`.
+
+---
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies
@@ -181,9 +205,10 @@
 - **Foundational (Phase 2)**: after Setup. Blocks US1/US2/US3.
 - **US1 (Phase 3)**: after Foundational. MVP shipped complete; all tasks marked `[x]`.
 - **US1 Keys MVP (Phase 3.5)**: after US1, contained within c3b0d4af5. All tasks marked `[x]`.
-- **US2 (Phase 4)**: after US1 complete. Pending (DEFERRED after MVP shipped).
-- **US3 (Phase 5)**: after US2. Pending (DEFERRED; only KeyPolicy shipped in MVP).
-- **Polish (Phase 6)**: after all user stories complete. Partially complete; see T036–T042 status.
+- **US2 (Phase 4)**: after US1 complete. Grotendeels geleverd (fd22418a9, caf9aecfd, fdefe4ac1, a32cb1079); restanten in T043.
+- **US3 (Phase 5)**: after US2. Grotendeels geleverd (f15fecbed, fdefe4ac1, cfe994ca9, fe876c8c9); restanten in T044/T035.
+- **Follow-up (Phase 6)** en **Analyse-gaps (Phase 7)**: na US2/US3-restanten; T045–T049 kunnen parallel.
+- **Polish (Phase 5.5)**: docs (T038/T039) en validatie (T040–T042) nog open.
 
 ### Story-level Dependencies
 
@@ -213,9 +238,10 @@
 1. ✅ Setup + Foundational → foundation ready.
 2. ✅ US1 → PermissionSets flowing at edges.
 3. ✅ US1 Keys MVP → KeyPolicy + Keys endpoints protected.
-4. ⏸ US2 → controllers reduced to permission checks (deferred; Keys done, others TBD).
-5. ⏸ US3 → policies reduced to scope-only (deferred; only KeyPolicy shipped).
-6. ⏸ Polish → cleanup + docs (partial; T036 WON'T DO, T037 NO-OP, T038–T042 partial/deferred).
+4. ✅ US2 → controllers grotendeels op `RequiredPermissions` (fd22418a9, caf9aecfd, fdefe4ac1; restanten T043).
+5. ✅ US3 → 15/23 policies op permissie/restrictie-model (f15fecbed, fdefe4ac1, cfe994ca9; restanten T044, T035).
+6. ⏸ Polish → cleanup + docs (partial; T036 WON'T DO, T037 NO-OP, T038–T042 open).
+7. ⏳ Analyse-gaps (Phase 7, T045–T052) → /v1/me-contract, resource-permissions, canSelect, nieuwe rollen, businessregels.
 
 ### Future PR Strategy (US2/US3)
 

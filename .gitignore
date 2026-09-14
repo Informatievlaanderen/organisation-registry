@@ -28,6 +28,9 @@ dotCover*
 [Oo]bj/
 [Xx]64/
 [Dd]ist/
+
+.hermes/
+.opencode/
 [Tt]est[Rr]esults/
 
 *.suo

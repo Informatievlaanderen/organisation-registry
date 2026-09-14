@@ -224,3 +224,8 @@ Security policies are defined in `OrganisationRegistry.Api/Security/`.
 
 ## Recent Changes
 - 009-permission-based-authz: Added C# / .NET 8, nullable reference types enabled + ASP.NET Core, Be.Vlaanderen.Basisregisters.AggregateSource, FluentValidation, Serilog, AutoFixture
+
+<!-- SPECKIT START -->
+For additional context about technologies to be used, project structure,
+shell commands, and other important information, read the current plan
+<!-- SPECKIT END -->
