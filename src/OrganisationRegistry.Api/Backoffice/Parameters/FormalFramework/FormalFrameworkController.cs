@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
 using Infrastructure;
+using Infrastructure.Security;
+using OrganisationRegistry.Infrastructure.Authorization;
 using Infrastructure.Search.Filtering;
 using Infrastructure.Search.Pagination;
 using Infrastructure.Search.Sorting;
@@ -22,6 +24,7 @@ using Swashbuckle.AspNetCore.Filters;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("formalframeworks")]
+[OrganisationRegistryAuthorize(RequiredPermissions = [Permission.ParametersFormalFrameworksRead])]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]
 public class FormalFrameworkController : OrganisationRegistryController

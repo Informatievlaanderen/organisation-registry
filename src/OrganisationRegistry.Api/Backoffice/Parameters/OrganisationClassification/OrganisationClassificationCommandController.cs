@@ -3,6 +3,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.OrganisationClassificat
 using System;
 using System.Threading.Tasks;
 using Infrastructure;
+using OrganisationRegistry.Infrastructure.Authorization;
 using Infrastructure.Security;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +13,7 @@ using Requests;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("organisationclassifications")]
-[OrganisationRegistryAuthorize]
+[OrganisationRegistryAuthorize(RequiredPermissions = [Permission.ParametersOrganisationClassificationsWrite])]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]
 public class OrganisationClassificationCommandController : OrganisationRegistryCommandController

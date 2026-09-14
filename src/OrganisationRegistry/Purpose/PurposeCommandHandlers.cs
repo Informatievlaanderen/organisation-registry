@@ -26,7 +26,7 @@ public class PurposeCommandHandlers :
 
     public async Task Handle(ICommandEnvelope<CreatePurpose> envelope)
         => await Handler.For(envelope.User, Session)
-            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .RequiresPermission(Permission.ParametersPurposesWrite)
             .Handle(
                 session =>
                 {
@@ -39,7 +39,7 @@ public class PurposeCommandHandlers :
 
     public async Task Handle(ICommandEnvelope<UpdatePurpose> envelope)
         => await UpdateHandler<Purpose>.For(envelope.Command, envelope.User, Session)
-            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .RequiresPermission(Permission.ParametersPurposesWrite)
             .Handle(
                 session =>
                 {

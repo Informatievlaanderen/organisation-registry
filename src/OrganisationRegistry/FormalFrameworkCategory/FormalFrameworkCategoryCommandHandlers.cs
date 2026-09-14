@@ -26,7 +26,7 @@ public class FormalFrameworkCategoryCommandHandlers :
 
     public async Task Handle(ICommandEnvelope<CreateFormalFrameworkCategory> envelope)
         => await Handler.For(envelope.User, Session)
-            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .RequiresPermission(Permission.ParametersFormalFrameworkCategoriesWrite)
             .Handle(
                 session =>
                 {
@@ -39,7 +39,7 @@ public class FormalFrameworkCategoryCommandHandlers :
 
     public async Task Handle(ICommandEnvelope<UpdateFormalFrameworkCategory> envelope)
         => await UpdateHandler<FormalFrameworkCategory>.For(envelope.Command, envelope.User, Session)
-            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .RequiresPermission(Permission.ParametersFormalFrameworkCategoriesWrite)
             .Handle(
                 session =>
                 {
