@@ -40,7 +40,7 @@ public class Given_Roles_With_CanManageKbo
         // number is globally unique and permanently consumed by the first successful coupling,
         // a re-run returns 400 "Kbo-nummer is niet uniek". Both prove authorization passed,
         // so we assert the request was not rejected by the authorization layer.
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.Should().NotBe(HttpStatusCode.Forbidden);
         response.StatusCode.Should().NotBe(HttpStatusCode.Unauthorized);
     }
 }

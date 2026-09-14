@@ -426,4 +426,26 @@ public class RolePermissionMapTests
                 new FormalFrameworkContext(otherFormalFrameworkId))
             .Should().BeFalse();
     }
+
+    [Fact]
+    public void For_config_RegelgevingBeheerder_grants_restricted_CanManageCapacities()
+    {
+        var regelgevingDbCapacityId = Guid.NewGuid();
+        var otherCapacityId = Guid.NewGuid();
+        var config = new OrganisationRegistryConfigurationStub();
+        ((AuthorizationConfigurationStub)config.Authorization).CapacityIdsOwnedByRegelgevingDbBeheerder
+            = new[] { regelgevingDbCapacityId };
+
+        var set = RolePermissionMap.For(new[] { Role.RegelgevingBeheerder }, config);
+
+        set.IsSatisfiedFor(
+                Permission.CanManageCapacities,
+                new CapacityContext(regelgevingDbCapacityId))
+            .Should().BeTrue();
+
+        set.IsSatisfiedFor(
+                Permission.CanManageCapacities,
+                new CapacityContext(otherCapacityId))
+            .Should().BeFalse();
+    }
 }
