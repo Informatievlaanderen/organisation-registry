@@ -124,6 +124,93 @@ public class Given_Roles_With_CanManageFormalFrameworks
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
 
+    [Fact]
+    public async Task For_Vlimpersbeheerder_WithOwnedFormalFramework_Then_Returns_Created()
+    {
+        var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Vlimpersbeheerder);
+
+        var organisationId = _apiFixture.Fixture.Create<Guid>();
+        await _apiFixture.Create.Organisation(organisationId, _apiFixture.Fixture.Create<string>());
+        var entityId = _apiFixture.Fixture.Create<Guid>();
+        var categoryId = await _apiFixture.Create.FormalFrameworkCategory();
+        var formalFrameworkId = await _apiFixture.Create.FormalFramework(
+            _apiFixture.Configuration.Authorization.FormalFrameworkIdsOwnedByVlimpers.First(),
+            categoryId);
+        var parentOrganisationId = _apiFixture.Fixture.Create<Guid>();
+        await _apiFixture.Create.Organisation(parentOrganisationId, _apiFixture.Fixture.Create<string>());
+
+        var response = await ApiFixture.Post(
+            client,
+            $"/v1/organisations/{organisationId}/formalframeworks",
+            new AddOrganisationFormalFrameworkRequest()
+            {
+                OrganisationFormalFrameworkId = entityId,
+                FormalFrameworkId = formalFrameworkId,
+                ParentOrganisationId = parentOrganisationId,
+                ValidFrom = null,
+                ValidTo = null,
+            });
+
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
+    }
+
+    [Fact]
+    public async Task For_Vlimpersbeheerder_WithNonOwnedFormalFramework_Then_Returns_Forbidden()
+    {
+        var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Vlimpersbeheerder);
+
+        var organisationId = _apiFixture.Fixture.Create<Guid>();
+        await _apiFixture.Create.Organisation(organisationId, _apiFixture.Fixture.Create<string>());
+        var entityId = _apiFixture.Fixture.Create<Guid>();
+        var categoryId = await _apiFixture.Create.FormalFrameworkCategory();
+        var formalFrameworkId = await _apiFixture.Create.FormalFramework(categoryId);
+        var parentOrganisationId = _apiFixture.Fixture.Create<Guid>();
+        await _apiFixture.Create.Organisation(parentOrganisationId, _apiFixture.Fixture.Create<string>());
+
+        var response = await ApiFixture.Post(
+            client,
+            $"/v1/organisations/{organisationId}/formalframeworks",
+            new AddOrganisationFormalFrameworkRequest()
+            {
+                OrganisationFormalFrameworkId = entityId,
+                FormalFrameworkId = formalFrameworkId,
+                ParentOrganisationId = parentOrganisationId,
+                ValidFrom = null,
+                ValidTo = null,
+            });
+
+        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+    }
+
+    [Fact]
+    public async Task For_Decentraalbeheerder_WithVlimpersOwnedFormalFramework_Then_Returns_Forbidden()
+    {
+        var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Decentraalbeheerder);
+
+        var organisationId = _apiFixture.DecentraalbeheerderOrganisationId;
+        var entityId = _apiFixture.Fixture.Create<Guid>();
+        var categoryId = await _apiFixture.Create.FormalFrameworkCategory();
+        var formalFrameworkId = await _apiFixture.Create.FormalFramework(
+            _apiFixture.Configuration.Authorization.FormalFrameworkIdsOwnedByVlimpers.First(),
+            categoryId);
+        var parentOrganisationId = _apiFixture.Fixture.Create<Guid>();
+        await _apiFixture.Create.Organisation(parentOrganisationId, _apiFixture.Fixture.Create<string>());
+
+        var response = await ApiFixture.Post(
+            client,
+            $"/v1/organisations/{organisationId}/formalframeworks",
+            new AddOrganisationFormalFrameworkRequest()
+            {
+                OrganisationFormalFrameworkId = entityId,
+                FormalFrameworkId = formalFrameworkId,
+                ParentOrganisationId = parentOrganisationId,
+                ValidFrom = null,
+                ValidTo = null,
+            });
+
+        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+    }
+
     private async Task<HttpResponseMessage> AddFormalFramework(HttpClient client, Guid organisationId)
     {
         var entityId = _apiFixture.Fixture.Create<Guid>();
