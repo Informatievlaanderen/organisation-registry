@@ -320,6 +320,89 @@ public class RolePermissionMapTests
     }
 
     [Fact]
+    public void Static_For_VlimpersBeheerder_does_not_grant_CanManageChildren()
+    {
+        // Regression guard: the static map must not grant unrestricted
+        // CanManageChildren to VlimpersBeheerder — that grant is only added by the
+        // config-aware overload, restricted to organisations under Vlimpers management.
+        RolePermissionMap.For(Role.VlimpersBeheerder)
+            .Contains(Permission.CanManageChildren).Should().BeFalse();
+    }
+
+    [Fact]
+    public void Static_For_DecentraalBeheerder_does_not_grant_CanManageChildren()
+    {
+        // Only granted as a data-driven restricted grant (own organisation, not under
+        // Vlimpers management) via the config-aware overload.
+        RolePermissionMap.For(Role.DecentraalBeheerder)
+            .Contains(Permission.CanManageChildren).Should().BeFalse();
+    }
+
+    [Fact]
+    public void For_config_VlimpersBeheerder_grants_CanManageChildren_only_for_vlimpers_managed_organisations()
+    {
+        var config = new OrganisationRegistryConfigurationStub();
+
+        var set = RolePermissionMap.For(new[] { Role.VlimpersBeheerder }, config);
+
+        set.IsSatisfiedFor(
+                Permission.CanManageChildren,
+                new VlimpersManagementContext(IsUnderVlimpersManagement: true))
+            .Should().BeTrue();
+
+        set.IsSatisfiedFor(
+                Permission.CanManageChildren,
+                new VlimpersManagementContext(IsUnderVlimpersManagement: false))
+            .Should().BeFalse();
+    }
+
+    [Fact]
+    public void For_config_DecentraalBeheerder_grants_CanManageChildren_only_for_own_non_vlimpers_organisation()
+    {
+        var ownOvoNumber = "OVO123456";
+        var otherOvoNumber = "OVO654321";
+        var config = new OrganisationRegistryConfigurationStub();
+
+        var user = new UserBuilder()
+            .AddRoles(Role.DecentraalBeheerder)
+            .AddOrganisations(ownOvoNumber)
+            .Build();
+
+        var set = RolePermissionMap.For(new[] { Role.DecentraalBeheerder }, config);
+
+        // Own organisation, not under Vlimpers management -> allowed.
+        set.IsSatisfiedFor(
+                Permission.CanManageChildren,
+                new UserContext(user),
+                new OrganisationContext(ownOvoNumber),
+                new VlimpersManagementContext(IsUnderVlimpersManagement: false))
+            .Should().BeTrue();
+
+        // Own organisation but under Vlimpers management -> reserved for VlimpersBeheerder.
+        set.IsSatisfiedFor(
+                Permission.CanManageChildren,
+                new UserContext(user),
+                new OrganisationContext(ownOvoNumber),
+                new VlimpersManagementContext(IsUnderVlimpersManagement: true))
+            .Should().BeFalse();
+
+        // Other organisation -> outside scope.
+        set.IsSatisfiedFor(
+                Permission.CanManageChildren,
+                new UserContext(user),
+                new OrganisationContext(otherOvoNumber),
+                new VlimpersManagementContext(IsUnderVlimpersManagement: false))
+            .Should().BeFalse();
+    }
+
+    [Fact]
+    public void Static_For_CjmBeheerder_does_not_grant_CanManageChildren()
+    {
+        RolePermissionMap.For(Role.CjmBeheerder)
+            .Contains(Permission.CanManageChildren).Should().BeFalse();
+    }
+
+    [Fact]
     public void For_config_unions_across_roles_and_unrestricted_absorbs_restricted()
     {
         var allowedKeyType = Guid.NewGuid();

@@ -6,6 +6,7 @@ using Infrastructure.Tests.Extensions.TestHelpers;
 using Microsoft.Extensions.Logging;
 using Moq;
 using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Authorization.Restrictions;
 using OrganisationRegistry.Infrastructure.Domain;
 using Tests.Shared;
 using Tests.Shared.TestDataBuilders;
@@ -47,6 +48,10 @@ public class WhenUpdatingAnOrganisationParentWithCircularDependencies
         => new UserBuilder()
             .AddOrganisations(_ovoNumberA)
             .AddRoles(Role.DecentraalBeheerder)
+            .WithPermissions(
+                PermissionSet.Of(
+                    Permission.CanManageChildren.RestrictedTo(
+                        ChildRestrictions.DecentraalAndNotUnderVlimpersManagement)))
             .Build();
 
     private IEvent[] Events

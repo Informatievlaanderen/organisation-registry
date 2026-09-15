@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Infrastructure.Tests.Extensions.TestHelpers;
 using Microsoft.Extensions.Logging;
 using Moq;
+using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Authorization.Restrictions;
 using OrganisationRegistry.Infrastructure.Domain;
 using OrganisationRegistry.Infrastructure.Events;
 using OrganisationRegistry.Organisation;
@@ -36,6 +38,16 @@ public class WhenAddingANonVlimpersOrganisationAsParentForAVlimpersOrganisation
         _validFrom = _dateTimeProviderStub.Today;
         _validTo = _dateTimeProviderStub.Today.AddDays(2);
     }
+
+
+    private IUser User
+        => new UserBuilder()
+            .AddRoles(Role.VlimpersBeheerder)
+            .WithPermissions(
+                PermissionSet.Of(
+                    Permission.CanManageChildren.RestrictedTo(
+                        ChildRestrictions.UnderVlimpersManagement)))
+            .Build();
 
     protected override AddOrganisationParentCommandHandler BuildHandler(ISession session)
         => new(
@@ -87,14 +99,14 @@ public class WhenAddingANonVlimpersOrganisationAsParentForAVlimpersOrganisation
     [Fact]
     public async Task PublishesNoEvents()
         => await Given(Events)
-            .When(AddOrganisationParentCommand, TestUser.VlimpersBeheerder)
+            .When(AddOrganisationParentCommand, User)
             .ThenItPublishesTheCorrectNumberOfEvents(0);
 
     [Fact]
     public async Task ThrowsAnException()
     {
         await Given(Events)
-            .When(AddOrganisationParentCommand, TestUser.VlimpersBeheerder)
+            .When(AddOrganisationParentCommand, User)
             .ThenThrows<VlimpersAndNonVlimpersOrganisationCannotBeInParentalRelationship>();
     }
 }

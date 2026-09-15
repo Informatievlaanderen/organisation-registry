@@ -7,6 +7,8 @@ using FluentAssertions;
 using Infrastructure.Tests.Extensions.TestHelpers;
 using Microsoft.Extensions.Logging;
 using Moq;
+using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Authorization.Restrictions;
 using OrganisationRegistry.Infrastructure.Domain;
 using OrganisationRegistry.Infrastructure.Events;
 using OrganisationRegistry.Organisation;
@@ -37,6 +39,16 @@ public class WhenAddingAVlimpersOrganisationParentAndUserIsVlimpers
         _organisationParentId = Guid.NewGuid();
         _organisationParentName = "Parent organisation";
     }
+
+
+    private IUser User
+        => new UserBuilder()
+            .AddRoles(Role.VlimpersBeheerder)
+            .WithPermissions(
+                PermissionSet.Of(
+                    Permission.CanManageChildren.RestrictedTo(
+                        ChildRestrictions.UnderVlimpersManagement)))
+            .Build();
 
     protected override AddOrganisationParentCommandHandler BuildHandler(ISession session)
         => new(
@@ -88,14 +100,14 @@ public class WhenAddingAVlimpersOrganisationParentAndUserIsVlimpers
     [Fact]
     public async Task PublishesTwoEvents()
     {
-        await Given(Events).When(AddOrganisationParentCommand, TestUser.VlimpersBeheerder)
+        await Given(Events).When(AddOrganisationParentCommand, User)
             .ThenItPublishesTheCorrectNumberOfEvents(2);
     }
 
     [Fact]
     public async Task AddsAnOrganisationParent()
     {
-        await Given(Events).When(AddOrganisationParentCommand, TestUser.VlimpersBeheerder).Then();
+        await Given(Events).When(AddOrganisationParentCommand, User).Then();
 
         PublishedEvents[0]
             .UnwrapBody<OrganisationParentAdded>()
@@ -114,7 +126,7 @@ public class WhenAddingAVlimpersOrganisationParentAndUserIsVlimpers
     [Fact]
     public async Task AssignsAParent()
     {
-        await Given(Events).When(AddOrganisationParentCommand, TestUser.VlimpersBeheerder).Then();
+        await Given(Events).When(AddOrganisationParentCommand, User).Then();
 
         PublishedEvents[1]
             .UnwrapBody<ParentAssignedToOrganisation>()

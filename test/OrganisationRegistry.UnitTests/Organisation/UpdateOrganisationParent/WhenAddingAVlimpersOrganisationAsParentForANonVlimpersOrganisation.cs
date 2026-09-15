@@ -7,6 +7,7 @@ using Infrastructure.Tests.Extensions.TestHelpers;
 using Microsoft.Extensions.Logging;
 using Moq;
 using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Authorization.Restrictions;
 using OrganisationRegistry.Infrastructure.Domain;
 using OrganisationRegistry.Infrastructure.Events;
 using OrganisationRegistry.Organisation;
@@ -52,6 +53,10 @@ public class WhenUpdatingAVlimpersOrganisationAsParentForANonVlimpersOrganisatio
         => new UserBuilder()
             .AddRoles(Role.DecentraalBeheerder)
             .AddOrganisations(_ovoNumber)
+            .WithPermissions(
+                PermissionSet.Of(
+                    Permission.CanManageChildren.RestrictedTo(
+                        ChildRestrictions.DecentraalAndNotUnderVlimpersManagement)))
             .Build();
 
     private IEvent[] Events

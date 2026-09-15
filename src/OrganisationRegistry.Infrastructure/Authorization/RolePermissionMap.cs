@@ -103,8 +103,7 @@ public static class RolePermissionMap
                 Permission.BodiesCanManageFormalFrameworks,
                 Permission.BodiesCanManageMep),
 
-            [Role.VlimpersBeheerder] = PermissionSet.Of(
-                Permission.CanManageChildren),
+            [Role.VlimpersBeheerder] = PermissionSet.Empty,
 
             // DecentraalBeheerder holds no unrestricted grants: every permission it
             // has (organisation-scoped edits and body management) is granted as a
@@ -277,6 +276,8 @@ public static class RolePermissionMap
         => role switch
         {
             Role.VlimpersBeheerder => PermissionSet.Of(
+                Permission.CanManageChildren.RestrictedTo(
+                    ChildRestrictions.UnderVlimpersManagement),
                 Permission.CanManageKeys.RestrictedTo(
                     KeyRestrictions.VlimpersManaged(
                         configuration.Authorization.KeyIdsAllowedForVlimpers)),
@@ -287,6 +288,8 @@ public static class RolePermissionMap
                     LabelRestrictions.VlimpersManaged(
                         configuration.Authorization.LabelIdsAllowedForVlimpers))),
             Role.DecentraalBeheerder => PermissionSet.Of(
+                Permission.CanManageChildren.RestrictedTo(
+                    ChildRestrictions.DecentraalAndNotUnderVlimpersManagement),
                 Permission.CanManageFunctions.RestrictedTo(
                     DecentraalOrganisationRestriction.Instance),
                 Permission.CanManageLocations.RestrictedTo(
