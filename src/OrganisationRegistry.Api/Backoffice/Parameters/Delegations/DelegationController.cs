@@ -21,7 +21,7 @@ using Swashbuckle.AspNetCore.Filters;
 
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
-[OrganisationRegistryAuthorize(Role.AlgemeenBeheerder , Role.DecentraalBeheerder)]
+[OrganisationRegistryAuthorize(RequiredPermissions = new[] { Permission.CanEditDelegations })]
 [OrganisationRegistryRoute("manage/delegations")]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]

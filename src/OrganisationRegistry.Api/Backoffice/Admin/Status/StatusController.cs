@@ -63,7 +63,7 @@ public class StatusController : OrganisationRegistryController
     /// <response code="200">De huidige configuratie-instellingen met verborgen gevoelige data.</response>
     [HttpGet]
     [Route("configuration")]
-    [OrganisationRegistryAuthorize(Role.Developer)]
+    [OrganisationRegistryAuthorize(RequiredPermissions = new[] { Permission.CanReadConfiguration })]
     public async Task<IActionResult> GetConfiguration(
         [FromServices] IConfiguration configuration,
         [FromServices] IExternalIpFetcher externalIpFetcher)

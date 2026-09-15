@@ -194,11 +194,20 @@ public class Startup
                 AuthenticationSchemes.TokenExchange,
                 options =>
                 {
-                    var tokenExchangeConfig = _configuration.GetSection("TokenExchange").Get<TokenExchangeConfiguration>();
-                    options.Authority = tokenExchangeConfig.Authority;
-                    options.ClientId = tokenExchangeConfig.ClientId;
-                    options.ClientSecret = tokenExchangeConfig.ClientSecret;
-                    options.IntrospectionEndpoint = tokenExchangeConfig.IntrospectionEndpoint;
+                    var tokenExchangeConfig = _configuration
+                            .GetSection(TokenExchangeConfiguration.Section)
+                            .Get<TokenExchangeConfiguration>()
+                        ?? throw new InvalidOperationException(
+                            $"The {TokenExchangeConfiguration.Section} configuration section is missing.");
+
+                    // Incomplete credentials are not rejected here but at the introspection endpoint,
+                    // which answers with a bare 401 on every request. Fail at startup instead.
+                    options.Authority = Required(tokenExchangeConfig.Authority, nameof(tokenExchangeConfig.Authority));
+                    options.ClientId = Required(tokenExchangeConfig.ClientId, nameof(tokenExchangeConfig.ClientId));
+                    options.ClientSecret = Required(tokenExchangeConfig.ClientSecret, nameof(tokenExchangeConfig.ClientSecret));
+                    options.IntrospectionEndpoint = Required(
+                        tokenExchangeConfig.IntrospectionEndpoint,
+                        nameof(tokenExchangeConfig.IntrospectionEndpoint));
 
                     options.Events = new OAuth2IntrospectionEvents()
                     {
@@ -216,7 +225,7 @@ public class Startup
                     };
                 })
             .Services
-            .Configure<TokenExchangeConfiguration>(_configuration.GetSection("TokenExchange"))
+            .Configure<TokenExchangeConfiguration>(_configuration.GetSection(TokenExchangeConfiguration.Section))
             .AddTransient<IClaimsTransformation, TokenExchangeClaimsTransformation>()
             .AddSingleton<IActionContextAccessor, ActionContextAccessor>()
             .AddSingleton<ISecurityService, SecurityService>()
@@ -503,4 +512,15 @@ public class Startup
     private static string GetApiLeadingText(ApiVersionDescription description)
         => $"Momenteel leest u de documentatie voor versie {description.ApiVersion} van de Basisregisters Vlaanderen Organisation Registry API{(description.IsDeprecated ? ", **deze API versie is niet meer ondersteund**." : ".")}"
            + SchermApiIntro;
+
+    /// <summary>
+    /// Guards a configuration value that the application cannot do anything sensible without,
+    /// naming the environment variable that sets it.
+    /// </summary>
+    private static string Required(string? value, string key)
+        => !string.IsNullOrWhiteSpace(value)
+            ? value
+            : throw new InvalidOperationException(
+                $"{TokenExchangeConfiguration.Section}:{key} is not configured. " +
+                $"Set the {TokenExchangeConfiguration.Section}__{key} environment variable.");
 }

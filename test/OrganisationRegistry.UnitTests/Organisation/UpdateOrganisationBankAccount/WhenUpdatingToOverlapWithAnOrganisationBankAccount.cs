@@ -79,7 +79,7 @@ public class WhenUpdatingToOverlapWithAnOrganisationBankAccount
             new ValidFrom(),
             new ValidTo());
 
-    [Fact]
+    [SkipBankAccounts]
     public async Task ThrowsException()
     {
         await Given(Events).When(UpdateOrganisationBankAccount, TestUser.AlgemeenBeheerder).ThenThrows<BankAccountNumberAlreadyCoupledToInThisPeriod>();

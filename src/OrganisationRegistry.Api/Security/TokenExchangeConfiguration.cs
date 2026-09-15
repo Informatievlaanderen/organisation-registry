@@ -5,6 +5,8 @@ using System.ComponentModel.DataAnnotations;
 
 public class TokenExchangeConfiguration
 {
+    public const string Section = "TokenExchange";
+
     [Required]
     [Url]
     public string Authority { get; set; } = string.Empty;

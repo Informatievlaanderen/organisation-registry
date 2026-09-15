@@ -38,8 +38,7 @@ public class WhenUpdatingAnOrganisationFormalFrameworkValidityToToday :
         => new(
             new Mock<ILogger<UpdateOrganisationFormalFrameworkCommandHandler>>().Object,
             session,
-            new DateTimeProvider(),
-            new OrganisationRegistryConfigurationStub());
+            new DateTimeProvider());
 
     private IEvent[] Events()
     {
