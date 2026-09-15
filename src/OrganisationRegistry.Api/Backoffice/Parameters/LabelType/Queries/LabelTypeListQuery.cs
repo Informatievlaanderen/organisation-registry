@@ -9,6 +9,7 @@ using Infrastructure.Search;
 using Infrastructure.Search.Filtering;
 using Infrastructure.Search.Sorting;
 using OrganisationRegistry.Infrastructure.Configuration;
+using Parameters;
 using SqlServer.Infrastructure;
 using SqlServer.LabelType;
 
@@ -67,6 +68,7 @@ public class LabelTypeListItemResult
         Id = id;
         Name = name;
         UserPermitted = userPermitted && policyFunc(id);
+        Permissions = new ResourceSelectPermissions(UserPermitted);
     }
 
     public Guid Id { get; }
@@ -74,4 +76,6 @@ public class LabelTypeListItemResult
     public string Name { get; }
 
     public bool UserPermitted { get; }
+
+    public ResourceSelectPermissions Permissions { get; }
 }
