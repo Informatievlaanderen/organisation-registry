@@ -16,6 +16,12 @@ public static class UpdateHandlerExtensionMethods
                 organisation.State.UnderVlimpersManagement,
                 organisation.State.OvoNumber));
 
+    public static UpdateHandler<Organisation> WithChildPolicy(this UpdateHandler<Organisation> source)
+        => source.WithPolicy(
+            organisation => new ChildPolicy(
+                organisation.State.OvoNumber,
+                organisation.State.UnderVlimpersManagement));
+
     public static UpdateHandler<Organisation> WithBeheerderForOrganisationPolicy(this UpdateHandler<Organisation> source)
         => source.WithPolicy(
             organisation => new BeheerderForOrganisationRegardlessOfVlimpersPolicy(

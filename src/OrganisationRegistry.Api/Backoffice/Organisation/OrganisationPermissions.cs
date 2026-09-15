@@ -92,7 +92,11 @@ public class OrganisationPermissions
         return new OrganisationPermissions(
             canEdit: canEditOrganisation,
             canDelete: false,
-            canManageChildren: Satisfies(Permission.CanManageChildren, userContext, organisationContext),
+            canManageChildren: Satisfies(
+                Permission.CanManageChildren,
+                userContext,
+                organisationContext,
+                new VlimpersManagementContext(isUnderVlimpersManagement)),
             canManageContacts: Satisfies(Permission.CanManageContacts, userContext, organisationContext),
             canManageLocations: Satisfies(Permission.CanManageLocations, userContext, organisationContext),
             canManageBuildings: Satisfies(Permission.CanManageBuildings, userContext, organisationContext),

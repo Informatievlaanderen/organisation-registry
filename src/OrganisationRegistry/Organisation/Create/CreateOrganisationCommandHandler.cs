@@ -80,7 +80,7 @@ public class CreateOrganisationCommandHandler :
             throw new NullReferenceException("parentOrganisationId should not be null when creating a daughter");
 
         return Handler.For(user, Session)
-            .WithVlimpersPolicy(Session.Get<Organisation>(parentId))
+            .WithChildPolicy(Session.Get<Organisation>(parentId))
             .Handle(
                 session =>
                 {

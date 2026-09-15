@@ -10,6 +10,7 @@ using OrganisationRegistry.Infrastructure.Domain;
 using OrganisationRegistry.Infrastructure.Events;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Events;
+using OrganisationRegistry.Handling.Authorization;
 using OrganisationRegistry.Organisation.Exceptions;
 using Tests.Shared;
 using Tests.Shared.Stubs;
@@ -92,6 +93,6 @@ public class WhenAddingAVlimpersOrganisationParentAndUserIsNotVlimpers
     public async Task ThrowsException()
     {
         await Given(Events).When(AddOrganisationParentCommand, TestUser.User)
-            .ThenThrows<UserIsNotAuthorizedForVlimpersOrganisations>();
+            .ThenThrows<InsufficientRights<ChildPolicy>>();
     }
 }
