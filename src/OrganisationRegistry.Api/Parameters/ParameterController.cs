@@ -264,7 +264,7 @@ public class ParameterController : OrganisationRegistryController
         var sorting = Request.ExtractSortingRequest();
         var pagination = Request.ExtractPaginationRequest();
 
-        var pagedOrganisationClassificationTypes = new OrganisationClassificationTypeListQuery(context, organisationRegistryConfiguration).Fetch(filtering, sorting, pagination);
+        var pagedOrganisationClassificationTypes = new OrganisationClassificationTypeListQuery(context, organisationRegistryConfiguration, _ => true).Fetch(filtering, sorting, pagination);
 
         Response.AddPaginationResponse(pagedOrganisationClassificationTypes.PaginationInfo);
         Response.AddSortingResponse(sorting.SortBy, sorting.SortOrder);
@@ -501,7 +501,7 @@ public class ParameterController : OrganisationRegistryController
         var sorting = Request.ExtractSortingRequest();
         var pagination = Request.ExtractPaginationRequest();
 
-        var pagedFormalFrameworks = new FormalFrameworkListQuery(context).Fetch(filtering, sorting, pagination);
+        var pagedFormalFrameworks = new FormalFrameworkListQuery(context, _ => true).Fetch(filtering, sorting, pagination);
 
         Response.AddPaginationResponse(pagedFormalFrameworks.PaginationInfo);
         Response.AddSortingResponse(sorting.SortBy, sorting.SortOrder);
@@ -547,7 +547,7 @@ public class ParameterController : OrganisationRegistryController
         var sorting = Request.ExtractSortingRequest();
         var pagination = Request.ExtractPaginationRequest();
 
-        var pagedCapacities = new CapacityListQuery(context).Fetch(filtering, sorting, pagination);
+        var pagedCapacities = new CapacityListQuery(context, _ => true).Fetch(filtering, sorting, pagination);
 
         Response.AddPaginationResponse(pagedCapacities.PaginationInfo);
         Response.AddSortingResponse(sorting.SortBy, sorting.SortOrder);

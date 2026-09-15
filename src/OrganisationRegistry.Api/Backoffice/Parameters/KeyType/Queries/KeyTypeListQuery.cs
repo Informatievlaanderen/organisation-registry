@@ -8,6 +8,7 @@ using Infrastructure.Search;
 using Infrastructure.Search.Filtering;
 using Infrastructure.Search.Sorting;
 using OrganisationRegistry.Infrastructure;
+using Parameters;
 using SqlServer.Infrastructure;
 using SqlServer.KeyType;
 
@@ -82,12 +83,12 @@ public class KeyTypeListItemResult
         Name = name;
         IsRemoved = isRemoved;
         UserPermitted = isAuthorizedForKeyType(id);
-        CanSelect = UserPermitted;
+        Permissions = new ResourceSelectPermissions(UserPermitted);
     }
 
     public Guid Id { get; set; }
     public string Name { get; set; }
     public bool IsRemoved { get; set; }
     public bool UserPermitted { get; set; }
-    public bool CanSelect { get; set; }
+    public ResourceSelectPermissions Permissions { get; set; }
 }
