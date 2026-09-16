@@ -1,3 +1,16 @@
+## [1.339.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.339.0...v1.339.1) (2026-09-16)
+
+
+### Bug Fixes
+
+* enable TokenExchange in Tilt environment for integration tests ([a89250e](https://github.com/informatievlaanderen/organisation-registry/commit/a89250e9ff10e48a02dc4cf2cb2d13a4b01ecbe2))
+* prevent TokenExchange scheme from crashing when not configured ([ba031d5](https://github.com/informatievlaanderen/organisation-registry/commit/ba031d510b369d8c67b5b57d0b48db1f32086326))
+
+
+### Reverts
+
+* Revert "fix: temp remove me controller" ([bf716f8](https://github.com/informatievlaanderen/organisation-registry/commit/bf716f849021d86dfa7333be2eb02788397b9a6c))
+
 # [1.339.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.338.2...v1.339.0) (2026-09-16)
 
 
