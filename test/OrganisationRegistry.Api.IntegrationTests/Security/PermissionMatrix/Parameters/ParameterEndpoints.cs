@@ -6,9 +6,11 @@ using System.Collections.Generic;
 /// Shared data for the parameter (master-data) permission matrix tests.
 ///
 /// Every parameter screen is gated by its own fine-grained
-/// <c>Parameters&lt;Thing&gt;Read/Write/Delete</c> permission. Only
+/// <c>Parameters&lt;Thing&gt;Write/Delete</c> permission for writes/deletes. Only
 /// <see cref="OrganisationRegistry.Infrastructure.Authorization.Role.AlgemeenBeheerder" />
-/// (and Developer) hold them; every other interactive role must receive 403.
+/// (and Developer) hold them; every other interactive role must receive 403
+/// when writing or deleting. Reading these lists, however, carries no
+/// dedicated permission and is open to any authenticated backoffice user.
 /// </summary>
 public static class ParameterEndpoints
 {
@@ -40,7 +42,9 @@ public static class ParameterEndpoints
 
     /// <summary>
     /// Interactive backoffice roles that must NOT have access to parameter
-    /// master-data management. All of these are expected to receive 403.
+    /// master-data management (writing/deleting). All of these are expected
+    /// to receive 403 on write/delete, but 200 on reads (see
+    /// <see cref="Given_Any_Role_Reading_Parameters"/>).
     /// </summary>
     public static readonly string[] NonPrivilegedRoles =
     {

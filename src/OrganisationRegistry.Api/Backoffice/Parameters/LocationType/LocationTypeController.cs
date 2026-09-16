@@ -22,7 +22,7 @@ using Swashbuckle.AspNetCore.Filters;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("locationtypes")]
-[OrganisationRegistryAuthorize(RequiredPermissions = [Permission.ParametersLocationTypesRead])]
+[OrganisationRegistryAuthorize(RequiredPermissions = [Permission.CanManageLocations])]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]
 public class LocationTypeController : OrganisationRegistryController

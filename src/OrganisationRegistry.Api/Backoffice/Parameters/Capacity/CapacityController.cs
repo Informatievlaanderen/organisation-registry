@@ -23,7 +23,7 @@ using Swashbuckle.AspNetCore.Filters;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("capacities")]
-[OrganisationRegistryAuthorize(RequiredPermissions = [Permission.ParametersCapacitiesRead, Permission.CanManageCapacities])]
+[OrganisationRegistryAuthorize(RequiredPermissions = [Permission.CanManageCapacities])]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]
 public class CapacityController : OrganisationRegistryController

@@ -21,7 +21,7 @@ using Swashbuckle.AspNetCore.Filters;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("formalframeworkcategories")]
-[OrganisationRegistryAuthorize(RequiredPermissions = [Permission.ParametersFormalFrameworkCategoriesRead])]
+[OrganisationRegistryAuthorize]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]
 public class FormalFrameworkCategoryController : OrganisationRegistryController

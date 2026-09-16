@@ -76,51 +76,34 @@ public enum Permission
     CanViewProjections,
 
     // Fine-grained parameter (master-data) permissions. Each parameter screen
-    // has its own read/write (and optionally delete) permission so access can be
+    // has its own write (and optionally delete) permission so access can be
     // granted per parameter type in the future. Today only Role.AlgemeenBeheerder
-    // holds them (see RolePermissionMap).
-    ParametersLocationsRead,
+    // holds them (see RolePermissionMap). Reading these master-data lists is not
+    // gated by a dedicated permission: the list endpoints only require the
+    // default BackofficeUser policy (any authenticated backoffice user), and
+    // some also accept the corresponding CanManage* permission so a scoped
+    // manager can still populate its own dropdowns (see the relevant *Controller).
     ParametersLocationsWrite,
-    ParametersBuildingsRead,
     ParametersBuildingsWrite,
-    ParametersInformationSystemsRead,
     ParametersInformationSystemsWrite,
     ParametersInformationSystemsDelete,
-    ParametersOrganisationClassificationsRead,
     ParametersOrganisationClassificationsWrite,
-    ParametersOrganisationClassificationTypesRead,
     ParametersOrganisationClassificationTypesWrite,
-    ParametersBodyClassificationsRead,
     ParametersBodyClassificationsWrite,
-    ParametersBodyClassificationTypesRead,
     ParametersBodyClassificationTypesWrite,
-    ParametersOrganisationRelationTypesRead,
     ParametersOrganisationRelationTypesWrite,
-    ParametersFormalFrameworksRead,
     ParametersFormalFrameworksWrite,
-    ParametersFormalFrameworkCategoriesRead,
     ParametersFormalFrameworkCategoriesWrite,
-    ParametersLifecyclePhaseTypesRead,
     ParametersLifecyclePhaseTypesWrite,
-    ParametersCapacitiesRead,
     ParametersCapacitiesWrite,
     ParametersCapacitiesDelete,
-    ParametersFunctionTypesRead,
     ParametersFunctionTypesWrite,
-    ParametersContactTypesRead,
     ParametersContactTypesWrite,
-    ParametersLabelTypesRead,
     ParametersLabelTypesWrite,
-    ParametersPurposesRead,
     ParametersPurposesWrite,
-    ParametersSeatTypesRead,
     ParametersSeatTypesWrite,
-    ParametersMandateRoleTypesRead,
     ParametersMandateRoleTypesWrite,
-    ParametersLocationTypesRead,
     ParametersLocationTypesWrite,
-    ParametersRegulationThemesRead,
     ParametersRegulationThemesWrite,
-    ParametersRegulationSubThemesRead,
     ParametersRegulationSubThemesWrite,
 }

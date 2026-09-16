@@ -21,7 +21,7 @@ using Swashbuckle.AspNetCore.Filters;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("mandateroletypes")]
-[OrganisationRegistryAuthorize(RequiredPermissions = [Permission.ParametersMandateRoleTypesRead])]
+[OrganisationRegistryAuthorize]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]
 public class MandateRoleTypeController : OrganisationRegistryController

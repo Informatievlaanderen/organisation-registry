@@ -1,6 +1,7 @@
 namespace OrganisationRegistry.Api.Auth.Models;
 
 using System.Collections.Generic;
+using System.Text;
 using OrganisationRegistry.Infrastructure.Authorization;
 
 /// <summary>
@@ -14,12 +15,30 @@ using OrganisationRegistry.Infrastructure.Authorization;
 /// <c>Parameters*</c> / <c>Bodies*</c> permissions granted there automatically show up
 /// on <c>/v1/me</c> without needing a matching manual edit here.
 ///
-/// Only the <c>Parameters*Read/Write/Delete</c> and <c>CanManageBodies</c> /
-/// <c>BodiesCanManage*</c> families are translated: those are the permissions that
-/// gate top-level admin screens. Per-organisation permissions (e.g. <c>CanManageKeys</c>,
-/// <c>CanManageCapacities</c>) are scoped to an individual organisation's detail page
-/// and are not relevant to global nav visibility, so they are intentionally not
-/// translated here.
+/// The <c>Parameters*Write/Delete</c> and <c>CanManageBodies</c> /
+/// <c>BodiesCanManage*</c> families are translated, as well as the top-level
+/// "can this role create/manage organisations or bodies at all" flags
+/// (<c>org.organisations:create</c>, <c>body.info:create</c>) and <c>imports</c>.
+/// Per-organisation permissions (e.g. <c>CanManageKeys</c>, <c>CanManageCapacities</c>)
+/// are scoped to an individual organisation's detail page and are not relevant to
+/// global nav visibility, so they are intentionally not translated here.
+///
+/// There is no <c>Parameters*Read</c> permission: reading a master-data list is
+/// open to any authenticated backoffice user (see the parameter list
+/// controllers), so it carries no per-role signal for nav visibility. Only the
+/// write/delete grants (which remain AlgemeenBeheerder/Developer-only today)
+/// are translated into <c>parameters.&lt;resource&gt;:write</c>,
+/// <c>parameters.&lt;resource&gt;:delete</c> and the aggregate
+/// <c>parameters:write</c> flag.
+///
+/// <see cref="PermissionSet.Contains"/> is used throughout (not
+/// <see cref="PermissionSet.IsSatisfiedFor"/>): nav visibility only cares whether a
+/// role holds a grant for a permission at all — restricted or not — since the
+/// actual scoping (own organisation, Vlimpers-managed, ...) is enforced again by
+/// the real command handlers. The <paramref name="permissions"/> passed in must
+/// therefore include restricted grants (i.e. be resolved via the config-aware
+/// <see cref="RolePermissionMap.For(System.Collections.Generic.IEnumerable{Role},Configuration.IOrganisationRegistryConfiguration,Microsoft.Extensions.Logging.ILogger)"/>
+/// overload) or Vlimpers/Decentraal will look like they have no access at all.
 /// </summary>
 public static class GlobalPermissionTranslator
 {
@@ -27,8 +46,17 @@ public static class GlobalPermissionTranslator
     {
         var result = new HashSet<string>();
         var hasBodies = false;
-        var hasParametersRead = false;
         var hasParametersWrite = false;
+
+        if (permissions.Contains(Permission.CanCreateOrganisations) ||
+            permissions.Contains(Permission.CanManageChildren))
+            result.Add("org.organisations:create");
+
+        if (permissions.Contains(Permission.CanManageBodies))
+            result.Add("body.info:create");
+
+        if (permissions.Contains(Permission.CanImport))
+            result.Add("imports");
 
         foreach (var entry in permissions)
         {
@@ -42,7 +70,7 @@ public static class GlobalPermissionTranslator
 
             if (name.StartsWith("BodiesCanManage"))
             {
-                var sub = name["BodiesCanManage".Length..].ToLowerInvariant();
+                var sub = ToKebabCase(name["BodiesCanManage".Length..]);
                 result.Add($"bodies.{sub}:read");
                 result.Add($"bodies.{sub}:write");
                 hasBodies = true;
@@ -57,7 +85,6 @@ public static class GlobalPermissionTranslator
                 continue;
 
             result.Add($"parameters.{resource}:{operation}");
-            hasParametersRead = hasParametersRead || operation == "read";
             hasParametersWrite = hasParametersWrite || operation is "write" or "delete";
         }
 
@@ -67,9 +94,6 @@ public static class GlobalPermissionTranslator
             result.Add("bodies:write");
         }
 
-        if (hasParametersRead)
-            result.Add("parameters:read");
-
         if (hasParametersWrite)
             result.Add("parameters:write");
 
@@ -77,8 +101,8 @@ public static class GlobalPermissionTranslator
     }
 
     /// <summary>
-    /// Splits a <c>Parameters{Resource}{Read|Write|Delete}</c> permission name into
-    /// its lowercase resource segment and operation. Returns a <c>null</c> operation
+    /// Splits a <c>Parameters{Resource}{Write|Delete}</c> permission name into
+    /// its kebab-case resource segment and operation. Returns a <c>null</c> operation
     /// when the name doesn't match the expected suffix (defensive; every current
     /// <c>Parameters*</c> member does).
     /// </summary>
@@ -86,15 +110,37 @@ public static class GlobalPermissionTranslator
     {
         const string prefix = "Parameters";
 
-        foreach (var suffix in new[] { "Read", "Write", "Delete" })
+        foreach (var suffix in new[] { "Write", "Delete" })
         {
             if (!name.EndsWith(suffix) || name.Length <= prefix.Length + suffix.Length)
                 continue;
 
-            var resource = name[prefix.Length..^suffix.Length].ToLowerInvariant();
+            var resource = ToKebabCase(name[prefix.Length..^suffix.Length]);
             return (resource, suffix.ToLowerInvariant());
         }
 
         return (string.Empty, null);
     }
+
+    /// <summary>
+    /// Converts a PascalCase permission-name fragment (e.g. <c>OrganisationClassificationTypes</c>)
+    /// into its kebab-case front-end resource name (<c>organisation-classification-types</c>).
+    /// </summary>
+    private static string ToKebabCase(string pascalCase)
+    {
+        var builder = new StringBuilder(pascalCase.Length + 8);
+
+        for (var i = 0; i < pascalCase.Length; i++)
+        {
+            var c = pascalCase[i];
+
+            if (char.IsUpper(c) && i > 0)
+                builder.Append('-');
+
+            builder.Append(char.ToLowerInvariant(c));
+        }
+
+        return builder.ToString();
+    }
 }
+

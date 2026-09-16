@@ -23,7 +23,7 @@ using Swashbuckle.AspNetCore.Filters;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("keytypes")]
-[OrganisationRegistryAuthorize(RequiredPermissions = [Permission.ParametersInformationSystemsRead, Permission.CanManageKeys])]
+[OrganisationRegistryAuthorize(RequiredPermissions = [Permission.CanManageKeys])]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]
 public class KeyTypeController : OrganisationRegistryController
