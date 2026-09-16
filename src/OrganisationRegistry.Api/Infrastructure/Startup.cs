@@ -117,6 +117,8 @@ public class Startup
             _configuration.GetSection(ApiConfigurationSection.Name).Get<ApiConfigurationSection>();
         var editApiConfiguration = _configuration.GetSection(EditApiConfigurationSection.Name)
             .Get<EditApiConfigurationSection>();
+        var tokenExchangeConfiguration = _configuration.GetSection("TokenExchange").Get<TokenExchangeConfiguration>();
+        var tokenExchangeEnabled = TokenExchangeSchemeSelector.IsEnabled(tokenExchangeConfiguration);
 
         if (apiConfiguration.KboCertificate is { } kboCertificate && kboCertificate.IsNotEmptyOrWhiteSpace())
         {
@@ -194,26 +196,28 @@ public class Startup
                 AuthenticationSchemes.TokenExchange,
                 options =>
                 {
-                    var tokenExchangeConfig = _configuration.GetSection("TokenExchange").Get<TokenExchangeConfiguration>();
-                    options.Authority = tokenExchangeConfig.Authority;
-                    options.ClientId = tokenExchangeConfig.ClientId;
-                    options.ClientSecret = tokenExchangeConfig.ClientSecret;
-                    options.IntrospectionEndpoint = tokenExchangeConfig.IntrospectionEndpoint;
-
-                    options.Events = new OAuth2IntrospectionEvents()
+                    if (tokenExchangeEnabled)
                     {
-                        OnAuthenticationFailed = context =>
-                        {
-                            Log.Logger.Information("Token Exchange failed: {@Error}", context.Error);
+                        options.Authority = tokenExchangeConfiguration!.Authority;
+                        options.ClientId = tokenExchangeConfiguration.ClientId;
+                        options.ClientSecret = tokenExchangeConfiguration.ClientSecret;
+                        options.IntrospectionEndpoint = tokenExchangeConfiguration.IntrospectionEndpoint;
 
-                            return Task.CompletedTask;
-                        },
-                        OnTokenValidated = context =>
+                        options.Events = new OAuth2IntrospectionEvents()
                         {
-                            Log.Logger.Information("Token Exchange validated for '{@Name}': {@Claims}", context.Principal.Identity.Name, context.Principal.Claims);
-                            return Task.CompletedTask;
-                        },
-                    };
+                            OnAuthenticationFailed = context =>
+                            {
+                                Log.Logger.Information("Token Exchange failed: {@Error}", context.Error);
+
+                                return Task.CompletedTask;
+                            },
+                            OnTokenValidated = context =>
+                            {
+                                Log.Logger.Information("Token Exchange validated for '{@Name}': {@Claims}", context.Principal.Identity.Name, context.Principal.Claims);
+                                return Task.CompletedTask;
+                            },
+                        };
+                    }
                 })
             .Services
             .Configure<TokenExchangeConfiguration>(_configuration.GetSection("TokenExchange"))
@@ -349,7 +353,9 @@ public class Startup
 
                             options.AddPolicy(
                                 PolicyNames.BackofficeUser,
-                                builder => builder.AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme, AuthenticationSchemes.TokenExchange)
+                                builder => builder
+                                    .AddAuthenticationSchemes(TokenExchangeSchemeSelector.WithTokenExchangeIfEnabled(
+                                        new[] { JwtBearerDefaults.AuthenticationScheme }, tokenExchangeEnabled))
                                     .RequireAuthenticatedUser()
                                     .RequireClaim(AcmIdmConstants.Claims.AcmId));
 

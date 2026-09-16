@@ -5,15 +5,20 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
+using OrganisationRegistry.Api.Security;
 using OrganisationRegistry.Infrastructure.Authorization;
 
 public class ConfigureClaimsPrincipalSelectorMiddleware
 {
     private readonly RequestDelegate _next;
+    private readonly bool _tokenExchangeEnabled;
 
-    public ConfigureClaimsPrincipalSelectorMiddleware(RequestDelegate next)
+    public ConfigureClaimsPrincipalSelectorMiddleware(RequestDelegate next, IConfiguration configuration)
     {
         _next = next;
+        var tokenExchangeConfiguration = configuration.GetSection("TokenExchange").Get<TokenExchangeConfiguration>();
+        _tokenExchangeEnabled = TokenExchangeSchemeSelector.IsEnabled(tokenExchangeConfiguration);
     }
 
     public Task Invoke(HttpContext context, IHttpContextAccessor httpContextAccessor)
@@ -42,18 +47,15 @@ public class ConfigureClaimsPrincipalSelectorMiddleware
         return _next(context);
     }
 
-    private static AuthenticateResult? TryGetAuthInfo(IHttpContextAccessor httpContextAccessor)
+    private AuthenticateResult? TryGetAuthInfo(IHttpContextAccessor httpContextAccessor)
     {
         var httpContext = httpContextAccessor.HttpContext;
         if (httpContext == null)
             return null;
 
-        var schemes = new[]
-        {
-            JwtBearerDefaults.AuthenticationScheme,
-            AuthenticationSchemes.EditApi,
-            AuthenticationSchemes.TokenExchange,
-        };
+        var schemes = TokenExchangeSchemeSelector.WithTokenExchangeIfEnabled(
+            new[] { JwtBearerDefaults.AuthenticationScheme, AuthenticationSchemes.EditApi },
+            _tokenExchangeEnabled);
 
         foreach (var scheme in schemes)
         {
@@ -65,3 +67,4 @@ public class ConfigureClaimsPrincipalSelectorMiddleware
         return null;
     }
 }
+
