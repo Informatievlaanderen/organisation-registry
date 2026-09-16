@@ -1,3 +1,10 @@
+# [1.339.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.338.2...v1.339.0) (2026-09-16)
+
+
+### Features
+
+* or-3543 check on whitespace for add organistation ([717dc32](https://github.com/informatievlaanderen/organisation-registry/commit/717dc32ee4f316e253c3f9be713bf1af52e2daa5))
+
 ## [1.338.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.338.1...v1.338.2) (2026-09-08)
 
 
