@@ -9,7 +9,8 @@ using Xunit;
 /// <summary>
 /// Verifies that <see cref="OrganisationRegistry.Infrastructure.Authorization.Role.AlgemeenBeheerder" />
 /// retains full access to the parameter master-data screens after the migration
-/// to fine-grained <c>Parameters&lt;Thing&gt;Read/Write/Delete</c> permissions.
+/// to fine-grained <c>Parameters&lt;Thing&gt;Write/Delete</c> permissions (reads
+/// are open to any backoffice user, see <see cref="Given_Any_Role_Reading_Parameters"/>).
 /// </summary>
 [Collection(ApiTestsCollection.Name)]
 public class Given_Algemeenbeheerder

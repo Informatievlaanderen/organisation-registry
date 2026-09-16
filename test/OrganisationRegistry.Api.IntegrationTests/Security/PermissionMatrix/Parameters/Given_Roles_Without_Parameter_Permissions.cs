@@ -8,7 +8,9 @@ using Xunit;
 
 /// <summary>
 /// Verifies that interactive roles without the fine-grained parameter
-/// permissions are denied (403) on every parameter master-data endpoint.
+/// permissions are still denied (403) on writing/deleting parameter
+/// master-data, even though reading those same lists is now open to any
+/// authenticated backoffice user (see <see cref="Given_Any_Role_Reading_Parameters"/>).
 ///
 /// The assertions are factorised: one theory proves every route is gated
 /// (single representative role across all routes), a second proves every
@@ -29,28 +31,6 @@ public class Given_Roles_Without_Parameter_Permissions
     public Given_Roles_Without_Parameter_Permissions(ApiFixture apiFixture)
     {
         _apiFixture = apiFixture;
-    }
-
-    [Theory]
-    [MemberData(nameof(ParameterEndpoints.ListRouteData), MemberType = typeof(ParameterEndpoints))]
-    public async Task Then_Reading_Returns_Forbidden(string route)
-    {
-        var client = await _apiFixture.CreateDynamicClient(RepresentativeRole);
-
-        var response = await ApiFixture.Get(client, $"/v1/{route}");
-
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
-    }
-
-    [Theory]
-    [MemberData(nameof(ParameterEndpoints.NonPrivilegedRoleData), MemberType = typeof(ParameterEndpoints))]
-    public async Task Then_Reading_Locations_Returns_Forbidden(string role)
-    {
-        var client = await _apiFixture.CreateDynamicClient(role);
-
-        var response = await ApiFixture.Get(client, "/v1/locations");
-
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
 
     [Theory]

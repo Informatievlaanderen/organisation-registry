@@ -21,7 +21,7 @@ using Swashbuckle.AspNetCore.Filters;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("organisationrelationtypes")]
-[OrganisationRegistryAuthorize(RequiredPermissions = [Permission.ParametersOrganisationRelationTypesRead])]
+[OrganisationRegistryAuthorize]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]
 public class OrganisationRelationTypeController : OrganisationRegistryController
