@@ -9,6 +9,17 @@ namespace OrganisationRegistry.Infrastructure.Authorization;
 public enum Permission
 {
     CanManageChildren,
+    CanManageOrganisation,
+
+    /// <summary>
+    /// Create a new <em>top-level</em> organisation (one with no parent).
+    /// Unrestricted-only: unlike <see cref="CanManageChildren"/> (which gates
+    /// adding a daughter organisation under an existing parent, and is held
+    /// as a restricted grant by VlimpersBeheerder/DecentraalBeheerder), there
+    /// is no parent organisation to scope a restriction against, so this
+    /// permission is granted only to AlgemeenBeheerder (and Developer).
+    /// </summary>
+    CanCreateOrganisations,
     CanManageContacts,
     CanManageFunctions,
     CanManageCapacities,

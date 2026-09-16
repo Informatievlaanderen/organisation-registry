@@ -34,6 +34,8 @@ public static class ScopePermissionMap
             // WellknownUsers.TestClient → Role.AlgemeenBeheerder mapping.
             [AcmIdmConstants.Scopes.TestClient] = PermissionSet.Of(
                 Permission.CanManageChildren,
+                Permission.CanManageOrganisation,
+                Permission.CanCreateOrganisations,
                 Permission.CanManageContacts,
                 Permission.CanManageFunctions,
                 Permission.CanManageBodies,
