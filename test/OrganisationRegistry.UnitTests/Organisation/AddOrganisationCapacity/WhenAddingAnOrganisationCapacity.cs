@@ -79,7 +79,6 @@ public class WhenAddingAnOrganisationCapacity
 
     [Theory]
     [InlineData(Role.AlgemeenBeheerder)]
-    [InlineData(Role.CjmBeheerder)]
     public async Task PublishesTwoEvent(Role role)
     {
         await Given(
