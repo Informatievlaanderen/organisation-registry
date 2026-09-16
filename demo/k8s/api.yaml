@@ -119,6 +119,8 @@ spec:
           value: "http://keycloak.localhost:9080/realms/wegwijs"
         - name: TokenExchange__IntrospectionEndpoint
           value: "http://keycloak/realms/wegwijs/protocol/openid-connect/token/introspect"
+        - name: TokenExchange__Enabled
+          value: "true"
         - name: FeatureManagement__BffApi
           value: "true"
         - name: FeatureManagement__EditApi
