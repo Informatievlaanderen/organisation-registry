@@ -138,9 +138,10 @@ public static class UpdateHandlerExtensionMethods
     public static UpdateHandler<Organisation> RequiresBeheerderForOrganisationButNotUnderVlimpersManagement(
         this UpdateHandler<Organisation> source)
         => source.WithPolicy(
-            organisation => new BeheerderForOrganisationButNotUnderVlimpersManagementPolicy(
-                organisation.State.UnderVlimpersManagement,
-                organisation.State.OvoNumber));
+            organisation => new OrganisationPolicy(
+                Permission.CanManageOrganisation,
+                organisation.State.OvoNumber,
+                organisation.State.UnderVlimpersManagement));
 
     public static UpdateHandler<Organisation> RequiresBeheerderForOrganisationRegardlessOfVlimpers(
         this UpdateHandler<Organisation> source)

@@ -85,7 +85,7 @@ public class OrganisationPermissions
             => user.IsSatisfiedFor(permission, contexts);
 
         var canEditOrganisation =
-            new BeheerderForOrganisationButNotUnderVlimpersManagementPolicy(isUnderVlimpersManagement, ovoNumber)
+            new OrganisationPolicy(Permission.CanManageOrganisation, ovoNumber, isUnderVlimpersManagement)
                 .Check(user)
                 .IsSuccessful;
 

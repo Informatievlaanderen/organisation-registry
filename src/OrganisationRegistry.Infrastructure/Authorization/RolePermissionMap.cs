@@ -21,6 +21,8 @@ public static class RolePermissionMap
         {
             [Role.AlgemeenBeheerder] = PermissionSet.Of(
                 Permission.CanManageChildren,
+                Permission.CanManageOrganisation,
+                Permission.CanCreateOrganisations,
                 Permission.CanManageContacts,
                 Permission.CanManageFunctions,
                 Permission.CanManageCapacities,
@@ -134,6 +136,8 @@ public static class RolePermissionMap
 
             [Role.Developer] = PermissionSet.Of(
                 Permission.CanManageChildren,
+                Permission.CanManageOrganisation,
+                Permission.CanCreateOrganisations,
                 Permission.CanManageContacts,
                 Permission.CanManageFunctions,
                 Permission.CanManageCapacities,
@@ -276,6 +280,8 @@ public static class RolePermissionMap
         => role switch
         {
             Role.VlimpersBeheerder => PermissionSet.Of(
+                Permission.CanManageOrganisation.RestrictedTo(
+                    ChildRestrictions.UnderVlimpersManagement),
                 Permission.CanManageChildren.RestrictedTo(
                     ChildRestrictions.UnderVlimpersManagement),
                 Permission.CanManageKeys.RestrictedTo(
@@ -288,6 +294,8 @@ public static class RolePermissionMap
                     LabelRestrictions.VlimpersManaged(
                         configuration.Authorization.LabelIdsAllowedForVlimpers))),
             Role.DecentraalBeheerder => PermissionSet.Of(
+                Permission.CanManageOrganisation.RestrictedTo(
+                    ChildRestrictions.DecentraalAndNotUnderVlimpersManagement),
                 Permission.CanManageChildren.RestrictedTo(
                     ChildRestrictions.DecentraalAndNotUnderVlimpersManagement),
                 Permission.CanManageFunctions.RestrictedTo(
