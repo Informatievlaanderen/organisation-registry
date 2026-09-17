@@ -39,11 +39,16 @@ public class RolePermissionsTests
             "system.statistics:read",
             "system.events:read",
             "system.kbo-terminated:read",
-            "parameters:read",
             "parameters:write",
-            "parameters.organisation-classification-types:read",
+            "parameters.organisation-classification-types:write",
             "parameters.information-systems:delete",
         });
+
+        // There is no Parameters*Read permission: reading a master-data list is
+        // open to any authenticated backoffice user (see GlobalPermissionTranslator),
+        // so it carries no per-role signal and is never surfaced on /v1/me.
+        result.Should().NotContain("parameters:read");
+        result.Should().NotContain("parameters.organisation-classification-types:read");
     }
 
     [Fact]
