@@ -15,6 +15,7 @@ import {OidcService} from "./oidc.service";
 
 export class HttpInterceptor extends Http {
   private securityUrl = `${this.configurationService.apiUrl}/v1/security`;
+  private meUrl = `${this.configurationService.apiUrl}/v1/me`;
 
   constructor(
     backend: ConnectionBackend,
@@ -27,9 +28,13 @@ export class HttpInterceptor extends Http {
     super(backend, defaultOptions);
   }
 
+  private bypassesInterception(url: string): boolean {
+    return url === this.securityUrl || url === this.meUrl;
+  }
+
   request(url: string | Request, options?: RequestOptionsArgs): Observable<Response> {
     let requestedUrl = (url instanceof Request) ? url.url : url;
-    if (requestedUrl === this.securityUrl)
+    if (this.bypassesInterception(requestedUrl))
       return super.request(url, this.getRequestOptionArgs(options));
 
     // console.log('http intercept - request', url);
@@ -37,7 +42,7 @@ export class HttpInterceptor extends Http {
   }
 
   get(url: string, options?: RequestOptionsArgs): Observable<Response> {
-    if (url === this.securityUrl)
+    if (this.bypassesInterception(url))
       return super.get(url, this.getRequestOptionArgs(options));
 
     // console.log('http intercept - get', url);

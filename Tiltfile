@@ -213,6 +213,14 @@ custom_build(
     deps=['demo/nuxt-bff/'],
 )
 
+# Seed — populates required parameter/reference data (KeyTypes, LabelTypes,
+# LifecyclePhaseTypes, ...) via the API. Idempotent, safe to re-run.
+custom_build(
+    'k3d-wegwijs-registry:5051/wegwijs-seed:local',
+    'docker build -t $EXPECTED_REF demos/seed && docker push $EXPECTED_REF',
+    deps=['demos/seed/'],
+)
+
 # =============================================================================
 # Applications
 # =============================================================================
@@ -223,6 +231,7 @@ k8s_yaml('demo/k8s/piavo-import.yaml')
 k8s_yaml('demo/k8s/m2m.yaml')
 k8s_yaml('demo/k8s/nuxt-bff.yaml')
 k8s_yaml('demo/k8s/ingress.yaml')
+k8s_yaml('demo/k8s/seed.yaml')
 
 # Group all Traefik IngressRoutes into a single Tilt resource so they are
 # always applied on `tilt up`, survive `tilt down`/re-up cycles, and are
@@ -273,6 +282,10 @@ k8s_resource('keycloak',
     labels=['infrastructure'],
     resource_deps=['keycloak-realm-configmap'],
     links=[link('http://keycloak.localhost:9080', 'Keycloak')])
+
+k8s_resource('seed',
+    labels=['setup'],
+    resource_deps=['api-configuration', 'keycloak'])
 
 # =============================================================================
 # Settings

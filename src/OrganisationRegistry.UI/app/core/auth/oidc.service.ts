@@ -16,6 +16,7 @@ import {
 
 } from "rxjs/operators";
 import {BehaviorSubject} from "rxjs/BehaviorSubject";
+import {forkJoin} from "rxjs/observable/forkJoin";
 
 export function hasAnyOfRoles(
   securityInfo: SecurityInfo,
@@ -38,6 +39,12 @@ export function isOrganisatieBeheerderFor(
   );
 }
 
+export interface Me {
+  name: string;
+  role: string;
+  permissions: Array<string>;
+}
+
 export interface SecurityInfo {
   isLoggedIn: boolean;
   userName: string;
@@ -45,13 +52,15 @@ export interface SecurityInfo {
   ovoNumbers: Array<string>;
   organisationIds: Array<string>;
   bodyIds: Array<string>;
+  permissions: Array<string>;
   refreshtoken: number;
   expires: number;
 }
 
 function createSecurityInfo(
   user: User = null,
-  refreshToken: number = 1000
+  refreshToken: number = 1000,
+  permissions: Array<string> = new Array<string>()
 ): SecurityInfo {
   return {
     isLoggedIn: !!user,
@@ -60,6 +69,7 @@ function createSecurityInfo(
     ovoNumbers: user ? user.ovoNumbers : new Array<string>(),
     userName: user ? user.userName : "",
     roles: user ? user.roles : new Array<Role>(),
+    permissions: permissions,
     expires: new Date().getTime() - 60 * 1000,
     refreshtoken: refreshToken,
   };
@@ -69,6 +79,7 @@ function createSecurityInfo(
 export class OidcService {
   private securityUrl = `${this.configurationService.apiUrl}/v1/security`;
   private securityInfoUrl = `${this.configurationService.apiUrl}/v1/security/info`;
+  private meUrl = `${this.configurationService.apiUrl}/v1/me`;
   private securityInfoSubject = new BehaviorSubject<SecurityInfo>(null);
 
   constructor(
@@ -182,6 +193,14 @@ export class OidcService {
     return this.getSecurityInfo().map((user) => user.bodyIds);
   }
 
+  public get permissions(): Observable<Array<string>> {
+    return this.getSecurityInfo().map((user) => user.permissions);
+  }
+
+  public hasPermission(permission: string): Observable<boolean> {
+    return this.permissions.map((permissions) => permissions.indexOf(permission) > -1);
+  }
+
   public canEditBody(bodyId): Observable<boolean> {
 
     return this.getSecurityInfo().pipe(
@@ -236,15 +255,17 @@ export class OidcService {
   }
 
   public getFromServer(): Observable<SecurityInfo> {
-    return this.getUser().pipe(
-      map((user: User) =>{
-        return createSecurityInfo(
+    return forkJoin(
+      this.getUser().pipe(catchError(() => Observable.of(null))),
+      this.getMe().pipe(catchError(() => Observable.of(null)))
+    ).pipe(
+      map(([user, me]: [User, Me]) =>
+        createSecurityInfo(
           user,
-          (this.securityInfoSubject.getValue() ? this.securityInfoSubject.getValue().refreshtoken : 1000) + 1
-        )}
-      ),
-      catchError(() =>
-        Observable.of(createSecurityInfo()))
+          (this.securityInfoSubject.getValue() ? this.securityInfoSubject.getValue().refreshtoken : 1000) + 1,
+          me ? me.permissions : new Array<string>()
+        )
+      )
     );
   }
 
@@ -256,6 +277,31 @@ export class OidcService {
     return this.http
       .get(url, {headers: headers})
       .pipe(map(OidcService.toUser), catchError(OidcService.handleError));
+  }
+
+  // Always called alongside getUser() (whether the user turns out to be logged
+  // in or not) so /v1/me shows up in the network tab on every app load and is
+  // re-fetched with fresh permissions right after signing in (see
+  // updateSecurityInfo(true) in CallbackComponent). Failures (401 when
+  // anonymous, 403 without a Wegwijs role) resolve to no permissions instead
+  // of breaking the overall security info refresh.
+  private getMe(): Observable<Me> {
+    const url = `${this.meUrl}`;
+
+    let headers = new HeadersBuilder().json().build();
+
+    return this.http
+      .get(url, {headers: headers})
+      .pipe(map(OidcService.toMe), catchError(OidcService.handleError));
+  }
+
+  private static toMe(res: Response): Me {
+    let body = res.json();
+    return {
+      name: body.name,
+      role: body.role,
+      permissions: body.permissions || new Array<string>(),
+    };
   }
 
   private static toUser(res: Response): User {
