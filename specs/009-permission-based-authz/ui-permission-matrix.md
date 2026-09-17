@@ -35,6 +35,33 @@
 | KBO-koppeling | `canViewKbo`, `canManageKbo` | – | – | CRUD | – | – | – | R |
 | Vlimpers | `canViewVlimpers`, `canManageVlimpers` | – | – | CRUD | – | – | – | R |
 
+## Personen (los van organisatie/orgaan-scope)
+
+**Status:** Geïmplementeerd. `Persoon` is geen organisatiescherm (geen `canEdit`/organisatie-scope);
+onderstaande rechten gelden globaal, ongeacht welke organisatie of orgaan de persoon (mede)
+vertegenwoordigt.
+
+| Scherm/functionaliteit | Permissie | Publieke rol | VO medewerker | Algemeen beheerder | Decentraal beheerder | Vlimpers beheerder | Orgaan beheerder | Regelgeving / Deugdelijk bestuur beheerder |
+|---|---|---|---|---|---|---|---|---|
+| Persoon | `PeopleWrite` (create/update, geen delete) | R | R | CRU | R | R | R | R |
+| Functies | `PeopleFunctionsRead` | – | R | R | R | R | R | R |
+| Hoedanigheden | `PeopleCapacitiesRead` | – | R | R | R | R | R | R |
+| Mandaten | – (geen permissie vereist) | R | R | R | R | R | R | R |
+
+- `Persoon` lezen (`GET /v1/people`, `GET /v1/people/{id}`) vereist geen permissie: dit is publiek
+  toegankelijk, ook zonder token.
+- `Persoon` aanmaken/aanpassen (`POST`/`PUT /v1/people`) vereist `PeopleWrite`, enkel toegekend aan
+  AlgemeenBeheerder (en Developer). Alle andere rollen krijgen 403. Er is geen delete-permissie:
+  personen kunnen nooit verwijderd worden via de API.
+- `Functies`/`Hoedanigheden` lezen vereist resp. `PeopleFunctionsRead`/`PeopleCapacitiesRead`,
+  toegekend aan elke backoffice-rol (AlgemeenBeheerder, DecentraalBeheerder, VlimpersBeheerder,
+  OrgaanBeheerder, RegelgevingBeheerder). Een niet-ingelogde ("Publiek") aanvraag krijgt 401
+  (geen geldig token) — er bestaat geen echte "Publiek"/"VO medewerker"-rol in het systeem, dus
+  deze kolommen zijn hier documentair (elke ingelogde backoffice-gebruiker = "VO medewerker").
+- `Mandaten` lezen vereist geen permissie: publiek toegankelijk zoals `Persoon` lezen.
+- Er bestaat geen write-permissie voor Functies/Hoedanigheden op het Personen-scherm: die worden
+  uitsluitend beheerd vanaf de organisatiekant (`CanManageFunctions`/`CanManageCapacities`).
+
 ## Interpretatie per sterretje-cel
 
 | Cel | Betekenis (voorlopig, valideren tijdens implementatie) |

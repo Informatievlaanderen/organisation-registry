@@ -60,8 +60,8 @@ public class Given_Roles_With_CanManageChildren
             validFrom,
             validTo);
 
-        // De decentraalbeheerder-scope is gecachet op de boom onder OVO000002; er kan geen
-        // verse organisatie binnen scope aangemaakt worden. OVO000002 verzamelt bovendien
+        // De decentraalbeheerder-scope is gecachet op de boom onder OVO000003; er kan geen
+        // verse organisatie binnen scope aangemaakt worden. OVO000003 verzamelt bovendien
         // ouderkoppelingen over testruns heen, waardoor de domeinlaag een 400 (reeds gekoppeld)
         // kan teruggeven. Voor deze matrixrij toetsen we dus de *machtiging*: de aanvraag mag
         // niet geweigerd worden (403/401). AlgemeenBeheerder dekt de strikte 201.

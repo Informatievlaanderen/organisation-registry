@@ -42,7 +42,7 @@ public class ApiFixture : IDisposable, IAsyncLifetime
     private Guid? _decentraalbeheerderOrganisationId;
     private Guid? _decentraalbeheerderChildOrganisationId;
 
-    private const string DecentraalbeheerderOvoNumber = "OVO000002";
+    private const string DecentraalbeheerderOvoNumber = "OVO000003";
     private const string DecentraalbeheerderChildOvoNumber = "OVO000102";
 
     public struct Orafin
@@ -110,13 +110,13 @@ public class ApiFixture : IDisposable, IAsyncLifetime
         => _importedChildOrganisationId ?? throw new InvalidOperationException("Imported child organisation is not ready.");
 
     /// <summary>
-    /// Organisatie (OVO000002) waarvoor de decentraalbeheerder-persona beheerder is.
+    /// Organisatie (OVO000003) waarvoor de decentraalbeheerder-persona beheerder is.
     /// </summary>
     public Guid DecentraalbeheerderOrganisationId
         => _decentraalbeheerderOrganisationId ?? throw new InvalidOperationException("Decentraalbeheerder organisation is not ready.");
 
     /// <summary>
-    /// Dochterorganisatie van OVO000002 en dus binnen de scope van de decentraalbeheerder-persona.
+    /// Dochterorganisatie van OVO000003 en dus binnen de scope van de decentraalbeheerder-persona.
     /// </summary>
     public Guid DecentraalbeheerderChildOrganisationId
         => _decentraalbeheerderChildOrganisationId ?? throw new InvalidOperationException("Decentraalbeheerder child organisation is not ready.");
@@ -127,7 +127,7 @@ public class ApiFixture : IDisposable, IAsyncLifetime
     /// Client die authenticeert als <see cref="Role.Developer" />. Enkel de developer-rol mag bij het
     /// aanmaken van een organisatie een vast OVO-nummer opgeven (zie OrganisationDetailCommandController);
     /// alle andere rollen krijgen een automatisch gegenereerd OVO-nummer. Wordt gebruikt om de
-    /// scope-organisaties (OVO000002 / OVO000102) met een gekend OVO-nummer aan te maken.
+    /// scope-organisaties (OVO000003 / OVO000102) met een gekend OVO-nummer aan te maken.
     /// </summary>
     public HttpClient DeveloperHttpClient { get; }
 
@@ -213,6 +213,18 @@ public class ApiFixture : IDisposable, IAsyncLifetime
     public async Task<HttpClient> CreateDynamicClient(string role)
         => await CreateBackofficeUserClientFor(role);
 
+    /// <summary>
+    /// Bouwt een <see cref="HttpClient" /> zonder <c>Authorization</c>-header, om een
+    /// niet-ingelogde ("Publiek") bezoeker te simuleren. Endpoints die authenticatie
+    /// vereisen antwoorden hierop met 401 (geen geldig token), niet 403 (geen recht).
+    /// </summary>
+    public HttpClient CreateAnonymousClient()
+    {
+        var httpClientFor = new HttpClient { BaseAddress = new Uri(ApiEndpoint) };
+        httpClientFor.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        return httpClientFor;
+    }
+
 
     /// <summary>
     /// Bouwt een <see cref="HttpClient" /> die authenticeert als een interactieve
@@ -286,7 +298,7 @@ public class ApiFixture : IDisposable, IAsyncLifetime
             .FirstOrDefault()
             ?? throw new InvalidOperationException(
                 "Geen developer geconfigureerd in 'OpenIdConnect:Developers'. De developer-rol is nodig om " +
-                "organisaties met een vast OVO-nummer (OVO000002 / OVO000102) aan te maken.");
+                "organisaties met een vast OVO-nummer (OVO000003 / OVO000102) aan te maken.");
 
         var identity = new ClaimsIdentity();
         identity.AddClaim(new Claim(JwtClaimTypes.Subject, "api-integration-tests-developer"));
@@ -447,7 +459,7 @@ public class ApiFixture : IDisposable, IAsyncLifetime
     }
 
     /// <summary>
-    /// Zorgt ervoor dat de decentraalbeheerder-organisatie (OVO000002) een gekende dochterorganisatie heeft.
+    /// Zorgt ervoor dat de decentraalbeheerder-organisatie (OVO000003) een gekende dochterorganisatie heeft.
     /// Dit gebeurt idempotent tijdens de fixture-initialisatie, vóór de eerste geauthenticeerde request van de
     /// decentraalbeheerder-persona, zodat de dochter in de OrganisationTree (en dus in de scope-cache) zit.
     /// </summary>
@@ -475,7 +487,7 @@ public class ApiFixture : IDisposable, IAsyncLifetime
         await WaitUntilAsync(
             () => OrganisationHasChildWithOvoNumber(DecentraalbeheerderOrganisationId, DecentraalbeheerderChildOvoNumber),
             ImportReadinessTimeout,
-            "De decentraalbeheerder-organisatie (OVO000002) heeft nog geen gekende dochterorganisatie. " +
+            "De decentraalbeheerder-organisatie (OVO000003) heeft nog geen gekende dochterorganisatie. " +
             "Controleer of de OrganisationTree-projectie afgewerkt is.");
     }
 

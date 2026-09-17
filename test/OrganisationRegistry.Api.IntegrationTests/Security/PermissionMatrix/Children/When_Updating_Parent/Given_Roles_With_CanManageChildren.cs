@@ -46,7 +46,7 @@ public class Given_Roles_With_CanManageChildren
 
         // OVO000102 ligt binnen de (gecachete) scope van de decentraalbeheerder en is niet
         // Vlimpers-beheerd. Het heeft reeds een (open) ouderkoppeling uit de fixture; die
-        // werken we in-place bij zodat we niets aan OVO000002 toevoegen (dat over testruns
+        // werken we in-place bij zodat we niets aan OVO000003 toevoegen (dat over testruns
         // heen ouderkoppelingen verzamelt en de domeinlaag zou blokkeren).
         var childOrganisationId = _apiFixture.DecentraalbeheerderChildOrganisationId;
         var existing = await GetFirstParentCoupling(client, childOrganisationId);
@@ -93,7 +93,7 @@ public class Given_Roles_With_CanManageChildren
         response.StatusCode.Should().Be(HttpStatusCode.OK, await response.Content.ReadAsStringAsync());
 
         var items = await ApiFixture.DeserializeAsList(response);
-        items.Should().NotBeEmpty("de fixture koppelt OVO000102 aan een ouder (OVO000002)");
+        items.Should().NotBeEmpty("de fixture koppelt OVO000102 aan een ouder (OVO000003)");
 
         var first = items[0];
         return (

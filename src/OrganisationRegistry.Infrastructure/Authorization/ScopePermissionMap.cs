@@ -62,6 +62,10 @@ public static class ScopePermissionMap
                // Permission.CanManageDelegations, // TODO ?
                 Permission.CanReadConfiguration,
 
+                Permission.PeopleWrite,
+                Permission.PeopleFunctionsRead,
+                Permission.PeopleCapacitiesRead,
+
                 Permission.ParametersLocationsWrite,
                 Permission.ParametersBuildingsWrite,
                 Permission.ParametersInformationSystemsWrite,

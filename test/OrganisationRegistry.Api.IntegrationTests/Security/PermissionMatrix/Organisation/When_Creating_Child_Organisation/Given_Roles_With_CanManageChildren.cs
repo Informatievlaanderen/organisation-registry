@@ -49,7 +49,7 @@ public class Given_Roles_With_CanManageChildren
     {
         var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Decentraalbeheerder);
 
-        // OVO000002 is de eigen organisatie van de decentraalbeheerder-persona en valt dus binnen de scope.
+        // OVO000003 is de eigen organisatie van de decentraalbeheerder-persona en valt dus binnen de scope.
         var response = await CreateDaughterOrganisation(client, _apiFixture.DecentraalbeheerderOrganisationId);
 
         response.StatusCode.Should().Be(HttpStatusCode.Created);

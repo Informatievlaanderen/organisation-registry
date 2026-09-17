@@ -89,6 +89,12 @@ namespace OrganisationRegistry.Import.Piavo
                 new Claim(ClaimTypes.GivenName, "PIAVO"),
                 new Claim(ClaimTypes.Surname, "Import"),
                 new Claim(ClaimTypes.Role, "algemeenbeheerder"),
+                // "developer" role is required for CreateOrganisation/RegisterBody to
+                // honour the explicit ids/ovoNumber/bodyNumber we pass below — without
+                // it the API silently blanks those fields and auto-generates them,
+                // making the imported OVO-numbers non-deterministic (see demos/seed's
+                // identical fix, which this mirrors).
+                new Claim(ClaimTypes.Role, "developer"),
             };
 
             var descriptor = new SecurityTokenDescriptor
