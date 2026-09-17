@@ -43,6 +43,31 @@ public enum Permission
     CanManageKbo,
     CanManageVlimpers,
 
+    /// <summary>
+    /// Create or update a <c>Persoon</c> (<c>PersonDetailCommandController</c>).
+    /// Granted only to AlgemeenBeheerder (and Developer). There is no delete
+    /// permission: people can never be deleted via the API. Reading a person
+    /// (<c>PersonDetailController</c>/<c>PersonListController</c>) requires no
+    /// permission — it is open to any caller, including unauthenticated ones.
+    /// </summary>
+    PeopleWrite,
+
+    /// <summary>
+    /// Read a person's functions (<c>PersonFunctionController</c>). Granted to
+    /// every backoffice role; unauthenticated ("Publiek") callers are rejected.
+    /// There is no corresponding write permission: functions are only ever
+    /// managed from the organisation side (<see cref="CanManageFunctions"/>).
+    /// </summary>
+    PeopleFunctionsRead,
+
+    /// <summary>
+    /// Read a person's capacities (<c>PersonCapacityController</c>). Granted to
+    /// every backoffice role; unauthenticated ("Publiek") callers are rejected.
+    /// There is no corresponding write permission: capacities are only ever
+    /// managed from the organisation side (<see cref="CanManageCapacities"/>).
+    /// </summary>
+    PeopleCapacitiesRead,
+
     // TODO check below
     CanImport,
     CanRunScheduledJobs,

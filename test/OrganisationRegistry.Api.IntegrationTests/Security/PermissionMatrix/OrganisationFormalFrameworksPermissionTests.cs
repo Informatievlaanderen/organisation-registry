@@ -193,7 +193,10 @@ public class OrganisationFormalFrameworksPermissionTests
     {
         var client = await _apiFixture.CreateBackofficeUserClientFor(ApiFixture.Backoffice.Decentraalbeheerder);
 
-        var organisationId = await _apiFixture.GetOrCreateOrganisationWithOvoNumber("OVO000002");
+        // OVO000003 is the decentraalbeheerder-persona's own organisation (see the
+        // "wegwijsbeheerder-decentraalbeheerder:OVO000003" role in keycloak/realm-export.json).
+        // OVO000002 belongs to Vlimpers, not to this persona.
+        var organisationId = await _apiFixture.GetOrCreateOrganisationWithOvoNumber("OVO000003");
         var parentOrganisationId = _apiFixture.Fixture.Create<Guid>();
         await _apiFixture.Create.Organisation(parentOrganisationId, _apiFixture.Fixture.Create<string>());
 
@@ -244,7 +247,9 @@ public class OrganisationFormalFrameworksPermissionTests
     {
         var client = await _apiFixture.CreateBackofficeUserClientFor(ApiFixture.Backoffice.Decentraalbeheerder);
 
-        var organisationId = await _apiFixture.GetOrCreateOrganisationWithOvoNumber("OVO000002");
+        // OVO000003 is the decentraalbeheerder-persona's own organisation (see the
+        // "wegwijsbeheerder-decentraalbeheerder:OVO000003" role in keycloak/realm-export.json).
+        var organisationId = await _apiFixture.GetOrCreateOrganisationWithOvoNumber("OVO000003");
         var parentOrganisationId = _apiFixture.Fixture.Create<Guid>();
         await _apiFixture.Create.Organisation(parentOrganisationId, _apiFixture.Fixture.Create<string>());
 

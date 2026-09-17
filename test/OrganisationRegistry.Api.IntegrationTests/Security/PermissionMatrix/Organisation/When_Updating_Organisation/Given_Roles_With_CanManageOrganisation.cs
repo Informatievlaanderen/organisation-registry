@@ -49,7 +49,7 @@ public class Given_Roles_With_CanManageOrganisation
     {
         var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Decentraalbeheerder);
 
-        // OVO000002 is de eigen organisatie van de decentraalbeheerder-persona en valt dus binnen de scope.
+        // OVO000003 is de eigen organisatie van de decentraalbeheerder-persona en valt dus binnen de scope.
         var organisationId = _apiFixture.DecentraalbeheerderOrganisationId;
 
         var response = await UpdateOrganisation(client, organisationId);

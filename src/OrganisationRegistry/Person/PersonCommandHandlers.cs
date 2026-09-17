@@ -20,7 +20,7 @@ public class PersonCommandHandlers :
 
     public async Task Handle(ICommandEnvelope<CreatePerson> envelope)
         => await Handler.For(envelope.User, Session)
-            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .WithPeoplePolicy()
             .Handle(
                 session =>
                 {
@@ -30,7 +30,7 @@ public class PersonCommandHandlers :
 
     public async Task Handle(ICommandEnvelope<UpdatePerson> envelope)
         => await UpdateHandler<Person>.For(envelope.Command, envelope.User, Session)
-            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .WithPeoplePolicy()
             .Handle(
                 session =>
                 {

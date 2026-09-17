@@ -168,4 +168,8 @@ public static class UpdateHandlerExtensionMethods
 
     public static UpdateHandler<Body> WithEditDelegationPolicy(this UpdateHandler<Body> source, OrganisationId organisationId)
         => source.WithPolicy(body => new EditDelegationPolicy(organisationId, body.Id));
+
+    public static UpdateHandler<TAggregate> WithPeoplePolicy<TAggregate>(this UpdateHandler<TAggregate> source)
+        where TAggregate : AggregateRoot
+        => source.WithPolicy(_ => new PeoplePolicy());
 }

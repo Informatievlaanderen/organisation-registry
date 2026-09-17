@@ -49,6 +49,10 @@ public static class RolePermissionMap
                 Permission.CanImport,
                 Permission.CanReadConfiguration,
 
+                Permission.PeopleWrite,
+                Permission.PeopleFunctionsRead,
+                Permission.PeopleCapacitiesRead,
+
                 Permission.ParametersLocationsWrite,
                 Permission.ParametersBuildingsWrite,
                 Permission.ParametersInformationSystemsWrite,
@@ -82,23 +86,36 @@ public static class RolePermissionMap
                 Permission.BodiesCanManageOrganisations,
                 Permission.BodiesCanManageClassifications,
                 Permission.BodiesCanManageFormalFrameworks,
-                Permission.BodiesCanManageMep),
+                Permission.BodiesCanManageMep,
+
+                Permission.PeopleFunctionsRead,
+                Permission.PeopleCapacitiesRead),
 
             // VlimpersBeheerder holds CanImport unrestricted (importing is a global
             // action, not organisation-scoped — per-organisation Vlimpers scoping for
-            // imports is enforced separately by ImportPolicy). Every other permission
-            // it has is a data-driven restricted grant (see RestrictedGrantsFor).
+            // imports is enforced separately by ImportPolicy). The Personen read
+            // screens (Functies/Hoedanigheden) are likewise not organisation-scoped
+            // and granted unrestricted here. Every other permission it has is a
+            // data-driven restricted grant (see RestrictedGrantsFor).
             [Role.VlimpersBeheerder] = PermissionSet.Of(
-                Permission.CanImport),
+                Permission.CanImport,
+                Permission.PeopleFunctionsRead,
+                Permission.PeopleCapacitiesRead),
 
-            // DecentraalBeheerder holds no unrestricted grants: every permission it
-            // has (organisation-scoped edits and body management) is granted as a
-            // data-driven restricted grant (own / child organisation or body) via
-            // the config-aware overload (RestrictedGrantsFor).
-            [Role.DecentraalBeheerder] = PermissionSet.Empty,
+            // DecentraalBeheerder holds no unrestricted grants for organisation-scoped
+            // edits and body management (every such permission is a data-driven
+            // restricted grant via RestrictedGrantsFor). The Personen read screens
+            // (Functies/Hoedanigheden) are not organisation-scoped, so they are
+            // granted unrestricted here.
+            [Role.DecentraalBeheerder] = PermissionSet.Of(
+                Permission.PeopleFunctionsRead,
+                Permission.PeopleCapacitiesRead),
 
             [Role.RegelgevingBeheerder] = PermissionSet.Of(
-                Permission.CanManageRegulations),
+                Permission.CanManageRegulations,
+
+                Permission.PeopleFunctionsRead,
+                Permission.PeopleCapacitiesRead),
 
             [Role.CjmBeheerder] = PermissionSet.Of(
                 Permission.CanManageRegulations,
@@ -147,6 +164,10 @@ public static class RolePermissionMap
                 Permission.CanImport,
                 Permission.CanRunScheduledJobs,
                 Permission.CanReadConfiguration,
+
+                Permission.PeopleWrite,
+                Permission.PeopleFunctionsRead,
+                Permission.PeopleCapacitiesRead,
 
                 Permission.ParametersLocationsWrite,
                 Permission.ParametersBuildingsWrite,
