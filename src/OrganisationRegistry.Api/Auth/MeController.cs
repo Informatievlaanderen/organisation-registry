@@ -51,9 +51,9 @@ public class MeController : OrganisationRegistryController
                 throw new ApiException("De gebruiker beschikt niet over een geldige Wegwijs-rol.", 403);
 
             var fullname = $"{user.FirstName} {user.LastName}".Trim();
-            var role = user.Roles.First();
+            var role = RolePriority.SelectPrimary(user.Roles) ?? user.Roles.First();
 
-            var permissions = RolePermissions.Resolve(role);
+            var permissions = RolePermissions.Resolve(role, user.Permissions);
 
             return Ok(MeResponse.Create(fullname, role.ToString(), permissions));
         }

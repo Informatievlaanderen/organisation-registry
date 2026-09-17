@@ -149,6 +149,11 @@ string MintBackofficeJwt()
         new Claim(ClaimTypes.GivenName, "Local"),
         new Claim(ClaimTypes.Surname, "Seed"),
         new Claim(ClaimTypes.Role, "algemeenbeheerder"),
+        // "developer" role is required for CreateOrganisation/RegisterBody to
+        // honour the explicit ids/ovoNumber/bodyNumber we pass below — without
+        // it the API silently blanks those fields and auto-generates them,
+        // making the demo data's OVO-numbers non-deterministic across seeds.
+        new Claim(ClaimTypes.Role, "developer"),
     };
 
     var descriptor = new SecurityTokenDescriptor
@@ -275,6 +280,7 @@ class Seeder
         await KeyTypesAsync();
         await OrafinOrgAsync();
         await VlimpersOrgAsync();
+        await DecentraalOrgAsync();
         await LabelTypesAsync();
         await ContactTypesAsync();
         await LocationTypesAsync();
@@ -446,6 +452,8 @@ class Seeder
         await CreateAsync("INR",           "/v1/keytypes", new { id = "a7e93f01-0001-0000-0000-000000000002",   name = "INR" });
         await CreateAsync("Vademecum",     "/v1/keytypes", new { id = "a7e93f01-0001-0000-0000-000000000003",   name = "Vademecum" });
         await CreateAsync("Vlimpers kort", "/v1/keytypes", new { id = "a7e93f01-0001-0000-0000-000000000004",   name = "Vlimpers kort" });
+        await CreateAsync("Vlimpers referentie", "/v1/keytypes", new { id = "a7e93f01-0001-0000-0000-000000000005", name = "Vlimpers referentie" });
+        await CreateAsync("Vlimpers extern",     "/v1/keytypes", new { id = "a7e93f01-0001-0000-0000-000000000006", name = "Vlimpers extern" });
     }
 
     async Task OrafinOrgAsync()
@@ -477,6 +485,18 @@ class Seeder
             new { vlimpersManagement = true });
         await AddKeyAsync("Vlimpers key op organisatie",
             Constants.VlimpersOrgId, Constants.VlimpersOrgKeyId, Constants.VlimpersKeyTypeId, "VLIMPERS-LOCAL-DEV");
+    }
+
+    async Task DecentraalOrgAsync()
+    {
+        Console.WriteLine("\n=== Decentraal-testorganisatie ===");
+        await CreateAsync("Decentraal testorg (lokale dev)", "/v1/organisations", new
+        {
+            id                       = Constants.DecentraalOrgId,
+            name                     = "Decentraal testorganisatie",
+            ovoNumber                = Constants.DecentraalOvoCode,
+            showOnVlaamseOverheidSites = false,
+        });
     }
 
     async Task LabelTypesAsync()
@@ -607,4 +627,11 @@ static class Constants
     public const string VlimpersOvoCode   = "OVO000002";
     public const string VlimpersKeyTypeId = "922a46bb-1378-45bd-a61f-b6bbf348a4d5";
     public const string VlimpersOrgKeyId  = "a7e93f0f-000f-0000-0000-000000000002";
+
+    // Dedicated demo organisation for DecentraalBeheerder — must NOT be
+    // Vlimpers-managed and must use a different OVO number than VlimpersOrgId
+    // (the decentraalbeheerder demo user's Keycloak role claim is scoped to
+    // this exact OVO number, see keycloak/realm-export.json).
+    public const string DecentraalOrgId   = "a7e93f10-0010-0000-0000-000000000001";
+    public const string DecentraalOvoCode = "OVO000003";
 }

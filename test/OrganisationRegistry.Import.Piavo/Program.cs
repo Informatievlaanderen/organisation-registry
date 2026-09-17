@@ -12,6 +12,7 @@ namespace OrganisationRegistry.Import.Piavo
     using Microsoft.IdentityModel.Tokens;
     using Microsoft.Rest;
     using Models;
+    using Newtonsoft.Json.Linq;
 
     public class Program
     {
@@ -211,7 +212,155 @@ namespace OrganisationRegistry.Import.Piavo
             }
         }
 
-        private static void ImportOrganisations(IOrganisationRegistryAPI client)
+        // -------------------------------------------------------------------
+        // Idempotency helpers.
+        //
+        // Master-data lists (KeyTypes, LabelTypes, ContactTypes, ...) are
+        // uniquely named, and some of the fixed well-known ids below
+        // (MaatschappelijkeZetelGuid, RechtsvormGuid, FormeleBenamingGuid) are
+        // also created by demos/seed/Program.cs, a local-dev bootstrapper
+        // that may run before or concurrently with this import. Rather than
+        // failing when a name/id already exists (whoever creates it first
+        // "wins"), we look the existing entity up and reuse its id so
+        // downstream organisation-level references still resolve correctly.
+        // -------------------------------------------------------------------
+
+        private static JArray FetchExistingList(OrganisationRegistryAPI client, string listPath)
+        {
+            try
+            {
+                using var request = new System.Net.Http.HttpRequestMessage(
+                    System.Net.Http.HttpMethod.Get,
+                    new Uri(client.BaseUri, listPath));
+                request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                request.Headers.Add("x-pagination", "none");
+
+                using var response = client.HttpClient
+                    .SendAsync(request)
+                    .GetAwaiter()
+                    .GetResult();
+
+                if (!response.IsSuccessStatusCode)
+                    return new JArray();
+
+                var json = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                return JArray.Parse(json);
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine($"  Could not read existing {listPath}, will attempt to create anyway: {exception.Message}");
+                return new JArray();
+            }
+        }
+
+        private static Dictionary<string, Guid> FetchExistingIdsByName(OrganisationRegistryAPI client, string listPath)
+        {
+            var map = new Dictionary<string, Guid>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var item in FetchExistingList(client, listPath))
+            {
+                var name = item["name"]?.ToString();
+                if (string.IsNullOrWhiteSpace(name))
+                    continue;
+
+                if (Guid.TryParse(item["id"]?.ToString(), out var id))
+                    map[name] = id;
+            }
+
+            return map;
+        }
+
+        /// <summary>
+        /// Like <see cref="FetchExistingIdsByName"/>, but for entities that are only
+        /// uniquely named within a scope (e.g. OrganisationClassifications, which are
+        /// unique per classification type, not globally).
+        /// </summary>
+        private static Dictionary<string, Guid> FetchExistingIdsByCompoundKey(
+            OrganisationRegistryAPI client,
+            string listPath,
+            Func<JToken, string?> keySelector)
+        {
+            var map = new Dictionary<string, Guid>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var item in FetchExistingList(client, listPath))
+            {
+                var key = keySelector(item);
+                if (string.IsNullOrWhiteSpace(key))
+                    continue;
+
+                if (Guid.TryParse(item["id"]?.ToString(), out var id))
+                    map[key] = id;
+            }
+
+            return map;
+        }
+
+        private static bool HasAnyItems(OrganisationRegistryAPI client, string listPath)
+            => FetchExistingList(client, listPath).Count > 0;
+
+        /// <summary>
+        /// Ensures a uniquely-named master-data entity exists, reusing the
+        /// existing id if one with this name was already created (e.g. by
+        /// demos/seed), or creating it with <paramref name="desiredId"/> otherwise.
+        /// Returns the id that should be used from here on.
+        /// </summary>
+        private static Guid EnsureByName(
+            IDictionary<string, Guid> existingByName,
+            string name,
+            Guid desiredId,
+            Action<Guid> create)
+        {
+            if (existingByName.TryGetValue(name, out var existingId))
+            {
+                Console.WriteLine($"  [bestaat] {name}");
+                return existingId;
+            }
+
+            create(desiredId);
+            existingByName[name] = desiredId;
+            return desiredId;
+        }
+
+        private static bool ExistsById(OrganisationRegistryAPI client, string listPath, Guid id)
+        {
+            try
+            {
+                using var response = client.HttpClient
+                    .GetAsync(new Uri(client.BaseUri, $"{listPath}/{id}"))
+                    .GetAwaiter()
+                    .GetResult();
+
+                return response.IsSuccessStatusCode;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Ensures a fixed well-known id (referenced by KBO api-configuration,
+        /// see scripts/seed-tilt-api-configuration.sh / demos/seed) exists,
+        /// regardless of which display name it was created under. Skips
+        /// creation entirely if the id is already taken.
+        /// </summary>
+        private static void EnsureWellKnownIdExists(
+            OrganisationRegistryAPI client,
+            string listPath,
+            Guid id,
+            string name,
+            Action<Guid> create)
+        {
+            if (ExistsById(client, listPath, id))
+            {
+                Console.WriteLine($"  [bestaat] {name} ({id})");
+                return;
+            }
+
+            create(id);
+        }
+
+        private static void ImportOrganisations(OrganisationRegistryAPI client)
         {
             var sortedOrgs = Sort(_organisations, x => x.ParentOrganisation != null ? new List<Organisation> { x.ParentOrganisation } : new List<Organisation>(), true).ToList();
             var total = sortedOrgs.Count;
@@ -223,6 +372,17 @@ namespace OrganisationRegistry.Import.Piavo
                 var organisation = sortedOrgs[i];
 
                 Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{organisation.Name}] '{organisation.NewId}'...");
+
+                // The deterministic id is stable across re-runs of this import; if the
+                // organisation (and by extension all its associations, added further
+                // below in this same loop iteration on a prior run) already exists,
+                // skip it entirely rather than failing on duplicate associations.
+                if (ExistsById(client, "organisations", organisation.NewId))
+                {
+                    Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] [bestaat] [{organisation.Name}] '{organisation.NewId}', skipping organisation and its associations...");
+                    continue;
+                }
+
                 client.OrganisationsPost(new CreateOrganisationRequest
                 {
                     Id = organisation.NewId,
@@ -265,6 +425,18 @@ namespace OrganisationRegistry.Import.Piavo
                 Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{organisation.Name}] Classifications...");
                 foreach (var classification in organisation.OrganisationClassifications)
                 {
+                    // The "Rechtsvorm"/"Juridische vorm" classification type is the
+                    // well-known type configured as Api:KboV2LegalFormOrganisationClassificationTypeId
+                    // (see demos/seed / scripts/seed-tilt-api-configuration.sh). Once that
+                    // config key is set, the domain forbids manually coupling classifications
+                    // of that type (it's meant to be KBO-managed only), so skip it here
+                    // rather than failing the whole import.
+                    if (classification.OrganisationClassification.OrganisationClassificationType.NewId == RechtsvormGuid)
+                    {
+                        Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Skipping [{organisation.Name}] Classification [{classification.OrganisationClassification.OrganisationClassificationType.Name}] = [{classification.OrganisationClassification.Name}]: managed by KBO, cannot be linked manually...");
+                        continue;
+                    }
+
                     Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{organisation.Name}] Classification [{classification.OrganisationClassification.OrganisationClassificationType.Name}] = [{classification.OrganisationClassification.Name}]...");
                     client.OrganisationsByOrganisationIdClassificationsPost(organisation.NewId, new AddOrganisationOrganisationClassificationRequest
                     {
@@ -382,7 +554,7 @@ namespace OrganisationRegistry.Import.Piavo
             return contacts;
         }
 
-        private static void ImportOrganisationParents(IOrganisationRegistryAPI client)
+        private static void ImportOrganisationParents(OrganisationRegistryAPI client)
         {
             var organisationsWithParents = _organisations.Where(x => x.ParentOrganisation != null).ToList();
             var total = organisationsWithParents.Count;
@@ -394,6 +566,16 @@ namespace OrganisationRegistry.Import.Piavo
                 var organisation = organisationsWithParents[i];
 
                 Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{organisation.Name}] Parents...");
+
+                // This is not natural-key idempotent (the association id is random),
+                // so on re-runs of this import check whether the organisation already
+                // has any parent link before adding a new (duplicate) one.
+                if (HasAnyItems(client, $"organisations/{organisation.NewId}/parents"))
+                {
+                    Console.WriteLine($"  [bestaat] {organisation.Name} heeft al een bovenliggende organisatie");
+                    continue;
+                }
+
                 client.OrganisationsByOrganisationIdParentsPost(organisation.NewId, new AddOrganisationParentRequest
                 {
                     OrganisationOrganisationParentId = Guid.NewGuid(),
@@ -406,8 +588,12 @@ namespace OrganisationRegistry.Import.Piavo
             Console.WriteLine();
         }
 
-        private static void ImportOrganisationClassifications(IOrganisationRegistryAPI client)
+        private static void ImportOrganisationClassifications(OrganisationRegistryAPI client)
         {
+            var existing = FetchExistingIdsByCompoundKey(
+                client,
+                "organisationclassifications",
+                item => $"{item["organisationClassificationTypeName"]}|{item["name"]}");
             var total = _organisationClassifications.Count;
             var padLength = total.ToString().Length;
 
@@ -415,22 +601,28 @@ namespace OrganisationRegistry.Import.Piavo
             for (var i = 0; i < _organisationClassifications.Count; i++)
             {
                 var organisationClassification = _organisationClassifications[i];
+                var key = $"{organisationClassification.OrganisationClassificationType?.Name}|{organisationClassification.Name}";
 
                 Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{organisationClassification.Name}]...");
-                client.OrganisationclassificationsPost(new CreateOrganisationClassificationRequest
-                {
-                    Id = organisationClassification.NewId,
-                    Name = organisationClassification.Name,
-                    Order = organisationClassification.Order,
-                    Active = organisationClassification.Active.ToLowerInvariant().Trim() == "on",
-                    OrganisationClassificationTypeId = organisationClassification.OrganisationClassificationType.NewId,
-                }).CheckBadRequest();
+                organisationClassification.NewId = EnsureByName(
+                    existing,
+                    key,
+                    organisationClassification.NewId,
+                    id => client.OrganisationclassificationsPost(new CreateOrganisationClassificationRequest
+                    {
+                        Id = id,
+                        Name = organisationClassification.Name,
+                        Order = organisationClassification.Order,
+                        Active = organisationClassification.Active.ToLowerInvariant().Trim() == "on",
+                        OrganisationClassificationTypeId = organisationClassification.OrganisationClassificationType.NewId,
+                    }).CheckBadRequest());
             }
             Console.WriteLine();
         }
 
-        private static void ImportOrganisationClassificationTypes(IOrganisationRegistryAPI client)
+        private static void ImportOrganisationClassificationTypes(OrganisationRegistryAPI client)
         {
+            var existing = FetchExistingIdsByName(client, "organisationclassificationtypes");
             var total = _organisationClassificationTypes.Count;
             var padLength = total.ToString().Length;
 
@@ -440,22 +632,36 @@ namespace OrganisationRegistry.Import.Piavo
                 var organisationClassificationType = _organisationClassificationTypes[i];
 
                 Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{organisationClassificationType.Name}]...");
-                client.OrganisationclassificationtypesPost(new CreateOrganisationClassificationTypeRequest
-                {
-                    Id = organisationClassificationType.NewId,
-                    Name = organisationClassificationType.Name,
-                }).CheckBadRequest();
+                organisationClassificationType.NewId = EnsureByName(
+                    existing,
+                    organisationClassificationType.Name,
+                    organisationClassificationType.NewId,
+                    id => client.OrganisationclassificationtypesPost(new CreateOrganisationClassificationTypeRequest
+                    {
+                        Id = id,
+                        Name = organisationClassificationType.Name,
+                    }).CheckBadRequest());
             }
-            client.OrganisationclassificationtypesPost(new CreateOrganisationClassificationTypeRequest
-            {
-                Id = RechtsvormGuid,
-                Name = "Rechtsvorm",
-            }).CheckBadRequest();
+
+            // Fixed well-known id referenced by Api:KboV2LegalFormOrganisationClassificationTypeId
+            // (see demos/seed/Program.cs / scripts/seed-tilt-api-configuration.sh); may already exist
+            // under a different display name (e.g. "Juridische vorm") if seed ran first.
+            EnsureWellKnownIdExists(
+                client,
+                "organisationclassificationtypes",
+                RechtsvormGuid,
+                "Rechtsvorm",
+                id => client.OrganisationclassificationtypesPost(new CreateOrganisationClassificationTypeRequest
+                {
+                    Id = id,
+                    Name = "Rechtsvorm",
+                }).CheckBadRequest());
             Console.WriteLine();
         }
 
-        private static void ImportFunctions(IOrganisationRegistryAPI client)
+        private static void ImportFunctions(OrganisationRegistryAPI client)
         {
+            var existing = FetchExistingIdsByName(client, "functiontypes");
             var total = _functions.Count;
             var padLength = total.ToString().Length;
 
@@ -463,18 +669,24 @@ namespace OrganisationRegistry.Import.Piavo
             for (var i = 0; i < _functions.Count; i++)
             {
                 var function = _functions[i];
+                var name = function.Name.UpperCaseFirstLetter();
 
-                Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{function.Name.UpperCaseFirstLetter()}]...");
-                client.FunctiontypesPost(new CreateFunctionTypeRequest()
-                {
-                    Id = function.NewId,
-                    Name = function.Name.UpperCaseFirstLetter(),
-                }).CheckBadRequest();
+                Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{name}]...");
+                function.NewId = EnsureByName(
+                    existing,
+                    name,
+                    function.NewId,
+                    id => client.FunctiontypesPost(new CreateFunctionTypeRequest()
+                    {
+                        Id = id,
+                        Name = name,
+                    }).CheckBadRequest());
             }
             Console.WriteLine();
         }
 
-        private static void ImportPeople(IOrganisationRegistryAPI client)
+
+        private static void ImportPeople(OrganisationRegistryAPI client)
         {
             var total = _people.Count;
             var padLength = total.ToString().Length;
@@ -485,6 +697,14 @@ namespace OrganisationRegistry.Import.Piavo
                 var person = _people[i];
 
                 Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{person.Name}]...");
+
+                // Deterministic id is stable across re-runs of this import; people have
+                // no unique-name list endpoint, so check by id instead.
+                if (ExistsById(client, "people", person.NewId))
+                {
+                    Console.WriteLine($"  [bestaat] {person.Name}");
+                    continue;
+                }
 
                 var sex = string.Empty;
                 if (person.Sex == "V") sex = "Female";
@@ -505,7 +725,7 @@ namespace OrganisationRegistry.Import.Piavo
             Console.WriteLine();
         }
 
-        private static void ImportLocations(IOrganisationRegistryAPI client)
+        private static void ImportLocations(OrganisationRegistryAPI client)
         {
             var total = _locations.Count;
             var padLength = total.ToString().Length;
@@ -516,6 +736,15 @@ namespace OrganisationRegistry.Import.Piavo
                 var location = _locations[i];
 
                 Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{location.Street} {location.Number}, {location.PostalCode} {location.City} {location.Country}]...");
+
+                // Locations have no natural-key list endpoint, but the deterministic
+                // id is stable across re-runs of this import, so check by id instead.
+                if (ExistsById(client, "locations", location.NewId))
+                {
+                    Console.WriteLine($"  [bestaat] {location.Street} {location.Number}");
+                    continue;
+                }
+
                 client.LocationsPost(new CreateLocationRequest
                 {
                     Id = location.NewId,
@@ -528,22 +757,32 @@ namespace OrganisationRegistry.Import.Piavo
             Console.WriteLine();
         }
 
-        private static void ImportLocationTypes(IOrganisationRegistryAPI client, Guid maatschappelijkeZetelLocationType)
+        private static void ImportLocationTypes(OrganisationRegistryAPI client, Guid maatschappelijkeZetelLocationType)
         {
             var total = _locations.Count;
             var padLength = total.ToString().Length;
             Console.WriteLine($"[{0.ToString().PadLeft(padLength, '0')}/{total}] Importing LocationTypes...");
-            client.LocationtypesPost(new CreateLocationTypeRequest
-            {
-                Id = maatschappelijkeZetelLocationType,
-                Name = "Maatschappelijke zetel volgens KBO"
-            }).CheckBadRequest();
+
+            // Fixed well-known id referenced by Api:KboV2RegisteredOfficeLocationTypeId
+            // (see demos/seed/Program.cs / scripts/seed-tilt-api-configuration.sh); may already exist
+            // under a different display name (e.g. "Maatschappelijke zetel") if seed ran first.
+            EnsureWellKnownIdExists(
+                client,
+                "locationtypes",
+                maatschappelijkeZetelLocationType,
+                "Maatschappelijke zetel volgens KBO",
+                id => client.LocationtypesPost(new CreateLocationTypeRequest
+                {
+                    Id = id,
+                    Name = "Maatschappelijke zetel volgens KBO"
+                }).CheckBadRequest());
 
             Console.WriteLine();
         }
 
-        private static void ImportBuildings(IOrganisationRegistryAPI client)
+        private static void ImportBuildings(OrganisationRegistryAPI client)
         {
+            var existing = FetchExistingIdsByName(client, "buildings");
             var total = _buildings.Count;
             var padLength = total.ToString().Length;
 
@@ -553,18 +792,23 @@ namespace OrganisationRegistry.Import.Piavo
                 var building = _buildings[i];
 
                 Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{building.Name}]...");
-                client.BuildingsPost(new CreateBuildingRequest
-                {
-                    Id = building.NewId,
-                    Name = building.Name,
-                    VimId = building.Id,
-                }).CheckBadRequest();
+                building.NewId = EnsureByName(
+                    existing,
+                    building.Name,
+                    building.NewId,
+                    id => client.BuildingsPost(new CreateBuildingRequest
+                    {
+                        Id = id,
+                        Name = building.Name,
+                        VimId = building.Id,
+                    }).CheckBadRequest());
             }
             Console.WriteLine();
         }
 
-        private static void ImportKeys(IOrganisationRegistryAPI client)
+        private static void ImportKeys(OrganisationRegistryAPI client)
         {
+            var existing = FetchExistingIdsByName(client, "keytypes");
             var total = _keys.Count;
             var padLength = total.ToString().Length;
 
@@ -574,17 +818,22 @@ namespace OrganisationRegistry.Import.Piavo
                 var key = _keys[i];
 
                 Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{key.Name}]...");
-                client.KeytypesPost(new CreateKeyTypeRequest
-                {
-                    Id = key.NewId,
-                    Name = key.Name,
-                }).CheckBadRequest();
+                key.NewId = EnsureByName(
+                    existing,
+                    key.Name,
+                    key.NewId,
+                    id => client.KeytypesPost(new CreateKeyTypeRequest
+                    {
+                        Id = id,
+                        Name = key.Name,
+                    }).CheckBadRequest());
             }
             Console.WriteLine();
         }
 
-        private static void ImportLabels(IOrganisationRegistryAPI client)
+        private static void ImportLabels(OrganisationRegistryAPI client)
         {
+            var existing = FetchExistingIdsByName(client, "labeltypes");
             var total = _labels.Count;
             var padLength = total.ToString().Length;
 
@@ -594,52 +843,75 @@ namespace OrganisationRegistry.Import.Piavo
                 var label = _labels[i];
 
                 Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{label.Name}]...");
-                client.LabeltypesPost(new CreateLabelTypeRequest
-                {
-                    Id = label.NewId,
-                    Name = label.Name,
-                }).CheckBadRequest();
+                label.NewId = EnsureByName(
+                    existing,
+                    label.Name,
+                    label.NewId,
+                    id => client.LabeltypesPost(new CreateLabelTypeRequest
+                    {
+                        Id = id,
+                        Name = label.Name,
+                    }).CheckBadRequest());
             }
-            client.LabeltypesPost(new CreateLabelTypeRequest
-            {
-                Id = FormeleBenamingGuid,
-                Name =  "Formele Benaming",
-            }).CheckBadRequest();
+
+            // Fixed well-known id referenced by Api:KboV2FormalNameLabelTypeId
+            // (see demos/seed/Program.cs / scripts/seed-tilt-api-configuration.sh); may already exist
+            // under a different display name (e.g. "Formele benaming KBO") if seed ran first.
+            EnsureWellKnownIdExists(
+                client,
+                "labeltypes",
+                FormeleBenamingGuid,
+                "Formele Benaming",
+                id => client.LabeltypesPost(new CreateLabelTypeRequest
+                {
+                    Id = id,
+                    Name = "Formele Benaming",
+                }).CheckBadRequest());
             Console.WriteLine();
         }
 
-        private static void ImportFormalFrameworks(IOrganisationRegistryAPI client)
+        private static void ImportFormalFrameworks(OrganisationRegistryAPI client)
         {
+            var existingCategories = FetchExistingIdsByName(client, "formalframeworkcategories");
+            var existingFrameworks = FetchExistingIdsByName(client, "formalframeworks");
             var total = _formalFramework.Count;
             var padLength = total.ToString().Length;
 
             Console.WriteLine($"[{0.ToString().PadLeft(padLength, '0')}/{total}] Importing FormalFrameworks...");
 
-            var formalFrameworkCategoryId = Guid.NewGuid();
-            client.FormalframeworkcategoriesPost(new CreateFormalFrameworkCategoryRequest
-            {
-                Id = formalFrameworkCategoryId,
-                Name = "Organisatie",
-            }).CheckBadRequest();
+            var formalFrameworkCategoryId = EnsureByName(
+                existingCategories,
+                "Organisatie",
+                Guid.NewGuid(),
+                id => client.FormalframeworkcategoriesPost(new CreateFormalFrameworkCategoryRequest
+                {
+                    Id = id,
+                    Name = "Organisatie",
+                }).CheckBadRequest());
 
             for (var i = 0; i < _formalFramework.Count; i++)
             {
                 var formalFramework = _formalFramework[i];
 
                 Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{formalFramework.Name}]...");
-                client.FormalframeworksPost(new CreateFormalFrameworkRequest
-                {
-                    Id = formalFramework.NewId,
-                    Code = formalFramework.Code,
-                    Name = formalFramework.Name,
-                    FormalFrameworkCategoryId = formalFrameworkCategoryId,
-                }).CheckBadRequest();
+                formalFramework.NewId = EnsureByName(
+                    existingFrameworks,
+                    formalFramework.Name,
+                    formalFramework.NewId,
+                    id => client.FormalframeworksPost(new CreateFormalFrameworkRequest
+                    {
+                        Id = id,
+                        Code = formalFramework.Code,
+                        Name = formalFramework.Name,
+                        FormalFrameworkCategoryId = formalFrameworkCategoryId,
+                    }).CheckBadRequest());
             }
             Console.WriteLine();
         }
 
-        private static void ImportContactTypes(IOrganisationRegistryAPI client)
+        private static void ImportContactTypes(OrganisationRegistryAPI client)
         {
+            var existing = FetchExistingIdsByName(client, "contacttypes");
             var total = _contactTypes.Count;
             var padLength = total.ToString().Length;
 
@@ -647,19 +919,25 @@ namespace OrganisationRegistry.Import.Piavo
             for (var i = 0; i < _contactTypes.Count; i++)
             {
                 var contactType = _contactTypes[i];
+                var name = contactType.Name.UpperCaseFirstLetter();
 
-                Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{contactType.Name.UpperCaseFirstLetter()}]...");
-                client.ContacttypesPost(new CreateContactTypeRequest
-                {
-                    Id = contactType.NewId,
-                    Name = contactType.Name.UpperCaseFirstLetter(),
-                }).CheckBadRequest();
+                Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{name}]...");
+                contactType.NewId = EnsureByName(
+                    existing,
+                    name,
+                    contactType.NewId,
+                    id => client.ContacttypesPost(new CreateContactTypeRequest
+                    {
+                        Id = id,
+                        Name = name,
+                    }).CheckBadRequest());
             }
             Console.WriteLine();
         }
 
-        private static void ImportCapacityTypes(IOrganisationRegistryAPI client)
+        private static void ImportCapacityTypes(OrganisationRegistryAPI client)
         {
+            var existing = FetchExistingIdsByName(client, "capacities");
             var total = _capacities.Count;
             var padLength = total.ToString().Length;
 
@@ -667,16 +945,22 @@ namespace OrganisationRegistry.Import.Piavo
             for (var i = 0; i < _capacities.Count; i++)
             {
                 var capacity = _capacities[i];
+                var name = capacity.Name.UpperCaseFirstLetter();
 
-                Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{capacity.Name.UpperCaseFirstLetter()}]...");
-                client.CapacitiesPost(new CreateCapacityRequest
-                {
-                    Id = capacity.NewId,
-                    Name = capacity.Name.UpperCaseFirstLetter(),
-                }).CheckBadRequest();
+                Console.WriteLine($"[{(i + 1).ToString().PadLeft(padLength, '0')}/{total}] Importing [{name}]...");
+                capacity.NewId = EnsureByName(
+                    existing,
+                    name,
+                    capacity.NewId,
+                    id => client.CapacitiesPost(new CreateCapacityRequest
+                    {
+                        Id = id,
+                        Name = name,
+                    }).CheckBadRequest());
             }
             Console.WriteLine();
         }
+
         private static void ImportPurposes(IOrganisationRegistryAPI client)
         {
             var id = Guid.NewGuid();
