@@ -262,9 +262,16 @@ k8s_resource('ui',
     resource_deps=['api-configuration', 'keycloak'],
     links=[link('http://ui.localhost:9080', 'Angular UI')])
 
+# piavo-import must run after 'seed': both create overlapping master data
+# (KeyTypes, LabelTypes, ContactTypes, LocationTypes, ClassificationTypes,
+# FormalFrameworks, Capacities, Purposes) via the API. Running them
+# concurrently races the same POSTs against the API, and unlike 'seed',
+# piavo-import's Job has backoffLimit=0 (no retries), so any transient
+# conflict from that race fails it permanently. Sequencing after 'seed'
+# removes the race entirely.
 k8s_resource('piavo-import',
     labels=['setup'],
-    resource_deps=['api-configuration'],
+    resource_deps=['api-configuration', 'seed'],
     auto_init=True,
     trigger_mode=TRIGGER_MODE_MANUAL)
 
