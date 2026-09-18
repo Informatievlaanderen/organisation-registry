@@ -1,3 +1,10 @@
+## [1.339.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.339.1...v1.339.2) (2026-09-18)
+
+
+### Bug Fixes
+
+* **deps:** update dependency core-js to v2.6.12 ([7741700](https://github.com/informatievlaanderen/organisation-registry/commit/7741700e95753eed941a3ada0f6fe85f2b295f65))
+
 ## [1.339.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.339.0...v1.339.1) (2026-09-16)
 
 
