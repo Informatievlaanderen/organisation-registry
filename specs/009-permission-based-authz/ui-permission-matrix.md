@@ -88,6 +88,39 @@ string `system:read`) dekt alle drie.
   dit blijft een gedocumenteerde gap tot het endpoint (opnieuw) geïmplementeerd wordt.
 - Read-only: er is geen create/update/delete op één van de drie schermen.
 
+## Importeren (los van organisatie/orgaan-scope)
+
+**Status:** Geïmplementeerd. `Importeren` is geen organisatiescherm; één globaal recht
+(`Permission.CanImport`, `/v1/me`-string `imports`) dekt het volledige scherm.
+
+| Scherm/functionaliteit | Permissie | Publieke rol | VO medewerker | Algemeen beheerder | Decentraal beheerder | Vlimpers beheerder | Orgaan beheerder | Regelgeving / Deugdelijk bestuur beheerder |
+|---|---|---|---|---|---|---|---|---|
+| Importeren | `CanImport` | – | – | CRUD | – | CRUD | – | – |
+
+- `AlgemeenBeheerder` en `Developer` krijgen `Permission.CanImport` **onbeperkt** (elke
+  organisatie). `VlimpersBeheerder` krijgt `CanImport` enkel als **beperkte grant**,
+  geldig per doelorganisatie: die organisatie moet onder Vlimpers-beheer staan
+  (`ChildRestrictions.UnderVlimpersManagement`, dezelfde restrictie als `CanManageChildren`).
+  Alle andere rollen (DecentraalBeheerder, OrgaanBeheerder, RegelgevingBeheerder, CjmBeheerder,
+  Orafin) krijgen 403 op alle import-endpoints, lezen inbegrepen (fail-closed).
+- De controller (`ImportOrganisationsController`, route `imports`) is gemigreerd van het
+  verouderde rol-gebaseerde `[OrganisationRegistryAuthorize(Role.AlgemeenBeheerder,
+  Role.VlimpersBeheerder)]` naar `RequiredPermissions = [Permission.CanImport]`; deze
+  controllercheck kent geen organisatiecontext (upload-tijdstip), dus is functioneel
+  ongewijzigd t.o.v. voorheen: elke houder van `CanImport` (onbeperkt of beperkt) mag
+  uploaden/lezen.
+- **Handler-niveau (`ImportPolicy`)**: gemigreerd van handmatige rol-checks (`IsInAnyOf`
+  + `VlimpersPolicy`-delegatie) naar het permissie/restrictie-patroon, analoog aan
+  `ChildPolicy`. Voor elke doelorganisatie in de import wordt `IsSatisfiedFor(CanImport,
+  UserContext, OrganisationContext, VlimpersManagementContext)` geëvalueerd; dit is waar
+  de Vlimpers-restrictie voor `VlimpersBeheerder` effectief wordt afgedwongen (per
+  organisatie, niet enkel op controllerniveau).
+- **Er bestaan momenteel geen Update- of Delete-endpoints** voor imports — enkel Create
+  (`POST /v1/imports/organisation-creations`, `POST /v1/imports/organisation-terminations`)
+  en Read (`GET /v1/imports`, `GET /v1/imports/{id}/content`). `CanImport` dekt volledige CRUD
+  zodra dergelijke endpoints ooit worden toegevoegd; tot dan is dit een gedocumenteerde gap,
+  analoog aan de Statistieken-gap bij Systeem.
+
 ## Interpretatie per sterretje-cel
 
 | Cel | Betekenis (voorlopig, valideren tijdens implementatie) |

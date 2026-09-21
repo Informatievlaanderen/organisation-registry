@@ -70,7 +70,8 @@ public class WhenImportingACorrectCsvFile
         return await new ImportedFileProcessor(
                 _context,
                 new DateTimeProviderStub(fixture.Create<DateTime>()),
-                Mock.Of<ICommandSender>())
+                Mock.Of<ICommandSender>(),
+                new OrganisationRegistryConfigurationStub())
             .Process(
                 new ImportOrganisationsStatusListItem
                 {
