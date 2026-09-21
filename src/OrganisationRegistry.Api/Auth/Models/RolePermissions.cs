@@ -19,9 +19,7 @@ public static class RolePermissions
         [
             new GlobalPermission("reports", CrudOperation.Read),
             new GlobalPermission("delegations", CrudOperation.Read | CrudOperation.Write | CrudOperation.Delete),
-            new GlobalPermission("system.statistics", CrudOperation.Read),
-            new GlobalPermission("system.events", CrudOperation.Read),
-            new GlobalPermission("system.kbo-terminated", CrudOperation.Read),
+            new GlobalPermission("system", CrudOperation.Read),
         ],
 
         [Role.DecentraalBeheerder] =

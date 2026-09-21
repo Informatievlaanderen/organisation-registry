@@ -48,6 +48,7 @@ public static class RolePermissionMap
 
                 Permission.CanImport,
                 Permission.CanReadConfiguration,
+                Permission.System,
 
                 Permission.PeopleWrite,
                 Permission.PeopleFunctionsRead,
@@ -164,6 +165,7 @@ public static class RolePermissionMap
                 Permission.CanImport,
                 Permission.CanRunScheduledJobs,
                 Permission.CanReadConfiguration,
+                Permission.System,
 
                 Permission.PeopleWrite,
                 Permission.PeopleFunctionsRead,

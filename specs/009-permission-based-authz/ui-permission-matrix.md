@@ -62,6 +62,32 @@ vertegenwoordigt.
 - Er bestaat geen write-permissie voor Functies/Hoedanigheden op het Personen-scherm: die worden
   uitsluitend beheerd vanaf de organisatiekant (`CanManageFunctions`/`CanManageCapacities`).
 
+## Systeem (los van organisatie/orgaan-scope)
+
+**Status:** Geïmplementeerd. `Systeem` is geen organisatiescherm; het gaat om drie
+technische/admin-schermen (Statistieken, Events, Stopgezet in KBO). Er is bewust **geen
+fijnmazig recht per scherm** — één ongesplitst globaal recht (`Permission.System`, `/v1/me`
+string `system:read`) dekt alle drie.
+
+| Scherm/functionaliteit | Permissie | Publieke rol | VO medewerker | Algemeen beheerder | Decentraal beheerder | Vlimpers beheerder | Orgaan beheerder | Regelgeving / Deugdelijk bestuur beheerder |
+|---|---|---|---|---|---|---|---|---|
+| Statistieken | `System` | – | – | R | – | – | – | – |
+| Events | `System` | – | – | R | – | – | – | – |
+| Stopgezet in KBO | `System` | – | – | R | – | – | – | – |
+
+- Enkel `AlgemeenBeheerder` (en `Developer`) krijgt `Permission.System`. Alle andere rollen
+  (inclusief `CjmBeheerder`/Orafin) krijgen 403 op `GET /v1/events` en
+  `GET /v1/organisations/kbo/terminated`.
+- `CjmBeheerder` had voorheen (rol-gebaseerd) toegang tot `kbo/terminated` —
+  dat is met de overstap naar het ongesplitste `System`-recht komen te vervallen.
+- `Events` (`GET /v1/events`) gebruikte voorheen een ongebruikt `CanReadEvents`-recht dat aan
+  geen enkele rol was toegekend (dus 403 voor iedereen, ook AlgemeenBeheerder) — dit was een
+  latente bug, nu gefixt via `Permission.System`.
+- **Statistieken heeft geen backend-endpoint** (de legacy Angular-UI roept `/v1/status/stats`
+  aan, maar er bestaat geen bijhorende controller). Er is dus niets te gaten op serverniveau;
+  dit blijft een gedocumenteerde gap tot het endpoint (opnieuw) geïmplementeerd wordt.
+- Read-only: er is geen create/update/delete op één van de drie schermen.
+
 ## Interpretatie per sterretje-cel
 
 | Cel | Betekenis (voorlopig, valideren tijdens implementatie) |

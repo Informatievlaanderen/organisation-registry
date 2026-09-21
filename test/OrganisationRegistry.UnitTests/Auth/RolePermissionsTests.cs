@@ -36,9 +36,7 @@ public class RolePermissionsTests
             "delegations:delete",
             "reports:read",
             "imports",
-            "system.statistics:read",
-            "system.events:read",
-            "system.kbo-terminated:read",
+            "system:read",
             "parameters:write",
             "parameters.organisation-classification-types:write",
             "parameters.information-systems:delete",
@@ -69,6 +67,7 @@ public class RolePermissionsTests
         result.Should().NotContain("imports");
         result.Should().NotContain("parameters:read");
         result.Should().NotContain("people:write");
+        result.Should().NotContain("system:read");
     }
 
     [Fact]
@@ -82,6 +81,7 @@ public class RolePermissionsTests
 
         result.Should().NotContain("body.info:create");
         result.Should().NotContain("delegations:read");
+        result.Should().NotContain("system:read");
     }
 
     [Fact]
@@ -94,6 +94,7 @@ public class RolePermissionsTests
 
         result.Should().NotContain("org.organisations:create");
         result.Should().NotContain("imports");
+        result.Should().NotContain("system:read");
     }
 
     [Fact]
@@ -106,5 +107,6 @@ public class RolePermissionsTests
         result.Should().NotContain("org.organisations:create");
         result.Should().NotContain("body.info:create");
         result.Should().NotContain("imports");
+        result.Should().NotContain("system:read");
     }
 }

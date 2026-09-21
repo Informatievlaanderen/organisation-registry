@@ -202,6 +202,29 @@ public class RolePermissionMapTests
         RolePermissionMap.For(role).Contains(Permission.CanReadConfiguration).Should().BeFalse();
     }
 
+    [Theory]
+    [InlineData(Role.AlgemeenBeheerder)]
+    [InlineData(Role.Developer)]
+    public void AlgemeenBeheerder_and_Developer_grant_System(Role role)
+    {
+        // Statistieken/Events/Stopgezet-in-KBO are gated by a single, coarse-grained
+        // System permission (see ui-permission-matrix.md) — no per-screen split.
+        RolePermissionMap.For(role).Contains(Permission.System).Should().BeTrue();
+    }
+
+    [Theory]
+    [InlineData(Role.VlimpersBeheerder)]
+    [InlineData(Role.DecentraalBeheerder)]
+    [InlineData(Role.OrgaanBeheerder)]
+    [InlineData(Role.RegelgevingBeheerder)]
+    [InlineData(Role.CjmBeheerder)]
+    [InlineData(Role.Orafin)]
+    [InlineData(Role.AutomatedTask)]
+    public void Non_admin_roles_do_not_grant_System(Role role)
+    {
+        RolePermissionMap.For(role).Contains(Permission.System).Should().BeFalse();
+    }
+
     [Fact]
     public void For_roles_unions_all_permissions()
     {

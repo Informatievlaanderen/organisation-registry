@@ -45,7 +45,7 @@ public class OrganisationKboController : OrganisationRegistryController
     /// <summary>Vraag een lijst van te beëindigen organisaties volgens de KBO op.</summary>
     /// <response code="200">Een lijst van te beëindigen organisaties volgens de KBO.</response>
     [HttpGet("kbo/terminated")]
-    [OrganisationRegistryAuthorize(Role.AlgemeenBeheerder, Role.CjmBeheerder, Role.Developer)]
+    [OrganisationRegistryAuthorize(RequiredPermissions = [Permission.System])]
     [ProducesResponseType(typeof(List<OrganisationTerminationListItem>), StatusCodes.Status200OK)]
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(OrganisationTerminationListExamples))]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)

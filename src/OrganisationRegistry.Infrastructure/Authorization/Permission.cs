@@ -97,7 +97,19 @@ public enum Permission
     /// permission only opens the controller-level general check.
     /// </summary>
     //CanEditOrganisationLabels,
-    CanReadEvents,
+
+    /// <summary>
+    /// Single, coarse-grained "Systeem" permission gating the Statistieken,
+    /// Events (<c>EventsController</c>) and Stopgezet-in-KBO
+    /// (<c>OrganisationKboController.Get</c>, <c>kbo/terminated</c>) admin
+    /// screens. Deliberately not split per screen (see
+    /// <c>ui-permission-matrix.md</c>): all three are read-only, operational/
+    /// diagnostic views intended for <see cref="Role.AlgemeenBeheerder"/> (and
+    /// <see cref="Role.Developer"/>) only. Every other role — including
+    /// CjmBeheerder/Orafin, which previously had role-based access to
+    /// <c>kbo/terminated</c> — gets 403.
+    /// </summary>
+    System,
     CanViewProjections,
 
     // Fine-grained parameter (master-data) permissions. Each parameter screen
