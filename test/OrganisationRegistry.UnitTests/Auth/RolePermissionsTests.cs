@@ -42,6 +42,9 @@ public class RolePermissionsTests
             "parameters:write",
             "parameters.organisation-classification-types:write",
             "parameters.information-systems:delete",
+            "people:write",
+            "people.functions:read",
+            "people.capacities:read",
         });
 
         // There is no Parameters*Read permission: reading a master-data list is
@@ -59,10 +62,13 @@ public class RolePermissionsTests
         result.Should().Contain("org.organisations:create");
         result.Should().Contain("body.info:create");
         result.Should().Contain("reports:read");
+        result.Should().Contain("people.functions:read");
+        result.Should().Contain("people.capacities:read");
 
         result.Should().NotContain("delegations:read");
         result.Should().NotContain("imports");
         result.Should().NotContain("parameters:read");
+        result.Should().NotContain("people:write");
     }
 
     [Fact]
