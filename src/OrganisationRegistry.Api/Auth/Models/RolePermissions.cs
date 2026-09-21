@@ -10,15 +10,14 @@ public static class RolePermissions
     // command controllers directly, e.g. via [OrganisationRegistryAuthorize] with
     // no RequiredPermissions, or are entirely UI-facing conventions), so they stay
     // hand-maintained. Parameters/Bodies admin-screen permissions, org.organisations:create,
-    // body.info:create and imports are NOT listed here — they are derived from
-    // RolePermissionMap by GlobalPermissionTranslator so they can't drift out of
-    // sync with the real grants.
+    // body.info:create, imports and delegations:read/write/delete are NOT listed
+    // here — they are derived from RolePermissionMap by GlobalPermissionTranslator
+    // so they can't drift out of sync with the real grants.
     private static readonly Dictionary<Role, GlobalPermission[]> Map = new()
     {
         [Role.AlgemeenBeheerder] =
         [
             new GlobalPermission("reports", CrudOperation.Read),
-            new GlobalPermission("delegations", CrudOperation.Read | CrudOperation.Write | CrudOperation.Delete),
             new GlobalPermission("system", CrudOperation.Read),
         ],
 

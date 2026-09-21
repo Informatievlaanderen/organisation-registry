@@ -18,8 +18,11 @@ using OrganisationRegistry.Infrastructure.Authorization;
 /// The <c>Parameters*Write/Delete</c>, <c>CanManageBodies</c> /
 /// <c>BodiesCanManage*</c> and <c>People*</c> families are translated, as well
 /// as the top-level "can this role create/manage organisations or bodies at
-/// all" flags (<c>org.organisations:create</c>, <c>body.info:create</c>) and
-/// <c>imports</c>.
+/// all" flags (<c>org.organisations:create</c>, <c>body.info:create</c>),
+/// <c>imports</c> and <c>delegations:read</c>/<c>delegations:write</c>/
+/// <c>delegations:delete</c> (<see cref="Permission.DelegationsCreate"/> is
+/// deliberately not translated — it is an internal-only, Developer-only
+/// capability with no corresponding rights-table entry).
 /// Per-organisation permissions (e.g. <c>CanManageKeys</c>, <c>CanManageCapacities</c>)
 /// are scoped to an individual organisation's detail page and are not relevant to
 /// global nav visibility, so they are intentionally not translated here.
@@ -61,6 +64,15 @@ public static class GlobalPermissionTranslator
 
         if (permissions.Contains(Permission.PeopleWrite))
             result.Add("people:write");
+
+        if (permissions.Contains(Permission.DelegationsRead))
+            result.Add("delegations:read");
+
+        if (permissions.Contains(Permission.DelegationsWrite))
+            result.Add("delegations:write");
+
+        if (permissions.Contains(Permission.DelegationsDelete))
+            result.Add("delegations:delete");
 
         foreach (var entry in permissions)
         {

@@ -76,7 +76,11 @@ public static class RolePermissionMap
                 Permission.ParametersMandateRoleTypesWrite,
                 Permission.ParametersLocationTypesWrite,
                 Permission.ParametersRegulationThemesWrite,
-                Permission.ParametersRegulationSubThemesWrite),
+                Permission.ParametersRegulationSubThemesWrite,
+
+                Permission.DelegationsRead,
+                Permission.DelegationsWrite,
+                Permission.DelegationsDelete),
 
             [Role.OrgaanBeheerder] = PermissionSet.Of(
                 Permission.CanManageBodies,
@@ -192,7 +196,12 @@ public static class RolePermissionMap
                 Permission.ParametersMandateRoleTypesWrite,
                 Permission.ParametersLocationTypesWrite,
                 Permission.ParametersRegulationThemesWrite,
-                Permission.ParametersRegulationSubThemesWrite),
+                Permission.ParametersRegulationSubThemesWrite,
+
+                Permission.DelegationsRead,
+                Permission.DelegationsWrite,
+                Permission.DelegationsDelete,
+                Permission.DelegationsCreate),
 
             // Transitional: AutomatedTask keeps CanRunScheduledJobs until the
             // scheduled-job / sync services migrate to Client Credentials

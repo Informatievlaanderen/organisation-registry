@@ -21,7 +21,6 @@ using Swashbuckle.AspNetCore.Filters;
 
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
-[OrganisationRegistryAuthorize] // TODO
 [OrganisationRegistryRoute("manage/delegations")]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]
@@ -30,18 +29,16 @@ public class DelegationAssignmentController : OrganisationRegistryController
     /// <summary>Vraag een lijst van delegatieopdrachten op.</summary>
     /// <response code="200">Een lijst van delegatieopdrachten.</response>
     [HttpGet("{delegationId}/assignments")]
+    [OrganisationRegistryAuthorize(RequiredPermissions = [Permission.DelegationsRead])]
     [ProducesResponseType(typeof(List<DelegationAssignmentListItem>), StatusCodes.Status200OK)]
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(DelegationAssignmentListExamples))]
     [ActionName("List")]
-    public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromServices] ISecurityService securityService, [FromRoute] Guid delegationId)
+    public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid delegationId)
     {
         var delegation = await context.DelegationList.FirstOrDefaultAsync(x => x.Id == delegationId);
 
         if (delegation == null)
             return NotFound();
-
-        if (!await securityService.CanEditDelegation(User, delegation.OrganisationId, delegation.BodyId))
-            return Unauthorized(); // ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor deze delegatie.");
 
         var filtering = Request.ExtractFilteringRequest<DelegationAssignmentListItemFilter>();
         var sorting = Request.ExtractSortingRequest();
@@ -60,11 +57,11 @@ public class DelegationAssignmentController : OrganisationRegistryController
     /// <response code="200">Als de toewijzing gevonden is.</response>
     /// <response code="404">Als de toewijzing niet gevonden kan worden.</response>
     [HttpGet("{delegationId}/assignments/{id}")]
+    [OrganisationRegistryAuthorize(RequiredPermissions = [Permission.DelegationsRead])]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get(
         [FromServices] OrganisationRegistryContext context,
-        [FromServices] ISecurityService securityService,
         [FromRoute] Guid delegationId,
         Guid id)
     {
@@ -77,9 +74,6 @@ public class DelegationAssignmentController : OrganisationRegistryController
 
         if (delegation == null)
             return NotFound();
-
-        if (!await securityService.CanEditDelegation(User, delegation.OrganisationId, delegation.BodyId))
-            return Unauthorized(); // ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor deze delegatie.");
 
         return Ok(new DelegationAssignmentResponse(delegationAssignment));
     }

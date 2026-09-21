@@ -121,6 +121,34 @@ string `system:read`) dekt alle drie.
   zodra dergelijke endpoints ooit worden toegevoegd; tot dan is dit een gedocumenteerde gap,
   analoog aan de Statistieken-gap bij Systeem.
 
+## Delegaties (los van organisatie/orgaan-scope)
+
+**Status:** Geïmplementeerd. `Delegatie` is geen organisatiescherm; drie globale rechten
+(`Permission.DelegationsRead`, `Permission.DelegationsWrite`, `Permission.DelegationsDelete`,
+`/v1/me`-strings `delegations:read`/`delegations:write`/`delegations:delete`) dekken het
+volledige scherm. Er is bewust **geen Create** voor backoffice-rollen.
+
+| Scherm/functionaliteit | Permissie | Publieke rol | VO medewerker | Algemeen beheerder | Decentraal beheerder | Vlimpers beheerder | Orgaan beheerder | Regelgeving / Deugdelijk bestuur beheerder |
+|---|---|---|---|---|---|---|---|---|
+| Delegatie | `DelegationsRead`, `DelegationsWrite` (enkel Update), `DelegationsDelete` | – | – | RUD | – | – | – | – |
+
+- Enkel `AlgemeenBeheerder` krijgt `DelegationsRead`/`DelegationsWrite`/`DelegationsDelete`.
+  Alle andere rollen (DecentraalBeheerder, VlimpersBeheerder, OrgaanBeheerder,
+  RegelgevingBeheerder, CjmBeheerder, Orafin) krijgen 403 op alle delegatie-endpoints,
+  lezen inbegrepen (fail-closed). Publiek/niet-ingelogd krijgt 401.
+- **Er bestaat geen "Create Delegatie"-endpoint** — enkel "Create Delegatie**toewijzing**"
+  (`POST manage/delegations/{delegationId}/assignments`). `AlgemeenBeheerder` heeft hier
+  bewust géén toegang toe: `DelegationsWrite` dekt enkel Update
+  (`PUT manage/delegations/{delegationId}/assignments/{id}`), niet Create.
+- Een intern, niet via `/v1/me` blootgesteld recht `Permission.DelegationsCreate` is enkel
+  toegekend aan `Role.Developer` (test-/tooling-doeleinden) om het aanmaken van
+  toewijzingen te kunnen valideren zonder dit recht aan enige echte beheerdersrol te geven.
+- De controllers (`DelegationController`, `DelegationAssignmentController`,
+  `DelegationAssignmentCommandController`) zijn gemigreerd van het verouderde
+  `[OrganisationRegistryAuthorize] // TODO` (elke ingelogde backoffice-gebruiker, met een
+  legacy `ISecurityService.CanEditDelegation`-organisatie/orgaan-restrictiecheck) naar
+  per-actie `RequiredPermissions = [Permission.DelegationsRead|Write|Delete|Create]`.
+
 ## Interpretatie per sterretje-cel
 
 | Cel | Betekenis (voorlopig, valideren tijdens implementatie) |
