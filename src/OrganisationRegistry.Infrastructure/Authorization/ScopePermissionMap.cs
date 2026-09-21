@@ -61,6 +61,7 @@ public static class ScopePermissionMap
                 Permission.CanManageVlimpers,
                // Permission.CanManageDelegations, // TODO ?
                 Permission.CanReadConfiguration,
+                Permission.System,
 
                 Permission.PeopleWrite,
                 Permission.PeopleFunctionsRead,

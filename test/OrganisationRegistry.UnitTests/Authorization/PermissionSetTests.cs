@@ -29,12 +29,12 @@ public class PermissionSetTests
     public void Of_deduplicates_permissions()
     {
         var set = PermissionSet.Of(
-            Permission.CanReadEvents,
-            Permission.CanReadEvents,
+            Permission.System,
+            Permission.System,
             Permission.CanManageChildren);
 
         set.Count.Should().Be(2);
-        set.Contains(Permission.CanReadEvents).Should().BeTrue();
+        set.Contains(Permission.System).Should().BeTrue();
         set.Contains(Permission.CanManageChildren).Should().BeTrue();
     }
 
@@ -51,7 +51,7 @@ public class PermissionSetTests
     [Fact]
     public void Union_is_commutative_and_deduplicates()
     {
-        var a = PermissionSet.Of(Permission.CanReadEvents, Permission.CanManageChildren);
+        var a = PermissionSet.Of(Permission.System, Permission.CanManageChildren);
         var b = PermissionSet.Of(Permission.CanManageChildren, Permission.CanManageBodies);
 
         var ab = a.Union(b);
@@ -64,7 +64,7 @@ public class PermissionSetTests
     [Fact]
     public void Union_with_Empty_returns_original_instance()
     {
-        var a = PermissionSet.Of(Permission.CanReadEvents);
+        var a = PermissionSet.Of(Permission.System);
         a.Union(PermissionSet.Empty).Should().BeSameAs(a);
         PermissionSet.Empty.Union(a).Should().BeSameAs(a);
     }
@@ -72,9 +72,9 @@ public class PermissionSetTests
     [Fact]
     public void Enumeration_yields_all_permissions()
     {
-        var set = PermissionSet.Of(Permission.CanReadEvents, Permission.CanReadOrafin);
+        var set = PermissionSet.Of(Permission.System, Permission.CanReadOrafin);
         set.Select(e => e.Permission).Should()
-            .BeEquivalentTo(new[] { Permission.CanReadEvents, Permission.CanReadOrafin });
+            .BeEquivalentTo(new[] { Permission.System, Permission.CanReadOrafin });
     }
 
     [Fact]
@@ -95,7 +95,7 @@ public class PermissionSetTests
     [Fact]
     public void IsSatisfiedFor_returns_false_when_permission_is_missing()
     {
-        var set = PermissionSet.Of(Permission.CanReadEvents);
+        var set = PermissionSet.Of(Permission.System);
 
         set.IsSatisfiedFor(Permission.CanManageKeys, StubContext.Empty).Should().BeFalse();
     }
