@@ -15,10 +15,11 @@ using OrganisationRegistry.Infrastructure.Authorization;
 /// <c>Parameters*</c> / <c>Bodies*</c> permissions granted there automatically show up
 /// on <c>/v1/me</c> without needing a matching manual edit here.
 ///
-/// The <c>Parameters*Write/Delete</c> and <c>CanManageBodies</c> /
-/// <c>BodiesCanManage*</c> families are translated, as well as the top-level
-/// "can this role create/manage organisations or bodies at all" flags
-/// (<c>org.organisations:create</c>, <c>body.info:create</c>) and <c>imports</c>.
+/// The <c>Parameters*Write/Delete</c>, <c>CanManageBodies</c> /
+/// <c>BodiesCanManage*</c> and <c>People*</c> families are translated, as well
+/// as the top-level "can this role create/manage organisations or bodies at
+/// all" flags (<c>org.organisations:create</c>, <c>body.info:create</c>) and
+/// <c>imports</c>.
 /// Per-organisation permissions (e.g. <c>CanManageKeys</c>, <c>CanManageCapacities</c>)
 /// are scoped to an individual organisation's detail page and are not relevant to
 /// global nav visibility, so they are intentionally not translated here.
@@ -58,6 +59,9 @@ public static class GlobalPermissionTranslator
         if (permissions.Contains(Permission.CanImport))
             result.Add("imports");
 
+        if (permissions.Contains(Permission.PeopleWrite))
+            result.Add("people:write");
+
         foreach (var entry in permissions)
         {
             var name = entry.Permission.ToString();
@@ -74,6 +78,18 @@ public static class GlobalPermissionTranslator
                 result.Add($"bodies.{sub}:read");
                 result.Add($"bodies.{sub}:write");
                 hasBodies = true;
+                continue;
+            }
+
+            if (name == nameof(Permission.PeopleFunctionsRead))
+            {
+                result.Add("people.functions:read");
+                continue;
+            }
+
+            if (name == nameof(Permission.PeopleCapacitiesRead))
+            {
+                result.Add("people.capacities:read");
                 continue;
             }
 
