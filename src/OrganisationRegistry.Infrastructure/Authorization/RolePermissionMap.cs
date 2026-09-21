@@ -92,14 +92,13 @@ public static class RolePermissionMap
                 Permission.PeopleFunctionsRead,
                 Permission.PeopleCapacitiesRead),
 
-            // VlimpersBeheerder holds CanImport unrestricted (importing is a global
-            // action, not organisation-scoped — per-organisation Vlimpers scoping for
-            // imports is enforced separately by ImportPolicy). The Personen read
-            // screens (Functies/Hoedanigheden) are likewise not organisation-scoped
-            // and granted unrestricted here. Every other permission it has is a
-            // data-driven restricted grant (see RestrictedGrantsFor).
+            // VlimpersBeheerder holds no unrestricted grant for CanImport — importing
+            // is only permitted for organisations under Vlimpers management, enforced
+            // as a data-driven restricted grant via RestrictedGrantsFor (see
+            // ImportPolicy). The Personen read screens (Functies/Hoedanigheden) are
+            // not organisation-scoped, so they are granted unrestricted here. Every
+            // other permission it has is likewise a data-driven restricted grant.
             [Role.VlimpersBeheerder] = PermissionSet.Of(
-                Permission.CanImport,
                 Permission.PeopleFunctionsRead,
                 Permission.PeopleCapacitiesRead),
 
@@ -268,6 +267,8 @@ public static class RolePermissionMap
                 Permission.CanManageOrganisation.RestrictedTo(
                     ChildRestrictions.UnderVlimpersManagement),
                 Permission.CanManageChildren.RestrictedTo(
+                    ChildRestrictions.UnderVlimpersManagement),
+                Permission.CanImport.RestrictedTo(
                     ChildRestrictions.UnderVlimpersManagement),
                 Permission.CanManageKeys.RestrictedTo(
                     KeyRestrictions.VlimpersManaged(

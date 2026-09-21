@@ -77,7 +77,8 @@ public class WhenImportingAFaultyCsvFile
         return await new ImportedFileProcessor(
                 _context,
                 new DateTimeProviderStub(today.ToDateTime(new TimeOnly())),
-                Mock.Of<ICommandSender>())
+                Mock.Of<ICommandSender>(),
+                new OrganisationRegistryConfigurationStub())
             .Process(
                 statusItem,
                 CancellationToken.None);

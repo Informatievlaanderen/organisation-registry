@@ -18,6 +18,7 @@ using OrganisationRegistry.SqlServer.Import.Organisations;
 using OrganisationRegistry.SqlServer.Infrastructure;
 using OrganisationRegistry.SqlServer.Organisation;
 using Tests.Shared;
+using Tests.Shared.Stubs;
 using Xunit;
 
 public class WhenImportingAFaultyCsvFile
@@ -64,7 +65,8 @@ public class WhenImportingAFaultyCsvFile
         };
         return await new ImportedFileProcessor(
                 _context,
-                Mock.Of<ICommandSender>())
+                Mock.Of<ICommandSender>(),
+                new OrganisationRegistryConfigurationStub())
             .Process(
                 statusItem,
                 CancellationToken.None);

@@ -225,6 +225,56 @@ public class RolePermissionMapTests
         RolePermissionMap.For(role).Contains(Permission.System).Should().BeFalse();
     }
 
+    [Theory]
+    [InlineData(Role.AlgemeenBeheerder)]
+    [InlineData(Role.Developer)]
+    public void AlgemeenBeheerder_and_Developer_grant_CanImport_unrestricted(Role role)
+    {
+        // Importeren (imports) is gated by Permission.CanImport; AlgemeenBeheerder and
+        // Developer hold it unrestricted (any organisation) — see ui-permission-matrix.md.
+        RolePermissionMap.For(role).Contains(Permission.CanImport).Should().BeTrue();
+    }
+
+    [Fact]
+    public void Static_For_VlimpersBeheerder_does_not_grant_CanImport()
+    {
+        // Regression guard: the static map must not grant unrestricted CanImport to
+        // VlimpersBeheerder — that grant is only added by the config-aware overload,
+        // restricted to organisations under Vlimpers management (see ImportPolicy).
+        RolePermissionMap.For(Role.VlimpersBeheerder)
+            .Contains(Permission.CanImport).Should().BeFalse();
+    }
+
+    [Fact]
+    public void For_config_VlimpersBeheerder_grants_CanImport_only_for_vlimpers_managed_organisations()
+    {
+        var config = new OrganisationRegistryConfigurationStub();
+
+        var set = RolePermissionMap.For(new[] { Role.VlimpersBeheerder }, config);
+
+        set.IsSatisfiedFor(
+                Permission.CanImport,
+                new VlimpersManagementContext(IsUnderVlimpersManagement: true))
+            .Should().BeTrue();
+
+        set.IsSatisfiedFor(
+                Permission.CanImport,
+                new VlimpersManagementContext(IsUnderVlimpersManagement: false))
+            .Should().BeFalse();
+    }
+
+    [Theory]
+    [InlineData(Role.DecentraalBeheerder)]
+    [InlineData(Role.OrgaanBeheerder)]
+    [InlineData(Role.RegelgevingBeheerder)]
+    [InlineData(Role.CjmBeheerder)]
+    [InlineData(Role.Orafin)]
+    [InlineData(Role.AutomatedTask)]
+    public void Non_admin_non_vlimpers_roles_do_not_grant_CanImport(Role role)
+    {
+        RolePermissionMap.For(role).Contains(Permission.CanImport).Should().BeFalse();
+    }
+
     [Fact]
     public void For_roles_unions_all_permissions()
     {

@@ -19,20 +19,21 @@ public static class ImportNextFileProcessor
         IDateTimeProvider dateTimeProvider,
         ILogger logger,
         ICommandSender commandSender,
-        HostedServiceConfiguration configuration,
+        HostedServiceConfiguration hostedServiceConfiguration,
+        IOrganisationRegistryConfiguration configuration,
         CancellationToken cancellationToken)
     {
         var context = contextFactory.Create();
 
         if (await MaybeGetNextImportFile(context, cancellationToken) is not { } importFile)
         {
-            await configuration.Delay(cancellationToken);
+            await hostedServiceConfiguration.Delay(cancellationToken);
             return;
         }
 
         try
         {
-            var processorFactory = new ImportedFileProcessorFactory(context, dateTimeProvider, commandSender);
+            var processorFactory = new ImportedFileProcessorFactory(context, dateTimeProvider, commandSender, configuration);
             var result = await processorFactory
                 .Create(importFile.ImportFileType)
                 .Process(importFile, cancellationToken);
