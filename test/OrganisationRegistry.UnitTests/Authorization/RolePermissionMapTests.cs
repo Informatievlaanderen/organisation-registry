@@ -170,14 +170,17 @@ public class RolePermissionMapTests
     }
 
     [Fact]
-    public void Developer_is_AlgemeenBeheerder_superset_by_CanRunScheduledJobs()
+    public void Developer_is_AlgemeenBeheerder_superset_by_CanRunScheduledJobs_and_DelegationsCreate()
     {
         // Developer intentionally has all AlgemeenBeheerder permissions PLUS CanRunScheduledJobs
-        // (preserves current Developer access to /backoffice/tasks after T026a conversion).
+        // (preserves current Developer access to /backoffice/tasks after T026a conversion) PLUS
+        // DelegationsCreate (internal-only, tooling capability not granted to AlgemeenBeheerder —
+        // there is no Create on delegations, see ui-permission-matrix.md).
         var ab = RolePermissionMap.For(Role.AlgemeenBeheerder);
         var dev = RolePermissionMap.For(Role.Developer);
 
-        ((object)dev).Should().Be(ab.Union(PermissionSet.Of(Permission.CanRunScheduledJobs)));
+        ((object)dev).Should().Be(
+            ab.Union(PermissionSet.Of(Permission.CanRunScheduledJobs, Permission.DelegationsCreate)));
     }
 
     [Fact]
@@ -625,5 +628,49 @@ public class RolePermissionMapTests
                 Permission.CanManageOrganisationClassifications,
                 new ClassificationTypeContext(otherClassificationTypeId))
             .Should().BeFalse();
+    }
+
+    [Fact]
+    public void AlgemeenBeheerder_grants_DelegationsRead_Write_Delete_but_not_Create()
+    {
+        // AlgemeenBeheerder can read, update and delete delegations, but there is no
+        // Create on delegations for this role (see ui-permission-matrix.md).
+        var set = RolePermissionMap.For(Role.AlgemeenBeheerder);
+
+        set.Contains(Permission.DelegationsRead).Should().BeTrue();
+        set.Contains(Permission.DelegationsWrite).Should().BeTrue();
+        set.Contains(Permission.DelegationsDelete).Should().BeTrue();
+        set.Contains(Permission.DelegationsCreate).Should().BeFalse();
+    }
+
+    [Fact]
+    public void Developer_grants_DelegationsRead_Write_Delete_and_Create()
+    {
+        // Developer is the only role that may create delegation assignments
+        // (internal/tooling capability, not exposed via /v1/me).
+        var set = RolePermissionMap.For(Role.Developer);
+
+        set.Contains(Permission.DelegationsRead).Should().BeTrue();
+        set.Contains(Permission.DelegationsWrite).Should().BeTrue();
+        set.Contains(Permission.DelegationsDelete).Should().BeTrue();
+        set.Contains(Permission.DelegationsCreate).Should().BeTrue();
+    }
+
+    [Theory]
+    [InlineData(Role.VlimpersBeheerder)]
+    [InlineData(Role.DecentraalBeheerder)]
+    [InlineData(Role.OrgaanBeheerder)]
+    [InlineData(Role.RegelgevingBeheerder)]
+    [InlineData(Role.CjmBeheerder)]
+    [InlineData(Role.Orafin)]
+    [InlineData(Role.AutomatedTask)]
+    public void Non_admin_roles_do_not_grant_any_Delegations_permission(Role role)
+    {
+        var set = RolePermissionMap.For(role);
+
+        set.Contains(Permission.DelegationsRead).Should().BeFalse();
+        set.Contains(Permission.DelegationsWrite).Should().BeFalse();
+        set.Contains(Permission.DelegationsDelete).Should().BeFalse();
+        set.Contains(Permission.DelegationsCreate).Should().BeFalse();
     }
 }

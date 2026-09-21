@@ -143,4 +143,39 @@ public enum Permission
     ParametersLocationTypesWrite,
     ParametersRegulationThemesWrite,
     ParametersRegulationSubThemesWrite,
+
+    /// <summary>
+    /// Read delegaties/delegatie-toewijzingen (<c>DelegationController</c>,
+    /// <c>DelegationAssignmentController</c>). Granted only to
+    /// <see cref="Role.AlgemeenBeheerder"/> and <see cref="Role.Developer"/> — every
+    /// other role (including DecentraalBeheerder/VlimpersBeheerder/OrgaanBeheerder/
+    /// RegelgevingBeheerder, which previously had implicit access via
+    /// <c>SecurityService.CanEditDelegation</c>'s per-organisation/body fallback) is
+    /// now fail-closed (403), read included.
+    /// </summary>
+    DelegationsRead,
+
+    /// <summary>
+    /// Update a delegatie-toewijzing (<c>DelegationAssignmentCommandController.Put</c>).
+    /// Granted only to <see cref="Role.AlgemeenBeheerder"/> and <see cref="Role.Developer"/>.
+    /// Covers update only — there is no Create permission for AlgemeenBeheerder (see
+    /// <see cref="DelegationsCreate"/>).
+    /// </summary>
+    DelegationsWrite,
+
+    /// <summary>
+    /// Delete a delegatie-toewijzing (<c>DelegationAssignmentCommandController.Delete</c>).
+    /// Granted only to <see cref="Role.AlgemeenBeheerder"/> and <see cref="Role.Developer"/>.
+    /// </summary>
+    DelegationsDelete,
+
+    /// <summary>
+    /// Create a delegatie-toewijzing (<c>DelegationAssignmentCommandController.Post</c>).
+    /// Deliberately <em>not</em> granted to <see cref="Role.AlgemeenBeheerder"/> — there is
+    /// no Create on the Delegaties screen for that role. Granted only to
+    /// <see cref="Role.Developer"/> (test/tooling capability). Internal-only: unlike
+    /// <see cref="DelegationsRead"/>/<see cref="DelegationsWrite"/>/
+    /// <see cref="DelegationsDelete"/>, this is not surfaced on <c>/v1/me</c>.
+    /// </summary>
+    DelegationsCreate,
 }
