@@ -105,7 +105,7 @@
     "@semantic-release/npm": "9.0.1",
     "@semantic-release/release-notes-generator": "10.0.3",
     "@types/hammerjs": "2.0.35",
-    "@types/jasmine": "2.5.38",
+    "@types/jasmine": "2.8.24",
     "@types/node": "6.0.48",
     "@types/selenium-webdriver": "2.53.35",
     "@types/source-map": "0.5.0",
