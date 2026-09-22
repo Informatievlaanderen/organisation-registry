@@ -34,4 +34,8 @@ export class ConfigurationService {
   public get environment() {
     return (<any>window).environment || 'development';
   }
+  public get environmentName() {
+    return (<any>window).environmentName;
+  }
+
 }

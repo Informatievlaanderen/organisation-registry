@@ -9,6 +9,8 @@ window.organisationRegistryUiEndpoint="${UI_ENDPOINT}";
 window.organisationRegistryInformatieVlaanderenLink="${AIV_URI}";
 window.otelServerUri="${OTEL_SERVER_URI}";
 window.otelDistributedTracingOrigins="${OTEL_DISTRIBUTED_TRACING_ORIGINS}";
+window.environmentName="${ENV_NAME}";
+
 EOF
 
 nginx -g 'daemon off;'

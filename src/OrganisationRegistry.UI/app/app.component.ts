@@ -30,9 +30,11 @@ export class App implements OnInit, OnDestroy {
     private alertService: AlertService,
     private configurationService: ConfigurationService
   ) {
-    if (configurationService.apiUrl.includes('dev-vlaanderen.be')) {
+    if (configurationService.environmentName){
+      this.environment = configurationService.environmentName;
+    } else if (configurationService.apiUrl.includes('dev-vlaanderen.be')) {
       this.environment = Environments.staging;
-    } else if (configurationService.apiUrl.includes('dev-vlaanderen.local')) {
+    } else if (configurationService.apiUrl.includes('test-vlaanderen.local')) {
       this.environment = Environments.development;
     } else {
       this.environment = Environments.production;
