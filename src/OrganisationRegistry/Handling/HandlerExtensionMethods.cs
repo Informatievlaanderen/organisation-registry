@@ -18,8 +18,6 @@ public static class HandlerExtensionMethods
                 organisation.State.OvoNumber,
                 organisation.State.UnderVlimpersManagement));
 
-    public static Handler RequiresAdmin(this Handler source)
-        => source.WithPolicy(new AdminOnlyPolicy());
 
     public static Handler WithRegisterBodyPolicy(this Handler source, OrganisationId? organisationId)
         => source.WithPolicy(new RegisterBodyPolicy(organisationId));
