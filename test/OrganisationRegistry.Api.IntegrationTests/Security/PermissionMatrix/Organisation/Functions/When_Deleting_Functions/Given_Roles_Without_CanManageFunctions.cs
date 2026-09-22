@@ -1,0 +1,37 @@
+namespace OrganisationRegistry.Api.IntegrationTests.Security.PermissionMatrix.Organisation.Functions.When_Deleting_Functions;
+
+using System;
+using System.Net;
+using System.Threading.Tasks;
+using AutoFixture;
+using FluentAssertions;
+using Xunit;
+
+[Collection(ApiTestsCollection.Name)]
+public class Given_Roles_Without_CanManageFunctions
+{
+    private readonly ApiFixture _apiFixture;
+
+    public Given_Roles_Without_CanManageFunctions(ApiFixture apiFixture)
+    {
+        _apiFixture = apiFixture;
+    }
+
+    [Theory]
+    [InlineData(ApiFixture.Backoffice.Regelgevingbeheerder)]
+    [InlineData(ApiFixture.Backoffice.Orgaanbeheerder)]
+    public async Task Then_Returns_Forbidden(string role)
+    {
+        var client = await _apiFixture.CreateDynamicClient(role);
+
+        var organisationId = _apiFixture.Fixture.Create<Guid>();
+        await _apiFixture.Create.Organisation(organisationId, _apiFixture.Fixture.Create<string>());
+        var entityId = _apiFixture.Fixture.Create<Guid>();
+
+        var response = await ApiFixture.Delete(
+            client,
+            $"/v1/organisations/{organisationId}/functions/{entityId}");
+
+        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+    }
+}

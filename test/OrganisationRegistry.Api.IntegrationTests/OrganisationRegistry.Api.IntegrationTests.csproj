@@ -19,6 +19,9 @@
 
   <ItemGroup>
     <Folder Include="ImportFiles\" />
+    <Folder Include="Security\PermissionMatrix\Organisation\Children\" />
+    <Folder Include="Security\PermissionMatrix\Organisation\Create\" />
+    <Folder Include="Security\PermissionMatrix\Organisation\Update\" />
   </ItemGroup>
 
   <ItemGroup>

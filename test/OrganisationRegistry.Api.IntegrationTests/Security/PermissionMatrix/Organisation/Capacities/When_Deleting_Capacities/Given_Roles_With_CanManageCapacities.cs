@@ -1,0 +1,162 @@
+namespace OrganisationRegistry.Api.IntegrationTests.Security.PermissionMatrix.Organisation.Capacities.When_Deleting_Capacities;
+
+using System;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
+using AutoFixture;
+using FluentAssertions;
+using OrganisationRegistry.Api.Backoffice.Organisation.Capacity;
+using Xunit;
+
+[Collection(ApiTestsCollection.Name)]
+public class Given_Roles_With_CanManageCapacities
+{
+    private readonly ApiFixture _apiFixture;
+
+    public Given_Roles_With_CanManageCapacities(ApiFixture apiFixture)
+    {
+        _apiFixture = apiFixture;
+    }
+
+    [Fact]
+    public async Task For_Algemeenbeheerder_Then_Returns_NoContent()
+    {
+        var client = await _apiFixture.CreateAlgemeenbeheerderClient();
+
+        var organisationId = _apiFixture.Fixture.Create<Guid>();
+        await _apiFixture.Create.Organisation(organisationId, _apiFixture.Fixture.Create<string>());
+        var entityId = await AddCapacity(client, organisationId);
+
+        var response = await DeleteCapacity(client, organisationId, entityId);
+
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+    }
+
+    [Fact]
+    public async Task For_Decentraalbeheerder_WithOwnOrganisation_Then_Returns_NoContent()
+    {
+        var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Decentraalbeheerder);
+
+        var organisationId = _apiFixture.DecentraalbeheerderOrganisationId;
+        var entityId = await AddCapacity(client, organisationId);
+
+        var response = await DeleteCapacity(client, organisationId, entityId);
+
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+    }
+
+    [Fact]
+    public async Task For_Decentraalbeheerder_WithChildOrganisationInScope_Then_Returns_NoContent()
+    {
+        var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Decentraalbeheerder);
+
+        var organisationId = _apiFixture.DecentraalbeheerderChildOrganisationId;
+        var entityId = await AddCapacity(client, organisationId);
+
+        var response = await DeleteCapacity(client, organisationId, entityId);
+
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+    }
+
+    [Fact]
+    public async Task For_Decentraalbeheerder_WithOrganisationOutsideScope_Then_Returns_Forbidden()
+    {
+        var privilegedClient = await _apiFixture.CreateAlgemeenbeheerderClient();
+        var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Decentraalbeheerder);
+
+        var organisationId = _apiFixture.Fixture.Create<Guid>();
+        await _apiFixture.Create.Organisation(organisationId, _apiFixture.Fixture.Create<string>());
+        var entityId = await AddCapacity(privilegedClient, organisationId);
+
+        var response = await DeleteCapacity(client, organisationId, entityId);
+
+        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+    }
+
+    [Fact]
+    public async Task For_Regelgevingbeheerder_WithOwnedCapacity_Then_Returns_NoContent()
+    {
+        var privilegedClient = await _apiFixture.CreateAlgemeenbeheerderClient();
+        var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Regelgevingbeheerder);
+
+        var organisationId = _apiFixture.Fixture.Create<Guid>();
+        await _apiFixture.Create.Organisation(organisationId, _apiFixture.Fixture.Create<string>());
+
+        // The organisation capacity must be backed by a Regelgeving-owned capacity:
+        // the delete policy resolves the capacity id from the existing entry and
+        // checks it against the configured allow-list.
+        var ownedCapacityId = await _apiFixture.Create.Capacity(
+            _apiFixture.Configuration.Authorization.CapacityIdsOwnedByRegelgevingDbBeheerder.First());
+
+        var entityId = _apiFixture.Fixture.Create<Guid>();
+        await ApiFixture.Post(
+            privilegedClient,
+            $"/v1/organisations/{organisationId}/capacities",
+            new AddOrganisationCapacityRequest()
+            {
+                OrganisationCapacityId = entityId,
+                CapacityId = ownedCapacityId,
+                PersonId = null,
+                FunctionId = null,
+                LocationId = null,
+                Contacts = null,
+                ValidFrom = null,
+                ValidTo = null,
+            });
+
+        var response = await DeleteCapacity(client, organisationId, entityId);
+
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+    }
+
+    [Fact]
+    public async Task For_Regelgevingbeheerder_WithNonOwnedCapacity_Then_Returns_Forbidden()
+    {
+        var privilegedClient = await _apiFixture.CreateAlgemeenbeheerderClient();
+        var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Regelgevingbeheerder);
+
+        var organisationId = _apiFixture.Fixture.Create<Guid>();
+        await _apiFixture.Create.Organisation(organisationId, _apiFixture.Fixture.Create<string>());
+        var entityId = await AddCapacity(privilegedClient, organisationId);
+
+        // Deleting an organisation capacity backed by a freshly created
+        // (non-owned) capacity must be rejected: Regelgevingbeheerder may only
+        // manage the configured Regelgeving-owned capacities.
+        var response = await DeleteCapacity(client, organisationId, entityId);
+
+        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+    }
+
+    private async Task<Guid> AddCapacity(HttpClient client, Guid organisationId)
+    {
+        var entityId = _apiFixture.Fixture.Create<Guid>();
+        var capacityId = await _apiFixture.Create.Capacity();
+
+        await ApiFixture.Post(
+            client,
+            $"/v1/organisations/{organisationId}/capacities",
+            new AddOrganisationCapacityRequest()
+            {
+                OrganisationCapacityId = entityId,
+                CapacityId = capacityId,
+                PersonId = null,
+                FunctionId = null,
+                LocationId = null,
+                Contacts = null,
+                ValidFrom = null,
+                ValidTo = null,
+            });
+
+        return entityId;
+    }
+
+
+    private async Task<HttpResponseMessage> DeleteCapacity(HttpClient client, Guid organisationId, Guid entityId)
+    {
+        return await ApiFixture.Delete(
+            client,
+            $"/v1/organisations/{organisationId}/capacities/{entityId}");
+    }
+}
