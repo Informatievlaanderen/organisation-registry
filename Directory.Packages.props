@@ -16,7 +16,7 @@
     <PackageVersion Include="Be.Vlaanderen.Basisregisters.Converters.TrimString" Version="5.1.0" />
     <PackageVersion Include="Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql" Version="5.0" />
     <PackageVersion Include="CsvHelper" Version="27.2.1" />
-    <PackageVersion Include="Dapper" Version="2.0.123" />
+    <PackageVersion Include="Dapper" Version="2.1.86" />
     <PackageVersion Include="FluentAssertions" Version="6.5.1" />
     <PackageVersion Include="FluentFTP" Version="33.0.3" />
     <PackageVersion Include="FluentValidation" Version="12.1.1" />
