@@ -15,7 +15,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OrganisationRegistry.Infrastructure.AppSpecific;
 using OrganisationRegistry.Infrastructure.Authorization;
-using OrganisationRegistry.Infrastructure.Configuration;
 using Queries;
 using SqlServer.Infrastructure;
 using SqlServer.KeyType;
@@ -24,6 +23,7 @@ using Swashbuckle.AspNetCore.Filters;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("keytypes")]
+[OrganisationRegistryAuthorize]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]
 public class KeyTypeController : OrganisationRegistryController
@@ -33,13 +33,11 @@ public class KeyTypeController : OrganisationRegistryController
     [HttpGet]
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(KeyTypeListExamples))]
     [ProducesResponseType(typeof(List<KeyTypeListItem>), StatusCodes.Status200OK)]
-    [OrganisationRegistryAuthorize]
     [ActionName("List")]
     public async Task<IActionResult> Get(
         [FromServices] OrganisationRegistryContext context,
         [FromServices] IMemoryCaches memoryCaches,
         [FromServices] ISecurityService securityService,
-        [FromServices] IOrganisationRegistryConfiguration configuration,
         [FromQuery] Guid? forOrganisationId)
     {
         var filtering = Request.ExtractFilteringRequest<KeyTypeListQuery.KeyTypeListItemFilter>();
@@ -52,8 +50,7 @@ public class KeyTypeController : OrganisationRegistryController
         Func<Guid, bool> isAuthorizedForKeyType = keyTypeId =>
             !forOrganisationId.HasValue ||
             new KeyPolicy(
-                    memoryCaches.OvoNumbers[forOrganisationId.Value],
-                    configuration,
+                    memoryCaches.UnderVlimpersManagement.Contains(forOrganisationId.Value),
                     keyTypeId)
                 .Check(user)
                 .IsSuccessful;
@@ -70,7 +67,6 @@ public class KeyTypeController : OrganisationRegistryController
     /// <response code="200">Als het sleuteltype gevonden is.</response>
     /// <response code="404">Als het sleuteltype niet gevonden kan worden.</response>
     [HttpGet("{id}")]
-    [OrganisationRegistryAuthorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid id)

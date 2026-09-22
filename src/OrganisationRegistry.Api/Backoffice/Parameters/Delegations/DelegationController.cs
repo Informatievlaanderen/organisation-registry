@@ -21,7 +21,6 @@ using Swashbuckle.AspNetCore.Filters;
 
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
-[OrganisationRegistryAuthorize(Role.AlgemeenBeheerder , Role.DecentraalBeheerder)]
 [OrganisationRegistryRoute("manage/delegations")]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]
@@ -30,6 +29,7 @@ public class DelegationController : OrganisationRegistryController
     /// <summary>Vraag een lijst van delegaties op.</summary>
     /// <response code="200">Een lijst van delegaties.</response>
     [HttpGet]
+    [OrganisationRegistryAuthorize(RequiredPermissions = [Permission.DelegationsRead])]
     [ProducesResponseType(typeof(List<DelegationListItem>), StatusCodes.Status200OK)]
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(DelegationListExamples))]
     [ActionName("List")]
@@ -54,17 +54,15 @@ public class DelegationController : OrganisationRegistryController
     /// <response code="200">Als de delegatie gevonden is.</response>
     /// <response code="404">Als de delegatie niet gevonden kan worden.</response>
     [HttpGet("{id}")]
+    [OrganisationRegistryAuthorize(RequiredPermissions = [Permission.DelegationsRead])]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Get([FromServices] ISecurityService securityService, [FromServices] OrganisationRegistryContext context, [FromRoute] Guid id)
+    public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid id)
     {
         var delegation = await context.DelegationList.FirstOrDefaultAsync(x => x.Id == id);
 
         if (delegation == null)
             return NotFound();
-
-        if (!await securityService.CanEditDelegation(User, delegation.OrganisationId, delegation.BodyId))
-            return Unauthorized();
 
         return Ok(new DelegationResponse(delegation));
     }

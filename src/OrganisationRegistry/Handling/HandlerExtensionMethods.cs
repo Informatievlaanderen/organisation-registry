@@ -12,6 +12,12 @@ public static class HandlerExtensionMethods
                 organisation.State.UnderVlimpersManagement,
                 organisation.State.OvoNumber));
 
+    public static Handler WithChildPolicy(this Handler source, Organisation organisation)
+        => source.WithPolicy(
+            new ChildPolicy(
+                organisation.State.OvoNumber,
+                organisation.State.UnderVlimpersManagement));
+
     public static Handler RequiresAdmin(this Handler source)
         => source.WithPolicy(new AdminOnlyPolicy());
 
@@ -21,6 +27,12 @@ public static class HandlerExtensionMethods
     public static Handler RequiresOneOfRole(this Handler source, params Role[] roles)
         => source.WithPolicy(new RequiresRolesPolicy(roles));
 
-    public static Handler WithAddBodyPolicy(this Handler source)
-        => source.WithPolicy(new AddBodyPolicy());
+    public static Handler RequiresPermission(this Handler source, Permission permission)
+        => source.WithPolicy(new RequiresPermissionPolicy(permission));
+
+    public static Handler WithBodyPolicy(this Handler source, Permission permission, System.Guid bodyId)
+        => source.WithPolicy(new BodyPolicy(permission, bodyId));
+
+    public static Handler WithPeoplePolicy(this Handler source)
+        => source.WithPolicy(new PeoplePolicy());
 }

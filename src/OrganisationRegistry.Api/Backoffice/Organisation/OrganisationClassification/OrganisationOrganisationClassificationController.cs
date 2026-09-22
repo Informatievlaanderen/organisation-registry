@@ -47,7 +47,6 @@ public class OrganisationOrganisationClassificationController : OrganisationRegi
         Func<Guid, bool> isAuthorizedForOrganisationClassificationType = id =>
             new OrganisationClassificationTypePolicy(
                     memoryCaches.OvoNumbers[organisationId],
-                    configuration,
                     id)
                 .Check(user)
                 .IsSuccessful;

@@ -198,10 +198,12 @@ public class Startup
                 {
                     if (tokenExchangeEnabled)
                     {
-                        options.Authority = tokenExchangeConfiguration!.Authority;
-                        options.ClientId = tokenExchangeConfiguration.ClientId;
-                        options.ClientSecret = tokenExchangeConfiguration.ClientSecret;
-                        options.IntrospectionEndpoint = tokenExchangeConfiguration.IntrospectionEndpoint;
+                        options.Authority = Required(tokenExchangeConfiguration.Authority, nameof(tokenExchangeConfiguration.Authority));
+                        options.ClientId = Required(tokenExchangeConfiguration.ClientId, nameof(tokenExchangeConfiguration.ClientId));
+                        options.ClientSecret = Required(tokenExchangeConfiguration.ClientSecret, nameof(tokenExchangeConfiguration.ClientSecret));
+                        options.IntrospectionEndpoint = Required(
+                            tokenExchangeConfiguration.IntrospectionEndpoint,
+                            nameof(tokenExchangeConfiguration.IntrospectionEndpoint));
 
                         options.Events = new OAuth2IntrospectionEvents()
                         {
@@ -220,7 +222,7 @@ public class Startup
                     }
                 })
             .Services
-            .Configure<TokenExchangeConfiguration>(_configuration.GetSection("TokenExchange"))
+            .Configure<TokenExchangeConfiguration>(_configuration.GetSection(TokenExchangeConfiguration.Section))
             .AddTransient<IClaimsTransformation, TokenExchangeClaimsTransformation>()
             .AddSingleton<IActionContextAccessor, ActionContextAccessor>()
             .AddSingleton<ISecurityService, SecurityService>()
@@ -509,4 +511,15 @@ public class Startup
     private static string GetApiLeadingText(ApiVersionDescription description)
         => $"Momenteel leest u de documentatie voor versie {description.ApiVersion} van de Basisregisters Vlaanderen Organisation Registry API{(description.IsDeprecated ? ", **deze API versie is niet meer ondersteund**." : ".")}"
            + SchermApiIntro;
+
+    /// <summary>
+    /// Guards a configuration value that the application cannot do anything sensible without,
+    /// naming the environment variable that sets it.
+    /// </summary>
+    private static string Required(string? value, string key)
+        => !string.IsNullOrWhiteSpace(value)
+            ? value
+            : throw new InvalidOperationException(
+                $"{TokenExchangeConfiguration.Section}:{key} is not configured. " +
+                $"Set the {TokenExchangeConfiguration.Section}__{key} environment variable.");
 }

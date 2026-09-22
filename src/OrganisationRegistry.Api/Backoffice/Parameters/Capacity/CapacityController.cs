@@ -3,7 +3,10 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.Capacity;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Handling.Authorization;
 using Infrastructure;
+using Infrastructure.Security;
+using OrganisationRegistry.Infrastructure.Authorization;
 using Infrastructure.Search.Filtering;
 using Infrastructure.Search.Pagination;
 using Infrastructure.Search.Sorting;
@@ -11,6 +14,7 @@ using Infrastructure.Swagger.Examples;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OrganisationRegistry.Infrastructure.AppSpecific;
 using Queries;
 using SqlServer.Capacity;
 using SqlServer.Infrastructure;
@@ -19,6 +23,7 @@ using Swashbuckle.AspNetCore.Filters;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("capacities")]
+[OrganisationRegistryAuthorize(RequiredPermissions = [Permission.CanManageCapacities])]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]
 public class CapacityController : OrganisationRegistryController
@@ -29,13 +34,26 @@ public class CapacityController : OrganisationRegistryController
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(CapacityListExamples))]
     [ProducesResponseType(typeof(List<CapacityListItem>), StatusCodes.Status200OK)]
     [ActionName("List")]
-    public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
+    public async Task<IActionResult> Get(
+        [FromServices] OrganisationRegistryContext context,
+        [FromServices] IMemoryCaches memoryCaches,
+        [FromServices] ISecurityService securityService,
+        [FromQuery] Guid? forOrganisationId)
     {
         var filtering = Request.ExtractFilteringRequest<CapacityListQuery.CapacityListFilter>();
         var sorting = Request.ExtractSortingRequest();
         var pagination = Request.ExtractPaginationRequest();
 
-        var pagedCapacities = new CapacityListQuery(context).Fetch(filtering, sorting, pagination);
+        var user = await securityService.GetUser(User);
+        Func<Guid, bool> isAuthorizedForCapacity = capacityId =>
+            !forOrganisationId.HasValue ||
+            new CapacityPolicy(
+                    memoryCaches.OvoNumbers[forOrganisationId.Value],
+                    capacityId)
+                .Check(user)
+                .IsSuccessful;
+
+        var pagedCapacities = new CapacityListQuery(context, isAuthorizedForCapacity).Fetch(filtering, sorting, pagination);
 
         Response.AddPaginationResponse(pagedCapacities.PaginationInfo);
         Response.AddSortingResponse(sorting.SortBy, sorting.SortOrder);

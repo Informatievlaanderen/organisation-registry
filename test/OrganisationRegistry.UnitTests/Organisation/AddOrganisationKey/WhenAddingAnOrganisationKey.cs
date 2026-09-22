@@ -28,7 +28,6 @@ public class WhenAddingAnOrganisationKey : Specification<AddOrganisationKeyComma
     private readonly string _value;
     private readonly DateTime _validTo;
     private readonly DateTime _validFrom;
-    private readonly Mock<ISecurityService> _securityServiceMock;
 
     public WhenAddingAnOrganisationKey(ITestOutputHelper helper) : base(helper)
     {
@@ -38,22 +37,12 @@ public class WhenAddingAnOrganisationKey : Specification<AddOrganisationKeyComma
         _validTo = DateTime.Now.AddDays(2);
         _organisationId = Guid.NewGuid();
         _value = "12345ABC-@#$";
-
-        _securityServiceMock = new Mock<ISecurityService>();
-        _securityServiceMock
-            .Setup(
-                service =>
-                    service.CanUseKeyType(
-                        It.IsAny<IUser>(),
-                        It.IsAny<Guid>()))
-            .Returns(true);
     }
 
     protected override AddOrganisationKeyCommandHandler BuildHandler(ISession session)
         => new(
             new Mock<ILogger<AddOrganisationKeyCommandHandler>>().Object,
-            session,
-            new OrganisationRegistryConfigurationStub());
+            session);
 
     private IEvent[] Events
         => new IEvent[]

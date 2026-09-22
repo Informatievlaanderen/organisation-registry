@@ -27,7 +27,7 @@ public class RegulationSubThemeCommandHandlers :
 
     public async Task Handle(ICommandEnvelope<CreateRegulationSubTheme> envelope)
         => await Handler.For(envelope.User, Session)
-            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .RequiresPermission(Permission.ParametersRegulationSubThemesWrite)
             .Handle(
                 session =>
                 {
@@ -47,7 +47,7 @@ public class RegulationSubThemeCommandHandlers :
 
     public async Task Handle(ICommandEnvelope<UpdateRegulationSubTheme> envelope)
         => await UpdateHandler<RegulationTheme>.For(envelope.Command, envelope.User, Session)
-            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .RequiresPermission(Permission.ParametersRegulationSubThemesWrite)
             .Handle(
                 session =>
                 {

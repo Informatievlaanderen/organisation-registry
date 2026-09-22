@@ -26,7 +26,7 @@ public class MandateRoleTypeCommandHandlers :
 
     public async Task Handle(ICommandEnvelope<CreateMandateRoleType> envelope)
         => await Handler.For(envelope.User, Session)
-            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .RequiresPermission(Permission.ParametersMandateRoleTypesWrite)
             .Handle(
                 session =>
                 {
@@ -39,7 +39,7 @@ public class MandateRoleTypeCommandHandlers :
 
     public async Task Handle(ICommandEnvelope<UpdateMandateRoleType> envelope)
         => await UpdateHandler<MandateRoleType>.For(envelope.Command, envelope.User, Session)
-            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .RequiresPermission(Permission.ParametersMandateRoleTypesWrite)
             .Handle(
                 session =>
                 {

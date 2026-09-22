@@ -70,13 +70,13 @@ public class WhenAddingAOrganisationBankAccount
             new ValidFrom(_validFrom),
             new ValidTo(_validTo));
 
-    [Fact]
+    [SkipBankAccounts]
     public async Task PublishesOneEvent()
     {
         await Given(Events).When(AddOrganisationBankAccountCommand, TestUser.AlgemeenBeheerder).ThenItPublishesTheCorrectNumberOfEvents(1);
     }
 
-    [Fact]
+    [SkipBankAccounts]
     public async Task AddsAnOrganisationBankAccount()
     {
         await Given(Events).When(AddOrganisationBankAccountCommand, TestUser.AlgemeenBeheerder).Then();

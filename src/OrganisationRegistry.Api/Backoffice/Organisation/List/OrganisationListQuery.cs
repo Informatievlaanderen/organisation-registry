@@ -74,7 +74,9 @@ public class OrganisationListQuery : Query<OrganisationListItem, OrganisationLis
             x.ParentOrganisationId,
             x.ParentOrganisationOvoNumber);
 
-    public OrganisationListQuery(OrganisationRegistryContext context, SecurityInformation securityInformation)
+    public OrganisationListQuery(
+        OrganisationRegistryContext context,
+        SecurityInformation securityInformation)
     {
         _context = context;
         _securityInformation = securityInformation;

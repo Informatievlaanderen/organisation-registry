@@ -26,7 +26,7 @@ public class OrganisationClassificationTypeCommandHandlers :
 
     public async Task Handle(ICommandEnvelope<CreateOrganisationClassificationType> envelope)
         => await Handler.For(envelope.User, Session)
-            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .RequiresPermission(Permission.ParametersOrganisationClassificationTypesWrite)
             .Handle(
                 session =>
                 {
@@ -39,7 +39,7 @@ public class OrganisationClassificationTypeCommandHandlers :
 
     public async Task Handle(ICommandEnvelope<UpdateOrganisationClassificationType> envelope)
         => await UpdateHandler<OrganisationClassificationType>.For(envelope.Command, envelope.User, Session)
-            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .RequiresPermission(Permission.ParametersOrganisationClassificationTypesWrite)
             .Handle(
                 session =>
                 {

@@ -23,10 +23,13 @@ public class BodyResponse
     public bool HasAllSeatsAssigned { get; }
     public bool IsMepCompliant { get; }
 
+    public BodyPermissions? Permissions { get; }
+
     public BodyResponse(
         BodyDetail projectionItem,
         bool hasAllSeatsAssigned,
-        bool isMepCompliant)
+        bool isMepCompliant,
+        BodyPermissions? permissions = null)
     {
         Id = projectionItem.Id;
 
@@ -42,5 +45,7 @@ public class BodyResponse
 
         HasAllSeatsAssigned = hasAllSeatsAssigned;
         IsMepCompliant = isMepCompliant;
+
+        Permissions = permissions;
     }
 }

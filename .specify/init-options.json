@@ -1,0 +1,9 @@
+{
+  "ai": "generic",
+  "branch_numbering": "sequential",
+  "context_file": "AGENTS.md",
+  "here": true,
+  "integration": "generic",
+  "script": "sh",
+  "speckit_version": "0.8.10.dev0"
+}

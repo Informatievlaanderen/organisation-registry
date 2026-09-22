@@ -10,7 +10,9 @@ using Infrastructure;
 using OrganisationRegistry.Api.Infrastructure.Search.Filtering;
 using OrganisationRegistry.Api.Infrastructure.Search.Pagination;
 using OrganisationRegistry.Api.Infrastructure.Search.Sorting;
+using OrganisationRegistry.Api.Infrastructure.Security;
 using OrganisationRegistry.Api.Infrastructure.Swagger.Examples;
+using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.SqlServer.Infrastructure;
 using OrganisationRegistry.SqlServer.Person;
 using Swashbuckle.AspNetCore.Filters;
@@ -18,6 +20,7 @@ using Swashbuckle.AspNetCore.Filters;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("people/{personId}/functions")]
+[OrganisationRegistryAuthorize(RequiredPermissions = [Permission.PeopleFunctionsRead])]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Scherm APIs: Personen")]
 public class PersonFunctionController : OrganisationRegistryController

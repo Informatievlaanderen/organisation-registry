@@ -9,6 +9,7 @@ using Infrastructure.Search;
 using Infrastructure.Search.Filtering;
 using Infrastructure.Search.Sorting;
 using OrganisationRegistry.Infrastructure;
+using Parameters;
 using SqlServer.FormalFramework;
 using SqlServer.Infrastructure;
 
@@ -18,23 +19,27 @@ public class FormalFrameworkListQueryResult
     public string Code { get; }
     public string FormalFrameworkCategoryName { get; }
     public string Name { get; }
+    public ResourceSelectPermissions Permissions { get; }
 
     public FormalFrameworkListQueryResult(
         Guid id,
         string code,
         string formalFrameworkCategoryName,
-        string name)
+        string name,
+        Func<Guid, bool> isAuthorizedForFormalFramework)
     {
         Id = id;
         Code = code;
         FormalFrameworkCategoryName = formalFrameworkCategoryName;
         Name = name;
+        Permissions = new ResourceSelectPermissions(isAuthorizedForFormalFramework(id));
     }
 }
 
 public class FormalFrameworkListQuery : Query<FormalFrameworkListItem, FormalFrameworkListItemFilter, FormalFrameworkListQueryResult>
 {
     private readonly OrganisationRegistryContext _context;
+    private readonly Func<Guid, bool> _isAuthorizedForFormalFramework;
 
     protected override ISorting Sorting => new FormalFrameworkListSorting();
 
@@ -43,11 +48,13 @@ public class FormalFrameworkListQuery : Query<FormalFrameworkListItem, FormalFra
             x.Id,
             x.Code,
             x.FormalFrameworkCategoryName,
-            x.Name);
+            x.Name,
+            _isAuthorizedForFormalFramework);
 
-    public FormalFrameworkListQuery(OrganisationRegistryContext context)
+    public FormalFrameworkListQuery(OrganisationRegistryContext context, Func<Guid, bool> isAuthorizedForFormalFramework)
     {
         _context = context;
+        _isAuthorizedForFormalFramework = isAuthorizedForFormalFramework;
     }
 
     protected override IQueryable<FormalFrameworkListItem> Filter(FilteringHeader<FormalFrameworkListItemFilter> filtering)

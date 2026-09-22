@@ -26,3 +26,12 @@ echo "Clearing OrganisationRegistry database..."
     -b
 
 echo "Database cleared."
+
+echo "Resetting OpenSearch data..."
+"${KUBECTL}" scale statefulset opensearch -n "${NAMESPACE}" --replicas=0
+"${KUBECTL}" wait --for=delete pod/opensearch-0 -n "${NAMESPACE}" --timeout=120s || true
+"${KUBECTL}" delete pvc opensearch-data-opensearch-0 -n "${NAMESPACE}" --ignore-not-found=true
+"${KUBECTL}" scale statefulset opensearch -n "${NAMESPACE}" --replicas=1
+"${KUBECTL}" wait --for=condition=ready pod/opensearch-0 -n "${NAMESPACE}" --timeout=300s
+
+echo "OpenSearch reset complete."

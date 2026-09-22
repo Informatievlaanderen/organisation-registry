@@ -15,7 +15,8 @@ public class ProcessImportedFilesService : BackgroundService
     private readonly IDateTimeProvider _dateTimeProvider;
     private readonly ILogger<ProcessImportedFilesService> _logger;
     private readonly ICommandSender _commandSender;
-    private readonly HostedServiceConfiguration _configuration;
+    private readonly IOrganisationRegistryConfiguration _configuration;
+    private readonly HostedServiceConfiguration _hostedServiceConfiguration;
 
     public ProcessImportedFilesService(
         IContextFactory contextFactory,
@@ -28,12 +29,13 @@ public class ProcessImportedFilesService : BackgroundService
         _dateTimeProvider = dateTimeProvider;
         _logger = logger;
         _commandSender = commandSender;
-        _configuration = configuration.HostedServices.ProcessImportedFileService;
+        _configuration = configuration;
+        _hostedServiceConfiguration = configuration.HostedServices.ProcessImportedFileService;
     }
 
     protected override async Task Process(CancellationToken cancellationToken)
     {
-        if (!_configuration.Enabled)
+        if (!_hostedServiceConfiguration.Enabled)
         {
             _logger.LogInformation("{ServiceName} disabled, skipping execution", nameof(ProcessImportedFilesService));
             return;
@@ -50,6 +52,7 @@ public class ProcessImportedFilesService : BackgroundService
                     _dateTimeProvider,
                     _logger,
                     _commandSender,
+                    _hostedServiceConfiguration,
                     _configuration,
                     cancellationToken);
             }
@@ -59,9 +62,9 @@ public class ProcessImportedFilesService : BackgroundService
                     exception,
                     "An exception occurred while processing next file. " +
                     "Will retry in {DelayInSeconds} seconds.",
-                    _configuration.DelayInSeconds);
+                    _hostedServiceConfiguration.DelayInSeconds);
 
-                await Task.Delay(_configuration.DelayInSeconds, cancellationToken);
+                await Task.Delay(_hostedServiceConfiguration.DelayInSeconds, cancellationToken);
             }
         }
     }

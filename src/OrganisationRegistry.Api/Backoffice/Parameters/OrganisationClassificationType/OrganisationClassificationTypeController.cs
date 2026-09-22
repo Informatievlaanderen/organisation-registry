@@ -3,7 +3,10 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.OrganisationClassificat
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Handling.Authorization;
 using Infrastructure;
+using Infrastructure.Security;
+using OrganisationRegistry.Infrastructure.Authorization;
 using Infrastructure.Search.Filtering;
 using Infrastructure.Search.Pagination;
 using Infrastructure.Search.Sorting;
@@ -11,6 +14,7 @@ using Infrastructure.Swagger.Examples;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OrganisationRegistry.Infrastructure.AppSpecific;
 using OrganisationRegistry.Infrastructure.Configuration;
 using Queries;
 using SqlServer.Infrastructure;
@@ -20,6 +24,7 @@ using Swashbuckle.AspNetCore.Filters;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("organisationclassificationtypes")]
+[OrganisationRegistryAuthorize(RequiredPermissions = [Permission.CanManageOrganisationClassifications])]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]
 public class OrganisationClassificationTypeController : OrganisationRegistryController
@@ -32,13 +37,30 @@ public class OrganisationClassificationTypeController : OrganisationRegistryCont
     [ActionName("List")]
     public async Task<IActionResult> Get(
         [FromServices] OrganisationRegistryContext context,
-        [FromServices] IOrganisationRegistryConfiguration organisationRegistryConfiguration)
+        [FromServices] IOrganisationRegistryConfiguration organisationRegistryConfiguration,
+        [FromServices] IMemoryCaches memoryCaches,
+        [FromServices] ISecurityService securityService,
+        [FromQuery] Guid? forOrganisationId)
     {
         var filtering = Request.ExtractFilteringRequest<OrganisationClassificationTypeListItem>();
         var sorting = Request.ExtractSortingRequest();
         var pagination = Request.ExtractPaginationRequest();
 
-        var pagedOrganisationClassificationTypes = new OrganisationClassificationTypeListQuery(context, organisationRegistryConfiguration).Fetch(filtering, sorting, pagination);
+        var user = await securityService.GetUser(User);
+        Func<Guid, bool> isAuthorizedForOrganisationClassificationType = organisationClassificationTypeId =>
+            !forOrganisationId.HasValue ||
+            new OrganisationClassificationTypePolicy(
+                    memoryCaches.OvoNumbers[forOrganisationId.Value],
+                    organisationClassificationTypeId)
+                .Check(user)
+                .IsSuccessful;
+
+        var pagedOrganisationClassificationTypes =
+            new OrganisationClassificationTypeListQuery(
+                    context,
+                    organisationRegistryConfiguration,
+                    isAuthorizedForOrganisationClassificationType)
+                .Fetch(filtering, sorting, pagination);
 
         Response.AddPaginationResponse(pagedOrganisationClassificationTypes.PaginationInfo);
         Response.AddSortingResponse(sorting.SortBy, sorting.SortOrder);

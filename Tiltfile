@@ -62,7 +62,7 @@ local_resource(
     './scripts/clear-database.sh',
     deps=['scripts/clear-database.sh'],
     labels=['setup'],
-    resource_deps=['mssql'],
+    resource_deps=['mssql', 'opensearch'],
 )
 
 local_resource(
@@ -213,6 +213,14 @@ custom_build(
     deps=['demo/nuxt-bff/'],
 )
 
+# Seed — populates required parameter/reference data (KeyTypes, LabelTypes,
+# LifecyclePhaseTypes, ...) via the API. Idempotent, safe to re-run.
+custom_build(
+    'k3d-wegwijs-registry:5051/wegwijs-seed:local',
+    'docker build -t $EXPECTED_REF demos/seed && docker push $EXPECTED_REF',
+    deps=['demos/seed/'],
+)
+
 # =============================================================================
 # Applications
 # =============================================================================
@@ -223,6 +231,7 @@ k8s_yaml('demo/k8s/piavo-import.yaml')
 k8s_yaml('demo/k8s/m2m.yaml')
 k8s_yaml('demo/k8s/nuxt-bff.yaml')
 k8s_yaml('demo/k8s/ingress.yaml')
+k8s_yaml('demo/k8s/seed.yaml')
 
 # Group all Traefik IngressRoutes into a single Tilt resource so they are
 # always applied on `tilt up`, survive `tilt down`/re-up cycles, and are
@@ -253,9 +262,16 @@ k8s_resource('ui',
     resource_deps=['api-configuration', 'keycloak'],
     links=[link('http://ui.localhost:9080', 'Angular UI')])
 
+# piavo-import must run after 'seed': both create overlapping master data
+# (KeyTypes, LabelTypes, ContactTypes, LocationTypes, ClassificationTypes,
+# FormalFrameworks, Capacities, Purposes) via the API. Running them
+# concurrently races the same POSTs against the API, and unlike 'seed',
+# piavo-import's Job has backoffLimit=0 (no retries), so any transient
+# conflict from that race fails it permanently. Sequencing after 'seed'
+# removes the race entirely.
 k8s_resource('piavo-import',
     labels=['setup'],
-    resource_deps=['api-configuration'],
+    resource_deps=['api-configuration', 'seed'],
     auto_init=True,
     trigger_mode=TRIGGER_MODE_MANUAL)
 
@@ -273,6 +289,10 @@ k8s_resource('keycloak',
     labels=['infrastructure'],
     resource_deps=['keycloak-realm-configmap'],
     links=[link('http://keycloak.localhost:9080', 'Keycloak')])
+
+k8s_resource('seed',
+    labels=['setup'],
+    resource_deps=['api-configuration', 'keycloak'])
 
 # =============================================================================
 # Settings

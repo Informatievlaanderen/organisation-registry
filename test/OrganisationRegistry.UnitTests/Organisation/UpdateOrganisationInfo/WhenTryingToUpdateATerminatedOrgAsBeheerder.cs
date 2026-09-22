@@ -45,6 +45,10 @@ public class
         => new UserBuilder()
             .AddRoles(Role.DecentraalBeheerder)
             .AddOrganisations(_ovoNumber)
+            .WithPermissions(
+                RolePermissionMap.For(
+                    new[] { Role.DecentraalBeheerder },
+                    new OrganisationRegistryConfigurationStub()))
             .Build();
 
     private IEvent[] Events

@@ -26,7 +26,7 @@ public class SeatTypeCommandHandlers :
 
     public async Task Handle(ICommandEnvelope<CreateSeatType> envelope)
         => await Handler.For(envelope.User, Session)
-            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .RequiresPermission(Permission.ParametersSeatTypesWrite)
             .Handle(
                 session =>
                 {
@@ -39,7 +39,7 @@ public class SeatTypeCommandHandlers :
 
     public async Task Handle(ICommandEnvelope<UpdateSeatType> envelope)
         => await UpdateHandler<SeatType>.For(envelope.Command, envelope.User, Session)
-            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .RequiresPermission(Permission.ParametersSeatTypesWrite)
             .Handle(
                 session =>
                 {

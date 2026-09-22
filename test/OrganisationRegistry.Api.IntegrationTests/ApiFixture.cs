@@ -39,6 +39,11 @@ public class ApiFixture : IDisposable, IAsyncLifetime
     private static readonly TimeSpan ReadinessPollInterval = TimeSpan.FromSeconds(2);
     private Guid? _importedParentOrganisationId;
     private Guid? _importedChildOrganisationId;
+    private Guid? _decentraalbeheerderOrganisationId;
+    private Guid? _decentraalbeheerderChildOrganisationId;
+
+    private const string DecentraalbeheerderOvoNumber = "OVO000003";
+    private const string DecentraalbeheerderChildOvoNumber = "OVO000102";
 
     public struct Orafin
     {
@@ -59,6 +64,26 @@ public class ApiFixture : IDisposable, IAsyncLifetime
     }
 
     /// <summary>
+    /// Interactieve backoffice-gebruikers uit de Keycloak wegwijs-realm. Tokens worden
+    /// opgehaald met de direct access grant op de <c>nuxt-bff</c> client, zodat het token
+    /// exact dezelfde vorm heeft als het token dat de BFF na een browserlogin doorgeeft.
+    /// In de demo-realm is het wachtwoord gelijk aan de gebruikersnaam.
+    /// </summary>
+    public struct Backoffice
+    {
+        public const string Client = "nuxt-bff";
+        public const string Scope = "openid";
+
+        public const string Algemeenbeheerder = "algemeenbeheerder";
+        public const string Vlimpersbeheerder = "vlimpers";
+        public const string Decentraalbeheerder = "decentraalbeheerder";
+        public const string Orgaanbeheerder = "organen";
+        public const string Regelgevingbeheerder = "regelgeving";
+        public const string Cjmbeheerder = "cjmbeheerder";
+        public const string Orafinbeheerder = "orafinbeheerder";
+    }
+
+    /// <summary>
     /// Gets the client secret for the specified client ID.
     /// Centralizes client secret mapping for all integration tests.
     /// </summary>
@@ -68,6 +93,7 @@ public class ApiFixture : IDisposable, IAsyncLifetime
             CJM.Client => "cjm-client-secret-2024",
             Orafin.Client => "orafin-client-secret-2024",
             Test.Client => "test-client-secret-2024",
+            Backoffice.Client => "nuxt-bff-secret",
             _ => "secret"
         };
 
@@ -83,7 +109,27 @@ public class ApiFixture : IDisposable, IAsyncLifetime
     public Guid ImportedChildOrganisationId
         => _importedChildOrganisationId ?? throw new InvalidOperationException("Imported child organisation is not ready.");
 
+    /// <summary>
+    /// Organisatie (OVO000003) waarvoor de decentraalbeheerder-persona beheerder is.
+    /// </summary>
+    public Guid DecentraalbeheerderOrganisationId
+        => _decentraalbeheerderOrganisationId ?? throw new InvalidOperationException("Decentraalbeheerder organisation is not ready.");
+
+    /// <summary>
+    /// Dochterorganisatie van OVO000003 en dus binnen de scope van de decentraalbeheerder-persona.
+    /// </summary>
+    public Guid DecentraalbeheerderChildOrganisationId
+        => _decentraalbeheerderChildOrganisationId ?? throw new InvalidOperationException("Decentraalbeheerder child organisation is not ready.");
+
     public HttpClient HttpClient { get; }
+
+    /// <summary>
+    /// Client die authenticeert als <see cref="Role.Developer" />. Enkel de developer-rol mag bij het
+    /// aanmaken van een organisatie een vast OVO-nummer opgeven (zie OrganisationDetailCommandController);
+    /// alle andere rollen krijgen een automatisch gegenereerd OVO-nummer. Wordt gebruikt om de
+    /// scope-organisaties (OVO000003 / OVO000102) met een gekend OVO-nummer aan te maken.
+    /// </summary>
+    public HttpClient DeveloperHttpClient { get; }
 
     public Fixture Fixture { get; } = new();
 
@@ -115,6 +161,7 @@ public class ApiFixture : IDisposable, IAsyncLifetime
             ?? throw new InvalidOperationException($"Missing '{OpenIdConnectConfigurationSection.Name}' configuration.");
         Jwt = CreateBackofficeJwt(_openIdConnectConfiguration);
         HttpClient = CreateApiClient(Jwt);
+        DeveloperHttpClient = CreateApiClient(CreateDeveloperJwt(_openIdConnectConfiguration));
         Configuration = CreateOrganisationRegistryConfiguration(_configurationRoot);
     }
 
@@ -154,11 +201,53 @@ public class ApiFixture : IDisposable, IAsyncLifetime
         return httpClientFor;
     }
 
+    public async Task<HttpClient> CreateAlgemeenbeheerderClient()
+        => await CreateBackofficeUserClientFor(Backoffice.Algemeenbeheerder);
+    public async Task<HttpClient> CreateDecentraalBeheerderClient()
+        => await CreateBackofficeUserClientFor(Backoffice.Decentraalbeheerder);
+    public async Task<HttpClient> CreateRegelgevingClient()
+        => await CreateBackofficeUserClientFor(Backoffice.Regelgevingbeheerder);
+    public async Task<HttpClient> CreateOrganenClient()
+        => await CreateBackofficeUserClientFor(Backoffice.Orgaanbeheerder);
+
+    public async Task<HttpClient> CreateDynamicClient(string role)
+        => await CreateBackofficeUserClientFor(role);
+
+    /// <summary>
+    /// Bouwt een <see cref="HttpClient" /> zonder <c>Authorization</c>-header, om een
+    /// niet-ingelogde ("Publiek") bezoeker te simuleren. Endpoints die authenticatie
+    /// vereisen antwoorden hierop met 401 (geen geldig token), niet 403 (geen recht).
+    /// </summary>
+    public HttpClient CreateAnonymousClient()
+    {
+        var httpClientFor = new HttpClient { BaseAddress = new Uri(ApiEndpoint) };
+        httpClientFor.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        return httpClientFor;
+    }
+
+
+    /// <summary>
+    /// Bouwt een <see cref="HttpClient" /> die authenticeert als een interactieve
+    /// backoffice-gebruiker. Het token komt van Keycloak via de direct access grant
+    /// (resource owner password credentials) en wordt door de API gevalideerd met de
+    /// TokenExchange-introspectie, net zoals een token dat via de BFF binnenkomt.
+    /// Het wachtwoord van de demo-gebruikers is gelijk aan hun gebruikersnaam.
+    /// </summary>
+    public async Task<HttpClient> CreateBackofficeUserClientFor(string username, string? password = null)
+    {
+        var httpClientFor = CreateApiClient(await GetDirectGrantToken(username, password ?? username));
+        httpClientFor.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        return httpClientFor;
+    }
+
     public static async Task<HttpResponseMessage> Post(HttpClient httpClient, string route, object body)
         => await httpClient.PostAsync(route, ToJson(body));
 
     public static async Task<HttpResponseMessage> Put(HttpClient httpClient, string route, object body)
         => await httpClient.PutAsync(route, ToJson(body));
+
+    public static async Task<HttpResponseMessage> Patch(HttpClient httpClient, string route, object body)
+        => await httpClient.PatchAsync(route, ToJson(body));
 
     public static async Task<HttpResponseMessage> Get(HttpClient httpClient, string route)
         => await httpClient.GetAsync(route);
@@ -202,6 +291,26 @@ public class ApiFixture : IDisposable, IAsyncLifetime
         return tokenBuilder.BuildJwt(tokenBuilder.ParseRoles(identity));
     }
 
+    private static string CreateDeveloperJwt(OpenIdConnectConfigurationSection openIdConnectConfiguration)
+    {
+        var developerAcmId = (openIdConnectConfiguration.Developers ?? string.Empty)
+            .Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
+            .FirstOrDefault()
+            ?? throw new InvalidOperationException(
+                "Geen developer geconfigureerd in 'OpenIdConnect:Developers'. De developer-rol is nodig om " +
+                "organisaties met een vast OVO-nummer (OVO000003 / OVO000102) aan te maken.");
+
+        var identity = new ClaimsIdentity();
+        identity.AddClaim(new Claim(JwtClaimTypes.Subject, "api-integration-tests-developer"));
+        identity.AddClaim(new Claim(JwtClaimTypes.GivenName, "Developer"));
+        identity.AddClaim(new Claim(JwtClaimTypes.FamilyName, "Persona"));
+        identity.AddClaim(new Claim(AcmIdmConstants.Claims.AcmId, developerAcmId));
+        identity.AddClaim(new Claim(AcmIdmConstants.Claims.Role, "WegwijsBeheerder-algemeenbeheerder:OVO002949"));
+
+        var tokenBuilder = new OrganisationRegistryTokenBuilder(openIdConnectConfiguration);
+        return tokenBuilder.BuildJwt(tokenBuilder.ParseRoles(identity));
+    }
+
     private async Task ConfigureExternalDependencies()
     {
         await Task.CompletedTask;
@@ -216,6 +325,8 @@ public class ApiFixture : IDisposable, IAsyncLifetime
             "Controleer of de Piavo-import gelopen heeft en of de projecties afgewerkt zijn.");
 
         await EnsureImportedOrganisationCoverage();
+
+        await EnsureDecentraalbeheerderScopeIsReady();
 
         await WaitUntilAsync(
             HasImportedReadModelCoverageAsync,
@@ -347,6 +458,49 @@ public class ApiFixture : IDisposable, IAsyncLifetime
         await EnsureImportedOrganisationHasClassification();
     }
 
+    /// <summary>
+    /// Zorgt ervoor dat de decentraalbeheerder-organisatie (OVO000003) een gekende dochterorganisatie heeft.
+    /// Dit gebeurt idempotent tijdens de fixture-initialisatie, vóór de eerste geauthenticeerde request van de
+    /// decentraalbeheerder-persona, zodat de dochter in de OrganisationTree (en dus in de scope-cache) zit.
+    /// </summary>
+    private async Task EnsureDecentraalbeheerderScopeIsReady()
+    {
+        _decentraalbeheerderOrganisationId = await GetOrCreateOrganisationWithOvoNumber(DecentraalbeheerderOvoNumber);
+        _decentraalbeheerderChildOrganisationId = await GetOrCreateOrganisationWithOvoNumber(DecentraalbeheerderChildOvoNumber);
+
+        if (!await HasAnyItems($"/v1/organisations/{_decentraalbeheerderChildOrganisationId}/parents"))
+        {
+            using var response = await Post(
+                HttpClient,
+                $"/v1/organisations/{_decentraalbeheerderChildOrganisationId}/parents",
+                new
+                {
+                    OrganisationOrganisationParentId = Guid.NewGuid(),
+                    ParentOrganisationId = _decentraalbeheerderOrganisationId,
+                    ValidFrom = (DateTime?)null,
+                    ValidTo = (DateTime?)null,
+                });
+
+            await VerifyStatusCode(response, HttpStatusCode.Created);
+        }
+
+        await WaitUntilAsync(
+            () => OrganisationHasChildWithOvoNumber(DecentraalbeheerderOrganisationId, DecentraalbeheerderChildOvoNumber),
+            ImportReadinessTimeout,
+            "De decentraalbeheerder-organisatie (OVO000003) heeft nog geen gekende dochterorganisatie. " +
+            "Controleer of de OrganisationTree-projectie afgewerkt is.");
+    }
+
+    private async Task<bool> OrganisationHasChildWithOvoNumber(Guid parentOrganisationId, string childOvoNumber)
+    {
+        using var response = await GetWithoutPagination($"/v1/organisations/{parentOrganisationId}/children");
+        if (!response.IsSuccessStatusCode)
+            return false;
+
+        var children = await DeserializeAsList(response);
+        return children.Any(child => TryGetString(child, "ovoNumber", out var ovoNumber) && ovoNumber == childOvoNumber);
+    }
+
     private async Task EnsureImportedOrganisationHasKey()
     {
         if (await HasAnyItems($"/v1/organisations/{ImportedParentOrganisationId}/keys"))
@@ -458,16 +612,55 @@ public class ApiFixture : IDisposable, IAsyncLifetime
         await VerifyStatusCode(response, HttpStatusCode.Created);
     }
 
+    private string KeycloakAuthority
+    {
+        get
+        {
+            var editApiConfiguration = _configurationRoot.GetSection(EditApiConfigurationSection.Name)
+                .Get<EditApiConfigurationSection>();
+
+            return string.IsNullOrWhiteSpace(editApiConfiguration?.Authority)
+                ? DefaultKeycloakAuthority
+                : editApiConfiguration.Authority;
+        }
+    }
+
+    private string KeycloakTokenEndpoint
+        => $"{KeycloakAuthority.TrimEnd('/')}/protocol/openid-connect/token";
+
+    private async Task<string> GetDirectGrantToken(string username, string password)
+    {
+        var tokenClient = new TokenClient(
+            () => new HttpClient(),
+            new TokenClientOptions
+            {
+                Address = KeycloakTokenEndpoint,
+                ClientId = Backoffice.Client,
+                ClientSecret = GetClientSecret(Backoffice.Client),
+            });
+
+        var response = await tokenClient.RequestTokenAsync(
+            OidcConstants.GrantTypes.Password,
+            new Parameters(
+                new[]
+                {
+                    new KeyValuePair<string, string>(OidcConstants.TokenRequest.UserName, username),
+                    new KeyValuePair<string, string>(OidcConstants.TokenRequest.Password, password),
+                    new KeyValuePair<string, string>(OidcConstants.TokenRequest.Scope, Backoffice.Scope),
+                }));
+
+        if (response.IsError || string.IsNullOrWhiteSpace(response.AccessToken))
+            throw new InvalidOperationException(
+                $"Could not retrieve Keycloak direct grant token for user '{username}' " +
+                $"via client '{Backoffice.Client}' from '{KeycloakTokenEndpoint}'. " +
+                $"Error: {response.Error}. Description: {response.ErrorDescription}.");
+
+        return response.AccessToken;
+    }
+
     private async Task<string> GetMachineToMachineToken(string clientId, string scope)
     {
-        var editApiConfiguration = _configurationRoot.GetSection(EditApiConfigurationSection.Name)
-            .Get<EditApiConfigurationSection>();
-
-        var authority = string.IsNullOrWhiteSpace(editApiConfiguration?.Authority)
-            ? DefaultKeycloakAuthority
-            : editApiConfiguration.Authority;
-
-        var address = $"{authority.TrimEnd('/')}/protocol/openid-connect/token";
+        var address = KeycloakTokenEndpoint;
         var tokenClient = new TokenClient(
             () => new HttpClient(),
             new TokenClientOptions
@@ -486,11 +679,14 @@ public class ApiFixture : IDisposable, IAsyncLifetime
 
         if (response.IsError || string.IsNullOrWhiteSpace(response.AccessToken))
             throw new InvalidOperationException(
-                $"Could not retrieve Keycloak M2M token for '{clientId}' from '{authority} ({address})'. " +
+                $"Could not retrieve Keycloak M2M token for '{clientId}' from '{address}'. " +
                 $"Error: {response.Error}. Description: {response.ErrorDescription}.");
 
         return response.AccessToken;
     }
+
+    public static Task WaitUntil(Func<Task<bool>> predicate, string timeoutMessage)
+        => WaitUntilAsync(predicate, ImportReadinessTimeout, timeoutMessage);
 
     private static async Task WaitUntilAsync(Func<Task<bool>> predicate, TimeSpan timeout, string timeoutMessage)
     {
@@ -556,6 +752,39 @@ public class ApiFixture : IDisposable, IAsyncLifetime
 
         var getResponse = await Get(HttpClient, $"{baseRoute}/{id}");
         await VerifyStatusCode(getResponse, HttpStatusCode.NotFound);
+    }
+
+    public async Task<Guid> GetOrganisationIdByOvoNumber(string ovoNumber)
+    {
+        using var response = await GetWithoutPagination("/v1/organisations");
+        if (!response.IsSuccessStatusCode)
+            throw new InvalidOperationException($"Could not list organisations to find '{ovoNumber}'.");
+
+        var organisations = await DeserializeAsList(response);
+        var organisation = organisations.FirstOrDefault(org =>
+            TryGetString(org, "ovoNumber", out var orgOvoNumber) &&
+            string.Equals(orgOvoNumber, ovoNumber, StringComparison.OrdinalIgnoreCase));
+
+        if (organisation == null || !TryGetGuid(organisation, "id", out var organisationId))
+            throw new InvalidOperationException($"Could not find organisation with OVO number '{ovoNumber}'.");
+
+        return organisationId;
+    }
+
+    public async Task<Guid> GetOrCreateOrganisationWithOvoNumber(string ovoNumber)
+    {
+        try
+        {
+            return await GetOrganisationIdByOvoNumber(ovoNumber);
+        }
+        catch (InvalidOperationException)
+        {
+            var organisationId = Fixture.Create<Guid>();
+            // Enkel de developer-rol mag een vast OVO-nummer opgeven bij het aanmaken; andere rollen
+            // krijgen een automatisch gegenereerd OVO-nummer (zie OrganisationDetailCommandController).
+            await Create.Organisation(organisationId, Fixture.Create<string>(), ovoNumber, DeveloperHttpClient);
+            return organisationId;
+        }
     }
 
     public async Task GetListAndVerify(string route)

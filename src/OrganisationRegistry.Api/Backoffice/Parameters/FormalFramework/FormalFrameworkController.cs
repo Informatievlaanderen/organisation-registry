@@ -4,7 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
+using Handling.Authorization;
 using Infrastructure;
+using Infrastructure.Security;
+using OrganisationRegistry.Infrastructure.Authorization;
 using Infrastructure.Search.Filtering;
 using Infrastructure.Search.Pagination;
 using Infrastructure.Search.Sorting;
@@ -13,6 +16,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using OrganisationRegistry.Infrastructure.AppSpecific;
 using OrganisationRegistry.Infrastructure.Configuration;
 using Queries;
 using SqlServer.FormalFramework;
@@ -22,6 +26,7 @@ using Swashbuckle.AspNetCore.Filters;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("formalframeworks")]
+[OrganisationRegistryAuthorize(RequiredPermissions = [Permission.CanManageFormalFrameworks])]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]
 public class FormalFrameworkController : OrganisationRegistryController
@@ -39,13 +44,19 @@ public class FormalFrameworkController : OrganisationRegistryController
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(FormalFrameworkListExamples))]
     [ProducesResponseType(typeof(List<FormalFrameworkListItem>), StatusCodes.Status200OK)]
     [ActionName("List")]
-    public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
+    public async Task<IActionResult> Get(
+        [FromServices] OrganisationRegistryContext context,
+        [FromServices] IMemoryCaches memoryCaches,
+        [FromServices] ISecurityService securityService,
+        [FromQuery] Guid? forOrganisationId)
     {
         var filtering = Request.ExtractFilteringRequest<FormalFrameworkListItemFilter>();
         var sorting = Request.ExtractSortingRequest();
         var pagination = Request.ExtractPaginationRequest();
 
-        var pagedFormalFrameworks = new FormalFrameworkListQuery(context).Fetch(filtering, sorting, pagination);
+        var isAuthorizedForFormalFramework = await CreateIsAuthorizedForFormalFramework(memoryCaches, securityService, User, forOrganisationId);
+
+        var pagedFormalFrameworks = new FormalFrameworkListQuery(context, isAuthorizedForFormalFramework).Fetch(filtering, sorting, pagination);
 
         Response.AddPaginationResponse(pagedFormalFrameworks.PaginationInfo);
         Response.AddSortingResponse(sorting.SortBy, sorting.SortOrder);
@@ -58,7 +69,11 @@ public class FormalFrameworkController : OrganisationRegistryController
     [HttpGet("vademecum")]
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(FormalFrameworkListExamples))]
     [ProducesResponseType(typeof(List<FormalFrameworkListItem>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetVademecumFormalFrameworks([FromServices] OrganisationRegistryContext context)
+    public async Task<IActionResult> GetVademecumFormalFrameworks(
+        [FromServices] OrganisationRegistryContext context,
+        [FromServices] IMemoryCaches memoryCaches,
+        [FromServices] ISecurityService securityService,
+        [FromQuery] Guid? forOrganisationId)
     {
         var filtering = Request.ExtractFilteringRequest<FormalFrameworkListItemFilter>();
         var sorting = Request.ExtractSortingRequest();
@@ -74,12 +89,30 @@ public class FormalFrameworkController : OrganisationRegistryController
                 if (Guid.TryParse(id, out Guid guid))
                     filtering.Filter.Ids.Add(guid);
 
-        var pagedFormalFrameworks = new FormalFrameworkListQuery(context).Fetch(filtering, sorting, pagination);
+        var isAuthorizedForFormalFramework = await CreateIsAuthorizedForFormalFramework(memoryCaches, securityService, User, forOrganisationId);
+
+        var pagedFormalFrameworks = new FormalFrameworkListQuery(context, isAuthorizedForFormalFramework).Fetch(filtering, sorting, pagination);
 
         Response.AddPaginationResponse(pagedFormalFrameworks.PaginationInfo);
         Response.AddSortingResponse(sorting.SortBy, sorting.SortOrder);
 
         return Ok(await pagedFormalFrameworks.Items.ToListAsync());
+    }
+
+    private static async Task<Func<Guid, bool>> CreateIsAuthorizedForFormalFramework(
+        IMemoryCaches memoryCaches,
+        ISecurityService securityService,
+        System.Security.Claims.ClaimsPrincipal principal,
+        Guid? forOrganisationId)
+    {
+        var user = await securityService.GetUser(principal);
+        return formalFrameworkId =>
+            !forOrganisationId.HasValue ||
+            new FormalFrameworkPolicy(
+                    memoryCaches.OvoNumbers[forOrganisationId.Value],
+                    formalFrameworkId)
+                .Check(user)
+                .IsSuccessful;
     }
 
     /// <summary>Vraag een toepassingsgebied op.</summary>

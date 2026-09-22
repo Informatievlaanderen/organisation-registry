@@ -19,7 +19,7 @@ using Validation;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("imports")]
-[OrganisationRegistryAuthorize(Role.AlgemeenBeheerder, Role.VlimpersBeheerder)]
+[OrganisationRegistryAuthorize(RequiredPermissions = [Permission.CanImport])]
 [FeatureGate(FeatureFlags.ImportApi)]
 public class ImportOrganisationsController : OrganisationRegistryController
 {

@@ -3,6 +3,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.BodyClassification;
 using System;
 using System.Threading.Tasks;
 using Infrastructure;
+using OrganisationRegistry.Infrastructure.Authorization;
 using Infrastructure.Security;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +12,7 @@ using Requests;
 
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
-[OrganisationRegistryAuthorize]
+[OrganisationRegistryAuthorize(RequiredPermissions = [Permission.ParametersBodyClassificationsWrite])]
 [OrganisationRegistryRoute("bodyclassifications")]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]

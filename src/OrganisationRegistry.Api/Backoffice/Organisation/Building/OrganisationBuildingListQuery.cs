@@ -4,9 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using Handling.Authorization;
 using Infrastructure.Search;
 using Infrastructure.Search.Filtering;
 using Infrastructure.Search.Sorting;
+using OrganisationRegistry.Infrastructure.AppSpecific;
+using OrganisationRegistry.Infrastructure.Authorization;
 using SqlServer.Infrastructure;
 using SqlServer.Organisation;
 
@@ -20,12 +23,18 @@ public class OrganisationBuildingListQueryResult
 
     public bool IsActive { get; }
 
+    public bool IsEditable { get; }
+
+    public ResourceEditPermissions Permissions { get; }
+
     public OrganisationBuildingListQueryResult(
         Guid organisationBuildingId,
         string buildingName,
         bool isMainBuilding,
         DateTime? validFrom,
-        DateTime? validTo)
+        DateTime? validTo,
+        string ovoNumber,
+        IUser user)
     {
         OrganisationBuildingId = organisationBuildingId;
         BuildingName = buildingName;
@@ -34,13 +43,17 @@ public class OrganisationBuildingListQueryResult
         ValidTo = validTo;
 
         IsActive = new Period(new ValidFrom(validFrom), new ValidTo(validTo)).OverlapsWith(DateTime.Today);
+        IsEditable = new BuildingPolicy(ovoNumber).Check(user).IsSuccessful;
+        Permissions = new ResourceEditPermissions(IsEditable);
     }
 }
 
 public class OrganisationBuildingListQuery : Query<OrganisationBuildingListItem, OrganisationBuildingListItemFilter, OrganisationBuildingListQueryResult>
 {
     private readonly OrganisationRegistryContext _context;
+    private readonly IMemoryCaches _memoryCaches;
     private readonly Guid _organisationId;
+    private readonly IUser _user;
 
     protected override ISorting Sorting => new OrganisationBuildingListSorting();
 
@@ -50,12 +63,16 @@ public class OrganisationBuildingListQuery : Query<OrganisationBuildingListItem,
             x.BuildingName,
             x.IsMainBuilding,
             x.ValidFrom,
-            x.ValidTo);
+            x.ValidTo,
+            _memoryCaches.OvoNumbers[x.OrganisationId],
+            _user);
 
-    public OrganisationBuildingListQuery(OrganisationRegistryContext context, Guid organisationId)
+    public OrganisationBuildingListQuery(OrganisationRegistryContext context, IMemoryCaches memoryCaches, Guid organisationId, IUser user)
     {
         _context = context;
+        _memoryCaches = memoryCaches;
         _organisationId = organisationId;
+        _user = user;
     }
 
     protected override IQueryable<OrganisationBuildingListItem> Filter(FilteringHeader<OrganisationBuildingListItemFilter> filtering)

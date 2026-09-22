@@ -7,7 +7,6 @@ using ContactType;
 using Function;
 using Handling;
 using Infrastructure.Commands;
-using Infrastructure.Configuration;
 using Infrastructure.Domain;
 using Location;
 using Microsoft.Extensions.Logging;
@@ -17,18 +16,16 @@ public class UpdateOrganisationCapacityCommandHandler
 :BaseCommandHandler<UpdateOrganisationCapacityCommandHandler>
 ,ICommandEnvelopeHandler<UpdateOrganisationCapacity>
 {
-    private readonly IOrganisationRegistryConfiguration _organisationRegistryConfiguration;
     private readonly IDateTimeProvider _dateTimeProvider;
 
-    public UpdateOrganisationCapacityCommandHandler(ILogger<UpdateOrganisationCapacityCommandHandler> logger, ISession session, IOrganisationRegistryConfiguration organisationRegistryConfiguration, IDateTimeProvider dateTimeProvider) : base(logger, session)
+    public UpdateOrganisationCapacityCommandHandler(ILogger<UpdateOrganisationCapacityCommandHandler> logger, ISession session, IDateTimeProvider dateTimeProvider) : base(logger, session)
     {
-        _organisationRegistryConfiguration = organisationRegistryConfiguration;
         _dateTimeProvider = dateTimeProvider;
     }
 
     public Task Handle(ICommandEnvelope<UpdateOrganisationCapacity> envelope)
         => UpdateHandler<Organisation>.For(envelope.Command,envelope.User, Session)
-            .WithCapacityPolicy(_organisationRegistryConfiguration, envelope.Command)
+            .WithCapacityPolicy(envelope.Command)
             .Handle(
                 session =>
                 {

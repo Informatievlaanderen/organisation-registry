@@ -25,7 +25,7 @@ public class AddOrganisationParentCommandHandler
 
     public Task Handle(ICommandEnvelope<AddOrganisationParent> envelope)
         => UpdateHandler<Organisation>.For(envelope.Command, envelope.User, Session)
-            .WithVlimpersPolicy()
+            .WithChildPolicy()
             .Handle(
                 session =>
                 {

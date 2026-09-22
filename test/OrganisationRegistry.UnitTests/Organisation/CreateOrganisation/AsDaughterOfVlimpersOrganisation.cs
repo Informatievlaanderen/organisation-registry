@@ -7,6 +7,8 @@ using FluentAssertions;
 using Infrastructure.Tests.Extensions.TestHelpers;
 using Microsoft.Extensions.Logging;
 using Moq;
+using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Authorization.Restrictions;
 using OrganisationRegistry.Infrastructure.Domain;
 using Purpose;
 using Tests.Shared;
@@ -51,6 +53,15 @@ public class AsDaughterOfVlimpersOrganisation : Specification<CreateOrganisation
             new ValidFrom(),
             new ValidTo());
 
+    private IUser User
+        => new UserBuilder()
+            .AddRoles(Role.VlimpersBeheerder)
+            .WithPermissions(
+                PermissionSet.Of(
+                    Permission.CanManageChildren.RestrictedTo(
+                        ChildRestrictions.UnderVlimpersManagement)))
+            .Build();
+
     protected override CreateOrganisationCommandHandler BuildHandler(ISession session)
         => new(
             new Mock<ILogger<CreateOrganisationCommandHandler>>().Object,
@@ -63,13 +74,13 @@ public class AsDaughterOfVlimpersOrganisation : Specification<CreateOrganisation
     [Fact]
     public async Task PublishesFiveEvents()
     {
-        await Given(Events).When(CreateOrganisationCommand, TestUser.VlimpersBeheerder).ThenItPublishesTheCorrectNumberOfEvents(5);
+        await Given(Events).When(CreateOrganisationCommand, User).ThenItPublishesTheCorrectNumberOfEvents(5);
     }
 
     [Fact]
     public async Task CreatesAnOrganisation()
     {
-        await Given(Events).When(CreateOrganisationCommand, TestUser.VlimpersBeheerder).Then();
+        await Given(Events).When(CreateOrganisationCommand, User).Then();
         PublishedEvents[0]
             .UnwrapBody<OrganisationCreated>()
             .Should()
@@ -79,7 +90,7 @@ public class AsDaughterOfVlimpersOrganisation : Specification<CreateOrganisation
     [Fact]
     public async Task TheOrganisationIsPlacedUnderVlimpersManagement()
     {
-        await Given(Events).When(CreateOrganisationCommand, TestUser.VlimpersBeheerder).Then();
+        await Given(Events).When(CreateOrganisationCommand, User).Then();
         PublishedEvents[4]
             .UnwrapBody<OrganisationPlacedUnderVlimpersManagement>()
             .Should()

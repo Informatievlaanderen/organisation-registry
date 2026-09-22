@@ -26,7 +26,7 @@ public class BuildingCommandHandlers :
 
     public async Task Handle(ICommandEnvelope<CreateBuilding> envelope)
         => await Handler.For(envelope.User, Session)
-            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .RequiresPermission(Permission.ParametersBuildingsWrite)
             .Handle(
                 session =>
                 {
@@ -39,7 +39,7 @@ public class BuildingCommandHandlers :
 
     public async Task Handle(ICommandEnvelope<UpdateBuilding> envelope)
         => await UpdateHandler<Building>.For(envelope.Command, envelope.User, Session)
-            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .RequiresPermission(Permission.ParametersBuildingsWrite)
             .Handle(
                 session =>
                 {

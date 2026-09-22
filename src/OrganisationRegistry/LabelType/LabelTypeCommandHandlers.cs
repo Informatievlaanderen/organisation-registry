@@ -26,7 +26,7 @@ public class LabelTypeCommandHandlers :
 
     public async Task Handle(ICommandEnvelope<CreateLabelType> envelope)
         => await Handler.For(envelope.User, Session)
-            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .RequiresPermission(Permission.ParametersLabelTypesWrite)
             .Handle(
                 session =>
                 {
@@ -39,7 +39,7 @@ public class LabelTypeCommandHandlers :
 
     public async Task Handle(ICommandEnvelope<UpdateLabelType> envelope)
         => await UpdateHandler<LabelType>.For(envelope.Command, envelope.User, Session)
-            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .RequiresPermission(Permission.ParametersLabelTypesWrite)
             .Handle(
                 session =>
                 {

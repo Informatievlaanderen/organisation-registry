@@ -198,7 +198,8 @@ public class SecurityService : ISecurityService
             securityInformation.Roles.ToArray(),
             securityInformation.OvoNumbers,
             securityInformation.BodyIds,
-            securityInformation.OrganisationIds);
+            securityInformation.OrganisationIds,
+            RolePermissionMap.For(securityInformation.Roles, _configuration));
     }
 
     public async Task<IUser> GetUser(ClaimsPrincipal? principal)
@@ -224,26 +225,11 @@ public class SecurityService : ISecurityService
             securityInformation.Roles.ToArray(),
             securityInformation.OvoNumbers,
             securityInformation.BodyIds,
-            securityInformation.OrganisationIds);
+            securityInformation.OrganisationIds,
+            RolePermissionMap.For(securityInformation.Roles, _configuration));
     }
 
     // TODO: see how we can make SecurityService use IUser everywhere, io ClaimsPrincipal.
-    public bool CanUseKeyType(IUser user, Guid keyTypeId)
-    {
-        if (user.IsInAnyOf(Role.Developer, Role.AlgemeenBeheerder))
-            return true;
-
-        if (_configuration.OrafinKeyTypeId.Equals(keyTypeId))
-            return user.IsInAnyOf(Role.Orafin) ||
-                   user.Organisations.Any(x => x.Equals(_configuration.OrafinOvoCode));
-        // todo: instead of checking the organisations now, check them on creation of jwt.
-
-        if (_configuration.VlimpersKeyTypeId.Equals(keyTypeId))
-            return user.IsAuthorizedForVlimpersOrganisations;
-
-        return true;
-    }
-
     public bool CanUseLabelType(IUser user, Guid labelTypeId)
     {
         if (user.IsInAnyOf(Role.Developer, Role.AlgemeenBeheerder))

@@ -3,6 +3,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.SeatType;
 using System;
 using System.Threading.Tasks;
 using Infrastructure;
+using OrganisationRegistry.Infrastructure.Authorization;
 using Infrastructure.Security;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +13,7 @@ using Requests;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("seattypes")]
-[OrganisationRegistryAuthorize]
+[OrganisationRegistryAuthorize(RequiredPermissions = [Permission.ParametersSeatTypesWrite])]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]
 public class SeatTypeCommandController : OrganisationRegistryCommandController

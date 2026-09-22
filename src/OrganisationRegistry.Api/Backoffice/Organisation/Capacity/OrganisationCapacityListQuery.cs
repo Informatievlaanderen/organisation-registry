@@ -24,6 +24,8 @@ public class OrganisationCapacityListQueryResult
 
     public bool IsEditable { get; }
 
+    public ResourceEditPermissions Permissions { get; }
+
     public OrganisationCapacityListQueryResult(
         Guid organisationCapacityId,
         Guid capacityId,
@@ -46,6 +48,7 @@ public class OrganisationCapacityListQueryResult
         IsActive = new Period(new ValidFrom(validFrom), new ValidTo(validTo)).OverlapsWith(DateTime.Today);
 
         IsEditable = isAuthorizedForCapacity(capacityId);
+        Permissions = new ResourceEditPermissions(IsEditable);
     }
 }
 

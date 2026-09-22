@@ -4,6 +4,8 @@ using System;
 using AutoFixture;
 using FluentAssertions;
 using Handling.Authorization;
+using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Configuration;
 using OrganisationRegistry.Organisation.Exceptions;
 using Tests.Shared;
 using Tests.Shared.Stubs;
@@ -14,7 +16,7 @@ public class LabelPolicyTests
     private const string VlimpersLabelIdValue = "7FE6F62E-3EC1-4F30-A1E2-72731E53E5A1";
 
     private readonly Fixture _fixture;
-    private readonly OrganisationRegistryConfigurationStub _configuration;
+    private readonly IOrganisationRegistryConfiguration _configuration;
     private readonly Guid _vlimpersLabelId;
 
     public LabelPolicyTests()
@@ -30,18 +32,31 @@ public class LabelPolicyTests
         };
     }
 
+    private IUser UserWithRoles(params Role[] roles)
+        => new UserBuilder()
+            .AddRoles(roles)
+            .WithPermissions(RolePermissionMap.For(roles, _configuration))
+            .Build();
+
+    private IUser DecentraalBeheerderFor(string ovoNumber)
+        => new UserBuilder()
+            .AddRoles(Role.DecentraalBeheerder)
+            .AddOrganisations(ovoNumber)
+            .WithPermissions(
+                RolePermissionMap.For(new[] { Role.DecentraalBeheerder }, _configuration))
+            .Build();
+
     [Fact]
     public void AlgemeenBeheerderCanUpdateAllLabels()
     {
         var policy = LabelPolicy.ForUpdate(
             _fixture.Create<string>(),
             _fixture.Create<bool>(),
-            _configuration,
             _vlimpersLabelId,
             Guid.NewGuid()
         );
 
-        policy.Check(TestUser.AlgemeenBeheerder)
+        policy.Check(UserWithRoles(Role.AlgemeenBeheerder))
             .Should().BeEquivalentTo(AuthorizationResult.Success());
     }
 
@@ -50,13 +65,12 @@ public class LabelPolicyTests
     {
         var policy = LabelPolicy.ForUpdate(
             _fixture.Create<string>(),
-            _fixture.Create<bool>(),
-            _configuration,
+            isUnderVlimpersManagement: true,
             _vlimpersLabelId,
             _vlimpersLabelId
         );
 
-        policy.Check(TestUser.VlimpersBeheerder)
+        policy.Check(UserWithRoles(Role.VlimpersBeheerder))
             .Should().BeEquivalentTo(AuthorizationResult.Success());
     }
 
@@ -68,13 +82,12 @@ public class LabelPolicyTests
     {
         var policy = LabelPolicy.ForUpdate(
             _fixture.Create<string>(),
-            _fixture.Create<bool>(),
-            _configuration,
+            isUnderVlimpersManagement: true,
             new Guid(oldLabelTypeIdValue),
             new Guid(newLabelTypeIdValue)
         );
 
-        policy.Check(TestUser.VlimpersBeheerder)
+        policy.Check(UserWithRoles(Role.VlimpersBeheerder))
             .ShouldFailWith<InsufficientRights<LabelPolicy>>();
     }
 
@@ -84,11 +97,10 @@ public class LabelPolicyTests
         var ovoNumber = _fixture.Create<string>();
         var otherOvoNumber = _fixture.Create<string>();
 
-        var user = new UserBuilder().AsDecentraalBeheerder().AddOrganisations(ovoNumber).Build();
+        var user = DecentraalBeheerderFor(ovoNumber);
         var policy = LabelPolicy.ForUpdate(
             otherOvoNumber,
             _fixture.Create<bool>(),
-            _configuration,
             _fixture.Create<Guid>(),
             _fixture.Create<Guid>());
 
@@ -102,11 +114,10 @@ public class LabelPolicyTests
     public void DecentraalBeheerderCannotUpdateVlimpersLabelsForVlimpersOrganisation(string oldLabelTypeIdValue, string newLabelTypeIdValue)
     {
         var ovoNumber = _fixture.Create<string>();
-        var user = new UserBuilder().AsDecentraalBeheerder().AddOrganisations(ovoNumber).Build();
+        var user = DecentraalBeheerderFor(ovoNumber);
         var policy = LabelPolicy.ForUpdate(
             ovoNumber,
             isUnderVlimpersManagement: true,
-            _configuration,
             new Guid(oldLabelTypeIdValue),
             new Guid(newLabelTypeIdValue));
 
@@ -117,11 +128,10 @@ public class LabelPolicyTests
     public void DecentraalBeheerderCanUpdateLabelsForNotVlimpersOrganisation()
     {
         var ovoNumber = _fixture.Create<string>();
-        var user = new UserBuilder().AsDecentraalBeheerder().AddOrganisations(ovoNumber).Build();
+        var user = DecentraalBeheerderFor(ovoNumber);
         var policy = LabelPolicy.ForUpdate(
             ovoNumber,
             isUnderVlimpersManagement: false,
-            _configuration,
             _fixture.Create<Guid>(),
             _fixture.Create<Guid>());
 
@@ -132,14 +142,27 @@ public class LabelPolicyTests
     public void DecentraalBeheerderCanUpdateNonVlimperLabelsForVlimperOrganisation()
     {
         var ovoNumber = _fixture.Create<string>();
-        var user = new UserBuilder().AsDecentraalBeheerder().AddOrganisations(ovoNumber).Build();
+        var user = DecentraalBeheerderFor(ovoNumber);
         var policy = LabelPolicy.ForUpdate(
             ovoNumber,
             isUnderVlimpersManagement: true,
-            _configuration,
             _fixture.Create<Guid>(),
             _fixture.Create<Guid>());
 
         policy.Check(user).Should().BeEquivalentTo(AuthorizationResult.Success());
+    }
+
+    [Fact]
+    public void DecentraalBeheerderCannotUpdateVlimpersLabelsEvenForNonVlimpersOrganisation()
+    {
+        var ovoNumber = _fixture.Create<string>();
+        var user = DecentraalBeheerderFor(ovoNumber);
+        var policy = LabelPolicy.ForUpdate(
+            ovoNumber,
+            isUnderVlimpersManagement: false,
+            _vlimpersLabelId,
+            _fixture.Create<Guid>());
+
+        policy.Check(user).ShouldFailWith<InsufficientRights<LabelPolicy>>();
     }
 }

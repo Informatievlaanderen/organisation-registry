@@ -1,0 +1,676 @@
+namespace OrganisationRegistry.UnitTests.Authorization;
+
+using System;
+using System.Collections.Generic;
+using FluentAssertions;
+using Microsoft.Extensions.Logging;
+using Moq;
+using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Authorization.Restrictions;
+using Tests.Shared;
+using Tests.Shared.Stubs;
+using Xunit;
+
+[Collection("PermissionMapThrottleState")]
+public class RolePermissionMapTests
+{
+    public RolePermissionMapTests() => RolePermissionMap.ResetThrottleState();
+
+    [Theory]
+    [InlineData(Role.AlgemeenBeheerder, Permission.CanReadConfiguration)]
+    [InlineData(Role.AlgemeenBeheerder, Permission.CanManageLabels)]
+    //[InlineData(Role.VlimpersBeheerder, Permission.CanManageVlimpers)] TODO vlimpers cannot edit themselves?
+    [InlineData(Role.OrgaanBeheerder, Permission.CanManageBodies)]
+    [InlineData(Role.RegelgevingBeheerder, Permission.CanManageRegulations)]
+    [InlineData(Role.Orafin, Permission.CanReadOrafin)]
+    [InlineData(Role.Developer, Permission.CanReadConfiguration)]
+    [InlineData(Role.Developer, Permission.CanManageLabels)]
+    [InlineData(Role.AutomatedTask, Permission.CanRunScheduledJobs)]
+    public void Every_role_maps_to_a_non_empty_permission_set_containing_expected_permission(
+        Role role, Permission expected)
+    {
+        var set = RolePermissionMap.For(role);
+        set.Count.Should().BeGreaterThan(0);
+        set.Contains(expected).Should().BeTrue();
+    }
+
+    [Theory]
+    [InlineData(Role.OrgaanBeheerder)]
+    [InlineData(Role.RegelgevingBeheerder)]
+    [InlineData(Role.Orafin)]
+    [InlineData(Role.AutomatedTask)]
+    [InlineData(Role.VlimpersBeheerder)]
+    [InlineData(Role.DecentraalBeheerder)]
+    public void Roles_without_unrestricted_label_management_do_not_grant_CanManageLabels(Role role)
+    {
+        // VlimpersBeheerder and DecentraalBeheerder only receive CanManageLabels
+        // as a data-driven restricted grant via the config-aware overload; the static map
+        // must not grant it unrestricted.
+        RolePermissionMap.For(role).Contains(Permission.CanManageLabels).Should().BeFalse();
+    }
+
+    [Theory]
+    [InlineData(Permission.CanManageFunctions)]
+    [InlineData(Permission.CanManageLocations)]
+    [InlineData(Permission.CanManageBuildings)]
+    [InlineData(Permission.CanManageRelations)]
+    public void DecentraalBeheerder_does_not_grant_organisation_scoped_permissions_unrestricted(
+        Permission permission)
+    {
+        // These are only granted as data-driven restricted grants (own / child
+        // organisation) via the config-aware overload; the static map must not
+        // grant them unrestricted (which would allow editing any organisation).
+        RolePermissionMap.For(Role.DecentraalBeheerder).Contains(permission).Should().BeFalse();
+    }
+
+    [Theory]
+    [InlineData(Permission.CanManageFunctions)]
+    [InlineData(Permission.CanManageLocations)]
+    [InlineData(Permission.CanManageBuildings)]
+    [InlineData(Permission.CanManageRelations)]
+    public void For_config_DecentraalBeheerder_grants_organisation_scoped_permissions_restricted_to_own_organisation(
+        Permission permission)
+    {
+        var ownOvoNumber = "OVO123456";
+        var otherOvoNumber = "OVO654321";
+        var config = new OrganisationRegistryConfigurationStub();
+
+        var user = new UserBuilder()
+            .AddRoles(Role.DecentraalBeheerder)
+            .AddOrganisations(ownOvoNumber)
+            .Build();
+
+        var set = RolePermissionMap.For(new[] { Role.DecentraalBeheerder }, config);
+
+        set.IsSatisfiedFor(
+                permission,
+                new UserContext(user),
+                new OrganisationContext(ownOvoNumber))
+            .Should().BeTrue();
+
+        set.IsSatisfiedFor(
+                permission,
+                new UserContext(user),
+                new OrganisationContext(otherOvoNumber))
+            .Should().BeFalse();
+    }
+
+    [Theory]
+    [InlineData(Permission.CanManageBodies)]
+    [InlineData(Permission.BodiesCanManageContacts)]
+    [InlineData(Permission.BodiesCanManageSeats)]
+    [InlineData(Permission.BodiesCanManageMandates)]
+    [InlineData(Permission.BodiesCanManageLifecycles)]
+    [InlineData(Permission.BodiesCanManageOrganisations)]
+    [InlineData(Permission.BodiesCanManageClassifications)]
+    [InlineData(Permission.BodiesCanManageFormalFrameworks)]
+    public void DecentraalBeheerder_does_not_grant_body_permissions_unrestricted(Permission permission)
+    {
+        // Body management is only granted as a data-driven restricted grant (own /
+        // child organisation body) via the config-aware overload; the static map
+        // must not grant it unrestricted (which would allow managing any body).
+        RolePermissionMap.For(Role.DecentraalBeheerder).Contains(permission).Should().BeFalse();
+    }
+
+    [Theory]
+    [InlineData(Permission.CanManageBodies)]
+    [InlineData(Permission.BodiesCanManageContacts)]
+    [InlineData(Permission.BodiesCanManageSeats)]
+    [InlineData(Permission.BodiesCanManageMandates)]
+    [InlineData(Permission.BodiesCanManageLifecycles)]
+    [InlineData(Permission.BodiesCanManageOrganisations)]
+    [InlineData(Permission.BodiesCanManageClassifications)]
+    [InlineData(Permission.BodiesCanManageFormalFrameworks)]
+    public void For_config_DecentraalBeheerder_grants_body_permissions_restricted_to_own_body(
+        Permission permission)
+    {
+        var ownBodyId = Guid.NewGuid();
+        var otherBodyId = Guid.NewGuid();
+        var config = new OrganisationRegistryConfigurationStub();
+
+        var user = new UserBuilder()
+            .AddRoles(Role.DecentraalBeheerder)
+            .AddBodies(ownBodyId)
+            .Build();
+
+        var set = RolePermissionMap.For(new[] { Role.DecentraalBeheerder }, config);
+
+        set.IsSatisfiedFor(
+                permission,
+                new UserContext(user),
+                new BodyContext(ownBodyId))
+            .Should().BeTrue();
+
+        set.IsSatisfiedFor(
+                permission,
+                new UserContext(user),
+                new BodyContext(otherBodyId))
+            .Should().BeFalse();
+    }
+
+    [Fact]
+    public void For_config_DecentraalBeheerder_never_grants_body_mep()
+    {
+        var ownBodyId = Guid.NewGuid();
+        var config = new OrganisationRegistryConfigurationStub();
+
+        var user = new UserBuilder()
+            .AddRoles(Role.DecentraalBeheerder)
+            .AddBodies(ownBodyId)
+            .Build();
+
+        var set = RolePermissionMap.For(new[] { Role.DecentraalBeheerder }, config);
+
+        set.Contains(Permission.BodiesCanManageMep).Should().BeFalse();
+        set.IsSatisfiedFor(
+                Permission.BodiesCanManageMep,
+                new UserContext(user),
+                new BodyContext(ownBodyId))
+            .Should().BeFalse();
+    }
+
+    [Fact]
+    public void Developer_is_AlgemeenBeheerder_superset_by_CanRunScheduledJobs_and_DelegationsCreate()
+    {
+        // Developer intentionally has all AlgemeenBeheerder permissions PLUS CanRunScheduledJobs
+        // (preserves current Developer access to /backoffice/tasks after T026a conversion) PLUS
+        // DelegationsCreate (internal-only, tooling capability not granted to AlgemeenBeheerder —
+        // there is no Create on delegations, see ui-permission-matrix.md).
+        var ab = RolePermissionMap.For(Role.AlgemeenBeheerder);
+        var dev = RolePermissionMap.For(Role.Developer);
+
+        ((object)dev).Should().Be(
+            ab.Union(PermissionSet.Of(Permission.CanRunScheduledJobs, Permission.DelegationsCreate)));
+    }
+
+    [Fact]
+    public void AlgemeenBeheerder_does_not_grant_orafin_or_info_or_scheduled()
+    {
+        var set = RolePermissionMap.For(Role.AlgemeenBeheerder);
+        set.Contains(Permission.CanReadOrafin).Should().BeFalse();
+        set.Contains(Permission.CanReadInfoEndpoints).Should().BeFalse();
+        set.Contains(Permission.CanRunScheduledJobs).Should().BeFalse();
+    }
+
+    [Theory]
+    [InlineData(Role.VlimpersBeheerder)]
+    [InlineData(Role.DecentraalBeheerder)]
+    [InlineData(Role.OrgaanBeheerder)]
+    [InlineData(Role.RegelgevingBeheerder)]
+    [InlineData(Role.CjmBeheerder)]
+    [InlineData(Role.Orafin)]
+    [InlineData(Role.AutomatedTask)]
+    public void Non_admin_roles_do_not_grant_CanReadConfiguration(Role role)
+    {
+        RolePermissionMap.For(role).Contains(Permission.CanReadConfiguration).Should().BeFalse();
+    }
+
+    [Theory]
+    [InlineData(Role.AlgemeenBeheerder)]
+    [InlineData(Role.Developer)]
+    public void AlgemeenBeheerder_and_Developer_grant_System(Role role)
+    {
+        // Statistieken/Events/Stopgezet-in-KBO are gated by a single, coarse-grained
+        // System permission (see ui-permission-matrix.md) — no per-screen split.
+        RolePermissionMap.For(role).Contains(Permission.System).Should().BeTrue();
+    }
+
+    [Theory]
+    [InlineData(Role.VlimpersBeheerder)]
+    [InlineData(Role.DecentraalBeheerder)]
+    [InlineData(Role.OrgaanBeheerder)]
+    [InlineData(Role.RegelgevingBeheerder)]
+    [InlineData(Role.CjmBeheerder)]
+    [InlineData(Role.Orafin)]
+    [InlineData(Role.AutomatedTask)]
+    public void Non_admin_roles_do_not_grant_System(Role role)
+    {
+        RolePermissionMap.For(role).Contains(Permission.System).Should().BeFalse();
+    }
+
+    [Theory]
+    [InlineData(Role.AlgemeenBeheerder)]
+    [InlineData(Role.Developer)]
+    public void AlgemeenBeheerder_and_Developer_grant_CanImport_unrestricted(Role role)
+    {
+        // Importeren (imports) is gated by Permission.CanImport; AlgemeenBeheerder and
+        // Developer hold it unrestricted (any organisation) — see ui-permission-matrix.md.
+        RolePermissionMap.For(role).Contains(Permission.CanImport).Should().BeTrue();
+    }
+
+    [Fact]
+    public void Static_For_VlimpersBeheerder_does_not_grant_CanImport()
+    {
+        // Regression guard: the static map must not grant unrestricted CanImport to
+        // VlimpersBeheerder — that grant is only added by the config-aware overload,
+        // restricted to organisations under Vlimpers management (see ImportPolicy).
+        RolePermissionMap.For(Role.VlimpersBeheerder)
+            .Contains(Permission.CanImport).Should().BeFalse();
+    }
+
+    [Fact]
+    public void For_config_VlimpersBeheerder_grants_CanImport_only_for_vlimpers_managed_organisations()
+    {
+        var config = new OrganisationRegistryConfigurationStub();
+
+        var set = RolePermissionMap.For(new[] { Role.VlimpersBeheerder }, config);
+
+        set.IsSatisfiedFor(
+                Permission.CanImport,
+                new VlimpersManagementContext(IsUnderVlimpersManagement: true))
+            .Should().BeTrue();
+
+        set.IsSatisfiedFor(
+                Permission.CanImport,
+                new VlimpersManagementContext(IsUnderVlimpersManagement: false))
+            .Should().BeFalse();
+    }
+
+    [Theory]
+    [InlineData(Role.DecentraalBeheerder)]
+    [InlineData(Role.OrgaanBeheerder)]
+    [InlineData(Role.RegelgevingBeheerder)]
+    [InlineData(Role.CjmBeheerder)]
+    [InlineData(Role.Orafin)]
+    [InlineData(Role.AutomatedTask)]
+    public void Non_admin_non_vlimpers_roles_do_not_grant_CanImport(Role role)
+    {
+        RolePermissionMap.For(role).Contains(Permission.CanImport).Should().BeFalse();
+    }
+
+    [Fact]
+    public void For_roles_unions_all_permissions()
+    {
+        var union = RolePermissionMap.For(new[] { Role.Orafin, Role.CjmBeheerder });
+
+        union.Contains(Permission.CanReadOrafin).Should().BeTrue();
+        // TODO: check this
+        // union.Contains(Permission.CanAddBodies).Should().BeTrue();
+        // union.Contains(Permission.CanEditBodies).Should().BeTrue();
+    }
+
+    [Fact]
+    public void For_roles_null_returns_Empty()
+    {
+        RolePermissionMap.For((IEnumerable<Role>?)null).Should().BeSameAs(PermissionSet.Empty);
+    }
+
+    [Fact]
+    public void For_roles_empty_returns_Empty()
+    {
+        RolePermissionMap.For(Array.Empty<Role>()).Should().BeSameAs(PermissionSet.Empty);
+    }
+
+    [Fact]
+    public void Unknown_role_fails_closed_and_logs_once()
+    {
+        var unknown = (Role)9999;
+        var logger = new Mock<ILogger>();
+
+        var first = RolePermissionMap.For(unknown, logger.Object);
+        var second = RolePermissionMap.For(unknown, logger.Object);
+
+        first.Should().BeSameAs(PermissionSet.Empty);
+        second.Should().BeSameAs(PermissionSet.Empty);
+
+        logger.Verify(
+            l => l.Log(
+                LogLevel.Warning,
+                It.IsAny<EventId>(),
+                It.IsAny<It.IsAnyType>(),
+                It.IsAny<Exception?>(),
+                It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
+            Times.Once);
+    }
+
+    [Fact]
+    public void Unknown_role_without_logger_still_returns_Empty()
+    {
+        RolePermissionMap.For((Role)8888).Should().BeSameAs(PermissionSet.Empty);
+    }
+
+    [Fact]
+    public void ResetThrottleState_allows_warning_to_fire_again()
+    {
+        var unknown = (Role)7777;
+        var logger = new Mock<ILogger>();
+
+        RolePermissionMap.For(unknown, logger.Object);
+        RolePermissionMap.ResetThrottleState();
+        RolePermissionMap.For(unknown, logger.Object);
+
+        logger.Verify(
+            l => l.Log(
+                LogLevel.Warning,
+                It.IsAny<EventId>(),
+                It.IsAny<It.IsAnyType>(),
+                It.IsAny<Exception?>(),
+                It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
+            Times.Exactly(2));
+    }
+
+    [Fact]
+    public void Static_For_VlimpersBeheerder_does_not_grant_CanManageKeys()
+    {
+        // Regression guard: the static map must not grant unrestricted CanManageKeys
+        // to VlimpersBeheerder — that grant is only added by the config-aware overload
+        // (data-driven, restricted to Vlimpers-allowed keytypes on Vlimpers-managed orgs).
+        RolePermissionMap.For(Role.VlimpersBeheerder)
+            .Contains(Permission.CanManageKeys).Should().BeFalse();
+    }
+
+    [Fact]
+    public void For_config_null_roles_returns_Empty()
+    {
+        var config = new OrganisationRegistryConfigurationStub();
+
+        RolePermissionMap.For((IEnumerable<Role>?)null, config)
+            .Should().BeSameAs(PermissionSet.Empty);
+    }
+
+    [Fact]
+    public void For_config_VlimpersBeheerder_grants_restricted_CanManageKeys()
+    {
+        var allowedKeyType = Guid.NewGuid();
+        var otherKeyType = Guid.NewGuid();
+        var config = new OrganisationRegistryConfigurationStub();
+        ((AuthorizationConfigurationStub)config.Authorization).KeyIdsAllowedForVlimpers
+            = new[] { allowedKeyType };
+
+        var set = RolePermissionMap.For(new[] { Role.VlimpersBeheerder }, config);
+
+        set.IsSatisfiedFor(
+                Permission.CanManageKeys,
+                new KeyContext(isUnderVlimpersManagement: true, allowedKeyType))
+            .Should().BeTrue();
+
+        set.IsSatisfiedFor(
+                Permission.CanManageKeys,
+                new KeyContext(isUnderVlimpersManagement: true, otherKeyType))
+            .Should().BeFalse();
+
+        set.IsSatisfiedFor(
+                Permission.CanManageKeys,
+                new KeyContext(isUnderVlimpersManagement: false, allowedKeyType))
+            .Should().BeFalse();
+    }
+
+    [Fact]
+    public void Static_For_VlimpersBeheerder_does_not_grant_CanManageChildren()
+    {
+        // Regression guard: the static map must not grant unrestricted
+        // CanManageChildren to VlimpersBeheerder — that grant is only added by the
+        // config-aware overload, restricted to organisations under Vlimpers management.
+        RolePermissionMap.For(Role.VlimpersBeheerder)
+            .Contains(Permission.CanManageChildren).Should().BeFalse();
+    }
+
+    [Fact]
+    public void Static_For_DecentraalBeheerder_does_not_grant_CanManageChildren()
+    {
+        // Only granted as a data-driven restricted grant (own organisation, not under
+        // Vlimpers management) via the config-aware overload.
+        RolePermissionMap.For(Role.DecentraalBeheerder)
+            .Contains(Permission.CanManageChildren).Should().BeFalse();
+    }
+
+    [Fact]
+    public void For_config_VlimpersBeheerder_grants_CanManageChildren_only_for_vlimpers_managed_organisations()
+    {
+        var config = new OrganisationRegistryConfigurationStub();
+
+        var set = RolePermissionMap.For(new[] { Role.VlimpersBeheerder }, config);
+
+        set.IsSatisfiedFor(
+                Permission.CanManageChildren,
+                new VlimpersManagementContext(IsUnderVlimpersManagement: true))
+            .Should().BeTrue();
+
+        set.IsSatisfiedFor(
+                Permission.CanManageChildren,
+                new VlimpersManagementContext(IsUnderVlimpersManagement: false))
+            .Should().BeFalse();
+    }
+
+    [Fact]
+    public void For_config_DecentraalBeheerder_grants_CanManageChildren_only_for_own_non_vlimpers_organisation()
+    {
+        var ownOvoNumber = "OVO123456";
+        var otherOvoNumber = "OVO654321";
+        var config = new OrganisationRegistryConfigurationStub();
+
+        var user = new UserBuilder()
+            .AddRoles(Role.DecentraalBeheerder)
+            .AddOrganisations(ownOvoNumber)
+            .Build();
+
+        var set = RolePermissionMap.For(new[] { Role.DecentraalBeheerder }, config);
+
+        // Own organisation, not under Vlimpers management -> allowed.
+        set.IsSatisfiedFor(
+                Permission.CanManageChildren,
+                new UserContext(user),
+                new OrganisationContext(ownOvoNumber),
+                new VlimpersManagementContext(IsUnderVlimpersManagement: false))
+            .Should().BeTrue();
+
+        // Own organisation but under Vlimpers management -> reserved for VlimpersBeheerder.
+        set.IsSatisfiedFor(
+                Permission.CanManageChildren,
+                new UserContext(user),
+                new OrganisationContext(ownOvoNumber),
+                new VlimpersManagementContext(IsUnderVlimpersManagement: true))
+            .Should().BeFalse();
+
+        // Other organisation -> outside scope.
+        set.IsSatisfiedFor(
+                Permission.CanManageChildren,
+                new UserContext(user),
+                new OrganisationContext(otherOvoNumber),
+                new VlimpersManagementContext(IsUnderVlimpersManagement: false))
+            .Should().BeFalse();
+    }
+
+    [Fact]
+    public void Static_For_CjmBeheerder_does_not_grant_CanManageChildren()
+    {
+        RolePermissionMap.For(Role.CjmBeheerder)
+            .Contains(Permission.CanManageChildren).Should().BeFalse();
+    }
+
+    [Fact]
+    public void For_config_unions_across_roles_and_unrestricted_absorbs_restricted()
+    {
+        var allowedKeyType = Guid.NewGuid();
+        var otherKeyType = Guid.NewGuid();
+        var config = new OrganisationRegistryConfigurationStub();
+        ((AuthorizationConfigurationStub)config.Authorization).KeyIdsAllowedForVlimpers
+            = new[] { allowedKeyType };
+
+        var set = RolePermissionMap.For(
+            new[] { Role.VlimpersBeheerder, Role.AlgemeenBeheerder },
+            config);
+
+        // AlgemeenBeheerder holds unrestricted CanManageKeys; must absorb the
+        // VlimpersBeheerder restricted grant regardless of context.
+        set.IsSatisfiedFor(
+                Permission.CanManageKeys,
+                new KeyContext(isUnderVlimpersManagement: false, otherKeyType))
+            .Should().BeTrue();
+    }
+
+    [Fact]
+    public void For_config_non_vlimpers_role_matches_static_For()
+    {
+        var config = new OrganisationRegistryConfigurationStub();
+
+        var staticSet = RolePermissionMap.For(Role.Orafin);
+        var configSet = RolePermissionMap.For(new[] { Role.Orafin }, config);
+
+        ((object)configSet).Should().Be(staticSet);
+    }
+
+    [Fact]
+    public void For_config_VlimpersBeheerder_grants_restricted_CanManageFormalFrameworks()
+    {
+        var vlimpersFormalFrameworkId = Guid.NewGuid();
+        var otherFormalFrameworkId = Guid.NewGuid();
+        var config = new OrganisationRegistryConfigurationStub();
+        ((AuthorizationConfigurationStub)config.Authorization).FormalFrameworkIdsOwnedByVlimpers
+            = new[] { vlimpersFormalFrameworkId };
+
+        var set = RolePermissionMap.For(new[] { Role.VlimpersBeheerder }, config);
+
+        set.IsSatisfiedFor(
+                Permission.CanManageFormalFrameworks,
+                new FormalFrameworkContext(vlimpersFormalFrameworkId))
+            .Should().BeTrue();
+
+        set.IsSatisfiedFor(
+                Permission.CanManageFormalFrameworks,
+                new FormalFrameworkContext(otherFormalFrameworkId))
+            .Should().BeFalse();
+    }
+
+    [Fact]
+    public void For_config_DecentraalBeheerder_grants_restricted_CanManageFormalFrameworks()
+    {
+        var ovoNumber = "OVO123456";
+        var vlimpersFormalFrameworkId = Guid.NewGuid();
+        var otherFormalFrameworkId = Guid.NewGuid();
+        var config = new OrganisationRegistryConfigurationStub();
+        ((AuthorizationConfigurationStub)config.Authorization).FormalFrameworkIdsOwnedByVlimpers
+            = new[] { vlimpersFormalFrameworkId };
+
+        var user = new UserBuilder()
+            .AddRoles(Role.DecentraalBeheerder)
+            .AddOrganisations(ovoNumber)
+            .Build();
+
+        var set = RolePermissionMap.For(new[] { Role.DecentraalBeheerder }, config);
+
+        set.IsSatisfiedFor(
+                Permission.CanManageFormalFrameworks,
+                new UserContext(user),
+                new OrganisationContext(ovoNumber),
+                new FormalFrameworkContext(otherFormalFrameworkId))
+            .Should().BeTrue();
+
+        set.IsSatisfiedFor(
+                Permission.CanManageFormalFrameworks,
+                new UserContext(user),
+                new OrganisationContext(ovoNumber),
+                new FormalFrameworkContext(vlimpersFormalFrameworkId))
+            .Should().BeFalse();
+    }
+
+    [Fact]
+    public void For_config_RegelgevingBeheerder_grants_restricted_CanManageFormalFrameworks()
+    {
+        var regelgevingDbFormalFrameworkId = Guid.NewGuid();
+        var otherFormalFrameworkId = Guid.NewGuid();
+        var config = new OrganisationRegistryConfigurationStub();
+        ((AuthorizationConfigurationStub)config.Authorization).FormalFrameworkIdsOwnedByRegelgevingDbBeheerder
+            = new[] { regelgevingDbFormalFrameworkId };
+
+        var set = RolePermissionMap.For(new[] { Role.RegelgevingBeheerder }, config);
+
+        set.IsSatisfiedFor(
+                Permission.CanManageFormalFrameworks,
+                new FormalFrameworkContext(regelgevingDbFormalFrameworkId))
+            .Should().BeTrue();
+
+        set.IsSatisfiedFor(
+                Permission.CanManageFormalFrameworks,
+                new FormalFrameworkContext(otherFormalFrameworkId))
+            .Should().BeFalse();
+    }
+
+    [Fact]
+    public void For_config_RegelgevingBeheerder_grants_restricted_CanManageCapacities()
+    {
+        var regelgevingDbCapacityId = Guid.NewGuid();
+        var otherCapacityId = Guid.NewGuid();
+        var config = new OrganisationRegistryConfigurationStub();
+        ((AuthorizationConfigurationStub)config.Authorization).CapacityIdsOwnedByRegelgevingDbBeheerder
+            = new[] { regelgevingDbCapacityId };
+
+        var set = RolePermissionMap.For(new[] { Role.RegelgevingBeheerder }, config);
+
+        set.IsSatisfiedFor(
+                Permission.CanManageCapacities,
+                new CapacityContext(regelgevingDbCapacityId))
+            .Should().BeTrue();
+
+        set.IsSatisfiedFor(
+                Permission.CanManageCapacities,
+                new CapacityContext(otherCapacityId))
+            .Should().BeFalse();
+    }
+
+    [Fact]
+    public void For_config_RegelgevingBeheerder_grants_restricted_CanManageOrganisationClassifications()
+    {
+        var regelgevingDbClassificationTypeId = Guid.NewGuid();
+        var otherClassificationTypeId = Guid.NewGuid();
+        var config = new OrganisationRegistryConfigurationStub();
+        ((AuthorizationConfigurationStub)config.Authorization).OrganisationClassificationTypeIdsOwnedByRegelgevingDbBeheerder
+            = new[] { regelgevingDbClassificationTypeId };
+
+        var set = RolePermissionMap.For(new[] { Role.RegelgevingBeheerder }, config);
+
+        set.IsSatisfiedFor(
+                Permission.CanManageOrganisationClassifications,
+                new ClassificationTypeContext(regelgevingDbClassificationTypeId))
+            .Should().BeTrue();
+
+        set.IsSatisfiedFor(
+                Permission.CanManageOrganisationClassifications,
+                new ClassificationTypeContext(otherClassificationTypeId))
+            .Should().BeFalse();
+    }
+
+    [Fact]
+    public void AlgemeenBeheerder_grants_DelegationsRead_Write_Delete_but_not_Create()
+    {
+        // AlgemeenBeheerder can read, update and delete delegations, but there is no
+        // Create on delegations for this role (see ui-permission-matrix.md).
+        var set = RolePermissionMap.For(Role.AlgemeenBeheerder);
+
+        set.Contains(Permission.DelegationsRead).Should().BeTrue();
+        set.Contains(Permission.DelegationsWrite).Should().BeTrue();
+        set.Contains(Permission.DelegationsDelete).Should().BeTrue();
+        set.Contains(Permission.DelegationsCreate).Should().BeFalse();
+    }
+
+    [Fact]
+    public void Developer_grants_DelegationsRead_Write_Delete_and_Create()
+    {
+        // Developer is the only role that may create delegation assignments
+        // (internal/tooling capability, not exposed via /v1/me).
+        var set = RolePermissionMap.For(Role.Developer);
+
+        set.Contains(Permission.DelegationsRead).Should().BeTrue();
+        set.Contains(Permission.DelegationsWrite).Should().BeTrue();
+        set.Contains(Permission.DelegationsDelete).Should().BeTrue();
+        set.Contains(Permission.DelegationsCreate).Should().BeTrue();
+    }
+
+    [Theory]
+    [InlineData(Role.VlimpersBeheerder)]
+    [InlineData(Role.DecentraalBeheerder)]
+    [InlineData(Role.OrgaanBeheerder)]
+    [InlineData(Role.RegelgevingBeheerder)]
+    [InlineData(Role.CjmBeheerder)]
+    [InlineData(Role.Orafin)]
+    [InlineData(Role.AutomatedTask)]
+    public void Non_admin_roles_do_not_grant_any_Delegations_permission(Role role)
+    {
+        var set = RolePermissionMap.For(role);
+
+        set.Contains(Permission.DelegationsRead).Should().BeFalse();
+        set.Contains(Permission.DelegationsWrite).Should().BeFalse();
+        set.Contains(Permission.DelegationsDelete).Should().BeFalse();
+        set.Contains(Permission.DelegationsCreate).Should().BeFalse();
+    }
+}

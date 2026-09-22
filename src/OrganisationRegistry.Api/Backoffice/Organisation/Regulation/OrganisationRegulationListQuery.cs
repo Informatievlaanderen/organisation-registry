@@ -24,6 +24,8 @@ public class OrganisationRegulationListQueryResult
 
     public bool IsEditable { get; }
 
+    public ResourceEditPermissions Permissions { get; }
+
     public OrganisationRegulationListQueryResult(
         Guid organisationRegulationId,
         string? regulationThemeName,
@@ -43,6 +45,7 @@ public class OrganisationRegulationListQueryResult
         IsActive = new Period(new ValidFrom(validFrom), new ValidTo(validTo)).OverlapsWith(DateTime.Today);
 
         IsEditable = isAuthorizedForRegulation();
+        Permissions = new ResourceEditPermissions(IsEditable);
     }
 }
 

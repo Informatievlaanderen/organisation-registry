@@ -7,13 +7,13 @@ using Infrastructure.Security;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Commands;
 using Requests;
 using SqlServer.Infrastructure;
 
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
-[OrganisationRegistryAuthorize]
 [OrganisationRegistryRoute("manage/delegations")]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]
@@ -28,6 +28,7 @@ public class DelegationAssignmentCommandController : OrganisationRegistryCommand
     /// <response code="201">Als de toewijzing succesvol aangemaakt is.</response>
     /// <response code="400">Als de validatie voor de toewijzing mislukt is.</response>
     [HttpPost("{delegationId}/assignments")]
+    [OrganisationRegistryAuthorize(RequiredPermissions = [Permission.DelegationsCreate])]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Post(
@@ -55,6 +56,7 @@ public class DelegationAssignmentCommandController : OrganisationRegistryCommand
     /// <response code="200">Als de toewijzing succesvol aangepast is.</response>
     /// <response code="400">Als de validatie voor de toewijzing mislukt is.</response>
     [HttpPut("{delegationId}/assignments/{id}")]
+    [OrganisationRegistryAuthorize(RequiredPermissions = [Permission.DelegationsWrite])]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Put(
@@ -83,6 +85,7 @@ public class DelegationAssignmentCommandController : OrganisationRegistryCommand
     /// <response code="200">Als de toewijzing succesvol verwijderd is.</response>
     /// <response code="400">Als de validatie voor de toewijzing mislukt is.</response>
     [HttpDelete("{delegationId}/assignments/{delegationAssignmentId}/{bodyId}/{bodySeatId}")]
+    [OrganisationRegistryAuthorize(RequiredPermissions = [Permission.DelegationsDelete])]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Delete(

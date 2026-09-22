@@ -6,11 +6,12 @@ using Infrastructure;
 using Infrastructure.Security;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Commands;
 
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
-[OrganisationRegistryAuthorize]
+[OrganisationRegistryAuthorize(RequiredPermissions = [Permission.CanManageCapacities])]
 [OrganisationRegistryRoute("organisations/{organisationId}/capacities")]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Scherm APIs: Organisaties")]

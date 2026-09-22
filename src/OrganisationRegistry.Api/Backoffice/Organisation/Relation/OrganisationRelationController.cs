@@ -11,6 +11,8 @@ using Infrastructure.Swagger.Examples;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OrganisationRegistry.Infrastructure.AppSpecific;
+using OrganisationRegistry.Infrastructure.Authorization;
 using SqlServer.Infrastructure;
 using SqlServer.Organisation;
 using Swashbuckle.AspNetCore.Filters;
@@ -28,13 +30,13 @@ public class OrganisationRelationController : OrganisationRegistryController
     [ProducesResponseType(typeof(List<OrganisationRelationListItem>), StatusCodes.Status200OK)]
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(OrganisationRelationListExamples))]
     [ActionName("List")]
-    public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid organisationId)
+    public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromServices] ISecurityService securityService, [FromServices] IMemoryCaches memoryCaches, [FromRoute] Guid organisationId)
     {
         var filtering = Request.ExtractFilteringRequest<OrganisationRelationListItemFilter>();
         var sorting = Request.ExtractSortingRequest();
         var pagination = Request.ExtractPaginationRequest();
 
-        var pagedOrganisations = new OrganisationRelationListQuery(context, organisationId).Fetch(filtering, sorting, pagination);
+        var pagedOrganisations = new OrganisationRelationListQuery(context, memoryCaches, organisationId, await securityService.GetUser(User)).Fetch(filtering, sorting, pagination);
 
         Response.AddPaginationResponse(pagedOrganisations.PaginationInfo);
         Response.AddSortingResponse(sorting.SortBy, sorting.SortOrder);
