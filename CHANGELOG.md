@@ -1,3 +1,10 @@
+## [1.339.4](https://github.com/informatievlaanderen/organisation-registry/compare/v1.339.3...v1.339.4) (2026-09-22)
+
+
+### Bug Fixes
+
+* allow anonymous formal framework reads ([ce913f7](https://github.com/informatievlaanderen/organisation-registry/commit/ce913f7eed6ad14d19edd95a216b062d714be778))
+
 ## [1.339.3](https://github.com/informatievlaanderen/organisation-registry/compare/v1.339.2...v1.339.3) (2026-09-22)
 
 
