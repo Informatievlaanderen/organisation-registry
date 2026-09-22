@@ -56,4 +56,24 @@ public class Given_Any_Role_Reading_Parameters
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
+
+    [Fact]
+    public async Task Then_Reading_FormalFrameworks_Returns_Ok_For_Authenticated_User()
+    {
+        var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Regelgevingbeheerder);
+
+        var response = await ApiFixture.Get(client, "/v1/formalframeworks");
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    [Fact]
+    public async Task Then_Reading_FormalFrameworks_Returns_Ok_For_Anonymous_User()
+    {
+        var client = _apiFixture.CreateAnonymousClient();
+
+        var response = await ApiFixture.Get(client, "/v1/formalframeworks");
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
 }

@@ -12,6 +12,7 @@ using Infrastructure.Search.Filtering;
 using Infrastructure.Search.Pagination;
 using Infrastructure.Search.Sorting;
 using Infrastructure.Swagger.Examples;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -26,7 +27,8 @@ using Swashbuckle.AspNetCore.Filters;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("formalframeworks")]
-[OrganisationRegistryAuthorize(RequiredPermissions = [Permission.CanManageFormalFrameworks])]
+[OrganisationRegistryAuthorize]
+[AllowAnonymous]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]
 public class FormalFrameworkController : OrganisationRegistryController
