@@ -1,3 +1,10 @@
+## [1.339.3](https://github.com/informatievlaanderen/organisation-registry/compare/v1.339.2...v1.339.3) (2026-09-22)
+
+
+### Bug Fixes
+
+* allow env_name from env vars in UI ([4dd90d5](https://github.com/informatievlaanderen/organisation-registry/commit/4dd90d5e1cfab855cf837eb50d43611f78d3707f))
+
 ## [1.339.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.339.1...v1.339.2) (2026-09-18)
 
 
