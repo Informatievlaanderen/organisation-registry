@@ -82,7 +82,7 @@ public class Given_Any_Role_Reading_Parameters
     }
 
     [Fact]
-    public async Task Then_Reading_OrganisationClassificationTypes_ForOrganisation_Returns_Only_Types_Decentraalbeheerder_Can_Select()
+    public async Task Then_Reading_OrganisationClassificationTypes_ForOrganisation_Flags_Only_Types_Decentraalbeheerder_Can_Select()
     {
         var regelgevingDbClassificationTypeId = _apiFixture.Configuration.Authorization.OrganisationClassificationTypeIdsOwnedByRegelgevingDbBeheerder.First();
         await _apiFixture.Create.CreateOrganisationClassificationType(regelgevingDbClassificationTypeId);
@@ -96,11 +96,12 @@ public class Given_Any_Role_Reading_Parameters
         var response = await client.SendAsync(request);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        var ids = JArray
-            .Parse(await response.Content.ReadAsStringAsync())
-            .Select(item => Guid.Parse(item.Value<string>("id")!));
+        var items = JArray.Parse(await response.Content.ReadAsStringAsync());
 
-        ids.Should().Contain(decentraalClassificationTypeId);
-        ids.Should().NotContain(regelgevingDbClassificationTypeId);
+        var decentraalItem = items.Single(item => Guid.Parse(item.Value<string>("id")!) == decentraalClassificationTypeId);
+        var regelgevingItem = items.Single(item => Guid.Parse(item.Value<string>("id")!) == regelgevingDbClassificationTypeId);
+
+        decentraalItem["permissions"]!.Value<bool>("canSelect").Should().BeTrue();
+        regelgevingItem["permissions"]!.Value<bool>("canSelect").Should().BeFalse();
     }
 }
