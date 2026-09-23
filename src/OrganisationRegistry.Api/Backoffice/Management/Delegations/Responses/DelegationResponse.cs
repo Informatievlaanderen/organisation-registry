@@ -1,7 +1,7 @@
-﻿namespace OrganisationRegistry.Api.Backoffice.Parameters.Delegations.Responses;
+﻿namespace OrganisationRegistry.Api.Backoffice.Management.Delegations.Responses;
 
 using System;
-using SqlServer.Delegations;
+using OrganisationRegistry.SqlServer.Delegations;
 
 public class DelegationResponse
 {

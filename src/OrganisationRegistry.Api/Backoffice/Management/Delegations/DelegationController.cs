@@ -1,22 +1,22 @@
-namespace OrganisationRegistry.Api.Backoffice.Parameters.Delegations;
+namespace OrganisationRegistry.Api.Backoffice.Management.Delegations;
 
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Infrastructure;
-using Infrastructure.Search.Filtering;
-using Infrastructure.Search.Pagination;
-using Infrastructure.Search.Sorting;
-using Infrastructure.Security;
-using Infrastructure.Swagger.Examples;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OrganisationRegistry.Api.Infrastructure;
+using OrganisationRegistry.Api.Infrastructure.Search.Filtering;
+using OrganisationRegistry.Api.Infrastructure.Search.Pagination;
+using OrganisationRegistry.Api.Infrastructure.Search.Sorting;
+using OrganisationRegistry.Api.Infrastructure.Security;
+using OrganisationRegistry.Api.Infrastructure.Swagger.Examples;
 using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.SqlServer.Delegations;
+using OrganisationRegistry.SqlServer.Infrastructure;
 using Queries;
 using Responses;
-using SqlServer.Delegations;
-using SqlServer.Infrastructure;
 using Swashbuckle.AspNetCore.Filters;
 
 [ApiVersion("1.0")]

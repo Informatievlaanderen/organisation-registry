@@ -1,17 +1,17 @@
-namespace OrganisationRegistry.Api.Backoffice.Parameters.Delegations.Queries;
+namespace OrganisationRegistry.Api.Backoffice.Management.Delegations.Queries;
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
-using Infrastructure.Search;
-using Infrastructure.Search.Filtering;
-using Infrastructure.Search.Sorting;
+using OrganisationRegistry.Api.Infrastructure.Search;
+using OrganisationRegistry.Api.Infrastructure.Search.Filtering;
+using OrganisationRegistry.Api.Infrastructure.Search.Sorting;
 using OrganisationRegistry.Infrastructure;
 using OrganisationRegistry.Infrastructure.Authorization;
-using SqlServer.Delegations;
-using SqlServer.Infrastructure;
+using OrganisationRegistry.SqlServer.Delegations;
+using OrganisationRegistry.SqlServer.Infrastructure;
 
 public class DelegationListQueryResult
 {
