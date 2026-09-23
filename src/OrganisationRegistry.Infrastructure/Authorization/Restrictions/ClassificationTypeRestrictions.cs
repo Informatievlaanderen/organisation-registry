@@ -26,10 +26,9 @@ public static class ClassificationTypeRestrictions
     /// must be neither Regelgeving DB-owned.
     /// </summary>
     public static IRestriction DecentraalOrganisationAndNotOwned(
-        IEnumerable<Guid> regelgevingDbClassificationTypeIds,
-        IEnumerable<Guid> cjmClassificationTypeIds)
+        IEnumerable<Guid> regelgevingDbClassificationTypeIds)
         => new CompositeAndRestriction(
             DecentraalOrganisationRestriction.Instance,
             new NotAllowListRestriction<ClassificationTypeContext>(
-                regelgevingDbClassificationTypeIds.Concat(cjmClassificationTypeIds)));
+                regelgevingDbClassificationTypeIds));
 }

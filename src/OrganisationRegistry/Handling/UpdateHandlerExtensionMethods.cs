@@ -148,9 +148,6 @@ public static class UpdateHandlerExtensionMethods
         => source.WithPolicy(
             organisation => new BeheerderForOrganisationRegardlessOfVlimpersPolicy(organisation.State.OvoNumber));
 
-    public static UpdateHandler<Organisation> RequiresAdmin(this UpdateHandler<Organisation> source)
-        => source.WithPolicy(_ => new AdminOnlyPolicy());
-
     public static UpdateHandler<TAggregate> RequiresOneOfRole<TAggregate>(
         this UpdateHandler<TAggregate> source,
         params Role[] roles)

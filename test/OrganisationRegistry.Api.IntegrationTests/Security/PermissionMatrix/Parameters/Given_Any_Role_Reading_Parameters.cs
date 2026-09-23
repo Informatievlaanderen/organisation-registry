@@ -1,8 +1,12 @@
 namespace OrganisationRegistry.Api.IntegrationTests.Security.PermissionMatrix.Parameters;
 
+using System;
+using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Newtonsoft.Json.Linq;
 using Xunit;
 
 /// <summary>
@@ -75,5 +79,28 @@ public class Given_Any_Role_Reading_Parameters
         var response = await ApiFixture.Get(client, "/v1/formalframeworks");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    [Fact]
+    public async Task Then_Reading_OrganisationClassificationTypes_ForOrganisation_Returns_Only_Types_Decentraalbeheerder_Can_Select()
+    {
+        var regelgevingDbClassificationTypeId = _apiFixture.Configuration.Authorization.OrganisationClassificationTypeIdsOwnedByRegelgevingDbBeheerder.First();
+        await _apiFixture.Create.CreateOrganisationClassificationType(regelgevingDbClassificationTypeId);
+        var decentraalClassificationTypeId = await _apiFixture.Create.CreateOrganisationClassificationType(false);
+        var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Decentraalbeheerder);
+
+        var request = new HttpRequestMessage(
+            HttpMethod.Get,
+            $"/v1/organisationclassificationtypes?forOrganisationId={_apiFixture.DecentraalbeheerderOrganisationId}");
+        request.Headers.Add("x-pagination", "none");
+        var response = await client.SendAsync(request);
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var ids = JArray
+            .Parse(await response.Content.ReadAsStringAsync())
+            .Select(item => Guid.Parse(item.Value<string>("id")!));
+
+        ids.Should().Contain(decentraalClassificationTypeId);
+        ids.Should().NotContain(regelgevingDbClassificationTypeId);
     }
 }
