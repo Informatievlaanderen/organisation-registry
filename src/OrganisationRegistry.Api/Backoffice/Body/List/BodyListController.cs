@@ -29,20 +29,14 @@ public class BodyListController : OrganisationRegistryController
     [ProducesResponseType(typeof(List<BodyListItem>), StatusCodes.Status200OK)]
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(BodyListExamples))]
     public async Task<IActionResult> Get(
-        [FromServices] OrganisationRegistryContext context,
-        [FromServices] ISecurityService securityService)
+        [FromServices] OrganisationRegistryContext context)
     {
         var filtering = Request.ExtractFilteringRequest<BodyListItemFilter>();
         var sorting = Request.ExtractSortingRequest();
         var pagination = Request.ExtractPaginationRequest();
 
-        var user = await securityService.GetUser(User);
-
-        BodyPermissions PermissionsFactory(Guid bodyId)
-            => BodyPermissions.For(user, bodyId);
-
         var pagedBodies =
-            new BodyListQuery(context, PermissionsFactory).Fetch(filtering, sorting, pagination);
+            new BodyListQuery(context).Fetch(filtering, sorting, pagination);
 
         Response.AddPaginationResponse(pagedBodies.PaginationInfo);
         Response.AddSortingResponse(sorting.SortBy, sorting.SortOrder);
