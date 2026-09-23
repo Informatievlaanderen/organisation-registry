@@ -33,17 +33,13 @@ public class BodyListQueryResult
     [DisplayName("Organisatie")]
     public string? Organisation { get; }
 
-    [ExcludeFromCsv]
-    public BodyPermissions Permissions { get; }
-
     public BodyListQueryResult(
         Guid id,
         string? bodyNumber,
         string name,
         string? shortName,
         Guid? organisationId,
-        string? organisation,
-        Func<Guid, BodyPermissions> permissionsFactory)
+        string? organisation)
     {
         Id = id;
         BodyNumber = bodyNumber;
@@ -51,14 +47,12 @@ public class BodyListQueryResult
         ShortName = shortName;
         OrganisationId = organisationId;
         Organisation = organisation;
-        Permissions = permissionsFactory(id);
     }
 }
 
 public class BodyListQuery : Query<BodyListItem, BodyListItemFilter, BodyListQueryResult>
 {
     private readonly OrganisationRegistryContext _context;
-    private readonly Func<Guid, BodyPermissions> _permissionsFactory;
 
     protected override ISorting Sorting => new BodyListSorting();
 
@@ -69,13 +63,11 @@ public class BodyListQuery : Query<BodyListItem, BodyListItemFilter, BodyListQue
             x.Name,
             x.ShortName,
             x.OrganisationId,
-            x.Organisation,
-            _permissionsFactory);
+            x.Organisation);
 
-    public BodyListQuery(OrganisationRegistryContext context, Func<Guid, BodyPermissions> permissionsFactory)
+    public BodyListQuery(OrganisationRegistryContext context)
     {
         _context = context;
-        _permissionsFactory = permissionsFactory;
     }
 
     protected override IQueryable<BodyListItem> Filter(FilteringHeader<BodyListItemFilter> filtering)
