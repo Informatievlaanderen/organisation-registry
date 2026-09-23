@@ -57,7 +57,7 @@ public class OrganisationLocationTests
             OrganisationLocationId = creationId,
             LocationId = locationId,
             LocationTypeId = null,
-            IsMainLocation = _apiFixture.Fixture.Create<bool>(),
+            IsMainLocation = false,
             ValidFrom = today.AddDays(-10),
             ValidTo = today.AddDays(10),
         };
@@ -77,7 +77,7 @@ public class OrganisationLocationTests
             OrganisationLocationId = id,
             LocationId = locationId,
             LocationTypeId = null,
-            IsMainLocation = _apiFixture.Fixture.Create<bool>(),
+            IsMainLocation = false,
             ValidFrom = today.AddDays(-10),
             ValidTo = today.AddDays(10),
         };
