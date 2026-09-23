@@ -78,6 +78,8 @@
     <PackageVersion Include="System.ServiceModel.Http" Version="6.0.0" />
     <PackageVersion Include="System.ServiceModel.NetTcp" Version="6.0.0" />
     <PackageVersion Include="System.ServiceModel.Security" Version="6.0.0" />
+    <PackageVersion Include="TngTech.ArchUnitNET" Version="0.13.4" />
+    <PackageVersion Include="TngTech.ArchUnitNET.xUnit" Version="0.13.4" />
     <PackageVersion Include="xunit" Version="2.9.3" />
     <PackageVersion Include="xunit.categories" Version="2.0.8" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.8.2" />

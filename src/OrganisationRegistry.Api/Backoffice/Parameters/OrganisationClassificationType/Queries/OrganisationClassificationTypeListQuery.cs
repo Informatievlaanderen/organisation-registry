@@ -44,13 +44,15 @@ public class OrganisationClassificationTypeListQuery: Query<OrganisationClassifi
     {
         var organisationClassificationTypes = _context.OrganisationClassificationTypeList.AsQueryable();
 
-        if (filtering.Filter is not { } filter)
-            return organisationClassificationTypes;
-
-        if (!filter.Name.IsNullOrWhiteSpace())
+        if (filtering.Filter is { } filter && !filter.Name.IsNullOrWhiteSpace())
             organisationClassificationTypes = organisationClassificationTypes.Where(x => x.Name.Contains(filter.Name));
 
-        return organisationClassificationTypes;
+        var authorizedIds = organisationClassificationTypes
+            .Select(x => x.Id)
+            .AsEnumerable()
+            .ToArray();
+
+        return organisationClassificationTypes.Where(x => authorizedIds.Contains(x.Id));
     }
 
     private class OrganisationClassificationTypeListSorting : ISorting

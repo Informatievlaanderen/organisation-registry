@@ -309,8 +309,7 @@ public static class RolePermissionMap
                         configuration.Authorization.CapacityIdsOwnedByRegelgevingDbBeheerder)),
                 Permission.CanManageOrganisationClassifications.RestrictedTo(
                     ClassificationTypeRestrictions.DecentraalOrganisationAndNotOwned(
-                        configuration.Authorization.OrganisationClassificationTypeIdsOwnedByRegelgevingDbBeheerder,
-                        configuration.Authorization.OrganisationClassificationTypeIdsOwnedByCjm)),
+                        configuration.Authorization.OrganisationClassificationTypeIdsOwnedByRegelgevingDbBeheerder)),
                 // Own organisation labels are allowed, except Vlimpers-owned
                 // labeltypes which are reserved for the VlimpersBeheerder.
                 Permission.CanManageLabels.RestrictedTo(

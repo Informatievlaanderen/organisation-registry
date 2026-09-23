@@ -44,6 +44,33 @@ public class Given_Roles_With_CanManageOrganisationClassifications
     }
 
     [Fact]
+    public async Task For_Decentraalbeheerder_WithOwnOrganisation_But_NotOwnedClassificationType_Then_Returns_Created()
+    {
+        var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Decentraalbeheerder);
+
+        var organisationId = _apiFixture.Fixture.Create<Guid>();
+        await _apiFixture.Create.Organisation(organisationId, _apiFixture.Fixture.Create<string>());
+        var entityId = _apiFixture.Fixture.Create<Guid>();
+        var classificationTypeId = _apiFixture.Configuration.Authorization.OrganisationClassificationTypeIdsOwnedByRegelgevingDbBeheerder.First();
+        await _apiFixture.Create.CreateOrganisationClassificationType(classificationTypeId);
+        var classificationId = await _apiFixture.Create.OrganisationClassification(classificationTypeId);
+
+        var response = await ApiFixture.Post(
+            client,
+            $"/v1/organisations/{organisationId}/classifications",
+            new AddOrganisationOrganisationClassificationRequest
+            {
+                OrganisationOrganisationClassificationId = entityId,
+                OrganisationClassificationTypeId = classificationTypeId,
+                OrganisationClassificationId = classificationId,
+                ValidFrom = null,
+                ValidTo = null,
+            });
+
+        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+    }
+
+    [Fact]
     public async Task For_Decentraalbeheerder_WithChildOrganisationInScope_Then_Returns_Created()
     {
         var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Decentraalbeheerder);

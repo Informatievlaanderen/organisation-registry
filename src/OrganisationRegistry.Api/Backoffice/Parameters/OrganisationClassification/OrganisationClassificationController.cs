@@ -10,6 +10,7 @@ using Infrastructure.Search.Filtering;
 using Infrastructure.Search.Pagination;
 using Infrastructure.Search.Sorting;
 using Infrastructure.Swagger.Examples;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -22,6 +23,7 @@ using Swashbuckle.AspNetCore.Filters;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("organisationclassifications")]
 [OrganisationRegistryAuthorize]
+[AllowAnonymous]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Scherm APIs: Parameters")]
 public class OrganisationClassificationController : OrganisationRegistryController

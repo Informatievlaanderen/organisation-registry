@@ -135,6 +135,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "setup-python", "setup-pytho
 		.github\actions\setup-python\action.yml = .github\actions\setup-python\action.yml
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrganisationRegistry.ArchitectureTests", "test\OrganisationRegistry.ArchitectureTests\OrganisationRegistry.ArchitectureTests.csproj", "{408ACD00-389D-4037-BD98-885A66A93C4D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -253,6 +255,10 @@ Global
 		{55759034-DCC0-4752-8B9B-9714644D47CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{55759034-DCC0-4752-8B9B-9714644D47CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{55759034-DCC0-4752-8B9B-9714644D47CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{408ACD00-389D-4037-BD98-885A66A93C4D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{408ACD00-389D-4037-BD98-885A66A93C4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{408ACD00-389D-4037-BD98-885A66A93C4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{408ACD00-389D-4037-BD98-885A66A93C4D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -297,5 +303,6 @@ Global
 		{7E59232C-D113-41CB-82ED-C7D4E9D3554D} = {54C35C74-BED8-474C-9D1E-FDE6EF9BB64E}
 		{167473E7-439E-4E86-B4A9-E39D1D0A666B} = {54C35C74-BED8-474C-9D1E-FDE6EF9BB64E}
 		{AD9BBCB1-F46C-4DED-94E9-7B1ADED03F36} = {54C35C74-BED8-474C-9D1E-FDE6EF9BB64E}
+		{408ACD00-389D-4037-BD98-885A66A93C4D} = {694835F2-9FEE-41C0-8989-44A574C6AF2E}
 	EndGlobalSection
 EndGlobal

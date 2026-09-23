@@ -2,10 +2,12 @@ namespace OrganisationRegistry.Api.Backoffice.Person.Detail;
 
 using System;
 using System.Threading.Tasks;
+using Handling.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Infrastructure;
+using Microsoft.AspNetCore.Authorization;
 using OrganisationRegistry.Api.Infrastructure.Security;
 using OrganisationRegistry.Infrastructure.Authorization;
 using Security;
@@ -15,6 +17,8 @@ using OrganisationRegistry.SqlServer.Person;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("people")]
+[OrganisationRegistryAuthorize]
+[AllowAnonymous]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Scherm APIs: Personen")]
 public class PersonDetailController : OrganisationRegistryController
@@ -25,7 +29,10 @@ public class PersonDetailController : OrganisationRegistryController
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid id)
+    public async Task<IActionResult> Get(
+        [FromServices] ISecurityService securityService,
+        [FromServices] OrganisationRegistryContext context,
+        [FromRoute] Guid id)
     {
         var person = await context.PersonList.FirstOrDefaultAsync(x => x.Id == id);
 
@@ -33,7 +40,7 @@ public class PersonDetailController : OrganisationRegistryController
             return NotFound();
 
         var authInfo = await HttpContext.GetAuthenticateInfoAsync();
-        if (authInfo?.Principal != null && authInfo.Principal.IsInRole(RoleMapping.Map(Role.AlgemeenBeheerder)))
+        if (new PeoplePolicy().Check(await securityService.GetRequiredUser(User)).IsSuccessful)
             return Ok(person);
 
         return Ok(new PersonListItem { Id = person.Id, FirstName = person.FirstName, Name = person.Name });
