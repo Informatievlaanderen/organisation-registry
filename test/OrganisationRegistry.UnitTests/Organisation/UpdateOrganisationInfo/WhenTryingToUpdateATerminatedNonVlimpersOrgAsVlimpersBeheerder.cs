@@ -98,6 +98,6 @@ public class WhenTryingToUpdateATerminatedNonVlimpersOrgAsVlimpersUser : Specifi
     public async Task UpdatesOrganisationName()
     {
         await Given(Events).When(UpdateOrganisationInfoLimitedToVlimpersCommand, TestUser.VlimpersBeheerder)
-            .ThenThrows<InsufficientRights<VlimpersOnlyPolicy>>();
+            .ThenThrows<InsufficientRights<OrganisationPolicy>>();
     }
 }

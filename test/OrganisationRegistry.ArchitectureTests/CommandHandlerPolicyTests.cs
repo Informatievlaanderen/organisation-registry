@@ -16,8 +16,8 @@ public class CommandHandlerPolicyTests : ArchitectureTestBase
 {
     private static readonly string DomainRoot = FindDomainRoot();
 
-    private const int HandlersWithPolicyBaseline = 57;
-    private const int HandlersWithoutPolicyBaseline = 44;
+    private const int HandlersWithPolicyBaseline = 67;
+    private const int HandlersWithoutPolicyBaseline = 34;
 
     private static readonly string[] PolicyCallPatterns =
     {
@@ -25,8 +25,9 @@ public class CommandHandlerPolicyTests : ArchitectureTestBase
         "RequiresRoles", "RequiresRegisterBody",
         ".WithPolicy(", ".Check(",
         "WithBodyPolicy", "WithImportPolicy", "WithChildPolicy",
-        "WithVlimpersPolicy", "WithKboPolicy", "WithRegulationPolicy",
+        "WithKboPolicy", "WithRegulationPolicy",
         "WithVlimpersManagementPolicy",
+        "RequiresBeheerderForOrganisationButNotUnderVlimpersManagement",
     };
 
     private static readonly string[] PermissionMethods =

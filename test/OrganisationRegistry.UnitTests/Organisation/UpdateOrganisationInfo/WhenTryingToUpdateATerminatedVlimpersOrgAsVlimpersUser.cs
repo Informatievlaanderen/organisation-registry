@@ -12,6 +12,8 @@ using OrganisationRegistry.Infrastructure.Domain;
 using Tests.Shared;
 using Tests.Shared.TestDataBuilders;
 using OrganisationRegistry.Infrastructure.Events;
+using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Authorization.Restrictions;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Events;
 using Tests.Shared.Stubs;
@@ -23,6 +25,15 @@ public class WhenTryingToUpdateATerminatedVlimpersOrgAsVlimpersUser :
 {
     private readonly Guid _organisationId;
     private readonly Fixture _fixture;
+
+    private static IUser VlimpersUser
+        => new UserBuilder()
+            .AddRoles(Role.VlimpersBeheerder)
+            .WithPermissions(
+                PermissionSet.Of(
+                    Permission.CanManageOrganisation.RestrictedTo(
+                        ChildRestrictions.UnderVlimpersManagement)))
+            .Build();
 
     public WhenTryingToUpdateATerminatedVlimpersOrgAsVlimpersUser(ITestOutputHelper helper) : base(helper)
     {
@@ -89,14 +100,14 @@ public class WhenTryingToUpdateATerminatedVlimpersOrgAsVlimpersUser :
     [Fact]
     public async Task PublishesFourEvents()
     {
-        await Given(Events).When(UpdateOrganisationInfoLimitedToVlimpersCommand, TestUser.VlimpersBeheerder)
+        await Given(Events).When(UpdateOrganisationInfoLimitedToVlimpersCommand, VlimpersUser)
             .ThenItPublishesTheCorrectNumberOfEvents(4);
     }
 
     [Fact]
     public async Task UpdatesOrganisationName()
     {
-        await Given(Events).When(UpdateOrganisationInfoLimitedToVlimpersCommand, TestUser.VlimpersBeheerder)
+        await Given(Events).When(UpdateOrganisationInfoLimitedToVlimpersCommand, VlimpersUser)
             .Then();
         var organisationCreated = PublishedEvents[0].UnwrapBody<OrganisationNameUpdated>();
         organisationCreated.Should().NotBeNull();
@@ -105,7 +116,7 @@ public class WhenTryingToUpdateATerminatedVlimpersOrgAsVlimpersUser :
     [Fact]
     public async Task UpdatesShortName()
     {
-        await Given(Events).When(UpdateOrganisationInfoLimitedToVlimpersCommand, TestUser.VlimpersBeheerder)
+        await Given(Events).When(UpdateOrganisationInfoLimitedToVlimpersCommand, VlimpersUser)
             .Then();
         var organisationCreated = PublishedEvents[1].UnwrapBody<OrganisationShortNameUpdated>();
         organisationCreated.Should().NotBeNull();
@@ -114,7 +125,7 @@ public class WhenTryingToUpdateATerminatedVlimpersOrgAsVlimpersUser :
     [Fact]
     public async Task UpdatesOrganisationValidity()
     {
-        await Given(Events).When(UpdateOrganisationInfoLimitedToVlimpersCommand, TestUser.VlimpersBeheerder)
+        await Given(Events).When(UpdateOrganisationInfoLimitedToVlimpersCommand, VlimpersUser)
             .Then();
         var organisationCreated = PublishedEvents[2].UnwrapBody<OrganisationValidityUpdated>();
         organisationCreated.Should().NotBeNull();
@@ -123,7 +134,7 @@ public class WhenTryingToUpdateATerminatedVlimpersOrgAsVlimpersUser :
     [Fact]
     public async Task UpdatesOrganisationOperationalValidity()
     {
-        await Given(Events).When(UpdateOrganisationInfoLimitedToVlimpersCommand, TestUser.VlimpersBeheerder)
+        await Given(Events).When(UpdateOrganisationInfoLimitedToVlimpersCommand, VlimpersUser)
             .Then();
         var organisationCreated = PublishedEvents[3].UnwrapBody<OrganisationOperationalValidityUpdated>();
         organisationCreated.Should().NotBeNull();
