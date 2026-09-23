@@ -1,4 +1,4 @@
-﻿namespace OrganisationRegistry.Api.Backoffice.Parameters.DelegationAssignments.Requests;
+﻿namespace OrganisationRegistry.Api.Backoffice.Management.DelegationAssignments.Requests;
 
 using System;
 using FluentValidation;

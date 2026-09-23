@@ -3,8 +3,8 @@ namespace OrganisationRegistry.Api.IntegrationTests.Security.PermissionMatrix.Or
 using System;
 using System.Net;
 using System.Threading.Tasks;
+using Backoffice.Management.DelegationAssignments.Requests;
 using FluentAssertions;
-using OrganisationRegistry.Api.Backoffice.Parameters.DelegationAssignments.Requests;
 using Xunit;
 
 /// <summary>

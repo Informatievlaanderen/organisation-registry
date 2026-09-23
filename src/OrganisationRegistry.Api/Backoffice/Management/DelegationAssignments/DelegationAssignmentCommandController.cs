@@ -1,16 +1,16 @@
-namespace OrganisationRegistry.Api.Backoffice.Parameters.DelegationAssignments;
+namespace OrganisationRegistry.Api.Backoffice.Management.DelegationAssignments;
 
 using System;
 using System.Threading.Tasks;
-using Infrastructure;
-using Infrastructure.Security;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OrganisationRegistry.Api.Infrastructure;
+using OrganisationRegistry.Api.Infrastructure.Security;
 using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Commands;
+using OrganisationRegistry.SqlServer.Infrastructure;
 using Requests;
-using SqlServer.Infrastructure;
 
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]

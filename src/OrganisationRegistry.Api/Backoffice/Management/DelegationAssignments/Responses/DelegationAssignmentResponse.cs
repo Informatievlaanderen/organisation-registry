@@ -1,9 +1,9 @@
-﻿namespace OrganisationRegistry.Api.Backoffice.Parameters.DelegationAssignments.Responses;
+﻿namespace OrganisationRegistry.Api.Backoffice.Management.DelegationAssignments.Responses;
 
 using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
-using SqlServer.DelegationAssignments;
+using OrganisationRegistry.SqlServer.DelegationAssignments;
 
 public class DelegationAssignmentResponse
 {
