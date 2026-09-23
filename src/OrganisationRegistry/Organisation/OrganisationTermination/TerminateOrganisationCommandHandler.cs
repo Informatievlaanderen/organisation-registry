@@ -26,7 +26,7 @@ public class TerminateOrganisationCommandHandler
 
     public Task Handle(ICommandEnvelope<TerminateOrganisation> envelope)
         => UpdateHandler<Organisation>.For(envelope.Command, envelope.User, Session)
-            .WithVlimpersOnlyPolicy()
+            .RequiresBeheerderForOrganisationButNotUnderVlimpersManagement()
             .Handle(
                 session =>
                 {

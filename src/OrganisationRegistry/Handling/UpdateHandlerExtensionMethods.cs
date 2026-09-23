@@ -10,22 +10,11 @@ using Organisation;
 
 public static class UpdateHandlerExtensionMethods
 {
-    public static UpdateHandler<Organisation> WithVlimpersPolicy(this UpdateHandler<Organisation> source)
-        => source.WithPolicy(
-            organisation => new VlimpersPolicy(
-                organisation.State.UnderVlimpersManagement,
-                organisation.State.OvoNumber));
-
     public static UpdateHandler<Organisation> WithChildPolicy(this UpdateHandler<Organisation> source)
         => source.WithPolicy(
             organisation => new ChildPolicy(
                 organisation.State.OvoNumber,
                 organisation.State.UnderVlimpersManagement));
-
-    public static UpdateHandler<Organisation> WithBeheerderForOrganisationPolicy(this UpdateHandler<Organisation> source)
-        => source.WithPolicy(
-            organisation => new BeheerderForOrganisationRegardlessOfVlimpersPolicy(
-                organisation.State.OvoNumber));
 
     public static UpdateHandler<Organisation> WithContactPolicy(this UpdateHandler<Organisation> source)
         => source.WithPolicy(_ => new ContactPolicy());
@@ -47,9 +36,6 @@ public static class UpdateHandlerExtensionMethods
 
     public static UpdateHandler<Organisation> WithLocationPolicy(this UpdateHandler<Organisation> source)
         => source.WithPolicy(organisation => new LocationPolicy(organisation.State.OvoNumber));
-
-    public static UpdateHandler<Organisation> WithVlimpersOnlyPolicy(this UpdateHandler<Organisation> source)
-        => source.WithPolicy(organisation => new VlimpersOnlyPolicy(organisation.State.UnderVlimpersManagement));
 
     public static UpdateHandler<Organisation> WithLabelPolicy(
         this UpdateHandler<Organisation> source,
@@ -143,11 +129,6 @@ public static class UpdateHandlerExtensionMethods
                 organisation.State.OvoNumber,
                 organisation.State.UnderVlimpersManagement));
 
-    public static UpdateHandler<Organisation> RequiresBeheerderForOrganisationRegardlessOfVlimpers(
-        this UpdateHandler<Organisation> source)
-        => source.WithPolicy(
-            organisation => new BeheerderForOrganisationRegardlessOfVlimpersPolicy(organisation.State.OvoNumber));
-
     public static UpdateHandler<TAggregate> RequiresOneOfRole<TAggregate>(
         this UpdateHandler<TAggregate> source,
         params Role[] roles)
@@ -162,9 +143,6 @@ public static class UpdateHandlerExtensionMethods
 
     public static UpdateHandler<Body> WithBodyPolicy(this UpdateHandler<Body> source, Permission permission)
         => source.WithPolicy(body => new BodyPolicy(permission, body.Id));
-
-    public static UpdateHandler<Body> WithEditDelegationPolicy(this UpdateHandler<Body> source, OrganisationId organisationId)
-        => source.WithPolicy(body => new EditDelegationPolicy(organisationId, body.Id));
 
     public static UpdateHandler<TAggregate> WithPeoplePolicy<TAggregate>(this UpdateHandler<TAggregate> source)
         where TAggregate : AggregateRoot

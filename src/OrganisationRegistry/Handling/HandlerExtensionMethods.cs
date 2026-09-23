@@ -6,12 +6,6 @@ using Organisation;
 
 public static class HandlerExtensionMethods
 {
-    public static Handler WithVlimpersPolicy(this Handler source, Organisation organisation)
-        => source.WithPolicy(
-            new VlimpersPolicy(
-                organisation.State.UnderVlimpersManagement,
-                organisation.State.OvoNumber));
-
     public static Handler WithChildPolicy(this Handler source, Organisation organisation)
         => source.WithPolicy(
             new ChildPolicy(

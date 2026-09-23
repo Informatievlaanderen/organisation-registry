@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using ContactType;
 using Handling;
+using Infrastructure.Authorization;
 using Infrastructure.Commands;
 using Infrastructure.Domain;
 using Microsoft.Extensions.Logging;
@@ -27,7 +28,7 @@ public class UpdateDelegationAssignmentCommandHandler
     public async Task Handle(ICommandEnvelope<UpdateDelegationAssignment> envelope)
     {
         await UpdateHandler<Body>.For(envelope.Command, envelope.User, Session)
-            .WithEditDelegationPolicy(envelope.Command.OrganisationId)
+            .RequiresPermission(Permission.DelegationsWrite)
             .Handle(
                 session =>
                 {

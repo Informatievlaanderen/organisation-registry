@@ -102,7 +102,6 @@ public class
 
     [Theory]
     [InlineData(Role.AlgemeenBeheerder)]
-    [InlineData(Role.CjmBeheerder)]
     public async Task TerminatesTheOrganisation(Role role)
     {
         await Given(Events).When(TerminateOrganisationCommand, new UserBuilder().AddRoles(role).Build()).Then();

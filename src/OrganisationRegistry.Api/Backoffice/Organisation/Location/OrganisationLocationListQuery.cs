@@ -37,7 +37,9 @@ public class OrganisationLocationListQueryResult
         string? locationTypeName,
         DateTime? validFrom,
         DateTime? validTo,
+        Guid organisationId,
         string ovoNumber,
+        IMemoryCaches memoryCaches,
         IUser user)
     {
         OrganisationLocationId = organisationLocationId;
@@ -50,7 +52,10 @@ public class OrganisationLocationListQueryResult
 
         IsActive = new Period(new ValidFrom(validFrom), new ValidTo(validTo)).OverlapsWith(DateTime.Today);
         IsEditable =
-            new BeheerderForOrganisationRegardlessOfVlimpersPolicy(ovoNumber)
+            new OrganisationPolicy(
+                    Permission.CanManageOrganisation,
+                    ovoNumber,
+                    memoryCaches.UnderVlimpersManagement.Contains(organisationId))
                 .Check(user)
                 .IsSuccessful;
         Permissions = new ResourceEditPermissions(IsEditable);
@@ -75,7 +80,9 @@ public class OrganisationLocationListQuery : Query<OrganisationLocationListItem,
             x.LocationTypeName,
             x.ValidFrom,
             x.ValidTo,
+            x.OrganisationId,
             _memoryCaches.OvoNumbers[x.OrganisationId],
+            _memoryCaches,
             _user);
 
     public OrganisationLocationListQuery(OrganisationRegistryContext context, IMemoryCaches memoryCaches, Guid organisationId, IUser user)

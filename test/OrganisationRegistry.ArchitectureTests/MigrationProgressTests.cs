@@ -21,13 +21,13 @@ public class MigrationProgressTests : ArchitectureTestBase
     private const int RoleAttributeUsageBaseline = 1;
 
     /// <summary>ISecurityPolicy implementations still referencing the Role enum.</summary>
-    private const int RoleBasedPoliciesBaseline = 5;
+    private const int RoleBasedPoliciesBaseline = 1;
 
     /// <summary>Non-edge types still referencing the Role enum.</summary>
-    private const int RoleReferencesOutsideEdgeBaseline = 23;
+    private const int RoleReferencesOutsideEdgeBaseline = 19;
 
     /// <summary>Controllers calling RoleMapping outside the edge translation layer.</summary>
-    private const int InlineRoleMappingBaseline = 3;
+    private const int InlineRoleMappingBaseline = 2;
 
     // ── Migrated state (update UPWARD only) ───────────────────────────────────
 
