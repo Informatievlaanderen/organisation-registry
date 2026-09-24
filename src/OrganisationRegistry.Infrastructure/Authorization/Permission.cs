@@ -50,6 +50,8 @@ public enum Permission
     CanManageCapacities,
     CanManageLocations,
     CanManageBuildings,
+    CanManageBankAccounts,
+    CanManageOpeningHours,
     CanManageLabels,
     CanManageOrganisationClassifications,
     CanManageFormalFrameworks,
