@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
+using Handling.Authorization;
 using Infrastructure.Tests.Extensions.TestHelpers;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -13,6 +14,7 @@ using OrganisationRegistry.Infrastructure.Domain;
 using OrganisationRegistry.Infrastructure.Events;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Events;
+using OrganisationRegistry.Organisation.Exceptions;
 using Tests.Shared;
 using Tests.Shared.Stubs;
 using Xunit;
@@ -130,5 +132,21 @@ public class
         organisationTerminated.FieldsToTerminate.OpeningHours.Should().BeEmpty();
         organisationTerminated.KboFieldsToTerminate.BankAccounts.Should().BeEmpty();
         organisationTerminated.DateOfTerminationAccordingToKbo.Should().BeNull();
+    }
+
+    [Theory]
+    [InlineData(Role.VlimpersBeheerder)]
+    [InlineData(Role.DecentraalBeheerder)]
+    [InlineData(Role.CjmBeheerder)]
+    [InlineData(Role.OrgaanBeheerder)]
+    [InlineData(Role.RegelgevingBeheerder)]
+    public async Task DoesNotTerminateTheOrganisation(Role role)
+    {
+        // Permission.CanTerminateOrganisation is unrestricted-only (AlgemeenBeheerder
+        // and Developer): VlimpersBeheerder/DecentraalBeheerder never hold it, even
+        // though they may hold a restricted CanManageOrganisation (edit) grant for
+        // their own/Vlimpers-managed organisations.
+        await Given(Events).When(TerminateOrganisationCommand, new UserBuilder().AddRoles(role).Build())
+            .ThenThrows<InsufficientRights<RequiresPermissionPolicy>>();
     }
 }

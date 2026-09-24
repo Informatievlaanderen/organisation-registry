@@ -35,6 +35,7 @@ public static class ScopePermissionMap
             [AcmIdmConstants.Scopes.TestClient] = PermissionSet.Of(
                 Permission.CanManageChildren,
                 Permission.CanManageOrganisation,
+                Permission.CanTerminateOrganisation,
                 Permission.CanCreateOrganisations,
                 Permission.CanManageContacts,
                 Permission.CanManageFunctions,
