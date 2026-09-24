@@ -13,14 +13,14 @@ using Xunit;
 /// <summary>
 /// Matrixrij <b>Onderliggende organisaties (kinderen)</b> — het aanpassen van een
 /// bovenliggende organisatie (<c>PUT /v1/organisations/{id}/parents/{id}</c>) wordt
-/// gedreven door <see cref="Permission.CanManageChildren" />.
+/// gedreven door <see cref="Permission.CanManageParent" />.
 /// </summary>
 [Collection(ApiTestsCollection.Name)]
-public class Given_Roles_With_CanManageChildren
+public class Given_Roles_With_CanManageParent
 {
     private readonly ApiFixture _apiFixture;
 
-    public Given_Roles_With_CanManageChildren(ApiFixture apiFixture)
+    public Given_Roles_With_CanManageParent(ApiFixture apiFixture)
     {
         _apiFixture = apiFixture;
     }

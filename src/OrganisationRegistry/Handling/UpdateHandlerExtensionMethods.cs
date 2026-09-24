@@ -16,6 +16,20 @@ public static class UpdateHandlerExtensionMethods
                 organisation.State.OvoNumber,
                 organisation.State.UnderVlimpersManagement));
 
+    /// <summary>
+    /// Authorization for managing an already-existing organisation's parent
+    /// coupling (<see cref="Permission.CanManageParent"/>), evaluated against
+    /// the organisation being reparented (the aggregate loaded by
+    /// <see cref="UpdateHandler{TAggregate}.For"/>, i.e. the command's own
+    /// <c>Id</c>) — not the target parent organisation.
+    /// </summary>
+    public static UpdateHandler<Organisation> WithParentPolicy(this UpdateHandler<Organisation> source)
+        => source.WithPolicy(
+            organisation => new OrganisationPolicy(
+                Permission.CanManageParent,
+                organisation.State.OvoNumber,
+                organisation.State.UnderVlimpersManagement));
+
     public static UpdateHandler<Organisation> WithContactPolicy(this UpdateHandler<Organisation> source)
         => source.WithPolicy(_ => new ContactPolicy());
 

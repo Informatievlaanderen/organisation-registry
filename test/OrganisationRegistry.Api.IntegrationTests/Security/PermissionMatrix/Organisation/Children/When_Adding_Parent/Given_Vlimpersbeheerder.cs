@@ -14,7 +14,7 @@ using Xunit;
 /// <summary>
 /// Matrixrij <b>Onderliggende organisaties (kinderen)</b> voor de
 /// <see cref="Role.VlimpersBeheerder" />. Een vlimpersbeheerder bezit
-/// <see cref="Permission.CanManageChildren" /> enkel als restricted grant: hij mag
+/// <see cref="Permission.CanManageParent" /> enkel als restricted grant: hij mag
 /// de ouder/kind-structuur uitsluitend beheren voor organisaties die onder
 /// Vlimpersbeheer vallen. Alle andere combinaties leveren 403 op.
 /// </summary>

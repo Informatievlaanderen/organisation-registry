@@ -52,7 +52,7 @@ public class WhenUpdatingAnOrganisationParentValidityToTheFuture
             .AddRoles(Role.DecentraalBeheerder)
             .WithPermissions(
                 PermissionSet.Of(
-                    Permission.CanManageChildren.RestrictedTo(
+                    Permission.CanManageParent.RestrictedTo(
                         ChildRestrictions.DecentraalAndNotUnderVlimpersManagement)))
             .Build();
 

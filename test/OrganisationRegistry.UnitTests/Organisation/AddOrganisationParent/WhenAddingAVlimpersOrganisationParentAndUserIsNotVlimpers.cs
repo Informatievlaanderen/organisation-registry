@@ -93,6 +93,6 @@ public class WhenAddingAVlimpersOrganisationParentAndUserIsNotVlimpers
     public async Task ThrowsException()
     {
         await Given(Events).When(AddOrganisationParentCommand, TestUser.User)
-            .ThenThrows<InsufficientRights<ChildPolicy>>();
+            .ThenThrows<InsufficientRights<OrganisationPolicy>>();
     }
 }

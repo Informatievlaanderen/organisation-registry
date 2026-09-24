@@ -55,7 +55,7 @@ public class WhenUpdatingAVlimpersOrganisationAsParentForANonVlimpersOrganisatio
             .AddOrganisations(_ovoNumber)
             .WithPermissions(
                 PermissionSet.Of(
-                    Permission.CanManageChildren.RestrictedTo(
+                    Permission.CanManageParent.RestrictedTo(
                         ChildRestrictions.DecentraalAndNotUnderVlimpersManagement)))
             .Build();
 

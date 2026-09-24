@@ -9,15 +9,15 @@ using OrganisationRegistry.Api.Backoffice.Organisation.Parent;
 using Xunit;
 
 /// <summary>
-/// Rollen zonder <c>CanManageChildren</c> mogen de ouder/kind-structuur van een
+/// Rollen zonder <c>CanManageParent</c> mogen de ouder/kind-structuur van een
 /// organisatie niet beheren en krijgen 403 terug.
 /// </summary>
 [Collection(ApiTestsCollection.Name)]
-public class Given_Roles_Without_CanManageChildren
+public class Given_Roles_Without_CanManageParent
 {
     private readonly ApiFixture _apiFixture;
 
-    public Given_Roles_Without_CanManageChildren(ApiFixture apiFixture)
+    public Given_Roles_Without_CanManageParent(ApiFixture apiFixture)
     {
         _apiFixture = apiFixture;
     }
