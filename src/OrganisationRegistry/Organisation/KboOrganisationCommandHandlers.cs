@@ -234,19 +234,19 @@ public class KboOrganisationCommandHandlers :
     }
 
     public async Task Handle(ICommandEnvelope<CreateOrganisationFromKboNumber> envelope)
-    {
-        new RequiresRolesPolicy(Role.AlgemeenBeheerder, Role.CjmBeheerder)
-            .ThrowOnViolation(envelope.User);
-
-        await CreateFromKbo(envelope.Command, envelope.User);
-    }
+        => await Handler.For(envelope.User, Session)
+            .RequiresPermission(Permission.CanCreateOrganisations)
+            .Handle(async _ => await CreateFromKbo(envelope.Command, envelope.User));
 
     public async Task Handle(ICommandEnvelope<CreateOrganisationFromKbo> envelope)
     {
-        new RequiresRolesPolicy(Role.AlgemeenBeheerder, Role.CjmBeheerder)
-            .ThrowOnViolation(envelope.User);
+        var command = envelope.Command;
 
-        await CreateFromKbo(envelope.Command, envelope.User);
+        var handler = command.ParentOrganisationId is { } parentOrganisationId
+            ? Handler.For(envelope.User, Session).WithChildPolicy(Session.Get<Organisation>(parentOrganisationId))
+            : Handler.For(envelope.User, Session).RequiresPermission(Permission.CanCreateOrganisations);
+
+        await handler.Handle(async _ => await CreateFromKbo(command, envelope.User));
     }
 
     private async Task CreateFromKbo(CreateOrganisationFromKbo command, IUser user)
