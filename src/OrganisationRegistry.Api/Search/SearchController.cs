@@ -15,6 +15,8 @@ using Infrastructure;
 using Infrastructure.Search;
 using Infrastructure.Search.Pagination;
 using Infrastructure.Search.Sorting;
+using Infrastructure.Security;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -278,6 +280,8 @@ public class SearchController : OrganisationRegistryController
 
     /// <summary>Entiteiten opzoeken.</summary>
     [HttpPost("{indexName}")]
+    [OrganisationRegistryAuthorize]
+    [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> PostApiSearch(
         string indexName,
