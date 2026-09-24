@@ -30,7 +30,7 @@ public class CreateOrUpdateOrganisationKeyTests
 
         var response = await CreateKey(
             organisationId,
-            _apiFixture.HttpClient,
+            _apiFixture.CreateAnonymousClient(),
             _orafinKeyType);
 
         await ApiFixture.VerifyStatusCode(response, HttpStatusCode.Unauthorized);
@@ -49,6 +49,23 @@ public class CreateOrUpdateOrganisationKeyTests
         var response = await CreateKey(organisationId, httpClient, _orafinKeyType);
 
         await ApiFixture.VerifyStatusCode(response, HttpStatusCode.Forbidden);
+    }
+
+    [EnvVarIgnoreFact]
+    public async Task AsTestClient_ReturnsCreatedAndCanUpdate()
+    {
+        var organisationId = Guid.NewGuid();
+        await _apiFixture.Create.Organisation(organisationId, TestOrganisationName);
+
+        var keyTypeId = await _apiFixture.Create.KeyType();
+        var httpClient = await _apiFixture.CreateTestClient();
+
+        var createResponse = await CreateKey(organisationId, httpClient, keyTypeId);
+        await ApiFixture.VerifyStatusCode(createResponse, HttpStatusCode.Created);
+        var organisationKeyId = ApiFixture.GetIdFrom(createResponse.Headers);
+
+        var updateResponse = await UpdateKey(organisationId, organisationKeyId, httpClient, keyTypeId);
+        await ApiFixture.VerifyStatusCode(updateResponse, HttpStatusCode.OK);
     }
 
     private static async Task<HttpResponseMessage> UpdateKey(Guid organisationId, Guid organisationKeyId, HttpClient httpClient, Guid orafinKeyType)

@@ -11,6 +11,7 @@ using Infrastructure;
 using OrganisationRegistry.Api.Infrastructure.Security;
 using Infrastructure.Swagger;
 using Infrastructure.Swagger.Examples;
+using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Commands;
 using Swashbuckle.AspNetCore.Filters;
 using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetails;
@@ -23,7 +24,10 @@ using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetai
 [ApiExplorerSettings(GroupName = "Organisatiesleutels")]
 [Consumes("application/json")]
 [Produces("application/json")]
-[Authorize(AuthenticationSchemes = AuthenticationSchemes.EditApi, Policy = PolicyNames.Keys)]
+[OrganisationRegistryAuthorize(
+    RequiredPermissions = [Permission.CanManageKeys],
+    AuthenticationSchemes = AuthenticationSchemes.EditApi,
+    Policy = PolicyNames.Keys)]
 public class OrganisationKeyController : EditApiController
 {
     public OrganisationKeyController(ICommandSender commandSender)

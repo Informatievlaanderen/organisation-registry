@@ -1,10 +1,13 @@
 namespace OrganisationRegistry.ArchitectureTests;
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using ArchUnitNET.Domain;
 using ArchUnitNET.Fluent;
 using ArchUnitNET.xUnit;
+using Infrastructure.Authorization;
+using OrganisationRegistry.Api.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Xunit;
@@ -21,7 +24,7 @@ public class ControllerAuthorizationTests : ArchitectureTestBase
     private const string AuthorizeAttributeFullName =
         "OrganisationRegistry.Api.Infrastructure.Security.OrganisationRegistryAuthorizeAttribute";
 
-    private static readonly string AnonymousAttributeFullName = typeof(AllowAnonymousAttribute).FullName;
+    private static readonly string AnonymousAttributeFullName = typeof(AllowAnonymousAttribute).FullName!;
 
     [Fact]
     public void AllowAnonymousOnlyAppearsTogetherWithOrganisationRegistryAuthorize()
@@ -37,10 +40,9 @@ public class ControllerAuthorizationTests : ArchitectureTestBase
             {
                 var classTargets = c.AttributeInstances
                     .Any(a => a.Type.FullName == AnonymousAttributeFullName)
-                    ? new[]
+                    ? new (string Target, bool HasAuthorize)[]
                     {
-                        (Target: c.FullName,
-                         HasAuthorize: c.AttributeInstances.Any(a => a.Type.FullName == AuthorizeAttributeFullName))
+                        (c.FullName, c.AttributeInstances.Any(a => a.Type.FullName == AuthorizeAttributeFullName)),
                     }
                     : Array.Empty<(string Target, bool HasAuthorize)>();
 
@@ -111,6 +113,63 @@ public class ControllerAuthorizationTests : ArchitectureTestBase
     }
 
     [Fact]
+    public void EditApiMutatingActionsRequirePermissionThatMatchesPolicyScope()
+    {
+        var expectedPermissionsByPolicy = new Dictionary<string, string[]>
+        {
+            [PolicyNames.Organisations] = [nameof(Permission.CanCreateOrganisations)],
+            [PolicyNames.BankAccounts] = [nameof(Permission.CanManageBankAccounts)],
+            [PolicyNames.OrganisationClassifications] = [nameof(Permission.CanManageOrganisationClassifications)],
+            [PolicyNames.OrganisationContacts] = [nameof(Permission.CanManageContacts)],
+            [PolicyNames.Keys] = [nameof(Permission.CanManageKeys)],
+        };
+
+        var controllers = ConcreteControllers.GetObjects(Architecture);
+        var violations = controllers
+            .Where(c => c.Namespace?.FullName?.Contains(".Api.Edit.") == true)
+            .SelectMany(c =>
+            {
+                var classPolicy = c.AttributeInstances
+                    .Where(a => a.Type.FullName == typeof(AuthorizeAttribute).FullName)
+                    .Select(GetPolicy)
+                    .FirstOrDefault(policy => policy is not null);
+
+                if (classPolicy is null || !expectedPermissionsByPolicy.TryGetValue(classPolicy, out var expectedPermissions))
+                    return Array.Empty<string>();
+
+                var classPermissions = c.AttributeInstances
+                    .Where(a => a.Type.FullName == AuthorizeAttributeFullName)
+                    .SelectMany(GetRequiredPermissions)
+                    .ToArray();
+
+                return c.Members
+                    .OfType<MethodMember>()
+                    .Where(m => m.AttributeInstances.Any(a => IsMutatingHttpMethod(a.Type.FullName)))
+                    .Where(m => !m.AttributeInstances.Any(a => a.Type.FullName == AnonymousAttributeFullName))
+                    .Where(m =>
+                    {
+                        var effectivePermissions = m.AttributeInstances
+                            .Where(a => a.Type.FullName == AuthorizeAttributeFullName)
+                            .SelectMany(GetRequiredPermissions)
+                            .Concat(classPermissions)
+                            .Distinct()
+                            .ToArray();
+
+                        return effectivePermissions.Intersect(expectedPermissions).Any() is false;
+                    })
+                    .Select(m => $"{c.FullName}.{m.Name} (policy: {classPolicy}, expected one of: {string.Join(", ", expectedPermissions)})");
+            })
+            .OrderBy(name => name)
+            .ToList();
+
+        Assert.True(
+            violations.Count == 0,
+            "Edit API mutating actions must pair their client-credentials policy with a matching " +
+            "[OrganisationRegistryAuthorize(RequiredPermissions = ...)] permission.\n" +
+            "Mismatches:\n - " + string.Join("\n - ", violations));
+    }
+
+    [Fact]
     public void ParameterGetActionsAllowBothAnonymousAndAuthenticatedAccess()
     {
         // Parameter GETs (referentiedata-lijsten) moeten publiek leesbaar zijn.
@@ -154,4 +213,26 @@ public class ControllerAuthorizationTests : ArchitectureTestBase
             arg is AttributeNamedArgument named
             && named.Name == "RequiredPermissions"
             && named.Value is object[] { Length: > 0 });
+
+    private static IEnumerable<string> GetRequiredPermissions(AttributeInstance attribute)
+        => attribute.AttributeArguments
+            .OfType<AttributeNamedArgument>()
+            .Where(arg => arg.Name == "RequiredPermissions")
+            .SelectMany(arg => arg.Value as object[] ?? Array.Empty<object>())
+            // ArchUnitNET reads enum array elements as their raw underlying int value
+            // (not the enum name), so the Permission name must be resolved explicitly.
+            .Select(value => value is int i ? ((Permission)i).ToString() : value?.ToString())
+            .Where(value => !string.IsNullOrWhiteSpace(value))!;
+
+    private static string? GetPolicy(AttributeInstance attribute)
+        => attribute.AttributeArguments
+            .OfType<AttributeNamedArgument>()
+            .FirstOrDefault(arg => arg.Name == nameof(AuthorizeAttribute.Policy))
+            ?.Value as string;
+
+    private static bool IsMutatingHttpMethod(string? attributeFullName)
+        => attributeFullName == typeof(HttpPostAttribute).FullName
+            || attributeFullName == typeof(HttpPutAttribute).FullName
+            || attributeFullName == typeof(HttpDeleteAttribute).FullName
+            || attributeFullName == typeof(HttpPatchAttribute).FullName;
 }
