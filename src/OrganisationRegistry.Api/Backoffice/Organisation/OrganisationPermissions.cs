@@ -21,6 +21,13 @@ using OrganisationRegistry.Infrastructure.Authorization.Restrictions;
 public class OrganisationPermissions
 {
     public bool CanEdit { get; }
+
+    /// <summary>
+    /// Whether the caller may terminate this organisation (PUT .../terminate).
+    /// Unrestricted-only (<see cref="Permission.CanTerminateOrganisation"/>): unlike
+    /// <see cref="CanEdit"/>, VlimpersBeheerder and DecentraalBeheerder never hold
+    /// this permission, even for their own/Vlimpers-managed organisations.
+    /// </summary>
     public bool CanDelete { get; }
     public bool CanManageChildren { get; }
     public bool CanManageContacts { get; }
@@ -91,7 +98,7 @@ public class OrganisationPermissions
 
         return new OrganisationPermissions(
             canEdit: canEditOrganisation,
-            canDelete: false,
+            canDelete: user.HasPermission(Permission.CanTerminateOrganisation),
             canManageChildren: Satisfies(
                 Permission.CanManageChildren,
                 userContext,

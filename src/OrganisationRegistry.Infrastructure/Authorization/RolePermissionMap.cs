@@ -22,6 +22,7 @@ public static class RolePermissionMap
             [Role.AlgemeenBeheerder] = PermissionSet.Of(
                 Permission.CanManageChildren,
                 Permission.CanManageOrganisation,
+                Permission.CanTerminateOrganisation,
                 Permission.CanCreateOrganisations,
                 Permission.CanManageContacts,
                 Permission.CanManageFunctions,
@@ -141,6 +142,7 @@ public static class RolePermissionMap
             [Role.Developer] = PermissionSet.Of(
                 Permission.CanManageChildren,
                 Permission.CanManageOrganisation,
+                Permission.CanTerminateOrganisation,
                 Permission.CanCreateOrganisations,
                 Permission.CanManageContacts,
                 Permission.CanManageFunctions,

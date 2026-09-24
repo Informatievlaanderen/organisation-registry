@@ -12,6 +12,18 @@ public enum Permission
     CanManageOrganisation,
 
     /// <summary>
+    /// Terminate ("beëindig") an organisation (<c>OrganisationDetailCommandController.Terminate</c>).
+    /// Unrestricted-only: unlike <see cref="CanManageOrganisation"/> (which
+    /// VlimpersBeheerder/DecentraalBeheerder hold as restricted grants for
+    /// editing their own/managed organisations), termination is a distinct,
+    /// higher-impact capability that must never be reachable via those
+    /// restricted edit grants. Granted only to AlgemeenBeheerder (and
+    /// Developer); VlimpersBeheerder and DecentraalBeheerder have no
+    /// termination rights at all, regardless of Vlimpers-management status.
+    /// </summary>
+    CanTerminateOrganisation,
+
+    /// <summary>
     /// Create a new <em>top-level</em> organisation (one with no parent).
     /// Unrestricted-only: unlike <see cref="CanManageChildren"/> (which gates
     /// adding a daughter organisation under an existing parent, and is held

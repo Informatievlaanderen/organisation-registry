@@ -120,6 +120,7 @@ public class OrganisationDetailCommandController : OrganisationRegistryCommandCo
     /// <summary>Beëindig een organisatie.</summary>
     /// <response code="200">Als de organisatie beëindigd is.</response>
     [HttpPut("{id}/terminate")]
+    [OrganisationRegistryAuthorize(RequiredPermissions = [Permission.CanTerminateOrganisation])]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Terminate([FromRoute] Guid id, [FromBody] OrganisationTerminationRequest message)

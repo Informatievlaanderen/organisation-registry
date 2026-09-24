@@ -96,6 +96,28 @@ public class RolePermissionMapTests
     }
 
     [Theory]
+    [InlineData(Role.AlgemeenBeheerder)]
+    [InlineData(Role.Developer)]
+    public void Grants_CanTerminateOrganisation(Role role)
+        => RolePermissionMap.For(role).Contains(Permission.CanTerminateOrganisation).Should().BeTrue();
+
+    [Theory]
+    [InlineData(Role.VlimpersBeheerder)]
+    [InlineData(Role.DecentraalBeheerder)]
+    [InlineData(Role.CjmBeheerder)]
+    [InlineData(Role.OrgaanBeheerder)]
+    [InlineData(Role.RegelgevingBeheerder)]
+    [InlineData(Role.Orafin)]
+    [InlineData(Role.AutomatedTask)]
+    public void Does_not_grant_CanTerminateOrganisation(Role role)
+    {
+        // CanTerminateOrganisation is unrestricted-only: it cannot be modeled as a
+        // restriction on CanManageOrganisation because VlimpersBeheerder/DecentraalBeheerder
+        // must be excluded even for organisations they can otherwise edit.
+        RolePermissionMap.For(role).Contains(Permission.CanTerminateOrganisation).Should().BeFalse();
+    }
+
+    [Theory]
     [InlineData(Permission.CanManageBodies)]
     [InlineData(Permission.BodiesCanManageContacts)]
     [InlineData(Permission.BodiesCanManageSeats)]
