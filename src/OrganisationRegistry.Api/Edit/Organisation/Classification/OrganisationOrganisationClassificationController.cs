@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.FeatureManagement.Mvc;
+using OrganisationRegistry.Api.Infrastructure.Security;
+using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Commands;
 using Swashbuckle.AspNetCore.Filters;
 
@@ -22,7 +24,10 @@ using Swashbuckle.AspNetCore.Filters;
 [ApiExplorerSettings(GroupName = "Organisatieclassificaties")]
 [Consumes("application/json")]
 [Produces("application/json")]
-[Authorize(AuthenticationSchemes = AuthenticationSchemes.EditApi, Policy = PolicyNames.OrganisationClassifications)]
+[OrganisationRegistryAuthorize(
+    RequiredPermissions = [Permission.CanManageOrganisationClassifications],
+    AuthenticationSchemes = AuthenticationSchemes.EditApi,
+    Policy = PolicyNames.OrganisationClassifications)]
 public class OrganisationOrganisationClassificationController : EditApiController
 {
     public OrganisationOrganisationClassificationController(ICommandSender commandSender) : base(commandSender)

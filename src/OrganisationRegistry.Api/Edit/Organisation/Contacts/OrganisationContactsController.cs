@@ -7,6 +7,8 @@ using Infrastructure.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.FeatureManagement.Mvc;
+using OrganisationRegistry.Api.Infrastructure.Security;
+using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Commands;
 
 [FeatureGate(FeatureFlags.EditApi)]
@@ -17,7 +19,10 @@ using OrganisationRegistry.Infrastructure.Commands;
 [ApiExplorerSettings(GroupName = "OrganisationContacts")]
 [Consumes("application/json")]
 [Produces("application/json")]
-[Authorize(AuthenticationSchemes = AuthenticationSchemes.EditApi, Policy = PolicyNames.OrganisationContacts)]
+[OrganisationRegistryAuthorize(
+    RequiredPermissions = [Permission.CanManageContacts],
+    AuthenticationSchemes = AuthenticationSchemes.EditApi,
+    Policy = PolicyNames.OrganisationContacts)]
 public class OrganisationContactsController : EditApiController
 {
     public OrganisationContactsController(ICommandSender commandSender) : base(commandSender)

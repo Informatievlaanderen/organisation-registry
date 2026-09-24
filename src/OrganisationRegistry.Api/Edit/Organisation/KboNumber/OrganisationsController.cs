@@ -13,6 +13,8 @@ using Infrastructure.Swagger.Examples;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.FeatureManagement.Mvc;
+using OrganisationRegistry.Api.Infrastructure.Security;
+using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Commands;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Commands;
@@ -28,7 +30,10 @@ using Swashbuckle.AspNetCore.Filters;
 [ApiExplorerSettings(GroupName = "Organisaties")]
 [Consumes("application/json")]
 [Produces("application/json")]
-[Authorize(AuthenticationSchemes = AuthenticationSchemes.EditApi, Policy = PolicyNames.Organisations)]
+[OrganisationRegistryAuthorize(
+    RequiredPermissions = [Permission.CanCreateOrganisations],
+    AuthenticationSchemes = AuthenticationSchemes.EditApi,
+    Policy = PolicyNames.Organisations)]
 public class OrganisationsController : EditApiController
 {
     public OrganisationsController(ICommandSender commandSender) : base(commandSender)

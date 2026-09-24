@@ -14,7 +14,6 @@ using Xunit;
 public class CreateContactsTests
 {
     private const string TestOrganisationForCreateContacts = "test organisation for createContacts";
-    private const string ContactTypeName = "contactTypeName";
     private readonly ApiFixture _apiFixture;
     private readonly Guid _organisationId;
 
@@ -28,7 +27,7 @@ public class CreateContactsTests
     public async Task WithoutBearer_ReturnsUnauthorized()
     {
         var response = await CreateContacts(
-            _apiFixture.HttpClient,
+            _apiFixture.CreateAnonymousClient(),
             _apiFixture.Fixture.Create<Guid>(),
             _apiFixture.Fixture.Create<Guid>(),
             _apiFixture.Fixture.Create<string>());
@@ -45,6 +44,31 @@ public class CreateContactsTests
             _apiFixture.Fixture.Create<Guid>(),
             _apiFixture.Fixture.Create<string>());
         await ApiFixture.VerifyStatusCode(response, HttpStatusCode.Forbidden);
+    }
+
+    [EnvVarIgnoreFact]
+    public async Task AsCjmBeheerder_ReturnsForbidden()
+    {
+        var response = await CreateContacts(
+            await _apiFixture.CreateCjmClient(),
+            _apiFixture.Fixture.Create<Guid>(),
+            _apiFixture.Fixture.Create<Guid>(),
+            _apiFixture.Fixture.Create<string>());
+        await ApiFixture.VerifyStatusCode(response, HttpStatusCode.Forbidden);
+    }
+
+    [EnvVarIgnoreFact]
+    public async Task AsTestClient_ReturnsCreatedAndCanUpdate()
+    {
+        await _apiFixture.Create.Organisation(_organisationId, TestOrganisationForCreateContacts);
+
+        var httpClient = await _apiFixture.CreateTestClient();
+        var contactTypeName = _apiFixture.Fixture.Create<string>();
+        var contactTypeId = await _apiFixture.Create.ContactType(contactTypeName);
+
+        var organisationContactId = await CreatAndVerify(httpClient, contactTypeId, contactTypeName);
+
+        await UpdateAndVerify(httpClient, contactTypeId, organisationContactId, contactTypeName);
     }
 
     private async Task UpdateAndVerify(HttpClient httpClient, Guid contactTypeId, Guid organisationContactId, string contactTypeName)
