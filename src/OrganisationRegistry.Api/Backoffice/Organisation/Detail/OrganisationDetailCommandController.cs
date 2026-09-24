@@ -14,7 +14,6 @@ using Security;
 
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
-[OrganisationRegistryAuthorize]
 [OrganisationRegistryRoute("organisations")]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Scherm APIs: Organisaties")]
@@ -28,6 +27,7 @@ public class OrganisationDetailCommandController : OrganisationRegistryCommandCo
     /// <response code="201">Als de organisatie succesvol aangemaakt is.</response>
     /// <response code="400">Als de validatie voor de organisatie mislukt is.</response>
     [HttpPost]
+    [OrganisationRegistryAuthorize(RequiredPermissions = [Permission.CanCreateOrganisations, Permission.CanManageChildren])]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Post(
@@ -61,6 +61,7 @@ public class OrganisationDetailCommandController : OrganisationRegistryCommandCo
     /// <response code="200">Als de organisatie succesvol aangepast is.</response>
     /// <response code="400">Als de validatie voor de organisatie mislukt is.</response>
     [HttpPut("{id}")]
+    [OrganisationRegistryAuthorize(RequiredPermissions = [Permission.CanManageOrganisation])]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Put(
@@ -81,6 +82,7 @@ public class OrganisationDetailCommandController : OrganisationRegistryCommandCo
     /// <response code="200">Als de organisatie succesvol aangepast is.</response>
     /// <response code="400">Als de validatie voor de organisatie mislukt is.</response>
     [HttpPut("{id}/limitedtovlimpers")]
+    [OrganisationRegistryAuthorize(RequiredPermissions = [Permission.CanManageOrganisation])]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Put(
@@ -101,6 +103,7 @@ public class OrganisationDetailCommandController : OrganisationRegistryCommandCo
     /// <response code="200">Als de organisatie succesvol aangepast is.</response>
     /// <response code="400">Als de validatie voor de organisatie mislukt is.</response>
     [HttpPut("{id}/notlimitedtovlimpers")]
+    [OrganisationRegistryAuthorize(RequiredPermissions = [Permission.CanManageOrganisation])]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Put(
