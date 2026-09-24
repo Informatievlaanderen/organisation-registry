@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.FeatureManagement.Mvc;
+using OrganisationRegistry.Api.Infrastructure.Security;
+using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Commands;
 using Swashbuckle.AspNetCore.Filters;
 using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetails;
@@ -23,7 +25,10 @@ using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetai
 [ApiExplorerSettings(GroupName = "Organisatiebankrekeningnummers")]
 [Consumes("application/json")]
 [Produces("application/json")]
-[Authorize(AuthenticationSchemes = AuthenticationSchemes.EditApi, Policy = PolicyNames.BankAccounts)]
+[OrganisationRegistryAuthorize(
+    RequiredPermissions = [Permission.CanManageBankAccounts],
+    AuthenticationSchemes = AuthenticationSchemes.EditApi,
+    Policy = PolicyNames.BankAccounts)]
 public class OrganisationBankAccountController : EditApiController
 {
     public OrganisationBankAccountController(ICommandSender commandSender) : base(commandSender)
