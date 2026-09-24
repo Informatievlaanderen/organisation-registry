@@ -45,7 +45,7 @@ public class WhenAddingANonVlimpersOrganisationAsParentForAVlimpersOrganisation
             .AddRoles(Role.VlimpersBeheerder)
             .WithPermissions(
                 PermissionSet.Of(
-                    Permission.CanManageChildren.RestrictedTo(
+                    Permission.CanManageParent.RestrictedTo(
                         ChildRestrictions.UnderVlimpersManagement)))
             .Build();
 

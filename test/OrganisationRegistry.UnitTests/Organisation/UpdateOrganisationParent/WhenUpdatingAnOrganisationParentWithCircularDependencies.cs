@@ -50,7 +50,7 @@ public class WhenUpdatingAnOrganisationParentWithCircularDependencies
             .AddRoles(Role.DecentraalBeheerder)
             .WithPermissions(
                 PermissionSet.Of(
-                    Permission.CanManageChildren.RestrictedTo(
+                    Permission.CanManageParent.RestrictedTo(
                         ChildRestrictions.DecentraalAndNotUnderVlimpersManagement)))
             .Build();
 

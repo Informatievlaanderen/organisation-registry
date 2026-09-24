@@ -24,7 +24,7 @@ public class CommandHandlerPolicyTests : ArchitectureTestBase
         "RequiresPermission", "RequiresVlimpersBeheerder", "RequiresDecentraleBeheerder",
         "RequiresRoles", "RequiresRegisterBody",
         ".WithPolicy(", ".Check(",
-        "WithBodyPolicy", "WithImportPolicy", "WithChildPolicy",
+        "WithBodyPolicy", "WithImportPolicy", "WithChildPolicy", "WithParentPolicy",
         "WithKboPolicy", "WithRegulationPolicy",
         "WithVlimpersManagementPolicy",
         "RequiresBeheerderForOrganisationButNotUnderVlimpersManagement",

@@ -9,6 +9,19 @@ namespace OrganisationRegistry.Infrastructure.Authorization;
 public enum Permission
 {
     CanManageChildren,
+
+    /// <summary>
+    /// Manage an <em>already existing</em> organisation's parent coupling
+    /// (<c>OrganisationParentCommandController</c>: adding/updating the
+    /// bovenliggende organisatie). Distinct from <see cref="CanManageChildren"/>
+    /// (which gates adding a new daughter organisation) for clarity of intent,
+    /// but carries the exact same role grants and restrictions (evaluated
+    /// against the organisation being reparented): AlgemeenBeheerder/Developer
+    /// unrestricted, VlimpersBeheerder restricted to organisations under
+    /// Vlimpers management, DecentraalBeheerder restricted to their own,
+    /// non-Vlimpers-managed organisations.
+    /// </summary>
+    CanManageParent,
     CanManageOrganisation,
 
     /// <summary>
