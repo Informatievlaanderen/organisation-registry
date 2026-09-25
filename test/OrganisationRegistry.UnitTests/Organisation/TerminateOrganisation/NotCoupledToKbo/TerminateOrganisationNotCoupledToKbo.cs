@@ -144,8 +144,9 @@ public class
     {
         // Permission.CanTerminateOrganisation is unrestricted-only (AlgemeenBeheerder
         // and Developer): VlimpersBeheerder/DecentraalBeheerder never hold it, even
-        // though they may hold a restricted CanManageOrganisation (edit) grant for
-        // their own/Vlimpers-managed organisations.
+        // though they may hold a restricted CanManageOrganisationInfoLimitedToVlimpers
+        // / CanManageOrganisationInfoNotLimitedToVlimpers (edit) grant for their
+        // own/Vlimpers-managed organisations.
         await Given(Events).When(TerminateOrganisationCommand, new UserBuilder().AddRoles(role).Build())
             .ThenThrows<InsufficientRights<RequiresPermissionPolicy>>();
     }

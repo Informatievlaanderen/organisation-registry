@@ -22,11 +22,50 @@ public enum Permission
     /// non-Vlimpers-managed organisations.
     /// </summary>
     CanManageParent,
+
+    /// <summary>
+    /// Manage the general organisation info fields via the top-level
+    /// <c>PUT /organisations/{id}</c> endpoint (<c>UpdateOrganisationCommandHandler</c>).
+    /// Unrestricted-only: held only by AlgemeenBeheerder/Developer. VlimpersBeheerder
+    /// and DecentraalBeheerder must use the split endpoints instead
+    /// (<see cref="CanManageOrganisationInfoLimitedToVlimpers"/> and
+    /// <see cref="CanManageOrganisationInfoNotLimitedToVlimpers"/> respectively).
+    /// </summary>
     CanManageOrganisation,
 
     /// <summary>
+    /// Edit the four organisation fields whose management is reserved to
+    /// Vlimpers (<c>UpdateOrganisationInfoLimitedToVlimpersCommandHandler</c>:
+    /// formele naam, formele korte naam, lidwoord, operationele geldigheid).
+    /// Distinct from <see cref="CanManageOrganisation"/> (the general endpoint,
+    /// only held by AlgemeenBeheerder/Developer) and from
+    /// <see cref="CanManageOrganisationInfoNotLimitedToVlimpers"/> (every other
+    /// organisation field): granted unrestricted to AlgemeenBeheerder/Developer,
+    /// restricted to organisations under Vlimpers management for VlimpersBeheerder,
+    /// and <em>never</em> granted to DecentraalBeheerder — DecentraalBeheerder must
+    /// not be able to touch these four fields on any organisation, Vlimpers-managed
+    /// or not.
+    /// </summary>
+    CanManageOrganisationInfoLimitedToVlimpers,
+
+    /// <summary>
+    /// Edit the organisation info fields <em>not</em> reserved to Vlimpers
+    /// (<c>UpdateOrganisationInfoNotLimitedToVlimpersCommandHandler</c>: description,
+    /// doelstellingen/purposes, tonen op Vlaamse overheid sites). Distinct from
+    /// <see cref="CanManageOrganisation"/> (the general <c>PUT /organisations/{id}</c>
+    /// endpoint, which also covers the four Vlimpers-reserved fields and is only
+    /// held by AlgemeenBeheerder/Developer): granted unrestricted to
+    /// AlgemeenBeheerder/Developer, and restricted to DecentraalBeheerder for
+    /// their own organisation via <see cref="OrganisationRegistry.Infrastructure.Authorization.Restrictions.DecentraalOrganisationRestriction"/>
+    /// — regardless of Vlimpers-management status, since these fields are never
+    /// Vlimpers-reserved. VlimpersBeheerder never holds this permission.
+    /// </summary>
+    CanManageOrganisationInfoNotLimitedToVlimpers,
+
+    /// <summary>
     /// Terminate ("beëindig") an organisation (<c>OrganisationDetailCommandController.Terminate</c>).
-    /// Unrestricted-only: unlike <see cref="CanManageOrganisation"/> (which
+    /// Unrestricted-only: unlike <see cref="CanManageOrganisationInfoLimitedToVlimpers"/>
+    /// and <see cref="CanManageOrganisationInfoNotLimitedToVlimpers"/> (which
     /// VlimpersBeheerder/DecentraalBeheerder hold as restricted grants for
     /// editing their own/managed organisations), termination is a distinct,
     /// higher-impact capability that must never be reachable via those

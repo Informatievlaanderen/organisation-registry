@@ -82,7 +82,7 @@ public class OrganisationDetailCommandController : OrganisationRegistryCommandCo
     /// <response code="200">Als de organisatie succesvol aangepast is.</response>
     /// <response code="400">Als de validatie voor de organisatie mislukt is.</response>
     [HttpPut("{id}/limitedtovlimpers")]
-    [OrganisationRegistryAuthorize(RequiredPermissions = [Permission.CanManageOrganisation])]
+    [OrganisationRegistryAuthorize(RequiredPermissions = [Permission.CanManageOrganisationInfoLimitedToVlimpers])]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Put(
@@ -103,7 +103,7 @@ public class OrganisationDetailCommandController : OrganisationRegistryCommandCo
     /// <response code="200">Als de organisatie succesvol aangepast is.</response>
     /// <response code="400">Als de validatie voor de organisatie mislukt is.</response>
     [HttpPut("{id}/notlimitedtovlimpers")]
-    [OrganisationRegistryAuthorize(RequiredPermissions = [Permission.CanManageOrganisation])]
+    [OrganisationRegistryAuthorize(RequiredPermissions = [Permission.CanManageOrganisationInfoNotLimitedToVlimpers])]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Put(

@@ -118,6 +118,147 @@ public class RolePermissionMapTests
     }
 
     [Theory]
+    [InlineData(Role.AlgemeenBeheerder)]
+    [InlineData(Role.Developer)]
+    public void Grants_CanManageOrganisationInfoLimitedToVlimpers_unrestricted(Role role)
+        => RolePermissionMap.For(role).Contains(Permission.CanManageOrganisationInfoLimitedToVlimpers)
+            .Should().BeTrue();
+
+    [Fact]
+    public void DecentraalBeheerder_never_grants_CanManageOrganisationInfoLimitedToVlimpers()
+    {
+        // The four Vlimpers-reserved fields (formele naam, formele korte naam,
+        // lidwoord, operationele geldigheid) must never be reachable by
+        // DecentraalBeheerder, unlike CanManageOrganisationInfoNotLimitedToVlimpers
+        // (which it holds restricted to its own organisation).
+        var config = new OrganisationRegistryConfigurationStub();
+
+        RolePermissionMap.For(Role.DecentraalBeheerder)
+            .Contains(Permission.CanManageOrganisationInfoLimitedToVlimpers)
+            .Should().BeFalse();
+
+        RolePermissionMap.For(new[] { Role.DecentraalBeheerder }, config)
+            .Contains(Permission.CanManageOrganisationInfoLimitedToVlimpers)
+            .Should().BeFalse();
+    }
+
+    [Fact]
+    public void For_config_VlimpersBeheerder_grants_CanManageOrganisationInfoLimitedToVlimpers_restricted_to_organisations_under_vlimpers_management()
+    {
+        var ovoNumber = "OVO123456";
+        var config = new OrganisationRegistryConfigurationStub();
+
+        var user = new UserBuilder()
+            .AddRoles(Role.VlimpersBeheerder)
+            .AddOrganisations(ovoNumber)
+            .Build();
+
+        var set = RolePermissionMap.For(new[] { Role.VlimpersBeheerder }, config);
+
+        set.IsSatisfiedFor(
+                Permission.CanManageOrganisationInfoLimitedToVlimpers,
+                new UserContext(user),
+                new OrganisationContext(ovoNumber),
+                new VlimpersManagementContext(true))
+            .Should().BeTrue();
+
+        set.IsSatisfiedFor(
+                Permission.CanManageOrganisationInfoLimitedToVlimpers,
+                new UserContext(user),
+                new OrganisationContext(ovoNumber),
+                new VlimpersManagementContext(false))
+            .Should().BeFalse();
+    }
+
+    [Theory]
+    [InlineData(Role.AlgemeenBeheerder)]
+    [InlineData(Role.Developer)]
+    public void Grants_CanManageOrganisation_unrestricted(Role role)
+        => RolePermissionMap.For(role).Contains(Permission.CanManageOrganisation).Should().BeTrue();
+
+    [Theory]
+    [InlineData(Role.VlimpersBeheerder)]
+    [InlineData(Role.DecentraalBeheerder)]
+    [InlineData(Role.CjmBeheerder)]
+    [InlineData(Role.OrgaanBeheerder)]
+    [InlineData(Role.RegelgevingBeheerder)]
+    public void Non_admin_roles_never_grant_CanManageOrganisation(Role role)
+    {
+        // The general PUT /organisations/{id} endpoint (all fields, incl. the
+        // four Vlimpers-reserved ones) is now exclusively for
+        // AlgemeenBeheerder/Developer. VlimpersBeheerder and
+        // DecentraalBeheerder use the split
+        // CanManageOrganisationInfoLimitedToVlimpers /
+        // CanManageOrganisationInfoNotLimitedToVlimpers permissions instead.
+        var config = new OrganisationRegistryConfigurationStub();
+
+        RolePermissionMap.For(role).Contains(Permission.CanManageOrganisation).Should().BeFalse();
+
+        RolePermissionMap.For(new[] { role }, config)
+            .Contains(Permission.CanManageOrganisation)
+            .Should().BeFalse();
+    }
+
+    [Theory]
+    [InlineData(Role.AlgemeenBeheerder)]
+    [InlineData(Role.Developer)]
+    public void Grants_CanManageOrganisationInfoNotLimitedToVlimpers_unrestricted(Role role)
+        => RolePermissionMap.For(role).Contains(Permission.CanManageOrganisationInfoNotLimitedToVlimpers)
+            .Should().BeTrue();
+
+    [Fact]
+    public void VlimpersBeheerder_never_grants_CanManageOrganisationInfoNotLimitedToVlimpers()
+    {
+        var config = new OrganisationRegistryConfigurationStub();
+
+        RolePermissionMap.For(Role.VlimpersBeheerder)
+            .Contains(Permission.CanManageOrganisationInfoNotLimitedToVlimpers)
+            .Should().BeFalse();
+
+        RolePermissionMap.For(new[] { Role.VlimpersBeheerder }, config)
+            .Contains(Permission.CanManageOrganisationInfoNotLimitedToVlimpers)
+            .Should().BeFalse();
+    }
+
+    [Fact]
+    public void For_config_DecentraalBeheerder_grants_CanManageOrganisationInfoNotLimitedToVlimpers_restricted_to_own_organisation()
+    {
+        var ownOvoNumber = "OVO123456";
+        var otherOvoNumber = "OVO654321";
+        var config = new OrganisationRegistryConfigurationStub();
+
+        var user = new UserBuilder()
+            .AddRoles(Role.DecentraalBeheerder)
+            .AddOrganisations(ownOvoNumber)
+            .Build();
+
+        var set = RolePermissionMap.For(new[] { Role.DecentraalBeheerder }, config);
+
+        // Granted for the own organisation, regardless of Vlimpers-management
+        // status: these fields are never Vlimpers-reserved.
+        set.IsSatisfiedFor(
+                Permission.CanManageOrganisationInfoNotLimitedToVlimpers,
+                new UserContext(user),
+                new OrganisationContext(ownOvoNumber),
+                new VlimpersManagementContext(true))
+            .Should().BeTrue();
+
+        set.IsSatisfiedFor(
+                Permission.CanManageOrganisationInfoNotLimitedToVlimpers,
+                new UserContext(user),
+                new OrganisationContext(ownOvoNumber),
+                new VlimpersManagementContext(false))
+            .Should().BeTrue();
+
+        set.IsSatisfiedFor(
+                Permission.CanManageOrganisationInfoNotLimitedToVlimpers,
+                new UserContext(user),
+                new OrganisationContext(otherOvoNumber),
+                new VlimpersManagementContext(false))
+            .Should().BeFalse();
+    }
+
+    [Theory]
     [InlineData(Permission.CanManageBodies)]
     [InlineData(Permission.BodiesCanManageContacts)]
     [InlineData(Permission.BodiesCanManageSeats)]

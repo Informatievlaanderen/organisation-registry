@@ -66,8 +66,11 @@ vertegenwoordigt.
 
 **Status:** Geïmplementeerd. `Systeem` is geen organisatiescherm; het gaat om drie
 technische/admin-schermen (Statistieken, Events, Stopgezet in KBO). Er is bewust **geen
-fijnmazig recht per scherm** — één ongesplitst globaal recht (`Permission.System`, `/v1/me`
-string `system:read`) dekt alle drie.
+fijnmazig recht per scherm** in de backend — één ongesplitst globaal recht (`Permission.System`)
+dekt alle drie. `GlobalPermissionTranslator` expandeert dit ene recht op `/v1/me` wel naar de
+drie afzonderlijke front-end strings (`system.statistics:read`, `system.events:read`,
+`system.kbo-terminated:read`) plus de aggregaatvlag `system`, zodat de front-end zowel het
+top-level nav-item als de drie schermen afzonderlijk kan tonen zonder zelf de mapping te kennen.
 
 | Scherm/functionaliteit | Permissie | Publieke rol | VO medewerker | Algemeen beheerder | Decentraal beheerder | Vlimpers beheerder | Orgaan beheerder | Regelgeving / Deugdelijk bestuur beheerder |
 |---|---|---|---|---|---|---|---|---|

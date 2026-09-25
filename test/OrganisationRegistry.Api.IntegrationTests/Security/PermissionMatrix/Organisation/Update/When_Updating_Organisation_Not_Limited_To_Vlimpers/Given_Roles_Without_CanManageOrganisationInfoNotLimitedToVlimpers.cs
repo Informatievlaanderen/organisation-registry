@@ -1,4 +1,4 @@
-namespace OrganisationRegistry.Api.IntegrationTests.Security.PermissionMatrix.Organisation.Update.When_Updating_Organisation;
+namespace OrganisationRegistry.Api.IntegrationTests.Security.PermissionMatrix.Organisation.Update.When_Updating_Organisation_Not_Limited_To_Vlimpers;
 
 using System;
 using System.Net;
@@ -9,18 +9,15 @@ using OrganisationRegistry.Api.Backoffice.Organisation.Detail;
 using Xunit;
 
 /// <summary>
-/// Rollen zonder <c>CanManageOrganisation</c> mogen de organisatiegegevens
-/// niet aanpassen en krijgen 403 terug. VlimpersBeheerder en
-/// DecentraalBeheerder houden deze permissie niet (meer) — zie
-/// <c>Given_Vlimpersbeheerder</c> voor de sterkere assertie dat dit ook geldt
-/// voor hun eigen/Vlimpers-beheerde organisatie.
+/// Rollen zonder <c>CanManageOrganisationInfoNotLimitedToVlimpers</c> mogen
+/// de niet-Vlimpers-voorbehouden velden niet aanpassen en krijgen 403 terug.
 /// </summary>
 [Collection(ApiTestsCollection.Name)]
-public class Given_Roles_Without_CanManageOrganisation
+public class Given_Roles_Without_CanManageOrganisationInfoNotLimitedToVlimpers
 {
     private readonly ApiFixture _apiFixture;
 
-    public Given_Roles_Without_CanManageOrganisation(ApiFixture apiFixture)
+    public Given_Roles_Without_CanManageOrganisationInfoNotLimitedToVlimpers(ApiFixture apiFixture)
     {
         _apiFixture = apiFixture;
     }
@@ -30,8 +27,6 @@ public class Given_Roles_Without_CanManageOrganisation
     [InlineData(ApiFixture.Backoffice.Regelgevingbeheerder)]
     [InlineData(ApiFixture.Backoffice.Orgaanbeheerder)]
     [InlineData(ApiFixture.Backoffice.Orafinbeheerder)]
-    [InlineData(ApiFixture.Backoffice.Vlimpersbeheerder)]
-    [InlineData(ApiFixture.Backoffice.Decentraalbeheerder)]
     public async Task Then_Returns_Forbidden(string role)
     {
         var client = await _apiFixture.CreateDynamicClient(role);
@@ -41,14 +36,11 @@ public class Given_Roles_Without_CanManageOrganisation
 
         var response = await ApiFixture.Put(
             client,
-            $"/v1/organisations/{organisationId}",
-            new UpdateOrganisationInfoRequest
+            $"/v1/organisations/{organisationId}/notlimitedtovlimpers",
+            new UpdateOrganisationInfoNotLimitedToVlimpersRequest
             {
-                Name = _apiFixture.Fixture.Create<string>(),
-                ShortName = _apiFixture.Fixture.Create<string>(),
+                Description = _apiFixture.Fixture.Create<string>(),
                 ShowOnVlaamseOverheidSites = false,
-                ValidFrom = null,
-                ValidTo = null,
             });
 
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);

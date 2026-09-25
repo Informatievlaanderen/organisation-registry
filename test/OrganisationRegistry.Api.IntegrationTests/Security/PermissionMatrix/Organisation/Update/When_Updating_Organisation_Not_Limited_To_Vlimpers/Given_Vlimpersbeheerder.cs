@@ -1,4 +1,4 @@
-namespace OrganisationRegistry.Api.IntegrationTests.Security.PermissionMatrix.Organisation.Update.When_Updating_Organisation;
+namespace OrganisationRegistry.Api.IntegrationTests.Security.PermissionMatrix.Organisation.Update.When_Updating_Organisation_Not_Limited_To_Vlimpers;
 
 using System;
 using System.Net;
@@ -12,13 +12,12 @@ using OrganisationRegistry.Infrastructure.Authorization;
 using Xunit;
 
 /// <summary>
-/// Matrixrij <b>Organisatie</b> — organisatiegegevens aanpassen — voor
+/// Matrixrij <b>Organisatie</b> — de niet-Vlimpers-voorbehouden velden
+/// aanpassen (<c>PUT /v1/organisations/{id}/notlimitedtovlimpers</c>) — voor
 /// <see cref="Role.VlimpersBeheerder" />. VlimpersBeheerder houdt
-/// <see cref="Permission.CanManageOrganisation" /> niet (meer): het algemene
-/// <c>PUT /v1/organisations/{id}</c> endpoint is uitsluitend voor
-/// AlgemeenBeheerder/Developer. Dit blijft zo, zelfs voor een organisatie
-/// onder Vlimpersbeheer — hij moet het gesplitste <c>limitedtovlimpers</c>
-/// endpoint gebruiken.
+/// <see cref="Permission.CanManageOrganisationInfoNotLimitedToVlimpers" /> niet
+/// (dat zijn net de velden die <em>niet</em> aan Vlimpers voorbehouden zijn) —
+/// dit blijft zo, ongeacht of de organisatie onder Vlimpersbeheer valt.
 /// </summary>
 [Collection(ApiTestsCollection.Name)]
 public class Given_Vlimpersbeheerder
@@ -78,13 +77,10 @@ public class Given_Vlimpersbeheerder
     private async Task<HttpResponseMessage> UpdateOrganisation(HttpClient client, Guid organisationId)
         => await ApiFixture.Put(
             client,
-            $"/v1/organisations/{organisationId}",
-            new UpdateOrganisationInfoRequest
+            $"/v1/organisations/{organisationId}/notlimitedtovlimpers",
+            new UpdateOrganisationInfoNotLimitedToVlimpersRequest
             {
-                Name = _apiFixture.Fixture.Create<string>(),
-                ShortName = _apiFixture.Fixture.Create<string>(),
+                Description = _apiFixture.Fixture.Create<string>(),
                 ShowOnVlaamseOverheidSites = false,
-                ValidFrom = null,
-                ValidTo = null,
             });
 }

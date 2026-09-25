@@ -20,6 +20,16 @@ using OrganisationRegistry.Infrastructure.Authorization.Restrictions;
 /// </summary>
 public class OrganisationPermissions
 {
+    /// <summary>
+    /// Whether the caller may edit at least one organisation-info field
+    /// (general <c>PUT /organisations/{id}</c>, or either of the split
+    /// <c>limitedtovlimpers</c> / <c>notlimitedtovlimpers</c> endpoints).
+    /// True when the caller holds any of <see cref="Permission.CanManageOrganisation"/>
+    /// (AlgemeenBeheerder/Developer), <see cref="Permission.CanManageOrganisationInfoLimitedToVlimpers"/>
+    /// (VlimpersBeheerder for organisations under Vlimpers management), or
+    /// <see cref="Permission.CanManageOrganisationInfoNotLimitedToVlimpers"/>
+    /// (DecentraalBeheerder for their own organisation).
+    /// </summary>
     public bool CanEdit { get; }
 
     /// <summary>
@@ -93,6 +103,14 @@ public class OrganisationPermissions
 
         var canEditOrganisation =
             new OrganisationPolicy(Permission.CanManageOrganisation, ovoNumber, isUnderVlimpersManagement)
+                .Check(user)
+                .IsSuccessful
+            || new OrganisationPolicy(
+                    Permission.CanManageOrganisationInfoLimitedToVlimpers, ovoNumber, isUnderVlimpersManagement)
+                .Check(user)
+                .IsSuccessful
+            || new OrganisationPolicy(
+                    Permission.CanManageOrganisationInfoNotLimitedToVlimpers, ovoNumber, isUnderVlimpersManagement)
                 .Check(user)
                 .IsSuccessful;
 

@@ -1,4 +1,4 @@
-namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo;
+namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfoNotLimitedByVlimpers;
 
 using System;
 using System.Collections.Generic;
@@ -20,26 +20,30 @@ using Tests.Shared.Stubs;
 using Xunit;
 using Xunit.Abstractions;
 
+/// <summary>
+/// DecentraalBeheerder holds <see cref="Permission.CanManageOrganisationInfoNotLimitedToVlimpers"/>
+/// as a restricted grant for their own organisation, but even so cannot
+/// update a terminated organisation.
+/// </summary>
 public class
-    WhenTryingToUpdateATerminatedOrgAsBeheerder :
-        Specification<UpdateOrganisationCommandHandler, UpdateOrganisationInfo>
+    WhenTryingToUpdateATerminatedOrgAsDecentraalBeheerder :
+        Specification<UpdateOrganisationNotLimitedToVlimpersCommandHandler, UpdateOrganisationInfoNotLimitedToVlimpers>
 {
     private readonly string _ovoNumber;
     private readonly Guid _organisationId;
     private readonly Fixture _fixture;
 
-    public WhenTryingToUpdateATerminatedOrgAsBeheerder(ITestOutputHelper helper) : base(helper)
+    public WhenTryingToUpdateATerminatedOrgAsDecentraalBeheerder(ITestOutputHelper helper) : base(helper)
     {
         _fixture = new Fixture();
         _ovoNumber = new SequentialOvoNumberGenerator().GenerateNumber();
         _organisationId = Guid.NewGuid();
     }
 
-    protected override UpdateOrganisationCommandHandler BuildHandler(ISession session)
+    protected override UpdateOrganisationNotLimitedToVlimpersCommandHandler BuildHandler(ISession session)
         => new(
-            new Mock<ILogger<UpdateOrganisationCommandHandler>>().Object,
-            session,
-            new DateTimeProviderStub(DateTime.Today));
+            new Mock<ILogger<UpdateOrganisationNotLimitedToVlimpersCommandHandler>>().Object,
+            session);
 
     private IUser User
         => new UserBuilder()
@@ -89,28 +93,22 @@ public class
             ),
         };
 
-    private UpdateOrganisationInfo UpdateOrganisationInfoCommand
+    private UpdateOrganisationInfoNotLimitedToVlimpers UpdateOrganisationInfoNotLimitedToVlimpersCommand
         => new(
             new OrganisationId(_organisationId),
-            "Test",
-            Article.None,
             "testing",
-            "shortname",
             new List<PurposeId>(),
-            true,
-            new ValidFrom(),
-            new ValidTo(),
-            new ValidFrom(),
-            new ValidTo());
+            true);
 
     [Fact]
     public async Task PublishesNoEvents()
     {
-        await Given(Events).When(UpdateOrganisationInfoCommand, User).ThenItPublishesTheCorrectNumberOfEvents(0);
+        await Given(Events).When(UpdateOrganisationInfoNotLimitedToVlimpersCommand, User).ThenItPublishesTheCorrectNumberOfEvents(0);
     }
+
     [Fact]
     public async Task ThrowsOrganisationTerminatedException()
     {
-        await Given(Events).When(UpdateOrganisationInfoCommand, User).ThenThrows<OrganisationAlreadyTerminated>();
+        await Given(Events).When(UpdateOrganisationInfoNotLimitedToVlimpersCommand, User).ThenThrows<OrganisationAlreadyTerminated>();
     }
 }

@@ -1,4 +1,4 @@
-namespace OrganisationRegistry.Api.IntegrationTests.Security.PermissionMatrix.Organisation.Update.When_Updating_Organisation;
+namespace OrganisationRegistry.Api.IntegrationTests.Security.PermissionMatrix.Organisation.Update.When_Updating_Organisation_Limited_To_Vlimpers;
 
 using System;
 using System.Net;
@@ -12,13 +12,12 @@ using OrganisationRegistry.Infrastructure.Authorization;
 using Xunit;
 
 /// <summary>
-/// Matrixrij <b>Organisatie</b> — organisatiegegevens aanpassen — voor
-/// <see cref="Role.VlimpersBeheerder" />. VlimpersBeheerder houdt
-/// <see cref="Permission.CanManageOrganisation" /> niet (meer): het algemene
-/// <c>PUT /v1/organisations/{id}</c> endpoint is uitsluitend voor
-/// AlgemeenBeheerder/Developer. Dit blijft zo, zelfs voor een organisatie
-/// onder Vlimpersbeheer — hij moet het gesplitste <c>limitedtovlimpers</c>
-/// endpoint gebruiken.
+/// Matrixrij <b>Organisatie</b> — de vier Vlimpers-voorbehouden velden
+/// aanpassen (<c>PUT /v1/organisations/{id}/limitedtovlimpers</c>) — voor de
+/// <see cref="Role.VlimpersBeheerder" />. Een vlimpersbeheerder bezit
+/// <see cref="Permission.CanManageOrganisationInfoLimitedToVlimpers" /> enkel
+/// als restricted grant: hij mag deze velden uitsluitend aanpassen wanneer de
+/// organisatie onder Vlimpersbeheer valt.
 /// </summary>
 [Collection(ApiTestsCollection.Name)]
 public class Given_Vlimpersbeheerder
@@ -31,7 +30,7 @@ public class Given_Vlimpersbeheerder
     }
 
     [Fact]
-    public async Task For_Vlimpersbeheerder_WithVlimpersManagedOrganisation_Then_Returns_Forbidden()
+    public async Task For_Vlimpersbeheerder_WithVlimpersManagedOrganisation_Then_Returns_OK()
     {
         var organisationId = await CreateVlimpersManagedOrganisation();
 
@@ -39,7 +38,7 @@ public class Given_Vlimpersbeheerder
 
         var response = await UpdateOrganisation(client, organisationId);
 
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
     [Fact]
@@ -78,13 +77,15 @@ public class Given_Vlimpersbeheerder
     private async Task<HttpResponseMessage> UpdateOrganisation(HttpClient client, Guid organisationId)
         => await ApiFixture.Put(
             client,
-            $"/v1/organisations/{organisationId}",
-            new UpdateOrganisationInfoRequest
+            $"/v1/organisations/{organisationId}/limitedtovlimpers",
+            new UpdateOrganisationInfoLimitedToVlimpersRequest
             {
                 Name = _apiFixture.Fixture.Create<string>(),
                 ShortName = _apiFixture.Fixture.Create<string>(),
-                ShowOnVlaamseOverheidSites = false,
+                Article = null,
                 ValidFrom = null,
                 ValidTo = null,
+                OperationalValidFrom = null,
+                OperationalValidTo = null,
             });
 }

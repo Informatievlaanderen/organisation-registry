@@ -22,7 +22,7 @@ public class UpdateOrganisationInfoLimitedToVlimpersCommandHandler :
 
     public Task Handle(ICommandEnvelope<UpdateOrganisationInfoLimitedToVlimpers> envelope)
         => UpdateHandler<Organisation>.For(envelope.Command, envelope.User, Session)
-            .RequiresBeheerderForOrganisationButNotUnderVlimpersManagement()
+            .RequiresBeheerderForOrganisationLimitedToVlimpers()
             .Handle(
                 session =>
                 {

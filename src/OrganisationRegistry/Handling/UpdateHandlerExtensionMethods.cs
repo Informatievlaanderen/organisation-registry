@@ -135,11 +135,50 @@ public static class UpdateHandlerExtensionMethods
                         .Select(capacity => capacity.CapacityId)
                         .FirstOrDefault()));
 
+    /// <summary>
+    /// Authorization for the general organisation info fields via the top-level
+    /// endpoint (<see cref="Permission.CanManageOrganisation"/>): AlgemeenBeheerder/
+    /// Developer only. VlimpersBeheerder and DecentraalBeheerder must use the split
+    /// endpoints/policies instead (<see cref="RequiresBeheerderForOrganisationLimitedToVlimpers"/>
+    /// and <see cref="RequiresBeheerderForOrganisationNotLimitedToVlimpers"/>).
+    /// </summary>
     public static UpdateHandler<Organisation> RequiresBeheerderForOrganisationButNotUnderVlimpersManagement(
         this UpdateHandler<Organisation> source)
         => source.WithPolicy(
             organisation => new OrganisationPolicy(
                 Permission.CanManageOrganisation,
+                organisation.State.OvoNumber,
+                organisation.State.UnderVlimpersManagement));
+
+    /// <summary>
+    /// Authorization for the four fields whose management is reserved to
+    /// Vlimpers (<see cref="Permission.CanManageOrganisationInfoLimitedToVlimpers"/>):
+    /// AlgemeenBeheerder/Developer unrestricted, VlimpersBeheerder only for
+    /// organisations currently under Vlimpers management. Unlike
+    /// <see cref="RequiresBeheerderForOrganisationButNotUnderVlimpersManagement"/>,
+    /// DecentraalBeheerder never passes this check, regardless of the
+    /// organisation's Vlimpers-management status or ownership.
+    /// </summary>
+    public static UpdateHandler<Organisation> RequiresBeheerderForOrganisationLimitedToVlimpers(
+        this UpdateHandler<Organisation> source)
+        => source.WithPolicy(
+            organisation => new OrganisationPolicy(
+                Permission.CanManageOrganisationInfoLimitedToVlimpers,
+                organisation.State.OvoNumber,
+                organisation.State.UnderVlimpersManagement));
+
+    /// <summary>
+    /// Authorization for the organisation fields <em>not</em> reserved to
+    /// Vlimpers (<see cref="Permission.CanManageOrganisationInfoNotLimitedToVlimpers"/>):
+    /// AlgemeenBeheerder/Developer unrestricted, DecentraalBeheerder for their
+    /// own organisation regardless of Vlimpers-management status.
+    /// VlimpersBeheerder never passes this check.
+    /// </summary>
+    public static UpdateHandler<Organisation> RequiresBeheerderForOrganisationNotLimitedToVlimpers(
+        this UpdateHandler<Organisation> source)
+        => source.WithPolicy(
+            organisation => new OrganisationPolicy(
+                Permission.CanManageOrganisationInfoNotLimitedToVlimpers,
                 organisation.State.OvoNumber,
                 organisation.State.UnderVlimpersManagement));
 
