@@ -23,6 +23,8 @@ public static class RolePermissionMap
                 Permission.CanManageChildren,
                 Permission.CanManageParent,
                 Permission.CanManageOrganisation,
+                Permission.CanManageOrganisationInfoLimitedToVlimpers,
+                Permission.CanManageOrganisationInfoNotLimitedToVlimpers,
                 Permission.CanTerminateOrganisation,
                 Permission.CanCreateOrganisations,
                 Permission.CanManageContacts,
@@ -144,6 +146,8 @@ public static class RolePermissionMap
                 Permission.CanManageChildren,
                 Permission.CanManageParent,
                 Permission.CanManageOrganisation,
+                Permission.CanManageOrganisationInfoLimitedToVlimpers,
+                Permission.CanManageOrganisationInfoNotLimitedToVlimpers,
                 Permission.CanTerminateOrganisation,
                 Permission.CanCreateOrganisations,
                 Permission.CanManageContacts,
@@ -277,7 +281,12 @@ public static class RolePermissionMap
         => role switch
         {
             Role.VlimpersBeheerder => PermissionSet.Of(
-                Permission.CanManageOrganisation.RestrictedTo(
+                // The four Vlimpers-reserved fields (formele naam, formele korte
+                // naam, lidwoord, operationele geldigheid) are gated by a
+                // dedicated permission, not CanManageOrganisation (which
+                // VlimpersBeheerder no longer holds at all), so that
+                // DecentraalBeheerder can never reach them.
+                Permission.CanManageOrganisationInfoLimitedToVlimpers.RestrictedTo(
                     ChildRestrictions.UnderVlimpersManagement),
                 Permission.CanManageChildren.RestrictedTo(
                     ChildRestrictions.UnderVlimpersManagement),
@@ -295,8 +304,14 @@ public static class RolePermissionMap
                     LabelRestrictions.VlimpersManaged(
                         configuration.Authorization.LabelIdsAllowedForVlimpers))),
             Role.DecentraalBeheerder => PermissionSet.Of(
-                Permission.CanManageOrganisation.RestrictedTo(
-                    ChildRestrictions.DecentraalAndNotUnderVlimpersManagement),
+                // DecentraalBeheerder may edit every organisation-info field
+                // except the four Vlimpers-reserved ones (gated by the
+                // dedicated CanManageOrganisationInfoLimitedToVlimpers
+                // permission, which DecentraalBeheerder never holds), for
+                // their own organisation, regardless of Vlimpers-management
+                // status — these fields are never Vlimpers-reserved.
+                Permission.CanManageOrganisationInfoNotLimitedToVlimpers.RestrictedTo(
+                    DecentraalOrganisationRestriction.Instance),
                 Permission.CanManageChildren.RestrictedTo(
                     ChildRestrictions.DecentraalAndNotUnderVlimpersManagement),
                 Permission.CanManageParent.RestrictedTo(

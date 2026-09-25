@@ -28,7 +28,7 @@ public class WhenTryingToUpdateAVlimpersOrgAsVlimpersUser :
             .AddRoles(Role.VlimpersBeheerder)
             .WithPermissions(
                 PermissionSet.Of(
-                    Permission.CanManageOrganisation.RestrictedTo(
+                    Permission.CanManageOrganisationInfoLimitedToVlimpers.RestrictedTo(
                         ChildRestrictions.UnderVlimpersManagement)))
             .Build();
 

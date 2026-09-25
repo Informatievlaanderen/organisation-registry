@@ -9,16 +9,22 @@ public static class RolePermissions
     // Permissions here have no dedicated entry in RolePermissionMap (they gate
     // command controllers directly, e.g. via [OrganisationRegistryAuthorize] with
     // no RequiredPermissions, or are entirely UI-facing conventions), so they stay
-    // hand-maintained. Parameters/Bodies admin-screen permissions, org.organisations:create,
-    // body.info:create, imports and delegations:read/write/delete are NOT listed
-    // here — they are derived from RolePermissionMap by GlobalPermissionTranslator
-    // so they can't drift out of sync with the real grants.
+    // hand-maintained. Parameters/Bodies admin-screen permissions, organisations:create,
+    // bodies:create, imports, delegations:read/write/delete and system(.*) are NOT
+    // listed here — they are derived from RolePermissionMap by
+    // GlobalPermissionTranslator so they can't drift out of sync with the real
+    // grants. "reports" has no backing Permission at all (no reports endpoint is
+    // gated yet), so it remains a hand-maintained, per-role UI convention.
     private static readonly Dictionary<Role, GlobalPermission[]> Map = new()
     {
         [Role.AlgemeenBeheerder] =
         [
             new GlobalPermission("reports", CrudOperation.Read),
-            new GlobalPermission("system", CrudOperation.Read),
+        ],
+
+        [Role.Developer] =
+        [
+            new GlobalPermission("reports", CrudOperation.Read),
         ],
 
         [Role.DecentraalBeheerder] =
@@ -53,12 +59,20 @@ public static class RolePermissions
     public static IEnumerable<string> Resolve(Role role, PermissionSet permissions)
     {
         var manual = Map.TryGetValue(role, out var globalPermissions)
-            ? globalPermissions.SelectMany(p => p.ToPermissionStrings())
-            : Enumerable.Empty<string>();
+            ? globalPermissions.SelectMany(p => p.ToPermissionStrings()).ToList()
+            : new List<string>();
 
         var derived = GlobalPermissionTranslator.Translate(permissions);
 
-        return manual.Concat(derived).Distinct();
+        var result = manual.Concat(derived).Distinct().ToList();
+
+        // "reports" has no backing Permission (see Map above), so its bare
+        // aggregate flag can't be derived by GlobalPermissionTranslator; add it
+        // here whenever at least one reports:<operation> string is present.
+        if (result.Any(p => p.StartsWith("reports:")))
+            result.Add("reports");
+
+        return result.Distinct().OrderBy(p => p, System.StringComparer.Ordinal);
     }
 
     public static bool IsConfigured(Role role) =>

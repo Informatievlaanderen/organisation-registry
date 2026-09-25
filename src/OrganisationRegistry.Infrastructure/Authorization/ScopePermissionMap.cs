@@ -36,6 +36,8 @@ public static class ScopePermissionMap
                 Permission.CanManageChildren,
                 Permission.CanManageParent,
                 Permission.CanManageOrganisation,
+                Permission.CanManageOrganisationInfoLimitedToVlimpers,
+                Permission.CanManageOrganisationInfoNotLimitedToVlimpers,
                 Permission.CanTerminateOrganisation,
                 Permission.CanCreateOrganisations,
                 Permission.CanManageContacts,

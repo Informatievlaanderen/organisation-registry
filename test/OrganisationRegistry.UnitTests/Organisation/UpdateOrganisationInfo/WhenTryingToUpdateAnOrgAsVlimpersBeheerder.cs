@@ -20,14 +20,22 @@ using Tests.Shared.Stubs;
 using Xunit;
 using Xunit.Abstractions;
 
-public class
-    WhenUpdatingAVlimpersOrg : Specification<UpdateOrganisationCommandHandler,
-        UpdateOrganisationInfo>
+/// <summary>
+/// The general <c>PUT /organisations/{id}</c> endpoint
+/// (<see cref="UpdateOrganisationCommandHandler"/>, gated by
+/// <see cref="Permission.CanManageOrganisation"/>) is exclusively for
+/// AlgemeenBeheerder/Developer. VlimpersBeheerder never holds this
+/// permission, even for organisations under Vlimpers management — they must
+/// use the split <c>limitedtovlimpers</c> endpoint instead
+/// (<see cref="Permission.CanManageOrganisationInfoLimitedToVlimpers"/>).
+/// </summary>
+public class WhenTryingToUpdateAnOrgAsVlimpersBeheerder :
+    Specification<UpdateOrganisationCommandHandler, UpdateOrganisationInfo>
 {
     private readonly DateTime _yesterday;
     private readonly Guid _organisationId;
 
-    public WhenUpdatingAVlimpersOrg(ITestOutputHelper helper) : base(helper)
+    public WhenTryingToUpdateAnOrgAsVlimpersBeheerder(ITestOutputHelper helper) : base(helper)
     {
         _yesterday = DateTime.Today.AddDays(-1);
         _organisationId = Guid.NewGuid();
@@ -39,10 +47,6 @@ public class
             session,
             new DateTimeProviderStub(DateTime.Today));
 
-    // CanManageOrganisation is a config-driven restricted grant for
-    // VlimpersBeheerder (see RolePermissionMap.RestrictedGrantsFor), so the
-    // test user needs permissions derived via the config-aware overload;
-    // TestUser.VlimpersBeheerder (config-less) never carries it.
     private static IUser VlimpersBeheerderUser()
     {
         var configuration = new OrganisationRegistryConfigurationStub();
@@ -78,10 +82,10 @@ public class
             new ValidTo());
 
     [Fact]
-    public async Task AsVlimpersBeheerderItPublishesEvents()
+    public async Task ThrowsAnException_EvenIfOrganisationIsUnderVlimpersManagement()
     {
         await Given(Events).When(UpdateOrganisationInfoCommand, VlimpersBeheerderUser())
-            .ThenItPublishesTheCorrectNumberOfEvents(6);
+            .ThenThrows<InsufficientRights<OrganisationPolicy>>();
     }
 
     [Fact]
