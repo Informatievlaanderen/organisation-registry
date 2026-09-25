@@ -28,6 +28,8 @@ public class CommandHandlerPolicyTests : ArchitectureTestBase
         "WithKboPolicy", "WithRegulationPolicy",
         "WithVlimpersManagementPolicy",
         "RequiresBeheerderForOrganisationButNotUnderVlimpersManagement",
+        "RequiresBeheerderForOrganisationLimitedToVlimpers",
+        "RequiresBeheerderForOrganisationNotLimitedToVlimpers",
     };
 
     private static readonly string[] PermissionMethods =
