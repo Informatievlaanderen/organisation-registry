@@ -232,15 +232,6 @@ public class SecurityService : ISecurityService
             RolePermissionMap.For(securityInformation.Roles, _configuration));
     }
 
-    // TODO: see how we can make SecurityService use IUser everywhere, io ClaimsPrincipal.
-    public bool CanUseLabelType(IUser user, Guid labelTypeId)
-    {
-        if (user.HasAnyPermission(Permission.CanManageOrganisation, Permission.CanManageLabels))
-            return true;
-
-        return true;
-    }
-
     public void ExpireUserCache(string acmId)
     {
         _cache.Expire(acmId);
