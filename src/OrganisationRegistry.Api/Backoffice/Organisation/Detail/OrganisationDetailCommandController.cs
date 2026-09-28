@@ -10,7 +10,6 @@ using OrganisationRegistry.Infrastructure;
 using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Commands;
 using OrganisationRegistry.Organisation;
-using Security;
 
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
@@ -38,13 +37,18 @@ public class OrganisationDetailCommandController : OrganisationRegistryCommandCo
             return BadRequest(ModelState);
 
         //TODO can be removed ??
-        var authInfo = await HttpContext.GetAuthenticateInfoAsync();
-        if (authInfo?.Principal == null || !authInfo.Principal.IsInRole(RoleMapping.Map(Role.Developer)))
+        var user = await securityService.GetRequiredUser(User);
+        if (!user.HasPermission(Permission.CanAssignManualIdentifiers))
             message.OvoNumber = string.Empty;
 
         if (message.KboNumber is { } kboNumber && kboNumber.IsNotEmptyOrWhiteSpace())
         {
-            if (!await securityService.CanAddOrganisation(User, message.ParentOrganisationId))
+            var canAddOrganisation = user.HasPermission(Permission.CanCreateOrganisations) ||
+                                     (user.HasPermission(Permission.CanManageChildren) &&
+                                      message.ParentOrganisationId.HasValue &&
+                                      user.OrganisationIds.Contains(message.ParentOrganisationId.Value));
+
+            if (!canAddOrganisation)
                 ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor deze organisatie.");
 
             await CommandSender.Send(CreateOrganisationRequestMapping.MapToCreateKboOrganisation(message, kboNumber));
