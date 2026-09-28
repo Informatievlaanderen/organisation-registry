@@ -32,74 +32,6 @@ public class SecurityService : ISecurityService
         _cache = cache;
     }
 
-    public async Task<bool> CanAddOrganisation(ClaimsPrincipal user, Guid? parentOrganisationId)
-    {
-        var securityInfo = await GetSecurityInformation(user);
-
-        // Admins can do everything
-        if (securityInfo.Roles.Contains(Role.AlgemeenBeheerder) ||
-            securityInfo.Roles.Contains(Role.Developer))
-            return true;
-
-        // Otherwise you can only add to parents you are allowed
-        return HasPermissionsForOrganisation(securityInfo, parentOrganisationId);
-    }
-
-    public async Task<bool> CanEditOrganisation(ClaimsPrincipal user, Guid organisationId)
-    {
-        var securityInfo = await GetSecurityInformation(user);
-
-        // Admins can do everything
-        if (securityInfo.Roles.Contains(Role.AlgemeenBeheerder) ||
-            securityInfo.Roles.Contains(Role.Developer))
-            return true;
-
-        // Otherwise you can only edit what you are allowed
-        return HasPermissionsForOrganisation(securityInfo, organisationId);
-    }
-
-    public async Task<bool> CanEditDelegation(ClaimsPrincipal user, Guid? organisationId, Guid? bodyId)
-    {
-        var securityInfo = await GetSecurityInformation(user);
-
-        // Admins can do everything
-        if (securityInfo.Roles.Contains(Role.AlgemeenBeheerder) ||
-            securityInfo.Roles.Contains(Role.Developer))
-            return true;
-
-        // Otherwise you can only edit what you are allowed
-        return HasPermissionsForOrganisation(securityInfo, organisationId) ||
-               HasPermissionsForBody(securityInfo, bodyId);
-    }
-
-    public async Task<bool> CanAddBody(ClaimsPrincipal user, Guid? organisationId)
-    {
-        var securityInfo = await GetSecurityInformation(user);
-
-        // Admins can do everything
-        if (securityInfo.Roles.Contains(Role.AlgemeenBeheerder) ||
-            securityInfo.Roles.Contains(Role.OrgaanBeheerder) ||
-            securityInfo.Roles.Contains(Role.Developer))
-            return true;
-
-        // Otherwise you can only add to organisations you are allowed
-        return HasPermissionsForOrganisation(securityInfo, organisationId);
-    }
-
-    public async Task<bool> CanEditBody(ClaimsPrincipal user, Guid bodyId)
-    {
-        var securityInfo = await GetSecurityInformation(user);
-
-        // Admins can do everything
-        if (securityInfo.Roles.Contains(Role.AlgemeenBeheerder) ||
-            securityInfo.Roles.Contains(Role.OrgaanBeheerder) ||
-            securityInfo.Roles.Contains(Role.Developer))
-            return true;
-
-        // Otherwise you can only add to organisations you are allowed
-        return HasPermissionsForBody(securityInfo, bodyId);
-    }
-
     public async Task<SecurityInformation> GetSecurityInformation(ClaimsPrincipal? user)
     {
         if (user?.Identity == null || !user.Identity.IsAuthenticated)
@@ -235,26 +167,6 @@ public class SecurityService : ISecurityService
     public void ExpireUserCache(string acmId)
     {
         _cache.Expire(acmId);
-    }
-
-    private static bool HasPermissionsForOrganisation(SecurityInformation securityInfo, Guid? organisationId)
-    {
-        if (!organisationId.HasValue)
-            return false;
-
-        return
-            securityInfo.Roles.Contains(Role.DecentraalBeheerder) &&
-            securityInfo.OrganisationIds.Contains(organisationId.Value);
-    }
-
-    private static bool HasPermissionsForBody(SecurityInformation securityInfo, Guid? bodyId)
-    {
-        if (!bodyId.HasValue)
-            return false;
-
-        return
-            securityInfo.Roles.Contains(Role.DecentraalBeheerder) &&
-            securityInfo.BodyIds.Contains(bodyId.Value);
     }
 
     private async Task<OrganisationSecurityInformation> GetSecurityInformation(ImmutableArray<string> ovoNumbers)

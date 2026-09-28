@@ -12,21 +12,6 @@ using System.Threading.Tasks;
 /// </summary>
 public class NotImplementedSecurityService : ISecurityService
 {
-    public Task<bool> CanAddOrganisation(ClaimsPrincipal user, Guid? parentOrganisationId)
-        => throw new NotImplementedException();
-
-    public Task<bool> CanEditOrganisation(ClaimsPrincipal user, Guid organisationId)
-        => throw new NotImplementedException();
-
-    public Task<bool> CanAddBody(ClaimsPrincipal user, Guid? organisationId)
-        => throw new NotImplementedException();
-
-    public Task<bool> CanEditBody(ClaimsPrincipal user, Guid bodyId)
-        => throw new NotImplementedException();
-
-    public Task<bool> CanEditDelegation(ClaimsPrincipal user, Guid? organisationId, Guid? bodyId)
-        => throw new NotImplementedException();
-
     public Task<SecurityInformation> GetSecurityInformation(ClaimsPrincipal? user)
         => throw new NotImplementedException();
 
