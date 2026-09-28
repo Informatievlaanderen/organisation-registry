@@ -1,5 +1,6 @@
 namespace OrganisationRegistry.Infrastructure.Authorization;
 
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,6 +33,7 @@ public static class RolePermissionMap
                 Permission.CanManageCapacities,
                 Permission.CanManageLocations,
                 Permission.CanManageBuildings,
+                Permission.CanManageBankAccounts,
                 Permission.CanManageLabels,
                 Permission.CanManageOrganisationClassifications,
                 Permission.CanManageFormalFrameworks,
@@ -143,6 +145,7 @@ public static class RolePermissionMap
                 Permission.CanManageRegulations,
                 Permission.CanManageLabels,
                 Permission.CanManageBodies,
+                Permission.CanManageKbo,
                 Permission.BodiesCanManageContacts,
                 Permission.BodiesCanManageSeats,
                 Permission.BodiesCanManageMandates,
@@ -169,6 +172,7 @@ public static class RolePermissionMap
                 Permission.CanManageCapacities,
                 Permission.CanManageLocations,
                 Permission.CanManageBuildings,
+                Permission.CanManageBankAccounts,
                 Permission.CanManageLabels,
                 Permission.CanManageOrganisationClassifications,
                 Permission.CanManageFormalFrameworks,
@@ -233,7 +237,9 @@ public static class RolePermissionMap
             // T036 will remove or [Obsolete] this once migration completes.
             [Role.AutomatedTask] = PermissionSet.Of(
                 Permission.CanManageCapacities,
-                Permission.CanRunScheduledJobs),
+                Permission.CanRunScheduledJobs,
+                Permission.CanManageKeys,
+                Permission.CanManageKbo),
 
             // VoMedewerker: read-only role, no scoping. Conceptually "Publiek +
             // read access to Functies and Hoedanigheden" (both on organisations
@@ -252,6 +258,8 @@ public static class RolePermissionMap
 
     private static readonly ConcurrentDictionary<Role, byte> LoggedUnknownRoles = new();
 
+    private static readonly ConcurrentDictionary<string, byte> LoggedUnknownRoleNames = new();
+
     public static PermissionSet For(Role role, ILogger? logger = null)
     {
         if (Map.TryGetValue(role, out var permissions))
@@ -263,6 +271,48 @@ public static class RolePermissionMap
                 role);
 
         return PermissionSet.Empty;
+    }
+
+    public static PermissionSet For(string roleName, ILogger? logger = null)
+    {
+        if (Enum.TryParse<Role>(roleName, out var role))
+            return For(role, logger);
+
+        if (LoggedUnknownRoleNames.TryAdd(roleName, 0))
+            logger?.LogWarning(
+                "Unknown Role name {RoleName} encountered during permission translation; returning empty permission set (fail-closed).",
+                roleName);
+
+        return PermissionSet.Empty;
+    }
+
+    public static PermissionSet For(IEnumerable<string>? roleNames, ILogger? logger = null)
+    {
+        if (roleNames is null)
+            return PermissionSet.Empty;
+
+        var union = PermissionSet.Empty;
+        foreach (var roleName in roleNames)
+            union = union.Union(For(roleName, logger));
+
+        return union;
+    }
+
+    public static PermissionSet For(
+        IEnumerable<string>? roleNames,
+        IOrganisationRegistryConfiguration configuration,
+        ILogger? logger = null)
+    {
+        if (roleNames is null)
+            return PermissionSet.Empty;
+
+        var union = For(roleNames, logger);
+
+        foreach (var roleName in roleNames)
+            if (Enum.TryParse<Role>(roleName, out var role))
+                union = union.Union(RestrictedGrantsFor(role, configuration));
+
+        return union;
     }
 
     public static PermissionSet For(IEnumerable<Role>? roles, ILogger? logger = null)

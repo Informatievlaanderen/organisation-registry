@@ -12,15 +12,11 @@ public interface IUser
     string Ip { get; set; }
     Role[] Roles { get; set; }
     PermissionSet Permissions { get; }
-    bool IsAuthorizedForVlimpersOrganisations { get; }
     List<string> Organisations { get; }
+    List<Guid> OrganisationIds { get; }
     IEnumerable<Guid> Bodies { get; }
-    bool IsInAnyOf(params Role[] roles);
     bool HasPermission(Permission permission);
     bool HasAnyPermission(params Permission[] permissions);
-    bool IsDecentraalBeheerderForOrganisation(string ovoNumber);
-    bool IsDecentraalBeheerderForOrganisation(Guid organisationId);
-    bool IsDecentraalBeheerderForBody(Guid bodyId);
 
     /// <summary>
     /// Shorthand for <c>Permissions.IsSatisfiedFor(permission, contexts)</c>.
