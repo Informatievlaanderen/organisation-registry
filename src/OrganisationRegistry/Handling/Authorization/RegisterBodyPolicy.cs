@@ -32,7 +32,7 @@ public class RegisterBodyPolicy : ISecurityPolicy
 
         if (_organisationId is { } organisationId &&
             user.HasPermission(Permission.CanManageBodies) &&
-            user.IsDecentraalBeheerderForOrganisation((Guid)organisationId))
+            user.OrganisationIds.Contains((Guid)organisationId))
             return AuthorizationResult.Success();
 
         return AuthorizationResult.Fail(InsufficientRights.CreateFor(this));

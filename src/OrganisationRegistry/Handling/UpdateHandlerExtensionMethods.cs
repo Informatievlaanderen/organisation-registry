@@ -182,12 +182,6 @@ public static class UpdateHandlerExtensionMethods
                 organisation.State.OvoNumber,
                 organisation.State.UnderVlimpersManagement));
 
-    public static UpdateHandler<TAggregate> RequiresOneOfRole<TAggregate>(
-        this UpdateHandler<TAggregate> source,
-        params Role[] roles)
-        where TAggregate : AggregateRoot
-        => source.WithPolicy(_ => new RequiresRolesPolicy(roles));
-
     public static UpdateHandler<TAggregate> RequiresPermission<TAggregate>(
         this UpdateHandler<TAggregate> source,
         Permission permission)
