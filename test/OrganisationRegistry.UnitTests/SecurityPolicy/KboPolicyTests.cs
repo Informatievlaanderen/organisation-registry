@@ -14,7 +14,8 @@ public class KboPolicyTests
 
     [Theory]
     [InlineData(Role.AlgemeenBeheerder)]
-    public void AdminIsAuthorized(Role role)
+    [InlineData(Role.CjmBeheerder)]
+    public void AuthorizedRoles(Role role)
     {
         var user = new UserBuilder()
             .AddRoles(role)
@@ -31,7 +32,6 @@ public class KboPolicyTests
     [InlineData(Role.DecentraalBeheerder)]
     [InlineData(Role.VlimpersBeheerder)]
     [InlineData(Role.RegelgevingBeheerder)]
-    [InlineData(Role.CjmBeheerder)]
     [InlineData(Role.Orafin)]
     [InlineData(Role.OrgaanBeheerder)]
     public void NonAdminIsNotAuthorized(Role role)

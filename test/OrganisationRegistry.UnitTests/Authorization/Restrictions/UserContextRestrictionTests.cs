@@ -20,7 +20,7 @@ public class UserContextRestrictionTests
             .AddOrganisationIds(organisationId)
             .Build();
 
-        var restriction = new DecentraalBeheerderForOrganisationRestriction(organisationId);
+        var restriction = new OwnsOrganisationRestriction(organisationId);
 
         restriction.IsOkWith(new UserContext(user), new LabelContext(false, "OVO000001", Array.Empty<Guid>()))
             .Should().BeTrue();
@@ -36,22 +36,7 @@ public class UserContextRestrictionTests
             .AddOrganisationIds(otherOrganisationId)
             .Build();
 
-        var restriction = new DecentraalBeheerderForOrganisationRestriction(organisationId);
-
-        restriction.IsOkWith(new UserContext(user), new LabelContext(false, "OVO000001", Array.Empty<Guid>()))
-            .Should().BeFalse();
-    }
-
-    [Fact]
-    public void DecentraalBeheerderForOrganisationRestriction_fails_when_user_is_not_decentraal_beheerder()
-    {
-        var organisationId = Guid.NewGuid();
-        var user = new UserBuilder()
-            .AddRoles(Role.AlgemeenBeheerder)
-            .AddOrganisationIds(organisationId)
-            .Build();
-
-        var restriction = new DecentraalBeheerderForOrganisationRestriction(organisationId);
+        var restriction = new OwnsOrganisationRestriction(organisationId);
 
         restriction.IsOkWith(new UserContext(user), new LabelContext(false, "OVO000001", Array.Empty<Guid>()))
             .Should().BeFalse();
@@ -66,18 +51,18 @@ public class UserContextRestrictionTests
             .AddOrganisationIds(organisationId)
             .Build();
 
-        var restriction = new DecentraalBeheerderForOrganisationRestriction(organisationId);
+        var restriction = new OwnsOrganisationRestriction(organisationId);
 
         // No UserContext supplied
         restriction.IsOkWith(new LabelContext(false, "OVO000001", Array.Empty<Guid>()))
             .Should().BeFalse();
     }
 
-    private sealed class DecentraalBeheerderForOrganisationRestriction : IRestriction
+    private sealed class OwnsOrganisationRestriction : IRestriction
     {
         private readonly Guid _organisationId;
 
-        public DecentraalBeheerderForOrganisationRestriction(Guid organisationId)
+        public OwnsOrganisationRestriction(Guid organisationId)
             => _organisationId = organisationId;
 
         public bool IsOkWith(params IRestrictionContext[] contexts)
@@ -86,7 +71,7 @@ public class UserContextRestrictionTests
             if (userContext is null)
                 return false;
 
-            return userContext.User.IsDecentraalBeheerderForOrganisation(_organisationId);
+            return userContext.User.OrganisationIds.Contains(_organisationId);
         }
     }
 
