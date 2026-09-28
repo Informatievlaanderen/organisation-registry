@@ -6,16 +6,6 @@ using System.Threading.Tasks;
 
 public interface ISecurityService
 {
-    Task<bool> CanAddOrganisation(ClaimsPrincipal user, Guid? parentOrganisationId);
-    [Obsolete("TODO: Replace with BeheerderForOrganisationRegardlessOfVlimpersPolicy")]
-    Task<bool> CanEditOrganisation(ClaimsPrincipal user, Guid organisationId);
-
-    Task<bool> CanAddBody(ClaimsPrincipal user, Guid? organisationId);
-    [Obsolete("TODO: Replace with EditBodyPolicy")]
-    Task<bool> CanEditBody(ClaimsPrincipal user, Guid bodyId);
-
-    Task<bool> CanEditDelegation(ClaimsPrincipal user, Guid? organisationId, Guid? bodyId);
-
     Task<SecurityInformation> GetSecurityInformation(ClaimsPrincipal? user);
 
     Task<IUser> GetRequiredUser(ClaimsPrincipal? principal);
