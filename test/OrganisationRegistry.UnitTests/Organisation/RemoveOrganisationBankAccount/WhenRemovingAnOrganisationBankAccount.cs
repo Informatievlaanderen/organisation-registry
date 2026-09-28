@@ -76,7 +76,7 @@ public class WhenRemovingAnOrganisationBankAccount
                 OrganisationCreated,
                 OrganisationBankAccountAdded)
             .When(RemoveOrganisationBankAccountCommand, new UserBuilder().AddRoles(role).Build())
-            .ThenThrows<InsufficientRights<RequiresRolesPolicy>>();
+            .ThenThrows<InsufficientRights<RequiresPermissionPolicy>>();
     }
 
     [Theory]
