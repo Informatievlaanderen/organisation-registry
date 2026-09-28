@@ -6,19 +6,21 @@ using ArchUnitNET.xUnit;
 using Xunit;
 using static ArchUnitNET.Fluent.ArchRuleDefinition;
 
-/// <summary>Waarom: policies checken enkel scope-restricties, nooit rollen (SC-003/FR-008).</summary>
+/// <summary>Waarom: policies mogen geen rolchecks meer bevatten, enkel scope-restricties (FR-008, SC-003).</summary>
 public class PolicyRoleIsolationTests : ArchitectureTestBase
 {
-    private static readonly IObjectProvider<Class> SecurityPolicies =
-        Classes().That().ImplementInterface(typeof(Handling.Authorization.ISecurityPolicy))
-            .As("security policies");
+    private static readonly IObjectProvider<IType> PolicyNamespace =
+        Types().That().ResideInNamespace("OrganisationRegistry.Handling.Authorization").As("policies");
+
+    private static readonly IObjectProvider<IType> RoleEnum =
+        Types().That().Are(typeof(Infrastructure.Authorization.Role)).As("Role enum");
 
     [Fact]
     public void PoliciesMustNotDependOnTheRoleEnum()
     {
-        IArchRule rule = Classes().That().Are(SecurityPolicies)
-            .Should().NotDependOnAny(typeof(Infrastructure.Authorization.Role))
-            .Because("policies check only scope restrictions after the permission rework (FR-008, SC-003)");
+        IArchRule rule = Types().That().Are(PolicyNamespace)
+            .Should().NotDependOnAny(RoleEnum)
+            .Because("policies must evaluate scope restrictions, not roles");
 
         rule.Check(Architecture);
     }

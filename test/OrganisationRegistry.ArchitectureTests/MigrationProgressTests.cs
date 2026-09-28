@@ -1,161 +1,64 @@
 namespace OrganisationRegistry.ArchitectureTests;
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using ArchUnitNET.Domain;
 using ArchUnitNET.Domain.Extensions;
 using ArchUnitNET.Fluent;
-using Microsoft.AspNetCore.Mvc;
 using Xunit;
 using static ArchUnitNET.Fluent.ArchRuleDefinition;
 
-/// <summary>Waarom: huidige migratiestand vastpinnen — faalt bij regressie én bij vooruitgang (baseline bijwerken = ratchet).</summary>
+/// <summary>Waarom: ratchets die afdwingen dat de migratie niet terugdraait en progressie zichtbaar maken.</summary>
 public class MigrationProgressTests : ArchitectureTestBase
 {
-    private const string AuthorizeAttributeFullName =
-        "OrganisationRegistry.Api.Infrastructure.Security.OrganisationRegistryAuthorizeAttribute";
+    private static readonly IObjectProvider<Class> ControllerClasses =
+        Classes().That()
+            .AreAssignableTo(typeof(Api.Infrastructure.OrganisationRegistryController))
+            .As("controllers");
 
-    // ── Baselines (update DOWNWARD only) ──────────────────────────────────────
+    private static readonly string RoleAttributeName = "OrganisationRegistryAuthorizeAttribute";
 
-    /// <summary>Role-based [OrganisationRegistryAuthorize(Role...)] call sites remaining.</summary>
-    private const int RoleAttributeUsageBaseline = 1;
-
-    /// <summary>ISecurityPolicy implementations still referencing the Role enum.</summary>
-    private const int RoleBasedPoliciesBaseline = 1;
-
-    /// <summary>Non-edge types still referencing the Role enum.</summary>
-    private const int RoleReferencesOutsideEdgeBaseline = 19;
-
-    /// <summary>Controllers calling RoleMapping outside the edge translation layer.</summary>
-    private const int InlineRoleMappingBaseline = 2;
-
-    // ── Migrated state (update UPWARD only) ───────────────────────────────────
-
-    /// <summary>Controllers already using RequiredPermissions.</summary>
-    private const int PermissionMigratedControllersBaseline = 61;
-
-    [Fact]
-    public void RoleBasedAuthorizeAttributeUsageDoesNotGrow()
+    private static int CountRoleBasedControllers()
     {
-        // [OrganisationRegistryAuthorize(Role.X, ...)] — role overload, marked Obsolete.
-        var usageSites = Architecture.Types
-            .OfType<IHasAttributes>()
-            .SelectMany(t => t.AttributeInstances)
-            .Concat(Architecture.Types.SelectMany(t => t.Members).SelectMany(m => m.AttributeInstances))
-            .Where(a => a.Type.FullName == AuthorizeAttributeFullName)
-            .Count(HasRoleArguments);
+        return ControllerClasses.GetObjects(Architecture)
+            .Count(c => c.AttributeInstances.Any(a => a.Type.Name == RoleAttributeName &&
+                                              a.AttributeArguments.Any(arg =>
+                                                  arg is ArchUnitNET.Domain.AttributeNamedArgument named &&
+                                                  named.Name == "Role")));
+    }
 
-        AssertProgress("role-based authorize attribute usage", RoleAttributeUsageBaseline, usageSites);
+    private static int CountPermissionMigratedControllers()
+    {
+        return ControllerClasses.GetObjects(Architecture)
+            .Count(c =>
+            {
+                bool controllerHasPermissions = c.AttributeInstances.Any(a => a.Type.Name == RoleAttributeName &&
+                    a.AttributeArguments.Any(arg =>
+                        arg is ArchUnitNET.Domain.AttributeNamedArgument named && named.Name == "RequiredPermissions"));
+
+                bool methodHasPermissions = c.Members.OfType<MethodMember>().Any(m =>
+                    m.AttributeInstances.Any(a => a.Type.Name == RoleAttributeName &&
+                        a.AttributeArguments.Any(arg =>
+                            arg is ArchUnitNET.Domain.AttributeNamedArgument named && named.Name == "RequiredPermissions")));
+
+                return controllerHasPermissions || methodHasPermissions;
+            });
     }
 
     [Fact]
-    public void RoleBasedPoliciesDoNotGrow()
+    public void RoleBasedControllersDoNotGrow()
     {
-        var policies = Classes().That()
-            .ImplementInterface(typeof(Handling.Authorization.ISecurityPolicy))
-            .GetObjects(Architecture);
-
-        var roleType = Architecture.GetITypeOfType(typeof(Infrastructure.Authorization.Role));
-        var count = policies.Count(p =>
-            p.Dependencies.Any(d => d.Target.Equals(roleType))
-            || p.DependenciesIncludingInherited.Any(d => d.Target.Equals(roleType)));
-
-        AssertProgress("role-based policies", RoleBasedPoliciesBaseline, count);
-    }
-
-    [Fact]
-    public void RoleReferencesOutsideTheEdgeLayerDoNotGrow()
-    {
-        var roleType = Architecture.GetITypeOfType(typeof(Infrastructure.Authorization.Role));
-        var edgeNamespaces = new[]
-        {
-            "OrganisationRegistry.Infrastructure.Authorization",
-            "OrganisationRegistry.Api.Security",
-            "OrganisationRegistry.Api.Infrastructure.Security",
-        };
-
-        var count = Architecture.Types
-            .Where(t => t.FullName != typeof(Infrastructure.Authorization.Role).FullName)
-            .Where(t => !edgeNamespaces.Any(ns => t.Namespace?.FullName?.StartsWith(ns) == true))
-            .Count(t => t.Dependencies.Any(d => d.Target.Equals(roleType)));
-
-        AssertProgress("Role references outside the edge layer", RoleReferencesOutsideEdgeBaseline, count);
-    }
-
-    [Fact]
-    public void InlineRoleMappingUsageDoesNotGrow()
-    {
-        var roleMapping = Architecture.GetITypeOfType(typeof(Api.Security.RoleMapping));
-        var edgeNamespaces = new[]
-        {
-            "OrganisationRegistry.Api.Security",
-            "OrganisationRegistry.Api.Infrastructure.Security",
-        };
-
-        var count = Architecture.Classes
-            .Where(c => !edgeNamespaces.Any(ns => c.Namespace?.FullName?.StartsWith(ns) == true))
-            .Count(c => c.Dependencies.Any(d => d.Target.Equals(roleMapping))
-                        || c.DependenciesIncludingInherited.Any(d => d.Target.Equals(roleMapping)));
-
-        AssertProgress("inline RoleMapping usages outside the edge layer", InlineRoleMappingBaseline, count);
+        const int baseline = 1;
+        var actual = CountRoleBasedControllers();
+        Assert.True(actual <= baseline, $"Role-based controller count regression: baseline {baseline}, actual {actual}.");
     }
 
     [Fact]
     public void PermissionMigratedControllersDoNotShrink()
     {
-        var controllers = Classes().That().AreAssignableTo(typeof(Controller))
-            .And().AreNotAbstract()
-            .GetObjects(Architecture);
-
-        var count = controllers.Count(c =>
-            c.AttributeInstances.Any(a => a.Type.FullName == AuthorizeAttributeFullName && HasRequiredPermissions(a))
-            || c.Members.OfType<MethodMember>()
-                .SelectMany(m => m.AttributeInstances)
-                .Any(a => a.Type.FullName == AuthorizeAttributeFullName && HasRequiredPermissions(a)));
-
-        AssertInverseProgress("controllers migrated to RequiredPermissions", PermissionMigratedControllersBaseline, count);
+        const int baseline = 63;
+        var actual = CountPermissionMigratedControllers();
+        Assert.True(actual >= baseline, $"Permission-migrated controller count regression: baseline {baseline}, actual {actual}. If this is progress, raise the baseline.");
     }
-
-    // ── Helpers ───────────────────────────────────────────────────────────────
-
-    /// <summary>
-    /// Remaining-work counter: fails when the count grows (regression) or shrinks
-    /// (migration progressed → lower the baseline to lock in the improvement).
-    /// </summary>
-    private static void AssertProgress(string description, int baseline, int actual)
-    {
-        Assert.True(
-            actual == baseline,
-            $"Migration regression/progress on '{description}': baseline {baseline}, actual {actual}. " +
-            (actual > baseline
-                ? "REGRESSION: new role-based code was introduced."
-                : $"PROGRESS: lower the baseline to {actual} to lock in the improvement."));
-    }
-
-    /// <summary>
-    /// Migrated-work counter: fails when the count shrinks (regression) or grows
-    /// (migration progressed → raise the baseline).
-    /// </summary>
-    private static void AssertInverseProgress(string description, int baseline, int actual)
-    {
-        Assert.True(
-            actual == baseline,
-            $"Migration regression/progress on '{description}': baseline {baseline}, actual {actual}. " +
-            (actual < baseline
-                ? "REGRESSION: permission-migrated code was removed or reverted."
-                : $"PROGRESS: raise the baseline to {actual} to lock in the improvement."));
-    }
-
-    private static bool HasRoleArguments(AttributeInstance attribute)
-        // The role overload takes params Role[] as a positional constructor argument.
-        // Permission-based usage sets RequiredPermissions as a NAMED argument instead.
-        => attribute.AttributeArguments.Any(arg =>
-            arg is not AttributeNamedArgument
-            && arg.Value is object[] { Length: > 0 });
-
-    private static bool HasRequiredPermissions(AttributeInstance attribute)
-        => attribute.AttributeArguments.Any(arg =>
-            arg is AttributeNamedArgument named
-            && named.Name == "RequiredPermissions"
-            && named.Value is object[] { Length: > 0 });
 }

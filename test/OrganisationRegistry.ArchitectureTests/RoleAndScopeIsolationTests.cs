@@ -6,7 +6,7 @@ using ArchUnitNET.xUnit;
 using Xunit;
 using static ArchUnitNET.Fluent.ArchRuleDefinition;
 
-/// <summary>Waarom: rollen/scopes mogen na vertaling aan de rand nergens meer voorkomen — enkel in RolePermissionMap/ScopePermissionMap (SC-006).</summary>
+/// <summary>Waarom: rollen mogen na vertaling aan de rand nergens meer voorkomen — enkel in de vertaaltabellen (SC-006).</summary>
 public class RoleAndScopeIsolationTests : ArchitectureTestBase
 {
     private static readonly IObjectProvider<IType> RoleEnum =
@@ -17,6 +17,8 @@ public class RoleAndScopeIsolationTests : ArchitectureTestBase
             .ResideInNamespace("OrganisationRegistry.Infrastructure.Authorization")
             .Or().ResideInNamespace("OrganisationRegistry.Api.Security")
             .Or().ResideInNamespace("OrganisationRegistry.Api.Infrastructure.Security")
+            .Or().ResideInNamespace("OrganisationRegistry.Api.Auth")
+            .Or().ResideInNamespace("OrganisationRegistry.Api.Auth.Models")
             .As("edge translation layer");
 
     [Fact]

@@ -1,21 +1,26 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\OrganisationRegistry.Api\OrganisationRegistry.Api.csproj" />
-    <ProjectReference Include="..\..\src\OrganisationRegistry\OrganisationRegistry.csproj" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="TngTech.ArchUnitNET" />
+    <PackageReference Include="TngTech.ArchUnitNET.xUnit" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" />
-    <PackageReference Include="TngTech.ArchUnitNET.xUnit" />
-    <PackageReference Include="TngTech.ArchUnitNET" />
-    <PackageReference Include="xunit" />
-    <PackageReference Include="xunit.runner.visualstudio" />
+    <ProjectReference Include="../../src/OrganisationRegistry.Api/OrganisationRegistry.Api.csproj" />
+    <ProjectReference Include="../../src/OrganisationRegistry.Infrastructure/OrganisationRegistry.Infrastructure.csproj" />
+    <ProjectReference Include="../../src/OrganisationRegistry/OrganisationRegistry.csproj" />
   </ItemGroup>
 
 </Project>

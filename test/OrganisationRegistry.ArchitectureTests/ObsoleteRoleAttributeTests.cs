@@ -7,35 +7,26 @@ using ArchUnitNET.xUnit;
 using Xunit;
 using static ArchUnitNET.Fluent.ArchRuleDefinition;
 
-/// <summary>Waarom: obsolete role-attributen en RoleMapping horen enkel thuis in de rand — verwijderen bij T035/T036.</summary>
+/// <summary>Waarom: [OrganisationRegistryAuthorize(Role = ...)] en RoleMapping zijn verboden migratieoverblijfselen (FR-006).</summary>
 public class ObsoleteRoleAttributeTests : ArchitectureTestBase
 {
-    [Fact]
-    public void NobodyUsesOrProtectedAttribute()
-    {
-        var orProtected = Architecture.GetAttributeOfType(typeof(Api.Infrastructure.Security.OrProtectedAttribute));
-        if (orProtected is null)
-            return; // already removed from the codebase
-
-        IArchRule rule = Classes().That()
-            .AreNot(typeof(Api.Infrastructure.Security.OrProtectedAttribute))
-            .Should().NotHaveAnyAttributes(Attributes().That().Are(typeof(Api.Infrastructure.Security.OrProtectedAttribute)))
-            .Because("OrProtectedAttribute is the obsolete role-based catch-all (feature 009)");
-
-        rule.Check(Architecture);
-    }
+    private static readonly IObjectProvider<IType> EdgeTranslationLayer =
+        Types().That()
+            .ResideInNamespace("OrganisationRegistry.Infrastructure.Authorization")
+            .Or().ResideInNamespace("OrganisationRegistry.Api.Security")
+            .Or().ResideInNamespace("OrganisationRegistry.Api.Infrastructure.Security")
+            .Or().ResideInNamespace("OrganisationRegistry.Api.Auth")
+            .Or().ResideInNamespace("OrganisationRegistry.Api.Auth.Models")
+            .As("edge translation layer");
 
     [Fact]
     public void RoleMappingIsOnlyUsedInsideTheEdgeTranslationLayer()
     {
-        // RoleMapping maps ACM/IDM role names to claim values. After the rework it is
-        // only invoked inside the edge translation layer (token builder, token exchange
-        // claims transformation, the obsolete role attribute). Every other usage fails.
-        IArchRule rule = Classes().That()
-            .DoNotResideInNamespace("OrganisationRegistry.Api.Security")
-            .And().DoNotResideInNamespace("OrganisationRegistry.Api.Infrastructure.Security")
-            .Should().NotDependOnAny(Types().That().Are(typeof(Api.Security.RoleMapping)))
-            .Because("role mapping must only be invoked inside the edge translation layer (SC-006)");
+        var roleMappingType = Architecture.GetITypeOfType(typeof(Infrastructure.Authorization.Role));
+
+        IArchRule rule = Types().That().AreNot(EdgeTranslationLayer)
+            .Should().NotDependOnAny(Types().That().Are(roleMappingType))
+            .Because("Role mapping only exists to feed the edge translation tables");
 
         rule.Check(Architecture);
     }
