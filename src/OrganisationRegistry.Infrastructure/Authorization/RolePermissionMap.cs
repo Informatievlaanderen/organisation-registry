@@ -88,7 +88,8 @@ public static class RolePermissionMap
 
                 Permission.DelegationsRead,
                 Permission.DelegationsWrite,
-                Permission.DelegationsDelete),
+                Permission.DelegationsDelete,
+                Permission.CanAssignManualIdentifiers),
 
             [Role.OrgaanBeheerder] = PermissionSet.Of(
                 Permission.CanManageBodies,
@@ -229,7 +230,8 @@ public static class RolePermissionMap
                 Permission.DelegationsRead,
                 Permission.DelegationsWrite,
                 Permission.DelegationsDelete,
-                Permission.DelegationsCreate),
+                Permission.DelegationsCreate,
+                Permission.CanAssignManualIdentifiers),
 
             // Transitional: AutomatedTask keeps CanRunScheduledJobs until the
             // scheduled-job / sync services migrate to Client Credentials
