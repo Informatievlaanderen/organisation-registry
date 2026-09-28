@@ -65,8 +65,7 @@ public class RegisterBodyRequestValidator : AbstractValidator<RegisterBodyReques
 
         RuleFor(x => x.OrganisationId)
             .NotEmpty()
-            .WhenAsync(async (_, _) => await httpContextAccessor.UserIsDecentraalBeheerder(securityService.GetSecurityInformation))
-            .WithMessage("Organisation Id is required for users in role 'organisatieBeheerder'.");
+            .WithMessage("Organisation Id is required.");
     }
 }
 

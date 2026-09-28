@@ -50,8 +50,7 @@ public class AddBodyOrganisationInternalRequestValidator : AbstractValidator<Add
 
         RuleFor(x => x.Body.OrganisationId)
             .NotEmpty()
-            .WhenAsync(async (_, _) => await httpContextAccessor.UserIsDecentraalBeheerder(securityService.GetSecurityInformation))
-            .WithMessage("Organisation Id is required for users in role 'organisatieBeheerder'.");
+            .WithMessage("Organisation Id is required.");
     }
 }
 
