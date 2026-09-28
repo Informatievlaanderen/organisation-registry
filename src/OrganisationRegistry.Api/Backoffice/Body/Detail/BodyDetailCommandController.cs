@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Infrastructure;
 using OrganisationRegistry.Api.Infrastructure.Security;
-using Security;
+using OrganisationRegistry.Api.Security;
 using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Commands;
 using OrganisationRegistry.SqlServer.Infrastructure;
@@ -30,13 +30,16 @@ public class BodyDetailCommandController : OrganisationRegistryCommandController
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Post([FromServices] OrganisationRegistryContext context, [FromBody] RegisterBodyRequest message)
+    public async Task<IActionResult> Post(
+        [FromServices] ISecurityService securityService,
+        [FromServices] OrganisationRegistryContext context,
+        [FromBody] RegisterBodyRequest message)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var authInfo = await HttpContext.GetAuthenticateInfoAsync();
-        if (authInfo?.Principal == null || !authInfo.Principal.IsInRole(RoleMapping.Map(Role.Developer)))
+        var user = await securityService.GetRequiredUser(User);
+        if (!user.HasPermission(Permission.CanAssignManualIdentifiers))
             message.BodyNumber = string.Empty;
 
         await CommandSender.Send(

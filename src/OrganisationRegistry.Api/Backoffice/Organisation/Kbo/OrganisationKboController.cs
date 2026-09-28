@@ -27,7 +27,7 @@ public class OrganisationKboController : OrganisationRegistryController
     /// <summary>Vraag de beëindigingsstatus van een organisatie gekoppeld aan de KBO op.</summary>
     /// <response code="200">De beëindigingsstatus van de organisatie gekoppeld aan de KBO.</response>
     [HttpGet("{id}/kbo/{kboNumber}/termination")]
-    [OrganisationRegistryAuthorize(Role.AlgemeenBeheerder, Role.CjmBeheerder, Role.Developer, Role.VlimpersBeheerder)]
+    [OrganisationRegistryAuthorize(RequiredPermissions = [Permission.System])]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetTerminationStatus(
         [FromServices] OrganisationRegistryContext context,
