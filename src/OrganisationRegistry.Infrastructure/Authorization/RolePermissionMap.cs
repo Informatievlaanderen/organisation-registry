@@ -49,6 +49,8 @@ public static class RolePermissionMap
                 Permission.CanManageRelations,
                 Permission.CanManageKbo,
                 Permission.CanManageVlimpers,
+                Permission.CanViewOrganisationKbo,
+                Permission.CanViewOrganisationVlimpers,
 
                 Permission.CanImport,
                 Permission.CanReadConfiguration,
@@ -97,6 +99,9 @@ public static class RolePermissionMap
                 Permission.BodiesCanManageFormalFrameworks,
                 Permission.BodiesCanManageMep,
 
+                Permission.CanViewOrganisationFunctions,
+                Permission.CanViewOrganisationCapacities,
+
                 Permission.PeopleFunctionsRead,
                 Permission.PeopleCapacitiesRead),
 
@@ -106,7 +111,12 @@ public static class RolePermissionMap
             // ImportPolicy). The Personen read screens (Functies/Hoedanigheden) are
             // not organisation-scoped, so they are granted unrestricted here. Every
             // other permission it has is likewise a data-driven restricted grant.
+            // Functies/Hoedanigheden read-only (ui-permission-matrix.md: R / R*) is
+            // granted unconditionally since VlimpersBeheerder never manages either.
             [Role.VlimpersBeheerder] = PermissionSet.Of(
+                Permission.CanViewOrganisationFunctions,
+                Permission.CanViewOrganisationCapacities,
+
                 Permission.PeopleFunctionsRead,
                 Permission.PeopleCapacitiesRead),
 
@@ -121,6 +131,10 @@ public static class RolePermissionMap
 
             [Role.RegelgevingBeheerder] = PermissionSet.Of(
                 Permission.CanManageRegulations,
+
+                Permission.CanViewOrganisationFunctions,
+                Permission.CanViewOrganisationKbo,
+                Permission.CanViewOrganisationVlimpers,
 
                 Permission.PeopleFunctionsRead,
                 Permission.PeopleCapacitiesRead),
@@ -172,6 +186,8 @@ public static class RolePermissionMap
                 Permission.CanManageRelations,
                 Permission.CanManageKbo,
                 Permission.CanManageVlimpers,
+                Permission.CanViewOrganisationKbo,
+                Permission.CanViewOrganisationVlimpers,
 
                 Permission.CanImport,
                 Permission.CanRunScheduledJobs,
@@ -218,6 +234,20 @@ public static class RolePermissionMap
             [Role.AutomatedTask] = PermissionSet.Of(
                 Permission.CanManageCapacities,
                 Permission.CanRunScheduledJobs),
+
+            // VoMedewerker: read-only role, no scoping. Conceptually "Publiek +
+            // read access to Functies and Hoedanigheden" (both on organisations
+            // and on people). Holds no CanManage*/CanCreate*/CanTerminate*/
+            // Parameters*Write/Delete/Delegations*/System/CanImport permission —
+            // every screen not covered below is read-only via the (currently
+            // ungated) list/detail GET endpoints open to any authenticated
+            // backoffice user, same as every other role. See
+            // ui-permission-matrix.md for the full rights table.
+            [Role.VoMedewerker] = PermissionSet.Of(
+                Permission.PeopleFunctionsRead,
+                Permission.PeopleCapacitiesRead,
+                Permission.CanViewOrganisationFunctions,
+                Permission.CanViewOrganisationCapacities),
         };
 
     private static readonly ConcurrentDictionary<Role, byte> LoggedUnknownRoles = new();

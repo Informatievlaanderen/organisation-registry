@@ -26,6 +26,7 @@ public class Given_Roles_Without_CanManageParent
     [InlineData(ApiFixture.Backoffice.Cjmbeheerder)]
     [InlineData(ApiFixture.Backoffice.Regelgevingbeheerder)]
     [InlineData(ApiFixture.Backoffice.Orgaanbeheerder)]
+    [InlineData(ApiFixture.Backoffice.VoMedewerker)]
     public async Task Then_Returns_Forbidden(string role)
     {
         var client = await _apiFixture.CreateDynamicClient(role);

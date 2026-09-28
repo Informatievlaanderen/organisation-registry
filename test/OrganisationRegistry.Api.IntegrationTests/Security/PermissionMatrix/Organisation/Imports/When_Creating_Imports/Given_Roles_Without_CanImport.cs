@@ -35,6 +35,8 @@ public class Given_Roles_Without_CanImport
     [InlineData(ApiFixture.Backoffice.Cjmbeheerder, "organisation-terminations")]
     [InlineData(ApiFixture.Backoffice.Orafinbeheerder, "organisation-creations")]
     [InlineData(ApiFixture.Backoffice.Orafinbeheerder, "organisation-terminations")]
+    [InlineData(ApiFixture.Backoffice.VoMedewerker, "organisation-creations")]
+    [InlineData(ApiFixture.Backoffice.VoMedewerker, "organisation-terminations")]
     public async Task Then_Returns_Forbidden(string role, string endpoint)
     {
         var client = await _apiFixture.CreateDynamicClient(role);

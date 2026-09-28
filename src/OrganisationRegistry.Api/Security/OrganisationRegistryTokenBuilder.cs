@@ -97,9 +97,18 @@ public class OrganisationRegistryTokenBuilder : IOrganisationRegistryTokenBuilde
             AddDecentraalBeheerderClaim(roles, identity);
             AddRegelgevingBeheerderClaim(roles, identity);
             AddCjmBeheerderClaim(roles, identity);
+            AddVoMedewerkerClaim(roles, identity);
         }
 
         return identity;
+    }
+
+    private static void AddVoMedewerkerClaim(IEnumerable<string> roles, ClaimsIdentity identity)
+    {
+        if (!roles.Any(x => x.Contains(AcmIdmConstants.Roles.VoMedewerker)))
+            return;
+
+        AddRoleClaim(identity, Role.VoMedewerker);
     }
 
     private static void AddCjmBeheerderClaim(IEnumerable<string> roles, ClaimsIdentity identity)

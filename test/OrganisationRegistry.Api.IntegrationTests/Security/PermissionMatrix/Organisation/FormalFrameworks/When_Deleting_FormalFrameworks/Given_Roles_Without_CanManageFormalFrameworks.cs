@@ -19,6 +19,7 @@ public class Given_Roles_Without_CanManageFormalFrameworks
 
     [Theory]
     [InlineData(ApiFixture.Backoffice.Orgaanbeheerder)]
+    [InlineData(ApiFixture.Backoffice.VoMedewerker)]
     public async Task Then_Returns_Forbidden(string role)
     {
         var client = await _apiFixture.CreateDynamicClient(role);

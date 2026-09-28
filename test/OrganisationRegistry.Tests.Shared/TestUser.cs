@@ -22,6 +22,9 @@ public static class TestUser
     public static User VlimpersBeheerder
         => new UserBuilder().AddRoles(Role.VlimpersBeheerder).Build();
 
+    public static User VoMedewerker
+        => new UserBuilder().AddRoles(Role.VoMedewerker).Build();
+
     public static User User
         => new UserBuilder().Build();
 }

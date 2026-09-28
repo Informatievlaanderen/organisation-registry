@@ -25,6 +25,7 @@ public class Given_Roles_With_PeopleCapacitiesRead
     [InlineData(ApiFixture.Backoffice.Vlimpersbeheerder)]
     [InlineData(ApiFixture.Backoffice.Orgaanbeheerder)]
     [InlineData(ApiFixture.Backoffice.Regelgevingbeheerder)]
+    [InlineData(ApiFixture.Backoffice.VoMedewerker)]
     public async Task Then_Returns_Ok(string role)
     {
         var client = await _apiFixture.CreateDynamicClient(role);

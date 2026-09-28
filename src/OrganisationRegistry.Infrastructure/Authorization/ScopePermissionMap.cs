@@ -63,6 +63,8 @@ public static class ScopePermissionMap
                 Permission.CanManageKbo,
                 Permission.CanImport,
                 Permission.CanManageVlimpers,
+                Permission.CanViewOrganisationKbo,
+                Permission.CanViewOrganisationVlimpers,
                 Permission.DelegationsRead,
                 Permission.DelegationsWrite,
                 Permission.DelegationsDelete,

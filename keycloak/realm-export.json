@@ -646,6 +646,29 @@
           "orafin"
         ]
       }
+    },
+    {
+      "username": "vomedewerker",
+      "enabled": true,
+      "firstName": "VO",
+      "lastName": "Medewerker Persona",
+      "credentials": [
+        {
+          "id": "51ab66a7-2db9-42ce-8e49-98c4c47693c5",
+          "type": "password",
+          "createdDate": 1774358582511,
+          "secretData": "{\"value\":\"UbShaCg9nHNocy7rr8pwG9QOJ0X65u6Kd3jmIfgV2Vdo984qx9zIRP3t1XTZ0m6cQ1bddAXA/Xt7Cg23u9wSIA==\",\"salt\":\"D4yJkYreCdCmWkQ5X8kJyQ==\",\"additionalParameters\":{}}",
+          "credentialData": "{\"hashIterations\":210000,\"algorithm\":\"pbkdf2-sha512\",\"additionalParameters\":{}}"
+        }
+      ],
+      "attributes": {
+        "vo_id": [
+          "f109a26b-a2d6-448b-9bfa-e76e043a9292"
+        ],
+        "iv_wegwijs_rol_3D": [
+          "wegwijsbeheerder-vomedewerker:OVO00001"
+        ]
+      }
     }
   ],
   "attributes": {
