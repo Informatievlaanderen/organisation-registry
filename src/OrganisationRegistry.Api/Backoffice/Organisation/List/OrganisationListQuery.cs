@@ -128,7 +128,7 @@ public class OrganisationListQuery : Query<OrganisationListItem, OrganisationLis
 
         if (filter.AuthorizedOnly)
         {
-            if (!_securityInformation.Roles.Any(role => role is Role.AlgemeenBeheerder or Role.CjmBeheerder))
+            if (!_securityInformation.Permissions.Contains(Permission.CanManageOrganisation))
                 organisations = organisations.Where(x => _securityInformation.OvoNumbers.Contains(x.OvoNumber));
         }
 

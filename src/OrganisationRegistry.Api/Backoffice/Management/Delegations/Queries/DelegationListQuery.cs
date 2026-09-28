@@ -107,10 +107,10 @@ public class DelegationListQuery : Query<DelegationListItem, DelegationListItemF
     {
         var delegations = _context.DelegationList.AsQueryable();
 
-        // Only show relevant delegations,
-        //  - OrganisationRegistryBeheerder can see everything, so we dont reduce
-        //  - OrganisatieBeheerder can see only bodies owned by his organisation
-        if (_securityInformation.Roles.Contains(Role.DecentraalBeheerder) && !_securityInformation.Roles.Contains(Role.AlgemeenBeheerder))
+        // Only show relevant delegations:
+        //  - users with CanManageOrganisation can see everything
+        //  - other users (e.g. DecentraalBeheerder) can see only bodies owned by their organisation
+        if (!_securityInformation.Permissions.Contains(Permission.CanManageOrganisation))
         {
             // If there are no organisations, prevent sending all delegations
             if (_securityInformation.OrganisationIds.Count == 0)
