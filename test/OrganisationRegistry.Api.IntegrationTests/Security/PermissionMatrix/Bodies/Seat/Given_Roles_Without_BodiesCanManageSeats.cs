@@ -20,6 +20,7 @@ public class Given_Roles_Without_BodiesCanManageSeats
 
     [Theory]
     [InlineData(ApiFixture.Backoffice.Regelgevingbeheerder)]
+    [InlineData(ApiFixture.Backoffice.VoMedewerker)]
     public async Task Then_Returns_Forbidden(string role)
     {
         var client = await _apiFixture.CreateDynamicClient(role);

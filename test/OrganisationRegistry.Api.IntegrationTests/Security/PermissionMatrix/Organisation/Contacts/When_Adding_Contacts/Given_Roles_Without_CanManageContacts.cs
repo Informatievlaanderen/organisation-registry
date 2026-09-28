@@ -22,6 +22,7 @@ public class Given_Roles_Without_CanManageContacts
     [InlineData(ApiFixture.Backoffice.Decentraalbeheerder)]
     [InlineData(ApiFixture.Backoffice.Orgaanbeheerder)]
     [InlineData(ApiFixture.Backoffice.Regelgevingbeheerder)]
+    [InlineData(ApiFixture.Backoffice.VoMedewerker)]
     public async Task Then_Returns_Forbidden(string role)
     {
         var client = await _apiFixture.CreateDynamicClient(role);

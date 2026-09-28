@@ -87,6 +87,35 @@ public enum Permission
     CanManageContacts,
     CanManageFunctions,
     CanManageCapacities,
+
+    /// <summary>
+    /// Read-only view of an organisation's Functies list
+    /// (<c>OrganisationFunctionController</c>). Distinct from
+    /// <see cref="CanManageFunctions"/> (write access): granted standalone to
+    /// every role except the unauthenticated "Publiek" caller (VoMedewerker,
+    /// VlimpersBeheerder, OrgaanBeheerder, RegelgevingBeheerder — see
+    /// <c>RolePermissionMap</c>). Roles holding <see cref="CanManageFunctions"/>
+    /// (AlgemeenBeheerder, DecentraalBeheerder for their own organisation) can
+    /// already view via that permission (manage implies view — see
+    /// <c>OrganisationPermissions.CanViewFunctions</c>), so this permission is
+    /// only granted explicitly where read-only visibility is required without
+    /// any write grant.
+    /// </summary>
+    CanViewOrganisationFunctions,
+
+    /// <summary>
+    /// Read-only view of an organisation's Hoedanigheden list
+    /// (<c>OrganisationCapacityController</c>). Distinct from
+    /// <see cref="CanManageCapacities"/> (write access): granted standalone to
+    /// every role except the unauthenticated "Publiek" caller (VoMedewerker,
+    /// OrgaanBeheerder, VlimpersBeheerder — see <c>RolePermissionMap</c>). Roles
+    /// holding <see cref="CanManageCapacities"/> (unrestricted or restricted)
+    /// can already view via that permission (manage implies view — see
+    /// <c>OrganisationPermissions.CanViewCapacities</c>), so this permission is
+    /// only granted explicitly where read-only visibility is required without
+    /// any write grant.
+    /// </summary>
+    CanViewOrganisationCapacities,
     CanManageLocations,
     CanManageBuildings,
     CanManageBankAccounts,
@@ -108,6 +137,23 @@ public enum Permission
     CanManageRelations,
     CanManageKbo,
     CanManageVlimpers,
+
+    /// <summary>
+    /// Read-only view of an organisation's KBO-koppeling. Distinct from
+    /// <see cref="CanManageKbo"/> (write access): granted standalone to
+    /// AlgemeenBeheerder/Developer and RegelgevingBeheerder per
+    /// <c>ui-permission-matrix.md</c> — see <c>OrganisationPermissions.CanViewKbo</c>,
+    /// which relies solely on this permission (not on <see cref="CanManageKbo"/>).
+    /// </summary>
+    CanViewOrganisationKbo,
+
+    /// <summary>
+    /// Read-only view of an organisation's Vlimpers-koppeling. Distinct from
+    /// <see cref="CanManageVlimpers"/> (write access): granted standalone to
+    /// AlgemeenBeheerder/Developer and RegelgevingBeheerder, analogous to
+    /// <see cref="CanViewOrganisationKbo"/>.
+    /// </summary>
+    CanViewOrganisationVlimpers,
 
     /// <summary>
     /// Create or update a <c>Persoon</c> (<c>PersonDetailCommandController</c>).

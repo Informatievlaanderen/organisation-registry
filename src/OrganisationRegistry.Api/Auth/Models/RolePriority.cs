@@ -23,6 +23,7 @@ public static class RolePriority
         Role.RegelgevingBeheerder,
         Role.OrgaanBeheerder,
         Role.Orafin,
+        Role.VoMedewerker,
     ];
 
     /// <summary>

@@ -31,6 +31,7 @@ public class Given_Roles_Without_CanTerminateOrganisation
     [InlineData(ApiFixture.Backoffice.Regelgevingbeheerder)]
     [InlineData(ApiFixture.Backoffice.Orgaanbeheerder)]
     [InlineData(ApiFixture.Backoffice.Orafinbeheerder)]
+    [InlineData(ApiFixture.Backoffice.VoMedewerker)]
     public async Task Then_Returns_Forbidden(string role)
     {
         var organisationId = _apiFixture.Fixture.Create<Guid>();

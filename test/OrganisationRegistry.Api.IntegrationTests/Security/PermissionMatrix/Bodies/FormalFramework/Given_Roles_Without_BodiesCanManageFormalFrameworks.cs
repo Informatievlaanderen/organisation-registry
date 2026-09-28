@@ -20,6 +20,7 @@ public class Given_Roles_Without_BodiesCanManageFormalFrameworks
 
     [Theory]
     [InlineData(ApiFixture.Backoffice.Regelgevingbeheerder)]
+    [InlineData(ApiFixture.Backoffice.VoMedewerker)]
     public async Task Adding_Then_Returns_Forbidden(string role)
     {
         var client = await _apiFixture.CreateDynamicClient(role);
@@ -41,6 +42,7 @@ public class Given_Roles_Without_BodiesCanManageFormalFrameworks
 
     [Theory]
     [InlineData(ApiFixture.Backoffice.Regelgevingbeheerder)]
+    [InlineData(ApiFixture.Backoffice.VoMedewerker)]
     public async Task Updating_Then_Returns_Forbidden(string role)
     {
         var client = await _apiFixture.CreateDynamicClient(role);

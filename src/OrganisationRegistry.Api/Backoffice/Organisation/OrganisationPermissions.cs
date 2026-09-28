@@ -45,6 +45,24 @@ public class OrganisationPermissions
     public bool CanManageBuildings { get; }
     public bool CanManageFunctions { get; }
     public bool CanManageCapacities { get; }
+
+    /// <summary>
+    /// Whether the caller may view (but not necessarily manage) this
+    /// organisation's Functies list. True when the caller holds either
+    /// <see cref="Permission.CanManageFunctions"/> (manage implies view) or
+    /// the standalone read-only <see cref="Permission.CanViewOrganisationFunctions"/>
+    /// (e.g. <see cref="Role.VoMedewerker"/>).
+    /// </summary>
+    public bool CanViewFunctions { get; }
+
+    /// <summary>
+    /// Whether the caller may view (but not necessarily manage) this
+    /// organisation's Hoedanigheden list. True when the caller holds either
+    /// <see cref="Permission.CanManageCapacities"/> (manage implies view) or
+    /// the standalone read-only <see cref="Permission.CanViewOrganisationCapacities"/>
+    /// (e.g. <see cref="Role.VoMedewerker"/>).
+    /// </summary>
+    public bool CanViewCapacities { get; }
     public bool CanManageNames { get; }
     public bool CanManageClassifications { get; }
     public bool CanManageFormalFrameworks { get; }
@@ -55,6 +73,23 @@ public class OrganisationPermissions
     public bool CanManageKbo { get; }
     public bool CanManageVlimpers { get; }
 
+    /// <summary>
+    /// Whether the caller may view (but not necessarily manage) this
+    /// organisation's KBO-koppeling. True when the caller holds the
+    /// standalone read-only <see cref="Permission.CanViewOrganisationKbo"/>
+    /// (granted to AlgemeenBeheerder/Developer and RegelgevingBeheerder —
+    /// see <c>ui-permission-matrix.md</c>).
+    /// </summary>
+    public bool CanViewKbo { get; }
+
+    /// <summary>
+    /// Whether the caller may view (but not necessarily manage) this
+    /// organisation's Vlimpers-koppeling. True when the caller holds the
+    /// standalone read-only <see cref="Permission.CanViewOrganisationVlimpers"/>
+    /// (granted to AlgemeenBeheerder/Developer and RegelgevingBeheerder).
+    /// </summary>
+    public bool CanViewVlimpers { get; }
+
     private OrganisationPermissions(
         bool canEdit,
         bool canDelete,
@@ -64,6 +99,8 @@ public class OrganisationPermissions
         bool canManageBuildings,
         bool canManageFunctions,
         bool canManageCapacities,
+        bool canViewFunctions,
+        bool canViewCapacities,
         bool canManageNames,
         bool canManageClassifications,
         bool canManageFormalFrameworks,
@@ -72,7 +109,9 @@ public class OrganisationPermissions
         bool canManageLabels,
         bool canManageRegulations,
         bool canManageKbo,
-        bool canManageVlimpers)
+        bool canManageVlimpers,
+        bool canViewKbo,
+        bool canViewVlimpers)
     {
         CanEdit = canEdit;
         CanDelete = canDelete;
@@ -82,6 +121,8 @@ public class OrganisationPermissions
         CanManageBuildings = canManageBuildings;
         CanManageFunctions = canManageFunctions;
         CanManageCapacities = canManageCapacities;
+        CanViewFunctions = canViewFunctions;
+        CanViewCapacities = canViewCapacities;
         CanManageNames = canManageNames;
         CanManageClassifications = canManageClassifications;
         CanManageFormalFrameworks = canManageFormalFrameworks;
@@ -91,6 +132,8 @@ public class OrganisationPermissions
         CanManageRegulations = canManageRegulations;
         CanManageKbo = canManageKbo;
         CanManageVlimpers = canManageVlimpers;
+        CanViewKbo = canViewKbo;
+        CanViewVlimpers = canViewVlimpers;
     }
 
     public static OrganisationPermissions For(IUser user, string ovoNumber, bool isUnderVlimpersManagement)
@@ -131,6 +174,16 @@ public class OrganisationPermissions
                 userContext,
                 organisationContext,
                 new CapacityContext(Array.Empty<Guid>())),
+            canViewFunctions:
+                Satisfies(Permission.CanManageFunctions, userContext, organisationContext)
+                || Satisfies(Permission.CanViewOrganisationFunctions, userContext, organisationContext),
+            canViewCapacities:
+                Satisfies(
+                    Permission.CanManageCapacities,
+                    userContext,
+                    organisationContext,
+                    new CapacityContext(Array.Empty<Guid>()))
+                || Satisfies(Permission.CanViewOrganisationCapacities, userContext, organisationContext),
             canManageNames: canEditOrganisation,
             canManageClassifications: Satisfies(
                 Permission.CanManageOrganisationClassifications,
@@ -154,6 +207,8 @@ public class OrganisationPermissions
                 new LabelContext(isUnderVlimpersManagement, Array.Empty<Guid>())),
             canManageRegulations: Satisfies(Permission.CanManageRegulations),
             canManageKbo: Satisfies(Permission.CanManageKbo),
-            canManageVlimpers: Satisfies(Permission.CanManageVlimpers));
+            canManageVlimpers: Satisfies(Permission.CanManageVlimpers),
+            canViewKbo: Satisfies(Permission.CanViewOrganisationKbo),
+            canViewVlimpers: Satisfies(Permission.CanViewOrganisationVlimpers));
     }
 }

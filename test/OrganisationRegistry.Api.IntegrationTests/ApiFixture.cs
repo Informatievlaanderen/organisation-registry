@@ -81,6 +81,7 @@ public class ApiFixture : IDisposable, IAsyncLifetime
         public const string Regelgevingbeheerder = "regelgeving";
         public const string Cjmbeheerder = "cjmbeheerder";
         public const string Orafinbeheerder = "orafinbeheerder";
+        public const string VoMedewerker = "vomedewerker";
     }
 
     /// <summary>

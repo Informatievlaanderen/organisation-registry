@@ -53,6 +53,7 @@ public static class ParameterEndpoints
         ApiFixture.Backoffice.Orgaanbeheerder,
         ApiFixture.Backoffice.Regelgevingbeheerder,
         ApiFixture.Backoffice.Cjmbeheerder,
+        ApiFixture.Backoffice.VoMedewerker,
     };
 
     public static IEnumerable<object[]> ListRouteData()
