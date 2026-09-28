@@ -135,12 +135,15 @@ public class SecurityService : ISecurityService
                 return await GetSecurityInformation(organisations);
             });
 
+        var permissions = RolePermissionMap.For(roles, _configuration);
+
         return new SecurityInformation(
             $"{firstName} {name}",
             roles,
             organisationSecurityInformation.OvoNumbers,
             organisationSecurityInformation.OrganisationIds,
-            organisationSecurityInformation.BodyIds);
+            organisationSecurityInformation.BodyIds,
+            permissions);
     }
 
     public async Task<IUser> GetRequiredUser(ClaimsPrincipal? principal)
@@ -232,12 +235,8 @@ public class SecurityService : ISecurityService
     // TODO: see how we can make SecurityService use IUser everywhere, io ClaimsPrincipal.
     public bool CanUseLabelType(IUser user, Guid labelTypeId)
     {
-        if (user.IsInAnyOf(Role.Developer, Role.AlgemeenBeheerder))
+        if (user.HasAnyPermission(Permission.CanManageOrganisation, Permission.CanManageLabels))
             return true;
-
-        if (_configuration.FormalNameLabelTypeId.Equals(labelTypeId) ||
-            _configuration.FormalShortNameLabelTypeId.Equals(labelTypeId))
-            return user.IsInAnyOf(Role.VlimpersBeheerder);
 
         return true;
     }

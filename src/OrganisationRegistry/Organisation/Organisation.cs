@@ -3063,18 +3063,18 @@ public partial class Organisation : AggregateRoot
     }
 
     private bool UserCanPerformActionWhenOrganisationIsTerminated(IUser user)
-        => user.IsInAnyOf(Role.AlgemeenBeheerder, Role.AutomatedTask)
-           || (State.UnderVlimpersManagement && user.IsInAnyOf(Role.VlimpersBeheerder));
+        => user.HasAnyPermission(Permission.CanManageOrganisation, Permission.CanRunScheduledJobs)
+           || (State.UnderVlimpersManagement && user.HasPermission(Permission.CanManageOrganisationInfoLimitedToVlimpers));
 
     public void ThrowIfUnauthorizedForVlimpers(IUser user)
     {
-        if (State.UnderVlimpersManagement && !user.IsAuthorizedForVlimpersOrganisations)
+        if (State.UnderVlimpersManagement && !user.HasPermission(Permission.CanManageVlimpers))
             throw new UserIsNotAuthorizedForVlimpersOrganisations();
     }
 
     public void ThrowIfUnauthorizedForNonVlimpers(IUser user)
     {
-        if (!State.UnderVlimpersManagement && user.IsAuthorizedForVlimpersOrganisations)
+        if (!State.UnderVlimpersManagement && user.HasPermission(Permission.CanManageVlimpers))
             throw new UserIsNotAuthorizedForOrganisation();
     }
 
