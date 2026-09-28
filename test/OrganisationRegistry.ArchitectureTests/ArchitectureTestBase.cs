@@ -1,20 +1,18 @@
 namespace OrganisationRegistry.ArchitectureTests;
 
-using System.Reflection;
 using ArchUnitNET.Domain;
 using ArchUnitNET.Loader;
+using Xunit;
 
-/// <summary>
-/// Shared architecture context: loads the Api, domain and infrastructure assemblies once.
-/// ArchUnitNET reads compiled binaries — run in Debug configuration.
-/// </summary>
+/// <summary>Waarom: gedeelde ArchUnitNET-architectuur die één keer de relevante assemblies laadt.</summary>
 public abstract class ArchitectureTestBase
 {
-    protected static readonly System.Reflection.Assembly ApiAssembly = typeof(Api.Infrastructure.OrganisationRegistryController).Assembly;
-    protected static readonly System.Reflection.Assembly DomainAssembly = typeof(Handling.Authorization.ISecurityPolicy).Assembly;
-    protected static readonly System.Reflection.Assembly InfrastructureAssembly = typeof(Infrastructure.Authorization.Permission).Assembly;
-
-    protected static readonly Architecture Architecture = new ArchLoader()
-        .LoadAssemblies(ApiAssembly, DomainAssembly, InfrastructureAssembly)
+    private static readonly Architecture ArchitectureInstance = new ArchLoader()
+        .LoadAssemblies(
+            typeof(Api.Infrastructure.OrganisationRegistryController).Assembly,
+            typeof(Infrastructure.Authorization.IUser).Assembly,
+            typeof(Organisation.Organisation).Assembly)
         .Build();
+
+    protected static Architecture Architecture => ArchitectureInstance;
 }
