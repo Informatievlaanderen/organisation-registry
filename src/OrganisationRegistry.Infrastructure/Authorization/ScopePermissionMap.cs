@@ -69,6 +69,7 @@ public static class ScopePermissionMap
                 Permission.DelegationsRead,
                 Permission.DelegationsWrite,
                 Permission.DelegationsDelete,
+                Permission.CanAssignManualIdentifiers,
                 Permission.CanReadConfiguration,
                 Permission.System,
 
