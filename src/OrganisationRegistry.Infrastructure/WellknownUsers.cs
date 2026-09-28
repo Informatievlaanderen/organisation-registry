@@ -5,22 +5,27 @@ using Authorization;
 
 public class WellknownUsers
 {
-    public static User ScheduledCommandsService => Create("ScheduledCommandsService", Role.AutomatedTask);
-    public static User SyncRemovedItemsService => Create("SyncRemovedItemsService", Role.AutomatedTask);
-    public static User KboSyncService => Create("KboSyncService", Role.AutomatedTask);
-    public static User Orafin => Create("Orafin", "Edit Api", "Orafin Edit Api", Role.Orafin);
-    public static User Cjm => Create("Cjm", "Edit Api", "Cjm Edit Api", Role.CjmBeheerder);
-    public static User TestClient => Create("TestClient", Role.AlgemeenBeheerder);
+    public static User ScheduledCommandsService => Create("ScheduledCommandsService", Permission.CanRunScheduledJobs);
+    public static User SyncRemovedItemsService => Create("SyncRemovedItemsService", Permission.CanRunScheduledJobs);
+    public static User KboSyncService => Create("KboSyncService", Permission.CanManageKbo);
+    public static User Orafin => Create("Orafin", "Edit Api", "Orafin Edit Api", Permission.CanReadOrafin);
+    public static User Cjm => Create("Cjm", "Edit Api", "Cjm Edit Api", Permission.CanManageRegulations, Permission.CanManageLabels, Permission.CanManageBodies, Permission.CanManageKbo, Permission.BodiesCanManageContacts, Permission.BodiesCanManageSeats, Permission.BodiesCanManageMandates, Permission.BodiesCanManageLifecycles, Permission.BodiesCanManageOrganisations, Permission.BodiesCanManageClassifications, Permission.BodiesCanManageFormalFrameworks, Permission.BodiesCanManageMep);
+    public static User TestClient => Create("TestClient", Permission.CanManageOrganisation);
 
-    public static User Magda => Create("Magda", "Reregistrator", "Magda Reregistrator", Role.AutomatedTask);
+    public static User Magda => Create("Magda", "Reregistrator", "Magda Reregistrator", Permission.CanManageKbo);
 
     public static User Nobody => Create();
 
-    private static User Create(string name = "", Role? role = null) => Create(name, name, name, role);
+    private static User Create(string name = "", params Permission[] permissions) => Create(name, name, name, permissions);
 
-    private static User Create(string firstName, string lastName, string userId, Role? role = null) =>
-        new(firstName, lastName, userId, string.Empty, GetRoles(role), Array.Empty<string>(), Array.Empty<Guid>(), Array.Empty<Guid>());
-
-    private static Role[] GetRoles(Role? role) =>
-        role != null ? new[] { role.Value } : Array.Empty<Role>();
+    private static User Create(string firstName, string lastName, string userId, params Permission[] permissions)
+        => new(
+            firstName,
+            lastName,
+            userId,
+            string.Empty,
+            Array.Empty<string>(),
+            Array.Empty<Guid>(),
+            Array.Empty<Guid>(),
+            PermissionSet.Of(permissions));
 }
