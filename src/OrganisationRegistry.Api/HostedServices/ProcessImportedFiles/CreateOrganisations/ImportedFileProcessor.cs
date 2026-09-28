@@ -47,17 +47,17 @@ public class ImportedFileProcessor : ImportedFileProcessor<DeserializedRecord, C
         if (!validationResult.ValidationOk)
             return OutputSerializer.Serialize(validationResult.ValidationIssues);
 
-        var roles = importFile.UserRoles.Split("|").Select(x => (Role)Enum.Parse(typeof(Role), x)).ToArray();
+        var roleNames = importFile.UserRoles.Split("|");
+        var permissions = RolePermissionMap.For(roleNames, _configuration);
         var user = new User(
             importFile.UserFirstName,
             importFile.UserName,
             importFile.UserId,
             null,
-            roles,
             new List<string>(),
             new List<Guid>(),
             new List<Guid>(),
-            RolePermissionMap.For(roles, _configuration));
+            permissions);
 
         await _commandSender.Send(
             new CreateOrganisationsFromImport(importFile.Id, validationResult.CommandItems),

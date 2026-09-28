@@ -200,7 +200,7 @@ public class GeefOndernemingQuery : IGeefOndernemingQuery
                          $"LastName: {user.LastName} | " +
                          $"UserId: {user.UserId} | " +
                          $"Ip: {user.Ip} | " +
-                         $"Roles: {string.Join(',', user.Roles)}",
+                         $"Permissions: {user.Permissions}",
         };
         await context.MagdaCallReferences.AddAsync(magdaCallReference);
         await context.SaveChangesAsync();
