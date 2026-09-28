@@ -8,6 +8,7 @@ using Infrastructure.Commands;
 using Infrastructure.Domain;
 using Microsoft.Extensions.Logging;
 
+
 public class RemoveOrganisationKeyCommandHandler :
     BaseCommandHandler<RemoveOrganisationKeyCommandHandler>,
     ICommandEnvelopeHandler<RemoveOrganisationKey>
@@ -20,7 +21,7 @@ public class RemoveOrganisationKeyCommandHandler :
 
     public Task Handle(ICommandEnvelope<RemoveOrganisationKey> envelope)
         => UpdateHandler<Organisation>.For(envelope.Command, envelope.User, Session)
-            .RequiresOneOfRole(Role.AutomatedTask)
+            .RequiresPermission(Permission.CanManageKeys)
             .Handle(
                 session =>
                 {

@@ -19,7 +19,7 @@ public class RemoveDelegationAssignmentCommandHandler
 
     public async Task Handle(ICommandEnvelope<RemoveDelegationAssignment> envelope)
         => await UpdateHandler<Body>.For(envelope.Command, envelope.User, Session)
-            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .RequiresPermission(Permission.DelegationsDelete)
             .Handle(
                 session =>
                 {
