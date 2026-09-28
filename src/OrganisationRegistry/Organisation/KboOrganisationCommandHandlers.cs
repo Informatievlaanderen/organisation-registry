@@ -366,24 +366,26 @@ public class KboOrganisationCommandHandlers :
                 });
 
     public async Task Handle(ICommandEnvelope<SyncOrganisationWithKbo> envelope)
-    {
-        new RequiresRolesPolicy(Role.AlgemeenBeheerder, Role.CjmBeheerder, Role.AutomatedTask)
-            .ThrowOnViolation(envelope.User);
-
-        await SyncWithKbo(envelope.Command.OrganisationId, envelope.User, envelope.Command.KboSyncItemId);
-    }
+        => await UpdateHandler<Organisation>.For(envelope.Command, envelope.User, Session)
+            .RequiresPermission(Permission.CanManageKbo)
+            .Handle(
+                async _ =>
+                {
+                    await SyncWithKbo(envelope.Command.OrganisationId, envelope.User, envelope.Command.KboSyncItemId);
+                });
 
     public async Task Handle(ICommandEnvelope<SyncOrganisationTerminationWithKbo> envelope)
-    {
-        new RequiresRolesPolicy(Role.AlgemeenBeheerder, Role.CjmBeheerder)
-            .ThrowOnViolation(envelope.User);
+        => await UpdateHandler<Organisation>.For(envelope.Command, envelope.User, Session)
+            .RequiresPermission(Permission.CanManageKbo)
+            .Handle(
+                async _ =>
+                {
+                    await SyncWithKbo(envelope.Command.OrganisationId, envelope.User, null);
 
-        await SyncWithKbo(envelope.Command.OrganisationId, envelope.User, null);
+                    var organisation = Session.Get<Organisation>(envelope.Command.OrganisationId);
 
-        var organisation = Session.Get<Organisation>(envelope.Command.OrganisationId);
-
-        organisation.TerminateOrganisationBasedOnKboTermination();
-    }
+                    organisation.TerminateOrganisationBasedOnKboTermination();
+                });
 }
 
 public class KboRegisteredOffice

@@ -56,6 +56,7 @@ public static class ScopePermissionMap
                 Permission.CanManageCapacities,
                 Permission.CanManageLocations,
                 Permission.CanManageBuildings,
+                Permission.CanManageBankAccounts,
                 Permission.CanManageFormalFrameworks,
                 Permission.CanManageOrganisationClassifications,
                 Permission.CanManageRegulations,

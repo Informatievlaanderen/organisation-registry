@@ -17,7 +17,7 @@ public class RemoveOrganisationBankAccountCommandHandler
 
     public async Task Handle(ICommandEnvelope<RemoveOrganisationBankAccount> envelope)
         => await UpdateHandler<Organisation>.For(envelope.Command, envelope.User, Session)
-            .RequiresOneOfRole(Role.AlgemeenBeheerder, Role.CjmBeheerder)
+            .RequiresPermission(Permission.CanManageBankAccounts)
             .Handle(
                 session =>
                 {
