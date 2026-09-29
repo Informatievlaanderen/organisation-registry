@@ -27,29 +27,41 @@ public class RolePermissionsTests
     {
         var result = RolePermissions.Resolve(Role.AlgemeenBeheerder, PermissionsFor(Role.AlgemeenBeheerder)).ToList();
 
-        result.Should().Contain(new[]
+        result.Should().BeEquivalentTo(new[]
         {
             "organisations:create",
             "bodies:create",
-            "bodies",
-            "delegations",
             "delegations:read",
             "delegations:write",
             "delegations:delete",
-            "reports:read",
-            "reports",
-            "imports",
-            "system",
-            "system.statistics:read",
-            "system.events:read",
-            "system.kbo-terminated:read",
-            "parameters",
-            "parameters.organisation-classification-types:write",
+            "parameters.locations:write",
+            "parameters.buildings:write",
+            "parameters.information-systems:write",
             "parameters.information-systems:delete",
-            "people",
+            "parameters.organisation-classifications:write",
+            "parameters.organisation-classification-types:write",
+            "parameters.body-classifications:write",
+            "parameters.body-classification-types:write",
+            "parameters.organisation-relation-types:write",
+            "parameters.formal-frameworks:write",
+            "parameters.formal-framework-categories:write",
+            "parameters.lifecycle-phase-types:write",
+            "parameters.capacities:write",
+            "parameters.capacities:delete",
+            "parameters.function-types:write",
+            "parameters.contact-types:write",
+            "parameters.label-types:write",
+            "parameters.purposes:write",
+            "parameters.seat-types:write",
+            "parameters.mandate-role-types:write",
+            "parameters.location-types:write",
+            "parameters.regulation-themes:write",
+            "parameters.regulation-sub-themes:write",
             "people:write",
             "people.functions:read",
             "people.capacities:read",
+            "reports:read",
+            "system:read",
         });
 
         // There is no Parameters*Read permission: reading a master-data list is
@@ -57,6 +69,19 @@ public class RolePermissionsTests
         // so it carries no per-role signal and is never surfaced on /v1/me.
         result.Should().NotContain("parameters:read");
         result.Should().NotContain("parameters.organisation-classification-types:read");
+
+        // Bare family/aggregate flags and "imports" are deliberately not
+        // surfaced (see GlobalPermissionTranslator doc comment).
+        result.Should().NotContain("bodies");
+        result.Should().NotContain("parameters");
+        result.Should().NotContain("people");
+        result.Should().NotContain("delegations");
+        result.Should().NotContain("reports");
+        result.Should().NotContain("system");
+        result.Should().NotContain("imports");
+        result.Should().NotContain("system.statistics:read");
+        result.Should().NotContain("system.events:read");
+        result.Should().NotContain("system.kbo-terminated:read");
     }
 
     [Fact]
@@ -68,24 +93,24 @@ public class RolePermissionsTests
         {
             "organisations:create",
             "bodies:create",
-            "bodies",
-            "delegations",
             "delegations:read",
             "delegations:write",
             "delegations:delete",
             "reports:read",
-            "reports",
-            "imports",
-            "system",
-            "system.statistics:read",
-            "system.events:read",
-            "system.kbo-terminated:read",
-            "parameters",
-            "people",
+            "system:read",
             "people:write",
             "people.functions:read",
             "people.capacities:read",
         });
+
+        result.Should().NotContain("bodies");
+        result.Should().NotContain("parameters");
+        result.Should().NotContain("people");
+        result.Should().NotContain("delegations");
+        result.Should().NotContain("reports");
+        result.Should().NotContain("system");
+        result.Should().NotContain("imports");
+        result.Should().NotContain("system.statistics:read");
     }
 
     [Fact]
@@ -93,15 +118,15 @@ public class RolePermissionsTests
     {
         var result = RolePermissions.Resolve(Role.DecentraalBeheerder, PermissionsFor(Role.DecentraalBeheerder)).ToList();
 
-        result.Should().Contain("organisations:create");
         result.Should().Contain("bodies:create");
-        result.Should().Contain("bodies");
         result.Should().Contain("reports:read");
-        result.Should().Contain("reports");
-        result.Should().Contain("people");
         result.Should().Contain("people.functions:read");
         result.Should().Contain("people.capacities:read");
 
+        result.Should().NotContain("organisations:create");
+        result.Should().NotContain("bodies");
+        result.Should().NotContain("reports");
+        result.Should().NotContain("people");
         result.Should().NotContain("delegations");
         result.Should().NotContain("delegations:read");
         result.Should().NotContain("imports");
@@ -109,6 +134,7 @@ public class RolePermissionsTests
         result.Should().NotContain("parameters:read");
         result.Should().NotContain("people:write");
         result.Should().NotContain("system");
+        result.Should().NotContain("system:read");
         result.Should().NotContain("system.statistics:read");
     }
 
@@ -117,18 +143,21 @@ public class RolePermissionsTests
     {
         var result = RolePermissions.Resolve(Role.VlimpersBeheerder, PermissionsFor(Role.VlimpersBeheerder)).ToList();
 
-        result.Should().Contain("organisations:create");
         result.Should().Contain("reports:read");
-        result.Should().Contain("reports");
-        result.Should().Contain("imports");
-        result.Should().Contain("people");
+        result.Should().Contain("people.functions:read");
+        result.Should().Contain("people.capacities:read");
 
+        result.Should().NotContain("organisations:create");
         result.Should().NotContain("bodies:create");
         result.Should().NotContain("bodies");
         result.Should().NotContain("delegations");
         result.Should().NotContain("delegations:read");
         result.Should().NotContain("parameters");
+        result.Should().NotContain("people");
+        result.Should().NotContain("reports");
         result.Should().NotContain("system");
+        result.Should().NotContain("system:read");
+        result.Should().NotContain("imports");
     }
 
     [Fact]
@@ -137,19 +166,22 @@ public class RolePermissionsTests
         var result = RolePermissions.Resolve(Role.OrgaanBeheerder, PermissionsFor(Role.OrgaanBeheerder)).ToList();
 
         result.Should().Contain("bodies:create");
-        result.Should().Contain("bodies");
         result.Should().NotContain("bodies:read");
         result.Should().NotContain("bodies:write");
         result.Should().NotContain(p => p.StartsWith("bodies."));
         result.Should().Contain("reports:read");
-        result.Should().Contain("reports");
-        result.Should().Contain("people");
+        result.Should().Contain("people.functions:read");
+        result.Should().Contain("people.capacities:read");
 
+        result.Should().NotContain("bodies");
+        result.Should().NotContain("people");
+        result.Should().NotContain("reports");
         result.Should().NotContain("organisations:create");
         result.Should().NotContain("imports");
         result.Should().NotContain("delegations");
         result.Should().NotContain("parameters");
         result.Should().NotContain("system");
+        result.Should().NotContain("system:read");
         result.Should().NotContain("people:write");
     }
 
@@ -159,9 +191,11 @@ public class RolePermissionsTests
         var result = RolePermissions.Resolve(Role.RegelgevingBeheerder, PermissionsFor(Role.RegelgevingBeheerder)).ToList();
 
         result.Should().Contain("reports:read");
-        result.Should().Contain("reports");
-        result.Should().Contain("people");
+        result.Should().Contain("people.functions:read");
+        result.Should().Contain("people.capacities:read");
 
+        result.Should().NotContain("people");
+        result.Should().NotContain("reports");
         result.Should().NotContain("organisations:create");
         result.Should().NotContain("bodies:create");
         result.Should().NotContain("bodies");
@@ -169,5 +203,6 @@ public class RolePermissionsTests
         result.Should().NotContain("delegations");
         result.Should().NotContain("parameters");
         result.Should().NotContain("system");
+        result.Should().NotContain("system:read");
     }
 }

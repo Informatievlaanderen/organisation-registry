@@ -10,7 +10,7 @@ public static class RolePermissions
     // command controllers directly, e.g. via [OrganisationRegistryAuthorize] with
     // no RequiredPermissions, or are entirely UI-facing conventions), so they stay
     // hand-maintained. Parameters/Bodies admin-screen permissions, organisations:create,
-    // bodies:create, imports, delegations:read/write/delete and system(.*) are NOT
+    // bodies:create, delegations:read/write/delete and system:read are NOT
     // listed here — they are derived from RolePermissionMap by
     // GlobalPermissionTranslator so they can't drift out of sync with the real
     // grants. "reports" has no backing Permission at all (no reports endpoint is
@@ -64,15 +64,7 @@ public static class RolePermissions
 
         var derived = GlobalPermissionTranslator.Translate(permissions);
 
-        var result = manual.Concat(derived).Distinct().ToList();
-
-        // "reports" has no backing Permission (see Map above), so its bare
-        // aggregate flag can't be derived by GlobalPermissionTranslator; add it
-        // here whenever at least one reports:<operation> string is present.
-        if (result.Any(p => p.StartsWith("reports:")))
-            result.Add("reports");
-
-        return result.Distinct().OrderBy(p => p, System.StringComparer.Ordinal);
+        return manual.Concat(derived).Distinct().OrderBy(p => p, System.StringComparer.Ordinal);
     }
 
     public static bool IsConfigured(Role role) =>
