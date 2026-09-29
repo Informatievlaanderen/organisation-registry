@@ -56,7 +56,6 @@ public static class ScopePermissionMap
                 Permission.CanManageCapacities,
                 Permission.CanManageLocations,
                 Permission.CanManageBuildings,
-                Permission.CanManageBankAccounts,
                 Permission.CanManageFormalFrameworks,
                 Permission.CanManageOrganisationClassifications,
                 Permission.CanManageRegulations,
@@ -69,7 +68,6 @@ public static class ScopePermissionMap
                 Permission.DelegationsRead,
                 Permission.DelegationsWrite,
                 Permission.DelegationsDelete,
-                Permission.CanAssignManualIdentifiers,
                 Permission.CanReadConfiguration,
                 Permission.System,
 

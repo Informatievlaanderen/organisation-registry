@@ -31,16 +31,13 @@ public class BodyDetailCommandController : OrganisationRegistryCommandController
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Post(
-        [FromServices] ISecurityService securityService,
         [FromServices] OrganisationRegistryContext context,
         [FromBody] RegisterBodyRequest message)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var user = await securityService.GetRequiredUser(User);
-        if (!user.HasPermission(Permission.CanAssignManualIdentifiers))
-            message.BodyNumber = string.Empty;
+        message.BodyNumber = string.Empty;
 
         await CommandSender.Send(
             RegisterBodyRequestMapping.Map(

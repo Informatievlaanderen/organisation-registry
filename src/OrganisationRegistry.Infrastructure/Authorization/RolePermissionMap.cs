@@ -33,7 +33,6 @@ public static class RolePermissionMap
                 Permission.CanManageCapacities,
                 Permission.CanManageLocations,
                 Permission.CanManageBuildings,
-                Permission.CanManageBankAccounts,
                 Permission.CanManageLabels,
                 Permission.CanManageOrganisationClassifications,
                 Permission.CanManageFormalFrameworks,
@@ -88,8 +87,7 @@ public static class RolePermissionMap
 
                 Permission.DelegationsRead,
                 Permission.DelegationsWrite,
-                Permission.DelegationsDelete,
-                Permission.CanAssignManualIdentifiers),
+                Permission.DelegationsDelete),
 
             [Role.OrgaanBeheerder] = PermissionSet.Of(
                 Permission.CanManageBodies,
@@ -143,10 +141,7 @@ public static class RolePermissionMap
                 Permission.PeopleCapacitiesRead),
 
             [Role.CjmBeheerder] = PermissionSet.Of(
-                Permission.CanManageRegulations,
-                Permission.CanManageLabels,
                 Permission.CanManageBodies,
-                Permission.CanManageKbo,
                 Permission.BodiesCanManageContacts,
                 Permission.BodiesCanManageSeats,
                 Permission.BodiesCanManageMandates,
@@ -173,7 +168,6 @@ public static class RolePermissionMap
                 Permission.CanManageCapacities,
                 Permission.CanManageLocations,
                 Permission.CanManageBuildings,
-                Permission.CanManageBankAccounts,
                 Permission.CanManageLabels,
                 Permission.CanManageOrganisationClassifications,
                 Permission.CanManageFormalFrameworks,
@@ -230,8 +224,7 @@ public static class RolePermissionMap
                 Permission.DelegationsRead,
                 Permission.DelegationsWrite,
                 Permission.DelegationsDelete,
-                Permission.DelegationsCreate,
-                Permission.CanAssignManualIdentifiers),
+                Permission.DelegationsCreate),
 
             // Transitional: AutomatedTask keeps CanRunScheduledJobs until the
             // scheduled-job / sync services migrate to Client Credentials
