@@ -1,3 +1,4 @@
+using OrganisationRegistry.Infrastructure.Authorization;
 namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationBankAccount;
 
 using System;
@@ -73,13 +74,13 @@ public class WhenAddingAOrganisationBankAccount
     [SkipBankAccounts]
     public async Task PublishesOneEvent()
     {
-        await Given(Events).When(AddOrganisationBankAccountCommand, TestUser.AlgemeenBeheerder).ThenItPublishesTheCorrectNumberOfEvents(1);
+        await Given(Events).When(AddOrganisationBankAccountCommand, new UserBuilder().AddRoles(Role.AlgemeenBeheerder).AddPermission(Permission.CanManageBankAccounts).Build()).ThenItPublishesTheCorrectNumberOfEvents(1);
     }
 
     [SkipBankAccounts]
     public async Task AddsAnOrganisationBankAccount()
     {
-        await Given(Events).When(AddOrganisationBankAccountCommand, TestUser.AlgemeenBeheerder).Then();
+        await Given(Events).When(AddOrganisationBankAccountCommand, new UserBuilder().AddRoles(Role.AlgemeenBeheerder).AddPermission(Permission.CanManageBankAccounts).Build()).Then();
 
         PublishedEvents
             .First()

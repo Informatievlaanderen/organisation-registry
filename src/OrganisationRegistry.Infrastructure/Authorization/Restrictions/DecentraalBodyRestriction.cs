@@ -17,7 +17,9 @@ public sealed class DecentraalBodyRestriction : IRestriction
     public bool IsOkWith(params IRestrictionContext[] contexts)
         => contexts.OfType<UserContext>().FirstOrDefault() is { } userContext &&
            contexts.OfType<BodyContext>().FirstOrDefault() is { } bodyContext &&
-           userContext.User.Bodies.Contains(bodyContext.BodyId);
+           userContext.User.Bodies.Contains(bodyContext.BodyId) &&
+           (!bodyContext.OrganisationId.HasValue ||
+            userContext.User.OrganisationIds.Contains(bodyContext.OrganisationId.Value));
 
     public override string ToString() => "DecentraalBody";
 }
