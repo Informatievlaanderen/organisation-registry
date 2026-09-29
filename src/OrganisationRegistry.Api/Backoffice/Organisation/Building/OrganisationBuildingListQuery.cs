@@ -25,8 +25,6 @@ public class OrganisationBuildingListQueryResult
 
     public bool IsEditable { get; }
 
-    public ResourceEditPermissions Permissions { get; }
-
     public OrganisationBuildingListQueryResult(
         Guid organisationBuildingId,
         string buildingName,
@@ -44,7 +42,6 @@ public class OrganisationBuildingListQueryResult
 
         IsActive = new Period(new ValidFrom(validFrom), new ValidTo(validTo)).OverlapsWith(DateTime.Today);
         IsEditable = new BuildingPolicy(ovoNumber).Check(user).IsSuccessful;
-        Permissions = new ResourceEditPermissions(IsEditable);
     }
 }
 

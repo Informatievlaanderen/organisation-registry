@@ -26,7 +26,7 @@ public class OrganisationFormalFrameworkListQueryResult
 
     public bool IsEditable { get; }
 
-    public ResourceEditPermissions Permissions { get; }
+    public ResourceEditAndDeletePermissions Permissions { get; }
 
     public OrganisationFormalFrameworkListQueryResult(Guid organisationFormalFrameworkId,
         Guid formalFrameworkId, string? formalFrameworkName,
@@ -48,7 +48,10 @@ public class OrganisationFormalFrameworkListQueryResult
             new FormalFrameworkPolicy(ovoNumber, formalFrameworkId)
                 .Check(user)
                 .IsSuccessful;
-        Permissions = new ResourceEditPermissions(IsEditable);
+        // Toepassingsgebieden expose a DELETE endpoint guarded by the same
+        // permission/restriction as the PUT endpoint, so CanDelete mirrors
+        // CanEdit here.
+        Permissions = new ResourceEditAndDeletePermissions(IsEditable);
     }
 }
 

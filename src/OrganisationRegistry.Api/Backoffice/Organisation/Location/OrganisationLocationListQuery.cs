@@ -27,8 +27,6 @@ public class OrganisationLocationListQueryResult
 
     public bool IsEditable { get; }
 
-    public ResourceEditPermissions Permissions { get; }
-
     public OrganisationLocationListQueryResult(
         Guid organisationLocationId,
         bool isMainLocation,
@@ -58,7 +56,6 @@ public class OrganisationLocationListQueryResult
                     memoryCaches.UnderVlimpersManagement.Contains(organisationId))
                 .Check(user)
                 .IsSuccessful;
-        Permissions = new ResourceEditPermissions(IsEditable);
     }
 }
 
