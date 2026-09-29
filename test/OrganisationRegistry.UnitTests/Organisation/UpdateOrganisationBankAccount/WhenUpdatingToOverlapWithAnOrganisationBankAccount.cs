@@ -1,3 +1,4 @@
+using OrganisationRegistry.Infrastructure.Authorization;
 namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationBankAccount;
 
 using System;
@@ -82,6 +83,6 @@ public class WhenUpdatingToOverlapWithAnOrganisationBankAccount
     [SkipBankAccounts]
     public async Task ThrowsException()
     {
-        await Given(Events).When(UpdateOrganisationBankAccount, TestUser.AlgemeenBeheerder).ThenThrows<BankAccountNumberAlreadyCoupledToInThisPeriod>();
+        await Given(Events).When(UpdateOrganisationBankAccount, new UserBuilder().AddRoles(Role.AlgemeenBeheerder).AddPermission(Permission.CanManageBankAccounts).Build()).ThenThrows<BankAccountNumberAlreadyCoupledToInThisPeriod>();
     }
 }

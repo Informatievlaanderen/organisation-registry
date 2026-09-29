@@ -45,7 +45,7 @@ public class WhenRemovingAnOrganisationBankAccount
         await Given(
                 OrganisationCreated,
                 OrganisationBankAccountAdded)
-            .When(RemoveOrganisationBankAccountCommand, TestUser.AlgemeenBeheerder)
+            .When(RemoveOrganisationBankAccountCommand, new UserBuilder().AddRoles(Role.AlgemeenBeheerder).AddPermission(Permission.CanManageBankAccounts).Build())
             .ThenItPublishesTheCorrectNumberOfEvents(1);
     }
 
@@ -55,7 +55,7 @@ public class WhenRemovingAnOrganisationBankAccount
         await Given(
                 OrganisationCreated,
                 OrganisationBankAccountAdded)
-            .When(RemoveOrganisationBankAccountCommand, TestUser.AlgemeenBeheerder)
+            .When(RemoveOrganisationBankAccountCommand, new UserBuilder().AddRoles(Role.AlgemeenBeheerder).AddPermission(Permission.CanManageBankAccounts).Build())
             .Then();
 
         var evnt = PublishedEvents[0].UnwrapBody<OrganisationBankAccountRemoved>();
@@ -100,7 +100,7 @@ public class WhenRemovingAnOrganisationBankAccount
     {
         await Given(
                 OrganisationCreated)
-            .When(RemoveOrganisationBankAccountCommand, TestUser.AlgemeenBeheerder)
+            .When(RemoveOrganisationBankAccountCommand, new UserBuilder().AddRoles(Role.AlgemeenBeheerder).AddPermission(Permission.CanManageBankAccounts).Build())
             .ThenThrows<OrganisationBankAccountNotFound>();
     }
 
@@ -109,7 +109,7 @@ public class WhenRemovingAnOrganisationBankAccount
     {
         await Given(
                 OrganisationCreated)
-            .When(RemoveOrganisationBankAccountCommand, TestUser.AlgemeenBeheerder)
+            .When(RemoveOrganisationBankAccountCommand, new UserBuilder().AddRoles(Role.AlgemeenBeheerder).AddPermission(Permission.CanManageBankAccounts).Build())
             .ThenItPublishesTheCorrectNumberOfEvents(0);
     }
 

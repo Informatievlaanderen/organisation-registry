@@ -52,10 +52,10 @@ public class BodyPermissions
         CanManageClassifications = canManageClassifications;
     }
 
-    public static BodyPermissions For(IUser user, Guid bodyId)
+    public static BodyPermissions For(IUser user, Guid bodyId, Guid? organisationId = null)
     {
         var userContext = new UserContext(user);
-        var bodyContext = new BodyContext(bodyId);
+        var bodyContext = new BodyContext(bodyId, organisationId);
 
         bool Satisfies(Permission permission)
             => user.IsSatisfiedFor(permission, userContext, bodyContext);

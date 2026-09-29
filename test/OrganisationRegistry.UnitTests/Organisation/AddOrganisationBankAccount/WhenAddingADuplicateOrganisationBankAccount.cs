@@ -1,3 +1,4 @@
+using OrganisationRegistry.Infrastructure.Authorization;
 namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationBankAccount;
 
 using System;
@@ -84,7 +85,7 @@ public class WhenAddingADuplicateOrganisationBankAccount
         await Given(Events)
             .When(
                 AddOrganisationBankAccountCommand,
-                TestUser.AlgemeenBeheerder)
+                new UserBuilder().AddRoles(Role.AlgemeenBeheerder).AddPermission(Permission.CanManageBankAccounts).Build())
             .ThenThrows<BankAccountNumberAlreadyCoupledToInThisPeriod>();
     }
 }

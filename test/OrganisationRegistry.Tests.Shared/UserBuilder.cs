@@ -92,6 +92,17 @@ public class UserBuilder
         return this;
     }
 
+    /// <summary>
+    /// Adds a single permission to any permissions already derived from roles or
+    /// previously set explicitly. Useful for tests that need a capability that is
+    /// no longer granted to any standard role.
+    /// </summary>
+    public UserBuilder AddPermission(Permission permission)
+    {
+        _permissions = (_permissions ?? RolePermissionMap.For(_roles)).Union(PermissionSet.Of(permission));
+        return this;
+    }
+
     public User Build()
         => new(
             _firstName,

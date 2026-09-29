@@ -10,7 +10,7 @@ using System.Linq;
 /// DecentraalBeheerder managing a body that belongs to their own organisation
 /// or a child organisation).
 /// </summary>
-public sealed record BodyContext(Guid BodyId) : IRestrictionContext
+public sealed record BodyContext(Guid BodyId, Guid? OrganisationId = null) : IRestrictionContext
 {
     public IEnumerable<Guid> RelevantIds => Enumerable.Empty<Guid>();
 }
