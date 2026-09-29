@@ -36,27 +36,12 @@ public class OrganisationDetailCommandController : OrganisationRegistryCommandCo
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        //TODO can be removed ??
-        var user = await securityService.GetRequiredUser(User);
-        if (!user.HasPermission(Permission.CanAssignManualIdentifiers))
-            message.OvoNumber = string.Empty;
+        message.OvoNumber = string.Empty;
 
         if (message.KboNumber is { } kboNumber && kboNumber.IsNotEmptyOrWhiteSpace())
-        {
-            var canAddOrganisation = user.HasPermission(Permission.CanCreateOrganisations) ||
-                                     (user.HasPermission(Permission.CanManageChildren) &&
-                                      message.ParentOrganisationId.HasValue &&
-                                      user.OrganisationIds.Contains(message.ParentOrganisationId.Value));
-
-            if (!canAddOrganisation)
-                ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor deze organisatie.");
-
             await CommandSender.Send(CreateOrganisationRequestMapping.MapToCreateKboOrganisation(message, kboNumber));
-        }
         else
-        {
             await CommandSender.Send(CreateOrganisationRequestMapping.Map(message));
-        }
 
         return CreatedWithLocation(nameof(OrganisationDetailController), "GetById", new { id = message.Id });
     }

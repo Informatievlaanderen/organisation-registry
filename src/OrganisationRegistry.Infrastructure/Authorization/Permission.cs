@@ -291,12 +291,4 @@ public enum Permission
     /// </summary>
     DelegationsCreate,
 
-    /// <summary>
-    /// Assign a custom/manual OVO number, body number or other identifier during
-    /// creation. Reserved for <see cref="Role.AlgemeenBeheerder"/> and
-    /// <see cref="Role.Developer"/>; all other callers get an auto-generated identifier.
-    /// Replaces the former <c>IsInRole(RoleMapping.Map(Role.Developer))</c> checks in
-    /// <c>OrganisationDetailCommandController</c> and <c>BodyDetailCommandController</c>.
-    /// </summary>
-    CanAssignManualIdentifiers,
 }
