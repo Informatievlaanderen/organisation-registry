@@ -35,10 +35,10 @@ public class OrganisationListController : OrganisationRegistryController
         var sorting = Request.ExtractSortingRequest();
         var pagination = Request.ExtractPaginationRequest();
 
-        var securityInformation = await securityService.GetSecurityInformation(User);
+        var user = await securityService.GetRequiredUser(User);
 
         var pagedOrganisations =
-            new OrganisationListQuery(context, securityInformation)
+            new OrganisationListQuery(context, user)
                 .Fetch(filtering, sorting, pagination);
 
         Response.AddPaginationResponse(pagedOrganisations.PaginationInfo);

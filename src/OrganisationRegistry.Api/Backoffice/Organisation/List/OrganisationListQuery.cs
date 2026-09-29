@@ -10,8 +10,10 @@ using Infrastructure;
 using Infrastructure.Search;
 using Infrastructure.Search.Filtering;
 using Infrastructure.Search.Sorting;
+using OrganisationRegistry.Handling.Authorization;
 using OrganisationRegistry.Infrastructure;
 using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Authorization.Restrictions;
 using SqlServer.Infrastructure;
 using SqlServer.Organisation;
 
@@ -38,6 +40,14 @@ public class OrganisationListQueryResult
     [ExcludeFromCsv]
     public Guid? ParentOrganisationId { get; }
 
+    /// <summary>
+    /// Whether this organisation may be selected as a value in create/update
+    /// commands (e.g. as parent organisation). Evaluated with
+    /// <see cref="OrganisationPolicy"/> so restricted roles (DecentraalBeheerder,
+    /// VlimpersBeheerder) are taken into account.
+    /// </summary>
+    public bool CanSelect { get; }
+
     public OrganisationListQueryResult(
         Guid id,
         string ovoNumber,
@@ -45,7 +55,8 @@ public class OrganisationListQueryResult
         string? shortName,
         string? parentOrganisation,
         Guid? parentOrganisationId,
-        string? parentOrganisationOvoNumber)
+        string? parentOrganisationOvoNumber,
+        bool canSelect)
     {
         Id = id;
         OvoNumber = ovoNumber;
@@ -54,13 +65,14 @@ public class OrganisationListQueryResult
         ParentOrganisation = parentOrganisation;
         ParentOrganisationId = parentOrganisationId;
         ParentOrganisationOvoNumber = parentOrganisationOvoNumber;
+        CanSelect = canSelect;
     }
 }
 
 public class OrganisationListQuery : Query<OrganisationListItem, OrganisationListItemFilter, OrganisationListQueryResult>
 {
     private readonly OrganisationRegistryContext _context;
-    private readonly SecurityInformation _securityInformation;
+    private readonly IUser _user;
 
     protected override ISorting Sorting => new OrganisationListSorting();
 
@@ -72,14 +84,20 @@ public class OrganisationListQuery : Query<OrganisationListItem, OrganisationLis
             x.ShortName,
             x.ParentOrganisation,
             x.ParentOrganisationId,
-            x.ParentOrganisationOvoNumber);
+            x.ParentOrganisationOvoNumber,
+            // TODO: OR-3114 CanSelect should also respect Vlimpers management restrictions.
+            // OrganisationListItem currently lacks UnderVlimpersManagement; add it to the
+            // projection or join OrganisationDetail here so OrganisationPolicy can be fully
+            // evaluated. VlimpersBeheerder cannot create bodies, so the practical impact
+            // of this omission is low for the current UI flows.
+            new OrganisationPolicy(Permission.CanManageOrganisation, x.OvoNumber, false).Check(_user).IsSuccessful);
 
     public OrganisationListQuery(
         OrganisationRegistryContext context,
-        SecurityInformation securityInformation)
+        IUser user)
     {
         _context = context;
-        _securityInformation = securityInformation;
+        _user = user;
     }
 
     protected override IQueryable<OrganisationListItem> Filter(FilteringHeader<OrganisationListItemFilter> filtering)
@@ -111,34 +129,36 @@ public class OrganisationListQuery : Query<OrganisationListItem, OrganisationLis
                     (!y.ValidTo.HasValue || y.ValidTo >= DateTime.Today)));
 
         if (!filter.OrganisationClassificationId.IsEmptyGuid())
-            organisations = organisations.Where(x =>
-                x.OrganisationClassificationValidities.Any(y =>
-                    y.OrganisationClassificationId == filter.OrganisationClassificationId &&
-                    (!filter.ActiveOnly ||
-                     ((!y.ValidFrom.HasValue || y.ValidFrom <= DateTime.Today) &&
-                      (!y.ValidTo.HasValue || y.ValidTo >= DateTime.Today)))));
+                organisations = organisations.Where(x =>
+                    x.OrganisationClassificationValidities.Any(y =>
+                        y.OrganisationClassificationId == filter.OrganisationClassificationId &&
+                        (!filter.ActiveOnly ||
+                         ((!y.ValidFrom.HasValue || y.ValidFrom <= DateTime.Today) &&
+                          (!y.ValidTo.HasValue || y.ValidTo >= DateTime.Today)))));
 
-        if (!filter.OrganisationClassificationTypeId.IsEmptyGuid())
-            organisations = organisations.Where(x =>
-                x.OrganisationClassificationValidities.Any(y =>
-                    y.OrganisationClassificationTypeId == filter.OrganisationClassificationTypeId &&
-                    (!filter.ActiveOnly ||
-                     ((!y.ValidFrom.HasValue || y.ValidFrom <= DateTime.Today) &&
-                      (!y.ValidTo.HasValue || y.ValidTo >= DateTime.Today)))));
+            if (!filter.OrganisationClassificationTypeId.IsEmptyGuid())
+                organisations = organisations.Where(x =>
+                    x.OrganisationClassificationValidities.Any(y =>
+                        y.OrganisationClassificationTypeId == filter.OrganisationClassificationTypeId &&
+                        (!filter.ActiveOnly ||
+                         ((!y.ValidFrom.HasValue || y.ValidFrom <= DateTime.Today) &&
+                          (!y.ValidTo.HasValue || y.ValidTo >= DateTime.Today)))));
 
-        if (filter.AuthorizedOnly)
-        {
-            if (!_securityInformation.Permissions.Contains(Permission.CanManageOrganisation))
-                organisations = organisations.Where(x => _securityInformation.OvoNumbers.Contains(x.OvoNumber));
+            if (filter.AuthorizedOnly && _user.OrganisationIds.Any())
+            {
+                // Users with explicit organisation restrictions (e.g. DecentraalBeheerder)
+                // only see organisations in their scope. Users without restrictions see
+                // everything and rely on per-item CanSelect evaluated in the projection.
+                organisations = organisations.Where(x => _user.OrganisationIds.Contains(x.OrganisationId));
+            }
+
+            return organisations;
         }
 
-        return organisations;
-    }
-
-    private class OrganisationListSorting : ISorting
-    {
-        public IEnumerable<string> SortableFields { get; } = new[]
+        private class OrganisationListSorting : ISorting
         {
+            public IEnumerable<string> SortableFields { get; } = new[]
+            {
             nameof(OrganisationListItem.Name),
             nameof(OrganisationListItem.ParentOrganisation),
             nameof(OrganisationListItem.OvoNumber),
