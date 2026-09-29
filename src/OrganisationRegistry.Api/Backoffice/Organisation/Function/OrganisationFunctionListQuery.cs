@@ -26,8 +26,6 @@ public class OrganisationFunctionListQueryResult
 
     public bool IsEditable { get; }
 
-    public ResourceEditPermissions Permissions { get; }
-
     public OrganisationFunctionListQueryResult(
         Guid organisationFunctionId,
         Guid personId,
@@ -47,7 +45,6 @@ public class OrganisationFunctionListQueryResult
 
         IsActive = new Period(new ValidFrom(validFrom), new ValidTo(validTo)).OverlapsWith(DateTime.Today);
         IsEditable = new FunctionPolicy(ovoNumber).Check(user).IsSuccessful;
-        Permissions = new ResourceEditPermissions(IsEditable);
     }
 }
 

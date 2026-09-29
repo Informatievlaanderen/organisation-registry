@@ -24,8 +24,6 @@ public class OrganisationBodyListQueryResult
 
     public bool IsEditable { get; }
 
-    public ResourceEditPermissions Permissions { get; }
-
     public OrganisationBodyListQueryResult(
         Guid organisationBodyId,
         Guid bodyId,
@@ -42,7 +40,6 @@ public class OrganisationBodyListQueryResult
 
         IsActive = new Period(new ValidFrom(validFrom), new ValidTo(validTo)).OverlapsWith(DateTime.Today);
         IsEditable = new BodyPolicy(Permission.BodiesCanManageOrganisations, bodyId).Check(user).IsSuccessful;
-        Permissions = new ResourceEditPermissions(IsEditable);
     }
 }
 

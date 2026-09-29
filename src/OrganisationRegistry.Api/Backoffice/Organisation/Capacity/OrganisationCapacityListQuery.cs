@@ -24,7 +24,7 @@ public class OrganisationCapacityListQueryResult
 
     public bool IsEditable { get; }
 
-    public ResourceEditPermissions Permissions { get; }
+    public ResourceEditAndDeletePermissions Permissions { get; }
 
     public OrganisationCapacityListQueryResult(
         Guid organisationCapacityId,
@@ -48,7 +48,10 @@ public class OrganisationCapacityListQueryResult
         IsActive = new Period(new ValidFrom(validFrom), new ValidTo(validTo)).OverlapsWith(DateTime.Today);
 
         IsEditable = isAuthorizedForCapacity(capacityId);
-        Permissions = new ResourceEditPermissions(IsEditable);
+        // Hoedanigheden expose a DELETE endpoint guarded by the same
+        // permission/restriction as the PUT endpoint, so CanDelete mirrors
+        // CanEdit here.
+        Permissions = new ResourceEditAndDeletePermissions(IsEditable);
     }
 }
 

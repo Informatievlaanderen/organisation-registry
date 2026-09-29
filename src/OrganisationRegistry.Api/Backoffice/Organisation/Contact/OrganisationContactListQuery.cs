@@ -24,8 +24,6 @@ public class OrganisationContactListQueryResult
 
     public bool IsEditable { get; }
 
-    public ResourceEditPermissions Permissions { get; }
-
     public OrganisationContactListQueryResult(
         Guid organisationContactId,
         string contactTypeName,
@@ -42,7 +40,6 @@ public class OrganisationContactListQueryResult
 
         IsActive = new Period(new ValidFrom(validFrom), new ValidTo(validTo)).OverlapsWith(DateTime.Today);
         IsEditable = new ContactPolicy().Check(user).IsSuccessful;
-        Permissions = new ResourceEditPermissions(IsEditable);
     }
 }
 

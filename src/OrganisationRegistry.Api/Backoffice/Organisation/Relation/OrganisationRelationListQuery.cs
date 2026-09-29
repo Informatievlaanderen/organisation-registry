@@ -26,8 +26,6 @@ public class OrganisationRelationListQueryResult
 
     public bool IsEditable { get; }
 
-    public ResourceEditPermissions Permissions { get; }
-
     public OrganisationRelationListQueryResult(
         Guid organisationRelationId,
         Guid relatedOrganisationId,
@@ -47,7 +45,6 @@ public class OrganisationRelationListQueryResult
 
         IsActive = new Period(new ValidFrom(validFrom), new ValidTo(validTo)).OverlapsWith(DateTime.Today);
         IsEditable = new RelationPolicy(ovoNumber).Check(user).IsSuccessful;
-        Permissions = new ResourceEditPermissions(IsEditable);
     }
 }
 
