@@ -5,7 +5,7 @@ metadata:
   namespace: wegwijs-demo
 spec:
   ttlSecondsAfterFinished: 3600
-  backoffLimit: 0
+  backoffLimit: 2
   template:
     spec:
       restartPolicy: Never

@@ -120,11 +120,6 @@ namespace OrganisationRegistry.Import.Piavo
 
             try
             {
-                if (ImportAlreadyCompleted(client))
-                {
-                    Console.WriteLine("PIAVO import data is already present; skipping import.");
-                    return;
-                }
                 BuildDatabase();
                 AssignDeterministicIds();
                 ImportKeys(client);
@@ -197,27 +192,6 @@ namespace OrganisationRegistry.Import.Piavo
                     f.NewId = DeterministicGuid("orgfunction", $"{org.OvoNumber}|{f.PersonId}|{f.FunctionId}|{f.StartDate}");
                 foreach (var f in org.OrganisationFormalFrameworks)
                     f.NewId = DeterministicGuid("orgformalframework", $"{org.OvoNumber}|{f.FormalFrameworkId}|{f.StartDate}");
-            }
-        }
-
-        private static bool ImportAlreadyCompleted(OrganisationRegistryAPI client)
-        {
-            try
-            {
-                // OVO000001 is also created by demos/seed, so checking it makes the
-                // import skip itself whenever seed has run first. Use a PIAVO-specific
-                // organisation (OVO000105) that only this import creates.
-                using var response = client.HttpClient
-                    .GetAsync(new Uri(client.BaseUri, "organisations/OVO000105"))
-                    .GetAwaiter()
-                    .GetResult();
-
-                return response.IsSuccessStatusCode;
-            }
-            catch (Exception exception)
-            {
-                Console.WriteLine($"Could not determine whether PIAVO import already ran: {exception.Message}");
-                return false;
             }
         }
 
