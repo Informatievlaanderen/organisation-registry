@@ -1,3 +1,50 @@
+# [1.340.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.339.4...v1.340.0) (2026-10-01)
+
+
+### Bug Fixes
+
+* change the policy for bodies ([ceb4e8b](https://github.com/informatievlaanderen/organisation-registry/commit/ceb4e8b1bc103feeeb02caa5fac08d348033cd24))
+* discover parent/child dynamically in ApiFixture ([b8789db](https://github.com/informatievlaanderen/organisation-registry/commit/b8789db6ca9e6496d0630138dc3e3d0415ef50fb))
+* discover parent/child dynamically in wait-for-tilt script ([7211d06](https://github.com/informatievlaanderen/organisation-registry/commit/7211d0651f980d2b3651847e590c770e53c0e11c))
+* global permissions on me endpoint + fix CanManageOrganisationInfo ([05996af](https://github.com/informatievlaanderen/organisation-registry/commit/05996af82ee92a9b41a35fb78c53563bbad72370))
+* let ingress-routes wait on namespace ([a460335](https://github.com/informatievlaanderen/organisation-registry/commit/a460335ec3224698e949d43b51bd6115f2c992e8))
+* make piavo import idempotent and allow retries ([ba6a287](https://github.com/informatievlaanderen/organisation-registry/commit/ba6a28722bee44e3d62c98629dfc044138a6f64a))
+* or-3114 derive editApi client permissions from ScopePermissionMap ([589dff7](https://github.com/informatievlaanderen/organisation-registry/commit/589dff72572d574a55a32cd8a2fd52f48474c255))
+* or-3114 remove CanEdit from other list queries and add ResourceEditAndDeletePermissions ([d55204e](https://github.com/informatievlaanderen/organisation-registry/commit/d55204ef6a5a84d5bca288e9c073e35430a3782d))
+* or-3114 remove permissions from body list ([312866a](https://github.com/informatievlaanderen/organisation-registry/commit/312866a2df3236a0e78f4b75522f55595c9daf1a))
+* or-3114 restore anonymous access with permission check on public search ([b6fbf65](https://github.com/informatievlaanderen/organisation-registry/commit/b6fbf65fadf6790bb7bbb34c3cbbe6f9855528e5))
+* or-3114 use policy-based handler for KBO organisation creation ([74a99bf](https://github.com/informatievlaanderen/organisation-registry/commit/74a99bfde4691aa01121e0aafe068c05bfc8b75f))
+* select PIAVO pair by deterministic id and discover decentraalbeheerder child in ApiFixture ([9002098](https://github.com/informatievlaanderen/organisation-registry/commit/900209871ff743c4eb17cf7aea67120601602058))
+* select PIAVO pair by deterministic id in wait-for-tilt script ([96e9cf5](https://github.com/informatievlaanderen/organisation-registry/commit/96e9cf5e6b9c968a3a4616620585fb1cd57e8ab2))
+* set right global permissions ([216724b](https://github.com/informatievlaanderen/organisation-registry/commit/216724b29d8b53d8b60e0a9f56340d14a1e38361))
+* use GetUser instead of GetRequiredUser in PersonDetailController ([a6c1d64](https://github.com/informatievlaanderen/organisation-registry/commit/a6c1d648585b6787532e6a6d77d78e2ca80bc1bf))
+* use PIAVO-specific OVO for import idempotency check ([285235b](https://github.com/informatievlaanderen/organisation-registry/commit/285235beaf287eac284095ac3598fdab803f19b3))
+* wait for Configuration table before seeding api configuration ([dbd7f56](https://github.com/informatievlaanderen/organisation-registry/commit/dbd7f569f01142a1cd4b3eafc0719ed0fd3b1545))
+
+
+### Features
+
+* add CanSelect to organisation list items and filter by OrganisationIds ([dddb339](https://github.com/informatievlaanderen/organisation-registry/commit/dddb339706c8d5d5e7f8dd15c114d1fd579fb469))
+* add permission check to terminate organisation ([33d12f5](https://github.com/informatievlaanderen/organisation-registry/commit/33d12f5666c3c218903566d84330a9d697b6d568))
+* align role/scope permissions with rollenmatrix ([3b10b1b](https://github.com/informatievlaanderen/organisation-registry/commit/3b10b1b728b9f9cea1643be9afc48f9c8f2bb010))
+* or-3114 add action-level permission checks to OrganisationDetailCommandController ([7b2709c](https://github.com/informatievlaanderen/organisation-registry/commit/7b2709c6426a18291a4673eff64921adfbf03e09))
+* or-3114 add CanAssignManualIdentifiers permission ([2f16032](https://github.com/informatievlaanderen/organisation-registry/commit/2f16032ee0afa4ae1819ca557f1641d1d48ead04))
+* or-3114 add CanManageBankAccounts and CanManageOpeningHours permissions ([637ec4b](https://github.com/informatievlaanderen/organisation-registry/commit/637ec4b6ccaddc011fb2951296a5713194880261))
+* or-3114 add vo medewerker rol ([d9bab59](https://github.com/informatievlaanderen/organisation-registry/commit/d9bab59bc0b49728e3de4ed6380bbfb9da627ba2))
+* or-3114 drop role-based body-organisation validator rule ([343cbd9](https://github.com/informatievlaanderen/organisation-registry/commit/343cbd9df17f3ebdd28ab5635c79f73ae908693b))
+* or-3114 make user model permission-first ([85ba8cf](https://github.com/informatievlaanderen/organisation-registry/commit/85ba8cf2a85ab7a046b20a620ab209aaaf8fa994))
+* or-3114 migrate last role-based controller checks to permissions ([109d844](https://github.com/informatievlaanderen/organisation-registry/commit/109d8446a8df0c46f9c8d96978d65b904ff4f28a))
+* or-3114 migrate remaining command handlers to permissions ([402e63a](https://github.com/informatievlaanderen/organisation-registry/commit/402e63a6ac60fe8c3caabc6eb9844e90596ac0b9))
+* or-3114 remove role checks from Organisation aggregate and SecurityService.CanUseLabelType ([1765dbb](https://github.com/informatievlaanderen/organisation-registry/commit/1765dbba956427513244a6a582c9c5d53851130f))
+* or-3114 remove Role enum usage from hosted services and Magda logging ([143e5e0](https://github.com/informatievlaanderen/organisation-registry/commit/143e5e0952a119119fe06d3d137b571a0b920ae3))
+* or-3114 remove role-based handler policy helpers ([b0caa5a](https://github.com/informatievlaanderen/organisation-registry/commit/b0caa5a19ef97b2cdee39ebd750681392f819b3d))
+* or-3114 replace role checks in list queries with permissions ([f587372](https://github.com/informatievlaanderen/organisation-registry/commit/f587372c9d295072a9adf0b42d2c04b4a042f2f9))
+* or-3114 split CanManageParent from CanManageChildren for reparenting ([e1d51d0](https://github.com/informatievlaanderen/organisation-registry/commit/e1d51d045f39b35f7fe5bc4d837386389e896cbb))
+* or-3114 use policy for creating org and remove old handler role check ([766df3c](https://github.com/informatievlaanderen/organisation-registry/commit/766df3c9975ddc0ce95a065e6d4c303adda83115))
+* or-3114 wire permission checks on Edit API mutating controllers ([40e4a42](https://github.com/informatievlaanderen/organisation-registry/commit/40e4a42e87ff6b743cd32e1d74079659393a87a2))
+* remove CanAssignManualIdentifiers and inline controller checks ([7d5c767](https://github.com/informatievlaanderen/organisation-registry/commit/7d5c76768377a22dc278653421aa2271bbc12293))
+* restore CanAssignManualIdentifiers for developer role ([3dfe584](https://github.com/informatievlaanderen/organisation-registry/commit/3dfe58403690c3a0528c39a008b9661f7a6939ee))
+
 ## [1.339.4](https://github.com/informatievlaanderen/organisation-registry/compare/v1.339.3...v1.339.4) (2026-09-22)
 
 
