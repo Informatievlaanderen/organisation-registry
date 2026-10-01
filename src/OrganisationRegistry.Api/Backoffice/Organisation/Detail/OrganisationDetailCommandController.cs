@@ -36,7 +36,9 @@ public class OrganisationDetailCommandController : OrganisationRegistryCommandCo
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        message.OvoNumber = string.Empty;
+        var user = await securityService.GetRequiredUser(User);
+        if (!user.HasPermission(Permission.CanAssignManualIdentifiers))
+            message.OvoNumber = string.Empty;
 
         if (message.KboNumber is { } kboNumber && kboNumber.IsNotEmptyOrWhiteSpace())
             await CommandSender.Send(CreateOrganisationRequestMapping.MapToCreateKboOrganisation(message, kboNumber));

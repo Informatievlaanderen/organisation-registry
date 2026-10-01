@@ -291,4 +291,13 @@ public enum Permission
     /// </summary>
     DelegationsCreate,
 
+    /// <summary>
+    /// Assign a custom/manual OVO number or body number during creation
+    /// (<c>OrganisationDetailCommandController.Post</c>, <c>BodyDetailCommandController.Post</c>).
+    /// Granted only to <see cref="Role.Developer"/> (test/tooling capability: seed and
+    /// integration fixtures rely on deterministic OVO numbers). All other callers get an
+    /// auto-generated identifier.
+    /// </summary>
+    CanAssignManualIdentifiers,
+
 }
