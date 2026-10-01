@@ -374,14 +374,17 @@ public class ApiFixture : IDisposable, IAsyncLifetime
             return false;
 
         var organisations = await DeserializeAsList(response);
-        var parent = organisations.FirstOrDefault(IsImportedParentOrganisation);
-        if (parent == null || !TryGetGuid(parent, "id", out var parentOrganisationId))
-            return false;
 
+        // Find any parent/child pair in the imported data instead of hardcoding OVO000001,
+        // which is also created by demos/seed and may no longer be the PIAVO parent.
         var child = organisations.FirstOrDefault(organisation =>
             TryGetString(organisation, "parentOrganisationId", out var parentId) &&
-            string.Equals(parentId, parentOrganisationId.ToString(), StringComparison.OrdinalIgnoreCase));
+            !string.IsNullOrWhiteSpace(parentId));
         if (child == null || !TryGetGuid(child, "id", out var childOrganisationId))
+            return false;
+
+        if (!TryGetString(child, "parentOrganisationId", out var parentOrganisationIdString) ||
+            !Guid.TryParse(parentOrganisationIdString, out var parentOrganisationId))
             return false;
 
         _importedParentOrganisationId = parentOrganisationId;
@@ -405,10 +408,6 @@ public class ApiFixture : IDisposable, IAsyncLifetime
                await HasAnyItems($"/v1/organisations/{ImportedParentOrganisationId}/children") &&
                await HasAnyItems($"/v1/organisations/{ImportedChildOrganisationId}/classifications");
     }
-
-    private static bool IsImportedParentOrganisation(Dictionary<string, object> organisation)
-        => TryGetString(organisation, "ovoNumber", out var ovoNumber) &&
-           ovoNumber == "OVO000001";
 
     private static bool TryGetGuid(Dictionary<string, object> item, string key, out Guid value)
     {
