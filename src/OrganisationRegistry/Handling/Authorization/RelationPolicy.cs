@@ -27,7 +27,7 @@ public class RelationPolicy : ISecurityPolicy
         => user.IsSatisfiedFor(
             Permission.CanManageRelations,
             new UserContext(user),
-            new OrganisationContext(_ovoNumber))
+            new OrganisationContext.ByOvoNumber(_ovoNumber))
             ? AuthorizationResult.Success()
             : AuthorizationResult.Fail(InsufficientRights.CreateFor(this));
 

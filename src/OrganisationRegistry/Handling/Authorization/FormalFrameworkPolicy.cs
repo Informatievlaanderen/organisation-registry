@@ -30,7 +30,7 @@ public class FormalFrameworkPolicy : ISecurityPolicy
         => user.IsSatisfiedFor(
             Permission.CanManageFormalFrameworks,
             new UserContext(user),
-            new OrganisationContext(_ovoNumber),
+            new OrganisationContext.ByOvoNumber(_ovoNumber),
             new FormalFrameworkContext(_formalFrameworkId))
             ? AuthorizationResult.Success()
             : AuthorizationResult.Fail(InsufficientRights.CreateFor(this));

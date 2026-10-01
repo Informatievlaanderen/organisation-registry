@@ -39,7 +39,7 @@ public class ImportPolicy : ISecurityPolicy
             var isSatisfied = user.IsSatisfiedFor(
                 Permission.CanImport,
                 new UserContext(user),
-                new OrganisationContext(organisation.State.OvoNumber),
+                new OrganisationContext.ByOvoNumber(organisation.State.OvoNumber),
                 new VlimpersManagementContext(organisation.State.UnderVlimpersManagement));
 
             if (!isSatisfied)

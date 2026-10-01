@@ -2,6 +2,7 @@ namespace OrganisationRegistry.Handling.Authorization;
 
 using System;
 using Infrastructure.Authorization;
+using Infrastructure.Authorization.Restrictions;
 using Organisation;
 using Organisation.Exceptions;
 
@@ -27,15 +28,22 @@ public class RegisterBodyPolicy : ISecurityPolicy
 
     public AuthorizationResult Check(IUser user)
     {
-        if (user.IsSatisfiedFor(Permission.CanManageBodies))
-            return AuthorizationResult.Success();
+        // No organisation was specified: only an unrestricted grant (e.g.
+        // AlgemeenBeheerder/OrgaanBeheerder) can satisfy the permission here,
+        // since a restricted grant always requires a context to check against
+        // (a restriction never applies to an empty context array). This mirrors
+        // the pre-refactor "IsSatisfiedFor(CanManageBodies)" unrestricted check.
+        if (_organisationId is not { } organisationId)
+            return user.IsSatisfiedFor(Permission.CanManageBodies)
+                ? AuthorizationResult.Success()
+                : AuthorizationResult.Fail(InsufficientRights.CreateFor(this));
 
-        if (_organisationId is { } organisationId &&
-            user.HasPermission(Permission.CanManageBodies) &&
-            user.OrganisationIds.Contains((Guid)organisationId))
-            return AuthorizationResult.Success();
-
-        return AuthorizationResult.Fail(InsufficientRights.CreateFor(this));
+        return user.IsSatisfiedFor(
+            Permission.CanManageBodies,
+            new UserContext(user),
+            new OrganisationContext.ById((Guid)organisationId))
+            ? AuthorizationResult.Success()
+            : AuthorizationResult.Fail(InsufficientRights.CreateFor(this));
     }
 
     public override string ToString()

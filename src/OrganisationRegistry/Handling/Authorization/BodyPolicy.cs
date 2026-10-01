@@ -20,18 +20,27 @@ public class BodyPolicy : ISecurityPolicy
 {
     private readonly Permission _permission;
     private readonly Guid _bodyId;
+    private readonly Guid? _organisationId;
 
-    public BodyPolicy(Permission permission, Guid bodyId)
+    /// <param name="organisationId">
+    /// The body's current organisation (read live off the aggregate, not off a
+    /// — potentially stale — cached read model). Lets <see cref="DecentraalBodyRestriction"/>
+    /// check the user's organisation scope directly, so access isn't gated solely
+    /// by the user's cached <see cref="IUser.Bodies"/> list, which is only
+    /// refreshed when the security cache is invalidated.
+    /// </param>
+    public BodyPolicy(Permission permission, Guid bodyId, Guid? organisationId = null)
     {
         _permission = permission;
         _bodyId = bodyId;
+        _organisationId = organisationId;
     }
 
     public AuthorizationResult Check(IUser user)
         => user.IsSatisfiedFor(
             _permission,
             new UserContext(user),
-            new BodyContext(_bodyId))
+            new BodyContext(_bodyId, _organisationId))
             ? AuthorizationResult.Success()
             : AuthorizationResult.Fail(InsufficientRights.CreateFor(this));
 

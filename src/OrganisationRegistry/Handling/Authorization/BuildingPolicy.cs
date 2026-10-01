@@ -27,7 +27,7 @@ public class BuildingPolicy : ISecurityPolicy
         => user.IsSatisfiedFor(
             Permission.CanManageBuildings,
             new UserContext(user),
-            new OrganisationContext(_ovoNumber))
+            new OrganisationContext.ByOvoNumber(_ovoNumber))
             ? AuthorizationResult.Success()
             : AuthorizationResult.Fail(InsufficientRights.CreateFor(this));
 

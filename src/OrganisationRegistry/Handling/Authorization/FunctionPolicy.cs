@@ -27,7 +27,7 @@ public class FunctionPolicy : ISecurityPolicy
         => user.IsSatisfiedFor(
             Permission.CanManageFunctions,
             new UserContext(user),
-            new OrganisationContext(_ovoNumber))
+            new OrganisationContext.ByOvoNumber(_ovoNumber))
             ? AuthorizationResult.Success()
             : AuthorizationResult.Fail(InsufficientRights.CreateFor(this));
 

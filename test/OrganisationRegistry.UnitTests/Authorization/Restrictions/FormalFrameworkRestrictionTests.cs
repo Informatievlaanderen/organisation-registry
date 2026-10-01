@@ -66,7 +66,7 @@ public class DecentraalOrganisationRestrictionTests
             .Build();
 
         DecentraalOrganisationRestriction.Instance
-            .IsOkWith(new UserContext(user), new OrganisationContext(ovoNumber))
+            .IsOkWith(new UserContext(user), new OrganisationContext.ByOvoNumber(ovoNumber))
             .Should().BeTrue();
     }
 
@@ -79,7 +79,7 @@ public class DecentraalOrganisationRestrictionTests
             .Build();
 
         DecentraalOrganisationRestriction.Instance
-            .IsOkWith(new UserContext(user), new OrganisationContext(_fixture.Create<string>()))
+            .IsOkWith(new UserContext(user), new OrganisationContext.ByOvoNumber(_fixture.Create<string>()))
             .Should().BeFalse();
     }
 
@@ -87,7 +87,7 @@ public class DecentraalOrganisationRestrictionTests
     public void FailsClosedWhenUserContextIsMissing()
     {
         DecentraalOrganisationRestriction.Instance
-            .IsOkWith(new OrganisationContext(_fixture.Create<string>()))
+            .IsOkWith(new OrganisationContext.ByOvoNumber(_fixture.Create<string>()))
             .Should().BeFalse();
     }
 
@@ -142,7 +142,7 @@ public class FormalFrameworkRestrictionsTests
 
         restriction.IsOkWith(
                 new UserContext(user),
-                new OrganisationContext(ovoNumber),
+                new OrganisationContext.ByOvoNumber(ovoNumber),
                 new FormalFrameworkContext(_fixture.Create<Guid>()))
             .Should().BeTrue();
     }
@@ -161,7 +161,7 @@ public class FormalFrameworkRestrictionsTests
 
         restriction.IsOkWith(
                 new UserContext(user),
-                new OrganisationContext(ovoNumber),
+                new OrganisationContext.ByOvoNumber(ovoNumber),
                 new FormalFrameworkContext(vlimpersIds[0]))
             .Should().BeFalse();
     }
@@ -179,7 +179,7 @@ public class FormalFrameworkRestrictionsTests
 
         restriction.IsOkWith(
                 new UserContext(user),
-                new OrganisationContext(_fixture.Create<string>()),
+                new OrganisationContext.ByOvoNumber(_fixture.Create<string>()),
                 new FormalFrameworkContext(_fixture.Create<Guid>()))
             .Should().BeFalse();
     }

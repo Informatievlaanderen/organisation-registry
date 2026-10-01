@@ -32,7 +32,7 @@ public class ChildPolicy : ISecurityPolicy
         => user.IsSatisfiedFor(
             Permission.CanManageChildren,
             new UserContext(user),
-            new OrganisationContext(_ovoNumber),
+            new OrganisationContext.ByOvoNumber(_ovoNumber),
             new VlimpersManagementContext(_isUnderVlimpersManagement))
             ? AuthorizationResult.Success()
             : AuthorizationResult.Fail(InsufficientRights.CreateFor(this));

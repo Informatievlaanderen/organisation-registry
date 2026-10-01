@@ -42,6 +42,15 @@ public class Body : AggregateRoot
     private readonly List<BodyBodyClassification> _bodyBodyClassifications;
 
     /// <summary>
+    /// Id of the organisation this body currently belongs to, if any. Reflects
+    /// the aggregate's own in-memory state (no projection lag), used by
+    /// authorization checks (e.g. <see cref="Handling.Authorization.BodyPolicy"/>)
+    /// so a DecentraalBeheerder's access to a body they just (re)linked to their
+    /// organisation isn't gated by a potentially stale security cache.
+    /// </summary>
+    public Guid? CurrentOrganisationId => _currentBodyOrganisation is { } current ? (Guid)current.OrganisationId : null;
+
+    /// <summary>
     /// for deserialisation
     /// </summary>
     public Body() : this(string.Empty, string.Empty)
