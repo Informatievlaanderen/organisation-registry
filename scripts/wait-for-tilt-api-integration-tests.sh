@@ -90,16 +90,13 @@ for route in ("/v1/people", "/v1/buildings", "/v1/functiontypes", "/v1/capacitie
         sys.exit(1)
 
 organisations = get_json("/v1/organisations")
-parent_organisation_id = next(
-    organisation["id"]
+child_organisation = next(
+    organisation
     for organisation in organisations
-    if organisation["ovoNumber"] == "OVO000001"
+    if organisation.get("parentOrganisationId")
 )
-child_organisation_id = next(
-    organisation["id"]
-    for organisation in organisations
-    if organisation["parentOrganisationId"] == parent_organisation_id
-)
+parent_organisation_id = child_organisation["parentOrganisationId"]
+child_organisation_id = child_organisation["id"]
 
 if not get_json(f"/v1/organisations/{parent_organisation_id}"):
     sys.exit(1)
