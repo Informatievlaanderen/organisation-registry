@@ -189,7 +189,7 @@ public static class UpdateHandlerExtensionMethods
         => source.WithPolicy(_ => new RequiresPermissionPolicy(permission));
 
     public static UpdateHandler<Body> WithBodyPolicy(this UpdateHandler<Body> source, Permission permission)
-        => source.WithPolicy(body => new BodyPolicy(permission, body.Id));
+        => source.WithPolicy(body => new BodyPolicy(permission, body.Id, body.CurrentOrganisationId));
 
     public static UpdateHandler<TAggregate> WithPeoplePolicy<TAggregate>(this UpdateHandler<TAggregate> source)
         where TAggregate : AggregateRoot

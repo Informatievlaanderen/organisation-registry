@@ -3,6 +3,7 @@
 using System.Threading.Tasks;
 using Exceptions;
 using Handling;
+using Infrastructure.AppSpecific;
 using Infrastructure.Commands;
 using Infrastructure.Domain;
 using LifecyclePhaseType;

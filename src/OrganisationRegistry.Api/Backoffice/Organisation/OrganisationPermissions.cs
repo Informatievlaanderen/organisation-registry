@@ -139,7 +139,7 @@ public class OrganisationPermissions
     public static OrganisationPermissions For(IUser user, string ovoNumber, bool isUnderVlimpersManagement)
     {
         var userContext = new UserContext(user);
-        var organisationContext = new OrganisationContext(ovoNumber);
+        var organisationContext = new OrganisationContext.ByOvoNumber(ovoNumber);
 
         bool Satisfies(Permission permission, params IRestrictionContext[] contexts)
             => user.IsSatisfiedFor(permission, contexts);

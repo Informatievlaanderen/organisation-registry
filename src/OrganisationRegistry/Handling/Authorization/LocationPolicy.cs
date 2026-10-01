@@ -27,7 +27,7 @@ public class LocationPolicy : ISecurityPolicy
         => user.IsSatisfiedFor(
             Permission.CanManageLocations,
             new UserContext(user),
-            new OrganisationContext(_ovoNumber))
+            new OrganisationContext.ByOvoNumber(_ovoNumber))
             ? AuthorizationResult.Success()
             : AuthorizationResult.Fail(InsufficientRights.CreateFor(this));
 

@@ -419,6 +419,13 @@ public static class RolePermissionMap
                 // (BodiesCanManageMep) is intentionally never granted.
                 Permission.CanManageBodies.RestrictedTo(
                     DecentraalBodyRestriction.Instance),
+                // Registering a new body targets an organisation (the body
+                // doesn't exist yet, so there is no BodyContext to check
+                // against). This second grant for the same permission lets
+                // RegisterBodyPolicy's OrganisationContext check succeed for
+                // the user's own organisation or a child organisation in scope.
+                Permission.CanManageBodies.RestrictedTo(
+                    DecentraalOrganisationRestriction.Instance),
                 Permission.BodiesCanManageContacts.RestrictedTo(
                     DecentraalBodyRestriction.Instance),
                 Permission.BodiesCanManageSeats.RestrictedTo(

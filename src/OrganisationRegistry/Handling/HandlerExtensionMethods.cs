@@ -20,7 +20,8 @@ public static class HandlerExtensionMethods
         => source.WithPolicy(new RequiresPermissionPolicy(permission));
 
     public static Handler WithBodyPolicy(this Handler source, Permission permission, System.Guid bodyId)
-        => source.WithPolicy(new BodyPolicy(permission, bodyId));
+        => source.WithPolicy(
+            session => new BodyPolicy(permission, bodyId, session.Get<Body.Body>(bodyId).CurrentOrganisationId));
 
     public static Handler WithPeoplePolicy(this Handler source)
         => source.WithPolicy(new PeoplePolicy());

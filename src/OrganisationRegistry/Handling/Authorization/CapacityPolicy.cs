@@ -30,7 +30,7 @@ public class CapacityPolicy : ISecurityPolicy
         => user.IsSatisfiedFor(
             Permission.CanManageCapacities,
             new UserContext(user),
-            new OrganisationContext(_ovoNumber),
+            new OrganisationContext.ByOvoNumber(_ovoNumber),
             new CapacityContext(_organisationCapacityId))
             ? AuthorizationResult.Success()
             : AuthorizationResult.Fail(InsufficientRights.CreateFor(this));

@@ -32,7 +32,7 @@ public class OrganisationClassificationTypePolicy : ISecurityPolicy
         => user.IsSatisfiedFor(
             Permission.CanManageOrganisationClassifications,
             new UserContext(user),
-            new OrganisationContext(_ovoNumber),
+            new OrganisationContext.ByOvoNumber(_ovoNumber),
             new ClassificationTypeContext(_organisationClassificationTypeId))
             ? AuthorizationResult.Success()
             : AuthorizationResult.Fail(InsufficientRights.CreateFor(this));

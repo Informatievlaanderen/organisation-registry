@@ -11,6 +11,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.Extensions.Logging;
 using OrganisationRegistry.Body.Events;
 using OrganisationRegistry.Infrastructure;
+using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Authorization.Cache;
 using OrganisationRegistry.Infrastructure.Events;
 using RebuildProjection = OrganisationRegistry.Infrastructure.Events.RebuildProjection;
 
@@ -53,14 +55,17 @@ public class ActiveBodyOrganisationListView :
     private readonly Dictionary<Guid, ValidTo> _endDatePerBodyOrganisationId;
     private readonly IEventStore _eventStore;
     private readonly IDateTimeProvider _dateTimeProvider;
+    private readonly ICache<OrganisationSecurityInformation> _securityCache;
     public ActiveBodyOrganisationListView(
         ILogger<ActiveBodyOrganisationListView> logger,
         IEventStore eventStore,
         IDateTimeProvider dateTimeProvider,
-        IContextFactory contextFactory) : base(logger, contextFactory)
+        IContextFactory contextFactory,
+        ICache<OrganisationSecurityInformation> securityCache) : base(logger, contextFactory)
     {
         _eventStore = eventStore;
         _dateTimeProvider = dateTimeProvider;
+        _securityCache = securityCache;
 
         using (var context = contextFactory.Create())
         {
@@ -115,6 +120,12 @@ public class ActiveBodyOrganisationListView :
 
             await context.SaveChangesAsync();
         }
+
+        // The body's organisation (and hence its membership of a DecentraalBeheerder's
+        // in-scope bodies, see SecurityService.GetSecurityInformation) just changed.
+        // Expire the cached security info for every user so stale IUser.Bodies lists
+        // don't cause spurious 403s/incorrect grants until the sliding TTL lapses.
+        _securityCache.ExpireAll();
     }
 
     public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyAssignedToOrganisation> message)
@@ -137,6 +148,11 @@ public class ActiveBodyOrganisationListView :
             await context.ActiveBodyOrganisationList.AddAsync(activeBodyOrganisationListItem);
             await context.SaveChangesAsync();
         }
+
+        // A body just became (newly, or re-)linked to an organisation — a
+        // DecentraalBeheerder for that organisation (or a parent) may now be
+        // allowed to manage it. See ActiveCache-expiry note above.
+        _securityCache.ExpireAll();
     }
 
     public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyClearedFromOrganisation> message)
@@ -155,6 +171,11 @@ public class ActiveBodyOrganisationListView :
             context.ActiveBodyOrganisationList.Remove(activeBodyOrganisationListItem);
 
             await context.SaveChangesAsync();
+
+            // The body just lost its link to this organisation — a
+            // DecentraalBeheerder may no longer be allowed to manage it. See
+            // cache-expiry note above.
+            _securityCache.ExpireAll();
         }
     }
 

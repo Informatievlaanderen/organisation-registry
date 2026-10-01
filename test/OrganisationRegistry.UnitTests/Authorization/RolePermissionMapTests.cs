@@ -85,13 +85,13 @@ public class RolePermissionMapTests
         set.IsSatisfiedFor(
                 permission,
                 new UserContext(user),
-                new OrganisationContext(ownOvoNumber))
+                new OrganisationContext.ByOvoNumber(ownOvoNumber))
             .Should().BeTrue();
 
         set.IsSatisfiedFor(
                 permission,
                 new UserContext(user),
-                new OrganisationContext(otherOvoNumber))
+                new OrganisationContext.ByOvoNumber(otherOvoNumber))
             .Should().BeFalse();
     }
 
@@ -158,14 +158,14 @@ public class RolePermissionMapTests
         set.IsSatisfiedFor(
                 Permission.CanManageOrganisationInfoLimitedToVlimpers,
                 new UserContext(user),
-                new OrganisationContext(ovoNumber),
+                new OrganisationContext.ByOvoNumber(ovoNumber),
                 new VlimpersManagementContext(true))
             .Should().BeTrue();
 
         set.IsSatisfiedFor(
                 Permission.CanManageOrganisationInfoLimitedToVlimpers,
                 new UserContext(user),
-                new OrganisationContext(ovoNumber),
+                new OrganisationContext.ByOvoNumber(ovoNumber),
                 new VlimpersManagementContext(false))
             .Should().BeFalse();
     }
@@ -239,21 +239,21 @@ public class RolePermissionMapTests
         set.IsSatisfiedFor(
                 Permission.CanManageOrganisationInfoNotLimitedToVlimpers,
                 new UserContext(user),
-                new OrganisationContext(ownOvoNumber),
+                new OrganisationContext.ByOvoNumber(ownOvoNumber),
                 new VlimpersManagementContext(true))
             .Should().BeTrue();
 
         set.IsSatisfiedFor(
                 Permission.CanManageOrganisationInfoNotLimitedToVlimpers,
                 new UserContext(user),
-                new OrganisationContext(ownOvoNumber),
+                new OrganisationContext.ByOvoNumber(ownOvoNumber),
                 new VlimpersManagementContext(false))
             .Should().BeTrue();
 
         set.IsSatisfiedFor(
                 Permission.CanManageOrganisationInfoNotLimitedToVlimpers,
                 new UserContext(user),
-                new OrganisationContext(otherOvoNumber),
+                new OrganisationContext.ByOvoNumber(otherOvoNumber),
                 new VlimpersManagementContext(false))
             .Should().BeFalse();
     }
@@ -613,7 +613,7 @@ public class RolePermissionMapTests
         set.IsSatisfiedFor(
                 Permission.CanManageChildren,
                 new UserContext(user),
-                new OrganisationContext(ownOvoNumber),
+                new OrganisationContext.ByOvoNumber(ownOvoNumber),
                 new VlimpersManagementContext(IsUnderVlimpersManagement: false))
             .Should().BeTrue();
 
@@ -621,7 +621,7 @@ public class RolePermissionMapTests
         set.IsSatisfiedFor(
                 Permission.CanManageChildren,
                 new UserContext(user),
-                new OrganisationContext(ownOvoNumber),
+                new OrganisationContext.ByOvoNumber(ownOvoNumber),
                 new VlimpersManagementContext(IsUnderVlimpersManagement: true))
             .Should().BeFalse();
 
@@ -629,7 +629,7 @@ public class RolePermissionMapTests
         set.IsSatisfiedFor(
                 Permission.CanManageChildren,
                 new UserContext(user),
-                new OrganisationContext(otherOvoNumber),
+                new OrganisationContext.ByOvoNumber(otherOvoNumber),
                 new VlimpersManagementContext(IsUnderVlimpersManagement: false))
             .Should().BeFalse();
     }
@@ -715,14 +715,14 @@ public class RolePermissionMapTests
         set.IsSatisfiedFor(
                 Permission.CanManageFormalFrameworks,
                 new UserContext(user),
-                new OrganisationContext(ovoNumber),
+                new OrganisationContext.ByOvoNumber(ovoNumber),
                 new FormalFrameworkContext(otherFormalFrameworkId))
             .Should().BeTrue();
 
         set.IsSatisfiedFor(
                 Permission.CanManageFormalFrameworks,
                 new UserContext(user),
-                new OrganisationContext(ovoNumber),
+                new OrganisationContext.ByOvoNumber(ovoNumber),
                 new FormalFrameworkContext(vlimpersFormalFrameworkId))
             .Should().BeFalse();
     }

@@ -41,7 +41,7 @@ public class LabelPolicy : ISecurityPolicy
         => user.IsSatisfiedFor(
             Permission.CanManageLabels,
             new UserContext(user),
-            new OrganisationContext(_ovoNumber),
+            new OrganisationContext.ByOvoNumber(_ovoNumber),
             new LabelContext(_isUnderVlimpersManagement, _labelTypeIds))
             ? AuthorizationResult.Success()
             : AuthorizationResult.Fail(InsufficientRights.CreateFor(this));
