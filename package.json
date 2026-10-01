@@ -114,7 +114,7 @@
     "angular2-router-loader": "0.3.5",
     "angular2-template-loader": "0.6.2",
     "awesome-typescript-loader": "3.5.0",
-    "axios": "^1.5.1",
+    "axios": "^1.20.0",
     "codelyzer": "0.0.28",
     "commitizen": "4.2.5",
     "compression-webpack-plugin": "0.4.0",
