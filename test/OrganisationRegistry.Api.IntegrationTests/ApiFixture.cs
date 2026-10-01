@@ -43,7 +43,17 @@ public class ApiFixture : IDisposable, IAsyncLifetime
     private Guid? _decentraalbeheerderChildOrganisationId;
 
     private const string DecentraalbeheerderOvoNumber = "OVO000003";
-    private const string DecentraalbeheerderChildOvoNumber = "OVO000102";
+
+    // Deterministic ids assigned by OrganisationRegistry.Import.Piavo (md5 of
+    // "piavo:organisation:<ovo lowercased>", see Program.cs DeterministicGuid).
+    private static readonly Guid PiavoParentOrganisationId = PiavoOrganisationId("OVO000001");
+    private static readonly Guid PiavoChildOrganisationId = PiavoOrganisationId("OVO000105");
+
+    private static Guid PiavoOrganisationId(string ovoNumber)
+    {
+        var input = $"piavo:organisation:{ovoNumber.Trim().ToLowerInvariant()}";
+        return new Guid(System.Security.Cryptography.MD5.HashData(System.Text.Encoding.UTF8.GetBytes(input)));
+    }
 
     public struct Orafin
     {
@@ -125,10 +135,11 @@ public class ApiFixture : IDisposable, IAsyncLifetime
     public HttpClient HttpClient { get; }
 
     /// <summary>
-    /// Client die authenticeert als <see cref="Role.Developer" />. Enkel de developer-rol mag bij het
-    /// aanmaken van een organisatie een vast OVO-nummer opgeven (zie OrganisationDetailCommandController);
-    /// alle andere rollen krijgen een automatisch gegenereerd OVO-nummer. Wordt gebruikt om de
-    /// scope-organisaties (OVO000003 / OVO000102) met een gekend OVO-nummer aan te maken.
+    /// Client die authenticeert als <see cref="Role.Developer" />.
+    /// Wordt gebruikt om organisaties aan te maken via de fixture — de developer-rol
+    /// is vereist om <c>CreateOrganisation</c> te mogen aanroepen én heeft als enige
+    /// <see cref="Permission.CanAssignManualIdentifiers" />, zodat een opgegeven
+    /// OVO-nummer (bv. <see cref="DecentraalbeheerderOvoNumber" />) ook effectief gebruikt wordt.
     /// </summary>
     public HttpClient DeveloperHttpClient { get; }
 
@@ -375,11 +386,17 @@ public class ApiFixture : IDisposable, IAsyncLifetime
 
         var organisations = await DeserializeAsList(response);
 
-        // Find any parent/child pair in the imported data instead of hardcoding OVO000001,
-        // which is also created by demos/seed and may no longer be the PIAVO parent.
+        // Prefer the PIAVO-imported pair by its deterministic ids (see
+        // OrganisationRegistry.Import.Piavo/Program.cs DeterministicGuid), so this fixture and
+        // scripts/wait-for-tilt-api-integration-tests.sh always agree on the same parent/child
+        // regardless of the order in which /v1/organisations returns results.
+        // Fall back to any parent/child pair in case the PIAVO data changes.
         var child = organisations.FirstOrDefault(organisation =>
-            TryGetString(organisation, "parentOrganisationId", out var parentId) &&
-            !string.IsNullOrWhiteSpace(parentId));
+                        TryGetGuid(organisation, "id", out var id) && id == PiavoChildOrganisationId &&
+                        TryGetGuid(organisation, "parentOrganisationId", out var parentId) && parentId == PiavoParentOrganisationId)
+                    ?? organisations.FirstOrDefault(organisation =>
+                        TryGetString(organisation, "parentOrganisationId", out var parentId) &&
+                        !string.IsNullOrWhiteSpace(parentId));
         if (child == null || !TryGetGuid(child, "id", out var childOrganisationId))
             return false;
 
@@ -466,13 +483,24 @@ public class ApiFixture : IDisposable, IAsyncLifetime
     private async Task EnsureDecentraalbeheerderScopeIsReady()
     {
         _decentraalbeheerderOrganisationId = await GetOrCreateOrganisationWithOvoNumber(DecentraalbeheerderOvoNumber);
-        _decentraalbeheerderChildOrganisationId = await GetOrCreateOrganisationWithOvoNumber(DecentraalbeheerderChildOvoNumber);
 
-        if (!await HasAnyItems($"/v1/organisations/{_decentraalbeheerderChildOrganisationId}/parents"))
+        // Discover an existing child of the decentraalbeheerder org, or create one.
+        // The API auto-generates OVO numbers (the controller blanks any provided value),
+        // so we cannot hardcode a specific child OVO — we must discover what exists.
+        var existingChildId = await FindFirstChildOrganisationId(_decentraalbeheerderOrganisationId.Value);
+        if (existingChildId is { } childId)
         {
-            using var response = await Post(
+            _decentraalbeheerderChildOrganisationId = childId;
+        }
+        else
+        {
+            // Create a child org and link it as a daughter of OVO000003.
+            var newChildId = Guid.NewGuid();
+            await CreateOrganisation(newChildId, $"decentraal-child-{newChildId:N}");
+
+            using var parentResponse = await Post(
                 HttpClient,
-                $"/v1/organisations/{_decentraalbeheerderChildOrganisationId}/parents",
+                $"/v1/organisations/{newChildId}/parents",
                 new
                 {
                     OrganisationOrganisationParentId = Guid.NewGuid(),
@@ -481,24 +509,50 @@ public class ApiFixture : IDisposable, IAsyncLifetime
                     ValidTo = (DateTime?)null,
                 });
 
-            await VerifyStatusCode(response, HttpStatusCode.Created);
+            await VerifyStatusCode(parentResponse, HttpStatusCode.Created);
+            _decentraalbeheerderChildOrganisationId = newChildId;
         }
 
         await WaitUntilAsync(
-            () => OrganisationHasChildWithOvoNumber(DecentraalbeheerderOrganisationId, DecentraalbeheerderChildOvoNumber),
+            () => OrganisationHasAnyChild(_decentraalbeheerderOrganisationId!.Value),
             ImportReadinessTimeout,
             "De decentraalbeheerder-organisatie (OVO000003) heeft nog geen gekende dochterorganisatie. " +
             "Controleer of de OrganisationTree-projectie afgewerkt is.");
     }
 
-    private async Task<bool> OrganisationHasChildWithOvoNumber(Guid parentOrganisationId, string childOvoNumber)
+    private async Task<Guid?> FindFirstChildOrganisationId(Guid parentOrganisationId)
+    {
+        using var response = await GetWithoutPagination($"/v1/organisations/{parentOrganisationId}/children");
+        if (!response.IsSuccessStatusCode)
+            return null;
+
+        var children = await DeserializeAsList(response);
+        return children.Length > 0 && TryGetGuid(children[0], "id", out var id) ? id : null;
+    }
+
+    private async Task<bool> OrganisationHasAnyChild(Guid parentOrganisationId)
     {
         using var response = await GetWithoutPagination($"/v1/organisations/{parentOrganisationId}/children");
         if (!response.IsSuccessStatusCode)
             return false;
 
         var children = await DeserializeAsList(response);
-        return children.Any(child => TryGetString(child, "ovoNumber", out var ovoNumber) && ovoNumber == childOvoNumber);
+        return children.Length > 0;
+    }
+
+    private async Task CreateOrganisation(Guid id, string name)
+    {
+        using var response = await Post(
+            HttpClient,
+            "/v1/organisations",
+            new
+            {
+                id,
+                name,
+                showOnVlaamseOverheidSites = false,
+            });
+
+        await VerifyStatusCode(response, HttpStatusCode.Created);
     }
 
     private async Task EnsureImportedOrganisationHasKey()
