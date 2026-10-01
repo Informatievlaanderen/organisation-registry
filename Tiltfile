@@ -250,6 +250,7 @@ k8s_resource(
     ],
     new_name='ingress-routes',
     labels=['infrastructure'],
+    resource_deps=['namespace'],
 )
 
 k8s_resource('api',
@@ -265,10 +266,10 @@ k8s_resource('ui',
 # piavo-import must run after 'seed': both create overlapping master data
 # (KeyTypes, LabelTypes, ContactTypes, LocationTypes, ClassificationTypes,
 # FormalFrameworks, Capacities, Purposes) via the API. Running them
-# concurrently races the same POSTs against the API, and unlike 'seed',
-# piavo-import's Job has backoffLimit=0 (no retries), so any transient
-# conflict from that race fails it permanently. Sequencing after 'seed'
-# removes the race entirely.
+# concurrently races the same POSTs against the API. Sequencing after 'seed'
+# removes the race entirely. The import is fully idempotent — every
+# create-or-skip step checks existence first, so re-running on every tilt up
+# is safe and avoids stale "already completed" checks.
 k8s_resource('piavo-import',
     labels=['setup'],
     resource_deps=['api-configuration', 'seed'],
