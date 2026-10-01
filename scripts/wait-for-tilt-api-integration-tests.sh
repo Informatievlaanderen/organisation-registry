@@ -67,10 +67,12 @@ json_get() {
 
 import_ready() {
   API_BASE="$API_BASE" AUTH_TOKEN="$AUTH_TOKEN" python3 - <<'PY'
+import hashlib
 import json
 import os
 import sys
 import urllib.request
+import uuid
 
 api_base = os.environ["API_BASE"].rstrip("/")
 token = os.environ["AUTH_TOKEN"]
@@ -90,11 +92,26 @@ for route in ("/v1/people", "/v1/buildings", "/v1/functiontypes", "/v1/capacitie
         sys.exit(1)
 
 organisations = get_json("/v1/organisations")
-child_organisation = next(
-    organisation
-    for organisation in organisations
-    if organisation.get("parentOrganisationId")
-)
+
+# PIAVO assigns deterministic ids (Program.cs DeterministicGuid: md5 of
+# "piavo:organisation:<ovo>", little-endian Guid layout). Select the parent/child
+# pair by those ids so this script and ApiFixture always agree on the same pair,
+# regardless of the order in which /v1/organisations returns results.
+def piavo_id(ovo: str) -> str:
+    return str(uuid.UUID(bytes_le=hashlib.md5(f"piavo:organisation:{ovo.lower()}".encode()).digest()))
+
+piavo_parent_id = piavo_id("OVO000001")
+piavo_child_id = piavo_id("OVO000105")
+by_id = {organisation["id"].lower(): organisation for organisation in organisations}
+
+child_organisation = by_id.get(piavo_child_id)
+if child_organisation is None or child_organisation.get("parentOrganisationId", "").lower() != piavo_parent_id:
+    # Fallback: any org that has a parent.
+    child_organisation = next(
+        organisation
+        for organisation in organisations
+        if organisation.get("parentOrganisationId")
+    )
 parent_organisation_id = child_organisation["parentOrganisationId"]
 child_organisation_id = child_organisation["id"]
 
