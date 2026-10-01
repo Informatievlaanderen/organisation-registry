@@ -40,7 +40,7 @@ public class PersonDetailController : OrganisationRegistryController
             return NotFound();
 
         var authInfo = await HttpContext.GetAuthenticateInfoAsync();
-        if (new PeoplePolicy().Check(await securityService.GetRequiredUser(User)).IsSuccessful)
+        if (new PeoplePolicy().Check(await securityService.GetUser(User)).IsSuccessful)
             return Ok(person);
 
         return Ok(new PersonListItem { Id = person.Id, FirstName = person.FirstName, Name = person.Name });
