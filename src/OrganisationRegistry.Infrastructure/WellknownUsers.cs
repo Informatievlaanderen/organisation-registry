@@ -8,9 +8,13 @@ public class WellknownUsers
     public static User ScheduledCommandsService => Create("ScheduledCommandsService", Permission.CanRunScheduledJobs);
     public static User SyncRemovedItemsService => Create("SyncRemovedItemsService", Permission.CanRunScheduledJobs);
     public static User KboSyncService => Create("KboSyncService", Permission.CanManageKbo);
-    public static User Orafin => Create("Orafin", "Edit Api", "Orafin Edit Api", Permission.CanReadOrafin);
-    public static User Cjm => Create("Cjm", "Edit Api", "Cjm Edit Api", Permission.CanManageRegulations, Permission.CanManageLabels, Permission.CanManageBodies, Permission.CanManageKbo, Permission.BodiesCanManageContacts, Permission.BodiesCanManageSeats, Permission.BodiesCanManageMandates, Permission.BodiesCanManageLifecycles, Permission.BodiesCanManageOrganisations, Permission.BodiesCanManageClassifications, Permission.BodiesCanManageFormalFrameworks, Permission.BodiesCanManageMep);
-    public static User TestClient => Create("TestClient", Permission.CanManageOrganisation);
+    // Permissions for client-credential users (TestClient/Cjm/Orafin) are
+    // derived from the token's scopes via ScopePermissionMap (the single
+    // source of truth for scope → permission translation), not hardcoded
+    // here — callers pass the already-resolved PermissionSet in.
+    public static User Orafin(PermissionSet permissions) => CreateWithPermissions("Orafin", "Edit Api", "Orafin Edit Api", permissions);
+    public static User Cjm(PermissionSet permissions) => CreateWithPermissions("Cjm", "Edit Api", "Cjm Edit Api", permissions);
+    public static User TestClient(PermissionSet permissions) => CreateWithPermissions("TestClient", "TestClient", "TestClient", permissions);
 
     public static User Magda => Create("Magda", "Reregistrator", "Magda Reregistrator", Permission.CanManageKbo);
 
@@ -28,4 +32,15 @@ public class WellknownUsers
             Array.Empty<Guid>(),
             Array.Empty<Guid>(),
             PermissionSet.Of(permissions));
+
+    private static User CreateWithPermissions(string firstName, string lastName, string userId, PermissionSet permissions)
+        => new(
+            firstName,
+            lastName,
+            userId,
+            string.Empty,
+            Array.Empty<string>(),
+            Array.Empty<Guid>(),
+            Array.Empty<Guid>(),
+            permissions);
 }

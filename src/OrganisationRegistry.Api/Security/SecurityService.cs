@@ -88,14 +88,18 @@ public class SecurityService : ISecurityService
             .SelectMany(claim => claim.Value.Split(' ', StringSplitOptions.RemoveEmptyEntries))
             .ToImmutableHashSet();
 
+        // Client-credential tokens (TestClient/Cjm/Orafin) carry no name/acmId
+        // claims; their permissions are derived from the union of all scopes
+        // on the token via ScopePermissionMap, which is the single source of
+        // truth for scope → permission translation (see ClaimsExtension).
         if (scopes.Contains(AcmIdmConstants.Scopes.TestClient))
-            return WellknownUsers.TestClient;
+            return WellknownUsers.TestClient(ScopePermissionMap.For(scopes));
 
         if (scopes.Contains(AcmIdmConstants.Scopes.CjmBeheerder))
-            return WellknownUsers.Cjm;
+            return WellknownUsers.Cjm(ScopePermissionMap.For(scopes));
 
         if (scopes.Contains(AcmIdmConstants.Scopes.OrafinBeheerder))
-            return WellknownUsers.Orafin;
+            return WellknownUsers.Orafin(ScopePermissionMap.For(scopes));
 
         var firstName = principal.FindFirst(ClaimTypes.GivenName);
         if (firstName == null)
