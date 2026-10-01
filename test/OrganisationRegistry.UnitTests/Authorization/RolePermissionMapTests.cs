@@ -333,17 +333,21 @@ public class RolePermissionMapTests
     }
 
     [Fact]
-    public void Developer_is_AlgemeenBeheerder_superset_by_CanRunScheduledJobs_and_DelegationsCreate()
+    public void Developer_is_AlgemeenBeheerder_superset_by_CanRunScheduledJobs_DelegationsCreate_and_CanAssignManualIdentifiers()
     {
         // Developer intentionally has all AlgemeenBeheerder permissions PLUS CanRunScheduledJobs
         // (preserves current Developer access to /backoffice/tasks after T026a conversion) PLUS
         // DelegationsCreate (internal-only, tooling capability not granted to AlgemeenBeheerder —
-        // there is no Create on delegations, see ui-permission-matrix.md).
+        // there is no Create on delegations, see ui-permission-matrix.md) PLUS
+        // CanAssignManualIdentifiers (tooling: seed/fixtures need deterministic OVO/body numbers).
         var ab = RolePermissionMap.For(Role.AlgemeenBeheerder);
         var dev = RolePermissionMap.For(Role.Developer);
 
         ((object)dev).Should().Be(
-            ab.Union(PermissionSet.Of(Permission.CanRunScheduledJobs, Permission.DelegationsCreate)));
+            ab.Union(PermissionSet.Of(
+                Permission.CanRunScheduledJobs,
+                Permission.DelegationsCreate,
+                Permission.CanAssignManualIdentifiers)));
     }
 
     [Fact]
