@@ -17,6 +17,7 @@ spec:
       containers:
       - name: mssql
         image: mcr.microsoft.com/mssql/server:2017-latest
+        imagePullPolicy: IfNotPresent
         env:
         - name: ACCEPT_EULA
           value: "Y"
@@ -33,20 +34,21 @@ spec:
           value: "1024"
         ports:
         - containerPort: 1433
+        startupProbe:
+          exec:
+            command:
+            - /bin/bash
+            - -c
+            - /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "$SA_PASSWORD" -Q "SELECT 1" -b
+          periodSeconds: 2
+          timeoutSeconds: 5
+          failureThreshold: 60   # up to 2 minutes to boot
         readinessProbe:
           exec:
             command:
-            - /opt/mssql-tools/bin/sqlcmd
-            - -S
-            - localhost
-            - -U
-            - sa
-            - -P
-            - "E@syP@ssw0rd"
-            - -Q
-            - "SELECT 1"
-            - -b
-          initialDelaySeconds: 30
+            - /bin/bash
+            - -c
+            - /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "$SA_PASSWORD" -Q "SELECT 1" -b
           periodSeconds: 10
           timeoutSeconds: 5
           failureThreshold: 10

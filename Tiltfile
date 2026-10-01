@@ -233,24 +233,31 @@ k8s_yaml('demo/k8s/nuxt-bff.yaml')
 k8s_yaml('demo/k8s/ingress.yaml')
 k8s_yaml('demo/k8s/seed.yaml')
 
-# Group all Traefik IngressRoutes into a single Tilt resource so they are
-# always applied on `tilt up`, survive `tilt down`/re-up cycles, and are
-# visible/manageable in the Tilt UI. Without this, the IngressRoute objects
-# are loaded silently and can appear to "disappear" after cluster restarts.
+# # Group all Traefik IngressRoutes into a single Tilt resource so they are
+# # always applied on `tilt up`, survive `tilt down`/re-up cycles, and are
+# # visible/manageable in the Tilt UI. Without this, the IngressRoute objects
+# # are loaded silently and can appear to "disappear" after cluster restarts.
+local_resource(
+    'wait-traefik-crds',
+    cmd='''
+    for i in $(seq 1 90); do
+      kubectl get crd ingressroutes.traefik.io >/dev/null 2>&1 && break
+      sleep 2
+    done
+    kubectl wait --for=condition=Established crd/ingressroutes.traefik.io --timeout=60s 2>/dev/null
+    ''',
+    labels=['infrastructure'],
+)
+
 k8s_resource(
     objects=[
-        'keycloak:ingressroute',
-        'api:ingressroute',
-        'ui:ingressroute',
-        'app:ingressroute',
-        'm2m:ingressroute',
-        'seq:ingressroute',
-        'opensearch:ingressroute',
-        'mock:ingressroute',
+        'wegwijs-demo:ingressroute',
+        'wegwijs-demo-tls:ingressroute',
+        'https-to-http:middleware',
     ],
     new_name='ingress-routes',
+    resource_deps=['wait-traefik-crds'],
     labels=['infrastructure'],
-    resource_deps=['namespace'],
 )
 
 k8s_resource('api',
