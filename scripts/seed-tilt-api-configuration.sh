@@ -87,6 +87,20 @@ SQL
 
 SQL="${SQL//\$(KboCertificate)/${KBO_CERTIFICATE}}"
 
+echo "Waiting for OrganisationRegistry.Configuration table (API migrations)..."
+deadline=$((SECONDS + 300))
+until "${KUBECTL}" exec -n "${NAMESPACE}" mssql-0 -- \
+  "${SQLCMD}" -S localhost -U sa -P "${MSSQL_PASSWORD}" \
+  -d OrganisationRegistry -b -Q "SELECT 1 FROM [OrganisationRegistry].[Configuration]" > /dev/null 2>&1; do
+  if (( SECONDS >= deadline )); then
+    echo "Timed out waiting for Configuration table" >&2
+    exit 1
+  fi
+  echo "  Table not ready yet, retrying in 5s..."
+  sleep 5
+done
+echo "Configuration table is ready."
+
 echo "Seeding Tilt API configuration values..."
 "${KUBECTL}" exec -n "${NAMESPACE}" mssql-0 -- \
   "${SQLCMD}" \
