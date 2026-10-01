@@ -17,7 +17,10 @@ spec:
       containers:
       - name: opensearch
         image: opensearchproject/opensearch:1.1.0
+        imagePullPolicy: IfNotPresent
         env:
+        - name: OPENSEARCH_JAVA_OPTS
+          vaue: "-Xms512m -Xmx512m"
         - name: discovery.type
           value: "single-node"
         - name: DISABLE_SECURITY_PLUGIN
@@ -33,11 +36,16 @@ spec:
           containerPort: 9200
         - name: metrics
           containerPort: 9600
+        startupProbe:
+          httpGet:
+            path: /
+            port: 9200
+          periodSeconds: 2
+          failureThreshold: 90   # up to 3 minutes to boot
         readinessProbe:
           httpGet:
             path: /
             port: 9200
-          initialDelaySeconds: 20
           periodSeconds: 10
           timeoutSeconds: 5
           failureThreshold: 12

@@ -16,16 +16,22 @@ spec:
       containers:
       - name: wiremock
         image: wiremock/wiremock:2.32.0
+        imagePullPolicy: IfNotPresent
         args:
         - --verbose
         - --global-response-templating
         ports:
         - containerPort: 8080
+        startupProbe:
+          httpGet:
+            path: /__admin/mappings
+            port: 8080
+          periodSeconds: 2
+          failureThreshold: 90   # up to 3 minutes to boot
         readinessProbe:
           httpGet:
             path: /__admin/mappings
             port: 8080
-          initialDelaySeconds: 10
           periodSeconds: 10
           timeoutSeconds: 5
           failureThreshold: 12

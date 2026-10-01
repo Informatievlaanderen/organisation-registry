@@ -161,11 +161,16 @@ spec:
           value: "9c2f7372-7112-49dc-9771-f127b048b4c7"
         ports:
         - containerPort: 9002
+        startupProbe:
+          httpGet:
+            path: /health
+            port: 9002
+          periodSeconds: 2
+          failureThreshold: 90   # up to 3 minutes to boot
         readinessProbe:
           httpGet:
             path: /v1/organisations
             port: 9002
-          initialDelaySeconds: 30
           periodSeconds: 10
           timeoutSeconds: 5
           failureThreshold: 10
