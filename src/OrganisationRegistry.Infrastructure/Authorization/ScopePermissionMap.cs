@@ -30,8 +30,9 @@ public static class ScopePermissionMap
                 Permission.CanReadInfoEndpoints),
 
             // TestClient is used by integration tests and dev harnesses to
-            // impersonate a full admin. Kept aligned with the historical
-            // WellknownUsers.TestClient → Role.AlgemeenBeheerder mapping.
+            // impersonate a full admin. This is the single source of truth
+            // for the TestClient permission set — SecurityService.GetRequiredUser
+            // resolves WellknownUsers.TestClient's permissions from here.
             [AcmIdmConstants.Scopes.TestClient] = PermissionSet.Of(
                 Permission.CanManageChildren,
                 Permission.CanManageParent,
