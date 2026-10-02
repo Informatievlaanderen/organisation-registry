@@ -11,8 +11,16 @@ allow_k8s_contexts('k3d-wegwijs-dev')
 # Namespace & Secrets
 # =============================================================================
 
-k8s_yaml('demo/k8s/namespace.yaml')
-k8s_yaml('demo/k8s/secrets.yaml')
+k8s_yaml([
+  'demo/k8s/namespace.yaml',
+  'demo/k8s/secrets.yaml',
+  'demo/k8s/mssql.yaml',
+  'demo/k8s/opensearch.yaml',
+  'demo/k8s/keycloak.yaml',
+  'demo/k8s/wiremock.yaml',
+  'demo/k8s/seq.yaml',
+  'demo/k8s/otel-collector.yaml'
+])
 
 # =============================================================================
 # Keycloak realm ConfigMap — built from keycloak/realm-export.json
@@ -24,6 +32,7 @@ local_resource(
     deps=['keycloak/realm-export.json'],
     labels=['setup'],
     resource_deps=['namespace'],
+    allow_parallel=True
 )
 
 local_resource(
@@ -32,6 +41,7 @@ local_resource(
     deps=['wiremock/mappings'],
     labels=['setup'],
     resource_deps=['namespace'],
+    allow_parallel=True
 )
 
 local_resource(
@@ -40,6 +50,7 @@ local_resource(
     deps=['wiremock/files'],
     labels=['setup'],
     resource_deps=['namespace'],
+    allow_parallel=True
 )
 
 # Refresh kubeconfig from k3d — certs are regenerated on cluster create
@@ -47,6 +58,7 @@ local_resource(
     'kubeconfig',
     'k3d kubeconfig get wegwijs-dev > .kubeconfig',
     labels=['setup'],
+    allow_parallel=True
 )
 
 # Pseudo-resource to track namespace creation
@@ -55,6 +67,7 @@ local_resource(
     'KUBECONFIG=.kubeconfig kubectl apply -f demo/k8s/namespace.yaml && KUBECONFIG=.kubeconfig kubectl wait --for=jsonpath={.status.phase}=Active namespace/wegwijs-demo --timeout=60s',
     labels=['setup'],
     resource_deps=['kubeconfig'],
+    allow_parallel=True
 )
 
 local_resource(
@@ -63,6 +76,7 @@ local_resource(
     deps=['scripts/clear-database.sh'],
     labels=['setup'],
     resource_deps=['mssql', 'opensearch'],
+    allow_parallel=True
 )
 
 local_resource(
@@ -71,18 +85,12 @@ local_resource(
     deps=['scripts/seed-tilt-api-configuration.sh'],
     labels=['setup'],
     resource_deps=['api'],
+    allow_parallel=True
 )
 
 # =============================================================================
 # Infrastructure
 # =============================================================================
-
-k8s_yaml('demo/k8s/mssql.yaml')
-k8s_yaml('demo/k8s/opensearch.yaml')
-k8s_yaml('demo/k8s/keycloak.yaml')
-k8s_yaml('demo/k8s/wiremock.yaml')
-k8s_yaml('demo/k8s/seq.yaml')
-k8s_yaml('demo/k8s/otel-collector.yaml')
 
 k8s_resource('mssql',
     port_forwards='21433:1433',
@@ -98,7 +106,8 @@ k8s_resource('wiremock',
     port_forwards='8080:8080',
     labels=['infrastructure'],
     resource_deps=['wiremock-mappings-configmap', 'wiremock-files-configmap'],
-    links=[link('http://mock.localhost:9080', 'WireMock')])
+    links=[link('http://mock.localhost:9080', 'WireMock')],
+    pod_readiness='ignore')
 
 k8s_resource('seq',
     labels=['infrastructure'],
@@ -107,7 +116,8 @@ k8s_resource('seq',
 
 k8s_resource('otel-collector',
     labels=['infrastructure'],
-    resource_deps=['seq'])
+    resource_deps=['seq'],
+    pod_readiness='ignore')
 
 # =============================================================================
 # Application Images — build and push to k3d registry
@@ -233,10 +243,10 @@ k8s_yaml('demo/k8s/nuxt-bff.yaml')
 k8s_yaml('demo/k8s/ingress.yaml')
 k8s_yaml('demo/k8s/seed.yaml')
 
-# # Group all Traefik IngressRoutes into a single Tilt resource so they are
-# # always applied on `tilt up`, survive `tilt down`/re-up cycles, and are
-# # visible/manageable in the Tilt UI. Without this, the IngressRoute objects
-# # are loaded silently and can appear to "disappear" after cluster restarts.
+# Group all Traefik IngressRoutes into a single Tilt resource so they are
+# always applied on `tilt up`, survive `tilt down`/re-up cycles, and are
+# visible/manageable in the Tilt UI. Without this, the IngressRoute objects
+# are loaded silently and can appear to "disappear" after cluster restarts.
 local_resource(
     'wait-traefik-crds',
     cmd='''
@@ -248,7 +258,6 @@ local_resource(
     ''',
     labels=['infrastructure'],
 )
-
 k8s_resource(
     objects=[
         'wegwijs-demo:ingressroute',
@@ -258,17 +267,17 @@ k8s_resource(
     new_name='ingress-routes',
     resource_deps=['wait-traefik-crds'],
     labels=['infrastructure'],
+    pod_readiness='ignore'
 )
 
 k8s_resource('api',
-    labels=['applications'],
+    labels=['apps'],
     resource_deps=['clear-database', 'mssql', 'opensearch', 'keycloak', 'wiremock', 'otel-collector'],
     links=[link('http://api.localhost:9080/v1', 'API')])
 
 k8s_resource('ui',
-    labels=['applications'],
-    resource_deps=['api-configuration', 'keycloak'],
-    links=[link('http://ui.localhost:9080', 'Angular UI')])
+    labels=['apps'],
+    links=[link('http://ui.localhost:9080', 'UI')])
 
 # piavo-import must run after 'seed': both create overlapping master data
 # (KeyTypes, LabelTypes, ContactTypes, LocationTypes, ClassificationTypes,
@@ -284,14 +293,14 @@ k8s_resource('piavo-import',
     trigger_mode=TRIGGER_MODE_MANUAL)
 
 k8s_resource('m2m-demo',
-    labels=['demo'],
-    resource_deps=['api-configuration', 'keycloak'],
-    links=[link('http://m2m.localhost:9080', 'M2M Demo')])
+    labels=['apps'],
+    links=[link('http://m2m.localhost:9080', 'M2M Demo')],
+    auto_init=False)
 
 k8s_resource('nuxt-bff',
-    labels=['demo'],
-    resource_deps=['api-configuration', 'keycloak'],
-    links=[link('http://app.localhost:9080', 'Nuxt BFF')])
+    labels=['apps'],
+    links=[link('http://app.localhost:9080', 'Nuxt BFF')],
+    auto_init=False)
 
 k8s_resource('keycloak',
     labels=['infrastructure'],
@@ -307,7 +316,7 @@ k8s_resource('seed',
 # =============================================================================
 
 update_settings(
-    max_parallel_updates=2,
+    max_parallel_updates=3,
     k8s_upsert_timeout_secs=300,
 )
 
@@ -320,12 +329,12 @@ print('╔═══════════════════════�
 print('║  Wegwijs / Organisation Registry - Development Environment    ║')
 print('╠═══════════════════════════════════════════════════════════════╣')
 print('║  keycloak.localhost:9080  → Keycloak (admin/admin)            ║')
-print('║  seq.localhost:9080       → Seq (structured logs / OTLP)     ║')
-print('║  opensearch.localhost:9080 → OpenSearch                      ║')
-print('║  mock.localhost:9080      → WireMock (MAGDA mock)            ║')
+print('║  seq.localhost:9080       → Seq (structured logs / OTLP)      ║')
+print('║  opensearch.localhost:9080 → OpenSearch                       ║')
+print('║  mock.localhost:9080      → WireMock (MAGDA mock)             ║')
 print('║  api.localhost:9080       → Organisation Registry API         ║')
 print('║  ui.localhost:9080        → Angular UI (backoffice)           ║')
-print('║  m2m.localhost:9080       → M2M demo (client credentials)      ║')
+print('║  m2m.localhost:9080       → M2M demo (client credentials)     ║')
 print('║  app.localhost:9080       → Nuxt BFF (Keycloak demo)          ║')
 print('╠═══════════════════════════════════════════════════════════════╣')
 print('║  Demo users: dev / vlimpers / algemeenbeheerder (pw = user)   ║')
