@@ -1,133 +1,86 @@
-# Traefik IngressRoutes for all demo services
-# Matches both:
-#   *.localhost:9080          (local dev)
-#   *.10.20.20.100.nip.io:9080  (any IP via nip.io)
+# Traefik IngressRoute for all demo services.
+# Matches any host starting with the service name, so both
+#   <name>.localhost:9080 and <name>.<ip>.nip.io:9080 work.
 #
-# keycloak.* → Keycloak
-# api.*       → API
-# ui.*        → Angular UI (backoffice)
-# app.*       → Nuxt BFF (Keycloak demo)
-# seq.*        → Seq (structured log viewer)
-# m2m.*        → M2M demo
-# opensearch.* → OpenSearch
-# mock.*       → WireMock
----
+# keycloak.* → Keycloak        api.*        → API
+# ui.*       → Angular UI      app.*        → Nuxt BFF
+# seq.*      → Seq             m2m.*        → M2M demo
+# opensearch.* → OpenSearch    mock.*       → WireMock
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: keycloak
+  name: wegwijs-demo
   namespace: wegwijs-demo
 spec:
   entryPoints:
     - web
   routes:
-  - match: Host(`keycloak.localhost`) || HostRegexp(`^keycloak\..+$`)
+  - match: HostRegexp(`^keycloak\.`)
     kind: Rule
     services:
     - name: keycloak
       port: 80
----
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
-  name: api
-  namespace: wegwijs-demo
-spec:
-  entryPoints:
-    - web
-  routes:
-  - match: Host(`api.localhost`) || HostRegexp(`^api\..+$`)
+  - match: HostRegexp(`^api\.`)
     kind: Rule
     services:
     - name: api
       port: 80
----
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
-  name: ui
-  namespace: wegwijs-demo
-spec:
-  entryPoints:
-    - web
-  routes:
-  - match: Host(`ui.localhost`) || HostRegexp(`^ui\..+$`)
+  - match: HostRegexp(`^ui\.`)
     kind: Rule
     services:
     - name: ui
       port: 80
----
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
-  name: app
-  namespace: wegwijs-demo
-spec:
-  entryPoints:
-    - web
-  routes:
-  - match: Host(`app.localhost`) || HostRegexp(`^app\..+$`)
+  - match: HostRegexp(`^app\.`)
     kind: Rule
     services:
     - name: nuxt-bff
       port: 80
----
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
-  name: m2m
-  namespace: wegwijs-demo
-spec:
-  entryPoints:
-    - web
-  routes:
-  - match: Host(`m2m.localhost`) || HostRegexp(`^m2m\..+$`)
+  - match: HostRegexp(`^m2m\.`)
     kind: Rule
     services:
     - name: m2m-demo
       port: 80
----
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
-  name: seq
-  namespace: wegwijs-demo
-spec:
-  entryPoints:
-    - web
-  routes:
-  - match: Host(`seq.localhost`) || HostRegexp(`^seq\..+$`)
+  - match: HostRegexp(`^seq\.`)
     kind: Rule
     services:
     - name: seq
       port: 80
----
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
-  name: opensearch
-  namespace: wegwijs-demo
-spec:
-  entryPoints:
-    - web
-  routes:
-  - match: Host(`opensearch.localhost`) || HostRegexp(`^opensearch\..+$`)
+  - match: HostRegexp(`^opensearch\.`)
     kind: Rule
     services:
     - name: opensearch
       port: 9200
----
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
-  name: mock
-  namespace: wegwijs-demo
-spec:
-  entryPoints:
-    - web
-  routes:
-  - match: Host(`mock.localhost`) || HostRegexp(`^mock\..+$`)
+  - match: HostRegexp(`^mock\.`)
     kind: Rule
     services:
     - name: wiremock
       port: 8080
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: https-to-http
+  namespace: wegwijs-demo
+spec:
+  redirectScheme:
+    scheme: http
+    port: "9080"
+    permanent: false   # avoid browsers caching the redirect
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: wegwijs-demo-tls
+  namespace: wegwijs-demo
+spec:
+  entryPoints:
+    - web
+  tls: {}
+  routes:
+  - match: HostRegexp(`^.+$`)
+    kind: Rule
+    middlewares:
+    - name: https-to-http
+    services:
+    - name: noop@internal
+      kind: TraefikService

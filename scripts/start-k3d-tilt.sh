@@ -26,14 +26,28 @@ cluster_has_server() {
     k3d cluster list 2>/dev/null | awk -v cluster="$CLUSTER_NAME" '$1 == cluster { split($2, servers, "/"); print servers[1] }' | grep -Eq '^[1-9][0-9]*$'
 }
 
+cluster_run_registries_caches() {
+  if [[ "${START_TILT:-true}" == "false" ]]; then
+    log "Skipping cluster_setup_registry_caches (CI mode)"
+    return 0
+  fi
+  "$SCRIPT_DIR/start-caches.sh"
+
+  log "$(curl -s http://localhost:5000/v2/_catalog | jq -r '.repositories[]')"
+  log "$(curl -s http://localhost:5001/v2/_catalog | jq -r '.repositories[]')"
+  log "$(curl -s http://localhost:5002/v2/_catalog | jq -r '.repositories[]')"
+}
+
 main() {
     require_cmd docker
     require_cmd k3d
     require_cmd tilt
 
     cd "$REPO_ROOT"
+    cluster_run_registries_caches;
 
     if cluster_exists; then
+        log "Has cluster "
         if cluster_has_server; then
             log "Starting existing cluster '$CLUSTER_NAME'..."
             k3d cluster start "$CLUSTER_NAME"

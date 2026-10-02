@@ -16,14 +16,17 @@ spec:
       containers:
       - name: keycloak
         image: quay.io/keycloak/keycloak:26.2
+        imagePullPolicy: IfNotPresent
         args: ["start-dev", "--import-realm", "--hostname-strict=false", "--http-enabled=true"]
         env:
-        - name: KEYCLOAK_ADMIN
+        - name: JAVA_OPTS_KC_HEAP
+          value: "-Xms256m -Xmx512m"
+        - name: KC_BOOTSTRAP_ADMIN_USERNAME
           valueFrom:
             secretKeyRef:
               name: demo-secrets
               key: keycloak-admin
-        - name: KEYCLOAK_ADMIN_PASSWORD
+        - name: KC_BOOTSTRAP_ADMIN_PASSWORD
           valueFrom:
             secretKeyRef:
               name: demo-secrets
@@ -37,11 +40,16 @@ spec:
           value: "true"
         ports:
         - containerPort: 8080
+        startupProbe:
+          httpGet:
+            path: /realms/master
+            port: 8080
+          periodSeconds: 2
+          failureThreshold: 90   # up to 3 minutes to boot
         readinessProbe:
           httpGet:
             path: /realms/master
             port: 8080
-          initialDelaySeconds: 30
           periodSeconds: 10
           timeoutSeconds: 5
           failureThreshold: 10
