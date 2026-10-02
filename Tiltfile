@@ -117,7 +117,7 @@ k8s_resource('seq',
 k8s_resource('otel-collector',
     labels=['infrastructure'],
     resource_deps=['seq'],
-    pod_readiness='ignore')
+    pod_readiness='wait')
 
 # =============================================================================
 # Application Images — build and push to k3d registry
@@ -295,12 +295,12 @@ k8s_resource('piavo-import',
 k8s_resource('m2m-demo',
     labels=['apps'],
     links=[link('http://m2m.localhost:9080', 'M2M Demo')],
-    auto_init=False)
+    auto_init=True)
 
 k8s_resource('nuxt-bff',
     labels=['apps'],
     links=[link('http://app.localhost:9080', 'Nuxt BFF')],
-    auto_init=False)
+    auto_init=True)
 
 k8s_resource('keycloak',
     labels=['infrastructure'],
