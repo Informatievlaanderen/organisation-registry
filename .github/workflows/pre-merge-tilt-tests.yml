@@ -77,6 +77,37 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
 
+  unit-tests:
+    if: github.repository_owner == 'Informatievlaanderen'
+    name: Run Unit Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    strategy:
+      fail-fast: false
+      matrix:
+        projects:
+          [
+            "test/OrganisationRegistry.KboMutations.UnitTests",
+            "test/OrganisationRegistry.UnitTests"
+          ]
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup .NET Core
+        uses: ./.github/actions/setup-dotnet
+        with:
+          version: ${{ secrets.VBR_DOTNET_VERSION }}
+
+      - name: Run tests (no cluster needed)
+        shell: bash
+        run: |
+          dotnet tool restore
+          dotnet restore
+          dotnet test "${{ matrix.projects }}" --no-restore --logger html
+
   build:
     if: github.repository_owner == 'Informatievlaanderen'
     name: Run Tests
@@ -90,9 +121,7 @@ jobs:
           [
             "test/OrganisationRegistry.Api.IntegrationTests",
             "test/OrganisationRegistry.ElasticSearch.Tests",
-            "test/OrganisationRegistry.KboMutations.UnitTests",
-            "test/OrganisationRegistry.SqlServer.IntegrationTests",
-            "test/OrganisationRegistry.UnitTests"
+            "test/OrganisationRegistry.SqlServer.IntegrationTests"
           ]
 
     steps:
@@ -159,7 +188,7 @@ jobs:
     name: Notify Slack of Success
     runs-on: ubuntu-latest
 
-    needs: [build-backend, build-site, build]
+    needs: [build-backend, build-site, unit-tests, build]
 
     steps:
       - name: Post to Slack
@@ -176,7 +205,7 @@ jobs:
     name: Notify Slack of Failure
     runs-on: ubuntu-latest
 
-    needs: [build-backend, build-site, build]
+    needs: [build-backend, build-site, unit-tests, build]
 
     steps:
       - name: Post to Slack
@@ -187,6 +216,7 @@ jobs:
           slack-message: ":x: Tilt pre-merge checks failed: \n
           ${{format('{0}: {1}', 'build-backend', needs.build-backend.result) }}\n
           ${{format('{0}: {1}', 'build-site', needs.build-site.result) }}\n
+          ${{format('{0}: {1}', 'unit-tests', needs.unit-tests.result) }}\n
           ${{format('{0}: {1}', 'build', needs.build.result) }}\n
           ${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
         env:
