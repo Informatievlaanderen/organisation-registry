@@ -62,7 +62,7 @@ public class BodyPermissions
 
         return new BodyPermissions(
             canEdit: Satisfies(Permission.CanManageBodies),
-            canDelete: false,
+            canDelete: Satisfies(Permission.CanManageBodies),
             canManageContacts: Satisfies(Permission.BodiesCanManageContacts),
             canManageSeats: Satisfies(Permission.BodiesCanManageSeats),
             canManageMandates: Satisfies(Permission.BodiesCanManageMandates),
