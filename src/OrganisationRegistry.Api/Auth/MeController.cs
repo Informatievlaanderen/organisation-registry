@@ -55,7 +55,7 @@ public class MeController : OrganisationRegistryController
 
             var permissions = RolePermissions.Resolve(role, user.Permissions);
 
-            return Ok(MeResponse.Create(fullname, role.ToString(), permissions));
+            return Ok(MeResponse.Create(fullname, RoleDisplayNames.For(role), permissions));
         }
         catch(ApiException) { throw; }
         catch (Exception)
