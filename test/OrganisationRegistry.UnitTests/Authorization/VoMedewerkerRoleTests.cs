@@ -155,12 +155,7 @@ public class VoMedewerkerRoleTests
             .Where(p => combined.Contains(p) && !decentraalAlone.Contains(p))
             .ToList();
 
-        // The only permissions VoMedewerker may contribute on top of another
-        // role are its own read-only grants; it must never add a write,
-        // create or delete permission.
-        extra.Should().OnlyContain(
-            p => ExpectedGrants.Contains(p),
-            "VoMedewerker must only ever add its own read-only permissions, never a write/create/delete right");
+        extra.Should().BeEmpty();
     }
 
     [Fact]

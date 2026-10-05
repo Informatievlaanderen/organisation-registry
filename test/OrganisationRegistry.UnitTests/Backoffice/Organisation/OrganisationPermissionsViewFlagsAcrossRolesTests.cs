@@ -24,6 +24,23 @@ public class OrganisationPermissionsViewFlagsAcrossRolesTests
     private const string OwnOvoNumber = "OVO000003";
 
     [Fact]
+    public void User_cannot_view_functions_and_capacities()
+    {
+        var permissions = OrganisationPermissions.For(
+            TestUser.User, OwnOvoNumber, isUnderVlimpersManagement: false);
+
+        permissions.CanViewFunctions.Should().BeFalse();
+        permissions.CanViewCapacities.Should().BeFalse();
+
+
+        var permissions2 = OrganisationPermissions.For(
+            TestUser.User, OwnOvoNumber, isUnderVlimpersManagement: true);
+
+        permissions2.CanViewFunctions.Should().BeFalse();
+        permissions2.CanViewCapacities.Should().BeFalse();
+    }
+
+    [Fact]
     public void AlgemeenBeheerder_can_view_everything_via_manage_implies_view()
     {
         var permissions = OrganisationPermissions.For(
