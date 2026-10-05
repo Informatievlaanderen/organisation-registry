@@ -15,6 +15,7 @@ using Microsoft.EntityFrameworkCore;
 using OrganisationRegistry.Infrastructure.AppSpecific;
 using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Configuration;
+using OrganisationRegistry.Api.Infrastructure.Security;
 using SqlServer.Infrastructure;
 using SqlServer.Organisation;
 using Swashbuckle.AspNetCore.Filters;
@@ -22,6 +23,7 @@ using Swashbuckle.AspNetCore.Filters;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("organisations/{organisationId}/capacities")]
+[OrganisationRegistryAuthorize(RequiredPermissions = [Permission.CanViewOrganisationCapacities])]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Scherm APIs: Organisaties")]
 public class OrganisationCapacityController : OrganisationRegistryController

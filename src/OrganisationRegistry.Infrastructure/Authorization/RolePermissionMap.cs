@@ -29,6 +29,8 @@ public static class RolePermissionMap
                 Permission.CanTerminateOrganisation,
                 Permission.CanCreateOrganisations,
                 Permission.CanManageContacts,
+                Permission.CanViewOrganisationFunctions,
+                Permission.CanViewOrganisationCapacities,
                 Permission.CanManageFunctions,
                 Permission.CanManageCapacities,
                 Permission.CanManageLocations,
@@ -127,12 +129,15 @@ public static class RolePermissionMap
             // (Functies/Hoedanigheden) are not organisation-scoped, so they are
             // granted unrestricted here.
             [Role.DecentraalBeheerder] = PermissionSet.Of(
+                Permission.CanViewOrganisationCapacities,
+                Permission.CanViewOrganisationFunctions,
                 Permission.PeopleFunctionsRead,
                 Permission.PeopleCapacitiesRead),
 
             [Role.RegelgevingBeheerder] = PermissionSet.Of(
                 Permission.CanManageRegulations,
 
+                Permission.CanViewOrganisationCapacities,
                 Permission.CanViewOrganisationFunctions,
                 Permission.CanViewOrganisationKbo,
                 Permission.CanViewOrganisationVlimpers,
@@ -156,6 +161,8 @@ public static class RolePermissionMap
                 Permission.CanReadOrafin),
 
             [Role.Developer] = PermissionSet.Of(
+                Permission.CanViewOrganisationFunctions,
+                Permission.CanViewOrganisationCapacities,
                 Permission.CanManageChildren,
                 Permission.CanManageParent,
                 Permission.CanManageOrganisation,
@@ -232,6 +239,7 @@ public static class RolePermissionMap
             // (see WellknownUsers.ScheduledCommandsService / KboSyncService / Magda).
             // T036 will remove or [Obsolete] this once migration completes.
             [Role.AutomatedTask] = PermissionSet.Of(
+                Permission.CanViewOrganisationCapacities,
                 Permission.CanManageCapacities,
                 Permission.CanRunScheduledJobs,
                 Permission.CanManageKeys,

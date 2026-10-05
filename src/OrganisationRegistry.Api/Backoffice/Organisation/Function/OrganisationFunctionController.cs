@@ -8,6 +8,7 @@ using Infrastructure.Search.Filtering;
 using Infrastructure.Search.Pagination;
 using Infrastructure.Search.Sorting;
 using Infrastructure.Swagger.Examples;
+using OrganisationRegistry.Api.Infrastructure.Security;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +21,7 @@ using Swashbuckle.AspNetCore.Filters;
 [ApiVersion("1.0")]
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("organisations/{organisationId}/functions")]
+[OrganisationRegistryAuthorize(RequiredPermissions = [Permission.CanViewOrganisationFunctions])]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Scherm APIs: Organisaties")]
 public class OrganisationFunctionController : OrganisationRegistryController
