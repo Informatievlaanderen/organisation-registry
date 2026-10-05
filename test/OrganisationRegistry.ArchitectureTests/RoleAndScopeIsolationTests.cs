@@ -119,6 +119,7 @@ public partial class RoleAndScopeIsolationTests : ArchitectureTestBase
             "src/OrganisationRegistry.Infrastructure/Authorization/ScopePermissionMap.cs",
             "src/OrganisationRegistry.Api/Auth/Models/RolePermissions.cs",
             "src/OrganisationRegistry.Api/Auth/Models/RolePriority.cs",
+            "src/OrganisationRegistry.Api/Auth/Models/RoleDisplayNames.cs",
             "src/OrganisationRegistry.Api/Security/OrganisationRegistryTokenBuilder.cs",
             "src/OrganisationRegistry.Api/Security/TokenExchangeClaimsTransformation.cs",
             "src/OrganisationRegistry.Api/Security/RoleMapping.cs",
