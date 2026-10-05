@@ -1,6 +1,7 @@
 # Traefik IngressRoute for all demo services.
-# Matches any host starting with the service name, so both
-#   <name>.localhost:9080 and <name>.<ip>.nip.io:9080 work.
+# Matches <name>.localhost:9080 and (Traefik v3 only) <name>.<ip>.nip.io:9080.
+# Host() is required: k3s v1.30 (CI) bundles Traefik v2, where HostRegexp does
+# not take plain Go regexes and would 404 every route.
 #
 # keycloak.* → Keycloak        api.*        → API
 # ui.*       → Angular UI      app.*        → Nuxt BFF
@@ -15,42 +16,42 @@ spec:
   entryPoints:
     - web
   routes:
-  - match: HostRegexp(`^keycloak\.`)
+  - match: Host(`keycloak.localhost`) || HostRegexp(`^keycloak\..+$`)
     kind: Rule
     services:
     - name: keycloak
       port: 80
-  - match: HostRegexp(`^api\.`)
+  - match: Host(`api.localhost`) || HostRegexp(`^api\..+$`)
     kind: Rule
     services:
     - name: api
       port: 80
-  - match: HostRegexp(`^ui\.`)
+  - match: Host(`ui.localhost`) || HostRegexp(`^ui\..+$`)
     kind: Rule
     services:
     - name: ui
       port: 80
-  - match: HostRegexp(`^app\.`)
+  - match: Host(`app.localhost`) || HostRegexp(`^app\..+$`)
     kind: Rule
     services:
     - name: nuxt-bff
       port: 80
-  - match: HostRegexp(`^m2m\.`)
+  - match: Host(`m2m.localhost`) || HostRegexp(`^m2m\..+$`)
     kind: Rule
     services:
     - name: m2m-demo
       port: 80
-  - match: HostRegexp(`^seq\.`)
+  - match: Host(`seq.localhost`) || HostRegexp(`^seq\..+$`)
     kind: Rule
     services:
     - name: seq
       port: 80
-  - match: HostRegexp(`^opensearch\.`)
+  - match: Host(`opensearch.localhost`) || HostRegexp(`^opensearch\..+$`)
     kind: Rule
     services:
     - name: opensearch
       port: 9200
-  - match: HostRegexp(`^mock\.`)
+  - match: Host(`mock.localhost`) || HostRegexp(`^mock\..+$`)
     kind: Rule
     services:
     - name: wiremock

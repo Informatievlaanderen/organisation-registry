@@ -163,10 +163,10 @@ spec:
         - containerPort: 9002
         startupProbe:
           httpGet:
-            path: /health
+            path: /v1/status
             port: 9002
-          periodSeconds: 2
-          failureThreshold: 90   # up to 3 minutes to boot
+          periodSeconds: 5
+          failureThreshold: 90
         readinessProbe:
           httpGet:
             path: /v1/organisations
