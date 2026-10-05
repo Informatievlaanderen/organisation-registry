@@ -27,10 +27,10 @@ cluster_has_server() {
 }
 
 cluster_run_registries_caches() {
-  if [[ "${START_TILT:-true}" == "false" ]]; then
-    log "Skipping cluster_setup_registry_caches (CI mode)"
-    return 0
-  fi
+  # if [[ "${START_TILT:-true}" == "false" ]]; then
+  #   log "Skipping cluster_setup_registry_caches (CI mode)"
+  #   return 0
+  # fi
   "$SCRIPT_DIR/start-caches.sh"
 
   log "$(curl -s http://localhost:5000/v2/_catalog | jq -r '.repositories[]')"
