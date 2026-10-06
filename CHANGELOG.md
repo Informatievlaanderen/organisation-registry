@@ -1,3 +1,11 @@
+## [1.340.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.340.1...v1.340.2) (2026-10-06)
+
+
+### Bug Fixes
+
+* feedback code review ([f4cd446](https://github.com/informatievlaanderen/organisation-registry/commit/f4cd4464079c233a84c2e08e60b15bf4e27b0154))
+* or-3583 restrict anonymous access to organisation capacity & function endpoints ([7fd19d0](https://github.com/informatievlaanderen/organisation-registry/commit/7fd19d0483bc7c752a448abc368a4de3ae544061))
+
 ## [1.340.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.340.0...v1.340.1) (2026-10-06)
 
 
