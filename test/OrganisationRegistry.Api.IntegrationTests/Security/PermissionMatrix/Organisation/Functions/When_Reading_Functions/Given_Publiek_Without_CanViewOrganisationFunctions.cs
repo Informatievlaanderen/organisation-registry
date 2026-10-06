@@ -27,7 +27,7 @@ public class Given_Publiek_Without_CanViewOrganisationFunctions
     [Fact]
     public async Task Then_Returns_Unauthorized()
     {
-        var _client = await _apiFixture.CreateDecentraalBeheerderClient();
+        var _client = await _apiFixture.CreateAlgemeenbeheerderClient();
         var organisationId = _apiFixture.Fixture.Create<Guid>();
         await _apiFixture.Create.Organisation(organisationId, _apiFixture.Fixture.Create<string>(),_apiFixture.Fixture.Create<string>(), _client);
 
