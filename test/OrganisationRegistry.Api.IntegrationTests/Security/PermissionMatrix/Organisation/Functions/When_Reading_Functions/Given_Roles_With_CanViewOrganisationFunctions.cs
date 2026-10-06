@@ -31,7 +31,7 @@ public class Given_Roles_With_CanViewOrganisationFunctions
     [InlineData(ApiFixture.Backoffice.VoMedewerker)]
     public async Task Then_Returns_Ok(string role)
     {
-        var _client = await _apiFixture.CreateDecentraalBeheerderClient();
+        var _client = await _apiFixture.CreateAlgemeenbeheerderClient();
         var organisationId = _apiFixture.Fixture.Create<Guid>();
         await _apiFixture.Create.Organisation(organisationId, _apiFixture.Fixture.Create<string>(),_apiFixture.Fixture.Create<string>(), _client);
 
