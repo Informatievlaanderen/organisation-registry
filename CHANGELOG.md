@@ -1,3 +1,15 @@
+## [1.340.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.340.0...v1.340.1) (2026-10-06)
+
+
+### Bug Fixes
+
+* add RoleDisplayNames ([d487d89](https://github.com/informatievlaanderen/organisation-registry/commit/d487d897a669b49e6868bf4f4cfbf95af195e397))
+* ci speedup test ([d74ff40](https://github.com/informatievlaanderen/organisation-registry/commit/d74ff40c444d4f65149b2bc1f898d0c473063de9))
+* or-3597 add missing CanDelete on bodies ([610b399](https://github.com/informatievlaanderen/organisation-registry/commit/610b3994541f1bf63ddceb6df2eb94cab569920a))
+* seperate units tests ([ccc4aed](https://github.com/informatievlaanderen/organisation-registry/commit/ccc4aeda6f62b2956f9838da41623fe09207f7fa))
+* tilt ci ([641a627](https://github.com/informatievlaanderen/organisation-registry/commit/641a627fedc146ceaf86679f328567988cf8a19b))
+* traffic routing ([8a3799d](https://github.com/informatievlaanderen/organisation-registry/commit/8a3799df0f46dc8ecb6b8e2085c23e113171baf4))
+
 # [1.340.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.339.4...v1.340.0) (2026-10-01)
 
 
