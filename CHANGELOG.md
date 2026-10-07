@@ -1,3 +1,11 @@
+## [1.340.3](https://github.com/informatievlaanderen/organisation-registry/compare/v1.340.2...v1.340.3) (2026-10-07)
+
+
+### Bug Fixes
+
+* add debugger support to K3D cluster ([c32b316](https://github.com/informatievlaanderen/organisation-registry/commit/c32b316d832f4590cade3aa39e07cd8870623aab))
+* add missing telepresence cmd ([3f76ab4](https://github.com/informatievlaanderen/organisation-registry/commit/3f76ab434916a5399b0166b6506351a4727fedd9))
+
 ## [1.340.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.340.1...v1.340.2) (2026-10-06)
 
 
