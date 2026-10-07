@@ -169,7 +169,7 @@ spec:
           failureThreshold: 90
         readinessProbe:
           httpGet:
-            path: /v1/organisations
+            path: /health
             port: 9002
           periodSeconds: 10
           timeoutSeconds: 5
