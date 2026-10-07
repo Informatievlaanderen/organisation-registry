@@ -18,7 +18,6 @@ spec:
         image: wiremock/wiremock:2.32.0
         imagePullPolicy: IfNotPresent
         args:
-        - --verbose
         - --global-response-templating
         ports:
         - containerPort: 8080
