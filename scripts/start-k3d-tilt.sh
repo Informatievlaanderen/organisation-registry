@@ -52,9 +52,13 @@ main() {
             log "Starting existing cluster '$CLUSTER_NAME'..."
             k3d cluster start "$CLUSTER_NAME"
         else
-            log "Cluster '$CLUSTER_NAME' exists but has no nodes. Recreating it..."
-            k3d cluster delete "$CLUSTER_NAME"
-            k3d cluster create --config k3d.config.yaml
+            # log "Cluster '$CLUSTER_NAME' exists but has no nodes. Recreating it..."
+            # k3d cluster delete "$CLUSTER_NAME"
+            # k3d cluster create --config k3d.config.yaml
+            k3d cluster start "$CLUSTER_NAME"
+            tilt down --delete-namespaces --delete-volumes --file "$REPO_ROOT"/Tiltfile 2>/dev/null || true
+            sleep 5
+            tilt up
         fi
     else
         log "Creating cluster '$CLUSTER_NAME' from k3d.config.yaml..."

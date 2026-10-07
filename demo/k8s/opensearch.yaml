@@ -20,10 +20,12 @@ spec:
         imagePullPolicy: IfNotPresent
         env:
         - name: OPENSEARCH_JAVA_OPTS
-          vaue: "-Xms512m -Xmx512m"
+          value: "-Xms512m -Xmx512m"
         - name: discovery.type
           value: "single-node"
         - name: DISABLE_SECURITY_PLUGIN
+          value: "true"
+        - name: DISABLE_PERFORMANCE_ANALYZER_AGENT_CLI
           value: "true"
         - name: cluster.routing.allocation.disk.watermark.low
           value: "97%"

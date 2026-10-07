@@ -21,7 +21,7 @@ spec:
         env:
         - name: ACCEPT_EULA
           value: "Y"
-        - name: SA_PASSWORD
+        - name: MSSQL_SA_PASSWORD
           valueFrom:
             secretKeyRef:
               name: demo-secrets
@@ -31,24 +31,30 @@ spec:
         - name: MSSQL_IP_ADDRESS
           value: "0.0.0.0"
         - name: MSSQL_MEMORY_LIMIT_MB
-          value: "1024"
+          value: "768"
         ports:
         - containerPort: 1433
+        resources:
+          requests:
+            memory: 768Mi
+            cpu: 100m
+          limits:
+            memory: 1536Mi
         startupProbe:
           exec:
             command:
             - /bin/bash
             - -c
-            - /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "$SA_PASSWORD" -Q "SELECT 1" -b
+            - /opt/mssql-tools/bin/sqlcmd -S "tcp:$(hostname),1433" -U sa -P "$MSSQL_SA_PASSWORD" -Q "SELECT 1" -b
           periodSeconds: 2
           timeoutSeconds: 5
-          failureThreshold: 60   # up to 2 minutes to boot
+          failureThreshold: 60
         readinessProbe:
           exec:
             command:
             - /bin/bash
             - -c
-            - /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "$SA_PASSWORD" -Q "SELECT 1" -b
+            - /opt/mssql-tools/bin/sqlcmd -S "tcp:$(hostname),1433" -U sa -P "$MSSQL_SA_PASSWORD" -Q "SELECT 1" -b
           periodSeconds: 10
           timeoutSeconds: 5
           failureThreshold: 10
