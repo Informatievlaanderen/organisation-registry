@@ -273,7 +273,8 @@ k8s_resource(
 k8s_resource('api',
     labels=['apps'],
     resource_deps=['clear-database', 'mssql', 'opensearch', 'keycloak', 'wiremock', 'otel-collector'],
-    links=[link('http://api.localhost:9080/v1', 'API')])
+    links=[link('http://api.localhost:9080/v1', 'API')],
+    trigger_mode=TRIGGER_MODE_MANUAL)
 
 k8s_resource('ui',
     labels=['apps'],
