@@ -1,0 +1,33 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "OrganisationRegistry.Api",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build-api",
+      "program": "${workspaceFolder}/src/OrganisationRegistry.Api/bin/Debug/net10.0/OrganisationRegistry.Api.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/src/OrganisationRegistry.Api",
+      "stopAtEntry": false,
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+      },
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_URLS": "http://localhost:9002"
+      },
+      "sourceFileMap": {
+        "/src/OrganisationRegistry.Api": "${workspaceFolder}/src/OrganisationRegistry.Api"
+      },
+      "justMyCode": false,
+      "requireExactSource": false
+    },
+    {
+      "name": ".NET Core Attach",
+      "type": "coreclr",
+      "request": "attach"
+    },
+  ]
+}

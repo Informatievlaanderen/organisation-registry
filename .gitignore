@@ -8,7 +8,9 @@ wwwroot/
 !src/IdentityServer/wwwroot
 
 .vs/
-.vscode/
+.vscode/*
+!.vscode/launch.json
+!.vscode/tasks.json
 .fake/
 .idea/
 .ionide/

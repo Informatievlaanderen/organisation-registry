@@ -312,6 +312,26 @@ k8s_resource('seed',
     resource_deps=['api-configuration', 'keycloak'])
 
 # =============================================================================
+# Telepresence — run the API locally (IDE/debugger) inside the cluster network
+# =============================================================================
+local_resource(
+    'telepresence',
+    'KUBECONFIG=.kubeconfig telepresence helm install || KUBECONFIG=.kubeconfig telepresence helm upgrade',
+    labels=['setup'],
+    resource_deps=['kubeconfig'],
+)
+
+load('ext://uibutton', 'cmd_button', 'bool_input', 'choice_input')
+
+cmd_button('api:connect',
+    argv=['./scripts/tunnel.sh', '--resource', 'api', '--state', 'on'],
+    resource='api', icon_name='verified_user', text='Tunnel connect')
+
+cmd_button('api:disconnect',
+    argv=['./scripts/tunnel.sh', '--resource', 'api', '--state', 'off'],
+    resource='api', icon_name='close', text='Tunnel disconnect')
+
+# =============================================================================
 # Settings
 # =============================================================================
 
