@@ -1,0 +1,68 @@
+# ---------------------------------------------------------------
+# OpenSearch: single-node search backend (data on a 5Gi PVC)
+# ---------------------------------------------------------------
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: opensearch
+  namespace: wegwijs-demo
+spec:
+  serviceName: opensearch
+  replicas: 1
+  selector:
+    matchLabels: { app: opensearch }
+  template:
+    metadata:
+      labels: { app: opensearch }
+    spec:
+      containers:
+        - name: opensearch
+          image: opensearchproject/opensearch:1.1.0
+          imagePullPolicy: IfNotPresent
+          # resources:
+          #   requests: { cpu: 200m, memory: 1Gi }
+          #   limits: { memory: 1280Mi }
+          ports:
+            - { name: http,    containerPort: 9200 }
+            - { name: metrics, containerPort: 9600 }
+          startupProbe:
+            httpGet: { path: /, port: http }
+            periodSeconds: 2
+            failureThreshold: 90
+          readinessProbe:
+            httpGet: { path: /, port: http }
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 12
+          env:
+            - { name: OPENSEARCH_JAVA_OPTS, value: "-Xms512m -Xmx512m" }
+            - { name: discovery.type,       value: "single-node" }
+
+            # Dev only: no security plugin, no performance analyzer
+            - { name: DISABLE_SECURITY_PLUGIN,                value: "true" }
+            - { name: DISABLE_PERFORMANCE_ANALYZER_AGENT_CLI, value: "true" }
+
+            # Dev only: effectively disable disk watermarks so a full laptop disk doesn't block indexing
+            - { name: cluster.routing.allocation.disk.watermark.low,         value: "97%" }
+            - { name: cluster.routing.allocation.disk.watermark.high,        value: "98%" }
+            - { name: cluster.routing.allocation.disk.watermark.flood_stage, value: "99%" }
+          volumeMounts:
+            - { name: opensearch-data, mountPath: /usr/share/opensearch/data }
+  volumeClaimTemplates:
+    - metadata:
+        name: opensearch-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests: { storage: 5Gi }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: opensearch
+  namespace: wegwijs-demo
+spec:
+  selector: { app: opensearch }
+  ports:
+    - { name: http,    port: 9200, targetPort: http }
+    - { name: metrics, port: 9600, targetPort: metrics }

@@ -1,0 +1,54 @@
+# ---------------------------------------------------------------
+# WireMock: mocked KBO / Magda endpoints (mappings + files from ConfigMaps)
+# ---------------------------------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wiremock
+  namespace: wegwijs-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: wiremock }
+  template:
+    metadata:
+      labels: { app: wiremock }
+    spec:
+      containers:
+        - name: wiremock
+          image: wiremock/wiremock:2.32.0
+          imagePullPolicy: IfNotPresent
+          args: ["--global-response-templating"]
+          resources:
+            requests: { cpu: 50m, memory: 256Mi }
+            limits: { memory: 512Mi }
+          ports:
+            - { name: http, containerPort: 8080 }
+          startupProbe:
+            httpGet: { path: /__admin/mappings, port: http }
+            periodSeconds: 2
+            failureThreshold: 90      # up to 3 minutes to boot
+          readinessProbe:
+            httpGet: { path: /__admin/mappings, port: http }
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 12
+          volumeMounts:
+            - { name: mappings, mountPath: /home/wiremock/mappings, readOnly: true }
+            - { name: files,    mountPath: /home/wiremock/__files,   readOnly: true }
+      volumes:
+        - name: mappings
+          configMap: { name: wiremock-mappings }
+        - name: files
+          configMap: { name: wiremock-files }
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wiremock
+  namespace: wegwijs-demo
+spec:
+  selector: { app: wiremock }
+  ports:
+    - { name: http, port: 8080, targetPort: http }

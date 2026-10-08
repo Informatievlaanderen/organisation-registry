@@ -14,6 +14,7 @@ Please see our [contributing guidelines](CONTRIBUTING.md) before contributing.
 - nvm
 - k3d
 - tilt
+- [telepresence.io](https://telepresence.io/docs/install/client) (Used for debugging locally. Please install both **client** and **traffic manager**)
 
 ### Useful commands
 
