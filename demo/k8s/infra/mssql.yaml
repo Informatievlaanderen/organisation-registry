@@ -1,0 +1,70 @@
+# ---------------------------------------------------------------
+# MSSQL: SQL Server 2017 (data on a 5Gi PVC)
+# ---------------------------------------------------------------
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mssql
+  namespace: wegwijs-demo
+spec:
+  serviceName: mssql
+  replicas: 1
+  selector:
+    matchLabels: { app: mssql }
+  template:
+    metadata:
+      labels: { app: mssql }
+    spec:
+      containers:
+        - name: mssql
+          image: mcr.microsoft.com/mssql/server:2017-latest
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests: { cpu: 100m, memory: 768Mi }
+            limits: { memory: 1536Mi }
+          ports:
+            - { name: mssql, containerPort: 1433 }
+          env:
+            - { name: ACCEPT_EULA, value: "Y" }
+            - { name: MSSQL_SA_PASSWORD, valueFrom: { secretKeyRef: { name: demo-secrets, key: mssql-sa-password } } }
+            - { name: MSSQL_TCP_PORT, value: "1433" }
+            - { name: MSSQL_IP_ADDRESS, value: "0.0.0.0" }
+            - { name: MSSQL_MEMORY_LIMIT_MB, value: "768" }   # SQL Server's own cap, well below the 1536Mi container limit
+          startupProbe:
+            exec:
+              command:
+                - /bin/bash
+                - -c
+                - /opt/mssql-tools/bin/sqlcmd -S "tcp:$(hostname),1433" -U sa -P "$MSSQL_SA_PASSWORD" -Q "SELECT 1" -b
+            periodSeconds: 2
+            timeoutSeconds: 5
+            failureThreshold: 60      # up to 2 minutes to boot
+          readinessProbe:
+            exec:
+              command:
+                - /bin/bash
+                - -c
+                - /opt/mssql-tools/bin/sqlcmd -S "tcp:$(hostname),1433" -U sa -P "$MSSQL_SA_PASSWORD" -Q "SELECT 1" -b
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 10
+          volumeMounts:
+            - { name: mssql-data, mountPath: /var/opt/mssql }
+  volumeClaimTemplates:
+    - metadata:
+        name: mssql-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests: { storage: 5Gi }
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mssql
+  namespace: wegwijs-demo
+spec:
+  selector: { app: mssql }
+  ports:
+    - { name: mssql, port: 1433, targetPort: mssql }

@@ -1,0 +1,48 @@
+# ---------------------------------------------------------------
+# M2M demo: machine-to-machine client demo (served on :8080, exposed as Service port 80)
+# ---------------------------------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: m2m-demo
+  namespace: wegwijs-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: m2m-demo }
+  template:
+    metadata:
+      labels: { app: m2m-demo }
+    spec:
+      containers:
+        - name: m2m-demo
+          image: wegwijs-m2m:local
+          imagePullPolicy: Always
+          resources:
+            requests: { cpu: 50m, memory: 128Mi }
+            limits: { memory: 256Mi }
+          ports:
+            - { name: http, containerPort: 8080 }
+          env:
+            - { name: ASPNETCORE_URLS, value: "http://+:8080" }
+
+            # Internal cluster URLs
+            - { name: KEYCLOAK_TOKEN_ENDPOINT, value: "http://keycloak/realms/wegwijs/protocol/openid-connect/token" }
+            - { name: API_BASE_URL,            value: "http://api/v1" }
+
+            # Client credentials
+            - { name: CJM_CLIENT_ID,        valueFrom: { secretKeyRef: { name: demo-secrets, key: cjm-client-id } } }
+            - { name: CJM_CLIENT_SECRET,    valueFrom: { secretKeyRef: { name: demo-secrets, key: cjm-client-secret } } }
+            - { name: ORAFIN_CLIENT_ID,     valueFrom: { secretKeyRef: { name: demo-secrets, key: orafin-client-id } } }
+            - { name: ORAFIN_CLIENT_SECRET, valueFrom: { secretKeyRef: { name: demo-secrets, key: orafin-client-secret } } }
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: m2m-demo
+  namespace: wegwijs-demo
+spec:
+  selector: { app: m2m-demo }
+  ports:
+    - { name: http, port: 80, targetPort: http }

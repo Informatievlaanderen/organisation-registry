@@ -1,0 +1,43 @@
+# ---------------------------------------------------------------
+# Seq: log/trace store (UI on :80, ingestion on :5341)
+# ---------------------------------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: seq
+  namespace: wegwijs-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: seq }
+  template:
+    metadata:
+      labels: { app: seq }
+    spec:
+      containers:
+        - name: seq
+          image: datalust/seq:2026.1
+          imagePullPolicy: IfNotPresent
+          # resources:
+          #   requests: { cpu: 100m, memory: 256Mi }
+          #   limits: { memory: 1Gi }
+          ports:
+            - { name: ui,        containerPort: 80 }     # UI
+            - { name: ingestion, containerPort: 5341 }   # ingestion (HTTP + OTLP/HTTP)
+            - { name: otlp-grpc, containerPort: 45341 }  # OTLP/gRPC
+          env:
+            - { name: ACCEPT_EULA, value: "Y" }
+            - { name: SEQ_FIRSTRUN_NOAUTHENTICATION, value: "True" }
+            # - { name: SEQ_FIRSTRUN_ADMINPASSWORD, value: "admin" }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: seq
+  namespace: wegwijs-demo
+spec:
+  selector: { app: seq }
+  ports:
+    - { name: ui,        port: 80,    targetPort: ui }
+    - { name: ingestion, port: 5341,  targetPort: ingestion }
+    - { name: otlp-grpc, port: 45341, targetPort: otlp-grpc }

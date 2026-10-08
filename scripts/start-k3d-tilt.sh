@@ -42,6 +42,8 @@ main() {
     require_cmd docker
     require_cmd k3d
     require_cmd tilt
+    require_cmd telepresence
+
 
     cd "$REPO_ROOT"
     cluster_run_registries_caches;

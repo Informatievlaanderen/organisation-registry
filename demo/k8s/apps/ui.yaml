@@ -1,0 +1,45 @@
+# ---------------------------------------------------------------
+# UI: frontend (served on :9007, exposed as Service port 80)
+# ---------------------------------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ui
+  namespace: wegwijs-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: ui }
+  template:
+    metadata:
+      labels: { app: ui }
+    spec:
+      containers:
+        - name: ui
+          image: wegwijs-ui:local
+          imagePullPolicy: Always
+          resources:
+            requests: { cpu: 100m, memory: 128Mi }
+            limits: { cpu: 100m, memory: 128Mi }
+          ports:
+            - { name: http, containerPort: 9007 }
+          env:
+            - { name: API_VERSION, value: "demo" }
+            - { name: API_ENDPOINT, value: "http://api.localhost:9080" }
+            - { name: UI_ENDPOINT,  value: "http://ui.localhost:9080" }
+            - { name: AIV_URI,      value: "https://www.vlaanderen.be/digitaal-vlaanderen" }
+
+            # Telemetry (empty = disabled)
+            - { name: OTEL_SERVER_URI,                  value: "" }
+            - { name: OTEL_DISTRIBUTED_TRACING_ORIGINS, value: "" }
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ui
+  namespace: wegwijs-demo
+spec:
+  selector: { app: ui }
+  ports:
+    - { name: http, port: 80, targetPort: http }
