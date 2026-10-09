@@ -32,9 +32,9 @@ public class Given_Roles_Without_PeopleWrite
     [InlineData(ApiFixture.Backoffice.VoMedewerker)]
     public async Task Then_Returns_Forbidden(string role)
     {
-        var client = await _apiFixture.CreateDynamicClient(role);
+        using var client = await _apiFixture.CreateDynamicClient(role);
 
-        var response = await ApiFixture.Post(
+        using var response = await ApiFixture.Post(
             client,
             "/v1/people",
             new CreatePersonRequest

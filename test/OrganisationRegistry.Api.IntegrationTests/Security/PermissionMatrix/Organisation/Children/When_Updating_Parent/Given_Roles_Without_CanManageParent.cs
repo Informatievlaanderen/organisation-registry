@@ -33,9 +33,9 @@ public class Given_Roles_Without_CanManageParent
         var parentOrganisationId = await CreateOrganisation();
         var organisationParentId = await AddParentAsAlgemeenbeheerder(childOrganisationId, parentOrganisationId);
 
-        var client = await _apiFixture.CreateDynamicClient(role);
+        using var client = await _apiFixture.CreateDynamicClient(role);
 
-        var response = await ApiFixture.Put(
+        using var response = await ApiFixture.Put(
             client,
             $"/v1/organisations/{childOrganisationId}/parents/{organisationParentId}",
             new UpdateOrganisationParentRequest

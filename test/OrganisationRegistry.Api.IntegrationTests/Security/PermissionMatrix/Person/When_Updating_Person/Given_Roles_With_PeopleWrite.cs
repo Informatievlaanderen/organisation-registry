@@ -25,11 +25,11 @@ public class Given_Roles_With_PeopleWrite
     [Fact]
     public async Task For_Algemeenbeheerder_Then_Returns_Ok()
     {
-        var client = await _apiFixture.CreateAlgemeenbeheerderClient();
+        using var client = await _apiFixture.CreateAlgemeenbeheerderClient();
 
         var personId = await _apiFixture.Create.Person();
 
-        var response = await UpdatePerson(client, personId);
+        using var response = await UpdatePerson(client, personId);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }

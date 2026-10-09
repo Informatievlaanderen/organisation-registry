@@ -28,7 +28,7 @@ public class BodyLifecyclePhaseTests
 
         await VerifyNotFound(route);
 
-        var getResponse = await ApiFixture.Get(_apiFixture.HttpClient, route);
+        using var getResponse = await ApiFixture.Get(_apiFixture.HttpClient, route);
         var responseBody = await ApiFixture.DeserializeAsList(getResponse);
 
         var bodyLifecyclePhaseId = GetBodyLifecyclePhaseId(responseBody);
@@ -52,7 +52,7 @@ public class BodyLifecyclePhaseTests
 
     private async Task VerifyNotFound(string route)
     {
-        var getResponse = await ApiFixture.Get(_apiFixture.HttpClient, $"{route}/{_apiFixture.Fixture.Create<Guid>()}");
+        using var getResponse = await ApiFixture.Get(_apiFixture.HttpClient, $"{route}/{_apiFixture.Fixture.Create<Guid>()}");
         getResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 

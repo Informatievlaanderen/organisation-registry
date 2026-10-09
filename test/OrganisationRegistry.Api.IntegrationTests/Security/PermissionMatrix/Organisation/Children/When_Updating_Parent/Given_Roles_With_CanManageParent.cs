@@ -28,13 +28,13 @@ public class Given_Roles_With_CanManageParent
     [Fact]
     public async Task For_Algemeenbeheerder_Then_Returns_Ok()
     {
-        var client = await _apiFixture.CreateAlgemeenbeheerderClient();
+        using var client = await _apiFixture.CreateAlgemeenbeheerderClient();
 
         var childOrganisationId = await CreateOrganisation();
         var parentOrganisationId = await CreateOrganisation();
         var organisationParentId = await AddParentAsAlgemeenbeheerder(childOrganisationId, parentOrganisationId);
 
-        var response = await UpdateParent(client, childOrganisationId, organisationParentId, parentOrganisationId);
+        using var response = await UpdateParent(client, childOrganisationId, organisationParentId, parentOrganisationId);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
@@ -42,7 +42,7 @@ public class Given_Roles_With_CanManageParent
     [Fact]
     public async Task For_Decentraalbeheerder_WithOwnOrganisation_Then_Returns_Ok()
     {
-        var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Decentraalbeheerder);
+        using var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Decentraalbeheerder);
 
         // OVO000102 ligt binnen de (gecachete) scope van de decentraalbeheerder en is niet
         // Vlimpers-beheerd. Het heeft reeds een (open) ouderkoppeling uit de fixture; die
@@ -51,7 +51,7 @@ public class Given_Roles_With_CanManageParent
         var childOrganisationId = _apiFixture.DecentraalbeheerderChildOrganisationId;
         var existing = await GetFirstParentCoupling(client, childOrganisationId);
 
-        var response = await UpdateParent(
+        using var response = await UpdateParent(
             client,
             childOrganisationId,
             existing.OrganisationOrganisationParentId,
@@ -68,13 +68,13 @@ public class Given_Roles_With_CanManageParent
     [Fact]
     public async Task For_Decentraalbeheerder_WithOrganisationOutsideScope_Then_Returns_Forbidden()
     {
-        var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Decentraalbeheerder);
+        using var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Decentraalbeheerder);
 
         var childOrganisationId = await CreateOrganisation();
         var parentOrganisationId = await CreateOrganisation();
         var organisationParentId = await AddParentAsAlgemeenbeheerder(childOrganisationId, parentOrganisationId);
 
-        var response = await UpdateParent(client, childOrganisationId, organisationParentId, parentOrganisationId);
+        using var response = await UpdateParent(client, childOrganisationId, organisationParentId, parentOrganisationId);
 
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
@@ -110,9 +110,9 @@ public class Given_Roles_With_CanManageParent
         DateTime? validTo = null)
     {
         var organisationParentId = _apiFixture.Fixture.Create<Guid>();
-        var algemeenbeheerderClient = await _apiFixture.CreateAlgemeenbeheerderClient();
+        using var algemeenbeheerderClient = await _apiFixture.CreateAlgemeenbeheerderClient();
 
-        var response = await ApiFixture.Post(
+        using var response = await ApiFixture.Post(
             algemeenbeheerderClient,
             $"/v1/organisations/{childOrganisationId}/parents",
             new AddOrganisationParentRequest

@@ -34,9 +34,9 @@ public class Given_Vlimpersbeheerder
     {
         var organisationId = await CreateVlimpersManagedOrganisation();
 
-        var client = await _apiFixture.CreateBackofficeUserClientFor(ApiFixture.Backoffice.Vlimpersbeheerder);
+        using var client = await _apiFixture.CreateBackofficeUserClientFor(ApiFixture.Backoffice.Vlimpersbeheerder);
 
-        var response = await UpdateOrganisation(client, organisationId);
+        using var response = await UpdateOrganisation(client, organisationId);
 
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
@@ -46,9 +46,9 @@ public class Given_Vlimpersbeheerder
     {
         var organisationId = await CreateOrganisation();
 
-        var client = await _apiFixture.CreateBackofficeUserClientFor(ApiFixture.Backoffice.Vlimpersbeheerder);
+        using var client = await _apiFixture.CreateBackofficeUserClientFor(ApiFixture.Backoffice.Vlimpersbeheerder);
 
-        var response = await UpdateOrganisation(client, organisationId);
+        using var response = await UpdateOrganisation(client, organisationId);
 
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
@@ -64,8 +64,8 @@ public class Given_Vlimpersbeheerder
     {
         var organisationId = await CreateOrganisation();
 
-        var algemeenbeheerderClient = await _apiFixture.CreateAlgemeenbeheerderClient();
-        var response = await ApiFixture.Patch(
+        using var algemeenbeheerderClient = await _apiFixture.CreateAlgemeenbeheerderClient();
+        using var response = await ApiFixture.Patch(
             algemeenbeheerderClient,
             $"/v1/organisations/{organisationId}/vlimpers",
             new VlimpersRequest { VlimpersManagement = true });

@@ -24,7 +24,7 @@ public class Given_Publiek_Without_CanImport
     {
         var client = _apiFixture.CreateAnonymousClient();
 
-        var response = await ApiFixture.Get(client, "/v1/imports");
+        using var response = await ApiFixture.Get(client, "/v1/imports");
 
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }

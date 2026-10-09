@@ -30,9 +30,9 @@ public class Given_Roles_Without_DelegationsRead
     [InlineData(ApiFixture.Backoffice.VoMedewerker)]
     public async Task Then_Returns_Forbidden(string role)
     {
-        var client = await _apiFixture.CreateDynamicClient(role);
+        using var client = await _apiFixture.CreateDynamicClient(role);
 
-        var response = await ApiFixture.Get(client, "/v1/manage/delegations");
+        using var response = await ApiFixture.Get(client, "/v1/manage/delegations");
 
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }

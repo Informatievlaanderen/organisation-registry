@@ -22,14 +22,14 @@ public class Given_Roles_With_CanManageBuildings
     [Fact]
     public async Task For_Algemeenbeheerder_Then_Returns_OK()
     {
-        var client = await _apiFixture.CreateAlgemeenbeheerderClient();
+        using var client = await _apiFixture.CreateAlgemeenbeheerderClient();
 
         // Algemeenbeheerder heeft een ongescopete CanManageBuildings-toekenning: elke organisatie is toegestaan.
         var organisationId = _apiFixture.Fixture.Create<Guid>();
         await _apiFixture.Create.Organisation(organisationId, _apiFixture.Fixture.Create<string>());
         var entityId = await AddBuilding(client, organisationId);
 
-        var response = await UpdateBuilding(client, organisationId, entityId);
+        using var response = await UpdateBuilding(client, organisationId, entityId);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
@@ -37,13 +37,13 @@ public class Given_Roles_With_CanManageBuildings
     [Fact]
     public async Task For_Decentraalbeheerder_WithOwnOrganisation_Then_Returns_OK()
     {
-        var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Decentraalbeheerder);
+        using var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Decentraalbeheerder);
 
         // OVO000003 is de eigen organisatie van de decentraalbeheerder-persona en valt dus binnen de scope.
         var organisationId = _apiFixture.DecentraalbeheerderOrganisationId;
         var entityId = await AddBuilding(client, organisationId);
 
-        var response = await UpdateBuilding(client, organisationId, entityId);
+        using var response = await UpdateBuilding(client, organisationId, entityId);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
@@ -51,13 +51,13 @@ public class Given_Roles_With_CanManageBuildings
     [Fact]
     public async Task For_Decentraalbeheerder_WithChildOrganisationInScope_Then_Returns_OK()
     {
-        var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Decentraalbeheerder);
+        using var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Decentraalbeheerder);
 
         // De scope van een decentraalbeheerder omvat de volledige boom (OrganisationTree), dus ook dochterorganisaties.
         var organisationId = _apiFixture.DecentraalbeheerderChildOrganisationId;
         var entityId = await AddBuilding(client, organisationId);
 
-        var response = await UpdateBuilding(client, organisationId, entityId);
+        using var response = await UpdateBuilding(client, organisationId, entityId);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
@@ -65,8 +65,8 @@ public class Given_Roles_With_CanManageBuildings
     [Fact]
     public async Task For_Decentraalbeheerder_WithOrganisationOutsideScope_Then_Returns_Forbidden()
     {
-        var privilegedClient = await _apiFixture.CreateAlgemeenbeheerderClient();
-        var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Decentraalbeheerder);
+        using var privilegedClient = await _apiFixture.CreateAlgemeenbeheerderClient();
+        using var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Decentraalbeheerder);
 
         // De organisatie valt buiten de scope van de decentraalbeheerder. Het bestaande gebouw wordt met een
         // bevoorrechte client aangemaakt, waarna de update door de decentraalbeheerder geweigerd moet worden.
@@ -74,7 +74,7 @@ public class Given_Roles_With_CanManageBuildings
         await _apiFixture.Create.Organisation(organisationId, _apiFixture.Fixture.Create<string>());
         var entityId = await AddBuilding(privilegedClient, organisationId);
 
-        var response = await UpdateBuilding(client, organisationId, entityId);
+        using var response = await UpdateBuilding(client, organisationId, entityId);
 
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
@@ -84,7 +84,7 @@ public class Given_Roles_With_CanManageBuildings
         var entityId = _apiFixture.Fixture.Create<Guid>();
         var buildingId = await _apiFixture.Create.Building();
 
-        await ApiFixture.Post(
+        using var _ = await ApiFixture.Post(
             client,
             $"/v1/organisations/{organisationId}/buildings",
             new AddOrganisationBuildingRequest

@@ -35,11 +35,11 @@ public class Given_Roles_With_CanManageChildren
     [Fact]
     public async Task For_Algemeenbeheerder_Then_Returns_Created()
     {
-        var client = await _apiFixture.CreateAlgemeenbeheerderClient();
+        using var client = await _apiFixture.CreateAlgemeenbeheerderClient();
 
         var parentOrganisationId = await CreateOrganisation();
 
-        var response = await CreateDaughterOrganisation(client, parentOrganisationId);
+        using var response = await CreateDaughterOrganisation(client, parentOrganisationId);
 
         response.StatusCode.Should().Be(HttpStatusCode.Created);
     }
@@ -47,10 +47,10 @@ public class Given_Roles_With_CanManageChildren
     [Fact]
     public async Task For_Decentraalbeheerder_WithOwnOrganisationAsParent_Then_Returns_Created()
     {
-        var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Decentraalbeheerder);
+        using var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Decentraalbeheerder);
 
         // OVO000003 is de eigen organisatie van de decentraalbeheerder-persona en valt dus binnen de scope.
-        var response = await CreateDaughterOrganisation(client, _apiFixture.DecentraalbeheerderOrganisationId);
+        using var response = await CreateDaughterOrganisation(client, _apiFixture.DecentraalbeheerderOrganisationId);
 
         response.StatusCode.Should().Be(HttpStatusCode.Created);
     }
@@ -58,11 +58,11 @@ public class Given_Roles_With_CanManageChildren
     [Fact]
     public async Task For_Decentraalbeheerder_WithOrganisationOutsideScopeAsParent_Then_Returns_Forbidden()
     {
-        var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Decentraalbeheerder);
+        using var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Decentraalbeheerder);
 
         var parentOrganisationId = await CreateOrganisation();
 
-        var response = await CreateDaughterOrganisation(client, parentOrganisationId);
+        using var response = await CreateDaughterOrganisation(client, parentOrganisationId);
 
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }

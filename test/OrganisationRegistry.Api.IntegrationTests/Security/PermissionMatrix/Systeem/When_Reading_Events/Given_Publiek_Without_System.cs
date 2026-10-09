@@ -22,9 +22,9 @@ public class Given_Publiek_Without_System
     [Fact]
     public async Task Then_Returns_Unauthorized()
     {
-        var client = _apiFixture.CreateAnonymousClient();
+        using var client = _apiFixture.CreateAnonymousClient();
 
-        var response = await ApiFixture.Get(client, "/v1/events");
+        using var response = await ApiFixture.Get(client, "/v1/events");
 
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }

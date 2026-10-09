@@ -27,12 +27,12 @@ public class Given_Roles_Without_CanManageVlimpers
     [InlineData(ApiFixture.Backoffice.VoMedewerker)]
     public async Task Then_Returns_Forbidden(string role)
     {
-        var client = await _apiFixture.CreateDynamicClient(role);
+        using var client = await _apiFixture.CreateDynamicClient(role);
 
         var organisationId = _apiFixture.Fixture.Create<Guid>();
         await _apiFixture.Create.Organisation(organisationId, _apiFixture.Fixture.Create<string>());
 
-        var response = await ApiFixture.Patch(
+        using var response = await ApiFixture.Patch(
             client,
             $"/v1/organisations/{organisationId}/vlimpers",
             new VlimpersRequest { VlimpersManagement = true });

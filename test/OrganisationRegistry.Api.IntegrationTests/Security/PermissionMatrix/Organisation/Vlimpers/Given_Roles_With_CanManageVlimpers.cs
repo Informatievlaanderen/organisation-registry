@@ -21,12 +21,12 @@ public class Given_Roles_With_CanManageVlimpers
     [Fact]
     public async Task For_Algemeenbeheerder_Then_Returns_Ok()
     {
-        var client = await _apiFixture.CreateAlgemeenbeheerderClient();
+        using var client = await _apiFixture.CreateAlgemeenbeheerderClient();
 
         var organisationId = _apiFixture.Fixture.Create<Guid>();
         await _apiFixture.Create.Organisation(organisationId, _apiFixture.Fixture.Create<string>());
 
-        var response = await ApiFixture.Patch(
+        using var response = await ApiFixture.Patch(
             client,
             $"/v1/organisations/{organisationId}/vlimpers",
             new VlimpersRequest { VlimpersManagement = true });

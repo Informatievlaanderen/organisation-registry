@@ -2,12 +2,9 @@ namespace OrganisationRegistry.Api.IntegrationTests.Security.PermissionMatrix.Or
 
 using System;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
-using OrganisationRegistry.Api.Backoffice.Organisation.Detail;
-using OrganisationRegistry.Api.Backoffice.Organisation.Function;
 using Xunit;
 
 /// <summary>
@@ -27,12 +24,16 @@ public class Given_Publiek_Without_CanViewOrganisationFunctions
     [Fact]
     public async Task Then_Returns_Unauthorized()
     {
-        var _client = await _apiFixture.CreateAlgemeenbeheerderClient();
+        using var _client = await _apiFixture.CreateAlgemeenbeheerderClient();
         var organisationId = _apiFixture.Fixture.Create<Guid>();
-        await _apiFixture.Create.Organisation(organisationId, _apiFixture.Fixture.Create<string>(),_apiFixture.Fixture.Create<string>(), _client);
+        await _apiFixture.Create.Organisation(
+            organisationId,
+            _apiFixture.Fixture.Create<string>(),
+            _apiFixture.Fixture.Create<string>(),
+            _client);
 
-        var client = _apiFixture.CreateAnonymousClient();
-        var response = await ApiFixture.Get(client, $"/v1/organisations/{organisationId}/functions");
+        using var client = _apiFixture.CreateAnonymousClient();
+        using var response = await ApiFixture.Get(client, $"/v1/organisations/{organisationId}/functions");
 
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }

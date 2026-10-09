@@ -26,9 +26,9 @@ public class Given_Algemeenbeheerder
     [MemberData(nameof(ParameterEndpoints.ListRouteData), MemberType = typeof(ParameterEndpoints))]
     public async Task Then_Reading_Returns_Ok(string route)
     {
-        var client = await _apiFixture.CreateAlgemeenbeheerderClient();
+        using var client = await _apiFixture.CreateAlgemeenbeheerderClient();
 
-        var response = await ApiFixture.Get(client, $"/v1/{route}");
+        using var response = await ApiFixture.Get(client, $"/v1/{route}");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
@@ -36,10 +36,10 @@ public class Given_Algemeenbeheerder
     [Fact]
     public async Task Then_Deleting_A_KeyType_Is_Authorized()
     {
-        var client = await _apiFixture.CreateAlgemeenbeheerderClient();
+        using var client = await _apiFixture.CreateAlgemeenbeheerderClient();
         var keyTypeId = await _apiFixture.Create.KeyType(Guid.NewGuid());
 
-        var response = await ApiFixture.Delete(client, $"/v1/keytypes/{keyTypeId}");
+        using var response = await ApiFixture.Delete(client, $"/v1/keytypes/{keyTypeId}");
 
         response.StatusCode.Should().NotBe(HttpStatusCode.Forbidden);
         response.StatusCode.Should().NotBe(HttpStatusCode.Unauthorized);
@@ -48,10 +48,10 @@ public class Given_Algemeenbeheerder
     [Fact]
     public async Task Then_Deleting_A_Capacity_Is_Authorized()
     {
-        var client = await _apiFixture.CreateAlgemeenbeheerderClient();
+        using var client = await _apiFixture.CreateAlgemeenbeheerderClient();
         var capacityId = await _apiFixture.Create.Capacity();
 
-        var response = await ApiFixture.Delete(client, $"/v1/capacities/{capacityId}");
+        using var response = await ApiFixture.Delete(client, $"/v1/capacities/{capacityId}");
 
         response.StatusCode.Should().NotBe(HttpStatusCode.Forbidden);
         response.StatusCode.Should().NotBe(HttpStatusCode.Unauthorized);

@@ -22,9 +22,8 @@ public class Given_Publiek_Without_DelegationsRead
     [Fact]
     public async Task Then_Returns_Unauthorized()
     {
-        var client = _apiFixture.CreateAnonymousClient();
-
-        var response = await ApiFixture.Get(client, "/v1/manage/delegations");
+        using var client = _apiFixture.CreateAnonymousClient();
+        using var response = await ApiFixture.Get(client, "/v1/manage/delegations");
 
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }

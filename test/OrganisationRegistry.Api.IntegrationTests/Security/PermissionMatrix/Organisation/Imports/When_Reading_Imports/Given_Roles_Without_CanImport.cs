@@ -28,9 +28,9 @@ public class Given_Roles_Without_CanImport
     [InlineData(ApiFixture.Backoffice.VoMedewerker)]
     public async Task Then_Returns_Forbidden(string role)
     {
-        var client = await _apiFixture.CreateDynamicClient(role);
+        using var client = await _apiFixture.CreateDynamicClient(role);
 
-        var response = await ApiFixture.Get(client, "/v1/imports");
+        using var response = await ApiFixture.Get(client, "/v1/imports");
 
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }

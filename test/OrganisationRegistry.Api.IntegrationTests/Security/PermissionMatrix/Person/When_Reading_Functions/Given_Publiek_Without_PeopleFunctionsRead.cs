@@ -23,11 +23,11 @@ public class Given_Publiek_Without_PeopleFunctionsRead
     [Fact]
     public async Task Then_Returns_Unauthorized()
     {
-        var client = _apiFixture.CreateAnonymousClient();
+        using var client = _apiFixture.CreateAnonymousClient();
 
         var personId = await _apiFixture.Create.Person();
 
-        var response = await ApiFixture.Get(client, $"/v1/people/{personId}/functions");
+        using var response = await ApiFixture.Get(client, $"/v1/people/{personId}/functions");
 
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }

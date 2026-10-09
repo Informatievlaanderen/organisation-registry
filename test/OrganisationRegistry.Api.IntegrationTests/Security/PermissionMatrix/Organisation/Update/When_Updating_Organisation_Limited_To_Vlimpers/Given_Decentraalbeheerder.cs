@@ -33,14 +33,14 @@ public class Given_Decentraalbeheerder
     [Fact]
     public async Task For_OwnOrganisation_NotUnderVlimpersManagement_Then_Returns_Forbidden()
     {
-        var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Decentraalbeheerder);
+        using var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Decentraalbeheerder);
 
         // OVO000003 is de eigen organisatie van de decentraalbeheerder-persona;
         // ze valt binnen de scope van CanManageOrganisation, maar dat mag hier
         // geen effect hebben.
         var organisationId = _apiFixture.DecentraalbeheerderOrganisationId;
 
-        var response = await UpdateOrganisation(client, organisationId);
+        using var response = await UpdateOrganisation(client, organisationId);
 
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
@@ -48,11 +48,11 @@ public class Given_Decentraalbeheerder
     [Fact]
     public async Task For_OrganisationOutsideScope_Then_Returns_Forbidden()
     {
-        var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Decentraalbeheerder);
+        using var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Decentraalbeheerder);
 
         var organisationId = await CreateOrganisation();
 
-        var response = await UpdateOrganisation(client, organisationId);
+        using var response = await UpdateOrganisation(client, organisationId);
 
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }

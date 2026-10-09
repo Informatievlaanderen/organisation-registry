@@ -34,9 +34,9 @@ public class Given_Roles_With_CanCreateOrganisations
     [Fact]
     public async Task For_Algemeenbeheerder_Then_Returns_Created()
     {
-        var client = await _apiFixture.CreateAlgemeenbeheerderClient();
+        using var client = await _apiFixture.CreateAlgemeenbeheerderClient();
 
-        var response = await CreateTopLevelOrganisation(client);
+        using var response = await CreateTopLevelOrganisation(client);
 
         response.StatusCode.Should().Be(HttpStatusCode.Created);
     }
