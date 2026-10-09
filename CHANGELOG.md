@@ -1,3 +1,12 @@
+## [1.340.4](https://github.com/informatievlaanderen/organisation-registry/compare/v1.340.3...v1.340.4) (2026-10-09)
+
+
+### Bug Fixes
+
+* disable hrm for API ([806ec83](https://github.com/informatievlaanderen/organisation-registry/commit/806ec83e53316714d289c00ba04661dac793c9e2))
+* or-3613 refactor and speedup integrationTests + properly dipose objects ([4007600](https://github.com/informatievlaanderen/organisation-registry/commit/400760098de120bb62b43e4c573fde254fb823e4))
+* reduce local logging ([e9016a0](https://github.com/informatievlaanderen/organisation-registry/commit/e9016a0ef95c12be1780820ed82374239c8f6e76))
+
 ## [1.340.3](https://github.com/informatievlaanderen/organisation-registry/compare/v1.340.2...v1.340.3) (2026-10-07)
 
 
