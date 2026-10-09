@@ -30,41 +30,36 @@ using OrganisationRegistry.Api.Backoffice.Parameters.KeyType.Requests;
 using OrganisationRegistry.Api.Backoffice.Parameters.SeatType.Requests;
 using Person;
 
-public class CreationHelpers
+public sealed class CreationHelpers(ApiFixture fixture)
 {
-    private readonly ApiFixture _fixture;
-
-    public CreationHelpers(ApiFixture fixture)
-    {
-        _fixture = fixture;
-    }
-
     // Organisation:
     public async Task Organisation(Guid organisationId, string organisationName, string? ovoNumber = null, HttpClient? client = null)
-        => await ApiFixture.Post(client ?? _fixture.HttpClient, "/v1/organisations", new { id = organisationId, name = organisationName, ovoNumber });
+    {
+        using var _ = await ApiFixture.Post(client ?? fixture.HttpClient, "/v1/organisations", new { id = organisationId, name = organisationName, ovoNumber });
+    }
 
     public async Task<Guid> CreateOrganisationClassificationType(bool allowDifferentClassificationsToOverlap)
         => await Create<Guid>(
             "/v1/organisationclassificationtypes",
             new CreateOrganisationClassificationTypeRequest
             {
-                Name = _fixture.Fixture.Create<string>(),
+                Name = fixture.Fixture.Create<string>(),
                 AllowDifferentClassificationsToOverlap = allowDifferentClassificationsToOverlap,
             });
 
     public async Task<Guid> CreateOrganisationClassificationType(Guid organisationClassificationTypeId)
     {
-        using var getResponse = await ApiFixture.Get(_fixture.HttpClient, $"/v1/organisationclassificationtypes/{organisationClassificationTypeId}");
+        using var getResponse = await ApiFixture.Get(fixture.HttpClient, $"/v1/organisationclassificationtypes/{organisationClassificationTypeId}");
         if (getResponse.StatusCode == HttpStatusCode.OK)
             return organisationClassificationTypeId;
 
         using var postResponse = await ApiFixture.Post(
-            _fixture.HttpClient,
+            fixture.HttpClient,
             "/v1/organisationclassificationtypes",
             new CreateOrganisationClassificationTypeRequest
             {
                 Id = organisationClassificationTypeId,
-                Name = _fixture.Fixture.Create<string>(),
+                Name = fixture.Fixture.Create<string>(),
                 AllowDifferentClassificationsToOverlap = false,
             });
 
@@ -82,8 +77,8 @@ public class CreationHelpers
             "/v1/organisationclassifications",
             new CreateOrganisationClassificationRequest
             {
-                Name = _fixture.Fixture.Create<string>(),
-                Order = _fixture.Fixture.Create<int>(),
+                Name = fixture.Fixture.Create<string>(),
+                Order = fixture.Fixture.Create<int>(),
                 OrganisationClassificationTypeId = organisationClassificationTypeId,
                 Active = true,
                 ExternalKey = null,
@@ -92,9 +87,9 @@ public class CreationHelpers
 
     public async Task<Guid> OrganisationOrganisationClassification(Guid organisationId, Guid organisationClassificationTypeId, Guid organisationClassificationId)
     {
-        var id = _fixture.Fixture.Create<Guid>();
-        await ApiFixture.Post(
-            _fixture.HttpClient,
+        var id = fixture.Fixture.Create<Guid>();
+        using var response = await ApiFixture.Post(
+            fixture.HttpClient,
             $"/v1/organisation/{organisationId}/classifications",
             new AddOrganisationOrganisationClassificationRequest
             {
@@ -113,16 +108,16 @@ public class CreationHelpers
             "/v1/organisationrelationtypes",
             new CreateOrganisationRelationTypeRequest
             {
-                Name = _fixture.Fixture.Create<string>(),
-                InverseName = _fixture.Fixture.Create<string>(),
+                Name = fixture.Fixture.Create<string>(),
+                InverseName = fixture.Fixture.Create<string>(),
             });
 
     // Body
     public async Task Body(Guid bodyId, string bodyName, HttpClient? client = null)
     {
         await DefaultLifecyclePhaseTypes();
-        await ApiFixture.Post(
-            client ?? _fixture.HttpClient,
+        using var response = await ApiFixture.Post(
+            client ?? fixture.HttpClient,
             "/v1/bodies",
             new RegisterBodyRequest
             {
@@ -140,14 +135,14 @@ public class CreationHelpers
     {
         await DefaultLifecyclePhaseTypes();
 
-        var bodyId = _fixture.Fixture.Create<Guid>();
+        var bodyId = fixture.Fixture.Create<Guid>();
         using var response = await ApiFixture.Post(
             client,
             "/v1/bodies",
             new RegisterBodyRequest
             {
                 Id = bodyId,
-                Name = _fixture.Fixture.Create<string>(),
+                Name = fixture.Fixture.Create<string>(),
                 OrganisationId = organisationId,
                 ValidFrom = validFrom,
             });
@@ -165,9 +160,9 @@ public class CreationHelpers
             "/v1/seattypes",
             new CreateSeatTypeRequest
             {
-                Name = _fixture.Fixture.Create<string>(),
-                Order = _fixture.Fixture.Create<int>(),
-                IsEffective = _fixture.Fixture.Create<bool>(),
+                Name = fixture.Fixture.Create<string>(),
+                Order = fixture.Fixture.Create<int>(),
+                IsEffective = fixture.Fixture.Create<bool>(),
             });
 
     public async Task<Guid> BodyClassificationType()
@@ -175,7 +170,7 @@ public class CreationHelpers
             "/v1/bodyclassificationtypes",
             new CreateBodyClassificationTypeRequest
             {
-                Name = _fixture.Fixture.Create<string>(),
+                Name = fixture.Fixture.Create<string>(),
             });
 
     public async Task<Guid> BodyClassification(Guid bodyClassificationTypeId)
@@ -183,9 +178,9 @@ public class CreationHelpers
             "/v1/bodyclassifications",
             new CreateBodyClassificationRequest
             {
-                Name = _fixture.Fixture.Create<string>(),
+                Name = fixture.Fixture.Create<string>(),
                 Active = true,
-                Order = _fixture.Fixture.Create<int>(),
+                Order = fixture.Fixture.Create<int>(),
                 BodyClassificationTypeId = bodyClassificationTypeId,
             });
 
@@ -194,10 +189,10 @@ public class CreationHelpers
             "/v1/locations",
             new CreateLocationRequest
             {
-                City = _fixture.Fixture.Create<string>(),
-                Country = _fixture.Fixture.Create<string>(),
-                Street = _fixture.Fixture.Create<string>(),
-                ZipCode = _fixture.Fixture.Create<string>(),
+                City = fixture.Fixture.Create<string>(),
+                Country = fixture.Fixture.Create<string>(),
+                Street = fixture.Fixture.Create<string>(),
+                ZipCode = fixture.Fixture.Create<string>(),
             });
 
     public async Task DefaultLifecyclePhaseTypes()
@@ -209,12 +204,12 @@ public class CreationHelpers
     private async Task EnsureDefaultLifecyclePhaseType(bool representsActivePhase)
     {
         using var response = await ApiFixture.Post(
-            _fixture.HttpClient,
+            fixture.HttpClient,
             "/v1/lifecyclephasetypes",
             new CreateLifecyclePhaseTypeRequest
             {
-                Id = _fixture.Fixture.Create<Guid>(),
-                Name = _fixture.Fixture.Create<string>(),
+                Id = fixture.Fixture.Create<Guid>(),
+                Name = fixture.Fixture.Create<string>(),
                 IsDefaultPhase = true,
                 RepresentsActivePhase = representsActivePhase,
             });
@@ -236,7 +231,7 @@ public class CreationHelpers
             "/v1/lifecyclephasetypes",
             new CreateLifecyclePhaseTypeRequest()
             {
-                Name = _fixture.Fixture.Create<string>(),
+                Name = fixture.Fixture.Create<string>(),
                 IsDefaultPhase = isDefaultPhase ?? false,
                 RepresentsActivePhase = representsActivePhase ?? false,
             });
@@ -247,22 +242,22 @@ public class CreationHelpers
             "/v1/keytypes",
             new CreateKeyTypeRequest
             {
-                Name = _fixture.Fixture.Create<string>(),
+                Name = fixture.Fixture.Create<string>(),
             });
 
     public async Task<Guid> KeyType(Guid keyTypeId)
     {
-        using var getResponse = await ApiFixture.Get(_fixture.HttpClient, $"/v1/keytypes/{keyTypeId}");
+        using var getResponse = await ApiFixture.Get(fixture.HttpClient, $"/v1/keytypes/{keyTypeId}");
         if (getResponse.StatusCode == HttpStatusCode.OK)
             return keyTypeId;
 
         using var postResponse = await ApiFixture.Post(
-            _fixture.HttpClient,
+            fixture.HttpClient,
             "/v1/keytypes",
             new CreateKeyTypeRequest
             {
                 Id = keyTypeId,
-                Name = _fixture.Fixture.Create<string>(),
+                Name = fixture.Fixture.Create<string>(),
             });
 
         if (postResponse.StatusCode is not (HttpStatusCode.Created or HttpStatusCode.OK))
@@ -279,28 +274,28 @@ public class CreationHelpers
             "/v1/contacttypes",
             new CreateContactTypeRequest
             {
-                Name = contactTypeName ?? _fixture.Fixture.Create<string>(),
+                Name = contactTypeName ?? fixture.Fixture.Create<string>(),
                 Example = "test",
                 Regex = ".*",
             });
 
     public async Task<Guid> FormalFramework(Guid formalFrameworkCategoryId)
-        => await FormalFramework(_fixture.Fixture.Create<Guid>(), formalFrameworkCategoryId);
+        => await FormalFramework(fixture.Fixture.Create<Guid>(), formalFrameworkCategoryId);
 
     public async Task<Guid> FormalFramework(Guid formalFrameworkId, Guid formalFrameworkCategoryId)
     {
-        using var getResponse = await ApiFixture.Get(_fixture.HttpClient, $"/v1/formalframeworks/{formalFrameworkId}");
+        using var getResponse = await ApiFixture.Get(fixture.HttpClient, $"/v1/formalframeworks/{formalFrameworkId}");
         if (getResponse.StatusCode == HttpStatusCode.OK)
             return formalFrameworkId;
 
         using var postResponse = await ApiFixture.Post(
-            _fixture.HttpClient,
+            fixture.HttpClient,
             "/v1/formalframeworks",
             new CreateFormalFrameworkRequest
             {
                 Id = formalFrameworkId,
-                Name = _fixture.Fixture.Create<string>(),
-                Code = _fixture.Fixture.Create<string>(),
+                Name = fixture.Fixture.Create<string>(),
+                Code = fixture.Fixture.Create<string>(),
                 FormalFrameworkCategoryId = formalFrameworkCategoryId,
             });
 
@@ -317,7 +312,7 @@ public class CreationHelpers
             "/v1/formalframeworkcategories",
             new CreateFormalFrameworkCategoryRequest()
             {
-                Name = _fixture.Fixture.Create<string>(),
+                Name = fixture.Fixture.Create<string>(),
             });
 
     public async Task<Guid> Person()
@@ -325,10 +320,10 @@ public class CreationHelpers
             "/v1/people",
             new CreatePersonRequest
             {
-                Name = _fixture.Fixture.Create<string>(),
-                FirstName = _fixture.Fixture.Create<string>(),
-                Sex = _fixture.Fixture.Create<bool>() ? Sex.Male : Sex.Female,
-                DateOfBirth = _fixture.Fixture.Create<DateTime>(),
+                Name = fixture.Fixture.Create<string>(),
+                FirstName = fixture.Fixture.Create<string>(),
+                Sex = fixture.Fixture.Create<bool>() ? Sex.Male : Sex.Female,
+                DateOfBirth = fixture.Fixture.Create<DateTime>(),
             });
 
     public async Task<Guid> Function()
@@ -336,7 +331,7 @@ public class CreationHelpers
             "/v1/functiontypes",
             new CreateFunctionTypeRequest
             {
-                Name = _fixture.Fixture.Create<string>(),
+                Name = fixture.Fixture.Create<string>(),
             });
 
     public async Task<Guid> Capacity()
@@ -344,22 +339,22 @@ public class CreationHelpers
             "/v1/capacities",
             new CreateCapacityRequest
             {
-                Name = _fixture.Fixture.Create<string>(),
+                Name = fixture.Fixture.Create<string>(),
             });
 
     public async Task<Guid> Capacity(Guid capacityId)
     {
-        using var getResponse = await ApiFixture.Get(_fixture.HttpClient, $"/v1/capacities/{capacityId}");
+        using var getResponse = await ApiFixture.Get(fixture.HttpClient, $"/v1/capacities/{capacityId}");
         if (getResponse.StatusCode == HttpStatusCode.OK)
             return capacityId;
 
         using var postResponse = await ApiFixture.Post(
-            _fixture.HttpClient,
+            fixture.HttpClient,
             "/v1/capacities",
             new CreateCapacityRequest
             {
                 Id = capacityId,
-                Name = _fixture.Fixture.Create<string>(),
+                Name = fixture.Fixture.Create<string>(),
             });
 
         if (postResponse.StatusCode is not (HttpStatusCode.Created or HttpStatusCode.OK))
@@ -376,8 +371,8 @@ public class CreationHelpers
             "/v1/buildings",
             new CreateBuildingRequest
             {
-                Id = _fixture.Fixture.Create<Guid>(),
-                Name = _fixture.Fixture.Create<string>(),
+                Id = fixture.Fixture.Create<Guid>(),
+                Name = fixture.Fixture.Create<string>(),
                 VimId = null,
             });
 
@@ -386,8 +381,8 @@ public class CreationHelpers
             "/v1/labeltypes",
             new CreateLabelTypeRequest
             {
-                Id = _fixture.Fixture.Create<Guid>(),
-                Name = _fixture.Fixture.Create<string>(),
+                Id = fixture.Fixture.Create<Guid>(),
+                Name = fixture.Fixture.Create<string>(),
             });
 
     public async Task<Guid> RegulationTheme()
@@ -395,7 +390,7 @@ public class CreationHelpers
             "/v1/regulationthemes",
             new CreateRegulationThemeRequest
             {
-                Name = _fixture.Fixture.Create<string>(),
+                Name = fixture.Fixture.Create<string>(),
             });
 
     public async Task<Guid> RegulationSubTheme(Guid regulationThemeId)
@@ -403,23 +398,23 @@ public class CreationHelpers
             "/v1/regulationsubthemes",
             new CreateRegulationSubThemeRequest
             {
-                Name = _fixture.Fixture.Create<string>(),
+                Name = fixture.Fixture.Create<string>(),
                 RegulationThemeId = regulationThemeId,
             });
 
     public async Task<Guid> BodySeat(Guid bodyId, Guid seatTypeId)
     {
-        var id = _fixture.Fixture.Create<Guid>();
+        var id = fixture.Fixture.Create<Guid>();
         using var response = await ApiFixture.Post(
-            _fixture.HttpClient,
+            fixture.HttpClient,
             $"/v1/bodies/{bodyId}/seats",
             new AddBodySeatRequest
             {
                 // cannot use Create<> because the request uses 'BodySeatId', not 'Id'
                 BodySeatId = id,
-                Name = _fixture.Fixture.Create<string>(),
-                PaidSeat = _fixture.Fixture.Create<bool>(),
-                EntitledToVote = _fixture.Fixture.Create<bool>(),
+                Name = fixture.Fixture.Create<string>(),
+                PaidSeat = fixture.Fixture.Create<bool>(),
+                EntitledToVote = fixture.Fixture.Create<bool>(),
                 SeatTypeId = seatTypeId,
             });
 
@@ -437,8 +432,8 @@ public class CreationHelpers
         if (body.GetType().GetProperty("Id") is not { })
             throw new InvalidDataContractException("Object to create should have an 'Id' property.");
 
-        body.Id = _fixture.Fixture.Create<TId>();
-        using var response = await ApiFixture.Post(_fixture.HttpClient, route, body);
+        body.Id = fixture.Fixture.Create<TId>();
+        using var response = await ApiFixture.Post(fixture.HttpClient, route, body);
         if (response.StatusCode is not (HttpStatusCode.Created or HttpStatusCode.OK))
             throw new InvalidOperationException(
                 $"Could not create test resource at '{route}'. " +
@@ -454,7 +449,7 @@ public class CreationHelpers
 
         while (DateTime.UtcNow < deadline)
         {
-            using var response = await ApiFixture.Get(_fixture.HttpClient, $"{route}/{id}");
+            using var response = await ApiFixture.Get(fixture.HttpClient, $"{route}/{id}");
             if (response.StatusCode == HttpStatusCode.OK)
                 return;
 

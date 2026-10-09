@@ -23,11 +23,11 @@ public class Given_Any_Caller_Then_Mandates_Are_Readable
     [Fact]
     public async Task For_Publiek_Then_Returns_Ok()
     {
-        var client = _apiFixture.CreateAnonymousClient();
+        using var client = _apiFixture.CreateAnonymousClient();
 
         var personId = await _apiFixture.Create.Person();
 
-        var response = await ApiFixture.Get(client, $"/v1/people/{personId}/mandates");
+        using var response = await ApiFixture.Get(client, $"/v1/people/{personId}/mandates");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
@@ -41,11 +41,11 @@ public class Given_Any_Caller_Then_Mandates_Are_Readable
     [InlineData(ApiFixture.Backoffice.VoMedewerker)]
     public async Task For_Role_Then_Returns_Ok(string role)
     {
-        var client = await _apiFixture.CreateDynamicClient(role);
+        using var client = await _apiFixture.CreateDynamicClient(role);
 
         var personId = await _apiFixture.Create.Person();
 
-        var response = await ApiFixture.Get(client, $"/v1/people/{personId}/mandates");
+        using var response = await ApiFixture.Get(client, $"/v1/people/{personId}/mandates");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }

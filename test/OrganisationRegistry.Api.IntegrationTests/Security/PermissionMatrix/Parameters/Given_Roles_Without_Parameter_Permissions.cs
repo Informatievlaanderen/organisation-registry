@@ -37,11 +37,11 @@ public class Given_Roles_Without_Parameter_Permissions
     [MemberData(nameof(ParameterEndpoints.ListRouteData), MemberType = typeof(ParameterEndpoints))]
     public async Task Then_Writing_Returns_Forbidden(string route)
     {
-        var client = await _apiFixture.CreateDynamicClient(RepresentativeRole);
+        using var client = await _apiFixture.CreateDynamicClient(RepresentativeRole);
 
         // Authorization filters run before model binding, so the (empty) body
         // is irrelevant: the request must be rejected with 403, never 400.
-        var response = await ApiFixture.Post(client, $"/v1/{route}", new { });
+        using var response = await ApiFixture.Post(client, $"/v1/{route}", new { });
 
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
@@ -50,9 +50,9 @@ public class Given_Roles_Without_Parameter_Permissions
     [MemberData(nameof(ParameterEndpoints.NonPrivilegedRoleData), MemberType = typeof(ParameterEndpoints))]
     public async Task Then_Writing_Locations_Returns_Forbidden(string role)
     {
-        var client = await _apiFixture.CreateDynamicClient(role);
+        using var client = await _apiFixture.CreateDynamicClient(role);
 
-        var response = await ApiFixture.Post(client, "/v1/locations", new { });
+        using var response = await ApiFixture.Post(client, "/v1/locations", new { });
 
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
@@ -61,9 +61,9 @@ public class Given_Roles_Without_Parameter_Permissions
     [MemberData(nameof(ParameterEndpoints.NonPrivilegedRoleData), MemberType = typeof(ParameterEndpoints))]
     public async Task Then_Deleting_KeyType_Returns_Forbidden(string role)
     {
-        var client = await _apiFixture.CreateDynamicClient(role);
+        using var client = await _apiFixture.CreateDynamicClient(role);
 
-        var response = await ApiFixture.Delete(client, $"/v1/keytypes/{Guid.NewGuid()}");
+        using var response = await ApiFixture.Delete(client, $"/v1/keytypes/{Guid.NewGuid()}");
 
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
@@ -72,9 +72,9 @@ public class Given_Roles_Without_Parameter_Permissions
     [MemberData(nameof(ParameterEndpoints.NonPrivilegedRoleData), MemberType = typeof(ParameterEndpoints))]
     public async Task Then_Deleting_Capacity_Returns_Forbidden(string role)
     {
-        var client = await _apiFixture.CreateDynamicClient(role);
+        using var client = await _apiFixture.CreateDynamicClient(role);
 
-        var response = await ApiFixture.Delete(client, $"/v1/capacities/{Guid.NewGuid()}");
+        using var response = await ApiFixture.Delete(client, $"/v1/capacities/{Guid.NewGuid()}");
 
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }

@@ -25,12 +25,12 @@ public class Given_Roles_Without_CanManageContacts
     [InlineData(ApiFixture.Backoffice.VoMedewerker)]
     public async Task Then_Returns_Forbidden(string role)
     {
-        var client = await _apiFixture.CreateDynamicClient(role);
+        using var client = await _apiFixture.CreateDynamicClient(role);
 
         var organisationId = _apiFixture.Fixture.Create<Guid>();
         await _apiFixture.Create.Organisation(organisationId, _apiFixture.Fixture.Create<string>());
 
-        var response = await ApiFixture.Post(
+        using var response = await ApiFixture.Post(
             client,
             $"/v1/organisations/{organisationId}/contacts",
             new AddOrganisationContactRequest

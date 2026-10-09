@@ -26,7 +26,7 @@ public class BodyBodyClassificationTests
         var route = $"/v1/bodies/{bodyId}/classifications";
         await _apiFixture.Create.Body(bodyId, _apiFixture.Fixture.Create<string>());
 
-        var getResponse = await ApiFixture.Get(_apiFixture.HttpClient, $"{route}/{_apiFixture.Fixture.Create<Guid>()}");
+        using var getResponse = await ApiFixture.Get(_apiFixture.HttpClient, $"{route}/{_apiFixture.Fixture.Create<Guid>()}");
         getResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
         // CREATE

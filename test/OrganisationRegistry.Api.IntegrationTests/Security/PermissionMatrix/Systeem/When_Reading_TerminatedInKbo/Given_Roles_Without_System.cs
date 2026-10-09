@@ -30,9 +30,9 @@ public class Given_Roles_Without_System
     [InlineData(ApiFixture.Backoffice.VoMedewerker)]
     public async Task Then_Returns_Forbidden(string role)
     {
-        var client = await _apiFixture.CreateDynamicClient(role);
+        using var client = await _apiFixture.CreateDynamicClient(role);
 
-        var response = await ApiFixture.Get(client, "/v1/organisations/kbo/terminated");
+        using var response = await ApiFixture.Get(client, "/v1/organisations/kbo/terminated");
 
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }

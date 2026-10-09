@@ -32,9 +32,9 @@ public class Given_Any_Role_Reading_Parameters
     [MemberData(nameof(ParameterEndpoints.NonPrivilegedRoleData), MemberType = typeof(ParameterEndpoints))]
     public async Task Then_Reading_Locations_Returns_Ok(string role)
     {
-        var client = await _apiFixture.CreateDynamicClient(role);
+        using var client = await _apiFixture.CreateDynamicClient(role);
 
-        var response = await ApiFixture.Get(client, "/v1/locations");
+        using var response = await ApiFixture.Get(client, "/v1/locations");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
@@ -43,9 +43,9 @@ public class Given_Any_Role_Reading_Parameters
     [MemberData(nameof(ParameterEndpoints.NonPrivilegedRoleData), MemberType = typeof(ParameterEndpoints))]
     public async Task Then_Reading_LocationTypes_Returns_Ok(string role)
     {
-        var client = await _apiFixture.CreateDynamicClient(role);
+        using var client = await _apiFixture.CreateDynamicClient(role);
 
-        var response = await ApiFixture.Get(client, "/v1/locationtypes");
+        using var response = await ApiFixture.Get(client, "/v1/locationtypes");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
@@ -54,9 +54,9 @@ public class Given_Any_Role_Reading_Parameters
     [MemberData(nameof(ParameterEndpoints.ListRouteData), MemberType = typeof(ParameterEndpoints))]
     public async Task Then_Reading_Returns_Ok_For_Regelgevingbeheerder(string route)
     {
-        var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Regelgevingbeheerder);
+        using var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Regelgevingbeheerder);
 
-        var response = await ApiFixture.Get(client, $"/v1/{route}");
+        using var response = await ApiFixture.Get(client, $"/v1/{route}");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
@@ -64,9 +64,9 @@ public class Given_Any_Role_Reading_Parameters
     [Fact]
     public async Task Then_Reading_FormalFrameworks_Returns_Ok_For_Authenticated_User()
     {
-        var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Regelgevingbeheerder);
+        using var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Regelgevingbeheerder);
 
-        var response = await ApiFixture.Get(client, "/v1/formalframeworks");
+        using var response = await ApiFixture.Get(client, "/v1/formalframeworks");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
@@ -74,9 +74,9 @@ public class Given_Any_Role_Reading_Parameters
     [Fact]
     public async Task Then_Reading_FormalFrameworks_Returns_Ok_For_Anonymous_User()
     {
-        var client = _apiFixture.CreateAnonymousClient();
+        using var client = _apiFixture.CreateAnonymousClient();
 
-        var response = await ApiFixture.Get(client, "/v1/formalframeworks");
+        using var response = await ApiFixture.Get(client, "/v1/formalframeworks");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
@@ -87,13 +87,13 @@ public class Given_Any_Role_Reading_Parameters
         var regelgevingDbClassificationTypeId = _apiFixture.Configuration.Authorization.OrganisationClassificationTypeIdsOwnedByRegelgevingDbBeheerder.First();
         await _apiFixture.Create.CreateOrganisationClassificationType(regelgevingDbClassificationTypeId);
         var decentraalClassificationTypeId = await _apiFixture.Create.CreateOrganisationClassificationType(false);
-        var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Decentraalbeheerder);
+        using var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Decentraalbeheerder);
 
         var request = new HttpRequestMessage(
             HttpMethod.Get,
             $"/v1/organisationclassificationtypes?forOrganisationId={_apiFixture.DecentraalbeheerderOrganisationId}");
         request.Headers.Add("x-pagination", "none");
-        var response = await client.SendAsync(request);
+        using var response = await client.SendAsync(request);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         var items = JArray.Parse(await response.Content.ReadAsStringAsync());

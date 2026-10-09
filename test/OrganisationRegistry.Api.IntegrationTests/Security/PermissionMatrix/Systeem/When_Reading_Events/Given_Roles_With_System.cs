@@ -23,9 +23,9 @@ public class Given_Roles_With_System
     [InlineData(ApiFixture.Backoffice.Algemeenbeheerder)]
     public async Task Then_Returns_Ok(string role)
     {
-        var client = await _apiFixture.CreateDynamicClient(role);
+        using var client = await _apiFixture.CreateDynamicClient(role);
 
-        var response = await ApiFixture.Get(client, "/v1/events");
+        using var response = await ApiFixture.Get(client, "/v1/events");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }

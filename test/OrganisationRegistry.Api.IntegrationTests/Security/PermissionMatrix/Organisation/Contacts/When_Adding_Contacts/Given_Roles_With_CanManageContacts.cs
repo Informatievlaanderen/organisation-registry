@@ -21,12 +21,12 @@ public class Given_Roles_With_CanManageContacts
     [Fact]
     public async Task For_Algemeenbeheerder_Then_Returns_Created()
     {
-        var client = await _apiFixture.CreateAlgemeenbeheerderClient();
+        using var client = await _apiFixture.CreateAlgemeenbeheerderClient();
 
         var organisationId = _apiFixture.Fixture.Create<Guid>();
         await _apiFixture.Create.Organisation(organisationId, _apiFixture.Fixture.Create<string>());
 
-        var response = await ApiFixture.Post(
+        using var response = await ApiFixture.Post(
             client,
             $"/v1/organisations/{organisationId}/contacts",
             new AddOrganisationContactRequest

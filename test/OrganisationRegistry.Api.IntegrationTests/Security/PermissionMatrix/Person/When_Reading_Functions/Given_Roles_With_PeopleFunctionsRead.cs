@@ -28,11 +28,11 @@ public class Given_Roles_With_PeopleFunctionsRead
     [InlineData(ApiFixture.Backoffice.VoMedewerker)]
     public async Task Then_Returns_Ok(string role)
     {
-        var client = await _apiFixture.CreateDynamicClient(role);
+        using var client = await _apiFixture.CreateDynamicClient(role);
 
         var personId = await _apiFixture.Create.Person();
 
-        var response = await ApiFixture.Get(client, $"/v1/people/{personId}/functions");
+        using var response = await ApiFixture.Get(client, $"/v1/people/{personId}/functions");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }

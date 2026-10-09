@@ -22,9 +22,8 @@ public class Given_Roles_With_DelegationsRead
     [InlineData(ApiFixture.Backoffice.Algemeenbeheerder)]
     public async Task Then_Returns_Ok(string role)
     {
-        var client = await _apiFixture.CreateDynamicClient(role);
-
-        var response = await ApiFixture.Get(client, "/v1/manage/delegations");
+        using var client = await _apiFixture.CreateDynamicClient(role);
+        using var response = await ApiFixture.Get(client, "/v1/manage/delegations");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }

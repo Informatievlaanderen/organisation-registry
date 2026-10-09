@@ -32,11 +32,11 @@ public class Given_Algemeenbeheerder
     [Fact]
     public async Task For_Organisation_Not_Under_Vlimpers_Management_Then_Returns_OK()
     {
-        var client = await _apiFixture.CreateAlgemeenbeheerderClient();
+        using var client = await _apiFixture.CreateAlgemeenbeheerderClient();
 
         var organisationId = await CreateOrganisation();
 
-        var response = await UpdateOrganisation(client, organisationId);
+        using var response = await UpdateOrganisation(client, organisationId);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }

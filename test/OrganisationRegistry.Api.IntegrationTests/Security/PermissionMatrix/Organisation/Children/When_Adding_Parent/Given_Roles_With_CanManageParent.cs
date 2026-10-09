@@ -34,12 +34,12 @@ public class Given_Roles_With_CanManageParent
     [Fact]
     public async Task For_Algemeenbeheerder_Then_Returns_Created()
     {
-        var client = await _apiFixture.CreateAlgemeenbeheerderClient();
+        using var client = await _apiFixture.CreateAlgemeenbeheerderClient();
 
         var childOrganisationId = await CreateOrganisation();
         var parentOrganisationId = await CreateOrganisation();
 
-        var response = await AddParent(client, childOrganisationId, parentOrganisationId);
+        using var response = await AddParent(client, childOrganisationId, parentOrganisationId);
 
         response.StatusCode.Should().Be(HttpStatusCode.Created);
     }
@@ -47,13 +47,13 @@ public class Given_Roles_With_CanManageParent
     [Fact]
     public async Task For_Decentraalbeheerder_WithOwnOrganisation_Then_Returns_Created()
     {
-        var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Decentraalbeheerder);
+        using var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Decentraalbeheerder);
 
         // Verse (niet-Vlimpers) ouder; het kind is de eigen organisatie in scope.
         var parentOrganisationId = await CreateOrganisation();
 
         var (validFrom, validTo) = UniqueFutureValidity();
-        var response = await AddParent(
+        using var response = await AddParent(
             client,
             _apiFixture.DecentraalbeheerderOrganisationId,
             parentOrganisationId,
@@ -72,12 +72,12 @@ public class Given_Roles_With_CanManageParent
     [Fact]
     public async Task For_Decentraalbeheerder_WithOrganisationOutsideScope_Then_Returns_Forbidden()
     {
-        var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Decentraalbeheerder);
+        using var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Decentraalbeheerder);
 
         var childOrganisationId = await CreateOrganisation();
         var parentOrganisationId = await CreateOrganisation();
 
-        var response = await AddParent(client, childOrganisationId, parentOrganisationId);
+        using var response = await AddParent(client, childOrganisationId, parentOrganisationId);
 
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }

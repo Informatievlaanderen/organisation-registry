@@ -22,7 +22,7 @@ public class Given_Roles_With_CanManageContacts
     [Fact]
     public async Task For_Algemeenbeheerder_Then_Returns_Created()
     {
-        var client = await _apiFixture.CreateAlgemeenbeheerderClient();
+        using var client = await _apiFixture.CreateAlgemeenbeheerderClient();
 
         var organisationId = _apiFixture.Fixture.Create<Guid>();
         var entityId = _apiFixture.Fixture.Create<Guid>();
@@ -30,14 +30,14 @@ public class Given_Roles_With_CanManageContacts
 
         await ExecuteCreateRequest(client, organisationId, entityId);
 
-        var response = await ExecuteUpdateRequest(client, organisationId, entityId);
+        using var response = await ExecuteUpdateRequest(client, organisationId, entityId);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
     private async Task ExecuteCreateRequest(HttpClient client, Guid organisationId, Guid entityId)
     {
-        await ApiFixture.Post(
+        using var _ = await ApiFixture.Post(
             client,
             $"/v1/organisations/{organisationId}/contacts",
             new AddOrganisationContactRequest

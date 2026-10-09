@@ -11,6 +11,7 @@ using System.Net.Http.Headers;
 using System.Reflection;
 using System.Security.Claims;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoFixture;
 using AutoFixture.Kernel;
@@ -23,14 +24,15 @@ using Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using OrganisationRegistry.Api.Security;
-using OrganisationRegistry.Infrastructure;
 using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Configuration;
 
 using Xunit;
 
-public class ApiFixture : IDisposable, IAsyncLifetime
+public sealed class ApiFixture : IDisposable, IAsyncLifetime
 {
+    private readonly CompositeDisposable _disposables = new();
+    private readonly SocketsHttpHandler _handler;
     private const string DefaultApiEndpoint = "http://api.localhost:9080";
     private const string DefaultKeycloakAuthority = "http://keycloak.localhost:9080/realms/wegwijs";
     private const string ApiBaseUrlConfigurationKey = "ApiIntegrationTests:ApiBaseUrl";
@@ -147,6 +149,12 @@ public class ApiFixture : IDisposable, IAsyncLifetime
 
     public ApiFixture()
     {
+        _handler = new SocketsHttpHandler()
+        {
+            UseCookies = false, // no shared cookie jar between personas
+            AllowAutoRedirect = false, // assert the real status code, not whatever the redirect chain ends in
+            UseProxy = false, // talk straight to localhost, ignore HTTP(S)_PROXY on dev/CI machines
+        }.DisposeWith(_disposables);
         var maybeRootDirectory = Directory
             .GetParent(typeof(Startup).GetTypeInfo().Assembly.Location)?.Parent?.Parent?.Parent?.FullName;
         if (maybeRootDirectory is not { } rootDirectory)
@@ -232,7 +240,7 @@ public class ApiFixture : IDisposable, IAsyncLifetime
     /// </summary>
     public HttpClient CreateAnonymousClient()
     {
-        var httpClientFor = new HttpClient { BaseAddress = new Uri(ApiEndpoint) };
+        var httpClientFor = new HttpClient(_handler, disposeHandler: false) { BaseAddress = new Uri(ApiEndpoint) }.DisposeWith(_disposables);
         httpClientFor.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         return httpClientFor;
     }
@@ -268,14 +276,14 @@ public class ApiFixture : IDisposable, IAsyncLifetime
         => await httpClient.DeleteAsync(route);
 
     private HttpClient CreateApiClient(string token)
-        => new()
+        => new HttpClient(_handler, disposeHandler: false)
         {
             BaseAddress = new Uri(ApiEndpoint),
             DefaultRequestHeaders =
             {
                 Authorization = new AuthenticationHeaderValue("Bearer", token),
             },
-        };
+        }.DisposeWith(_disposables);
 
     private static IOrganisationRegistryConfiguration CreateOrganisationRegistryConfiguration(IConfigurationRoot configurationRoot)
     {
@@ -685,7 +693,7 @@ public class ApiFixture : IDisposable, IAsyncLifetime
     private async Task<string> GetDirectGrantToken(string username, string password)
     {
         var tokenClient = new TokenClient(
-            () => new HttpClient(),
+            () => new HttpClient(_handler, disposeHandler: false).DisposeWith(_disposables),
             new TokenClientOptions
             {
                 Address = KeycloakTokenEndpoint,
@@ -716,7 +724,7 @@ public class ApiFixture : IDisposable, IAsyncLifetime
     {
         var address = KeycloakTokenEndpoint;
         var tokenClient = new TokenClient(
-            () => new HttpClient(),
+            () => new HttpClient(_handler, disposeHandler: false).DisposeWith(_disposables),
             new TokenClientOptions
             {
                 Address = address,
@@ -801,10 +809,10 @@ public class ApiFixture : IDisposable, IAsyncLifetime
 
     public async Task RemoveAndVerify(string baseRoute, Guid id)
     {
-        var deleteResponse = await Delete(HttpClient, $"{baseRoute}/{id}");
+        using var deleteResponse = await Delete(HttpClient, $"{baseRoute}/{id}");
         await VerifyStatusCode(deleteResponse, HttpStatusCode.NoContent);
 
-        var getResponse = await Get(HttpClient, $"{baseRoute}/{id}");
+        using var getResponse = await Get(HttpClient, $"{baseRoute}/{id}");
         await VerifyStatusCode(getResponse, HttpStatusCode.NotFound);
     }
 
@@ -843,7 +851,7 @@ public class ApiFixture : IDisposable, IAsyncLifetime
 
     public async Task GetListAndVerify(string route)
     {
-        var getResponse = await Get(HttpClient, $"{route}");
+        using var getResponse = await Get(HttpClient, $"{route}");
         getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var deserializedResponse = await DeserializeAsList(getResponse);
@@ -854,26 +862,26 @@ public class ApiFixture : IDisposable, IAsyncLifetime
 
     public async Task CreateWithInvalidDataAndVerifyBadRequest(string route)
     {
-        var createResponse = await Post(HttpClient, $"{route}", "prut");
+        using var createResponse = await Post(HttpClient, $"{route}", "prut");
         await VerifyStatusCode(createResponse, HttpStatusCode.BadRequest);
     }
 
     public async Task UpdateWithInvalidDataAndVerifyBadRequest(string baseRoute, Guid id)
     {
-        var updateResponse = await Put(HttpClient, $"{baseRoute}/{id}", "prut");
+        using var updateResponse = await Put(HttpClient, $"{baseRoute}/{id}", "prut");
         await VerifyStatusCode(updateResponse, HttpStatusCode.BadRequest);
     }
 
     public async Task CreateAndVerify<T>(string baseRoute, T body, Action<Dictionary<string, object>, T> verifyResult)
         where T : notnull
     {
-        var createResponse = await Post(
+        using var createResponse = await Post(
             HttpClient,
             baseRoute,
             body);
         await VerifyStatusCode(createResponse, HttpStatusCode.Created);
 
-        var getResponse = await Get(HttpClient, createResponse.Headers.Location!.ToString());
+        using var getResponse = await Get(HttpClient, createResponse.Headers.Location!.ToString());
         await VerifyStatusCode(getResponse, HttpStatusCode.OK);
 
         var responseBody = await Deserialize(getResponse);
@@ -883,13 +891,13 @@ public class ApiFixture : IDisposable, IAsyncLifetime
     public async Task UpdateAndVerify<T>(string baseRoute, Guid id, T body, Action<Dictionary<string, object>, T> verifyResult)
         where T : notnull
     {
-        var updateResponse = await Put(
+        using var updateResponse = await Put(
             HttpClient,
             $"{baseRoute}/{id}",
             body);
         await VerifyStatusCode(updateResponse, HttpStatusCode.OK);
 
-        var getResponse = await Get(HttpClient, $"{baseRoute}/{id}");
+        using var getResponse = await Get(HttpClient, $"{baseRoute}/{id}");
         await VerifyStatusCode(getResponse, HttpStatusCode.OK);
 
         var responseBody = await Deserialize(getResponse);
@@ -927,16 +935,9 @@ public class ApiFixture : IDisposable, IAsyncLifetime
         return responseBody;
     }
 
-    protected virtual void Dispose(bool disposing)
-    {
-        if (disposing)
-            HttpClient.Dispose();
-    }
-
     public void Dispose()
     {
-        GC.SuppressFinalize(this);
-        Dispose(true);
+        _disposables?.Dispose();
     }
 
     public Task DisposeAsync()

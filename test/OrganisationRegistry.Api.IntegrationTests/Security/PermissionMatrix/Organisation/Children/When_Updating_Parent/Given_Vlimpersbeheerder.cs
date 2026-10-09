@@ -34,9 +34,9 @@ public class Given_Vlimpersbeheerder
         var parentOrganisationId = await CreateVlimpersManagedOrganisation();
         var organisationParentId = await AddParentAsAlgemeenbeheerder(childOrganisationId, parentOrganisationId);
 
-        var client = await _apiFixture.CreateBackofficeUserClientFor(ApiFixture.Backoffice.Vlimpersbeheerder);
+        using var client = await _apiFixture.CreateBackofficeUserClientFor(ApiFixture.Backoffice.Vlimpersbeheerder);
 
-        var response = await UpdateParent(client, childOrganisationId, organisationParentId, parentOrganisationId);
+        using var response = await UpdateParent(client, childOrganisationId, organisationParentId, parentOrganisationId);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
@@ -48,9 +48,9 @@ public class Given_Vlimpersbeheerder
         var parentOrganisationId = await CreateOrganisation();
         var organisationParentId = await AddParentAsAlgemeenbeheerder(childOrganisationId, parentOrganisationId);
 
-        var client = await _apiFixture.CreateBackofficeUserClientFor(ApiFixture.Backoffice.Vlimpersbeheerder);
+        using var client = await _apiFixture.CreateBackofficeUserClientFor(ApiFixture.Backoffice.Vlimpersbeheerder);
 
-        var response = await UpdateParent(client, childOrganisationId, organisationParentId, parentOrganisationId);
+        using var response = await UpdateParent(client, childOrganisationId, organisationParentId, parentOrganisationId);
 
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
@@ -66,8 +66,8 @@ public class Given_Vlimpersbeheerder
     {
         var organisationId = await CreateOrganisation();
 
-        var algemeenbeheerderClient = await _apiFixture.CreateAlgemeenbeheerderClient();
-        var response = await ApiFixture.Patch(
+        using var algemeenbeheerderClient = await _apiFixture.CreateAlgemeenbeheerderClient();
+        using var response = await ApiFixture.Patch(
             algemeenbeheerderClient,
             $"/v1/organisations/{organisationId}/vlimpers",
             new VlimpersRequest { VlimpersManagement = true });
@@ -79,9 +79,9 @@ public class Given_Vlimpersbeheerder
     private async Task<Guid> AddParentAsAlgemeenbeheerder(Guid childOrganisationId, Guid parentOrganisationId)
     {
         var organisationParentId = _apiFixture.Fixture.Create<Guid>();
-        var algemeenbeheerderClient = await _apiFixture.CreateAlgemeenbeheerderClient();
+        using var algemeenbeheerderClient = await _apiFixture.CreateAlgemeenbeheerderClient();
 
-        var response = await ApiFixture.Post(
+        using var response = await ApiFixture.Post(
             algemeenbeheerderClient,
             $"/v1/organisations/{childOrganisationId}/parents",
             new AddOrganisationParentRequest

@@ -29,14 +29,14 @@ public class Given_Roles_Without_CanManageParent
     [InlineData(ApiFixture.Backoffice.VoMedewerker)]
     public async Task Then_Returns_Forbidden(string role)
     {
-        var client = await _apiFixture.CreateDynamicClient(role);
+        using var client = await _apiFixture.CreateDynamicClient(role);
 
         var childOrganisationId = _apiFixture.Fixture.Create<Guid>();
         await _apiFixture.Create.Organisation(childOrganisationId, _apiFixture.Fixture.Create<string>());
         var parentOrganisationId = _apiFixture.Fixture.Create<Guid>();
         await _apiFixture.Create.Organisation(parentOrganisationId, _apiFixture.Fixture.Create<string>());
 
-        var response = await ApiFixture.Post(
+        using var response = await ApiFixture.Post(
             client,
             $"/v1/organisations/{childOrganisationId}/parents",
             new AddOrganisationParentRequest

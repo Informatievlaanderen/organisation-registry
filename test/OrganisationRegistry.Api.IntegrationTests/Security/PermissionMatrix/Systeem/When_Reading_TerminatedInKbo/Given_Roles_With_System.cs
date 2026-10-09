@@ -27,7 +27,7 @@ public class Given_Roles_With_System
     {
         var client = await _apiFixture.CreateDynamicClient(role);
 
-        var response = await ApiFixture.Get(client, "/v1/organisations/kbo/terminated");
+        using var response = await ApiFixture.Get(client, "/v1/organisations/kbo/terminated");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }

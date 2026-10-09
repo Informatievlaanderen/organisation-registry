@@ -23,7 +23,7 @@ public class Given_Roles_Without_CanManageFormalFrameworks
     [InlineData(ApiFixture.Backoffice.VoMedewerker)]
     public async Task Then_Returns_Forbidden(string role)
     {
-        var client = await _apiFixture.CreateDynamicClient(role);
+        using var client = await _apiFixture.CreateDynamicClient(role);
 
         var organisationId = _apiFixture.Fixture.Create<Guid>();
         await _apiFixture.Create.Organisation(organisationId, _apiFixture.Fixture.Create<string>());
@@ -33,7 +33,7 @@ public class Given_Roles_Without_CanManageFormalFrameworks
         var parentOrganisationId = _apiFixture.Fixture.Create<Guid>();
         await _apiFixture.Create.Organisation(parentOrganisationId, _apiFixture.Fixture.Create<string>());
 
-        var response = await ApiFixture.Post(
+        using var response = await ApiFixture.Post(
             client,
             $"/v1/organisations/{organisationId}/formalframeworks",
             new AddOrganisationFormalFrameworkRequest()
