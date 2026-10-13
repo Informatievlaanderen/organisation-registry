@@ -73,7 +73,6 @@ public class BuildingPolicyTests
 
     [Theory]
     [InlineData(Role.RegelgevingBeheerder)]
-    [InlineData(Role.CjmBeheerder)]
     [InlineData(Role.OrgaanBeheerder)]
     [InlineData(Role.Orafin)]
     public void RolesWithoutPermissionAreNotAuthorized(Role role)

@@ -20,7 +20,6 @@ public class GivenTheCommandContainsABodyNumberThatIsAnEmptyString
 {
     [Theory]
     [InlineData(Role.AlgemeenBeheerder)]
-    [InlineData(Role.CjmBeheerder)]
     public async Task ThenANewBodyNumberIsGenerated(Role role)
     {
         var fixture = new Fixture();

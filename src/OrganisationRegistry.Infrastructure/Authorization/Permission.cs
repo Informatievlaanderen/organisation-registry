@@ -200,7 +200,7 @@ public enum Permission
     /// <summary>
     /// Add or update labels on an individual organisation
     /// (<c>OrganisationLabelCommandController</c>). Granted to
-    /// <see cref="Role.AlgemeenBeheerder"/>, <see cref="Role.CjmBeheerder"/>,
+    /// <see cref="Role.AlgemeenBeheerder"/>,
     /// <see cref="Role.VlimpersBeheerder"/>, and <see cref="Role.DecentraalBeheerder"/>.
     /// Distinct from <see cref="CanManageLabels"/>, which gates master-data
     /// label-type administration and remains AB-only. Resource-level
@@ -218,7 +218,7 @@ public enum Permission
     /// <c>ui-permission-matrix.md</c>): all three are read-only, operational/
     /// diagnostic views intended for <see cref="Role.AlgemeenBeheerder"/> (and
     /// <see cref="Role.Developer"/>) only. Every other role — including
-    /// CjmBeheerder/Orafin, which previously had role-based access to
+    /// Orafin, which previously had role-based access to
     /// <c>kbo/terminated</c> — gets 403.
     /// </summary>
     System,

@@ -8,12 +8,11 @@ public class WellknownUsers
     public static User ScheduledCommandsService => Create("ScheduledCommandsService", Permission.CanRunScheduledJobs);
     public static User SyncRemovedItemsService => Create("SyncRemovedItemsService", Permission.CanRunScheduledJobs);
     public static User KboSyncService => Create("KboSyncService", Permission.CanManageKbo);
-    // Permissions for client-credential users (TestClient/Cjm/Orafin) are
+    // Permissions for client-credential users (TestClien /Orafin) are
     // derived from the token's scopes via ScopePermissionMap (the single
     // source of truth for scope → permission translation), not hardcoded
     // here — callers pass the already-resolved PermissionSet in.
     public static User Orafin(PermissionSet permissions) => CreateWithPermissions("Orafin", "Edit Api", "Orafin Edit Api", permissions);
-    public static User Cjm(PermissionSet permissions) => CreateWithPermissions("Cjm", "Edit Api", "Cjm Edit Api", permissions);
     public static User TestClient(PermissionSet permissions) => CreateWithPermissions("TestClient", "TestClient", "TestClient", permissions);
 
     public static User Magda => Create("Magda", "Reregistrator", "Magda Reregistrator", Permission.CanManageKbo);

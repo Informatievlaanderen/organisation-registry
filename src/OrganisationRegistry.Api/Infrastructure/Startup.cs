@@ -320,35 +320,30 @@ public class Startup
                                 PolicyNames.Organisations,
                                 builder => builder.RequireClaim(
                                     AcmIdmConstants.Claims.Scope,
-                                    AcmIdmConstants.Scopes.CjmBeheerder,
                                     AcmIdmConstants.Scopes.TestClient));
 
                             options.AddPolicy(
                                 PolicyNames.BankAccounts,
                                 builder => builder.RequireClaim(
                                     AcmIdmConstants.Claims.Scope,
-                                    AcmIdmConstants.Scopes.CjmBeheerder,
                                     AcmIdmConstants.Scopes.TestClient));
 
                             options.AddPolicy(
                                 PolicyNames.OrganisationClassifications,
                                 builder => builder.RequireClaim(
                                     AcmIdmConstants.Claims.Scope,
-                                    AcmIdmConstants.Scopes.CjmBeheerder,
                                     AcmIdmConstants.Scopes.TestClient));
 
                             options.AddPolicy(
                                 PolicyNames.OrganisationContacts,
                                 builder => builder.RequireClaim(
                                     AcmIdmConstants.Claims.Scope,
-                                    AcmIdmConstants.Scopes.CjmBeheerder,
                                     AcmIdmConstants.Scopes.TestClient));
 
                             options.AddPolicy(
                                 PolicyNames.Keys,
                                 builder => builder.RequireClaim(
                                     AcmIdmConstants.Claims.Scope,
-                                    AcmIdmConstants.Scopes.CjmBeheerder,
                                     AcmIdmConstants.Scopes.OrafinBeheerder,
                                     AcmIdmConstants.Scopes.TestClient)
                             );

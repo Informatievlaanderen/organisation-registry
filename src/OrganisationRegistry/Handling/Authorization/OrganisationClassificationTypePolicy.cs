@@ -13,7 +13,7 @@ using Organisation.Exceptions;
 /// <see cref="ClassificationTypeContext"/> and an <see cref="OrganisationContext"/>.
 ///
 /// A holder of an unrestricted grant (e.g. AlgemeenBeheerder) always passes; a
-/// restricted holder (Cjm, Regelgeving, or DecentraalBeheerder) only passes when
+/// restricted holder (Regelgeving, or DecentraalBeheerder) only passes when
 /// the organisation and classificationtype id match the configured rules for that
 /// role.
 /// </summary>

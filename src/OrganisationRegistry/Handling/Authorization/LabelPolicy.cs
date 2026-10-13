@@ -12,7 +12,7 @@ using Organisation.Exceptions;
 /// <see cref="LabelContext"/> (the organisation's Vlimpers-management status and
 /// the labeltype ids involved) and an <see cref="OrganisationContext"/>.
 ///
-/// A holder of an unrestricted grant (e.g. AlgemeenBeheerder or CjmBeheerder)
+/// A holder of an unrestricted grant (e.g. AlgemeenBeheerder)
 /// always passes; a VlimpersBeheerder only passes when the organisation is under
 /// Vlimpers management AND every labeltype is Vlimpers-allowed; a
 /// DecentraalBeheerder passes for their own organisation unless it is under

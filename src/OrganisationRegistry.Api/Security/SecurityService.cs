@@ -39,7 +39,7 @@ public class SecurityService : ISecurityService
 
         var firstName = user.GetRequiredClaim(ClaimTypes.GivenName);
         var name = user.GetRequiredClaim(ClaimTypes.Surname);
-        
+
         // Support both JWT Bearer (ACM-IDM) and OAuth2Introspection (TokenExchange) authentication
         string cacheKey;
         if (user.Identity.AuthenticationType == "OAuth2Introspection")
@@ -88,15 +88,12 @@ public class SecurityService : ISecurityService
             .SelectMany(claim => claim.Value.Split(' ', StringSplitOptions.RemoveEmptyEntries))
             .ToImmutableHashSet();
 
-        // Client-credential tokens (TestClient/Cjm/Orafin) carry no name/acmId
+        // Client-credential tokens (TestClient/Orafin) carry no name/acmId
         // claims; their permissions are derived from the union of all scopes
         // on the token via ScopePermissionMap, which is the single source of
         // truth for scope → permission translation (see ClaimsExtension).
         if (scopes.Contains(AcmIdmConstants.Scopes.TestClient))
             return WellknownUsers.TestClient(ScopePermissionMap.For(scopes));
-
-        if (scopes.Contains(AcmIdmConstants.Scopes.CjmBeheerder))
-            return WellknownUsers.Cjm(ScopePermissionMap.For(scopes));
 
         if (scopes.Contains(AcmIdmConstants.Scopes.OrafinBeheerder))
             return WellknownUsers.Orafin(ScopePermissionMap.For(scopes));

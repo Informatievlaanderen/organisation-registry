@@ -28,7 +28,6 @@ public class Given_No_Role_Has_CanManageBankAccounts
     [InlineData(ApiFixture.Backoffice.Decentraalbeheerder)]
     [InlineData(ApiFixture.Backoffice.Orgaanbeheerder)]
     [InlineData(ApiFixture.Backoffice.Regelgevingbeheerder)]
-    [InlineData(ApiFixture.Backoffice.Cjmbeheerder)]
     [InlineData(ApiFixture.Backoffice.Orafinbeheerder)]
     public async Task Then_Returns_Forbidden(string role)
     {

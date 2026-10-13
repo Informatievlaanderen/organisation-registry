@@ -8,7 +8,7 @@ using Organisation.Exceptions;
 /// from) Vlimpers management. Access is driven entirely by the
 /// <see cref="Permission.CanManageVlimpers"/> permission, which is held only by
 /// AlgemeenBeheerder (and the equivalent admin scope). Toggling Vlimpers management is
-/// never delegated to a VlimpersBeheerder, DecentraalBeheerder or CjmBeheerder.
+/// never delegated to a VlimpersBeheerder, DecentraalBeheerder.
 /// </summary>
 public class VlimpersManagementPolicy : ISecurityPolicy
 {

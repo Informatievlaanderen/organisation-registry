@@ -73,31 +73,6 @@ public class CreateOrganisationOrganisationClassificationTests
         await ApiFixture.VerifyStatusCode(response, HttpStatusCode.Forbidden);
     }
 
-    [EnvVarIgnoreFact]
-    public async Task CannotCreateAsCjm()
-    {
-        await _apiFixture.Create.Organisation(_organisationId, _apiFixture.Fixture.Create<string>());
-
-        var organisationClassificationTypeId = _apiFixture.Configuration.Authorization.OrganisationClassificationTypeIdsOwnedByCjm.First();
-        var organisationClassificationId = await _apiFixture.Create.OrganisationClassification(organisationClassificationTypeId);
-
-        var response = await Create(await _apiFixture.CreateCjmClient(), organisationClassificationTypeId, organisationClassificationId);
-        await ApiFixture.VerifyStatusCode(response, HttpStatusCode.Forbidden);
-    }
-
-    [EnvVarIgnoreFact]
-    public async Task CannotUpdateAsCjm()
-    {
-        await _apiFixture.Create.Organisation(_organisationId, _apiFixture.Fixture.Create<string>());
-
-        var organisationClassificationTypeId = _apiFixture.Configuration.Authorization.OrganisationClassificationTypeIdsOwnedByCjm.First();
-        var organisationClassificationId = await _apiFixture.Create.OrganisationClassification(organisationClassificationTypeId);
-        var organisationOrganisationClassificationId = await _apiFixture.Create.OrganisationOrganisationClassification(_organisationId, organisationClassificationTypeId, organisationClassificationId);
-
-        var response = await Update(await _apiFixture.CreateCjmClient(), organisationOrganisationClassificationId, organisationClassificationTypeId, organisationClassificationId);
-        await ApiFixture.VerifyStatusCode(response, HttpStatusCode.Forbidden);
-    }
-
     private async Task<Guid> CreateAndVerify(HttpClient httpClient, Guid organisationClassificationTypeId, Guid organisationClassificationId)
     {
         var response = await Create(httpClient, organisationClassificationTypeId, organisationClassificationId);

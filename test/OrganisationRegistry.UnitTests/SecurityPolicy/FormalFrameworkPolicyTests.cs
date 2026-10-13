@@ -68,16 +68,6 @@ public class FormalFrameworkPolicyTests
     }
 
     [Fact]
-    public void CjmBeheerderIsNotAuthorizedForFormalFrameworks()
-    {
-        var user = UserWithRoles(Role.CjmBeheerder);
-
-        CreatePolicy(_fixture.Create<string>(), _otherFormalFrameworkId)
-            .Check(user)
-            .ShouldFailWith<InsufficientRights<FormalFrameworkPolicy>>();
-    }
-
-    [Fact]
     public void RegelgevingDbBeheerderIsAuthorizedForRegelgevingDbOwnedFormalFramework()
     {
         var user = UserWithRoles(Role.RegelgevingBeheerder);

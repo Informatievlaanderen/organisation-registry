@@ -101,7 +101,6 @@ public class ImportPolicyTests
     [Theory]
     [InlineData(Role.DecentraalBeheerder)]
     [InlineData(Role.RegelgevingBeheerder)]
-    [InlineData(Role.CjmBeheerder)]
     [InlineData(Role.Orafin)]
     [InlineData(Role.OrgaanBeheerder)]
     public void NonAdminNonVlimpersIsNotAuthorized(Role role)

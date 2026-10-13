@@ -25,7 +25,6 @@ public class Given_Roles_Without_DelegationsDelete
     [InlineData(ApiFixture.Backoffice.Vlimpersbeheerder)]
     [InlineData(ApiFixture.Backoffice.Orgaanbeheerder)]
     [InlineData(ApiFixture.Backoffice.Regelgevingbeheerder)]
-    [InlineData(ApiFixture.Backoffice.Cjmbeheerder)]
     [InlineData(ApiFixture.Backoffice.Orafinbeheerder)]
     [InlineData(ApiFixture.Backoffice.VoMedewerker)]
     public async Task Then_Returns_Forbidden(string role)

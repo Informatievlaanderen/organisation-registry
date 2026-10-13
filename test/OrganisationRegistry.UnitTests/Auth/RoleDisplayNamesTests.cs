@@ -22,8 +22,4 @@ public class RoleDisplayNamesTests
     [InlineData(Role.RegelgevingBeheerder, "Regelgevingbeheerder en deugdelijk bestuur beheerder")]
     public void Maps_application_roles_to_their_Dutch_display_name(Role role, string expectedDisplayName)
         => RoleDisplayNames.For(role).Should().Be(expectedDisplayName);
-
-    [Fact]
-    public void Falls_back_to_the_bare_enum_name_for_a_role_without_a_mapping()
-        => RoleDisplayNames.For(Role.CjmBeheerder).Should().Be("CjmBeheerder");
 }

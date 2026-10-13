@@ -36,7 +36,6 @@ public class CreateBankAccountNumberTests
     }
 
     [Theory(Skip = "Skip Bankaccounts")]
-    [InlineData(ApiFixture.CJM.Client, ApiFixture.CJM.Scope)]
     [InlineData(ApiFixture.Test.Client, ApiFixture.Test.Scope)]
     public async Task CanCreateAndUpdateAs(string client, string scope)
     {
@@ -53,71 +52,6 @@ public class CreateBankAccountNumberTests
         var updateResponse = await UpdateBankAccountNumber(httpClient, _organisationId, organisationBankaccountId, "BG72UNCR70001522734456");
 
         await ApiFixture.VerifyStatusCode(updateResponse, HttpStatusCode.OK);
-    }
-
-    [SkipBankAccounts]
-    public async Task AsCjmBeheerder_CannotCreateWithInvalidBic()
-    {
-        await _apiFixture.Create.Organisation(_organisationId, TestOrganisationForCreatebankaccountnumbers);
-
-        var client = await _apiFixture.CreateMachine2MachineClientFor(ApiFixture.CJM.Client, ApiFixture.CJM.Scope);
-
-        var response = await CreateBankAccountNumber(client, _organisationId, "BE86001197741650", "NOT_A_BIC");
-
-        await ApiFixture.VerifyStatusCode(response, HttpStatusCode.BadRequest);
-    }
-
-    [SkipBankAccounts]
-    public async Task AsCjmBeheerder_CannotCreateWithInvalidFrom_InvalidTo()
-    {
-        await _apiFixture.Create.Organisation(_organisationId, TestOrganisationForCreatebankaccountnumbers);
-
-        var response = await CreateBankAccountNumber(await _apiFixture.CreateCjmClient(), _organisationId, "BE86001197741650", "NOT_A_BIC", invalidValidFrom: "XX", invalidValidTo: "YY");
-
-        await ApiFixture.VerifyStatusCode(response, HttpStatusCode.BadRequest);
-
-        _testOutputHelper.WriteLine(await response.Content.ReadAsStringAsync());
-    }
-
-    [SkipBankAccounts]
-    public async Task AsCjmBeheerder_CannotCreateWithEmptyOrganisationId()
-    {
-        await _apiFixture.Create.Organisation(_organisationId, TestOrganisationForCreatebankaccountnumbers);
-
-        var response = await CreateBankAccountNumber(await _apiFixture.CreateCjmClient(), Guid.Empty, "BE86001197741650", "NOT_A_BIC");
-
-        await ApiFixture.VerifyStatusCode(response, HttpStatusCode.BadRequest);
-
-        _testOutputHelper.WriteLine(await response.Content.ReadAsStringAsync());
-    }
-
-    [SkipBankAccounts]
-    public async Task AsCjmBeheerder_CannotCreateWithInvalidOrganisationId()
-    {
-        await _apiFixture.Create.Organisation(_organisationId, TestOrganisationForCreatebankaccountnumbers);
-
-        var response = await CreateBankAccountNumber(await _apiFixture.CreateCjmClient(), Guid.Empty, "BE86001197741650", "NOT_A_BIC", invalidOrganisationId: "XX");
-
-        await ApiFixture.VerifyStatusCode(response, HttpStatusCode.NotFound);
-
-        _testOutputHelper.WriteLine(await response.Content.ReadAsStringAsync());
-    }
-
-    [SkipBankAccounts]
-    public async Task AsCjmBeheerder_CannotUpdateWithInvalidFrom_InvalidTo()
-    {
-        await _apiFixture.Create.Organisation(_organisationId, TestOrganisationForCreatebankaccountnumbers);
-
-        var httpClient = await _apiFixture.CreateCjmClient();
-
-        var response = await CreateBankAccountNumber(httpClient, _organisationId, "BE86001197741650", "GEBABEBB");
-        var organisationBankaccountId = ApiFixture.GetIdFrom(response.Headers);
-
-        var updateResponse = await UpdateBankAccountNumber(httpClient, _organisationId, organisationBankaccountId, "BG72UNCR70001522734456", invalidValidFrom: "XX", invalidValidTo: "YY");
-
-        await ApiFixture.VerifyStatusCode(updateResponse, HttpStatusCode.BadRequest);
-
-        _testOutputHelper.WriteLine(await updateResponse.Content.ReadAsStringAsync());
     }
 
     [SkipBankAccounts]

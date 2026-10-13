@@ -31,8 +31,6 @@ public class Given_Roles_Without_CanImport
     [InlineData(ApiFixture.Backoffice.Orgaanbeheerder, "organisation-terminations")]
     [InlineData(ApiFixture.Backoffice.Regelgevingbeheerder, "organisation-creations")]
     [InlineData(ApiFixture.Backoffice.Regelgevingbeheerder, "organisation-terminations")]
-    [InlineData(ApiFixture.Backoffice.Cjmbeheerder, "organisation-creations")]
-    [InlineData(ApiFixture.Backoffice.Cjmbeheerder, "organisation-terminations")]
     [InlineData(ApiFixture.Backoffice.Orafinbeheerder, "organisation-creations")]
     [InlineData(ApiFixture.Backoffice.Orafinbeheerder, "organisation-terminations")]
     [InlineData(ApiFixture.Backoffice.VoMedewerker, "organisation-creations")]

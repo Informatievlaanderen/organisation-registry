@@ -10,7 +10,7 @@ using Xunit;
 
 /// <summary>
 /// Enkel AlgemeenBeheerder bezit <c>CanCreateOrganisations</c>. Alle andere
-/// rollen — inclusief CjmBeheerder, VlimpersBeheerder en DecentraalBeheerder,
+/// rollen — inclusief VlimpersBeheerder en DecentraalBeheerder,
 /// die elders wel organisatiegebonden rechten hebben — krijgen 403 terug bij
 /// het registreren van een top-level organisatie.
 /// </summary>
@@ -25,7 +25,6 @@ public class Given_Roles_Without_CanCreateOrganisations
     }
 
     [Theory]
-    [InlineData(ApiFixture.Backoffice.Cjmbeheerder)]
     [InlineData(ApiFixture.Backoffice.Vlimpersbeheerder)]
     [InlineData(ApiFixture.Backoffice.Decentraalbeheerder)]
     [InlineData(ApiFixture.Backoffice.Regelgevingbeheerder)]

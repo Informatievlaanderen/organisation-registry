@@ -63,12 +63,6 @@ public sealed class ApiFixture : IDisposable, IAsyncLifetime
         public const string Scope = AcmIdmConstants.Scopes.OrafinBeheerder;
     }
 
-    public struct CJM
-    {
-        public const string Client = "cjmClient";
-        public const string Scope = AcmIdmConstants.Scopes.CjmBeheerder;
-    }
-
     public struct Test
     {
         public const string Client = "testClient";
@@ -91,7 +85,6 @@ public sealed class ApiFixture : IDisposable, IAsyncLifetime
         public const string Decentraalbeheerder = "decentraalbeheerder";
         public const string Orgaanbeheerder = "organen";
         public const string Regelgevingbeheerder = "regelgeving";
-        public const string Cjmbeheerder = "cjmbeheerder";
         public const string Orafinbeheerder = "orafinbeheerder";
         public const string VoMedewerker = "vomedewerker";
     }
@@ -103,7 +96,6 @@ public sealed class ApiFixture : IDisposable, IAsyncLifetime
     public static string GetClientSecret(string clientId)
         => clientId switch
         {
-            CJM.Client => "cjm-client-secret-2024",
             Orafin.Client => "orafin-client-secret-2024",
             Test.Client => "test-client-secret-2024",
             Backoffice.Client => "nuxt-bff-secret",
@@ -204,9 +196,6 @@ public sealed class ApiFixture : IDisposable, IAsyncLifetime
         await EnsureParameterExists("keytypes", Configuration.Authorization.KeyIdsAllowedOnlyForOrafin.First(), "orafin key type");
         await EnsureImportedDataIsReady();
     }
-
-    public async Task<HttpClient> CreateCjmClient()
-        => await CreateMachine2MachineClientFor(CJM.Client, CJM.Scope);
 
     public async Task<HttpClient> CreateOrafinClient()
         => await CreateMachine2MachineClientFor(Orafin.Client, Orafin.Scope);

@@ -266,31 +266,6 @@ public class OrganisationFormalFrameworksPermissionTests
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
 
-    /// <summary>
-    /// Cjmbeheerder beschikt niet over <see cref="Permission.CanManageFormalFrameworks" />.
-    /// </summary>
-    [Fact]
-    public async Task Cjmbeheerder_CannotManageFormalFrameworks()
-    {
-        var client = await _apiFixture.CreateBackofficeUserClientFor(ApiFixture.Backoffice.Cjmbeheerder);
-
-        var organisationId = _apiFixture.Fixture.Create<Guid>();
-        await _apiFixture.Create.Organisation(organisationId, _apiFixture.Fixture.Create<string>());
-        var parentOrganisationId = _apiFixture.Fixture.Create<Guid>();
-        await _apiFixture.Create.Organisation(parentOrganisationId, _apiFixture.Fixture.Create<string>());
-
-        var formalFrameworkCategoryId = await _apiFixture.Create.FormalFrameworkCategory();
-        var formalFrameworkId = await _apiFixture.Create.FormalFramework(formalFrameworkCategoryId);
-
-        var response = await PostAddFormalFramework(
-            client,
-            organisationId,
-            parentOrganisationId,
-            formalFrameworkId);
-
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
-    }
-
     private async Task<HttpResponseMessage> PostAddFormalFramework(
         HttpClient client,
         Guid organisationId,

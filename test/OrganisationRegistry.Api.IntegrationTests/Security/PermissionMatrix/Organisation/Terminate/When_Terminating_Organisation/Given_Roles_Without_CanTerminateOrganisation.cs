@@ -10,7 +10,7 @@ using Xunit;
 
 /// <summary>
 /// Enkel AlgemeenBeheerder en Developer bezitten <c>CanTerminateOrganisation</c>.
-/// Alle andere rollen — inclusief CjmBeheerder, VlimpersBeheerder en
+/// Alle andere rollen — VlimpersBeheerder en
 /// DecentraalBeheerder, die elders wel organisatiegebonden rechten hebben —
 /// krijgen 403 terug bij het beëindigen van een organisatie.
 /// </summary>
@@ -25,7 +25,6 @@ public class Given_Roles_Without_CanTerminateOrganisation
     }
 
     [Theory]
-    [InlineData(ApiFixture.Backoffice.Cjmbeheerder)]
     [InlineData(ApiFixture.Backoffice.Vlimpersbeheerder)]
     [InlineData(ApiFixture.Backoffice.Decentraalbeheerder)]
     [InlineData(ApiFixture.Backoffice.Regelgevingbeheerder)]

@@ -32,7 +32,6 @@ public class PeoplePolicyTests
     [InlineData(Role.DecentraalBeheerder)]
     [InlineData(Role.VlimpersBeheerder)]
     [InlineData(Role.RegelgevingBeheerder)]
-    [InlineData(Role.CjmBeheerder)]
     [InlineData(Role.Orafin)]
     [InlineData(Role.OrgaanBeheerder)]
     public void NonAdminIsNotAuthorized(Role role)

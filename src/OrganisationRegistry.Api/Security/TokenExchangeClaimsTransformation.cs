@@ -53,9 +53,6 @@ public class TokenExchangeClaimsTransformation : IClaimsTransformation
             if (roles.Any(r => r.Contains(AcmIdmConstants.Roles.OrgaanBeheerder)))
                 AddRoleClaim(identity, Role.OrgaanBeheerder);
 
-            if (roles.Any(r => r.Contains(AcmIdmConstants.Roles.CjmBeheerder)))
-                AddRoleClaim(identity, Role.CjmBeheerder);
-
             if (roles.Any(r => r.Contains(AcmIdmConstants.Roles.RegelgevingBeheerder)))
                 AddRoleClaim(identity, Role.RegelgevingBeheerder);
 
