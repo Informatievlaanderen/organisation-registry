@@ -93,7 +93,6 @@ jobs:
           ElasticSearch__ReadConnectionString: http://opensearch.localhost:9080/
           ElasticSearch__WriteConnectionString: http://opensearch.localhost:9080/
           TIMEOUT_SECONDS: 300
-          DOTNET_TEST_LOGGER: console
         run: ./scripts/run-tilt-premerge-tests.sh
 
       - name: Dump Tilt diagnostics
@@ -104,6 +103,13 @@ jobs:
           KUBECONFIG=.kubeconfig kubectl get pods -n wegwijs-demo -o wide || true
           KUBECONFIG=.kubeconfig kubectl get events -n wegwijs-demo --sort-by=.lastTimestamp || true
           KUBECONFIG=.kubeconfig kubectl logs -n wegwijs-demo deploy/api --tail=500 || true
+
+      - name: Archive TestResults
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report
+          path: ./TestResults/*.html
 
       - name: Stop Tilt stack
         if: always()

@@ -76,53 +76,11 @@ jobs:
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-
-  unit-tests:
-    if: github.repository_owner == 'Informatievlaanderen'
-    name: Run Unit Tests
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-
-    strategy:
-      fail-fast: false
-      matrix:
-        projects:
-          [
-            "test/OrganisationRegistry.KboMutations.UnitTests",
-            "test/OrganisationRegistry.UnitTests"
-          ]
-
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
-      - name: Setup .NET Core
-        uses: ./.github/actions/setup-dotnet
-        with:
-          version: ${{ secrets.VBR_DOTNET_VERSION }}
-
-      - name: Run tests (no cluster needed)
-        shell: bash
-        run: |
-          dotnet tool restore
-          dotnet restore
-          dotnet test "${{ matrix.projects }}" --no-restore --logger html
-
   build:
     if: github.repository_owner == 'Informatievlaanderen'
     name: Run Tests
     runs-on: ubuntu-latest
     timeout-minutes: 75
-
-    strategy:
-      fail-fast: false
-      matrix:
-        projects:
-          [
-            "test/OrganisationRegistry.Api.IntegrationTests",
-            "test/OrganisationRegistry.ElasticSearch.Tests",
-            "test/OrganisationRegistry.SqlServer.IntegrationTests"
-          ]
 
     steps:
       - name: Delete huge unnecessary tools folder
@@ -168,7 +126,7 @@ jobs:
           ElasticSearch__ReadConnectionString: http://opensearch.localhost:9080/
           ElasticSearch__WriteConnectionString: http://opensearch.localhost:9080/
           TIMEOUT_SECONDS: 300
-        run: ./scripts/run-tilt-premerge-tests.sh "${{ matrix.projects }}"
+        run: ./scripts/run-tilt-premerge-tests.sh
 
       - name: Dump Tilt diagnostics
         if: failure()
@@ -178,6 +136,13 @@ jobs:
           KUBECONFIG=.kubeconfig kubectl get pods -n wegwijs-demo -o wide || true
           KUBECONFIG=.kubeconfig kubectl get events -n wegwijs-demo --sort-by=.lastTimestamp || true
           KUBECONFIG=.kubeconfig kubectl logs -n wegwijs-demo deploy/api --tail=500 || true
+
+      - name: Archive TestResults
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report
+          path: ./TestResults/*.html
 
       - name: Stop Tilt stack
         if: always()
@@ -190,7 +155,7 @@ jobs:
     name: Notify Slack of Success
     runs-on: ubuntu-latest
 
-    needs: [build-backend, build-site, unit-tests, build]
+    needs: [build-backend, build-site, build]
 
     steps:
       - name: Post to Slack
@@ -206,7 +171,7 @@ jobs:
     if: ${{ failure() }}
     name: Notify Slack of Failure
     runs-on: ubuntu-latest
-    needs: [build-backend, build-site, unit-tests, build]
+    needs: [build-backend, build-site, build]
     steps:
       - name: Post to Slack
         uses: slackapi/slack-github-action@v1.21.0
@@ -216,7 +181,6 @@ jobs:
             :x: Tilt pre-merge checks failed:
             build-backend: ${{ needs.build-backend.result }}
             build-site: ${{ needs.build-site.result }}
-            unit-tests: ${{ needs.unit-tests.result }}
             build: ${{ needs.build.result }}
             ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         env:
