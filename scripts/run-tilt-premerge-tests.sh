@@ -7,7 +7,6 @@ KUBECONFIG_FILE="${KUBECONFIG_FILE:-.kubeconfig}"
 TILT_LOG_FILE="${TILT_LOG_FILE:-tilt.log}"
 TIMEOUT_SECONDS="${TIMEOUT_SECONDS:-300}"
 TILT_CI_TIMEOUT="${TILT_CI_TIMEOUT:-45m}"
-DOTNET_TEST_LOGGER="${DOTNET_TEST_LOGGER:-html}"
 
 cd "${ROOT_DIR}"
 
@@ -40,20 +39,13 @@ KUBECONFIG="${KUBECONFIG_FILE}" tilt ci --timeout="${TILT_CI_TIMEOUT}" 2>&1 | te
 
 TIMEOUT_SECONDS="${TIMEOUT_SECONDS}" ./scripts/wait-for-tilt-api-integration-tests.sh
 
-if [ "$#" -gt 0 ]; then
-  test_projects=("$@")
-else
-  test_projects=(
-    "test/OrganisationRegistry.Api.IntegrationTests"
-    "test/OrganisationRegistry.ElasticSearch.Tests"
-    "test/OrganisationRegistry.KboMutations.UnitTests"
-    "test/OrganisationRegistry.SqlServer.IntegrationTests"
-    "test/OrganisationRegistry.UnitTests"
-  )
-fi
-
-for test_project in "${test_projects[@]}"; do
+rc=0
+for p in test/*/*.csproj; do
   ElasticSearch__ReadConnectionString="${ElasticSearch__ReadConnectionString:-http://opensearch.localhost:9080/}" \
   ElasticSearch__WriteConnectionString="${ElasticSearch__WriteConnectionString:-http://opensearch.localhost:9080/}" \
-  dotnet test "${test_project}" --no-restore --logger "${DOTNET_TEST_LOGGER}"
+  dotnet test "$p"
+    --no-restore
+    --logger "html;LogFileName=$(basename "$p" .csproj).html" \
+    --results-directory TestResults || rc=1
 done
+exit $rc
