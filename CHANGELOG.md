@@ -1,3 +1,10 @@
+## [1.340.5](https://github.com/informatievlaanderen/organisation-registry/compare/v1.340.4...v1.340.5) (2026-10-13)
+
+
+### Bug Fixes
+
+* ci pipeline testresults ([#1380](https://github.com/informatievlaanderen/organisation-registry/issues/1380)) ([4b8f7fc](https://github.com/informatievlaanderen/organisation-registry/commit/4b8f7fcf4b0aa68d66e81fa11fb7396346c5cf1e))
+
 ## [1.340.4](https://github.com/informatievlaanderen/organisation-registry/compare/v1.340.3...v1.340.4) (2026-10-09)
 
 
