@@ -41,11 +41,8 @@ TIMEOUT_SECONDS="${TIMEOUT_SECONDS}" ./scripts/wait-for-tilt-api-integration-tes
 
 rc=0
 for p in test/*/*.csproj; do
-  ElasticSearch__ReadConnectionString="${ElasticSearch__ReadConnectionString:-http://opensearch.localhost:9080/}" \
-  ElasticSearch__WriteConnectionString="${ElasticSearch__WriteConnectionString:-http://opensearch.localhost:9080/}" \
-  dotnet test "$p"
-    --no-restore
-    --logger "html;LogFileName=$(basename "$p" .csproj).html" \
-    --results-directory TestResults || rc=1
+  ElasticSearch__ReadConnectionString="${ElasticSearch__ReadConnectionString:-http://opensearch.localhost:9080/}"
+  ElasticSearch__WriteConnectionString="${ElasticSearch__WriteConnectionString:-http://opensearch.localhost:9080/}"
+  dotnet test "$p" --no-restore --logger "html;LogFileName=$(basename "$p" .csproj).html" --results-directory TestResults || rc=1
 done
 exit $rc
