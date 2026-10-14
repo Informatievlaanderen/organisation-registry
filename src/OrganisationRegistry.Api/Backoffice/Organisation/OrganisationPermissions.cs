@@ -74,6 +74,16 @@ public class OrganisationPermissions
     public bool CanManageVlimpers { get; }
 
     /// <summary>
+    /// Whether the caller may register (and therefore see/manage the "Organen"
+    /// tab for) at least one new body under this organisation. True for an
+    /// unrestricted <see cref="Permission.CanManageBodies"/> holder (AlgemeenBeheerder,
+    /// OrgaanBeheerder) or a <see cref="Role.DecentraalBeheerder"/> whose restricted
+    /// grant covers this organisation (their own organisation or a child
+    /// organisation in scope) — mirrors <see cref="RegisterBodyPolicy"/>.
+    /// </summary>
+    public bool CanManageBodies { get; }
+
+    /// <summary>
     /// Whether the caller may view (but not necessarily manage) this
     /// organisation's KBO-koppeling. True when the caller holds the
     /// standalone read-only <see cref="Permission.CanViewOrganisationKbo"/>
@@ -111,7 +121,8 @@ public class OrganisationPermissions
         bool canManageKbo,
         bool canManageVlimpers,
         bool canViewKbo,
-        bool canViewVlimpers)
+        bool canViewVlimpers,
+        bool canManageBodies)
     {
         CanEdit = canEdit;
         CanDelete = canDelete;
@@ -134,6 +145,7 @@ public class OrganisationPermissions
         CanManageVlimpers = canManageVlimpers;
         CanViewKbo = canViewKbo;
         CanViewVlimpers = canViewVlimpers;
+        CanManageBodies = canManageBodies;
     }
 
     public static OrganisationPermissions For(IUser user, string ovoNumber, bool isUnderVlimpersManagement)
@@ -209,6 +221,7 @@ public class OrganisationPermissions
             canManageKbo: Satisfies(Permission.CanManageKbo),
             canManageVlimpers: Satisfies(Permission.CanManageVlimpers),
             canViewKbo: Satisfies(Permission.CanViewOrganisationKbo),
-            canViewVlimpers: Satisfies(Permission.CanViewOrganisationVlimpers));
+            canViewVlimpers: Satisfies(Permission.CanViewOrganisationVlimpers),
+            canManageBodies: Satisfies(Permission.CanManageBodies, userContext, organisationContext));
     }
 }
