@@ -46,6 +46,7 @@ public class OrganisationPermissionsForVoMedewerkerTests
         permissions.CanManageVlimpers.Should().BeFalse();
         permissions.CanViewKbo.Should().BeFalse();
         permissions.CanViewVlimpers.Should().BeFalse();
+        permissions.CanManageBodies.Should().BeFalse();
     }
 
     [Fact]
@@ -61,5 +62,6 @@ public class OrganisationPermissionsForVoMedewerkerTests
         permissions.CanEdit.Should().BeFalse();
         permissions.CanManageLabels.Should().BeFalse();
         permissions.CanManageKeys.Should().BeFalse();
+        permissions.CanManageBodies.Should().BeFalse();
     }
 }
