@@ -1,3 +1,11 @@
+## [1.340.6](https://github.com/informatievlaanderen/organisation-registry/compare/v1.340.5...v1.340.6) (2026-10-14)
+
+
+### Bug Fixes
+
+* or-3114 add CanManageBodies to org ([e71830b](https://github.com/informatievlaanderen/organisation-registry/commit/e71830be8b0fbfa7e769d3ea605edeb04149f840))
+* or-3114 use restriction-aware KeyPolicy for RemoveOrganisationKey ([35b2c66](https://github.com/informatievlaanderen/organisation-registry/commit/35b2c66ac0b9bd9fad17645851aad7427e09d362))
+
 ## [1.340.5](https://github.com/informatievlaanderen/organisation-registry/compare/v1.340.4...v1.340.5) (2026-10-13)
 
 
