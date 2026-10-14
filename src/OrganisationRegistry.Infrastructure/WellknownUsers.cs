@@ -6,7 +6,20 @@ using Authorization;
 public class WellknownUsers
 {
     public static User ScheduledCommandsService => Create("ScheduledCommandsService", Permission.CanRunScheduledJobs);
-    public static User SyncRemovedItemsService => Create("SyncRemovedItemsService", Permission.CanRunScheduledJobs);
+
+    // Removes organisation keys/capacities that were scheduled for removal
+    // (see SyncRemovedItemsService). This system account doesn't act "as" any
+    // particular role/organisation — it cleans up scheduled removals
+    // irrespective of Vlimpers-management or keytype/capacity restrictions —
+    // so it needs the unrestricted grants (like AlgemeenBeheerder has), not a
+    // restricted one: RemoveOrganisationKeyCommandHandler/
+    // RemoveOrganisationCapacityCommandHandler route through the same
+    // restriction-aware KeyPolicy/CapacityPolicy as Add/Update.
+    public static User SyncRemovedItemsService => Create(
+        "SyncRemovedItemsService",
+        Permission.CanRunScheduledJobs,
+        Permission.CanManageKeys,
+        Permission.CanManageCapacities);
     public static User KboSyncService => Create("KboSyncService", Permission.CanManageKbo);
     // Permissions for client-credential users (TestClient/Cjm/Orafin) are
     // derived from the token's scopes via ScopePermissionMap (the single

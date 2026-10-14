@@ -3,7 +3,6 @@
 using System.Threading.Tasks;
 using Commands;
 using Handling;
-using Infrastructure.Authorization;
 using Infrastructure.Commands;
 using Infrastructure.Domain;
 using Microsoft.Extensions.Logging;
@@ -21,7 +20,7 @@ public class RemoveOrganisationKeyCommandHandler :
 
     public Task Handle(ICommandEnvelope<RemoveOrganisationKey> envelope)
         => UpdateHandler<Organisation>.For(envelope.Command, envelope.User, Session)
-            .RequiresPermission(Permission.CanManageKeys)
+            .WithKeyPolicy(envelope.Command)
             .Handle(
                 session =>
                 {
