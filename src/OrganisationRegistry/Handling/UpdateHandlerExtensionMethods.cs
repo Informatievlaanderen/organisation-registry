@@ -7,6 +7,7 @@ using Infrastructure.Authorization;
 using Infrastructure.Configuration;
 using Infrastructure.Domain;
 using Organisation;
+using Organisation.Commands;
 
 public static class UpdateHandlerExtensionMethods
 {
@@ -86,6 +87,26 @@ public static class UpdateHandlerExtensionMethods
             organisation => new KeyPolicy(
                 organisation.State.UnderVlimpersManagement,
                 message.KeyTypeId));
+
+    /// <summary>
+    /// Removing a key carries no KeyTypeId of its own (see
+    /// <see cref="RemoveOrganisationKey"/>), so the
+    /// keytype being touched is looked up from the key being removed, same
+    /// as <see cref="WithLabelPolicy(UpdateHandler{Organisation}, UpdateOrganisationLabel)"/>
+    /// does for labels. This mirrors Add/Update so a VlimpersBeheerder may
+    /// only remove a Vlimpers-managed key on a Vlimpers-managed organisation,
+    /// instead of any key via the previous unrestricted
+    /// <see cref="Permission.CanManageKeys"/> presence check.
+    /// </summary>
+    public static UpdateHandler<Organisation> WithKeyPolicy(
+        this UpdateHandler<Organisation> source,
+        RemoveOrganisationKey message)
+        => source.WithPolicy(
+            organisation => new KeyPolicy(
+                organisation.State.UnderVlimpersManagement,
+                organisation.State.OrganisationKeys
+                    .Single(key => key.OrganisationKeyId == message.OrganisationKeyId)
+                    .KeyTypeId));
 
     public static UpdateHandler<Organisation> WithOrganisationClassificationTypePolicy(
         this UpdateHandler<Organisation> source,
