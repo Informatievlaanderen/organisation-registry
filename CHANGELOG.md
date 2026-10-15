@@ -1,3 +1,10 @@
+## [1.340.7](https://github.com/informatievlaanderen/organisation-registry/compare/v1.340.6...v1.340.7) (2026-10-15)
+
+
+### Bug Fixes
+
+* use label type list to validate label type name uniqueness ([5a4970b](https://github.com/informatievlaanderen/organisation-registry/commit/5a4970b4326cfc47af3030bc3efd98f0c874e62f))
+
 ## [1.340.6](https://github.com/informatievlaanderen/organisation-registry/compare/v1.340.5...v1.340.6) (2026-10-14)
 
 
