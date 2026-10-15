@@ -21,7 +21,7 @@ public class UniqueNameValidator : IUniqueNameValidator<LabelType>
 
     public bool IsNameTaken(Guid id, string name)
     {
-        return _context.KeyTypeList
+        return _context.LabelTypeList
             .AsQueryable()
             .Where(item => item.Id != id)
             .Any(item => item.Name == name);
