@@ -33,6 +33,7 @@ public class OrganisationFormalFrameworkListQueryResult
         Guid parentOrganisationId, string? parentOrganisationName,
         DateTime? validFrom, DateTime? validTo,
         string ovoNumber,
+        bool isUnderVlimpersManagement,
         IUser user)
     {
         OrganisationFormalFrameworkId = organisationFormalFrameworkId;
@@ -45,7 +46,7 @@ public class OrganisationFormalFrameworkListQueryResult
 
         IsActive = new Period(new ValidFrom(validFrom), new ValidTo(validTo)).OverlapsWith(DateTime.Today);
         IsEditable =
-            new FormalFrameworkPolicy(ovoNumber, formalFrameworkId)
+            new FormalFrameworkPolicy(ovoNumber, isUnderVlimpersManagement, formalFrameworkId)
                 .Check(user)
                 .IsSuccessful;
         // Toepassingsgebieden expose a DELETE endpoint guarded by the same
@@ -74,6 +75,7 @@ public class OrganisationFormalFrameworkListQuery : Query<OrganisationFormalFram
             x.ValidFrom,
             x.ValidTo,
             _memoryCaches.OvoNumbers[x.OrganisationId],
+            _memoryCaches.UnderVlimpersManagement.Contains(x.OrganisationId),
             _user);
 
     public OrganisationFormalFrameworkListQuery(

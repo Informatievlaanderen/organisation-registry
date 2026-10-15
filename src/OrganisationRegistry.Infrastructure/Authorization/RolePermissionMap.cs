@@ -382,7 +382,7 @@ public static class RolePermissionMap
                     KeyRestrictions.VlimpersManaged(
                         configuration.Authorization.KeyIdsAllowedForVlimpers)),
                 Permission.CanManageFormalFrameworks.RestrictedTo(
-                    FormalFrameworkRestrictions.OwnedByVlimpers(
+                    FormalFrameworkRestrictions.VlimpersManaged(
                         configuration.Authorization.FormalFrameworkIdsOwnedByVlimpers)),
                 Permission.CanManageLabels.RestrictedTo(
                     LabelRestrictions.VlimpersManaged(
