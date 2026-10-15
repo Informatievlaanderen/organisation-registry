@@ -18,11 +18,13 @@ using Organisation.Exceptions;
 public class FormalFrameworkPolicy : ISecurityPolicy
 {
     private readonly string _ovoNumber;
+    private readonly bool _isUnderVlimpersManagement;
     private readonly Guid _formalFrameworkId;
 
-    public FormalFrameworkPolicy(string ovoNumber, Guid formalFrameworkId)
+    public FormalFrameworkPolicy(string ovoNumber, bool isUnderVlimpersManagement, Guid formalFrameworkId)
     {
         _ovoNumber = ovoNumber;
+        _isUnderVlimpersManagement = isUnderVlimpersManagement;
         _formalFrameworkId = formalFrameworkId;
     }
 
@@ -31,7 +33,7 @@ public class FormalFrameworkPolicy : ISecurityPolicy
             Permission.CanManageFormalFrameworks,
             new UserContext(user),
             new OrganisationContext.ByOvoNumber(_ovoNumber),
-            new FormalFrameworkContext(_formalFrameworkId))
+            new FormalFrameworkContext(_isUnderVlimpersManagement, _formalFrameworkId))
             ? AuthorizationResult.Success()
             : AuthorizationResult.Fail(InsufficientRights.CreateFor(this));
 

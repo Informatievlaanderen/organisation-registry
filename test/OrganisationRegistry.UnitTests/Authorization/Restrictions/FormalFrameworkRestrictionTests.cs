@@ -19,7 +19,7 @@ public class NotAllowListRestrictionTests
         var contextId = _fixture.Create<Guid>();
         var restriction = new NotAllowListRestriction<FormalFrameworkContext>(denied);
 
-        restriction.IsOkWith(new FormalFrameworkContext(contextId))
+        restriction.IsOkWith(new FormalFrameworkContext(false, contextId))
             .Should().BeTrue();
     }
 
@@ -29,7 +29,7 @@ public class NotAllowListRestrictionTests
         var denied = new[] { _fixture.Create<Guid>(), _fixture.Create<Guid>() };
         var restriction = new NotAllowListRestriction<FormalFrameworkContext>(denied);
 
-        restriction.IsOkWith(new FormalFrameworkContext(denied[0]))
+        restriction.IsOkWith(new FormalFrameworkContext(false, denied[0]))
             .Should().BeFalse();
     }
 
@@ -47,7 +47,7 @@ public class NotAllowListRestrictionTests
     {
         var restriction = new NotAllowListRestriction<FormalFrameworkContext>(Array.Empty<Guid>());
 
-        restriction.IsOkWith(new FormalFrameworkContext(_fixture.Create<Guid>()))
+        restriction.IsOkWith(new FormalFrameworkContext(false, _fixture.Create<Guid>()))
             .Should().BeTrue();
     }
 }
@@ -110,21 +110,31 @@ public class FormalFrameworkRestrictionsTests
     private readonly Fixture _fixture = new();
 
     [Fact]
-    public void OwnedByVlimpersPassesForVlimpersId()
+    public void VlimpersManagedPassesWhenUnderVlimpersManagementAndIdIsAllowed()
     {
         var vlimpersIds = new[] { _fixture.Create<Guid>() };
-        var restriction = FormalFrameworkRestrictions.OwnedByVlimpers(vlimpersIds);
+        var restriction = FormalFrameworkRestrictions.VlimpersManaged(vlimpersIds);
 
-        restriction.IsOkWith(new FormalFrameworkContext(vlimpersIds[0]))
+        restriction.IsOkWith(new FormalFrameworkContext(true, vlimpersIds[0]))
             .Should().BeTrue();
     }
 
     [Fact]
-    public void OwnedByVlimpersFailsForNonVlimpersId()
+    public void VlimpersManagedFailsForNonVlimpersId()
     {
-        var restriction = FormalFrameworkRestrictions.OwnedByVlimpers(new[] { _fixture.Create<Guid>() });
+        var restriction = FormalFrameworkRestrictions.VlimpersManaged(new[] { _fixture.Create<Guid>() });
 
-        restriction.IsOkWith(new FormalFrameworkContext(_fixture.Create<Guid>()))
+        restriction.IsOkWith(new FormalFrameworkContext(true, _fixture.Create<Guid>()))
+            .Should().BeFalse();
+    }
+
+    [Fact]
+    public void VlimpersManagedFailsWhenOrganisationIsNotUnderVlimpersManagementEvenForAllowedId()
+    {
+        var vlimpersIds = new[] { _fixture.Create<Guid>() };
+        var restriction = FormalFrameworkRestrictions.VlimpersManaged(vlimpersIds);
+
+        restriction.IsOkWith(new FormalFrameworkContext(false, vlimpersIds[0]))
             .Should().BeFalse();
     }
 
@@ -143,7 +153,7 @@ public class FormalFrameworkRestrictionsTests
         restriction.IsOkWith(
                 new UserContext(user),
                 new OrganisationContext.ByOvoNumber(ovoNumber),
-                new FormalFrameworkContext(_fixture.Create<Guid>()))
+                new FormalFrameworkContext(false, _fixture.Create<Guid>()))
             .Should().BeTrue();
     }
 
@@ -162,7 +172,7 @@ public class FormalFrameworkRestrictionsTests
         restriction.IsOkWith(
                 new UserContext(user),
                 new OrganisationContext.ByOvoNumber(ovoNumber),
-                new FormalFrameworkContext(vlimpersIds[0]))
+                new FormalFrameworkContext(false, vlimpersIds[0]))
             .Should().BeFalse();
     }
 
@@ -180,7 +190,7 @@ public class FormalFrameworkRestrictionsTests
         restriction.IsOkWith(
                 new UserContext(user),
                 new OrganisationContext.ByOvoNumber(_fixture.Create<string>()),
-                new FormalFrameworkContext(_fixture.Create<Guid>()))
+                new FormalFrameworkContext(false, _fixture.Create<Guid>()))
             .Should().BeFalse();
     }
 }

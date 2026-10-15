@@ -28,6 +28,7 @@ public class RemoveOrganisationFormalFrameworkCommandHandler
 
                     return new FormalFrameworkPolicy(
                         organisation.State.OvoNumber,
+                        organisation.State.UnderVlimpersManagement,
                         organisationFormalFramework.FormalFrameworkId);
                 })
             .Handle(

@@ -206,7 +206,7 @@ public class OrganisationPermissions
                 Permission.CanManageFormalFrameworks,
                 userContext,
                 organisationContext,
-                new FormalFrameworkContext(Array.Empty<Guid>())),
+                new FormalFrameworkContext(isUnderVlimpersManagement, Array.Empty<Guid>())),
             canManageKeys: Satisfies(
                 Permission.CanManageKeys,
                 userContext,

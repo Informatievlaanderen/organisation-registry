@@ -112,6 +112,7 @@ public class FormalFrameworkController : OrganisationRegistryController
             !forOrganisationId.HasValue ||
             new FormalFrameworkPolicy(
                     memoryCaches.OvoNumbers[forOrganisationId.Value],
+                    memoryCaches.UnderVlimpersManagement.Contains(forOrganisationId.Value),
                     formalFrameworkId)
                 .Check(user)
                 .IsSuccessful;

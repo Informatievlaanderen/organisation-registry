@@ -690,12 +690,19 @@ public class RolePermissionMapTests
 
         set.IsSatisfiedFor(
                 Permission.CanManageFormalFrameworks,
-                new FormalFrameworkContext(vlimpersFormalFrameworkId))
+                new FormalFrameworkContext(isUnderVlimpersManagement: true, vlimpersFormalFrameworkId))
             .Should().BeTrue();
 
         set.IsSatisfiedFor(
                 Permission.CanManageFormalFrameworks,
-                new FormalFrameworkContext(otherFormalFrameworkId))
+                new FormalFrameworkContext(isUnderVlimpersManagement: true, otherFormalFrameworkId))
+            .Should().BeFalse();
+
+        // Regression: without the organisation under Vlimpers management, the
+        // grant must not apply even for a Vlimpers-owned formal framework id.
+        set.IsSatisfiedFor(
+                Permission.CanManageFormalFrameworks,
+                new FormalFrameworkContext(isUnderVlimpersManagement: false, vlimpersFormalFrameworkId))
             .Should().BeFalse();
     }
 
@@ -720,14 +727,14 @@ public class RolePermissionMapTests
                 Permission.CanManageFormalFrameworks,
                 new UserContext(user),
                 new OrganisationContext.ByOvoNumber(ovoNumber),
-                new FormalFrameworkContext(otherFormalFrameworkId))
+                new FormalFrameworkContext(false, otherFormalFrameworkId))
             .Should().BeTrue();
 
         set.IsSatisfiedFor(
                 Permission.CanManageFormalFrameworks,
                 new UserContext(user),
                 new OrganisationContext.ByOvoNumber(ovoNumber),
-                new FormalFrameworkContext(vlimpersFormalFrameworkId))
+                new FormalFrameworkContext(false, vlimpersFormalFrameworkId))
             .Should().BeFalse();
     }
 
@@ -744,12 +751,12 @@ public class RolePermissionMapTests
 
         set.IsSatisfiedFor(
                 Permission.CanManageFormalFrameworks,
-                new FormalFrameworkContext(regelgevingDbFormalFrameworkId))
+                new FormalFrameworkContext(false, regelgevingDbFormalFrameworkId))
             .Should().BeTrue();
 
         set.IsSatisfiedFor(
                 Permission.CanManageFormalFrameworks,
-                new FormalFrameworkContext(otherFormalFrameworkId))
+                new FormalFrameworkContext(false, otherFormalFrameworkId))
             .Should().BeFalse();
     }
 

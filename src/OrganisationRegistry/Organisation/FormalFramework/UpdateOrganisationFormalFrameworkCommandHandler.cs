@@ -27,6 +27,7 @@ public class UpdateOrganisationFormalFrameworkCommandHandler
             .WithPolicy(
                 organisation => new FormalFrameworkPolicy(
                     organisation.State.OvoNumber,
+                    organisation.State.UnderVlimpersManagement,
                     envelope.Command.FormalFrameworkId))
             .Handle(
                 session =>

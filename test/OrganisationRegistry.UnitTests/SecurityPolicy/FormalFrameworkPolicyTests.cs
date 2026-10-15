@@ -52,8 +52,8 @@ public class FormalFrameworkPolicyTests
                     _configuration))
             .Build();
 
-    public FormalFrameworkPolicy CreatePolicy(string ovoNumber, Guid formalFrameworkId)
-        => new(ovoNumber, formalFrameworkId);
+    public FormalFrameworkPolicy CreatePolicy(string ovoNumber, Guid formalFrameworkId, bool isUnderVlimpersManagement = false)
+        => new(ovoNumber, isUnderVlimpersManagement, formalFrameworkId);
 
     [Theory]
     [InlineData(Role.AlgemeenBeheerder)]
@@ -112,7 +112,7 @@ public class FormalFrameworkPolicyTests
     {
         var user = UserWithRoles(Role.VlimpersBeheerder);
 
-        CreatePolicy(_fixture.Create<string>(), _vlimpersFormalFrameworkId)
+        CreatePolicy(_fixture.Create<string>(), _vlimpersFormalFrameworkId, isUnderVlimpersManagement: true)
             .Check(user)
             .Should().Be(AuthorizationResult.Success());
     }
@@ -133,6 +133,22 @@ public class FormalFrameworkPolicyTests
         var user = UserWithRoles(Role.VlimpersBeheerder);
 
         CreatePolicy(_fixture.Create<string>(), _otherFormalFrameworkId)
+            .Check(user)
+            .ShouldFailWith<InsufficientRights<FormalFrameworkPolicy>>();
+    }
+
+    /// <summary>
+    /// Regression test: without this gate, a VlimpersBeheerder could manage a
+    /// Vlimpers-owned formal framework on an organisation that has never been
+    /// placed under Vlimpers management, since the allow-list restriction alone
+    /// does not check the organisation's Vlimpers-management status.
+    /// </summary>
+    [Fact]
+    public void VlimpersBeheerderIsNotAuthorizedForVlimpersOwnedFormalFrameworkWhenOrganisationIsNotUnderVlimpersManagement()
+    {
+        var user = UserWithRoles(Role.VlimpersBeheerder);
+
+        CreatePolicy(_fixture.Create<string>(), _vlimpersFormalFrameworkId, isUnderVlimpersManagement: false)
             .Check(user)
             .ShouldFailWith<InsufficientRights<FormalFrameworkPolicy>>();
     }
