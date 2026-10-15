@@ -1,0 +1,26 @@
+name: "[Sigrid] Publish"
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  sigridci:
+    if: github.repository_owner == 'Informatievlaanderen'
+    name: Sigrid CI Publish
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Sigrid CI
+        uses: Software-Improvement-Group/sigridci@e671a83c9f5d95b8c14ecfc58dba8cde470474a2
+        with:
+          customer: digitaalvlaanderen
+          system: organisatieregister
+          publishonly: true
+        env:
+          SIGRID_CI_TOKEN: ${{ secrets.SIGRID_CI_TOKEN }}

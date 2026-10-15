@@ -1,0 +1,37 @@
+# Sigrid analysis scope configuration
+# https://docs.sigrid-says.com/reference/analysis-scope-configuration.html
+#
+# Technologies, components and test code are detected automatically.
+# Patterns are regular expressions and always start with ".*/".
+
+exclude:
+  # Tooling, local dev, demos and CI support (not part of the application)
+  - ".*/[.]specify/.*"
+  - ".*/[.]serena/.*"
+  - ".*/specs/.*"
+  - ".*/docs/.*"
+  - ".*/demos?/.*"
+  - ".*/wiremock/.*"
+  - ".*/scripts/.*"
+  - ".*/tools/.*"
+  - ".*/config/.*"
+  # Frontends (Angular UI, Vue)
+  - ".*/src/OrganisationRegistry[.]UI/.*"
+  - ".*/src/OrganisationRegistry[.]Vue2?/.*"
+  # Vendored OpenSearch client (fork of third-party code)
+  - ".*/src/Osc/.*"
+  - ".*/src/OpenSearch[.]Net/.*"
+  # Database migration scripts
+  - ".*/Migrations/.*"
+  # Generated code
+  - ".*[.]Designer[.]cs"
+  - ".*/test/OrganisationRegistry[.]Import[.]Piavo/Api/Generated/.*"
+
+# Security scan only; the exclude list above does not apply to security.
+thirdpartyfindings:
+  exclude:
+    # Mock responses for external services (fictitious test data)
+    - ".*/wiremock/.*"
+    # AI tooling templates and prompts (spec-kit, Serena)
+    - ".*/[.]specify/.*"
+    - ".*/[.]serena/.*"
