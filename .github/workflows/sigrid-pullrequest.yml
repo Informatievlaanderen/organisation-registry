@@ -1,0 +1,32 @@
+name: "[Sigrid] Pull Request Feedback"
+
+on:
+  pull_request:
+    types: [ opened, reopened, synchronize ]
+    branches:
+      - main
+
+jobs:
+  sigridci:
+    if: github.repository_owner == 'Informatievlaanderen'
+    name: Sigrid CI
+    runs-on: ubuntu-latest
+
+    permissions:
+      pull-requests: write
+      contents: read
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Sigrid CI
+        uses: Software-Improvement-Group/sigridci@e671a83c9f5d95b8c14ecfc58dba8cde470474a2
+        with:
+          customer: digitaalvlaanderen
+          system: organisatieregister
+        env:
+          SIGRID_CI_TOKEN: ${{ secrets.SIGRID_CI_TOKEN }}
+          SIGRIDCI_GITHUB_COMMENT_TOKEN: ${{ secrets.GITHUB_TOKEN }}

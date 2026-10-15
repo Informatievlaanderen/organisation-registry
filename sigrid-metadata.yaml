@@ -1,0 +1,8 @@
+metadata:
+  displayName: "Organisatieregister"
+  divisionName: "Digitaal Vlaanderen"
+  teamNames:
+    - "Team PAB"
+  targetIndustry: SIG1000
+  deploymentType: PUBLIC_FACING
+  lifecyclePhase: EVOLUTION
