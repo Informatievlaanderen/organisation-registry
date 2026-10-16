@@ -1,3 +1,10 @@
+## [1.340.8](https://github.com/informatievlaanderen/organisation-registry/compare/v1.340.7...v1.340.8) (2026-10-16)
+
+
+### Bug Fixes
+
+* or-3114 set FormalFrameworkPolicy to include isUnderVlimpersManagement ([75e5ea5](https://github.com/informatievlaanderen/organisation-registry/commit/75e5ea5a5cf2345d03a6a3cd68f8f10f290c0b1c))
+
 ## [1.340.7](https://github.com/informatievlaanderen/organisation-registry/compare/v1.340.6...v1.340.7) (2026-10-15)
 
 
