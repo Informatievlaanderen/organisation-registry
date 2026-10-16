@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
 using OrganisationRegistry.Api.Backoffice.Organisation.FormalFramework;
+using OrganisationRegistry.Api.Backoffice.Vlimpers;
 using Xunit;
 
 [Collection(ApiTestsCollection.Name)]
@@ -144,7 +145,46 @@ public class Given_Roles_With_CanManageFormalFrameworks
     }
 
     [Fact]
-    public async Task For_Vlimpersbeheerder_WithOwnedFormalFramework_Then_Returns_NoContent()
+    public async Task For_Vlimpersbeheerder_WithOrgOwnedByVlimpers_WithOwnedFormalFramework_Then_Returns_NoContent()
+    {
+        using var privilegedClient = await _apiFixture.CreateAlgemeenbeheerderClient();
+        using var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Vlimpersbeheerder);
+
+        var organisationId = await CreateVlimpersManagedOrganisation(privilegedClient);
+        var entityId = _apiFixture.Fixture.Create<Guid>();
+        var categoryId = await _apiFixture.Create.FormalFrameworkCategory();
+        var formalFrameworkId = await _apiFixture.Create.FormalFramework(
+            _apiFixture.Configuration.Authorization.FormalFrameworkIdsOwnedByVlimpers.First(),
+            categoryId);
+        var parentOrganisationId = _apiFixture.Fixture.Create<Guid>();
+        await _apiFixture.Create.Organisation(parentOrganisationId, _apiFixture.Fixture.Create<string>());
+
+        using var _ = await ApiFixture.Post(
+            privilegedClient,
+            $"/v1/organisations/{organisationId}/formalframeworks",
+            new AddOrganisationFormalFrameworkRequest()
+            {
+                OrganisationFormalFrameworkId = entityId,
+                FormalFrameworkId = formalFrameworkId,
+                ParentOrganisationId = parentOrganisationId,
+                ValidFrom = null,
+                ValidTo = null,
+            });
+
+        using var response = await ApiFixture.Delete(
+            client,
+            $"/v1/organisations/{organisationId}/formalframeworks/{entityId}");
+
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+    }
+
+    /// <summary>
+    /// Regressietest: zelfs een Vlimpers-owned formeel kader mag de
+    /// vlimpersbeheerder niet verwijderen wanneer de organisatie niet (meer)
+    /// onder Vlimpersbeheer valt.
+    /// </summary>
+    [Fact]
+    public async Task For_Vlimpersbeheerder_WithOwnedFormalFramework_OnOrganisationNotUnderVlimpersManagement_Then_Returns_Forbidden()
     {
         using var privilegedClient = await _apiFixture.CreateAlgemeenbeheerderClient();
         using var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Vlimpersbeheerder);
@@ -175,7 +215,7 @@ public class Given_Roles_With_CanManageFormalFrameworks
             client,
             $"/v1/organisations/{organisationId}/formalframeworks/{entityId}");
 
-        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
 
     [Fact]
@@ -239,4 +279,18 @@ public class Given_Roles_With_CanManageFormalFrameworks
         => await ApiFixture.Delete(
             client,
             $"/v1/organisations/{organisationId}/formalframeworks/{entityId}");
+
+    private async Task<Guid> CreateVlimpersManagedOrganisation(HttpClient algemeenbeheerderClient)
+    {
+        var organisationId = _apiFixture.Fixture.Create<Guid>();
+        await _apiFixture.Create.Organisation(organisationId, _apiFixture.Fixture.Create<string>());
+
+        using var response = await ApiFixture.Patch(
+            algemeenbeheerderClient,
+            $"/v1/organisations/{organisationId}/vlimpers",
+            new VlimpersRequest { VlimpersManagement = true });
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        return organisationId;
+    }
 }
