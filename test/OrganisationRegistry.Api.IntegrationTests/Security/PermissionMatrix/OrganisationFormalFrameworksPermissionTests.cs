@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using AutoFixture;
 using Backoffice.Organisation.FormalFramework;
+using Backoffice.Vlimpers;
 using FluentAssertions;
 using OrganisationRegistry.Infrastructure.Authorization;
 using Xunit;
@@ -85,6 +86,34 @@ public class OrganisationFormalFrameworksPermissionTests
     [Fact]
     public async Task Vlimpersbeheerder_CanUseVlimpersOwnedFormalFramework()
     {
+        var algemeenbeheerderClient = await _apiFixture.CreateAlgemeenbeheerderClient();
+        var client = await _apiFixture.CreateBackofficeUserClientFor(ApiFixture.Backoffice.Vlimpersbeheerder);
+
+        var organisationId = await CreateVlimpersManagedOrganisation(algemeenbeheerderClient);
+        var parentOrganisationId = _apiFixture.Fixture.Create<Guid>();
+        await _apiFixture.Create.Organisation(parentOrganisationId, _apiFixture.Fixture.Create<string>());
+
+        var formalFrameworkCategoryId = await _apiFixture.Create.FormalFrameworkCategory();
+        var vlimpersFormalFrameworkId = _apiFixture.Configuration.Authorization.FormalFrameworkIdsOwnedByVlimpers.First();
+        await _apiFixture.Create.FormalFramework(vlimpersFormalFrameworkId, formalFrameworkCategoryId);
+
+        var response = await PostAddFormalFramework(
+            client,
+            organisationId,
+            parentOrganisationId,
+            vlimpersFormalFrameworkId);
+
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
+    }
+
+    /// <summary>
+    /// Regressietest: zelfs een Vlimpers-owned toepassingsgebied mag de
+    /// vlimpersbeheerder niet beheren wanneer de organisatie niet (meer) onder
+    /// Vlimpersbeheer valt.
+    /// </summary>
+    [Fact]
+    public async Task Vlimpersbeheerder_CannotUseVlimpersOwnedFormalFrameworkForOrganisationNotUnderVlimpersManagement()
+    {
         var client = await _apiFixture.CreateBackofficeUserClientFor(ApiFixture.Backoffice.Vlimpersbeheerder);
 
         var organisationId = _apiFixture.Fixture.Create<Guid>();
@@ -102,7 +131,7 @@ public class OrganisationFormalFrameworksPermissionTests
             parentOrganisationId,
             vlimpersFormalFrameworkId);
 
-        response.StatusCode.Should().Be(HttpStatusCode.Created);
+        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
 
     /// <summary>
@@ -307,4 +336,18 @@ public class OrganisationFormalFrameworksPermissionTests
                 ValidFrom = null,
                 ValidTo = null,
             });
+
+    private async Task<Guid> CreateVlimpersManagedOrganisation(HttpClient algemeenbeheerderClient)
+    {
+        var organisationId = _apiFixture.Fixture.Create<Guid>();
+        await _apiFixture.Create.Organisation(organisationId, _apiFixture.Fixture.Create<string>());
+
+        var response = await ApiFixture.Patch(
+            algemeenbeheerderClient,
+            $"/v1/organisations/{organisationId}/vlimpers",
+            new VlimpersRequest { VlimpersManagement = true });
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        return organisationId;
+    }
 }
