@@ -185,7 +185,7 @@ public class OrganisationPermissions
                 Permission.CanManageCapacities,
                 userContext,
                 organisationContext,
-                new CapacityContext(Array.Empty<Guid>())),
+                new CapacityContext(isUnderVlimpersManagement, Array.Empty<Guid>())),
             canViewFunctions:
                 Satisfies(Permission.CanManageFunctions, userContext, organisationContext)
                 || Satisfies(Permission.CanViewOrganisationFunctions, userContext, organisationContext),
@@ -194,7 +194,7 @@ public class OrganisationPermissions
                     Permission.CanManageCapacities,
                     userContext,
                     organisationContext,
-                    new CapacityContext(Array.Empty<Guid>()))
+                    new CapacityContext(isUnderVlimpersManagement, Array.Empty<Guid>()))
                 || Satisfies(Permission.CanViewOrganisationCapacities, userContext, organisationContext),
             canManageNames: canEditOrganisation,
             canManageClassifications: Satisfies(

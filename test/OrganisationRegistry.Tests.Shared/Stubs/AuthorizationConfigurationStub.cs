@@ -12,6 +12,7 @@ public class AuthorizationConfigurationStub: IAuthorizationConfiguration
         FormalFrameworkIdsOwnedByRegelgevingDbBeheerder = Array.Empty<Guid>();
         OrganisationClassificationTypeIdsOwnedByRegelgevingDbBeheerder = Array.Empty<Guid>();
         CapacityIdsOwnedByRegelgevingDbBeheerder = Array.Empty<Guid>();
+        CapacityIdsAllowedForVlimpers = Array.Empty<Guid>();
         LabelIdsAllowedForVlimpers = Array.Empty<Guid>();
         KeyIdsAllowedForVlimpers = Array.Empty<Guid>();
         KeyIdsAllowedOnlyForOrafin = Array.Empty<Guid>();
@@ -24,4 +25,5 @@ public class AuthorizationConfigurationStub: IAuthorizationConfiguration
     public Guid[] KeyIdsAllowedOnlyForOrafin { get; set; }
     public Guid[] OrganisationClassificationTypeIdsOwnedByRegelgevingDbBeheerder { get; set; }
     public Guid[] CapacityIdsOwnedByRegelgevingDbBeheerder { get; set; }
+    public Guid[] CapacityIdsAllowedForVlimpers { get; set; }
 }

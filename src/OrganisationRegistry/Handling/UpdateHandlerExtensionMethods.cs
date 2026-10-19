@@ -133,6 +133,7 @@ public static class UpdateHandlerExtensionMethods
             organisation =>
                 new CapacityPolicy(
                     organisation.State.OvoNumber,
+                    organisation.State.UnderVlimpersManagement,
                     message.CapacityId));
 
     public static UpdateHandler<Organisation> WithCapacityPolicy(
@@ -142,6 +143,7 @@ public static class UpdateHandlerExtensionMethods
             organisation =>
                 new CapacityPolicy(
                     organisation.State.OvoNumber,
+                    organisation.State.UnderVlimpersManagement,
                     message.CapacityId));
 
     public static UpdateHandler<Organisation> WithCapacityPolicy(
@@ -151,6 +153,7 @@ public static class UpdateHandlerExtensionMethods
             organisation =>
                 new CapacityPolicy(
                     organisation.State.OvoNumber,
+                    organisation.State.UnderVlimpersManagement,
                     organisation.State.OrganisationCapacities
                         .Where(capacity => capacity.OrganisationCapacityId == message.OrganisationCapacityId)
                         .Select(capacity => capacity.CapacityId)

@@ -51,6 +51,7 @@ public class CapacityController : OrganisationRegistryController
             !forOrganisationId.HasValue ||
             new CapacityPolicy(
                     memoryCaches.OvoNumbers[forOrganisationId.Value],
+                    memoryCaches.UnderVlimpersManagement.Contains(forOrganisationId.Value),
                     capacityId)
                 .Check(user)
                 .IsSuccessful;

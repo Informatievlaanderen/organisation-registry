@@ -452,7 +452,15 @@ public static class RolePermissionMap
                         configuration.Authorization.FormalFrameworkIdsOwnedByVlimpers)),
                 Permission.CanManageLabels.RestrictedTo(
                     LabelRestrictions.VlimpersManaged(
-                        configuration.Authorization.LabelIdsAllowedForVlimpers))),
+                        configuration.Authorization.LabelIdsAllowedForVlimpers)),
+            // VlimpersBeheerder may manage capacities limited to LA
+            // (Leidinggevend topkader) and HRBP, on organisations under
+            // Vlimpers management — every other capacity remains
+            // read-only (CanViewOrganisationCapacities, granted
+            // unconditionally above).
+            Permission.CanManageCapacities.RestrictedTo(
+                CapacityRestrictions.VlimpersManaged(
+                configuration.Authorization.CapacityIdsAllowedForVlimpers))),
             Role.DecentraalBeheerder => DecentraalRestrictedGrants(configuration),
             Role.RegelgevingBeheerder => PermissionSet.Of(
                 Permission.CanManageFormalFrameworks.RestrictedTo(
