@@ -473,11 +473,56 @@ public static class RolePermissionMap
                     ClassificationTypeRestrictions.OwnedByRegelgevingDb(
                         configuration.Authorization.OrganisationClassificationTypeIdsOwnedByRegelgevingDbBeheerder))),
             Role.VoDecentraalBeheerder => PermissionSet.Of(
-                // VoDecentraalbeheerder may update organisation info fields
-                // (except the four Vlimpers-reserved ones) for their own
-                // organisation, regardless of Vlimpers-management status.
+                // VoDecentraalBeheerder has the same organisation-scoped write
+                // grants as DecentraalBeheerder, except contact management
+                // (CanManageContacts), which is reserved for DecentraalBeheerder.
+                // It does inherit body-contact management (BodiesCanManageContacts)
+                // because that is part of body management, not organisation
+                // contact management.
                 Permission.CanManageOrganisationInfoNotLimitedToVlimpers.RestrictedTo(
-                    DecentraalOrganisationRestriction.Instance)),
+                    DecentraalOrganisationRestriction.Instance),
+                Permission.CanManageChildren.RestrictedTo(
+                    ChildRestrictions.DecentraalAndNotUnderVlimpersManagement),
+                Permission.CanManageParent.RestrictedTo(
+                    ChildRestrictions.DecentraalAndNotUnderVlimpersManagement),
+                Permission.CanManageFunctions.RestrictedTo(
+                    DecentraalOrganisationRestriction.Instance),
+                Permission.CanManageLocations.RestrictedTo(
+                    DecentraalOrganisationRestriction.Instance),
+                Permission.CanManageBuildings.RestrictedTo(
+                    DecentraalOrganisationRestriction.Instance),
+                Permission.CanManageRelations.RestrictedTo(
+                    DecentraalOrganisationRestriction.Instance),
+                Permission.CanManageFormalFrameworks.RestrictedTo(
+                    FormalFrameworkRestrictions.DecentraalOrganisationAndNotOwnedByVlimpers(
+                        configuration.Authorization.FormalFrameworkIdsOwnedByVlimpers)),
+                Permission.CanManageCapacities.RestrictedTo(
+                    CapacityRestrictions.DecentraalOrganisationAndNotOwnedByRegelgevingDb(
+                        configuration.Authorization.CapacityIdsOwnedByRegelgevingDbBeheerder)),
+                Permission.CanManageOrganisationClassifications.RestrictedTo(
+                    ClassificationTypeRestrictions.DecentraalOrganisationAndNotOwned(
+                        configuration.Authorization.OrganisationClassificationTypeIdsOwnedByRegelgevingDbBeheerder)),
+                Permission.CanManageLabels.RestrictedTo(
+                    LabelRestrictions.DecentraalOrganisationAndNotOwnedByVlimpers(
+                        configuration.Authorization.LabelIdsAllowedForVlimpers)),
+                Permission.CanManageBodies.RestrictedTo(
+                    DecentraalBodyRestriction.Instance),
+                Permission.CanManageBodies.RestrictedTo(
+                    DecentraalOrganisationRestriction.Instance),
+                Permission.BodiesCanManageContacts.RestrictedTo(
+                    DecentraalBodyRestriction.Instance),
+                Permission.BodiesCanManageSeats.RestrictedTo(
+                    DecentraalBodyRestriction.Instance),
+                Permission.BodiesCanManageMandates.RestrictedTo(
+                    DecentraalBodyRestriction.Instance),
+                Permission.BodiesCanManageLifecycles.RestrictedTo(
+                    DecentraalBodyRestriction.Instance),
+                Permission.BodiesCanManageOrganisations.RestrictedTo(
+                    DecentraalBodyRestriction.Instance),
+                Permission.BodiesCanManageClassifications.RestrictedTo(
+                    DecentraalBodyRestriction.Instance),
+                Permission.BodiesCanManageFormalFrameworks.RestrictedTo(
+                    DecentraalBodyRestriction.Instance)),
             Role.CjmBeheerder => PermissionSet.Of(
                 Permission.CanManageOrganisationClassifications.RestrictedTo(
                     ClassificationTypeRestrictions.OwnedByCjm(
