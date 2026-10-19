@@ -62,6 +62,9 @@ public class TokenExchangeClaimsTransformation : IClaimsTransformation
             if (roles.Any(r => r.Contains(AcmIdmConstants.Roles.VoMedewerker)))
                 AddRoleClaim(identity, Role.VoMedewerker);
 
+            if (roles.Any(r => r.Contains(AcmIdmConstants.Roles.VoDecentraalBeheerder)))
+                AddRoleClaim(identity, Role.VoDecentraalBeheerder);
+
             var decentraalRoles = roles.Where(r => r.StartsWith(AcmIdmConstants.Roles.DecentraalBeheerder)).ToList();
             if (decentraalRoles.Any())
             {

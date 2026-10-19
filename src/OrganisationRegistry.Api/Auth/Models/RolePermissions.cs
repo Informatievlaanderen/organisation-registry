@@ -46,6 +46,11 @@ public static class RolePermissions
         [
             new GlobalPermission("reports", CrudOperation.Read),
         ],
+
+        [Role.VoDecentraalBeheerder] =
+        [
+            new GlobalPermission("reports", CrudOperation.Read),
+        ],
     };
 
     /// <summary>

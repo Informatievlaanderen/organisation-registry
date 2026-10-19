@@ -18,6 +18,7 @@ public static class RoleDisplayNames
     private static readonly IReadOnlyDictionary<Role, string> Names = new Dictionary<Role, string>
     {
         [Role.VoMedewerker] = "VO medewerker",
+        [Role.VoDecentraalBeheerder] = "VO decentraal beheerder",
         [Role.AlgemeenBeheerder] = "Algemeen beheerder",
         [Role.DecentraalBeheerder] = "Decentraal beheerder",
         [Role.VlimpersBeheerder] = "Vlimpers beheerder",
