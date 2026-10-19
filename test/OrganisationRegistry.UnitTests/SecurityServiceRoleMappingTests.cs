@@ -246,4 +246,35 @@ public class SecurityServiceRoleMappingTests
             claim.Type == ClaimTypes.Role &&
             claim.Value == RoleMapping.Map(Role.AlgemeenBeheerder));
     }
+
+    [Fact]
+    public async Task TokenExchangeClaimsTransformation_VoDecentraalBeheerder_ExtractsRoleAndOrganisation()
+    {
+        // VoDecentraalBeheerder is OVO-scoped: the claim value contains
+        // the OVO number after a colon separator. The transformation must
+        // extract both the role and the organisation claim.
+        var identity = new ClaimsIdentity(
+            new[]
+            {
+                new Claim(JwtClaimTypes.GivenName, "Test"),
+                new Claim(JwtClaimTypes.FamilyName, "User"),
+                new Claim(AcmIdmConstants.Claims.AcmId, "9c2f7372-7112-49dc-9771-f127b048b4c7"),
+                new Claim(AcmIdmConstants.Claims.Role, "wegwijsbeheerder-vodecentraalbeheerder:OVO002949"),
+            },
+            "OAuth2Introspection",
+            JwtClaimTypes.Name,
+            "role");
+
+        var principal = new ClaimsPrincipal(identity);
+
+        var transformed = await new TokenExchangeClaimsTransformation().TransformAsync(principal);
+
+        // Role claim must be present
+        transformed.IsInRole(RoleMapping.Map(Role.VoDecentraalBeheerder)).Should().BeTrue();
+
+        // Organisation claim must be extracted from the OVO-scoped role
+        transformed.Claims.Should().Contain(claim =>
+            claim.Type == AcmIdmConstants.Claims.Organisation &&
+            claim.Value == "ovo002949");
+    }
 }
