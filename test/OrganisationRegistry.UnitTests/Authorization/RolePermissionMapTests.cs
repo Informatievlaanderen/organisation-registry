@@ -766,12 +766,41 @@ public class RolePermissionMapTests
 
         set.IsSatisfiedFor(
                 Permission.CanManageCapacities,
-                new CapacityContext(regelgevingDbCapacityId))
+                new CapacityContext(false, regelgevingDbCapacityId))
             .Should().BeTrue();
 
         set.IsSatisfiedFor(
                 Permission.CanManageCapacities,
-                new CapacityContext(otherCapacityId))
+                new CapacityContext(false, otherCapacityId))
+            .Should().BeFalse();
+    }
+
+    [Fact]
+    public void For_config_VlimpersBeheerder_grants_restricted_CanManageCapacities()
+    {
+        var vlimpersCapacityId = Guid.NewGuid();
+        var otherCapacityId = Guid.NewGuid();
+        var config = new OrganisationRegistryConfigurationStub();
+        ((AuthorizationConfigurationStub)config.Authorization).CapacityIdsAllowedForVlimpers
+            = new[] { vlimpersCapacityId };
+
+        var set = RolePermissionMap.For(new[] { Role.VlimpersBeheerder }, config);
+
+        set.IsSatisfiedFor(
+                Permission.CanManageCapacities,
+                new CapacityContext(isUnderVlimpersManagement: true, vlimpersCapacityId))
+            .Should().BeTrue();
+
+        set.IsSatisfiedFor(
+                Permission.CanManageCapacities,
+                new CapacityContext(isUnderVlimpersManagement: true, otherCapacityId))
+            .Should().BeFalse();
+
+        // Regression: without the organisation under Vlimpers management, the
+        // grant must not apply even for a Vlimpers-allowed capacity id.
+        set.IsSatisfiedFor(
+                Permission.CanManageCapacities,
+                new CapacityContext(isUnderVlimpersManagement: false, vlimpersCapacityId))
             .Should().BeFalse();
     }
 

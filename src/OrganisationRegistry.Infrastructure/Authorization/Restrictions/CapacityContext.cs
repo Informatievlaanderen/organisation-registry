@@ -4,20 +4,17 @@ using System;
 using System.Collections.Generic;
 
 /// <summary>
-/// Context for OrganisationCapacity operations. Carries the capacity id a command
-/// touches so the CapacityPolicy can decide against the caller's allowed capacity
-/// set (e.g. the Regelgeving-owned capacities).
+/// Context for OrganisationCapacity operations. Carries the capacity ids a
+/// command touches and whether the target organisation is under Vlimpers
+/// management, so the CapacityPolicy can decide against the caller's allowed
+/// capacity set and the Vlimpers-management gate in one pass. Mirrors
+/// <see cref="LabelContext"/> and <see cref="KeyContext"/>.
 /// </summary>
-public sealed record CapacityContext(Guid CapacityId) : IRestrictionContext
+public sealed record CapacityContext(bool IsUnderVlimpersManagement, IReadOnlyCollection<Guid> CapacityIds)
+    : IVlimpersManagedContext
 {
-    private readonly IReadOnlyCollection<Guid>? _capacityIds;
+    public CapacityContext(bool isUnderVlimpersManagement, Guid capacityId)
+        : this(isUnderVlimpersManagement, new[] { capacityId }) { }
 
-    /// <summary>
-    /// Multi-id / "any" overload used for organisation-level permission summaries:
-    /// an empty collection yields an empty <see cref="RelevantIds"/> (vacuous truth).
-    /// </summary>
-    public CapacityContext(IReadOnlyCollection<Guid> capacityIds) : this(Guid.Empty)
-        => _capacityIds = capacityIds;
-
-    public IEnumerable<Guid> RelevantIds => _capacityIds ?? new[] { CapacityId };
+    public IEnumerable<Guid> RelevantIds => CapacityIds;
 }

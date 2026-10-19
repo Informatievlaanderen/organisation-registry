@@ -49,6 +49,7 @@ public class OrganisationCapacityController : OrganisationRegistryController
         Func<Guid, bool> isAuthorizedForCapacity = id =>
             new CapacityPolicy(
                     memoryCaches.OvoNumbers[organisationId],
+                    memoryCaches.UnderVlimpersManagement.Contains(organisationId),
                     id)
                 .Check(user)
                 .IsSuccessful;

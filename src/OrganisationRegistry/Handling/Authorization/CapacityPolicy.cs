@@ -18,11 +18,13 @@ using Organisation.Exceptions;
 public class CapacityPolicy : ISecurityPolicy
 {
     private readonly string _ovoNumber;
+    private readonly bool _isUnderVlimpersManagement;
     private readonly Guid _organisationCapacityId;
 
-    public CapacityPolicy(string ovoNumber, Guid organisationCapacityId)
+    public CapacityPolicy(string ovoNumber, bool isUnderVlimpersManagement, Guid organisationCapacityId)
     {
         _ovoNumber = ovoNumber;
+        _isUnderVlimpersManagement = isUnderVlimpersManagement;
         _organisationCapacityId = organisationCapacityId;
     }
 
@@ -31,7 +33,7 @@ public class CapacityPolicy : ISecurityPolicy
             Permission.CanManageCapacities,
             new UserContext(user),
             new OrganisationContext.ByOvoNumber(_ovoNumber),
-            new CapacityContext(_organisationCapacityId))
+            new CapacityContext(_isUnderVlimpersManagement, _organisationCapacityId))
             ? AuthorizationResult.Success()
             : AuthorizationResult.Fail(InsufficientRights.CreateFor(this));
 

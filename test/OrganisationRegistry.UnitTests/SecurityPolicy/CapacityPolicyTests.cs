@@ -15,6 +15,7 @@ public class CapacityPolicyTests
 {
     private readonly Fixture _fixture;
     private readonly Guid _regelgevingDbCapacityId;
+    private readonly Guid _vlimpersCapacityId;
     private readonly IOrganisationRegistryConfiguration _configuration;
 
     public CapacityPolicyTests()
@@ -22,11 +23,13 @@ public class CapacityPolicyTests
         _fixture = new Fixture();
 
         _regelgevingDbCapacityId = _fixture.Create<Guid>();
+        _vlimpersCapacityId = _fixture.Create<Guid>();
         _configuration = new OrganisationRegistryConfigurationStub
         {
             Authorization = new AuthorizationConfigurationStub
             {
                 CapacityIdsOwnedByRegelgevingDbBeheerder = new[] { _regelgevingDbCapacityId },
+                CapacityIdsAllowedForVlimpers = new[] { _vlimpersCapacityId },
             },
         };
     }
@@ -45,8 +48,8 @@ public class CapacityPolicyTests
                 RolePermissionMap.For(new[] { Role.DecentraalBeheerder }, _configuration))
             .Build();
 
-    private static CapacityPolicy CreatePolicy(string ovoNumber, Guid capacityId)
-        => new(ovoNumber, capacityId);
+    private static CapacityPolicy CreatePolicy(string ovoNumber, Guid capacityId, bool isUnderVlimpersManagement = false)
+        => new(ovoNumber, isUnderVlimpersManagement, capacityId);
 
     [Theory]
     [InlineData(Role.RegelgevingBeheerder)]
@@ -123,6 +126,42 @@ public class CapacityPolicyTests
 
         var authorizationResult =
             CreatePolicy(_fixture.Create<string>(), _fixture.Create<Guid>())
+                .Check(user);
+
+        authorizationResult.ShouldFailWith<InsufficientRights<CapacityPolicy>>();
+    }
+
+    [Fact]
+    public void VlimpersBeheerderIsAuthorizedForVlimpersOwnedCapacity()
+    {
+        var user = UserWithRoles(Role.VlimpersBeheerder);
+
+        var authorizationResult =
+            CreatePolicy(_fixture.Create<string>(), _vlimpersCapacityId, isUnderVlimpersManagement: true)
+                .Check(user);
+
+        authorizationResult.Should().Be(AuthorizationResult.Success());
+    }
+
+    [Fact]
+    public void VlimpersBeheerderIsNotAuthorizedForVlimpersOwnedCapacityWhenOrganisationIsNotUnderVlimpersManagement()
+    {
+        var user = UserWithRoles(Role.VlimpersBeheerder);
+
+        var authorizationResult =
+            CreatePolicy(_fixture.Create<string>(), _vlimpersCapacityId, isUnderVlimpersManagement: false)
+                .Check(user);
+
+        authorizationResult.ShouldFailWith<InsufficientRights<CapacityPolicy>>();
+    }
+
+    [Fact]
+    public void VlimpersBeheerderIsNotAuthorizedForNonVlimpersOwnedCapacityEvenWhenOrganisationIsUnderVlimpersManagement()
+    {
+        var user = UserWithRoles(Role.VlimpersBeheerder);
+
+        var authorizationResult =
+            CreatePolicy(_fixture.Create<string>(), _fixture.Create<Guid>(), isUnderVlimpersManagement: true)
                 .Check(user);
 
         authorizationResult.ShouldFailWith<InsufficientRights<CapacityPolicy>>();

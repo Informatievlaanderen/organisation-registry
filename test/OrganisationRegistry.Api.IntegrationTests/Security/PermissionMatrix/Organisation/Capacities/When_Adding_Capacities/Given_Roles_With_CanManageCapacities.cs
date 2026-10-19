@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
 using OrganisationRegistry.Api.Backoffice.Organisation.Capacity;
+using OrganisationRegistry.Api.Backoffice.Vlimpers;
 using Xunit;
 
 [Collection(ApiTestsCollection.Name)]
@@ -113,6 +114,98 @@ public class Given_Roles_With_CanManageCapacities
         var response = await AddCapacity(client, organisationId);
 
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+    }
+
+    [Fact]
+    public async Task For_Vlimpersbeheerder_WithOrgOwnedByVlimpers_WithOwnedCapacity_Then_Returns_Created()
+    {
+        var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Vlimpersbeheerder);
+
+        var organisationId = await CreateVlimpersManagedOrganisation();
+
+        // The VlimpersBeheerder capacity grant is restricted to the configured
+        // Vlimpers-allowed capacities (LA/HRBP), only on organisations under
+        // Vlimpers management.
+        var ownedCapacityId = await _apiFixture.Create.Capacity(
+            _apiFixture.Configuration.Authorization.CapacityIdsAllowedForVlimpers.First());
+
+        var response = await ApiFixture.Post(
+            client,
+            $"/v1/organisations/{organisationId}/capacities",
+            new AddOrganisationCapacityRequest()
+            {
+                OrganisationCapacityId = _apiFixture.Fixture.Create<Guid>(),
+                CapacityId = ownedCapacityId,
+                PersonId = null,
+                FunctionId = null,
+                LocationId = null,
+                Contacts = null,
+                ValidFrom = null,
+                ValidTo = null,
+            });
+
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
+    }
+
+    [Fact]
+    public async Task For_Vlimpersbeheerder_WithNonOwnedCapacity_Then_Returns_Forbidden()
+    {
+        var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Vlimpersbeheerder);
+
+        var organisationId = await CreateVlimpersManagedOrganisation();
+
+        var response = await AddCapacity(client, organisationId);
+
+        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+    }
+
+    /// <summary>
+    /// Regressietest: zelfs een Vlimpers-owned hoedanigheid mag de
+    /// vlimpersbeheerder niet beheren wanneer de organisatie niet (meer) onder
+    /// Vlimpersbeheer valt.
+    /// </summary>
+    [Fact]
+    public async Task For_Vlimpersbeheerder_WithOwnedCapacity_OnOrganisationNotUnderVlimpersManagement_Then_Returns_Forbidden()
+    {
+        var client = await _apiFixture.CreateDynamicClient(ApiFixture.Backoffice.Vlimpersbeheerder);
+
+        var organisationId = _apiFixture.Fixture.Create<Guid>();
+        await _apiFixture.Create.Organisation(organisationId, _apiFixture.Fixture.Create<string>());
+
+        var ownedCapacityId = await _apiFixture.Create.Capacity(
+            _apiFixture.Configuration.Authorization.CapacityIdsAllowedForVlimpers.First());
+
+        var response = await ApiFixture.Post(
+            client,
+            $"/v1/organisations/{organisationId}/capacities",
+            new AddOrganisationCapacityRequest()
+            {
+                OrganisationCapacityId = _apiFixture.Fixture.Create<Guid>(),
+                CapacityId = ownedCapacityId,
+                PersonId = null,
+                FunctionId = null,
+                LocationId = null,
+                Contacts = null,
+                ValidFrom = null,
+                ValidTo = null,
+            });
+
+        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+    }
+
+    private async Task<Guid> CreateVlimpersManagedOrganisation()
+    {
+        var organisationId = _apiFixture.Fixture.Create<Guid>();
+        await _apiFixture.Create.Organisation(organisationId, _apiFixture.Fixture.Create<string>());
+
+        var algemeenbeheerderClient = await _apiFixture.CreateAlgemeenbeheerderClient();
+        var response = await ApiFixture.Patch(
+            algemeenbeheerderClient,
+            $"/v1/organisations/{organisationId}/vlimpers",
+            new VlimpersRequest { VlimpersManagement = true });
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        return organisationId;
     }
 
     private async Task<HttpResponseMessage> AddCapacity(HttpClient client, Guid organisationId)

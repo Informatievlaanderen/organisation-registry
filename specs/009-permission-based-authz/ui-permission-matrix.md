@@ -20,7 +20,7 @@
 | Contacten | `canManageContacts` | R | R | CRUD | R | R | R | R |
 | Bankrekeningnummers | – | – | – | – | – | – | – | – |
 | Functies | `canViewFunctions`, `canManageFunctions` | – | R | CRUD | CRUD | R | R | R |
-| Hoedanigheden | `canViewCapacities`, `canManageCapacities` | – | R | CRUD | CRUD* | R* | R | CRUD* |
+| Hoedanigheden | `canViewCapacities`, `canManageCapacities` | – | R | CRUD | CRUD* | CRUD* | R | CRUD* |
 | Locaties | `canManageLocations` | R | R | CRUD | CRUD | R | R | R |
 | Gebouwen | `canManageBuildings` | R | R | CRUD | CRUD | R | R | R |
 | Historiek | – | R | R | CRUD | R | CRUD | R | R |
@@ -157,7 +157,7 @@ volledige scherm. Er is bewust **geen Create** voor backoffice-rollen.
 | Cel | Betekenis (voorlopig, valideren tijdens implementatie) |
 |---|---|
 | **DB Hoedanigheden CRUD\*** | Alleen op eigen organisatie (SecurityService live) — geen id-restrictie? |
-| **VB Hoedanigheden R\*** | Read-restrictie: alleen VB-relevante capacity-instanties? Nog te verhelderen. |
+| **VB Hoedanigheden CRUD\*** | **2-assig (zoals Sleutels)**: `CapacityIdsAllowedForVlimpers` allowlist (LA/Leidinggevend topkader en HRBP) **AND** organisatie moet onder Vlimpers-beheer staan. Zie `CapacityRestrictions.VlimpersManaged` + `RequireUnderVlimpersManagementRestriction`. Overige hoedanigheden blijven read-only (`CanViewOrganisationCapacities`, onvoorwaardelijk). Per-rij `isEditable` op het hoedanigheden-lijstscherm filtert op de werkelijke whitelist. |
 | **RDB Hoedanigheden CRUD\*** | `CapacityIdsOwnedByRegelgevingDbBeheerder` whitelist. |
 | **DB Benamingen CRUD\*** | Alleen op eigen organisatie + welke labeltypes precies? (huidig gedrag: alles behalve `LabelIdsAllowedForVlimpers`). Te verhelderen. |
 | **VB Benamingen CRUD\*** | `LabelIdsAllowedForVlimpers` whitelist. |
@@ -174,7 +174,7 @@ De volgende cellen wijken af van de huidige policy-implementaties en vereisen ex
 
 1. **DB Sleutels: R (was CRUD op subset)** — grote reductie.
 2. **DB Contacten: R (was CRUD?)** — te checken.
-3. **VB Hoedanigheden: R\* (waarschijnlijk was helemaal geen toegang)** — mogelijk nieuwe capability.
+3. **VB Hoedanigheden: CRUD\* (was geen toegang)** — nieuwe capability: beheer van LA (Leidinggevend topkader) en HRBP hoedanigheden op Vlimpers-beheerde organisaties. **Besloten en geïmplementeerd.**
 4. **VB Historiek: CRUD** — nieuwe capability?
 5. **RDB Regelgeving: CRUD (was: alleen bepaalde rol)** — te checken.
 

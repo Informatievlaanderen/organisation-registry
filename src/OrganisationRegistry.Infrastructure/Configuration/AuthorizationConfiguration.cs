@@ -22,6 +22,10 @@ public class AuthorizationConfiguration : IAuthorizationConfiguration
             authorizationConfiguration?.CapacityIdsOwnedByRegelgevingDbBeheerder.SplitGuids() ??
             Array.Empty<Guid>();
 
+        CapacityIdsAllowedForVlimpers =
+            authorizationConfiguration?.CapacityIdsAllowedForVlimpers.SplitGuids() ??
+            Array.Empty<Guid>();
+
         FormalFrameworkIdsOwnedByRegelgevingDbBeheerder =
             authorizationConfiguration?.FormalFrameworkIdsOwnedByRegelgevingDbBeheerder.SplitGuids() ??
             Array.Empty<Guid>();
@@ -46,4 +50,5 @@ public class AuthorizationConfiguration : IAuthorizationConfiguration
     public Guid[] KeyIdsAllowedOnlyForOrafin { get; }
     public Guid[] OrganisationClassificationTypeIdsOwnedByRegelgevingDbBeheerder { get; }
     public Guid[] CapacityIdsOwnedByRegelgevingDbBeheerder { get; }
+    public Guid[] CapacityIdsAllowedForVlimpers { get; }
 }
