@@ -23,4 +23,14 @@ public enum Role
     /// See <c>ui-permission-matrix.md</c> for the full rights table.
     /// </summary>
     VoMedewerker,
+
+    /// <summary>
+    /// VO Decentraal beheerder: read-only on all screens except
+    /// organisation info update (RU), scoped to own OVO and child
+    /// organisations. More restricted than <see cref="DecentraalBeheerder"/>
+    /// (no write access to sub-resources like contacts, functions, locations,
+    /// bodies, etc.) but can still update general organisation fields.
+    /// See <c>ui-permission-matrix.md</c> for the full rights table.
+    /// </summary>
+    VoDecentraalBeheerder,
 }

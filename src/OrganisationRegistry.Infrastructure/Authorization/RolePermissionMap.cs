@@ -258,6 +258,19 @@ public static class RolePermissionMap
                 Permission.PeopleCapacitiesRead,
                 Permission.CanViewOrganisationFunctions,
                 Permission.CanViewOrganisationCapacities),
+
+            // VoDecentraalBeheerder: same static read-only view permissions as
+            // DecentraalBeheerder (Functies, Hoedanigheden on both organisation
+            // and people screens). The restricted CRUD grants (see
+            // RestrictedGrantsFor) are identical to DecentraalBeheerder's too,
+            // except VoDecentraalBeheerder never gets CanManageContacts —
+            // which DecentraalBeheerder doesn't hold either, so in practice
+            // the two roles' restricted grants are fully equivalent.
+            [Role.VoDecentraalBeheerder] = PermissionSet.Of(
+                Permission.CanViewOrganisationCapacities,
+                Permission.CanViewOrganisationFunctions,
+                Permission.PeopleFunctionsRead,
+                Permission.PeopleCapacitiesRead),
         };
 
     private static readonly ConcurrentDictionary<Role, byte> LoggedUnknownRoles = new();
@@ -459,6 +472,12 @@ public static class RolePermissionMap
                 Permission.CanManageOrganisationClassifications.RestrictedTo(
                     ClassificationTypeRestrictions.OwnedByRegelgevingDb(
                         configuration.Authorization.OrganisationClassificationTypeIdsOwnedByRegelgevingDbBeheerder))),
+            Role.VoDecentraalBeheerder => PermissionSet.Of(
+                // VoDecentraalbeheerder may update organisation info fields
+                // (except the four Vlimpers-reserved ones) for their own
+                // organisation, regardless of Vlimpers-management status.
+                Permission.CanManageOrganisationInfoNotLimitedToVlimpers.RestrictedTo(
+                    DecentraalOrganisationRestriction.Instance)),
             Role.CjmBeheerder => PermissionSet.Of(
                 Permission.CanManageOrganisationClassifications.RestrictedTo(
                     ClassificationTypeRestrictions.OwnedByCjm(
