@@ -457,9 +457,6 @@ public class RolePermissionMapTests
         var union = RolePermissionMap.For(new[] { Role.Orafin, Role.CjmBeheerder });
 
         union.Should().Contain(Permission.CanReadOrafin);
-        // TODO: check this
-        // union.Should().Contain(Permission.CanAddBodies);
-        // union.Should().Contain(Permission.CanEditBodies);
     }
 
     [Fact]
@@ -918,9 +915,8 @@ public class RolePermissionMapTests
     }
 
     [Fact]
-    public void VoDecentraalBeheerder_cannot_manage_contacts()
+    public void VoDecentraalBeheerder_cannot_manage_organisation_contacts()
     {
-        // VoDecentraalBeheerder is a DecentraalBeheerder without contact write access.
         var set = RolePermissionMap.For(Role.VoDecentraalBeheerder);
 
         set.Should().NotContain(Permission.CanManageContacts);
