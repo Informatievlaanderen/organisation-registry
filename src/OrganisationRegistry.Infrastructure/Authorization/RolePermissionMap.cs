@@ -5,8 +5,8 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using Configuration;
-using Restrictions;
 using Microsoft.Extensions.Logging;
+using RolePermissions;
 
 /// <summary>
 /// Static translation from <see cref="Role"/> claims (edit-api and token-exchange
@@ -17,260 +17,20 @@ using Microsoft.Extensions.Logging;
 /// </summary>
 public static class RolePermissionMap
 {
-    private static readonly IReadOnlyDictionary<Role, PermissionSet> Map =
-        new Dictionary<Role, PermissionSet>
+    private static readonly IReadOnlyDictionary<Role, IRolePermissionProvider> Providers =
+        new Dictionary<Role, IRolePermissionProvider>
         {
-            [Role.AlgemeenBeheerder] = PermissionSet.Of(
-                Permission.CanManageChildren,
-                Permission.CanManageParent,
-                Permission.CanManageOrganisation,
-                Permission.CanManageOrganisationInfoLimitedToVlimpers,
-                Permission.CanManageOrganisationInfoNotLimitedToVlimpers,
-                Permission.CanTerminateOrganisation,
-                Permission.CanCreateOrganisations,
-                Permission.CanManageContacts,
-                Permission.CanViewOrganisationFunctions,
-                Permission.CanViewOrganisationCapacities,
-                Permission.CanManageFunctions,
-                Permission.CanManageCapacities,
-                Permission.CanManageLocations,
-                Permission.CanManageBuildings,
-                Permission.CanManageLabels,
-                Permission.CanManageOrganisationClassifications,
-                Permission.CanManageFormalFrameworks,
-                Permission.CanManageKeys,
-                Permission.CanManageRegulations,
-                Permission.CanManageBodies,
-                Permission.BodiesCanManageContacts,
-                Permission.BodiesCanManageSeats,
-                Permission.BodiesCanManageMandates,
-                Permission.BodiesCanManageLifecycles,
-                Permission.BodiesCanManageOrganisations,
-                Permission.BodiesCanManageClassifications,
-                Permission.BodiesCanManageFormalFrameworks,
-                Permission.BodiesCanManageMep,
-                Permission.CanManageRelations,
-                Permission.CanManageKbo,
-                Permission.CanManageVlimpers,
-                Permission.CanViewOrganisationKbo,
-                Permission.CanViewOrganisationVlimpers,
-
-                Permission.CanImport,
-                Permission.CanReadConfiguration,
-                Permission.System,
-
-                Permission.PeopleWrite,
-                Permission.PeopleFunctionsRead,
-                Permission.PeopleCapacitiesRead,
-
-                Permission.ParametersLocationsWrite,
-                Permission.ParametersBuildingsWrite,
-                Permission.ParametersInformationSystemsWrite,
-                Permission.ParametersInformationSystemsDelete,
-                Permission.ParametersOrganisationClassificationsWrite,
-                Permission.ParametersOrganisationClassificationTypesWrite,
-                Permission.ParametersBodyClassificationsWrite,
-                Permission.ParametersBodyClassificationTypesWrite,
-                Permission.ParametersOrganisationRelationTypesWrite,
-                Permission.ParametersFormalFrameworksWrite,
-                Permission.ParametersFormalFrameworkCategoriesWrite,
-                Permission.ParametersLifecyclePhaseTypesWrite,
-                Permission.ParametersCapacitiesWrite,
-                Permission.ParametersCapacitiesDelete,
-                Permission.ParametersFunctionTypesWrite,
-                Permission.ParametersContactTypesWrite,
-                Permission.ParametersLabelTypesWrite,
-                Permission.ParametersPurposesWrite,
-                Permission.ParametersSeatTypesWrite,
-                Permission.ParametersMandateRoleTypesWrite,
-                Permission.ParametersLocationTypesWrite,
-                Permission.ParametersRegulationThemesWrite,
-                Permission.ParametersRegulationSubThemesWrite,
-
-                Permission.DelegationsRead,
-                Permission.DelegationsWrite,
-                Permission.DelegationsDelete),
-
-            [Role.OrgaanBeheerder] = PermissionSet.Of(
-                Permission.CanManageBodies,
-                Permission.BodiesCanManageContacts,
-                Permission.BodiesCanManageSeats,
-                Permission.BodiesCanManageMandates,
-                Permission.BodiesCanManageLifecycles,
-                Permission.BodiesCanManageOrganisations,
-                Permission.BodiesCanManageClassifications,
-                Permission.BodiesCanManageFormalFrameworks,
-                Permission.BodiesCanManageMep,
-
-                Permission.CanViewOrganisationFunctions,
-                Permission.CanViewOrganisationCapacities,
-
-                Permission.PeopleFunctionsRead,
-                Permission.PeopleCapacitiesRead),
-
-            // VlimpersBeheerder holds no unrestricted grant for CanImport — importing
-            // is only permitted for organisations under Vlimpers management, enforced
-            // as a data-driven restricted grant via RestrictedGrantsFor (see
-            // ImportPolicy). The Personen read screens (Functies/Hoedanigheden) are
-            // not organisation-scoped, so they are granted unrestricted here. Every
-            // other permission it has is likewise a data-driven restricted grant.
-            // Functies/Hoedanigheden read-only (ui-permission-matrix.md: R / R*) is
-            // granted unconditionally since VlimpersBeheerder never manages either.
-            [Role.VlimpersBeheerder] = PermissionSet.Of(
-                Permission.CanViewOrganisationFunctions,
-                Permission.CanViewOrganisationCapacities,
-
-                Permission.PeopleFunctionsRead,
-                Permission.PeopleCapacitiesRead),
-
-            // DecentraalBeheerder holds no unrestricted grants for organisation-scoped
-            // edits and body management (every such permission is a data-driven
-            // restricted grant via RestrictedGrantsFor). The Personen read screens
-            // (Functies/Hoedanigheden) are not organisation-scoped, so they are
-            // granted unrestricted here.
-            [Role.DecentraalBeheerder] = PermissionSet.Of(
-                Permission.CanViewOrganisationCapacities,
-                Permission.CanViewOrganisationFunctions,
-                Permission.PeopleFunctionsRead,
-                Permission.PeopleCapacitiesRead),
-
-            [Role.RegelgevingBeheerder] = PermissionSet.Of(
-                Permission.CanManageRegulations,
-
-                Permission.CanViewOrganisationCapacities,
-                Permission.CanViewOrganisationFunctions,
-                Permission.CanViewOrganisationKbo,
-                Permission.CanViewOrganisationVlimpers,
-
-                Permission.PeopleFunctionsRead,
-                Permission.PeopleCapacitiesRead),
-
-            [Role.CjmBeheerder] = PermissionSet.Of(
-                Permission.CanManageBodies,
-                Permission.BodiesCanManageContacts,
-                Permission.BodiesCanManageSeats,
-                Permission.BodiesCanManageMandates,
-                Permission.BodiesCanManageLifecycles,
-                Permission.BodiesCanManageOrganisations,
-                Permission.BodiesCanManageClassifications,
-                Permission.BodiesCanManageFormalFrameworks,
-                Permission.BodiesCanManageMep),
-
-
-            [Role.Orafin] = PermissionSet.Of(
-                Permission.CanReadOrafin),
-
-            [Role.Developer] = PermissionSet.Of(
-                Permission.CanViewOrganisationFunctions,
-                Permission.CanViewOrganisationCapacities,
-                Permission.CanManageChildren,
-                Permission.CanManageParent,
-                Permission.CanManageOrganisation,
-                Permission.CanManageOrganisationInfoLimitedToVlimpers,
-                Permission.CanManageOrganisationInfoNotLimitedToVlimpers,
-                Permission.CanTerminateOrganisation,
-                Permission.CanCreateOrganisations,
-                Permission.CanManageContacts,
-                Permission.CanManageFunctions,
-                Permission.CanManageCapacities,
-                Permission.CanManageLocations,
-                Permission.CanManageBuildings,
-                Permission.CanManageLabels,
-                Permission.CanManageOrganisationClassifications,
-                Permission.CanManageFormalFrameworks,
-                Permission.CanManageKeys,
-                Permission.CanManageRegulations,
-                Permission.CanManageBodies,
-                Permission.BodiesCanManageContacts,
-                Permission.BodiesCanManageSeats,
-                Permission.BodiesCanManageMandates,
-                Permission.BodiesCanManageLifecycles,
-                Permission.BodiesCanManageOrganisations,
-                Permission.BodiesCanManageClassifications,
-                Permission.BodiesCanManageFormalFrameworks,
-                Permission.BodiesCanManageMep,
-                Permission.CanManageRelations,
-                Permission.CanManageKbo,
-                Permission.CanManageVlimpers,
-                Permission.CanViewOrganisationKbo,
-                Permission.CanViewOrganisationVlimpers,
-
-                Permission.CanImport,
-                Permission.CanRunScheduledJobs,
-                Permission.CanReadConfiguration,
-                Permission.System,
-
-                Permission.PeopleWrite,
-                Permission.PeopleFunctionsRead,
-                Permission.PeopleCapacitiesRead,
-
-                Permission.ParametersLocationsWrite,
-                Permission.ParametersBuildingsWrite,
-                Permission.ParametersInformationSystemsWrite,
-                Permission.ParametersInformationSystemsDelete,
-                Permission.ParametersOrganisationClassificationsWrite,
-                Permission.ParametersOrganisationClassificationTypesWrite,
-                Permission.ParametersBodyClassificationsWrite,
-                Permission.ParametersBodyClassificationTypesWrite,
-                Permission.ParametersOrganisationRelationTypesWrite,
-                Permission.ParametersFormalFrameworksWrite,
-                Permission.ParametersFormalFrameworkCategoriesWrite,
-                Permission.ParametersLifecyclePhaseTypesWrite,
-                Permission.ParametersCapacitiesWrite,
-                Permission.ParametersCapacitiesDelete,
-                Permission.ParametersFunctionTypesWrite,
-                Permission.ParametersContactTypesWrite,
-                Permission.ParametersLabelTypesWrite,
-                Permission.ParametersPurposesWrite,
-                Permission.ParametersSeatTypesWrite,
-                Permission.ParametersMandateRoleTypesWrite,
-                Permission.ParametersLocationTypesWrite,
-                Permission.ParametersRegulationThemesWrite,
-                Permission.ParametersRegulationSubThemesWrite,
-
-                Permission.DelegationsRead,
-                Permission.DelegationsWrite,
-                Permission.DelegationsDelete,
-                Permission.DelegationsCreate,
-                Permission.CanAssignManualIdentifiers),
-
-            // Transitional: AutomatedTask keeps CanRunScheduledJobs until the
-            // scheduled-job / sync services migrate to Client Credentials
-            // (see WellknownUsers.ScheduledCommandsService / KboSyncService / Magda).
-            // T036 will remove or [Obsolete] this once migration completes.
-            [Role.AutomatedTask] = PermissionSet.Of(
-                Permission.CanViewOrganisationCapacities,
-                Permission.CanManageCapacities,
-                Permission.CanRunScheduledJobs,
-                Permission.CanManageKeys,
-                Permission.CanManageKbo),
-
-            // VoMedewerker: read-only role, no scoping. Conceptually "Publiek +
-            // read access to Functies and Hoedanigheden" (both on organisations
-            // and on people). Holds no CanManage*/CanCreate*/CanTerminate*/
-            // Parameters*Write/Delete/Delegations*/System/CanImport permission —
-            // every screen not covered below is read-only via the (currently
-            // ungated) list/detail GET endpoints open to any authenticated
-            // backoffice user, same as every other role. See
-            // ui-permission-matrix.md for the full rights table.
-            [Role.VoMedewerker] = PermissionSet.Of(
-                Permission.PeopleFunctionsRead,
-                Permission.PeopleCapacitiesRead,
-                Permission.CanViewOrganisationFunctions,
-                Permission.CanViewOrganisationCapacities),
-
-            // VoDecentraalBeheerder: same static read-only view permissions as
-            // DecentraalBeheerder (Functies, Hoedanigheden on both organisation
-            // and people screens). The restricted CRUD grants (see
-            // RestrictedGrantsFor) are identical to DecentraalBeheerder's too,
-            // except VoDecentraalBeheerder never gets CanManageContacts —
-            // which DecentraalBeheerder doesn't hold either, so in practice
-            // the two roles' restricted grants are fully equivalent.
-            [Role.VoDecentraalBeheerder] = PermissionSet.Of(
-                Permission.CanViewOrganisationCapacities,
-                Permission.CanViewOrganisationFunctions,
-                Permission.PeopleFunctionsRead,
-                Permission.PeopleCapacitiesRead),
+            [Role.AlgemeenBeheerder] = new AlgemeenBeheerderPermissions(),
+            [Role.OrgaanBeheerder] = new OrgaanBeheerderPermissions(),
+            [Role.VlimpersBeheerder] = new VlimpersBeheerderPermissions(),
+            [Role.DecentraalBeheerder] = new DecentraalBeheerderPermissions(),
+            [Role.RegelgevingBeheerder] = new RegelgevingBeheerderPermissions(),
+            [Role.CjmBeheerder] = new CjmBeheerderPermissions(),
+            [Role.Orafin] = new OrafinPermissions(),
+            [Role.Developer] = new DeveloperPermissions(),
+            [Role.AutomatedTask] = new AutomatedTaskPermissions(),
+            [Role.VoMedewerker] = new VoMedewerkerPermissions(),
+            [Role.VoDecentraalBeheerder] = new VoDecentraalBeheerderPermissions(),
         };
 
     private static readonly ConcurrentDictionary<Role, byte> LoggedUnknownRoles = new();
@@ -279,8 +39,8 @@ public static class RolePermissionMap
 
     public static PermissionSet For(Role role, ILogger? logger = null)
     {
-        if (Map.TryGetValue(role, out var permissions))
-            return permissions;
+        if (Providers.TryGetValue(role, out var provider))
+            return provider.Static;
 
         if (LoggedUnknownRoles.TryAdd(role, 0))
             logger?.LogWarning(
@@ -368,121 +128,12 @@ public static class RolePermissionMap
         return union;
     }
 
-    /// <summary>
-    /// Config-dependent restricted grants for a single role. Empty for roles
-    /// whose access is fully expressed by the static map.
-    /// </summary>
-    private static PermissionSet DecentraalRestrictedGrants(
-        IOrganisationRegistryConfiguration configuration)
-        => PermissionSet.Of(
-            // DecentraalBeheerder may edit every organisation-info field
-            // except the four Vlimpers-reserved ones (gated by the
-            // dedicated CanManageOrganisationInfoLimitedToVlimpers
-            // permission, which DecentraalBeheerder never holds), for
-            // their own organisation, regardless of Vlimpers-management
-            // status — these fields are never Vlimpers-reserved.
-            Permission.CanManageOrganisationInfoNotLimitedToVlimpers.RestrictedTo(
-                DecentraalOrganisationRestriction.Instance),
-            Permission.CanManageChildren.RestrictedTo(
-                ChildRestrictions.DecentraalAndNotUnderVlimpersManagement),
-            Permission.CanManageParent.RestrictedTo(
-                ChildRestrictions.DecentraalAndNotUnderVlimpersManagement),
-            Permission.CanManageFunctions.RestrictedTo(
-                DecentraalOrganisationRestriction.Instance),
-            Permission.CanManageLocations.RestrictedTo(
-                DecentraalOrganisationRestriction.Instance),
-            Permission.CanManageBuildings.RestrictedTo(
-                DecentraalOrganisationRestriction.Instance),
-            Permission.CanManageRelations.RestrictedTo(
-                DecentraalOrganisationRestriction.Instance),
-            Permission.CanManageFormalFrameworks.RestrictedTo(
-                FormalFrameworkRestrictions.DecentraalOrganisationAndNotOwnedByVlimpers(
-                    configuration.Authorization.FormalFrameworkIdsOwnedByVlimpers)),
-            Permission.CanManageCapacities.RestrictedTo(
-                CapacityRestrictions.DecentraalOrganisationAndNotOwnedByRegelgevingDb(
-                    configuration.Authorization.CapacityIdsOwnedByRegelgevingDbBeheerder)),
-            Permission.CanManageOrganisationClassifications.RestrictedTo(
-                ClassificationTypeRestrictions.DecentraalOrganisationAndNotOwned(
-                    configuration.Authorization.OrganisationClassificationTypeIdsOwnedByRegelgevingDbBeheerder)),
-            // Own organisation labels are allowed, except Vlimpers-owned
-            // labeltypes which are reserved for the VlimpersBeheerder.
-            Permission.CanManageLabels.RestrictedTo(
-                LabelRestrictions.DecentraalOrganisationAndNotOwnedByVlimpers(
-                    configuration.Authorization.LabelIdsAllowedForVlimpers)),
-            // Body management: DecentraalBeheerder may only manage a body that
-            // belongs to their own organisation or a child organisation
-            // (i.e. one present in the user's Bodies). MEP-decreet
-            // (BodiesCanManageMep) is intentionally never granted.
-            Permission.CanManageBodies.RestrictedTo(
-                DecentraalBodyRestriction.Instance),
-            // Registering a new body targets an organisation (the body
-            // doesn't exist yet, so there is no BodyContext to check
-            // against). This second grant for the same permission lets
-            // RegisterBodyPolicy's OrganisationContext check succeed for
-            // the user's own organisation or a child organisation in scope.
-            Permission.CanManageBodies.RestrictedTo(
-                DecentraalOrganisationRestriction.Instance),
-            Permission.BodiesCanManageContacts.RestrictedTo(
-                DecentraalBodyRestriction.Instance),
-            Permission.BodiesCanManageSeats.RestrictedTo(
-                DecentraalBodyRestriction.Instance),
-            Permission.BodiesCanManageMandates.RestrictedTo(
-                DecentraalBodyRestriction.Instance),
-            Permission.BodiesCanManageLifecycles.RestrictedTo(
-                DecentraalBodyRestriction.Instance),
-            Permission.BodiesCanManageOrganisations.RestrictedTo(
-                DecentraalBodyRestriction.Instance),
-            Permission.BodiesCanManageClassifications.RestrictedTo(
-                DecentraalBodyRestriction.Instance),
-            Permission.BodiesCanManageFormalFrameworks.RestrictedTo(
-                DecentraalBodyRestriction.Instance));
-
     private static PermissionSet RestrictedGrantsFor(
         Role role,
         IOrganisationRegistryConfiguration configuration)
-        => role switch
-        {
-            Role.VlimpersBeheerder => PermissionSet.Of(
-                // The four Vlimpers-reserved fields (formele naam, formele korte
-                // naam, lidwoord, operationele geldigheid) are gated by a
-                // dedicated permission, not CanManageOrganisation (which
-                // VlimpersBeheerder no longer holds at all), so that
-                // DecentraalBeheerder can never reach them.
-                Permission.CanManageOrganisationInfoLimitedToVlimpers.RestrictedTo(
-                    ChildRestrictions.UnderVlimpersManagement),
-                Permission.CanManageChildren.RestrictedTo(
-                    ChildRestrictions.UnderVlimpersManagement),
-                Permission.CanManageParent.RestrictedTo(
-                    ChildRestrictions.UnderVlimpersManagement),
-                Permission.CanImport.RestrictedTo(
-                    ChildRestrictions.UnderVlimpersManagement),
-                Permission.CanManageKeys.RestrictedTo(
-                    KeyRestrictions.VlimpersManaged(
-                        configuration.Authorization.KeyIdsAllowedForVlimpers)),
-                Permission.CanManageFormalFrameworks.RestrictedTo(
-                    FormalFrameworkRestrictions.VlimpersManaged(
-                        configuration.Authorization.FormalFrameworkIdsOwnedByVlimpers)),
-                Permission.CanManageLabels.RestrictedTo(
-                    LabelRestrictions.VlimpersManaged(
-                        configuration.Authorization.LabelIdsAllowedForVlimpers))),
-            Role.DecentraalBeheerder => DecentraalRestrictedGrants(configuration),
-            Role.RegelgevingBeheerder => PermissionSet.Of(
-                Permission.CanManageFormalFrameworks.RestrictedTo(
-                    FormalFrameworkRestrictions.OwnedByRegelgevingDb(
-                        configuration.Authorization.FormalFrameworkIdsOwnedByRegelgevingDbBeheerder)),
-                Permission.CanManageCapacities.RestrictedTo(
-                    CapacityRestrictions.OwnedByRegelgevingDb(
-                        configuration.Authorization.CapacityIdsOwnedByRegelgevingDbBeheerder)),
-                Permission.CanManageOrganisationClassifications.RestrictedTo(
-                    ClassificationTypeRestrictions.OwnedByRegelgevingDb(
-                        configuration.Authorization.OrganisationClassificationTypeIdsOwnedByRegelgevingDbBeheerder))),
-            Role.VoDecentraalBeheerder => DecentraalRestrictedGrants(configuration),
-            Role.CjmBeheerder => PermissionSet.Of(
-                Permission.CanManageOrganisationClassifications.RestrictedTo(
-                    ClassificationTypeRestrictions.OwnedByCjm(
-                        configuration.Authorization.OrganisationClassificationTypeIdsOwnedByCjm))),
-            _ => PermissionSet.Empty,
-        };
+        => Providers.TryGetValue(role, out var provider)
+            ? provider.Restricted(configuration)
+            : PermissionSet.Empty;
 
     /// <summary>Test-only: clears the unknown-role throttle memory.</summary>
     internal static void ResetThrottleState() => LoggedUnknownRoles.Clear();
