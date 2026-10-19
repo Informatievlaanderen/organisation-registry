@@ -46,16 +46,6 @@ public class CreateContactsTests
         await ApiFixture.VerifyStatusCode(response, HttpStatusCode.Forbidden);
     }
 
-    [EnvVarIgnoreFact]
-    public async Task AsCjmBeheerder_ReturnsForbidden()
-    {
-        var response = await CreateContacts(
-            await _apiFixture.CreateCjmClient(),
-            _apiFixture.Fixture.Create<Guid>(),
-            _apiFixture.Fixture.Create<Guid>(),
-            _apiFixture.Fixture.Create<string>());
-        await ApiFixture.VerifyStatusCode(response, HttpStatusCode.Forbidden);
-    }
 
     [EnvVarIgnoreFact]
     public async Task AsTestClient_ReturnsCreatedAndCanUpdate()

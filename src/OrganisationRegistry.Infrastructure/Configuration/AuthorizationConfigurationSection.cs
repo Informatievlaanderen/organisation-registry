@@ -19,5 +19,4 @@ public class AuthorizationConfigurationSection
     public string FormalFrameworkIdsOwnedByRegelgevingDbBeheerder { get; set; } = null!;
     public string OrganisationClassificationTypeIdsOwnedByRegelgevingDbBeheerder { get; set; } = null!;
     public string CapacityIdsOwnedByRegelgevingDbBeheerder { get; set; } = null!;
-    public string OrganisationClassificationTypeIdsOwnedByCjm { get; set; } = null!;
 }

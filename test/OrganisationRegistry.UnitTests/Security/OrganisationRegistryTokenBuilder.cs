@@ -11,7 +11,6 @@ using Xunit;
 public class OrganisationRegistryTokenBuilderTests
 {
     [Theory]
-    [InlineData($"{AcmIdmConstants.RolePrefix}{AcmIdmConstants.Roles.CjmBeheerder}:OVO000001", Role.CjmBeheerder)]
     [InlineData($"{AcmIdmConstants.RolePrefix}{AcmIdmConstants.Roles.AlgemeenBeheerder}:OVO000001", Role.AlgemeenBeheerder)]
     [InlineData($"{AcmIdmConstants.RolePrefix}{AcmIdmConstants.Roles.DecentraalBeheerder}:OVO000001", Role.DecentraalBeheerder)]
     [InlineData($"{AcmIdmConstants.RolePrefix}{AcmIdmConstants.Roles.RegelgevingBeheerder}:OVO000001", Role.RegelgevingBeheerder)]

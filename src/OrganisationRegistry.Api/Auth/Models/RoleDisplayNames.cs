@@ -10,7 +10,7 @@ using OrganisationRegistry.Infrastructure.Authorization;
 /// copy and in <c>ui-permission-matrix.md</c>.
 ///
 /// Roles that are never selected as a user's primary role by <see cref="RolePriority"/>
-/// (<c>CjmBeheerder</c>, <c>AutomatedTask</c>) have no entry here; <see cref="For"/>
+/// <c>AutomatedTask</c> has no entry here; <see cref="For"/>
 /// falls back to the bare enum name for any role without a mapping.
 /// </summary>
 public static class RoleDisplayNames

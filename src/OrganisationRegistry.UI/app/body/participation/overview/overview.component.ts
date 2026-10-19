@@ -58,8 +58,7 @@ export class BodyParticipationOverviewComponent implements OnInit, OnDestroy {
       this.canManageMep = this.oidcService.roles.map((roles) => {
         return (
           roles.indexOf(Role.OrgaanBeheerder) !== -1 ||
-          roles.indexOf(Role.AlgemeenBeheerder) !== -1 ||
-          roles.indexOf(Role.CjmBeheerder) !== -1
+          roles.indexOf(Role.AlgemeenBeheerder) !== -1
         );
       });
 

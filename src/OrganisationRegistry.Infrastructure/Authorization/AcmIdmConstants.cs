@@ -26,7 +26,6 @@ public static class AcmIdmConstants
 
         public const string DecentraalBeheerder = "decentraalbeheerder";
         public const string OrgaanBeheerder = "orgaanbeheerder";
-        public const string CjmBeheerder = "cjmbeheerder";
 
         public const string VoMedewerker = "vomedewerker";
         public const string VoDecentraalBeheerder = "vodecentraalbeheerder";
@@ -34,7 +33,6 @@ public static class AcmIdmConstants
 
     public static class Scopes
     {
-        public const string CjmBeheerder = "dv_organisatieregister_cjmbeheerder";
         public const string OrafinBeheerder = "dv_organisatieregister_orafinbeheerder";
         public const string Info  = "dv_organisatieregister_info";
         public const string TestClient  = "dv_organisatieregister_testclient";

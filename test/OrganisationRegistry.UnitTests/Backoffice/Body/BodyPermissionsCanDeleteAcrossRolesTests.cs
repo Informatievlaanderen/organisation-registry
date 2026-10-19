@@ -21,7 +21,6 @@ using Xunit;
 /// |----------------------------------------|----------------------------------------|--------------------|
 /// | AlgemeenBeheerder                      | unrestricted                           | true (any body)    |
 /// | OrgaanBeheerder                        | unrestricted                           | true (any body)    |
-/// | CjmBeheerder                           | unrestricted                           | true (any body)    |
 /// | DecentraalBeheerder, own/child body     | restricted (DecentraalBodyRestriction) | true               |
 /// | DecentraalBeheerder, unrelated body    | restricted (DecentraalBodyRestriction) | false              |
 /// | VlimpersBeheerder                      | no grant                               | false              |
@@ -57,14 +56,6 @@ public class BodyPermissionsCanDeleteAcrossRolesTests
         permissions.CanDelete.Should().BeTrue();
     }
 
-    [Fact]
-    public void CjmBeheerder_can_edit_and_delete_any_body()
-    {
-        var permissions = BodyPermissions.For(TestUser.CjmBeheerder, BodyId);
-
-        permissions.CanEdit.Should().BeTrue();
-        permissions.CanDelete.Should().BeTrue();
-    }
 
     [Fact]
     public void DecentraalBeheerder_can_edit_and_delete_a_body_in_their_own_or_child_organisation()

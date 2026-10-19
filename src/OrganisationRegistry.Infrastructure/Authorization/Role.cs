@@ -11,7 +11,6 @@ public enum Role
     /// </summary>
     RegelgevingBeheerder,
     Orafin,
-    CjmBeheerder,
     Developer,
     AutomatedTask,
 

@@ -39,8 +39,6 @@ export class UserTokenResult {
         return Roles.Developer;
       case "regelgevingBeheerder":
         return Roles.Regelgever;
-      case "cjmBeheerder":
-        return Roles.CjmBeheerder;
     }
     return "";
   }

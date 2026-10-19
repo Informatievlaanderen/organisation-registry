@@ -9,7 +9,7 @@ using OrganisationRegistry.Infrastructure.Authorization;
 /// De <c>/v1/me</c> endpoint toont exact één rol: de belangrijkste die de
 /// gebruiker bezit. De volgorde volgt bewust <em>niet</em> de declaratievolgorde
 /// van <see cref="Role"/>. Developer staat als supergebruiker bovenaan.
-/// CjmBeheerder en AutomatedTask zijn geen applicatierollen en worden hier nooit
+/// AutomatedTask is geen applicatierol en wordt hier nooit
 /// als primaire rol geselecteerd.
 /// </summary>
 public static class RolePriority

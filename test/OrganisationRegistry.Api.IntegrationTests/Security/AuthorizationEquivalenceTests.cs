@@ -24,7 +24,6 @@ public class AuthorizationEquivalenceTests
 
     [EnvVarIgnoreTheory]
     [InlineData(ApiFixture.Test.Client, ApiFixture.Test.Scope)]
-    [InlineData(ApiFixture.CJM.Client, ApiFixture.CJM.Scope)]
     public async Task TokenExchangeAndBearerAuthentication_WithSameClient_ProvideEquivalentAuthorization(
         string clientId, string scope)
     {

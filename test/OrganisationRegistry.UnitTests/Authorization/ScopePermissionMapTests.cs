@@ -14,8 +14,6 @@ public class ScopePermissionMapTests
     public ScopePermissionMapTests() => ScopePermissionMap.ResetThrottleState();
 
     [Theory]
-    // [InlineData(AcmIdmConstants.Scopes.CjmBeheerder, Permission.CanAddBodies)]
-    // [InlineData(AcmIdmConstants.Scopes.CjmBeheerder, Permission.CanEditBodies)]
     [InlineData(AcmIdmConstants.Scopes.OrafinBeheerder, Permission.CanReadOrafin)]
     [InlineData(AcmIdmConstants.Scopes.Info, Permission.CanReadInfoEndpoints)]
     [InlineData(AcmIdmConstants.Scopes.TestClient, Permission.CanReadConfiguration)]
@@ -72,13 +70,14 @@ public class ScopePermissionMapTests
     {
         var union = ScopePermissionMap.For(new[]
         {
-            AcmIdmConstants.Scopes.CjmBeheerder,
             AcmIdmConstants.Scopes.OrafinBeheerder,
             AcmIdmConstants.Scopes.Info,
+            AcmIdmConstants.Scopes.TestClient,
         });
 
         union.Contains(Permission.CanReadOrafin).Should().BeTrue();
         union.Contains(Permission.CanReadInfoEndpoints).Should().BeTrue();
+        union.Contains(Permission.CanReadConfiguration).Should().BeTrue();
     }
 
     [Fact]

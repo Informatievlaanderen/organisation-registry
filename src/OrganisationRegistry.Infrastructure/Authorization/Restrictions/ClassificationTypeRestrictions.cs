@@ -16,12 +16,6 @@ public static class ClassificationTypeRestrictions
         => new AllowListRestriction<ClassificationTypeContext>(classificationTypeIds);
 
     /// <summary>
-    /// The classificationtype id must be in the CJM-owned set.
-    /// </summary>
-    public static IRestriction OwnedByCjm(IEnumerable<Guid> classificationTypeIds)
-        => new AllowListRestriction<ClassificationTypeContext>(classificationTypeIds);
-
-    /// <summary>
     /// DecentraalBeheerder grant: own organisation and the classificationtype id
     /// must be neither Regelgeving DB-owned.
     /// </summary>

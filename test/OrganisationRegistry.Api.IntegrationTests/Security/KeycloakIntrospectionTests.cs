@@ -65,7 +65,6 @@ public class KeycloakIntrospectionTests
 
     [EnvVarIgnoreTheory]
     [InlineData(ApiFixture.Test.Client, ApiFixture.Test.Scope)]
-    [InlineData(ApiFixture.CJM.Client, ApiFixture.CJM.Scope)]
     public async Task TokenExchangeAuthentication_WithDifferentKeycloakClients_PerformsIntrospectionCorrectly(
         string clientId, string scope)
     {

@@ -103,7 +103,7 @@ const routes: Routes = [
               title: "Orgaan - Algemeen - Bewerken Algemene Informatie",
               roles: [
                 Role.AlgemeenBeheerder,
-                Role.CjmBeheerder,
+                
                 Role.DecentraalBeheerder,
                 Role.OrgaanBeheerder,
               ],
@@ -121,7 +121,7 @@ const routes: Routes = [
               title: "Orgaan - Algemeen - Bewerken Duurtijd",
               roles: [
                 Role.AlgemeenBeheerder,
-                Role.CjmBeheerder,
+                
                 Role.DecentraalBeheerder,
                 Role.OrgaanBeheerder,
               ],
@@ -153,7 +153,7 @@ const routes: Routes = [
               title: "Orgaan - Organisaties - Organisatie koppelen",
               roles: [
                 Role.AlgemeenBeheerder,
-                Role.CjmBeheerder,
+                
                 Role.DecentraalBeheerder,
                 Role.OrgaanBeheerder,
               ],
@@ -174,7 +174,7 @@ const routes: Routes = [
               title: "Orgaan - Organisaties - Bewerken organisatie",
               roles: [
                 Role.AlgemeenBeheerder,
-                Role.CjmBeheerder,
+                
                 Role.DecentraalBeheerder,
                 Role.OrgaanBeheerder,
               ],
@@ -206,7 +206,7 @@ const routes: Routes = [
               title: "Orgaan - Posten - Nieuwe post",
               roles: [
                 Role.AlgemeenBeheerder,
-                Role.CjmBeheerder,
+                
                 Role.DecentraalBeheerder,
                 Role.OrgaanBeheerder,
               ],
@@ -227,7 +227,7 @@ const routes: Routes = [
               title: "Orgaan - Posten - Bewerken post",
               roles: [
                 Role.AlgemeenBeheerder,
-                Role.CjmBeheerder,
+                
                 Role.DecentraalBeheerder,
                 Role.OrgaanBeheerder,
               ],
@@ -260,7 +260,7 @@ const routes: Routes = [
               title: "Orgaan - Mandaat - Persoon toewijzen",
               roles: [
                 Role.AlgemeenBeheerder,
-                Role.CjmBeheerder,
+                
                 Role.DecentraalBeheerder,
                 Role.OrgaanBeheerder,
               ],
@@ -282,7 +282,7 @@ const routes: Routes = [
               title: "Orgaan - Mandaat - Bewerken mandaat (persoon)",
               roles: [
                 Role.AlgemeenBeheerder,
-                Role.CjmBeheerder,
+                
                 Role.DecentraalBeheerder,
                 Role.OrgaanBeheerder,
               ],
@@ -304,7 +304,7 @@ const routes: Routes = [
               title: "Orgaan - Mandaat - Functie toewijzen",
               roles: [
                 Role.AlgemeenBeheerder,
-                Role.CjmBeheerder,
+                
                 Role.DecentraalBeheerder,
                 Role.OrgaanBeheerder,
               ],
@@ -326,7 +326,7 @@ const routes: Routes = [
               title: "Orgaan - Mandaat - Bewerken mandaat (functie)",
               roles: [
                 Role.AlgemeenBeheerder,
-                Role.CjmBeheerder,
+                
                 Role.DecentraalBeheerder,
                 Role.OrgaanBeheerder,
               ],
@@ -347,7 +347,7 @@ const routes: Routes = [
               title: "Orgaan - Mandaat - Organisatie toewijzen",
               roles: [
                 Role.AlgemeenBeheerder,
-                Role.CjmBeheerder,
+                
                 Role.DecentraalBeheerder,
                 Role.OrgaanBeheerder,
               ],
@@ -368,7 +368,7 @@ const routes: Routes = [
               title: "Orgaan - Mandaat - Bewerken mandaat (organisatie)",
               roles: [
                 Role.AlgemeenBeheerder,
-                Role.CjmBeheerder,
+                
                 Role.DecentraalBeheerder,
                 Role.OrgaanBeheerder,
               ],
@@ -400,7 +400,7 @@ const routes: Routes = [
               title: "Orgaan - Levensloop - Levensloopfase koppelen",
               roles: [
                 Role.AlgemeenBeheerder,
-                Role.CjmBeheerder,
+                
                 Role.DecentraalBeheerder,
                 Role.OrgaanBeheerder,
               ],
@@ -421,7 +421,7 @@ const routes: Routes = [
               title: "Orgaan - Levensloop - Bewerken levensloopfase",
               roles: [
                 Role.AlgemeenBeheerder,
-                Role.CjmBeheerder,
+                
                 Role.DecentraalBeheerder,
                 Role.OrgaanBeheerder,
               ],
@@ -453,7 +453,7 @@ const routes: Routes = [
               title:
                 "Orgaan - Toepassingsgebieden - Toepassingsgebied koppelen",
               roles: [Role.AlgemeenBeheerder,
-                Role.CjmBeheerder, Role.OrgaanBeheerder],
+                Role.OrgaanBeheerder],
               bodyGuard: {
                 params: "route.parent.parent.params",
                 idPart: "id",
@@ -468,7 +468,7 @@ const routes: Routes = [
               title:
                 "Orgaan - Toepassingsgebieden - Bewerken toepassingsgebied",
               roles: [Role.AlgemeenBeheerder,
-                Role.CjmBeheerder, Role.OrgaanBeheerder],
+                Role.OrgaanBeheerder],
               bodyGuard: {
                 params: "route.parent.parent.params",
                 idPart: "id",
@@ -496,7 +496,7 @@ const routes: Routes = [
             data: {
               title: "Orgaan - Contacten - Nieuw contact",
               roles: [Role.AlgemeenBeheerder,
-                Role.CjmBeheerder, Role.OrgaanBeheerder],
+                Role.OrgaanBeheerder],
               bodyGuard: {
                 params: "route.parent.parent.params",
                 idPart: "id",
@@ -510,7 +510,7 @@ const routes: Routes = [
             data: {
               title: "Orgaan - Contacten - Bewerken contact",
               roles: [Role.AlgemeenBeheerder,
-                Role.CjmBeheerder, Role.OrgaanBeheerder],
+                Role.OrgaanBeheerder],
               bodyGuard: {
                 params: "route.parent.parent.params",
                 idPart: "id",
@@ -543,7 +543,7 @@ const routes: Routes = [
             data: {
               title: "Orgaan - Participatie - Beheer MEP",
               roles: [Role.AlgemeenBeheerder,
-                Role.CjmBeheerder, Role.OrgaanBeheerder],
+                Role.OrgaanBeheerder],
               bodyGuard: {
                 params: "route.parent.parent.params",
                 idPart: "id",
@@ -572,7 +572,7 @@ const routes: Routes = [
             data: {
               title: "Orgaan - Classificaties - Nieuwe classificatie",
               roles: [Role.AlgemeenBeheerder,
-                Role.CjmBeheerder, Role.OrgaanBeheerder],
+                Role.OrgaanBeheerder],
               bodyGuard: {
                 params: "route.parent.parent.params",
                 idPart: "id",
@@ -587,7 +587,7 @@ const routes: Routes = [
             data: {
               title: "Orgaan - Classificaties - Bewerken classificatie",
               roles: [Role.AlgemeenBeheerder,
-                Role.CjmBeheerder, Role.OrgaanBeheerder],
+                Role.OrgaanBeheerder],
               bodyGuard: {
                 params: "route.parent.parent.params",
                 idPart: "id",

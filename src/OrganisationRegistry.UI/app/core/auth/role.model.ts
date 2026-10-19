@@ -7,7 +7,6 @@ export enum Role {
   OrgaanBeheerder,
   Developer,
   AutomatedTask,
-  CjmBeheerder,
 }
 
 export class RoleMapping {
@@ -25,8 +24,6 @@ export class RoleMapping {
         return Role.RegelgevingBeheerder;
       case "developer":
         return Role.Developer;
-      case "cjmBeheerder": //TODO verify string with API
-        return Role.CjmBeheerder;
       default:
         return Role.UNKNOWN;
     }

@@ -41,8 +41,7 @@ export class OrganisationInfoOverviewComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.isOrganisationRegistryBeheerder = this.store.requiresOneOfRole(
-      Role.AlgemeenBeheerder,
-      Role.CjmBeheerder
+      Role.AlgemeenBeheerder
     );
 
     let organisationChangedObservable = this.store.organisationChanged;

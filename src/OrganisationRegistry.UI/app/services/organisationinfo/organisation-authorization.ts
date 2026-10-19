@@ -16,8 +16,7 @@ export class OrganisationAuthorization {
 
     return hasAnyOfRoles(
       securityInfo,
-      Role.AlgemeenBeheerder,
-      Role.CjmBeheerder
+      Role.AlgemeenBeheerder
     );
   }
 
@@ -29,8 +28,7 @@ export class OrganisationAuthorization {
 
     return hasAnyOfRoles(
       securityInfo,
-      Role.AlgemeenBeheerder,
-      Role.CjmBeheerder
+      Role.AlgemeenBeheerder
     );
   }
 
@@ -40,7 +38,7 @@ export class OrganisationAuthorization {
   ) {
     if (!securityInfo.isLoggedIn) return AllowedOrganisationFields.None;
 
-    if (hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder, Role.CjmBeheerder))
+    if (hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder))
       return AllowedOrganisationFields.All;
 
     if (hasAnyOfRoles(securityInfo, Role.VlimpersBeheerder)) {
@@ -66,7 +64,7 @@ export class OrganisationAuthorization {
   ) {
     if (!securityInfo.isLoggedIn) return false;
 
-    if (hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder, Role.CjmBeheerder))
+    if (hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder))
       return true;
 
     if (
@@ -96,8 +94,7 @@ export class OrganisationAuthorization {
 
     return hasAnyOfRoles(
       securityInfo,
-      Role.AlgemeenBeheerder,
-      Role.CjmBeheerder
+      Role.AlgemeenBeheerder
     );
   }
 
@@ -109,7 +106,7 @@ export class OrganisationAuthorization {
 
     return (
       organisation.kboNumber &&
-      hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder, Role.CjmBeheerder)
+      hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder)
     );
   }
 
@@ -121,7 +118,7 @@ export class OrganisationAuthorization {
 
     return (
       !organisation.kboNumber &&
-      hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder, Role.CjmBeheerder)
+      hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder)
     );
   }
 
@@ -131,7 +128,7 @@ export class OrganisationAuthorization {
   ) {
     if (!securityInfo.isLoggedIn) return false;
 
-    if (hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder, Role.CjmBeheerder))
+    if (hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder))
       return true;
 
     if (
@@ -154,7 +151,7 @@ export class OrganisationAuthorization {
   ) {
     if (!securityInfo.isLoggedIn) return false;
 
-    if (hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder, Role.CjmBeheerder))
+    if (hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder))
       return true;
 
     return hasAnyOfRoles(securityInfo, Role.RegelgevingBeheerder);
@@ -166,7 +163,7 @@ export class OrganisationAuthorization {
   ) {
     if (!securityInfo.isLoggedIn) return false;
 
-    if (hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder, Role.CjmBeheerder))
+    if (hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder))
       return true;
 
     if (organisation.isTerminated) return false;
@@ -180,7 +177,7 @@ export class OrganisationAuthorization {
   ) {
     if (!securityInfo.isLoggedIn) return false;
 
-    if (hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder, Role.CjmBeheerder))
+    if (hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder))
       return true;
 
     if (organisation.isTerminated) return false;
@@ -194,7 +191,7 @@ export class OrganisationAuthorization {
   ) {
     if (!securityInfo.isLoggedIn) return false;
 
-    if (hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder, Role.CjmBeheerder))
+    if (hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder))
       return true;
 
     if (hasAnyOfRoles(securityInfo, Role.RegelgevingBeheerder)) return true;
@@ -210,7 +207,7 @@ export class OrganisationAuthorization {
   ) {
     if (!securityInfo.isLoggedIn) return false;
 
-    if (hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder, Role.CjmBeheerder))
+    if (hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder))
       return true;
 
     if (hasAnyOfRoles(securityInfo, Role.RegelgevingBeheerder)) return true;
@@ -226,7 +223,7 @@ export class OrganisationAuthorization {
   ) {
     if (!securityInfo.isLoggedIn) return false;
 
-    if (hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder, Role.CjmBeheerder))
+    if (hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder))
       return true;
 
     if (organisation.isTerminated) return false;
@@ -240,7 +237,7 @@ export class OrganisationAuthorization {
   ) {
     if (!securityInfo.isLoggedIn) return false;
 
-    if (hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder, Role.CjmBeheerder))
+    if (hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder))
       return true;
 
     if (organisation.isTerminated) return false;
@@ -254,7 +251,7 @@ export class OrganisationAuthorization {
   ) {
     if (!securityInfo.isLoggedIn) return false;
 
-    if (hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder, Role.CjmBeheerder))
+    if (hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder))
       return true;
 
     if (organisation.isTerminated) return false;
@@ -268,7 +265,7 @@ export class OrganisationAuthorization {
   ) {
     if (!securityInfo.isLoggedIn) return false;
 
-    if (hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder, Role.CjmBeheerder))
+    if (hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder))
       return true;
 
     if (organisation.isTerminated) return false;
@@ -282,7 +279,7 @@ export class OrganisationAuthorization {
   ) {
     if (!securityInfo.isLoggedIn) return false;
 
-    if (hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder, Role.CjmBeheerder))
+    if (hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder))
       return true;
 
     if (organisation.isTerminated) return false;
@@ -300,7 +297,6 @@ export class OrganisationAuthorization {
       hasAnyOfRoles(
         securityInfo,
         Role.AlgemeenBeheerder,
-        Role.CjmBeheerder,
         Role.OrgaanBeheerder
       )
     )
@@ -315,7 +311,7 @@ export class OrganisationAuthorization {
   ) {
     if (!securityInfo.isLoggedIn) return false;
 
-    if (hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder, Role.CjmBeheerder))
+    if (hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder))
       return true;
 
     if (
@@ -338,7 +334,7 @@ export class OrganisationAuthorization {
   ) {
     if (!securityInfo.isLoggedIn) return false;
 
-    if (hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder, Role.CjmBeheerder))
+    if (hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder))
       return true;
 
     if (
@@ -361,7 +357,7 @@ export class OrganisationAuthorization {
   ) {
     if (!securityInfo.isLoggedIn) return false;
 
-    if (hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder, Role.CjmBeheerder))
+    if (hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder))
       return true;
 
     if (
@@ -381,7 +377,7 @@ export class OrganisationAuthorization {
   ) {
     if (!securityInfo.isLoggedIn) return false;
 
-    if (hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder, Role.CjmBeheerder))
+    if (hasAnyOfRoles(securityInfo, Role.AlgemeenBeheerder))
       return true;
 
     if (
@@ -403,8 +399,7 @@ export class OrganisationAuthorization {
 
     return hasAnyOfRoles(
       securityInfo,
-      Role.AlgemeenBeheerder,
-      Role.CjmBeheerder
+      Role.AlgemeenBeheerder
     );
   }
 
@@ -416,8 +411,7 @@ export class OrganisationAuthorization {
 
     return hasAnyOfRoles(
       securityInfo,
-      Role.AlgemeenBeheerder,
-      Role.CjmBeheerder
+      Role.AlgemeenBeheerder
     );
   }
 
@@ -429,8 +423,7 @@ export class OrganisationAuthorization {
 
     return hasAnyOfRoles(
       securityInfo,
-      Role.AlgemeenBeheerder,
-      Role.CjmBeheerder
+      Role.AlgemeenBeheerder
     );
   }
 
@@ -442,8 +435,7 @@ export class OrganisationAuthorization {
 
     return hasAnyOfRoles(
       securityInfo,
-      Role.AlgemeenBeheerder,
-      Role.CjmBeheerder
+      Role.AlgemeenBeheerder
     );
   }
 
@@ -455,8 +447,7 @@ export class OrganisationAuthorization {
 
     return hasAnyOfRoles(
       securityInfo,
-      Role.AlgemeenBeheerder,
-      Role.CjmBeheerder
+      Role.AlgemeenBeheerder
     );
   }
 

@@ -25,5 +25,5 @@ public class RoleDisplayNamesTests
 
     [Fact]
     public void Falls_back_to_the_bare_enum_name_for_a_role_without_a_mapping()
-        => RoleDisplayNames.For(Role.CjmBeheerder).Should().Be("CjmBeheerder");
+        => RoleDisplayNames.For(Role.AutomatedTask).Should().Be("AutomatedTask");
 }

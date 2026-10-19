@@ -22,7 +22,6 @@ export class NavbarComponent implements OnInit {
 
   public isLoggedIn: Observable<boolean>;
   public isOrganisationRegistryBeheerder: Observable<boolean>;
-  public isCjmBeheerder: Observable<boolean>;
   public isVlimpersBeheerder: Observable<boolean>;
   public isOrganisatieBeheerder: Observable<boolean>;
   public isDeveloper: Observable<boolean>;
@@ -45,8 +44,6 @@ export class NavbarComponent implements OnInit {
     this.isOrganisationRegistryBeheerder = this.oidcService.hasAnyOfRoles(
       Role.AlgemeenBeheerder
     );
-    this.isCjmBeheerder = this.oidcService.hasAnyOfRoles(Role.CjmBeheerder);
-
     this.isVlimpersBeheerder = this.oidcService.hasAnyOfRoles(
       Role.VlimpersBeheerder
     );
@@ -86,9 +83,6 @@ export class NavbarComponent implements OnInit {
     }
     if (roles.indexOf(Role.OrgaanBeheerder) !== -1) {
       return "Orgaan beheerder";
-    }
-    if (roles.indexOf(Role.CjmBeheerder) !== -1) {
-      return "Cjm beheerder";
     }
   }
 

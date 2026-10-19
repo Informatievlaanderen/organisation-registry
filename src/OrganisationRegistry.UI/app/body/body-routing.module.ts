@@ -24,7 +24,7 @@ const routes: Routes = [
     data: {
       roles: [
         Role.AlgemeenBeheerder,
-        Role.CjmBeheerder,
+        
         Role.DecentraalBeheerder,
         Role.OrgaanBeheerder,
       ],

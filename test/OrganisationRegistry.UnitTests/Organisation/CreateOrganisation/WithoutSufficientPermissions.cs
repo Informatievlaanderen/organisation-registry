@@ -24,7 +24,7 @@ using Xunit.Abstractions;
 /// and granted solely to AlgemeenBeheerder (and Developer). Unlike adding a
 /// daughter organisation (gated by <see cref="ChildPolicy"/> against the
 /// parent), there is no existing organisation to scope a restriction
-/// against, so CjmBeheerder/VlimpersBeheerder/DecentraalBeheerder can never
+/// against, so VlimpersBeheerder/DecentraalBeheerder can never
 /// create a top-level organisation, regardless of Vlimpers management or
 /// own-organisation membership.
 /// </summary>
@@ -62,7 +62,6 @@ public class WithoutSufficientPermissions : Specification<CreateOrganisationComm
             new DateTimeProviderStub(DateTime.Today));
 
     [Theory]
-    [InlineData(Role.CjmBeheerder)]
     [InlineData(Role.VlimpersBeheerder)]
     [InlineData(Role.DecentraalBeheerder)]
     [InlineData(Role.RegelgevingBeheerder)]
@@ -76,7 +75,6 @@ public class WithoutSufficientPermissions : Specification<CreateOrganisationComm
     }
 
     [Theory]
-    [InlineData(Role.CjmBeheerder)]
     [InlineData(Role.VlimpersBeheerder)]
     [InlineData(Role.DecentraalBeheerder)]
     public async Task PublishesNoEvents(Role role)

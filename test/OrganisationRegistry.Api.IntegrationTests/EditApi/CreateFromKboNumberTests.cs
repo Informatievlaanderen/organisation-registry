@@ -35,20 +35,6 @@ public class CreateFromKboNumberTests
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
 
-    /// <summary>
-    /// CjmBeheerder heeft geen <c>CanCreateOrganisations</c> (zie <c>RolePermissionMap</c>): het
-    /// aanmaken van organisaties op basis van een KBO-nummer is voorbehouden aan rollen/scopes die
-    /// deze permissie wel hebben (bv. de TestClient-scope, zie <see cref="AsTestClient_ReturnsCreated" />).
-    /// </summary>
-    [EnvVarIgnoreFact]
-    public async Task AsCjmBeheerder_ReturnsForbidden()
-    {
-        var httpClient = await _fixture.CreateMachine2MachineClientFor(ApiFixture.CJM.Client, ApiFixture.CJM.Scope);
-
-        var response = await CreateOrganisationFromKboNumber(httpClient);
-
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
-    }
 
     [EnvVarIgnoreFact]
     public async Task AsTestClient_ReturnsCreated()

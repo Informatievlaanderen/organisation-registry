@@ -57,7 +57,7 @@ public class OrProtectedAttribute : AuthorizeAttribute
 {
     public OrProtectedAttribute()
     {
-        List<Role> roles = [Role.AlgemeenBeheerder, Role.VlimpersBeheerder, Role.DecentraalBeheerder, Role.OrgaanBeheerder, Role.RegelgevingBeheerder, Role.Orafin, Role.CjmBeheerder, Role.Developer, Role.AutomatedTask, Role.VoMedewerker, Role.VoDecentraalBeheerder];
+        List<Role> roles = [Role.AlgemeenBeheerder, Role.VlimpersBeheerder, Role.DecentraalBeheerder, Role.OrgaanBeheerder, Role.RegelgevingBeheerder, Role.Orafin, Role.Developer, Role.AutomatedTask, Role.VoMedewerker, Role.VoDecentraalBeheerder];
         Roles = string.Join(",", roles.Select(RoleMapping.Map));
         Policy = PolicyNames.BackofficeUser;
     }

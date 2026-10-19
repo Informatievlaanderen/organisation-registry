@@ -23,7 +23,6 @@ public class Given_Roles_Without_CanManageParent
     }
 
     [Theory]
-    [InlineData(ApiFixture.Backoffice.Cjmbeheerder)]
     [InlineData(ApiFixture.Backoffice.Regelgevingbeheerder)]
     [InlineData(ApiFixture.Backoffice.Orgaanbeheerder)]
     [InlineData(ApiFixture.Backoffice.VoMedewerker)]

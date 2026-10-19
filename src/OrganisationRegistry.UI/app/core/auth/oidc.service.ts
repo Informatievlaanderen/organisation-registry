@@ -209,7 +209,6 @@ export class OidcService {
           hasAnyOfRoles(
             securityInfo,
             Role.AlgemeenBeheerder,
-            Role.CjmBeheerder,
             Role.OrgaanBeheerder
           )
         )

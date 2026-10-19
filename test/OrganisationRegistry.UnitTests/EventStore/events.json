@@ -125,7 +125,7 @@
     "Version": 11,
     "Name": "OrganisationRegistry.Organisation.Events.OrganisationOrganisationClassificationAdded",
     "Timestamp": "2018-12-08T20:44:28.467",
-    "Data": "{\"organisationId\":\"a467c450-65c9-4e65-b153-9eb0ba2ca3c4\",\"organisationOrganisationClassificationId\":\"be5acbfb-716a-4558-b999-a46a3055ce32\",\"organisationClassificationTypeId\":\"c35407e4-8559-08d4-f461-a8247c993d58\",\"organisationClassificationTypeName\":\"CJM-leverancier\",\"organisationClassificationId\":\"b0fe0974-31dd-e54b-9d7f-af73b8fd5869\",\"organisationClassificationName\":\"Ja\",\"validFrom\":null,\"validTo\":null,\"version\":11,\"timestamp\":\"2018-12-08T20:44:28Z\"}",
+    "Data": "{\"organisationId\":\"a467c450-65c9-4e65-b153-9eb0ba2ca3c4\",\"organisationOrganisationClassificationId\":\"be5acbfb-716a-4558-b999-a46a3055ce32\",\"organisationClassificationTypeId\":\"c35407e4-8559-08d4-f461-a8247c993d58\",\"organisationClassificationTypeName\":\"Leverancier\",\"organisationClassificationId\":\"b0fe0974-31dd-e54b-9d7f-af73b8fd5869\",\"organisationClassificationName\":\"Ja\",\"validFrom\":null,\"validTo\":null,\"version\":11,\"timestamp\":\"2018-12-08T20:44:28Z\"}",
     "Ip": "193.190.76.58",
     "LastName": "CIB",
     "FirstName": "Import",
