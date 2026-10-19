@@ -19,10 +19,6 @@ public static class ScopePermissionMap
     private static readonly IReadOnlyDictionary<string, PermissionSet> Map =
         new Dictionary<string, PermissionSet>(StringComparer.Ordinal)
         {
-            [AcmIdmConstants.Scopes.CjmBeheerder] = PermissionSet.Of(
-                Permission.CanManageBodies
-            ),
-
             [AcmIdmConstants.Scopes.OrafinBeheerder] = PermissionSet.Of(
                 Permission.CanReadOrafin),
 

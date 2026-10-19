@@ -152,7 +152,7 @@ const routes: Routes = [
               title: "Organisatie - Algemeen - Bewerken organisatie",
               roles: [
                 Role.AlgemeenBeheerder,
-                Role.CjmBeheerder,
+                
                 Role.DecentraalBeheerder,
                 Role.VlimpersBeheerder,
               ],
@@ -168,7 +168,7 @@ const routes: Routes = [
             canActivate: [RoleGuard],
             data: {
               title: "Organisatie - Algemeen - Koppelen KBO",
-              roles: [Role.AlgemeenBeheerder, Role.CjmBeheerder],
+              roles: [Role.AlgemeenBeheerder],
             },
           },
           {
@@ -177,7 +177,7 @@ const routes: Routes = [
             canActivate: [RoleGuard],
             data: {
               title: "Organisatie - Algemeen - Koppelen KBO ongedaan maken",
-              roles: [Role.AlgemeenBeheerder, Role.CjmBeheerder],
+              roles: [Role.AlgemeenBeheerder],
             },
           },
           {
@@ -188,7 +188,7 @@ const routes: Routes = [
               title: "Organisatie - Stopzetten",
               roles: [
                 Role.AlgemeenBeheerder,
-                Role.CjmBeheerder,
+                
                 Role.VlimpersBeheerder,
               ],
             },
@@ -201,7 +201,7 @@ const routes: Routes = [
               title: "Organisatie - Algemeen - Voeg dochterorganisatie toe",
               roles: [
                 Role.AlgemeenBeheerder,
-                Role.CjmBeheerder,
+                
                 Role.DecentraalBeheerder,
                 Role.VlimpersBeheerder,
               ],
@@ -230,7 +230,7 @@ const routes: Routes = [
               title: "Organisatie - Gebouwen - Gebouw koppelen",
               roles: [
                 Role.AlgemeenBeheerder,
-                Role.CjmBeheerder,
+                
                 Role.DecentraalBeheerder,
               ],
               organisationGuard: {
@@ -247,7 +247,7 @@ const routes: Routes = [
               title: "Organisatie - Gebouwen - Bewerken gebouw",
               roles: [
                 Role.AlgemeenBeheerder,
-                Role.CjmBeheerder,
+                
                 Role.DecentraalBeheerder,
               ],
               organisationGuard: {
@@ -318,7 +318,7 @@ const routes: Routes = [
               title: "Organisatie - Contacten - Nieuw contact",
               roles: [
                 Role.AlgemeenBeheerder,
-                Role.CjmBeheerder,
+                
                 Role.DecentraalBeheerder,
               ],
               organisationGuard: {
@@ -335,7 +335,7 @@ const routes: Routes = [
               title: "Organisatie - Contacten - Bewerken contact",
               roles: [
                 Role.AlgemeenBeheerder,
-                Role.CjmBeheerder,
+                
                 Role.DecentraalBeheerder,
               ],
               organisationGuard: {
@@ -366,7 +366,7 @@ const routes: Routes = [
               title: "Organisatie - Functies - Nieuwe functie",
               roles: [
                 Role.AlgemeenBeheerder,
-                Role.CjmBeheerder,
+                
                 Role.DecentraalBeheerder,
               ],
               organisationGuard: {
@@ -386,7 +386,7 @@ const routes: Routes = [
               title: "Organisatie - Functies - Bewerken functie",
               roles: [
                 Role.AlgemeenBeheerder,
-                Role.CjmBeheerder,
+                
                 Role.DecentraalBeheerder,
               ],
               organisationGuard: {
@@ -451,7 +451,7 @@ const routes: Routes = [
               title: "Organisatie - Sleutels - Nieuwe sleutel",
               roles: [
                 Role.AlgemeenBeheerder,
-                Role.CjmBeheerder,
+                
                 Role.DecentraalBeheerder,
                 Role.VlimpersBeheerder,
               ],
@@ -469,7 +469,7 @@ const routes: Routes = [
               title: "Organisatie - Sleutels - Bewerken sleutel",
               roles: [
                 Role.AlgemeenBeheerder,
-                Role.CjmBeheerder,
+                
                 Role.DecentraalBeheerder,
                 Role.VlimpersBeheerder,
               ],
@@ -539,7 +539,7 @@ const routes: Routes = [
               title: "Organisatie - Benamingen - Nieuwe benaming",
               roles: [
                 Role.AlgemeenBeheerder,
-                Role.CjmBeheerder,
+                
                 Role.DecentraalBeheerder,
                 Role.VlimpersBeheerder,
               ],
@@ -557,7 +557,7 @@ const routes: Routes = [
               title: "Organisatie - Benamingen - Bewerken benaming",
               roles: [
                 Role.AlgemeenBeheerder,
-                Role.CjmBeheerder,
+                
                 Role.DecentraalBeheerder,
                 Role.VlimpersBeheerder,
               ],
@@ -589,7 +589,7 @@ const routes: Routes = [
               title: "Organisatie - Locaties - Locatie koppelen",
               roles: [
                 Role.AlgemeenBeheerder,
-                Role.CjmBeheerder,
+                
                 Role.DecentraalBeheerder,
               ],
               organisationGuard: {
@@ -609,7 +609,7 @@ const routes: Routes = [
               title: "Organisatie - Locaties - Bewerken locatie",
               roles: [
                 Role.AlgemeenBeheerder,
-                Role.CjmBeheerder,
+                
                 Role.DecentraalBeheerder,
               ],
               organisationGuard: {
@@ -637,7 +637,7 @@ const routes: Routes = [
               title: "Organisatie - Historiek - Moeder entiteit koppelen",
               roles: [
                 Role.AlgemeenBeheerder,
-                Role.CjmBeheerder,
+                
                 Role.DecentraalBeheerder,
                 Role.VlimpersBeheerder,
               ],
@@ -655,7 +655,7 @@ const routes: Routes = [
               title: "Organisatie - Historiek - Bewerken moeder entiteit",
               roles: [
                 Role.AlgemeenBeheerder,
-                Role.CjmBeheerder,
+                
                 Role.DecentraalBeheerder,
                 Role.VlimpersBeheerder,
               ],
@@ -725,7 +725,7 @@ const routes: Routes = [
                 "Organisatie - Bankrekeningnummers - Bankrekeningnummer koppelen",
               roles: [
                 Role.AlgemeenBeheerder,
-                Role.CjmBeheerder,
+                
                 Role.DecentraalBeheerder,
               ],
               organisationGuard: {
@@ -744,7 +744,7 @@ const routes: Routes = [
                 "Organisatie - Bankrekeningnummers - Bewerken bankrekeningnummer",
               roles: [
                 Role.AlgemeenBeheerder,
-                Role.CjmBeheerder,
+                
                 Role.DecentraalBeheerder,
               ],
               organisationGuard: {
@@ -786,7 +786,7 @@ const routes: Routes = [
               title: "Organisatie - Relaties - Nieuwe relatie",
               roles: [
                 Role.AlgemeenBeheerder,
-                Role.CjmBeheerder,
+                
                 Role.DecentraalBeheerder,
               ],
               organisationGuard: {
@@ -806,7 +806,7 @@ const routes: Routes = [
               title: "Organisatie - Relaties - Bewerken relatie",
               roles: [
                 Role.AlgemeenBeheerder,
-                Role.CjmBeheerder,
+                
                 Role.DecentraalBeheerder,
               ],
               organisationGuard: {
@@ -835,7 +835,7 @@ const routes: Routes = [
               title: "Organisatie - Openingsuren - Nieuw openingsuur",
               roles: [
                 Role.AlgemeenBeheerder,
-                Role.CjmBeheerder,
+                
                 Role.DecentraalBeheerder,
               ],
               organisationGuard: {
@@ -853,7 +853,7 @@ const routes: Routes = [
               title: "Organisatie - Openingsuren - Bewerken openingsuur",
               roles: [
                 Role.AlgemeenBeheerder,
-                Role.CjmBeheerder,
+                
                 Role.DecentraalBeheerder,
               ],
               organisationGuard: {
@@ -873,7 +873,7 @@ const routes: Routes = [
             canActivate: [RoleGuard, OrganisationGuard],
             data: {
               title: "Organisatie - KBO-koppeling",
-              roles: [Role.AlgemeenBeheerder, Role.CjmBeheerder],
+              roles: [Role.AlgemeenBeheerder],
               organisationGuard: {
                 params: "route.parent.parent.params",
                 idPart: "id",
@@ -891,7 +891,7 @@ const routes: Routes = [
             canActivate: [RoleGuard, OrganisationGuard],
             data: {
               title: "Organisatie - Vlimpers",
-              roles: [Role.AlgemeenBeheerder, Role.CjmBeheerder],
+              roles: [Role.AlgemeenBeheerder],
               organisationGuard: {
                 params: "route.parent.parent.params",
                 idPart: "id",

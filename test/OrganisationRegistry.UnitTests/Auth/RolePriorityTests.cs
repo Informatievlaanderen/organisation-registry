@@ -52,13 +52,8 @@ public class RolePriorityTests
             .Should().Be(Role.DecentraalBeheerder);
 
     [Fact]
-    public void Never_selects_CjmBeheerder_as_primary_role()
-        => RolePriority.SelectPrimary(new[] { Role.CjmBeheerder, Role.OrgaanBeheerder })
-            .Should().Be(Role.OrgaanBeheerder);
-
-    [Fact]
     public void Returns_null_when_user_has_no_application_role()
-        => RolePriority.SelectPrimary(new[] { Role.CjmBeheerder, Role.AutomatedTask })
+        => RolePriority.SelectPrimary(new[] { Role.AutomatedTask })
             .Should().BeNull();
 
     [Fact]

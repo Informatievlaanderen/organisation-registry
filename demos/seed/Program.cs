@@ -22,7 +22,7 @@ using Microsoft.IdentityModel.Tokens;
 var apiBase         = Env("API_BASE",         "http://api");
 var keycloakBase    = Env("KEYCLOAK_BASE",    "http://keycloak:80");
 var keycloakRealm   = Env("KEYCLOAK_REALM",   "wegwijs");
-var clientId        = Env("CLIENT_ID",        "cjmClient");
+var clientId        = Env("CLIENT_ID",        "testClient");
 var clientSecret    = Env("CLIENT_SECRET",    "secret");
 var developerVoId   = Env("DEVELOPER_VO_ID", "9c2f7372-7112-49dc-9771-f127b048b4c7");
 var kboCertificate = Env("KBO_CERTIFICATE", "");
@@ -118,7 +118,6 @@ async Task<string> GetKeycloakTokenAsync()
         new KeyValuePair<string, string>("grant_type", "client_credentials"),
         new KeyValuePair<string, string>("client_id", clientId),
         new KeyValuePair<string, string>("client_secret", clientSecret),
-        new KeyValuePair<string, string>("scope", "dv_organisatieregister_cjmbeheerder")
     });
 
     var response = await client.PostAsync(tokenEndpoint, requestData);
@@ -544,9 +543,6 @@ class Seeder
         await CreateAsync("Categorie",                     "/v1/organisationclassificationtypes", new { id = "a7e93f06-0006-0000-0000-000000000004", name = "Categorie" });
         await CreateAsync("Entiteitsvorm",                 "/v1/organisationclassificationtypes", new { id = "a7e93f06-0006-0000-0000-000000000005", name = "Entiteitsvorm" });
         await CreateAsync("Regelgeving classificatie",     "/v1/organisationclassificationtypes", new { id = "cf2ce6fe-395c-0620-1bab-7152fc4d6f76", name = "Regelgeving classificatie" });
-        await CreateAsync("CJM classificatie A",           "/v1/organisationclassificationtypes", new { id = "af8e2f7d-c68c-8c15-c48e-61ef43e5a264", name = "CJM classificatie A" });
-        await CreateAsync("CJM classificatie B",           "/v1/organisationclassificationtypes", new { id = "910d6f9e-0427-ea76-c69d-7288107d79f9", name = "CJM classificatie B" });
-        await CreateAsync("CJM classificatie C",           "/v1/organisationclassificationtypes", new { id = "c35407e4-8559-08d4-f461-a8247c993d58", name = "CJM classificatie C" });
         await CreateAsync("Mandaten en vermogensaangifte", "/v1/organisationclassificationtypes", new { id = "94944afb-7261-554c-dac6-a19ad4387359", name = "Mandaten en vermogensaangifte" });
     }
 

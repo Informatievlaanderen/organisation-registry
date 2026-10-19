@@ -43,7 +43,6 @@ public class BodyPolicyTests
     [InlineData(Role.AlgemeenBeheerder)]
     [InlineData(Role.Developer)]
     [InlineData(Role.OrgaanBeheerder)]
-    [InlineData(Role.CjmBeheerder)]
     public void UnrestrictedRolesAreAuthorizedForAnyBody(Role role)
     {
         var user = UserWithRoles(role);

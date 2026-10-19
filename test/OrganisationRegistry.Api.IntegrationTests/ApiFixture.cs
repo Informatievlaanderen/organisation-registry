@@ -63,12 +63,6 @@ public sealed class ApiFixture : IDisposable, IAsyncLifetime
         public const string Scope = AcmIdmConstants.Scopes.OrafinBeheerder;
     }
 
-    public struct CJM
-    {
-        public const string Client = "cjmClient";
-        public const string Scope = AcmIdmConstants.Scopes.CjmBeheerder;
-    }
-
     public struct Test
     {
         public const string Client = "testClient";
@@ -91,7 +85,6 @@ public sealed class ApiFixture : IDisposable, IAsyncLifetime
         public const string Decentraalbeheerder = "decentraalbeheerder";
         public const string Orgaanbeheerder = "organen";
         public const string Regelgevingbeheerder = "regelgeving";
-        public const string Cjmbeheerder = "cjmbeheerder";
         public const string Orafinbeheerder = "orafinbeheerder";
         public const string VoMedewerker = "vomedewerker";
     }
@@ -103,7 +96,6 @@ public sealed class ApiFixture : IDisposable, IAsyncLifetime
     public static string GetClientSecret(string clientId)
         => clientId switch
         {
-            CJM.Client => "cjm-client-secret-2024",
             Orafin.Client => "orafin-client-secret-2024",
             Test.Client => "test-client-secret-2024",
             Backoffice.Client => "nuxt-bff-secret",
@@ -198,15 +190,10 @@ public sealed class ApiFixture : IDisposable, IAsyncLifetime
         await ConfigureExternalDependencies();
         await EnsureParameterExists("locationtypes", Configuration.Kbo.KboV2RegisteredOfficeLocationTypeId, "KBO Location");
         await EnsureParameterExists("organisationclassificationtypes", Configuration.Kbo.KboV2LegalFormOrganisationClassificationTypeId, "KBO Classification");
-        await EnsureParameterExists("organisationclassificationtypes", Configuration.Authorization.OrganisationClassificationTypeIdsOwnedByCjm.First(), "CJM Classification 1");
-        await EnsureParameterExists("organisationclassificationtypes", Configuration.Authorization.OrganisationClassificationTypeIdsOwnedByCjm.Last(), "CJM Classification 2");
         await EnsureParameterExists("labeltypes", Configuration.Kbo.KboV2FormalNameLabelTypeId, "KBO label");
         await EnsureParameterExists("keytypes", Configuration.Authorization.KeyIdsAllowedOnlyForOrafin.First(), "orafin key type");
         await EnsureImportedDataIsReady();
     }
-
-    public async Task<HttpClient> CreateCjmClient()
-        => await CreateMachine2MachineClientFor(CJM.Client, CJM.Scope);
 
     public async Task<HttpClient> CreateOrafinClient()
         => await CreateMachine2MachineClientFor(Orafin.Client, Orafin.Scope);
@@ -656,7 +643,7 @@ public sealed class ApiFixture : IDisposable, IAsyncLifetime
         if (await HasAnyItems($"/v1/organisations/{ImportedChildOrganisationId}/classifications"))
             return;
 
-        var organisationClassificationTypeId = Configuration.Authorization.OrganisationClassificationTypeIdsOwnedByCjm.First();
+        var organisationClassificationTypeId = await Create.CreateOrganisationClassificationType(false);
         var organisationClassificationId = await Create.OrganisationClassification(organisationClassificationTypeId);
 
         using var response = await Post(

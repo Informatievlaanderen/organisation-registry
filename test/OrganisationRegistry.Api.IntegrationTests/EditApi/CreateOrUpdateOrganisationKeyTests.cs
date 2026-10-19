@@ -38,7 +38,6 @@ public class CreateOrUpdateOrganisationKeyTests
 
     [EnvVarIgnoreTheory]
     [InlineData(ApiFixture.Orafin.Client, ApiFixture.Orafin.Scope)]
-    [InlineData(ApiFixture.CJM.Client, ApiFixture.CJM.Scope)]
     public async Task CannotCreateAndUpdateAs(string client, string scope)
     {
         var organisationId = Guid.NewGuid();

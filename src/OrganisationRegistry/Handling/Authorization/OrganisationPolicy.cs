@@ -12,7 +12,7 @@ using Organisation.Exceptions;
 /// (optional) restrictions, evaluated against an <see cref="OrganisationContext"/>
 /// and a <see cref="VlimpersManagementContext"/>.
 ///
-/// A holder of an unrestricted grant (e.g. AlgemeenBeheerder, CjmBeheerder)
+/// A holder of an unrestricted grant (e.g. AlgemeenBeheerder)
 /// always passes; a restricted holder only passes when the restriction is
 /// satisfied (e.g. DecentraalBeheerder for their own organisation as long as
 /// it is not under Vlimpers management, or VlimpersBeheerder for an

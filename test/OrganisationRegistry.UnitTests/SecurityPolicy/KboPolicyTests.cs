@@ -33,7 +33,6 @@ public class KboPolicyTests
     [InlineData(Role.RegelgevingBeheerder)]
     [InlineData(Role.Orafin)]
     [InlineData(Role.OrgaanBeheerder)]
-    [InlineData(Role.CjmBeheerder)]
     public void NonAdminIsNotAuthorized(Role role)
     {
         var user = new UserBuilder()

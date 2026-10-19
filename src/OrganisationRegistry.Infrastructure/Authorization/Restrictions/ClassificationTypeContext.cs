@@ -7,7 +7,7 @@ using System.Collections.Generic;
 /// Context for OrganisationClassification operations. Carries the
 /// organisationclassificationtype id a command touches so the
 /// OrganisationClassificationTypePolicy can decide against the caller's allowed
-/// classificationtype set (e.g. the Regelgeving- or Cjm-owned types).
+/// classificationtype set (e.g. the Regelgeving-owned types).
 /// </summary>
 public sealed record ClassificationTypeContext(Guid OrganisationClassificationTypeId) : IRestrictionContext
 {

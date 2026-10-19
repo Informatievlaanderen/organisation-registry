@@ -94,7 +94,6 @@ public class WhenUpdatingBodyOrganisationWithDifferentOrganisation : Specificati
 
     [Theory]
     [InlineData(Role.AlgemeenBeheerder)]
-    [InlineData(Role.CjmBeheerder)]
     public async Task UpdatesTheBodyOrganisation(Role role)
     {
         await Given(Events)

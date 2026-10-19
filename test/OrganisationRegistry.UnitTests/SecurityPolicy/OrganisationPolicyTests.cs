@@ -80,7 +80,6 @@ public class OrganisationPolicyTests
     }
 
     [Theory]
-    [InlineData(Role.CjmBeheerder)]
     [InlineData(Role.RegelgevingBeheerder)]
     [InlineData(Role.OrgaanBeheerder)]
     [InlineData(Role.Orafin)]

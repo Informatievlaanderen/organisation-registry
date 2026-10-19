@@ -22,13 +22,6 @@
       }
     },
     {
-      "name": "dv_organisatieregister_cjmbeheerder",
-      "protocol": "openid-connect",
-      "attributes": {
-        "include.in.token.scope": "true"
-      }
-    },
-    {
       "name": "dv_organisatieregister_orafinbeheerder",
       "protocol": "openid-connect",
       "attributes": {
@@ -160,7 +153,7 @@
     },
     {
       "name": "organisation-registry-api-access",
-      "description": "Adds organisation-registry-api as audience \u2014 required for RFC 8693 token exchange",
+      "description": "Adds organisation-registry-api as audience — required for RFC 8693 token exchange",
       "protocol": "openid-connect",
       "attributes": {
         "include.in.token.scope": "true"
@@ -206,7 +199,6 @@
         "web-origins",
         "vo",
         "iv_wegwijs",
-        "dv_organisatieregister_cjmbeheerder",
         "dv_organisatieregister_info"
       ],
       "optionalClientScopes": [
@@ -295,23 +287,6 @@
       }
     },
     {
-      "clientId": "cjmClient",
-      "name": "CJM Client (M2M)",
-      "enabled": true,
-      "publicClient": false,
-      "secret": "cjm-client-secret-2024",
-      "standardFlowEnabled": false,
-      "implicitFlowEnabled": false,
-      "directAccessGrantsEnabled": false,
-      "serviceAccountsEnabled": true,
-      "redirectUris": [],
-      "webOrigins": [],
-      "defaultClientScopes": [
-        "dv_organisatieregister_cjmbeheerder",
-        "dv_organisatieregister_info"
-      ]
-    },
-    {
       "clientId": "orafinClient",
       "name": "Orafin Client (M2M)",
       "enabled": true,
@@ -341,7 +316,6 @@
       "redirectUris": [],
       "webOrigins": [],
       "defaultClientScopes": [
-        "dv_organisatieregister_cjmbeheerder",
         "dv_organisatieregister_orafinbeheerder",
         "dv_organisatieregister_info",
         "dv_organisatieregister_testclient"
@@ -376,7 +350,6 @@
         "organisation-registry-api-access"
       ],
       "optionalClientScopes": [
-        "dv_organisatieregister_cjmbeheerder",
         "offline_access"
       ],
       "attributes": {
@@ -598,29 +571,6 @@
         ],
         "iv_wegwijs_rol_3D": [
           "wegwijsbeheerder-regelgevingbeheerder:OVO00001"
-        ]
-      }
-    },
-    {
-      "username": "cjmbeheerder",
-      "enabled": true,
-      "firstName": "CJM Beheerder",
-      "lastName": "Persona",
-      "credentials": [
-        {
-          "id": "d27795d0-a714-43e8-ad5a-658c17a8fd6c",
-          "type": "password",
-          "createdDate": 1774358581511,
-          "secretData": "{\"value\":\"ZUbJACvBLNxUbImCtLA6VCumb8gk+be1JreJym8B1WU88tN7+nGbONacZi3xzBnlGZoBPactN1PZy8TrmdEOnQ==\",\"salt\":\"TJsYZe4X0EJv9o6Rtmz3Iw==\",\"additionalParameters\":{}}",
-          "credentialData": "{\"hashIterations\":210000,\"algorithm\":\"pbkdf2-sha512\",\"additionalParameters\":{}}"
-        }
-      ],
-      "attributes": {
-        "vo_id": [
-          "A5C5BFCD-266C-4CC7-9869-5B95E34C090E"
-        ],
-        "iv_wegwijs_rol_3D": [
-          "wegwijsbeheerder-cjmbeheerder:OVO00001"
         ]
       }
     },

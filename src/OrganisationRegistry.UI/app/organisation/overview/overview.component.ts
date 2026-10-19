@@ -43,7 +43,6 @@ export class OrganisationOverviewComponent implements OnInit, OnDestroy {
     this.canCreateOrganisation = this.oidcService.roles.map((roles) => {
       if (
         roles.indexOf(Role.AlgemeenBeheerder) !== -1 ||
-        roles.indexOf(Role.CjmBeheerder) !== -1 ||
         roles.indexOf(Role.Developer) !== -1
       ) {
         return true;

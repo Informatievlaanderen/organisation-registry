@@ -145,18 +145,6 @@ public static class RolePermissionMap
                 Permission.PeopleFunctionsRead,
                 Permission.PeopleCapacitiesRead),
 
-            [Role.CjmBeheerder] = PermissionSet.Of(
-                Permission.CanManageBodies,
-                Permission.BodiesCanManageContacts,
-                Permission.BodiesCanManageSeats,
-                Permission.BodiesCanManageMandates,
-                Permission.BodiesCanManageLifecycles,
-                Permission.BodiesCanManageOrganisations,
-                Permission.BodiesCanManageClassifications,
-                Permission.BodiesCanManageFormalFrameworks,
-                Permission.BodiesCanManageMep),
-
-
             [Role.Orafin] = PermissionSet.Of(
                 Permission.CanReadOrafin),
 
@@ -477,10 +465,6 @@ public static class RolePermissionMap
                     ClassificationTypeRestrictions.OwnedByRegelgevingDb(
                         configuration.Authorization.OrganisationClassificationTypeIdsOwnedByRegelgevingDbBeheerder))),
             Role.VoDecentraalBeheerder => DecentraalRestrictedGrants(configuration),
-            Role.CjmBeheerder => PermissionSet.Of(
-                Permission.CanManageOrganisationClassifications.RestrictedTo(
-                    ClassificationTypeRestrictions.OwnedByCjm(
-                        configuration.Authorization.OrganisationClassificationTypeIdsOwnedByCjm))),
             _ => PermissionSet.Empty,
         };
 

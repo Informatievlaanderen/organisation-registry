@@ -31,8 +31,8 @@ spec:
             - { name: API_BASE_URL,            value: "http://api/v1" }
 
             # Client credentials
-            - { name: CJM_CLIENT_ID,        valueFrom: { secretKeyRef: { name: demo-secrets, key: cjm-client-id } } }
-            - { name: CJM_CLIENT_SECRET,    valueFrom: { secretKeyRef: { name: demo-secrets, key: cjm-client-secret } } }
+            - { name: TEST_CLIENT_ID,        valueFrom: { secretKeyRef: { name: demo-secrets, key: test-client-id } } }
+            - { name: TEST_CLIENT_SECRET,    valueFrom: { secretKeyRef: { name: demo-secrets, key: test-client-secret } } }
             - { name: ORAFIN_CLIENT_ID,     valueFrom: { secretKeyRef: { name: demo-secrets, key: orafin-client-id } } }
             - { name: ORAFIN_CLIENT_SECRET, valueFrom: { secretKeyRef: { name: demo-secrets, key: orafin-client-secret } } }
 

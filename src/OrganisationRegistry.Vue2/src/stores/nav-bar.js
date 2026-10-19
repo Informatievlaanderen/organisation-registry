@@ -20,7 +20,6 @@ export default [
     roles: [
       Roles.DecentraalBeheerder,
       Roles.AlgemeenBeheerder,
-      Roles.CjmBeheerder,
     ],
     title: "Delegaties",
     to: { path: "/../#/manage/delegations" },
@@ -31,12 +30,12 @@ export default [
     to: { path: "/../#/report" },
   },
   {
-    roles: [Roles.AlgemeenBeheerder, Roles.CjmBeheerder],
+    roles: [Roles.AlgemeenBeheerder],
     title: "Parameters",
     to: { path: "/../#/administration" },
   },
   {
-    roles: [Roles.AlgemeenBeheerder, Roles.Developer, Roles.CjmBeheerder],
+    roles: [Roles.AlgemeenBeheerder, Roles.Developer],
     title: "Systeem",
     to: { path: "/../#/system" },
   },
@@ -45,7 +44,6 @@ export default [
       Roles.VlimpersBeheerder,
       Roles.AlgemeenBeheerder,
       Roles.Developer,
-      Roles.CjmBeheerder,
     ],
     title: "Importeren",
     to: { name: "upload-organisations" },

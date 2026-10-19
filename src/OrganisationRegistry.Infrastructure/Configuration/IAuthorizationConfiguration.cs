@@ -12,5 +12,4 @@ public interface IAuthorizationConfiguration
     Guid[] KeyIdsAllowedOnlyForOrafin { get; }
     Guid[] OrganisationClassificationTypeIdsOwnedByRegelgevingDbBeheerder { get; }
     Guid[] CapacityIdsOwnedByRegelgevingDbBeheerder { get; }
-    Guid[] OrganisationClassificationTypeIdsOwnedByCjm { get; set; }
 }

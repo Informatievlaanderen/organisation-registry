@@ -7,7 +7,7 @@ using Xunit;
 
 /// <summary>
 /// Rollen zonder <c>Permission.System</c> mogen het Systeem-scherm "Stopgezet in KBO"
-/// niet lezen en krijgen 403 terug, inclusief CjmBeheerder (had voorheen rol-gebaseerd
+/// niet lezen en krijgen 403 terug, rol-gebaseerde toegang in het verleden)
 /// wel toegang) en Orafinbeheerder.
 /// </summary>
 [Collection(ApiTestsCollection.Name)]
@@ -25,7 +25,6 @@ public class Given_Roles_Without_System
     [InlineData(ApiFixture.Backoffice.Vlimpersbeheerder)]
     [InlineData(ApiFixture.Backoffice.Orgaanbeheerder)]
     [InlineData(ApiFixture.Backoffice.Regelgevingbeheerder)]
-    [InlineData(ApiFixture.Backoffice.Cjmbeheerder)]
     [InlineData(ApiFixture.Backoffice.Orafinbeheerder)]
     [InlineData(ApiFixture.Backoffice.VoMedewerker)]
     public async Task Then_Returns_Forbidden(string role)

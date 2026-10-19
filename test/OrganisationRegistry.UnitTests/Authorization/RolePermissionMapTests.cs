@@ -106,7 +106,6 @@ public class RolePermissionMapTests
     [InlineData(Role.VlimpersBeheerder)]
     [InlineData(Role.DecentraalBeheerder)]
     [InlineData(Role.VoDecentraalBeheerder)]
-    [InlineData(Role.CjmBeheerder)]
     [InlineData(Role.OrgaanBeheerder)]
     [InlineData(Role.RegelgevingBeheerder)]
     [InlineData(Role.Orafin)]
@@ -182,7 +181,6 @@ public class RolePermissionMapTests
     [InlineData(Role.VlimpersBeheerder)]
     [InlineData(Role.DecentraalBeheerder)]
     [InlineData(Role.VoDecentraalBeheerder)]
-    [InlineData(Role.CjmBeheerder)]
     [InlineData(Role.OrgaanBeheerder)]
     [InlineData(Role.RegelgevingBeheerder)]
     public void Non_admin_roles_never_grant_CanManageOrganisation(Role role)
@@ -368,7 +366,6 @@ public class RolePermissionMapTests
     [InlineData(Role.VoDecentraalBeheerder)]
     [InlineData(Role.OrgaanBeheerder)]
     [InlineData(Role.RegelgevingBeheerder)]
-    [InlineData(Role.CjmBeheerder)]
     [InlineData(Role.Orafin)]
     [InlineData(Role.AutomatedTask)]
     public void Non_admin_roles_do_not_grant_CanReadConfiguration(Role role)
@@ -392,7 +389,6 @@ public class RolePermissionMapTests
     [InlineData(Role.VoDecentraalBeheerder)]
     [InlineData(Role.OrgaanBeheerder)]
     [InlineData(Role.RegelgevingBeheerder)]
-    [InlineData(Role.CjmBeheerder)]
     [InlineData(Role.Orafin)]
     [InlineData(Role.AutomatedTask)]
     public void Non_admin_roles_do_not_grant_System(Role role)
@@ -443,7 +439,6 @@ public class RolePermissionMapTests
     [InlineData(Role.VoDecentraalBeheerder)]
     [InlineData(Role.OrgaanBeheerder)]
     [InlineData(Role.RegelgevingBeheerder)]
-    [InlineData(Role.CjmBeheerder)]
     [InlineData(Role.Orafin)]
     [InlineData(Role.AutomatedTask)]
     public void Non_admin_non_vlimpers_roles_do_not_grant_CanImport(Role role)
@@ -454,9 +449,10 @@ public class RolePermissionMapTests
     [Fact]
     public void For_roles_unions_all_permissions()
     {
-        var union = RolePermissionMap.For(new[] { Role.Orafin, Role.CjmBeheerder });
+        var union = RolePermissionMap.For(new[] { Role.Orafin, Role.OrgaanBeheerder });
 
         union.Should().Contain(Permission.CanReadOrafin);
+        union.Should().Contain(Permission.CanManageBodies);
     }
 
     [Fact]
@@ -641,12 +637,6 @@ public class RolePermissionMapTests
             .Should().BeFalse();
     }
 
-    [Fact]
-    public void Static_For_CjmBeheerder_does_not_grant_CanManageChildren()
-    {
-        RolePermissionMap.For(Role.CjmBeheerder)
-            .Should().NotContain(Permission.CanManageChildren);
-    }
 
     [Fact]
     public void For_config_unions_across_roles_and_unrestricted_absorbs_restricted()
@@ -839,7 +829,6 @@ public class RolePermissionMapTests
     [InlineData(Role.VoDecentraalBeheerder)]
     [InlineData(Role.OrgaanBeheerder)]
     [InlineData(Role.RegelgevingBeheerder)]
-    [InlineData(Role.CjmBeheerder)]
     [InlineData(Role.Orafin)]
     [InlineData(Role.AutomatedTask)]
     public void Non_admin_roles_do_not_grant_any_Delegations_permission(Role role)

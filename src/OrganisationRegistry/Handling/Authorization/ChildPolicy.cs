@@ -11,7 +11,7 @@ using Organisation.Exceptions;
 /// (optional) restrictions, evaluated against the target organisation's OVO number
 /// and Vlimpers-management flag.
 ///
-/// A holder of an unrestricted grant (AlgemeenBeheerder, CjmBeheerder, Developer)
+/// A holder of an unrestricted grant (AlgemeenBeheerder, Developer)
 /// always passes; a VlimpersBeheerder only passes when the organisation is under
 /// Vlimpers management; a DecentraalBeheerder only passes for their own
 /// organisation when it is not under Vlimpers management. This mirrors the

@@ -7,7 +7,7 @@ using Xunit;
 
 /// <summary>
 /// Enkel AlgemeenBeheerder mag het Systeem-scherm "Stopgezet in KBO" lezen
-/// (<c>Permission.System</c>). Voorheen had CjmBeheerder hier ook (rol-gebaseerde)
+/// (<c>Permission.System</c>). Voorheen was hier ook rol-gebaseerde
 /// toegang toe — dat is met de overstap naar het ongesplitste System-recht komen te
 /// vervallen.
 /// </summary>

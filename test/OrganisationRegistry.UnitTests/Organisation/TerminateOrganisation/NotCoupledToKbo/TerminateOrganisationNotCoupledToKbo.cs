@@ -137,7 +137,6 @@ public class
     [Theory]
     [InlineData(Role.VlimpersBeheerder)]
     [InlineData(Role.DecentraalBeheerder)]
-    [InlineData(Role.CjmBeheerder)]
     [InlineData(Role.OrgaanBeheerder)]
     [InlineData(Role.RegelgevingBeheerder)]
     public async Task DoesNotTerminateTheOrganisation(Role role)

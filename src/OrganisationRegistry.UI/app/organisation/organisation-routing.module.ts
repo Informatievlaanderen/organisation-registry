@@ -19,7 +19,7 @@ const routes: Routes = [
     canActivate: [RoleGuard],
     canActivateChild: [RoleGuard],
     data: {
-      roles: [Role.AlgemeenBeheerder, Role.CjmBeheerder, Role.Developer],
+      roles: [Role.AlgemeenBeheerder, Role.Developer],
       title: "Nieuwe organisatie",
     },
     component: CreateOrganisationComponent,

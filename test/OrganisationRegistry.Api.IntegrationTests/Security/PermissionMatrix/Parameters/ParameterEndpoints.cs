@@ -52,7 +52,6 @@ public static class ParameterEndpoints
         ApiFixture.Backoffice.Decentraalbeheerder,
         ApiFixture.Backoffice.Orgaanbeheerder,
         ApiFixture.Backoffice.Regelgevingbeheerder,
-        ApiFixture.Backoffice.Cjmbeheerder,
         ApiFixture.Backoffice.VoMedewerker,
     };
 

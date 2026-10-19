@@ -12,7 +12,7 @@ using Xunit;
 /// T015 — Baseline regression coverage for Client Credentials bearer tokens
 /// hitting the <c>EditApi</c> authentication scheme.
 /// <para>
-/// Each M2M client (CJM, Orafin, TestClient) presents a Keycloak-issued token
+/// Each M2M client (Orafin, TestClient) presents a Keycloak-issued token
 /// directly to an <c>/edit/organisations/**</c> route. The <c>EditApi</c>
 /// scheme (OAuth2 introspection) is the only authentication scheme reachable
 /// by Client Credentials today; the token-exchange scheme is only used to
@@ -21,8 +21,7 @@ using Xunit;
 /// <para>
 /// The target route is <c>POST /edit/organisations/{id}/keys</c>: its
 /// authorization policy (<c>PolicyNames.Keys</c>) accepts all three CC scopes
-/// (<c>dv_organisatieregister_cjmbeheerder</c>,
-/// <c>dv_organisatieregister_orafinbeheerder</c>,
+/// (/// <c>dv_organisatieregister_orafinbeheerder</c>,
 /// <c>dv_organisatieregister_testclient</c>), which lets us assert the scope-
 /// to-role translation with a single theory.
 /// </para>
@@ -47,7 +46,6 @@ public class ClientCredentialsScopePermissionTests
     }
 
     [EnvVarIgnoreTheory]
-    [InlineData(ApiFixture.CJM.Client, ApiFixture.CJM.Scope)]
     [InlineData(ApiFixture.Orafin.Client, ApiFixture.Orafin.Scope)]
     [InlineData(ApiFixture.Test.Client, ApiFixture.Test.Scope)]
     public async Task ClientCredentialsBearer_ScopeGrantsAccessToEditKeysEndpoint(
