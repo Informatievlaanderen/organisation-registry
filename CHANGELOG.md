@@ -1,3 +1,18 @@
+# [1.341.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.340.8...v1.341.0) (2026-10-19)
+
+
+### Bug Fixes
+
+* or-3732 extract OVO claims for VoDecentraalBeheerder in TokenExchange ([810f762](https://github.com/informatievlaanderen/organisation-registry/commit/810f76238a2fc4ff7c34e27890f1211ebad62fb1))
+
+
+### Features
+
+* or-3732 add VoDecentraalBeheerder role with permission mapping ([c54ce16](https://github.com/informatievlaanderen/organisation-registry/commit/c54ce160f83e9cdadd10324301466743e0cb0ae6))
+* or-3732 add VoDecentraalBeheerder to OrganisationRegistryTokenBuilder ([504c641](https://github.com/informatievlaanderen/organisation-registry/commit/504c64144273f9e32a333ffc1ce141d0d73c3146))
+* or-3732 voDecentraalBeheerder equals DecentraalBeheerder, never CanManageContacts ([ed26915](https://github.com/informatievlaanderen/organisation-registry/commit/ed26915f8e01a0bde47af8c0affc4c33a9a440c7))
+* or-3732 wire VoDecentraalBeheerder into auth pipeline ([9bef69f](https://github.com/informatievlaanderen/organisation-registry/commit/9bef69f5f4aaf99b9a7e05ef4012bc8ebffba2dd))
+
 ## [1.340.8](https://github.com/informatievlaanderen/organisation-registry/compare/v1.340.7...v1.340.8) (2026-10-16)
 
 
