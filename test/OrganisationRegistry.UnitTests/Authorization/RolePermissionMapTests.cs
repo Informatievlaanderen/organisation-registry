@@ -41,6 +41,7 @@ public class RolePermissionMapTests
     [InlineData(Role.AutomatedTask)]
     [InlineData(Role.VlimpersBeheerder)]
     [InlineData(Role.DecentraalBeheerder)]
+    [InlineData(Role.VoDecentraalBeheerder)]
     public void Roles_without_unrestricted_label_management_do_not_grant_CanManageLabels(Role role)
     {
         // VlimpersBeheerder and DecentraalBeheerder only receive CanManageLabels
@@ -104,6 +105,7 @@ public class RolePermissionMapTests
     [Theory]
     [InlineData(Role.VlimpersBeheerder)]
     [InlineData(Role.DecentraalBeheerder)]
+    [InlineData(Role.VoDecentraalBeheerder)]
     [InlineData(Role.CjmBeheerder)]
     [InlineData(Role.OrgaanBeheerder)]
     [InlineData(Role.RegelgevingBeheerder)]
@@ -179,6 +181,7 @@ public class RolePermissionMapTests
     [Theory]
     [InlineData(Role.VlimpersBeheerder)]
     [InlineData(Role.DecentraalBeheerder)]
+    [InlineData(Role.VoDecentraalBeheerder)]
     [InlineData(Role.CjmBeheerder)]
     [InlineData(Role.OrgaanBeheerder)]
     [InlineData(Role.RegelgevingBeheerder)]
@@ -362,6 +365,7 @@ public class RolePermissionMapTests
     [Theory]
     [InlineData(Role.VlimpersBeheerder)]
     [InlineData(Role.DecentraalBeheerder)]
+    [InlineData(Role.VoDecentraalBeheerder)]
     [InlineData(Role.OrgaanBeheerder)]
     [InlineData(Role.RegelgevingBeheerder)]
     [InlineData(Role.CjmBeheerder)]
@@ -385,6 +389,7 @@ public class RolePermissionMapTests
     [Theory]
     [InlineData(Role.VlimpersBeheerder)]
     [InlineData(Role.DecentraalBeheerder)]
+    [InlineData(Role.VoDecentraalBeheerder)]
     [InlineData(Role.OrgaanBeheerder)]
     [InlineData(Role.RegelgevingBeheerder)]
     [InlineData(Role.CjmBeheerder)]
@@ -435,6 +440,7 @@ public class RolePermissionMapTests
 
     [Theory]
     [InlineData(Role.DecentraalBeheerder)]
+    [InlineData(Role.VoDecentraalBeheerder)]
     [InlineData(Role.OrgaanBeheerder)]
     [InlineData(Role.RegelgevingBeheerder)]
     [InlineData(Role.CjmBeheerder)]
@@ -833,6 +839,7 @@ public class RolePermissionMapTests
     [Theory]
     [InlineData(Role.VlimpersBeheerder)]
     [InlineData(Role.DecentraalBeheerder)]
+    [InlineData(Role.VoDecentraalBeheerder)]
     [InlineData(Role.OrgaanBeheerder)]
     [InlineData(Role.RegelgevingBeheerder)]
     [InlineData(Role.CjmBeheerder)]
@@ -846,5 +853,93 @@ public class RolePermissionMapTests
         set.Contains(Permission.DelegationsWrite).Should().BeFalse();
         set.Contains(Permission.DelegationsDelete).Should().BeFalse();
         set.Contains(Permission.DelegationsCreate).Should().BeFalse();
+    }
+
+    // -----------------------------------------------------------------------
+    // VoDecentraalBeheerder
+    // -----------------------------------------------------------------------
+
+    [Fact]
+    public void VoDecentraalBeheerder_grants_people_and_org_view_permissions()
+    {
+        // Per rechtenmatrix: VO Decentraal beheerder has R on Functies,
+        // Hoedanigheden (both organisation and people screens).
+        var set = RolePermissionMap.For(Role.VoDecentraalBeheerder);
+
+        set.Contains(Permission.CanViewOrganisationFunctions).Should().BeTrue();
+        set.Contains(Permission.CanViewOrganisationCapacities).Should().BeTrue();
+        set.Contains(Permission.PeopleFunctionsRead).Should().BeTrue();
+        set.Contains(Permission.PeopleCapacitiesRead).Should().BeTrue();
+    }
+
+    [Fact]
+    public void VoDecentraalBeheerder_is_read_only_no_manage_permissions()
+    {
+        // Per rechtenmatrix: every Organisatie sub-screen (Contacten, Functies,
+        // Hoedanigheden, Locaties, Gebouwen, Benamingen, Classificaties,
+        // Toepassingsgebieden, Sleutels, Regelgeving, Organen, Relaties) is R,
+        // not CRUD. KBO and Vlimpers are completely blocked.
+        var set = RolePermissionMap.For(Role.VoDecentraalBeheerder);
+
+        set.Contains(Permission.CanManageChildren).Should().BeFalse();
+        set.Contains(Permission.CanManageParent).Should().BeFalse();
+        set.Contains(Permission.CanManageOrganisation).Should().BeFalse();
+        set.Contains(Permission.CanManageOrganisationInfoLimitedToVlimpers).Should().BeFalse();
+        set.Contains(Permission.CanManageOrganisationInfoNotLimitedToVlimpers).Should().BeFalse();
+        set.Contains(Permission.CanTerminateOrganisation).Should().BeFalse();
+        set.Contains(Permission.CanCreateOrganisations).Should().BeFalse();
+        set.Contains(Permission.CanManageContacts).Should().BeFalse();
+        set.Contains(Permission.CanManageFunctions).Should().BeFalse();
+        set.Contains(Permission.CanManageCapacities).Should().BeFalse();
+        set.Contains(Permission.CanManageLocations).Should().BeFalse();
+        set.Contains(Permission.CanManageBuildings).Should().BeFalse();
+        set.Contains(Permission.CanManageLabels).Should().BeFalse();
+        set.Contains(Permission.CanManageOrganisationClassifications).Should().BeFalse();
+        set.Contains(Permission.CanManageFormalFrameworks).Should().BeFalse();
+        set.Contains(Permission.CanManageKeys).Should().BeFalse();
+        set.Contains(Permission.CanManageRegulations).Should().BeFalse();
+        set.Contains(Permission.CanManageBodies).Should().BeFalse();
+        set.Contains(Permission.CanManageRelations).Should().BeFalse();
+        set.Contains(Permission.CanManageKbo).Should().BeFalse();
+        set.Contains(Permission.CanManageVlimpers).Should().BeFalse();
+        set.Contains(Permission.CanViewOrganisationKbo).Should().BeFalse();
+        set.Contains(Permission.CanViewOrganisationVlimpers).Should().BeFalse();
+        set.Contains(Permission.PeopleWrite).Should().BeFalse();
+        set.Contains(Permission.CanImport).Should().BeFalse();
+        set.Contains(Permission.System).Should().BeFalse();
+        set.Contains(Permission.CanReadConfiguration).Should().BeFalse();
+        set.Contains(Permission.DelegationsRead).Should().BeFalse();
+        set.Contains(Permission.DelegationsWrite).Should().BeFalse();
+        set.Contains(Permission.DelegationsDelete).Should().BeFalse();
+    }
+
+    [Fact]
+    public void For_config_VoDecentraalBeheerder_grants_org_info_update_restricted_to_own_organisation()
+    {
+        // Per rechtenmatrix: VO Decentraal beheerder has RU on Organisatie,
+        // scoped to own OVO. Only CanManageOrganisationInfoNotLimitedToVlimpers
+        // is needed (the four Vlimpers-reserved fields are never granted).
+        var ownOvoNumber = "OVO123456";
+        var otherOvoNumber = "OVO654321";
+        var config = new OrganisationRegistryConfigurationStub();
+
+        var user = new UserBuilder()
+            .AddRoles(Role.VoDecentraalBeheerder)
+            .AddOrganisations(ownOvoNumber)
+            .Build();
+
+        var set = RolePermissionMap.For(new[] { Role.VoDecentraalBeheerder }, config);
+
+        set.IsSatisfiedFor(
+                Permission.CanManageOrganisationInfoNotLimitedToVlimpers,
+                new UserContext(user),
+                new OrganisationContext.ByOvoNumber(ownOvoNumber))
+            .Should().BeTrue();
+
+        set.IsSatisfiedFor(
+                Permission.CanManageOrganisationInfoNotLimitedToVlimpers,
+                new UserContext(user),
+                new OrganisationContext.ByOvoNumber(otherOvoNumber))
+            .Should().BeFalse();
     }
 }
