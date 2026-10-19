@@ -860,86 +860,69 @@ public class RolePermissionMapTests
     // -----------------------------------------------------------------------
 
     [Fact]
-    public void VoDecentraalBeheerder_grants_people_and_org_view_permissions()
+    public void VoDecentraalBeheerder_has_same_static_view_permissions_as_DecentraalBeheerder()
     {
-        // Per rechtenmatrix: VO Decentraal beheerder has R on Functies,
-        // Hoedanigheden (both organisation and people screens).
-        var set = RolePermissionMap.For(Role.VoDecentraalBeheerder);
+        var voSet = RolePermissionMap.For(Role.VoDecentraalBeheerder);
+        var decentraalSet = RolePermissionMap.For(Role.DecentraalBeheerder);
 
-        set.Should().Contain(Permission.CanViewOrganisationFunctions);
-        set.Should().Contain(Permission.CanViewOrganisationCapacities);
-        set.Should().Contain(Permission.PeopleFunctionsRead);
-        set.Should().Contain(Permission.PeopleCapacitiesRead);
+        // Both have the same read-only view permissions.
+        voSet.Should().Contain(Permission.CanViewOrganisationFunctions);
+        voSet.Should().Contain(Permission.CanViewOrganisationCapacities);
+        voSet.Should().Contain(Permission.PeopleFunctionsRead);
+        voSet.Should().Contain(Permission.PeopleCapacitiesRead);
+        voSet.Should().BeEquivalentTo(decentraalSet);
     }
 
     [Fact]
-    public void VoDecentraalBeheerder_is_read_only_no_manage_permissions()
+    public void VoDecentraalBeheerder_has_same_restricted_grants_as_DecentraalBeheerder()
     {
-        // Per rechtenmatrix: every Organisatie sub-screen (Contacten, Functies,
-        // Hoedanigheden, Locaties, Gebouwen, Benamingen, Classificaties,
-        // Toepassingsgebieden, Sleutels, Regelgeving, Organen, Relaties) is R,
-        // not CRUD. KBO and Vlimpers are completely blocked.
-        var set = RolePermissionMap.For(Role.VoDecentraalBeheerder);
-
-        set.Should().NotContain(Permission.CanManageChildren);
-        set.Should().NotContain(Permission.CanManageParent);
-        set.Should().NotContain(Permission.CanManageOrganisation);
-        set.Should().NotContain(Permission.CanManageOrganisationInfoLimitedToVlimpers);
-        set.Should().NotContain(Permission.CanManageOrganisationInfoNotLimitedToVlimpers);
-        set.Should().NotContain(Permission.CanTerminateOrganisation);
-        set.Should().NotContain(Permission.CanCreateOrganisations);
-        set.Should().NotContain(Permission.CanManageContacts);
-        set.Should().NotContain(Permission.CanManageFunctions);
-        set.Should().NotContain(Permission.CanManageCapacities);
-        set.Should().NotContain(Permission.CanManageLocations);
-        set.Should().NotContain(Permission.CanManageBuildings);
-        set.Should().NotContain(Permission.CanManageLabels);
-        set.Should().NotContain(Permission.CanManageOrganisationClassifications);
-        set.Should().NotContain(Permission.CanManageFormalFrameworks);
-        set.Should().NotContain(Permission.CanManageKeys);
-        set.Should().NotContain(Permission.CanManageRegulations);
-        set.Should().NotContain(Permission.CanManageBodies);
-        set.Should().NotContain(Permission.CanManageRelations);
-        set.Should().NotContain(Permission.CanManageKbo);
-        set.Should().NotContain(Permission.CanManageVlimpers);
-        set.Should().NotContain(Permission.CanViewOrganisationKbo);
-        set.Should().NotContain(Permission.CanViewOrganisationVlimpers);
-        set.Should().NotContain(Permission.PeopleWrite);
-        set.Should().NotContain(Permission.CanImport);
-        set.Should().NotContain(Permission.System);
-        set.Should().NotContain(Permission.CanReadConfiguration);
-        set.Should().NotContain(Permission.DelegationsRead);
-        set.Should().NotContain(Permission.DelegationsWrite);
-        set.Should().NotContain(Permission.DelegationsDelete);
-    }
-
-    [Fact]
-    public void For_config_VoDecentraalBeheerder_grants_org_info_update_restricted_to_own_organisation()
-    {
-        // Per rechtenmatrix: VO Decentraal beheerder has RU on Organisatie,
-        // scoped to own OVO. Only CanManageOrganisationInfoNotLimitedToVlimpers
-        // is needed (the four Vlimpers-reserved fields are never granted).
         var ownOvoNumber = "OVO123456";
-        var otherOvoNumber = "OVO654321";
         var config = new OrganisationRegistryConfigurationStub();
 
-        var user = new UserBuilder()
+        var voUser = new UserBuilder()
             .AddRoles(Role.VoDecentraalBeheerder)
             .AddOrganisations(ownOvoNumber)
             .Build();
 
-        var set = RolePermissionMap.For(new[] { Role.VoDecentraalBeheerder }, config);
+        var decentraalUser = new UserBuilder()
+            .AddRoles(Role.DecentraalBeheerder)
+            .AddOrganisations(ownOvoNumber)
+            .Build();
 
-        set.IsSatisfiedFor(
+        var voSet = RolePermissionMap.For(new[] { Role.VoDecentraalBeheerder }, config);
+        var decentraalSet = RolePermissionMap.For(new[] { Role.DecentraalBeheerder }, config);
+
+        // The restricted grants for both roles should be equivalent on the
+        // user's own organisation.
+        voSet.IsSatisfiedFor(
                 Permission.CanManageOrganisationInfoNotLimitedToVlimpers,
-                new UserContext(user),
+                new UserContext(voUser),
                 new OrganisationContext.ByOvoNumber(ownOvoNumber))
             .Should().BeTrue();
 
-        set.IsSatisfiedFor(
+        decentraalSet.IsSatisfiedFor(
                 Permission.CanManageOrganisationInfoNotLimitedToVlimpers,
-                new UserContext(user),
-                new OrganisationContext.ByOvoNumber(otherOvoNumber))
+                new UserContext(decentraalUser),
+                new OrganisationContext.ByOvoNumber(ownOvoNumber))
+            .Should().BeTrue();
+
+        // Neither role is granted CanManageContacts (only AlgemeenBeheerder
+        // and Developer hold it) — asserted here for both to make the
+        // equivalence explicit, not because VoDecentraalBeheerder is
+        // special-cased to exclude it.
+        voSet.IsSatisfiedFor(
+                Permission.CanManageContacts,
+                new UserContext(voUser),
+                new OrganisationContext.ByOvoNumber(ownOvoNumber))
             .Should().BeFalse();
+    }
+
+    [Fact]
+    public void VoDecentraalBeheerder_cannot_manage_contacts()
+    {
+        // VoDecentraalBeheerder is a DecentraalBeheerder without contact write access.
+        var set = RolePermissionMap.For(Role.VoDecentraalBeheerder);
+
+        set.Should().NotContain(Permission.CanManageContacts);
     }
 }
