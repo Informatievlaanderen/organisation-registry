@@ -47,7 +47,7 @@ public class RolePermissionMapTests
         // VlimpersBeheerder and DecentraalBeheerder only receive CanManageLabels
         // as a data-driven restricted grant via the config-aware overload; the static map
         // must not grant it unrestricted.
-        RolePermissionMap.For(role).Contains(Permission.CanManageLabels).Should().BeFalse();
+        RolePermissionMap.For(role).Should().NotContain(Permission.CanManageLabels);
     }
 
     [Theory]
@@ -100,7 +100,7 @@ public class RolePermissionMapTests
     [InlineData(Role.AlgemeenBeheerder)]
     [InlineData(Role.Developer)]
     public void Grants_CanTerminateOrganisation(Role role)
-        => RolePermissionMap.For(role).Contains(Permission.CanTerminateOrganisation).Should().BeTrue();
+        => RolePermissionMap.For(role).Should().Contain(Permission.CanTerminateOrganisation);
 
     [Theory]
     [InlineData(Role.VlimpersBeheerder)]
@@ -116,7 +116,7 @@ public class RolePermissionMapTests
         // CanTerminateOrganisation is unrestricted-only: it cannot be modeled as a
         // restriction on CanManageOrganisation because VlimpersBeheerder/DecentraalBeheerder
         // must be excluded even for organisations they can otherwise edit.
-        RolePermissionMap.For(role).Contains(Permission.CanTerminateOrganisation).Should().BeFalse();
+        RolePermissionMap.For(role).Should().NotContain(Permission.CanTerminateOrganisation);
     }
 
     [Theory]
@@ -176,7 +176,7 @@ public class RolePermissionMapTests
     [InlineData(Role.AlgemeenBeheerder)]
     [InlineData(Role.Developer)]
     public void Grants_CanManageOrganisation_unrestricted(Role role)
-        => RolePermissionMap.For(role).Contains(Permission.CanManageOrganisation).Should().BeTrue();
+        => RolePermissionMap.For(role).Should().Contain(Permission.CanManageOrganisation);
 
     [Theory]
     [InlineData(Role.VlimpersBeheerder)]
@@ -195,7 +195,7 @@ public class RolePermissionMapTests
         // CanManageOrganisationInfoNotLimitedToVlimpers permissions instead.
         var config = new OrganisationRegistryConfigurationStub();
 
-        RolePermissionMap.For(role).Contains(Permission.CanManageOrganisation).Should().BeFalse();
+        RolePermissionMap.For(role).Should().NotContain(Permission.CanManageOrganisation);
 
         RolePermissionMap.For(new[] { role }, config)
             .Contains(Permission.CanManageOrganisation)
@@ -327,7 +327,7 @@ public class RolePermissionMapTests
 
         var set = RolePermissionMap.For(new[] { Role.DecentraalBeheerder }, config);
 
-        set.Contains(Permission.BodiesCanManageMep).Should().BeFalse();
+        set.Should().NotContain(Permission.BodiesCanManageMep);
         set.IsSatisfiedFor(
                 Permission.BodiesCanManageMep,
                 new UserContext(user),
@@ -357,9 +357,9 @@ public class RolePermissionMapTests
     public void AlgemeenBeheerder_does_not_grant_orafin_or_info_or_scheduled()
     {
         var set = RolePermissionMap.For(Role.AlgemeenBeheerder);
-        set.Contains(Permission.CanReadOrafin).Should().BeFalse();
-        set.Contains(Permission.CanReadInfoEndpoints).Should().BeFalse();
-        set.Contains(Permission.CanRunScheduledJobs).Should().BeFalse();
+        set.Should().NotContain(Permission.CanReadOrafin);
+        set.Should().NotContain(Permission.CanReadInfoEndpoints);
+        set.Should().NotContain(Permission.CanRunScheduledJobs);
     }
 
     [Theory]
@@ -373,7 +373,7 @@ public class RolePermissionMapTests
     [InlineData(Role.AutomatedTask)]
     public void Non_admin_roles_do_not_grant_CanReadConfiguration(Role role)
     {
-        RolePermissionMap.For(role).Contains(Permission.CanReadConfiguration).Should().BeFalse();
+        RolePermissionMap.For(role).Should().NotContain(Permission.CanReadConfiguration);
     }
 
     [Theory]
@@ -383,7 +383,7 @@ public class RolePermissionMapTests
     {
         // Statistieken/Events/Stopgezet-in-KBO are gated by a single, coarse-grained
         // System permission (see ui-permission-matrix.md) — no per-screen split.
-        RolePermissionMap.For(role).Contains(Permission.System).Should().BeTrue();
+        RolePermissionMap.For(role).Should().Contain(Permission.System);
     }
 
     [Theory]
@@ -397,7 +397,7 @@ public class RolePermissionMapTests
     [InlineData(Role.AutomatedTask)]
     public void Non_admin_roles_do_not_grant_System(Role role)
     {
-        RolePermissionMap.For(role).Contains(Permission.System).Should().BeFalse();
+        RolePermissionMap.For(role).Should().NotContain(Permission.System);
     }
 
     [Theory]
@@ -407,7 +407,7 @@ public class RolePermissionMapTests
     {
         // Importeren (imports) is gated by Permission.CanImport; AlgemeenBeheerder and
         // Developer hold it unrestricted (any organisation) — see ui-permission-matrix.md.
-        RolePermissionMap.For(role).Contains(Permission.CanImport).Should().BeTrue();
+        RolePermissionMap.For(role).Should().Contain(Permission.CanImport);
     }
 
     [Fact]
@@ -417,7 +417,7 @@ public class RolePermissionMapTests
         // VlimpersBeheerder — that grant is only added by the config-aware overload,
         // restricted to organisations under Vlimpers management (see ImportPolicy).
         RolePermissionMap.For(Role.VlimpersBeheerder)
-            .Contains(Permission.CanImport).Should().BeFalse();
+            .Should().NotContain(Permission.CanImport);
     }
 
     [Fact]
@@ -448,7 +448,7 @@ public class RolePermissionMapTests
     [InlineData(Role.AutomatedTask)]
     public void Non_admin_non_vlimpers_roles_do_not_grant_CanImport(Role role)
     {
-        RolePermissionMap.For(role).Contains(Permission.CanImport).Should().BeFalse();
+        RolePermissionMap.For(role).Should().NotContain(Permission.CanImport);
     }
 
     [Fact]
@@ -456,10 +456,10 @@ public class RolePermissionMapTests
     {
         var union = RolePermissionMap.For(new[] { Role.Orafin, Role.CjmBeheerder });
 
-        union.Contains(Permission.CanReadOrafin).Should().BeTrue();
+        union.Should().Contain(Permission.CanReadOrafin);
         // TODO: check this
-        // union.Contains(Permission.CanAddBodies).Should().BeTrue();
-        // union.Contains(Permission.CanEditBodies).Should().BeTrue();
+        // union.Should().Contain(Permission.CanAddBodies);
+        // union.Should().Contain(Permission.CanEditBodies);
     }
 
     [Fact]
@@ -529,7 +529,7 @@ public class RolePermissionMapTests
         // to VlimpersBeheerder — that grant is only added by the config-aware overload
         // (data-driven, restricted to Vlimpers-allowed keytypes on Vlimpers-managed orgs).
         RolePermissionMap.For(Role.VlimpersBeheerder)
-            .Contains(Permission.CanManageKeys).Should().BeFalse();
+            .Should().NotContain(Permission.CanManageKeys);
     }
 
     [Fact]
@@ -575,7 +575,7 @@ public class RolePermissionMapTests
         // CanManageChildren to VlimpersBeheerder — that grant is only added by the
         // config-aware overload, restricted to organisations under Vlimpers management.
         RolePermissionMap.For(Role.VlimpersBeheerder)
-            .Contains(Permission.CanManageChildren).Should().BeFalse();
+            .Should().NotContain(Permission.CanManageChildren);
     }
 
     [Fact]
@@ -584,7 +584,7 @@ public class RolePermissionMapTests
         // Only granted as a data-driven restricted grant (own organisation, not under
         // Vlimpers management) via the config-aware overload.
         RolePermissionMap.For(Role.DecentraalBeheerder)
-            .Contains(Permission.CanManageChildren).Should().BeFalse();
+            .Should().NotContain(Permission.CanManageChildren);
     }
 
     [Fact]
@@ -648,7 +648,7 @@ public class RolePermissionMapTests
     public void Static_For_CjmBeheerder_does_not_grant_CanManageChildren()
     {
         RolePermissionMap.For(Role.CjmBeheerder)
-            .Contains(Permission.CanManageChildren).Should().BeFalse();
+            .Should().NotContain(Permission.CanManageChildren);
     }
 
     [Fact]
@@ -817,10 +817,10 @@ public class RolePermissionMapTests
         // Create on delegations for this role (see ui-permission-matrix.md).
         var set = RolePermissionMap.For(Role.AlgemeenBeheerder);
 
-        set.Contains(Permission.DelegationsRead).Should().BeTrue();
-        set.Contains(Permission.DelegationsWrite).Should().BeTrue();
-        set.Contains(Permission.DelegationsDelete).Should().BeTrue();
-        set.Contains(Permission.DelegationsCreate).Should().BeFalse();
+        set.Should().Contain(Permission.DelegationsRead);
+        set.Should().Contain(Permission.DelegationsWrite);
+        set.Should().Contain(Permission.DelegationsDelete);
+        set.Should().NotContain(Permission.DelegationsCreate);
     }
 
     [Fact]
@@ -830,10 +830,10 @@ public class RolePermissionMapTests
         // (internal/tooling capability, not exposed via /v1/me).
         var set = RolePermissionMap.For(Role.Developer);
 
-        set.Contains(Permission.DelegationsRead).Should().BeTrue();
-        set.Contains(Permission.DelegationsWrite).Should().BeTrue();
-        set.Contains(Permission.DelegationsDelete).Should().BeTrue();
-        set.Contains(Permission.DelegationsCreate).Should().BeTrue();
+        set.Should().Contain(Permission.DelegationsRead);
+        set.Should().Contain(Permission.DelegationsWrite);
+        set.Should().Contain(Permission.DelegationsDelete);
+        set.Should().Contain(Permission.DelegationsCreate);
     }
 
     [Theory]
@@ -849,10 +849,10 @@ public class RolePermissionMapTests
     {
         var set = RolePermissionMap.For(role);
 
-        set.Contains(Permission.DelegationsRead).Should().BeFalse();
-        set.Contains(Permission.DelegationsWrite).Should().BeFalse();
-        set.Contains(Permission.DelegationsDelete).Should().BeFalse();
-        set.Contains(Permission.DelegationsCreate).Should().BeFalse();
+        set.Should().NotContain(Permission.DelegationsRead);
+        set.Should().NotContain(Permission.DelegationsWrite);
+        set.Should().NotContain(Permission.DelegationsDelete);
+        set.Should().NotContain(Permission.DelegationsCreate);
     }
 
     // -----------------------------------------------------------------------
@@ -866,10 +866,10 @@ public class RolePermissionMapTests
         // Hoedanigheden (both organisation and people screens).
         var set = RolePermissionMap.For(Role.VoDecentraalBeheerder);
 
-        set.Contains(Permission.CanViewOrganisationFunctions).Should().BeTrue();
-        set.Contains(Permission.CanViewOrganisationCapacities).Should().BeTrue();
-        set.Contains(Permission.PeopleFunctionsRead).Should().BeTrue();
-        set.Contains(Permission.PeopleCapacitiesRead).Should().BeTrue();
+        set.Should().Contain(Permission.CanViewOrganisationFunctions);
+        set.Should().Contain(Permission.CanViewOrganisationCapacities);
+        set.Should().Contain(Permission.PeopleFunctionsRead);
+        set.Should().Contain(Permission.PeopleCapacitiesRead);
     }
 
     [Fact]
@@ -881,36 +881,36 @@ public class RolePermissionMapTests
         // not CRUD. KBO and Vlimpers are completely blocked.
         var set = RolePermissionMap.For(Role.VoDecentraalBeheerder);
 
-        set.Contains(Permission.CanManageChildren).Should().BeFalse();
-        set.Contains(Permission.CanManageParent).Should().BeFalse();
-        set.Contains(Permission.CanManageOrganisation).Should().BeFalse();
-        set.Contains(Permission.CanManageOrganisationInfoLimitedToVlimpers).Should().BeFalse();
-        set.Contains(Permission.CanManageOrganisationInfoNotLimitedToVlimpers).Should().BeFalse();
-        set.Contains(Permission.CanTerminateOrganisation).Should().BeFalse();
-        set.Contains(Permission.CanCreateOrganisations).Should().BeFalse();
-        set.Contains(Permission.CanManageContacts).Should().BeFalse();
-        set.Contains(Permission.CanManageFunctions).Should().BeFalse();
-        set.Contains(Permission.CanManageCapacities).Should().BeFalse();
-        set.Contains(Permission.CanManageLocations).Should().BeFalse();
-        set.Contains(Permission.CanManageBuildings).Should().BeFalse();
-        set.Contains(Permission.CanManageLabels).Should().BeFalse();
-        set.Contains(Permission.CanManageOrganisationClassifications).Should().BeFalse();
-        set.Contains(Permission.CanManageFormalFrameworks).Should().BeFalse();
-        set.Contains(Permission.CanManageKeys).Should().BeFalse();
-        set.Contains(Permission.CanManageRegulations).Should().BeFalse();
-        set.Contains(Permission.CanManageBodies).Should().BeFalse();
-        set.Contains(Permission.CanManageRelations).Should().BeFalse();
-        set.Contains(Permission.CanManageKbo).Should().BeFalse();
-        set.Contains(Permission.CanManageVlimpers).Should().BeFalse();
-        set.Contains(Permission.CanViewOrganisationKbo).Should().BeFalse();
-        set.Contains(Permission.CanViewOrganisationVlimpers).Should().BeFalse();
-        set.Contains(Permission.PeopleWrite).Should().BeFalse();
-        set.Contains(Permission.CanImport).Should().BeFalse();
-        set.Contains(Permission.System).Should().BeFalse();
-        set.Contains(Permission.CanReadConfiguration).Should().BeFalse();
-        set.Contains(Permission.DelegationsRead).Should().BeFalse();
-        set.Contains(Permission.DelegationsWrite).Should().BeFalse();
-        set.Contains(Permission.DelegationsDelete).Should().BeFalse();
+        set.Should().NotContain(Permission.CanManageChildren);
+        set.Should().NotContain(Permission.CanManageParent);
+        set.Should().NotContain(Permission.CanManageOrganisation);
+        set.Should().NotContain(Permission.CanManageOrganisationInfoLimitedToVlimpers);
+        set.Should().NotContain(Permission.CanManageOrganisationInfoNotLimitedToVlimpers);
+        set.Should().NotContain(Permission.CanTerminateOrganisation);
+        set.Should().NotContain(Permission.CanCreateOrganisations);
+        set.Should().NotContain(Permission.CanManageContacts);
+        set.Should().NotContain(Permission.CanManageFunctions);
+        set.Should().NotContain(Permission.CanManageCapacities);
+        set.Should().NotContain(Permission.CanManageLocations);
+        set.Should().NotContain(Permission.CanManageBuildings);
+        set.Should().NotContain(Permission.CanManageLabels);
+        set.Should().NotContain(Permission.CanManageOrganisationClassifications);
+        set.Should().NotContain(Permission.CanManageFormalFrameworks);
+        set.Should().NotContain(Permission.CanManageKeys);
+        set.Should().NotContain(Permission.CanManageRegulations);
+        set.Should().NotContain(Permission.CanManageBodies);
+        set.Should().NotContain(Permission.CanManageRelations);
+        set.Should().NotContain(Permission.CanManageKbo);
+        set.Should().NotContain(Permission.CanManageVlimpers);
+        set.Should().NotContain(Permission.CanViewOrganisationKbo);
+        set.Should().NotContain(Permission.CanViewOrganisationVlimpers);
+        set.Should().NotContain(Permission.PeopleWrite);
+        set.Should().NotContain(Permission.CanImport);
+        set.Should().NotContain(Permission.System);
+        set.Should().NotContain(Permission.CanReadConfiguration);
+        set.Should().NotContain(Permission.DelegationsRead);
+        set.Should().NotContain(Permission.DelegationsWrite);
+        set.Should().NotContain(Permission.DelegationsDelete);
     }
 
     [Fact]
