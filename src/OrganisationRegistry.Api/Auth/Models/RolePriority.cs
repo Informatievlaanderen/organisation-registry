@@ -19,6 +19,7 @@ public static class RolePriority
         Role.Developer,
         Role.AlgemeenBeheerder,
         Role.DecentraalBeheerder,
+        Role.VoDecentraalBeheerder,
         Role.VlimpersBeheerder,
         Role.RegelgevingBeheerder,
         Role.OrgaanBeheerder,

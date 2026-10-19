@@ -17,6 +17,7 @@ public static class RoleMapping
         Mapping.Add(Role.AutomatedTask, "automatedTask");
         Mapping.Add(Role.CjmBeheerder, AcmIdmConstants.Roles.CjmBeheerder);
         Mapping.Add(Role.Orafin, "Orafin");
+        Mapping.Add(Role.VoDecentraalBeheerder, AcmIdmConstants.Roles.VoDecentraalBeheerder);
         Mapping.Add(Role.VoMedewerker, AcmIdmConstants.Roles.VoMedewerker);
     }
 

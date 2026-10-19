@@ -29,6 +29,7 @@ public static class AcmIdmConstants
         public const string CjmBeheerder = "cjmbeheerder";
 
         public const string VoMedewerker = "vomedewerker";
+        public const string VoDecentraalBeheerder = "vodecentraalbeheerder";
     }
 
     public static class Scopes
