@@ -98,6 +98,7 @@ public class OrganisationRegistryTokenBuilder : IOrganisationRegistryTokenBuilde
             AddRegelgevingBeheerderClaim(roles, identity);
             AddCjmBeheerderClaim(roles, identity);
             AddVoMedewerkerClaim(roles, identity);
+            AddVoDecentraalBeheerderClaim(roles, identity);
         }
 
         return identity;
@@ -110,6 +111,26 @@ public class OrganisationRegistryTokenBuilder : IOrganisationRegistryTokenBuilde
 
         AddRoleClaim(identity, Role.VoMedewerker);
     }
+
+    private static void AddVoDecentraalBeheerderClaim(IReadOnlyCollection<string> roles, ClaimsIdentity identity)
+    {
+        if (!roles.Any(IsVoDecentraalBeheerder))
+            return;
+
+        AddRoleClaim(identity, Role.VoDecentraalBeheerder);
+
+        var voDecentraalRoles = roles.Where(IsVoDecentraalBeheerder);
+        foreach (var role in voDecentraalRoles)
+        {
+            var organisation = role.Replace(
+                AcmIdmConstants.RolePrefix,
+                string.Empty).Split(':')[1];
+            AddOrganisationClaim(identity, organisation);
+        }
+    }
+
+    private static bool IsVoDecentraalBeheerder(string role)
+        => role.StartsWith(AcmIdmConstants.Roles.VoDecentraalBeheerder);
 
     private static void AddCjmBeheerderClaim(IEnumerable<string> roles, ClaimsIdentity identity)
     {
