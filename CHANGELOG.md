@@ -1,3 +1,16 @@
+# [1.342.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.341.0...v1.342.0) (2026-10-20)
+
+
+### Bug Fixes
+
+* or-3114 authorize VlimpersBeheerder with Vlimpers-allowed capacities ([02143e3](https://github.com/informatievlaanderen/organisation-registry/commit/02143e315025adfcf2c3c0744cfbfeaa81faade6))
+* or-3114 update nav-bar roles ([fb7d629](https://github.com/informatievlaanderen/organisation-registry/commit/fb7d6297d00b98ffddd7862ab79c9eac672ee00a))
+
+
+### Features
+
+* or-3114 remove cjm role ([12f8f2b](https://github.com/informatievlaanderen/organisation-registry/commit/12f8f2b5ff49f9fd8175b34cba7ebd7cbe3c7ba9))
+
 # [1.341.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.340.8...v1.341.0) (2026-10-19)
 
 
