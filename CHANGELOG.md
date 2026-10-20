@@ -1,3 +1,11 @@
+## [1.342.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.342.0...v1.342.1) (2026-10-20)
+
+
+### Bug Fixes
+
+* or-3114 allow anonymous access on public parameter lists ([6fb44c4](https://github.com/informatievlaanderen/organisation-registry/commit/6fb44c4b3fba6434b29424460f7e284f8d8a77eb))
+* or-3114 remove canManageNames from OrganisationPermissions ([db6f16c](https://github.com/informatievlaanderen/organisation-registry/commit/db6f16c6b4d462953eb987601b02257978c54204))
+
 # [1.342.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.341.0...v1.342.0) (2026-10-20)
 
 
