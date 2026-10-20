@@ -63,7 +63,6 @@ public class OrganisationPermissions
     /// (e.g. <see cref="Role.VoMedewerker"/>).
     /// </summary>
     public bool CanViewCapacities { get; }
-    public bool CanManageNames { get; }
     public bool CanManageClassifications { get; }
     public bool CanManageFormalFrameworks { get; }
     public bool CanManageKeys { get; }
@@ -111,7 +110,6 @@ public class OrganisationPermissions
         bool canManageCapacities,
         bool canViewFunctions,
         bool canViewCapacities,
-        bool canManageNames,
         bool canManageClassifications,
         bool canManageFormalFrameworks,
         bool canManageKeys,
@@ -134,7 +132,6 @@ public class OrganisationPermissions
         CanManageCapacities = canManageCapacities;
         CanViewFunctions = canViewFunctions;
         CanViewCapacities = canViewCapacities;
-        CanManageNames = canManageNames;
         CanManageClassifications = canManageClassifications;
         CanManageFormalFrameworks = canManageFormalFrameworks;
         CanManageKeys = canManageKeys;
@@ -196,7 +193,6 @@ public class OrganisationPermissions
                     organisationContext,
                     new CapacityContext(isUnderVlimpersManagement, Array.Empty<Guid>()))
                 || Satisfies(Permission.CanViewOrganisationCapacities, userContext, organisationContext),
-            canManageNames: canEditOrganisation,
             canManageClassifications: Satisfies(
                 Permission.CanManageOrganisationClassifications,
                 userContext,

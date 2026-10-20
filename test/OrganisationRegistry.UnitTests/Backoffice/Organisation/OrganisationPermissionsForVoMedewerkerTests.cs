@@ -35,7 +35,6 @@ public class OrganisationPermissionsForVoMedewerkerTests
         permissions.CanManageContacts.Should().BeFalse();
         permissions.CanManageLocations.Should().BeFalse();
         permissions.CanManageBuildings.Should().BeFalse();
-        permissions.CanManageNames.Should().BeFalse();
         permissions.CanManageClassifications.Should().BeFalse();
         permissions.CanManageFormalFrameworks.Should().BeFalse();
         permissions.CanManageKeys.Should().BeFalse();
