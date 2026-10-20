@@ -61,7 +61,7 @@ Na het verwijderen van een functietype ruimt een achterliggende procedure alle k
 
 - Koppelingen die al in het verleden afgelopen zijn (niet meer geldig) worden ook verwijderd; geldigheid speelt geen rol.
 - Orgaanposten worden niet verwijderd: een post is niet aan een functietype gekoppeld, enkel het mandaat op de post.
-- Koppelingen op organisaties die onder KBO-beheer of onder een beperkte (decentrale) bevoegdheid vallen: de procedure draait als systeemgebruiker en moet die toch kunnen verwijderen.
+- Koppelingen op organisaties die onder KBO-beheer of onder een beperkte (decentrale) bevoegdheid vallen: de procedure draait als systeemgebruiker en moet die toch kunnen verwijderen. Voor functies bestaat geen KBO-check (`FunctionPolicy`); dit wordt bij de implementatie geverifieerd.
 - Een koppeling die na de verwijdering toch nog met het verwijderde functietype wordt gemaakt (bv. rechtstreeks via de API) wordt niet opgeruimd; dat is gelijk aan het gedrag bij hoedanigheden.
 - Een verwijderd functietype wordt niet terug actief gemaakt (geen "herstel" in scope).
 
@@ -70,7 +70,7 @@ Na het verwijderen van een functietype ruimt een achterliggende procedure alle k
 ### Functional Requirements
 
 - **FR-001**: Het systeem MOET voor een functietype registreren dat het verwijderd is, als nieuw historisch feit (bestaande historiek blijft ongewijzigd).
-- **FR-002**: Enkel een algemeen beheerder MAG een functietype verwijderen.
+- **FR-002**: Enkel wie dezelfde rechten heeft als voor het verwijderen van hoedanigheden MAG een functietype verwijderen (de nieuwe permissie volgt exact de bestaande toekenningen, o.a. rol algemeen beheerder).
 - **FR-003**: Het verwijderen van een reeds verwijderd functietype MOET zonder effect en zonder fout gebeuren.
 - **FR-004**: De parameterlijst functietypes MOET standaard enkel niet-verwijderde functietypes teruggeven, met een optie om verwijderde mee op te vragen — gelijk aan het gedrag voor hoedanigheden.
 - **FR-005**: Het beheerscherm (FE) voor functietypes MOET een verwijderactie aanbieden die de verwijdering opslaat.
@@ -92,7 +92,7 @@ Na het verwijderen van een functietype ruimt een achterliggende procedure alle k
 ### Measurable Outcomes
 
 - **SC-001**: Een algemeen beheerder kan een functietype verwijderen in één actie vanuit het beheerscherm.
-- **SC-002**: 100% van de keuzelijsten voor het toevoegen van een functie bevat geen verwijderde functietypes, onmiddellijk na verwijdering.
+- **SC-002**: 100% van de keuzelijsten voor functietypes (toevoegen/wijzigen van een organisatie-functie, koppelen van een functietype aan een orgaan-mandaat) bevat geen verwijderde functietypes, onmiddellijk na verwijdering.
 - **SC-003**: Na één run van de opruimprocedure bestaan er 0 koppelingen meer (binnen de afgesproken scope) met een verwijderd functietype.
 - **SC-004**: Een tweede run van de procedure levert 0 bijkomende wijzigingen op.
 

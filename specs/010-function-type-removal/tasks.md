@@ -81,7 +81,7 @@ description: "Task list — OR-3412 functietype verwijderen"
 
 ### 5a. Organisatie-functie idempotent en toegelaten voor de systeemgebruiker
 - [ ] T024 [US3] Pas `test/OrganisationRegistry.UnitTests/Organisation/RemoveOrganisationFunction/WhenRemovingAnOrganistaionFunction.cs:76` aan: bij een onbekende functie volgt geen event in plaats van `OrganisationFunctionNotFound`
-- [ ] T025 [P] [US3] Maak de test `test/OrganisationRegistry.UnitTests/Organisation/RemoveOrganisationFunction/WhenRemovingAnOrganisationFunctionAsSyncRemovedItemsService.cs` (model: `RemoveOrganisationCapacity/WhenRemovingAnOrganisationCapacityAsSyncRemovedItemsService.cs`)
+- [ ] T025 [P] [US3] Maak de test `test/OrganisationRegistry.UnitTests/Organisation/RemoveOrganisationFunction/WhenRemovingAnOrganisationFunctionAsSyncRemovedItemsService.cs` (model: `RemoveOrganisationCapacity/WhenRemovingAnOrganisationCapacityAsSyncRemovedItemsService.cs`). Neem hierin de KBO/decentrale-casus uit de edge cases op (research A1: `FunctionPolicy` heeft geen KBO-check, dus dit moet slechts één keer geverifieerd worden).
 - [ ] T026 [US3] Laat `Organisation.RemoveFunction` (`src/OrganisationRegistry/Organisation/Organisation.cs:3095`) `return` geven in plaats van `throw new OrganisationFunctionNotFound()`. Verwijder `OrganisationFunctionNotFound.cs` als het nergens anders meer gebruikt wordt.
 - [ ] T027 [US3] Voeg `Permission.CanManageFunctions` en `Permission.BodiesCanManageMandates` toe aan `WellknownUsers.SyncRemovedItemsService` in `src/OrganisationRegistry.Infrastructure/WellknownUsers.cs:18-22`, en werk de commentaar bij
 
@@ -104,17 +104,19 @@ description: "Task list — OR-3412 functietype verwijderen"
 - [ ] T035 [US3] Maak de EF-migratie `AlterTables_FunctionTypeRemoval` (3 kolommen, default false): `cd src/OrganisationRegistry.SqlServer && dotnet ef migrations add AlterTables_FunctionTypeRemoval --context OrganisationRegistryContext --startup-project ../OrganisationRegistry.Api/`
 
 ### 5d. Opruiming
-- [ ] T036 [US3] Breid `src/OrganisationRegistry.Api/HostedServices/SyncRemovedItemsService.cs` uit. Na de capacities: `OrganisationFunctionList` → `RemoveOrganisationFunction`, daarna `BodyMandateList` → `RemoveBodyMandate`. Zorg dat de volgorde gegarandeerd is (capacities eerst, zie research R-5) en pas de generieke helper aan of hernoem hem, aangezien `BodyMandateListItem` geen organisatie-item is.
+- [ ] T036 [US3] Breid `src/OrganisationRegistry.Api/HostedServices/SyncRemovedItemsService.cs` uit. Hernoem `RemoveOrganisationItems<TItem, TCommand>` naar één generieke `RemoveItems<TItem, TCommand>` (geen organisatie-gebonden naam, `BodyMandateListItem` valt er ook onder) en voeg na de capacities deze twee calls toe, in deze gegarandeerde volgorde (research R-5): `OrganisationFunctionList` → `RemoveOrganisationFunction`, daarna `BodyMandateList` → `RemoveBodyMandate`.
 
 ### 5e. Projecties voor `BodyMandateRemoved` (verwijder rijen op `BodyMandateId`)
 - [ ] T037 [P] [US3] `src/OrganisationRegistry.SqlServer/DelegationAssignments/DelegationAssignmentListItemView.cs`
 - [ ] T038 [P] [US3] `src/OrganisationRegistry.SqlServer/Body/ScheduledActions/PeopleAssignedToBodyMandates/ActivePeopleAssignedToBodyMandates.cs` en `FuturePeopleAssignedToBodyMandates.cs`
 - [ ] T039 [P] [US3] `src/OrganisationRegistry.Projections.Delegations/Projections/DelegationListProjection.cs`
 - [ ] T040 [P] [US3] `src/OrganisationRegistry.Projections.Delegations/Projections/PersonMandateListProjection.cs`
-- [ ] T041 [P] [US3] `src/OrganisationRegistry.Projections.Reporting/Projections/BodySeatGenderRatioProjection.cs` (pas de mandaat- en assignment-tellingen aan)
+- [ ] T041 [P] [US3] `src/OrganisationRegistry.Projections.Reporting/Projections/BodySeatGenderRatioProjection.cs`: verwijder bij `BodyMandateRemoved` de bijdrage van dat mandaat (en van de personen die erop aangeduid waren) uit de geslachtsverhouding van de post en van het orgaan; de tellingen van de post zelf blijven ongewijzigd (de post bestaat nog).
 - [ ] T042 [P] [US3] ES: `src/OrganisationRegistry.ElasticSearch.Projections/Body/BodyHandler.cs` (mandaat uit het orgaandocument)
 - [ ] T043 [P] [US3] ES: `src/OrganisationRegistry.ElasticSearch.Projections/People/Handlers/PersonMandate.cs` (mandaat uit de persoonsdocumenten)
-- [ ] T044 [US3] Ga na of projecties nog een event-registratie of `InitialiseProjection`-lijst nodig hebben, zodat `BodyMandateRemoved` gerouteerd wordt (grep op de registraties van `AssignedFunctionTypeToBodySeat`)
+- [ ] T044 [US3] Sluit twee gaten af met een brede grep: (a) of er nog registraties/routes zijn waar `BodyMandateRemoved` aan moet worden toegevoegd (grep op de registraties van `AssignedFunctionTypeToBodySeat`); (b) of read models die `OrganisationFunctionRemoved`/`OrganisationCapacityRemoved` afhandelen ook bereikt worden (grep `OrganisationFunctionRemoved` en `OrganisationCapacityRemoved` over heel `src`, inclusief `OrganisationRegistry.Projections.*`; verwacht resultaat: `OrganisationFunctionListItemView`, `PersonFunctionListItemView`, ES `OrganisationFunction`/`PersonFunction`, `OrganisationCapacityListItemView`, `PersonCapacityListItemView`, ES `OrganisationCapacity`). Ontbreekt er een, voeg dan een taak toe.
+
+- [ ] T044b [US3] Integratietest (constitution V) in `test/OrganisationRegistry.Api.IntegrationTests`: verwijder een functietype, en asserteer daarna in de test-database dat de drie koppelingen `ScheduledForRemoval` hebben (model: de integratietests met de `Tests.Shared`-harness).
 
 **Checkpoint**: het volledige quickstart-scenario werkt.
 
