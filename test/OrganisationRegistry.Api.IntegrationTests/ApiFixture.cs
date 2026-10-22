@@ -87,6 +87,14 @@ public sealed class ApiFixture : IDisposable, IAsyncLifetime
         public const string Regelgevingbeheerder = "regelgeving";
         public const string Orafinbeheerder = "orafinbeheerder";
         public const string VoMedewerker = "vomedewerker";
+
+        /// <summary>
+        /// Test-only persona combining VlimpersBeheerder + OrgaanBeheerder (+ a
+        /// stale "cjmbeheerder" role attribute value that no longer maps to any
+        /// <see cref="Role"/> and is silently ignored). Used to verify the two
+        /// roles compose correctly (union of permissions) on a single user.
+        /// </summary>
+        public const string VlimpersbeheerderAndOrgaanbeheerder = "vlimpersorgaan";
     }
 
     /// <summary>
