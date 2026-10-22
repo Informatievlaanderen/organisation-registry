@@ -21,6 +21,8 @@
     <PackageVersion Include="FluentFTP" Version="33.0.3" />
     <PackageVersion Include="FluentValidation" Version="12.1.1" />
     <PackageVersion Include="Duende.IdentityModel" Version="8.1.0" />
+    <PackageVersion Include="IdempotentAPI" Version="2.6.0" />
+    <PackageVersion Include="IdempotentAPI.Cache.DistributedCache" Version="2.2.0" />
     <PackageVersion Include="IdentityModel.AspNetCore.OAuth2Introspection" Version="6.2.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.8" />
     <PackageVersion Include="Microsoft.AspNetCore.Authorization" Version="10.0.8" />

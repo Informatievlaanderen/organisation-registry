@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Organisation.Exceptions;
@@ -47,9 +49,31 @@ public static class OrganisationRegistryExceptionHandler
                 {
                     await HandleNotFoundException(aggregateNotFoundException, context, logger);
                 }
+                else if (exception is ConcurrencyException concurrencyException)
+                {
+                    // Thrown when a client-supplied id for a brand new aggregate
+                    // (e.g. POST /organisations, POST /bodies) already has events
+                    // in the store. This is a client input problem (the resource
+                    // already exists), not a server fault, so it maps to 409
+                    // Conflict rather than falling through to 500.
+                    await HandleConcurrencyException(concurrencyException, context, logger);
+                }
+                else if (TryGetDuplicateKeyViolation(exception, out var duplicateKeyException))
+                {
+                    // Thrown when a client-supplied id for a sub-entity of an
+                    // existing aggregate (e.g. a label, key, or capacity on an
+                    // organisation) collides with an existing row in a SQL
+                    // projection table. Same rationale as ConcurrencyException
+                    // above: the resource already exists, so this maps to 409
+                    // Conflict.
+                    await HandleDuplicateKeyException(duplicateKeyException!, context, logger);
+                }
                 else
                 {
-                    await HandleUnhandledException(error?.Error, context, logger);
+                    // Use the already-unwrapped `exception` (not `error?.Error`)
+                    // so a TargetInvocationException's real inner cause is what
+                    // gets logged, not the invocation wrapper.
+                    await HandleUnhandledException(exception, context, logger);
                 }
             });
         });
@@ -111,6 +135,72 @@ public static class OrganisationRegistryExceptionHandler
         {
             HttpStatus = context.Response.StatusCode.ToString(),
             Title = "Deze actie is niet geldig",
+            Detail = message,
+            Reference = exceptionNumber,
+        })).ConfigureAwait(false);
+    }
+
+    private static async Task HandleConcurrencyException(ConcurrencyException exception, HttpContext context, ILogger<OrganisationRegistryApiExceptionHandler> logger)
+    {
+        // ConcurrencyException is thrown both for a brand new aggregate whose
+        // client-supplied id already has events (a duplicate-create), and for
+        // a genuine optimistic-concurrency conflict on an existing aggregate
+        // (e.g. two users updating the same organisation at once). The message
+        // must therefore stay generic rather than assuming "duplicate identifier".
+        var message = "De resource werd ondertussen gewijzigd of bestaat reeds.";
+        var exceptionNumber = GetExceptionNumber();
+        logger.LogInformation(0, exception, "[{ErrorNumber}] ConcurrencyException handled: {ExceptionMessage}", exceptionNumber, exception.Message);
+
+        context.Response.StatusCode = (int) HttpStatusCode.Conflict;
+        await context.Response.WriteAsync(JsonConvert.SerializeObject(new BasicApiProblem
+        {
+            HttpStatus = context.Response.StatusCode.ToString(),
+            Title = "Er heeft zich een fout voorgedaan!",
+            Detail = message,
+            Reference = exceptionNumber,
+        })).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// SQL Server error 2627 ("Violation of PRIMARY KEY constraint") and 2601
+    /// ("Cannot insert duplicate key row in object ... with unique index") both
+    /// indicate a client-supplied identifier collided with an existing row.
+    /// </summary>
+    private const int SqlPrimaryKeyViolation = 2627;
+    private const int SqlUniqueIndexViolation = 2601;
+
+    private static bool TryGetDuplicateKeyViolation(Exception? exception, out DbUpdateException? duplicateKeyException)
+    {
+        duplicateKeyException = null;
+
+        if (exception is not DbUpdateException dbUpdateException)
+            return false;
+
+        if (dbUpdateException.InnerException is not SqlException sqlException)
+            return false;
+
+        if (sqlException.Number != SqlPrimaryKeyViolation && sqlException.Number != SqlUniqueIndexViolation)
+            return false;
+
+        duplicateKeyException = dbUpdateException;
+        return true;
+    }
+
+    private static async Task HandleDuplicateKeyException(DbUpdateException exception, HttpContext context, ILogger<OrganisationRegistryApiExceptionHandler> logger)
+    {
+        // Error 2601 is not limited to the sub-entity's own id column - it can
+        // also fire on an unrelated business unique index (e.g. OvoNumber) in
+        // the same projection table under a race condition. Keep the message
+        // generic rather than assuming it's always the identifier that collided.
+        var message = "De resource werd ondertussen gewijzigd of bestaat reeds.";
+        var exceptionNumber = GetExceptionNumber();
+        logger.LogInformation(0, exception, "[{ErrorNumber}] Duplicate key DbUpdateException handled: {ExceptionMessage}", exceptionNumber, exception.Message);
+
+        context.Response.StatusCode = (int) HttpStatusCode.Conflict;
+        await context.Response.WriteAsync(JsonConvert.SerializeObject(new BasicApiProblem
+        {
+            HttpStatus = context.Response.StatusCode.ToString(),
+            Title = "Er heeft zich een fout voorgedaan!",
             Detail = message,
             Reference = exceptionNumber,
         })).ConfigureAwait(false);

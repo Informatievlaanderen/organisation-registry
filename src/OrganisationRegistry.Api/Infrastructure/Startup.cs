@@ -14,6 +14,8 @@ using Be.Vlaanderen.Basisregisters.Api.Search.Sorting;
 using Configuration;
 using global::OpenTelemetry.Trace;
 using HostedServices;
+using IdempotentAPI.Cache.DistributedCache.Extensions.DependencyInjection;
+using IdempotentAPI.Extensions.DependencyInjection;
 using IdentityModel.AspNetCore.OAuth2Introspection;
 using Magda;
 using Microsoft.AspNetCore.Authentication;
@@ -106,6 +108,19 @@ public class Startup
         {
             services.AddDbContext<ConfigurationContext>(options => options.UseInMemoryDatabase(Guid.NewGuid().ToString()));
         }
+
+        // Idempotency support for client-supplied-id Create endpoints: a client resending the
+        // same request (identified by the Idempotency-Key header) within the cache window gets
+        // back the original cached response instead of re-executing the command. Backed by an
+        // in-memory IDistributedCache since the API currently runs as a single instance; replace
+        // with a SQL Server- or Redis-backed IDistributedCache registration here if the API is
+        // ever scaled out to multiple replicas.
+        // NOTE: IdempotentAttribute.CreateInstance() always resolves IIdempotencyOptions
+        // from DI (even though it is only used when UseIdempotencyOption = true on the
+        // attribute), so it must always be registered or filter creation throws.
+        services.AddDistributedMemoryCache();
+        services.AddIdempotentAPI(new IdempotentAPI.Core.IdempotencyOptions());
+        services.AddIdempotentAPIUsingDistributedCache();
 
         JsonConvert.DefaultSettings =
             () => JsonSerializerSettingsProvider.CreateSerializerSettings().ConfigureForOrganisationRegistry();
@@ -365,6 +380,7 @@ public class Startup
                                 "csv",
                                 MediaTypeHeaderValue.Parse("text/csv"));
                             cfg.EnableEndpointRouting = false;
+                            cfg.Conventions.Add(new IdempotencyConvention());
                         },
                         AfterMvc = builder => builder
                             .AddFormatterMappings()
