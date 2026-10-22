@@ -45,6 +45,8 @@
     <PackageReference Include="Be.Vlaanderen.Basisregisters.Api" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" />
     <PackageReference Include="IdentityModel.AspNetCore.OAuth2Introspection" />
+    <PackageReference Include="IdempotentAPI" />
+    <PackageReference Include="IdempotentAPI.Cache.DistributedCache" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
