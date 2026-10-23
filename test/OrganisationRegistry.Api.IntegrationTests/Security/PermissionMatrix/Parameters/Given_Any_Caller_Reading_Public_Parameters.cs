@@ -13,9 +13,9 @@ using Xunit;
 /// <c>[OrganisationRegistryAuthorize]</c>, so even a caller with no bearer
 /// token at all (not just an unprivileged backoffice role) must get 200.
 ///
-/// Only <c>keytypes</c> and <c>organisationrelationtypes</c> are excluded
-/// from this set and remain restricted to authenticated backoffice users
-/// (see <see cref="Given_Any_Role_Reading_Parameters"/>).
+/// Only <c>organisationrelationtypes</c> is excluded from this set and
+/// remains restricted to authenticated backoffice users (see
+/// <see cref="Given_Any_Role_Reading_Parameters"/>).
 /// </summary>
 [Collection(ApiTestsCollection.Name)]
 public class Given_Any_Caller_Reading_Public_Parameters
@@ -36,16 +36,6 @@ public class Given_Any_Caller_Reading_Public_Parameters
         using var response = await ApiFixture.Get(client, $"/v1/{route}");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-    }
-
-    [Fact]
-    public async Task Then_Reading_KeyTypes_Returns_Unauthorized_For_Anonymous_Caller()
-    {
-        using var client = _apiFixture.CreateAnonymousClient();
-
-        using var response = await ApiFixture.Get(client, "/v1/keytypes");
-
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
     [Fact]

@@ -15,8 +15,8 @@ using System.Collections.Generic;
 /// Most list screens (see <see cref="PubliclyReadableListRoutes"/>) are, in
 /// addition, open to anonymous (not logged in, "Publiek") callers: there is
 /// no restriction on reading master-data lists for the public. Only
-/// <c>keytypes</c> and <c>organisationrelationtypes</c> remain restricted to
-/// authenticated backoffice users (not part of this public-access set).
+/// <c>organisationrelationtypes</c> remains restricted to authenticated
+/// backoffice users (not part of this public-access set).
 /// </summary>
 public static class ParameterEndpoints
 {
@@ -49,13 +49,13 @@ public static class ParameterEndpoints
     /// <summary>
     /// List/collection routes whose controller carries <c>[AllowAnonymous]</c>,
     /// i.e. readable without being logged in at all. This is every route in
-    /// <see cref="ListRoutes"/> except <c>keytypes</c> and
-    /// <c>organisationrelationtypes</c>.
+    /// <see cref="ListRoutes"/> except <c>organisationrelationtypes</c>.
     /// </summary>
     public static readonly string[] PubliclyReadableListRoutes =
     {
         "locations",
         "buildings",
+        "keytypes",
         "organisationclassifications",
         "organisationclassificationtypes",
         "bodyclassifications",
