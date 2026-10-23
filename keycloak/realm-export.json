@@ -598,6 +598,31 @@
       }
     },
     {
+      "username": "vlimpersorgaan",
+      "enabled": true,
+      "firstName": "Vlimpers+Orgaan+Cjm",
+      "lastName": "Persona",
+      "credentials": [
+        {
+          "id": "8da09504-f671-4150-8a97-7bc8592ee350",
+          "type": "password",
+          "createdDate": 1792592718810,
+          "secretData": "{\"value\":\"V2IqDt7eglHI7IeVDnDEISu6SbQeJ5RzUuf3LXp23ypmg1uSvD+LlNwiozOPf+QIvT4RIDNJELQ4l7q0Rxreqw==\",\"salt\":\"v+TlBp36AuqNkBYwyzmxow==\",\"additionalParameters\":{}}",
+          "credentialData": "{\"hashIterations\":210000,\"algorithm\":\"pbkdf2-sha512\",\"additionalParameters\":{}}"
+        }
+      ],
+      "attributes": {
+        "vo_id": [
+          "F1BE7473-65DA-41E9-8249-AF14B89F726B"
+        ],
+        "iv_wegwijs_rol_3D": [
+          "wegwijsbeheerder-vlimpersbeheerder:OVO00001",
+          "wegwijsbeheerder-orgaanbeheerder:OVO00001",
+          "wegwijsbeheerder-cjmbeheerder:OVO00001"
+        ]
+      }
+    },
+    {
       "username": "vomedewerker",
       "enabled": true,
       "firstName": "VO",
