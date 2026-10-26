@@ -3,5 +3,6 @@ export class OrganisationClassificationTypeListItem {
     public id: string = '',
     public name: string = '',
     public userPermitted: boolean = false,
+    public permissions: { canSelect: boolean } = { canSelect: false },
   ) { }
 }

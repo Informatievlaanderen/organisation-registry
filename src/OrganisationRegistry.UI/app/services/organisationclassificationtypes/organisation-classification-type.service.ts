@@ -66,21 +66,26 @@ export class OrganisationClassificationTypeService implements ICrudService<Organ
       .map(this.toOrganisationClassificationTypes);
   }
 
-  public getAllOrganisationClassificationTypes(): Observable<OrganisationClassificationTypeListItem[]> {
+  public getAllOrganisationClassificationTypes(organisationId?: string): Observable<OrganisationClassificationTypeListItem[]> {
     let headers = new HeadersBuilder()
       .json()
       .withoutPagination()
       .withSorting('name', SortOrder.Ascending)
       .build();
 
+    const url = organisationId
+      ? `${this.organisationClassificationTypesUrl}?forOrganisationId=${organisationId}`
+      : this.organisationClassificationTypesUrl;
+
     return this.http
-      .get(this.organisationClassificationTypesUrl, { headers: headers })
+      .get(url, { headers: headers })
       .map(this.toOrganisationClassificationTypes)
       .map(pagedResult => pagedResult.data);
   }
 
-  public getAllUserPermittedOrganisationClassificationTypes(): Observable<OrganisationClassificationTypeListItem[]> {
-    return this.getAllOrganisationClassificationTypes().map(data => data.filter(classification => classification.userPermitted));
+  public getAllUserPermittedOrganisationClassificationTypes(organisationId: string): Observable<OrganisationClassificationTypeListItem[]> {
+    return this.getAllOrganisationClassificationTypes(organisationId)
+      .map(data => data.filter(classification => classification.permissions && classification.permissions.canSelect));
   }
 
   public create(organisationClassificationType: OrganisationClassificationType): Observable<string> {
