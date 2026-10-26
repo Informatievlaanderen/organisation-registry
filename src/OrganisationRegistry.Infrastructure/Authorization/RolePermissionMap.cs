@@ -251,9 +251,8 @@ public static class RolePermissionMap
             // DecentraalBeheerder (Functies, Hoedanigheden on both organisation
             // and people screens). The restricted CRUD grants (see
             // RestrictedGrantsFor) are identical to DecentraalBeheerder's too,
-            // except VoDecentraalBeheerder never gets CanManageContacts —
-            // which DecentraalBeheerder doesn't hold either, so in practice
-            // the two roles' restricted grants are fully equivalent.
+            // except VoDecentraalBeheerder never gets CanManageContacts, which
+            // DecentraalBeheerder holds for their own organisation.
             [Role.VoDecentraalBeheerder] = PermissionSet.Of(
                 Permission.CanViewOrganisationCapacities,
                 Permission.CanViewOrganisationFunctions,
@@ -371,10 +370,12 @@ public static class RolePermissionMap
             // status — these fields are never Vlimpers-reserved.
             Permission.CanManageOrganisationInfoNotLimitedToVlimpers.RestrictedTo(
                 DecentraalOrganisationRestriction.Instance),
+            // The parent/child structure of their own organisation may be
+            // managed regardless of Vlimpers-management status.
             Permission.CanManageChildren.RestrictedTo(
-                ChildRestrictions.DecentraalAndNotUnderVlimpersManagement),
+                DecentraalOrganisationRestriction.Instance),
             Permission.CanManageParent.RestrictedTo(
-                ChildRestrictions.DecentraalAndNotUnderVlimpersManagement),
+                DecentraalOrganisationRestriction.Instance),
             Permission.CanManageFunctions.RestrictedTo(
                 DecentraalOrganisationRestriction.Instance),
             Permission.CanManageLocations.RestrictedTo(
@@ -461,7 +462,13 @@ public static class RolePermissionMap
             Permission.CanManageCapacities.RestrictedTo(
                 CapacityRestrictions.VlimpersManaged(
                 configuration.Authorization.CapacityIdsAllowedForVlimpers))),
-            Role.DecentraalBeheerder => DecentraalRestrictedGrants(configuration),
+            // Organisation contacts on their own organisation (regardless of
+            // Vlimpers-management status) are a DecentraalBeheerder-only
+            // grant: VoDecentraalBeheerder never gets CanManageContacts.
+            Role.DecentraalBeheerder => DecentraalRestrictedGrants(configuration).Union(
+                PermissionSet.Of(
+                    Permission.CanManageContacts.RestrictedTo(
+                        DecentraalOrganisationRestriction.Instance))),
             Role.RegelgevingBeheerder => PermissionSet.Of(
                 Permission.CanManageFormalFrameworks.RestrictedTo(
                     FormalFrameworkRestrictions.OwnedByRegelgevingDb(

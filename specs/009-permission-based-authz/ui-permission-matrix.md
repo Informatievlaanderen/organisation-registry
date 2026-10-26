@@ -16,8 +16,8 @@
 | Scherm/functionaliteit | UI-recht op organisatierespons | Publieke rol | VO medewerker | Algemeen beheerder | Decentraal beheerder | Vlimpers beheerder | Orgaan beheerder | Regelgeving / Deugdelijk bestuur beheerder |
 |---|---|---|---|---|---|---|---|---|
 | Organisatie | `canEdit`, `canDelete`, `organisations:create` (globaal recht) | R | R | CRUD | CRU | CRUD | R | R |
-| Dochters | `canManageChildren` | R | R | CRUD | R | CRUD | R | R |
-| Contacten | `canManageContacts` | R | R | CRUD | R | R | R | R |
+| Dochters | `canManageChildren` | R | R | CRUD | CRUD* | CRUD* | R | R |
+| Contacten | `canManageContacts` | R | R | CRUD | CRUD* | R | R | R |
 | Bankrekeningnummers | – | – | – | – | – | – | – | – |
 | Functies | `canViewFunctions`, `canManageFunctions` | – | R | CRUD | CRUD | R | R | R |
 | Hoedanigheden | `canViewCapacities`, `canManageCapacities` | – | R | CRUD | CRUD* | CRUD* | R | CRUD* |
@@ -163,6 +163,9 @@ volledige scherm. Er is bewust **geen Create** voor backoffice-rollen.
 | **VB Benamingen CRUD\*** | `LabelIdsAllowedForVlimpers` whitelist. |
 | **RDB Classificaties CRUD\*** | `OrganisationClassificationTypeIdsOwnedByRegelgevingDbBeheerder` (+ Cjm via CC scope?). |
 | **DB Toepassingsgebieden CRUD\*** | Alleen eigen org — id-restrictie te verhelderen. |
+| **DB Dochters CRUD\*** | Alleen eigen organisatie (`DecentraalOrganisationRestriction`), **ongeacht** Vlimpers-beheer. Geldt zowel voor dochters (`CanManageChildren`) als voor de moederkoppeling (`CanManageParent`). |
+| **VB Dochters CRUD\*** | Organisatie moet onder Vlimpers-beheer staan (`ChildRestrictions.UnderVlimpersManagement`). |
+| **DB Contacten CRUD\*** | Alleen eigen organisatie (`DecentraalOrganisationRestriction`), ongeacht Vlimpers-beheer. Enkel `DecentraalBeheerder`; `VoDecentraalBeheerder` krijgt `CanManageContacts` nooit. |
 | **VB Toepassingsgebieden CRUD\*** | `FormalFrameworkIdsOwnedByVlimpers` whitelist. |
 | **RDB Toepassingsgebieden CRUD\*** | `FormalFrameworkIdsOwnedByRegelgevingDbBeheerder` whitelist. |
 | **VB Sleutels CRUD\*** | **2-assig (Model C, shipped)**: `KeyIdsAllowedForVlimpers` allowlist **AND** organisatie moet onder Vlimpers-beheer staan. Beide moeten passen. Zie `KeyRestrictions.VlimpersManaged` + `RequireUnderVlimpersManagementRestriction`. |
@@ -173,7 +176,7 @@ volledige scherm. Er is bewust **geen Create** voor backoffice-rollen.
 De volgende cellen wijken af van de huidige policy-implementaties en vereisen expliciete verificatie:
 
 1. **DB Sleutels: R (was CRUD op subset)** — grote reductie.
-2. **DB Contacten: R (was CRUD?)** — te checken.
+2. **DB Contacten: CRUD\* op eigen organisatie** — beslist (OR-3114): zoals oud gedrag (`BeheerderForOrganisationRegardlessOfVlimpersPolicy`), ook onder Vlimpers-beheer.
 3. **VB Hoedanigheden: CRUD\* (was geen toegang)** — nieuwe capability: beheer van LA (Leidinggevend topkader) en HRBP hoedanigheden op Vlimpers-beheerde organisaties. **Besloten en geïmplementeerd.**
 4. **VB Historiek: CRUD** — nieuwe capability?
 5. **RDB Regelgeving: CRUD (was: alleen bepaalde rol)** — te checken.

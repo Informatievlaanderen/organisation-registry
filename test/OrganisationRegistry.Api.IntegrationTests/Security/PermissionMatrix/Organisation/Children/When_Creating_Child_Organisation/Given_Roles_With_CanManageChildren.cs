@@ -19,8 +19,8 @@ using Xunit;
 ///
 /// AlgemeenBeheerder bezit deze permissie ongerestricteerd. Een
 /// DecentraalBeheerder bezit ze enkel als restricted grant: uitsluitend voor de
-/// eigen organisatie (of een organisatie in scope) én zolang die niet onder
-/// Vlimpersbeheer valt.
+/// eigen organisatie (of een organisatie in scope), ongeacht Vlimpersbeheer
+/// (zie <c>Given_Decentraalbeheerder_For_Own_Vlimpers_Managed_Organisation</c>).
 /// </summary>
 [Collection(ApiTestsCollection.Name)]
 public class Given_Roles_With_CanManageChildren

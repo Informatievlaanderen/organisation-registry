@@ -1,49 +1,82 @@
 namespace OrganisationRegistry.UnitTests.SecurityPolicy;
 
+using AutoFixture;
 using FluentAssertions;
 using Handling.Authorization;
 using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Configuration;
 using OrganisationRegistry.Organisation.Exceptions;
 using Tests.Shared;
+using Tests.Shared.Stubs;
 using Xunit;
 
 public class ContactPolicyTests
 {
-    private static ContactPolicy CreatePolicy()
-        => new();
+    private readonly Fixture _fixture;
+    private readonly IOrganisationRegistryConfiguration _configuration;
+
+    public ContactPolicyTests()
+    {
+        _fixture = new Fixture();
+        _configuration = new OrganisationRegistryConfigurationStub();
+    }
+
+    private IUser UserWithRolesFor(string ovoNumber, params Role[] roles)
+        => new UserBuilder()
+            .AddRoles(roles)
+            .AddOrganisations(ovoNumber)
+            .WithPermissions(RolePermissionMap.For(roles, _configuration))
+            .Build();
+
+    private static ContactPolicy CreatePolicy(string ovoNumber)
+        => new(ovoNumber);
 
     [Theory]
     [InlineData(Role.AlgemeenBeheerder)]
-    public void AdminIsAuthorized(Role role)
+    [InlineData(Role.Developer)]
+    public void UnrestrictedRolesAreAuthorizedForAnyOrganisation(Role role)
     {
-        var user = new UserBuilder()
-            .AddRoles(role)
-            .Build();
+        var user = UserWithRolesFor(_fixture.Create<string>(), role);
 
-        var authorizationResult =
-            CreatePolicy()
-                .Check(user);
+        CreatePolicy(_fixture.Create<string>())
+            .Check(user)
+            .Should().Be(AuthorizationResult.Success());
+    }
 
-        authorizationResult.Should().Be(AuthorizationResult.Success());
+    [Fact]
+    public void DecentraalBeheerderIsAuthorizedForTheirOwnOrganisation()
+    {
+        var ovoNumber = _fixture.Create<string>();
+        var user = UserWithRolesFor(ovoNumber, Role.DecentraalBeheerder);
+
+        CreatePolicy(ovoNumber)
+            .Check(user)
+            .Should().Be(AuthorizationResult.Success());
+    }
+
+    [Fact]
+    public void DecentraalBeheerderIsNotAuthorizedForOtherOrganisations()
+    {
+        var user = UserWithRolesFor(_fixture.Create<string>(), Role.DecentraalBeheerder);
+
+        CreatePolicy(_fixture.Create<string>())
+            .Check(user)
+            .ShouldFailWith<InsufficientRights<ContactPolicy>>();
     }
 
     [Theory]
-    [InlineData(Role.DecentraalBeheerder)]
+    [InlineData(Role.VoDecentraalBeheerder)]
     [InlineData(Role.VlimpersBeheerder)]
     [InlineData(Role.RegelgevingBeheerder)]
     [InlineData(Role.Orafin)]
     [InlineData(Role.OrgaanBeheerder)]
-    public void NonAdminIsNotAuthorized(Role role)
+    public void OtherRolesAreNotAuthorizedEvenForTheirOwnOrganisation(Role role)
     {
-        var user = new UserBuilder()
-            .AddRoles(role)
-            .AddOrganisations("OVO000001")
-            .Build();
+        var ovoNumber = _fixture.Create<string>();
+        var user = UserWithRolesFor(ovoNumber, role);
 
-        var authorizationResult =
-            CreatePolicy()
-                .Check(user);
-
-        authorizationResult.ShouldFailWith<InsufficientRights<ContactPolicy>>();
+        CreatePolicy(ovoNumber)
+            .Check(user)
+            .ShouldFailWith<InsufficientRights<ContactPolicy>>();
     }
 }

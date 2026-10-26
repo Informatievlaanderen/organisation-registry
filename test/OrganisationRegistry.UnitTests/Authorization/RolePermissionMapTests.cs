@@ -599,7 +599,7 @@ public class RolePermissionMapTests
     }
 
     [Fact]
-    public void For_config_DecentraalBeheerder_grants_CanManageChildren_only_for_own_non_vlimpers_organisation()
+    public void For_config_DecentraalBeheerder_grants_CanManageChildren_only_for_own_organisation_regardless_of_vlimpers()
     {
         var ownOvoNumber = "OVO123456";
         var otherOvoNumber = "OVO654321";
@@ -620,13 +620,13 @@ public class RolePermissionMapTests
                 new VlimpersManagementContext(IsUnderVlimpersManagement: false))
             .Should().BeTrue();
 
-        // Own organisation but under Vlimpers management -> reserved for VlimpersBeheerder.
+        // Own organisation under Vlimpers management -> still allowed.
         set.IsSatisfiedFor(
                 Permission.CanManageChildren,
                 new UserContext(user),
                 new OrganisationContext.ByOvoNumber(ownOvoNumber),
                 new VlimpersManagementContext(IsUnderVlimpersManagement: true))
-            .Should().BeFalse();
+            .Should().BeTrue();
 
         // Other organisation -> outside scope.
         set.IsSatisfiedFor(
@@ -921,14 +921,46 @@ public class RolePermissionMapTests
                 new OrganisationContext.ByOvoNumber(ownOvoNumber))
             .Should().BeTrue();
 
-        // Neither role is granted CanManageContacts (only AlgemeenBeheerder
-        // and Developer hold it) — asserted here for both to make the
-        // equivalence explicit, not because VoDecentraalBeheerder is
-        // special-cased to exclude it.
+        // CanManageContacts is the one exception: DecentraalBeheerder holds it
+        // for their own organisation, VoDecentraalBeheerder never does.
         voSet.IsSatisfiedFor(
                 Permission.CanManageContacts,
                 new UserContext(voUser),
                 new OrganisationContext.ByOvoNumber(ownOvoNumber))
+            .Should().BeFalse();
+
+        decentraalSet.IsSatisfiedFor(
+                Permission.CanManageContacts,
+                new UserContext(decentraalUser),
+                new OrganisationContext.ByOvoNumber(ownOvoNumber))
+            .Should().BeTrue();
+    }
+
+    [Fact]
+    public void For_config_DecentraalBeheerder_grants_CanManageContacts_only_for_own_organisation_regardless_of_vlimpers()
+    {
+        var ownOvoNumber = "OVO123456";
+        var otherOvoNumber = "OVO654321";
+        var config = new OrganisationRegistryConfigurationStub();
+
+        var user = new UserBuilder()
+            .AddRoles(Role.DecentraalBeheerder)
+            .AddOrganisations(ownOvoNumber)
+            .Build();
+
+        var set = RolePermissionMap.For(new[] { Role.DecentraalBeheerder }, config);
+
+        set.IsSatisfiedFor(
+                Permission.CanManageContacts,
+                new UserContext(user),
+                new OrganisationContext.ByOvoNumber(ownOvoNumber),
+                new VlimpersManagementContext(IsUnderVlimpersManagement: true))
+            .Should().BeTrue();
+
+        set.IsSatisfiedFor(
+                Permission.CanManageContacts,
+                new UserContext(user),
+                new OrganisationContext.ByOvoNumber(otherOvoNumber))
             .Should().BeFalse();
     }
 
