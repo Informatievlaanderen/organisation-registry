@@ -53,20 +53,20 @@ export class OrganisationOrganisationClassificationsCreateOrganisationOrganisati
   ngOnInit() {
     this.route.parent.parent.params.forEach((params: Params) => {
       this.form.setValue(new CreateOrganisationOrganisationClassificationRequest(params['id']));
-    });
 
-    this.subscriptions.push(this.organisationClassificationTypeService
-      .getAllUserPermittedOrganisationClassificationTypes()
-      .finally(() => this.enableForm())
-      .subscribe(
-        allOrganisationClassificationTypes => this.organisationClassificationTypes = allOrganisationClassificationTypes.map(k => new SelectItem(k.id, k.name)),
-        error =>
-          this.alertService.setAlert(
-            new AlertBuilder()
-              .error(error)
-              .withTitle('Classificatietypes konden niet geladen worden!')
-              .withMessage('Er is een fout opgetreden bij het ophalen van de classificatietypes. Probeer het later opnieuw.')
-              .build())));
+      this.subscriptions.push(this.organisationClassificationTypeService
+        .getAllUserPermittedOrganisationClassificationTypes(params['id'])
+        .finally(() => this.enableForm())
+        .subscribe(
+          allOrganisationClassificationTypes => this.organisationClassificationTypes = allOrganisationClassificationTypes.map(k => new SelectItem(k.id, k.name)),
+          error =>
+            this.alertService.setAlert(
+              new AlertBuilder()
+                .error(error)
+                .withTitle('Classificatietypes konden niet geladen worden!')
+                .withMessage('Er is een fout opgetreden bij het ophalen van de classificatietypes. Probeer het later opnieuw.')
+                .build())));
+    });
 
     this.subcribeToFormChanges();
   }

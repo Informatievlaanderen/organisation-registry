@@ -58,7 +58,6 @@ export class OrganisationOrganisationClassificationsUpdateOrganisationOrganisati
 
   ngOnInit() {
     this.form.disable();
-    let allOrganisationClassificationTypesObservable = this.organisationClassificationTypeService.getAllUserPermittedOrganisationClassificationTypes();
     this.subscribeToFormChanges();
 
     this.subscriptions.push(Observable.zip(this.route.parent.parent.params, this.route.params)
@@ -66,6 +65,7 @@ export class OrganisationOrganisationClassificationsUpdateOrganisationOrganisati
       .subscribe(res => {
         let orgId = res[0]['id'];
         let organisationClassificationId = res[1]['id'];
+        let allOrganisationClassificationTypesObservable = this.organisationClassificationTypeService.getAllUserPermittedOrganisationClassificationTypes(orgId);
 
         this.subscriptions.push(Observable.zip(this.organisationOrganisationClassificationService.get(orgId, organisationClassificationId), allOrganisationClassificationTypesObservable)
           .subscribe(item => this.setForm(item[0], item[1]),
