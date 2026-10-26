@@ -32,7 +32,7 @@ public static class UpdateHandlerExtensionMethods
                 organisation.State.UnderVlimpersManagement));
 
     public static UpdateHandler<Organisation> WithContactPolicy(this UpdateHandler<Organisation> source)
-        => source.WithPolicy(_ => new ContactPolicy());
+        => source.WithPolicy(organisation => new ContactPolicy(organisation.State.OvoNumber));
 
     public static UpdateHandler<Organisation> WithKboPolicy(this UpdateHandler<Organisation> source)
         => source.WithPolicy(_ => new KboPolicy());

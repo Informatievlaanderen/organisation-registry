@@ -45,6 +45,7 @@ public sealed class ApiFixture : IDisposable, IAsyncLifetime
     private Guid? _decentraalbeheerderChildOrganisationId;
 
     private const string DecentraalbeheerderOvoNumber = "OVO000003";
+    private const string DecentraalbeheerderChildNamePrefix = "decentraal-child-";
 
     // Deterministic ids assigned by OrganisationRegistry.Import.Piavo (md5 of
     // "piavo:organisation:<ovo lowercased>", see Program.cs DeterministicGuid).
@@ -487,10 +488,12 @@ public sealed class ApiFixture : IDisposable, IAsyncLifetime
     {
         _decentraalbeheerderOrganisationId = await GetOrCreateOrganisationWithOvoNumber(DecentraalbeheerderOvoNumber);
 
-        // Discover an existing child of the decentraalbeheerder org, or create one.
+        // Discover the fixture's own child of the decentraalbeheerder org, or create one.
         // The API auto-generates OVO numbers (the controller blanks any provided value),
         // so we cannot hardcode a specific child OVO — we must discover what exists.
-        var existingChildId = await FindFirstChildOrganisationId(_decentraalbeheerderOrganisationId.Value);
+        // Tests add other (e.g. Vlimpers-managed) children to OVO000003 too, so match on
+        // the fixture's own name prefix rather than taking whichever child comes first.
+        var existingChildId = await FindFixtureChildOrganisationId(_decentraalbeheerderOrganisationId.Value);
         if (existingChildId is { } childId)
         {
             _decentraalbeheerderChildOrganisationId = childId;
@@ -499,7 +502,7 @@ public sealed class ApiFixture : IDisposable, IAsyncLifetime
         {
             // Create a child org and link it as a daughter of OVO000003.
             var newChildId = Guid.NewGuid();
-            await CreateOrganisation(newChildId, $"decentraal-child-{newChildId:N}");
+            await CreateOrganisation(newChildId, $"{DecentraalbeheerderChildNamePrefix}{newChildId:N}");
 
             using var parentResponse = await Post(
                 HttpClient,
@@ -523,14 +526,18 @@ public sealed class ApiFixture : IDisposable, IAsyncLifetime
             "Controleer of de OrganisationTree-projectie afgewerkt is.");
     }
 
-    private async Task<Guid?> FindFirstChildOrganisationId(Guid parentOrganisationId)
+    private async Task<Guid?> FindFixtureChildOrganisationId(Guid parentOrganisationId)
     {
         using var response = await GetWithoutPagination($"/v1/organisations/{parentOrganisationId}/children");
         if (!response.IsSuccessStatusCode)
             return null;
 
         var children = await DeserializeAsList(response);
-        return children.Length > 0 && TryGetGuid(children[0], "id", out var id) ? id : null;
+        var fixtureChild = children.FirstOrDefault(child =>
+            TryGetString(child, "name", out var name) &&
+            name.StartsWith(DecentraalbeheerderChildNamePrefix, StringComparison.Ordinal));
+
+        return fixtureChild is not null && TryGetGuid(fixtureChild, "id", out var id) ? id : null;
     }
 
     private async Task<bool> OrganisationHasAnyChild(Guid parentOrganisationId)

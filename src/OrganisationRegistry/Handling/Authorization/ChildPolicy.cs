@@ -13,9 +13,8 @@ using Organisation.Exceptions;
 ///
 /// A holder of an unrestricted grant (AlgemeenBeheerder, Developer)
 /// always passes; a VlimpersBeheerder only passes when the organisation is under
-/// Vlimpers management; a DecentraalBeheerder only passes for their own
-/// organisation when it is not under Vlimpers management. This mirrors the
-/// behaviour of the historical role-based <c>VlimpersPolicy</c>.
+/// Vlimpers management; a DecentraalBeheerder passes for their own
+/// organisation regardless of its Vlimpers-management status.
 /// </summary>
 public class ChildPolicy : ISecurityPolicy
 {

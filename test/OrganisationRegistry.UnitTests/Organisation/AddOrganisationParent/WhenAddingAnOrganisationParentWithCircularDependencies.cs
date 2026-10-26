@@ -49,7 +49,7 @@ public class WhenAddingAnOrganisationParentWithCircularDependencies
             .WithPermissions(
                 PermissionSet.Of(
                     Permission.CanManageParent.RestrictedTo(
-                        ChildRestrictions.DecentraalAndNotUnderVlimpersManagement)))
+                        DecentraalOrganisationRestriction.Instance)))
             .Build();
 
     private IEvent[] Events
