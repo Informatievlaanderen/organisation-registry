@@ -1,3 +1,13 @@
+## [1.342.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.342.1...v1.342.2) (2026-10-27)
+
+
+### Bug Fixes
+
+* or-3114 add idempotency-key support & handle duplicate identifier collisions ([a14ee03](https://github.com/informatievlaanderen/organisation-registry/commit/a14ee039a7595ab27c8549e81fd0a013257a66e5))
+* or-3114 add organisationId in ui to get classifications for org ([6d72c15](https://github.com/informatievlaanderen/organisation-registry/commit/6d72c1579713f3378547aa16a43cf41a0c7cd44c))
+* or-3114 allow decentraal beheerder to edit own org even under vlimpers management ([a0a8a5a](https://github.com/informatievlaanderen/organisation-registry/commit/a0a8a5a51643840dff705874a062d7f826fa2357))
+* or-3114 allow reading keytypes for anonymous callers ([6b387d3](https://github.com/informatievlaanderen/organisation-registry/commit/6b387d3ae4419215e3d30cbd9fd4282b78c51ef6))
+
 ## [1.342.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.342.0...v1.342.1) (2026-10-20)
 
 
