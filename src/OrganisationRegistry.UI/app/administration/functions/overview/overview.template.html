@@ -12,7 +12,8 @@
         <ww-function-list
             [items]="functions"
             [isBusy]="isLoading"
-            (changePage)="changePage($event)">
+            (changePage)="changePage($event)"
+            (removeFunctionClicked)="removeFunction($event)">
         </ww-function-list>
     </div>
 </div>
