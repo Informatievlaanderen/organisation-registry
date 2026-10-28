@@ -63,7 +63,7 @@ public class WhenRemovingAnOrganistaionFunction
     }
 
     [Fact]
-    public async Task ThrowsException_WhenNotFound()
+    public async Task DoesNotThrow_WhenNotFound()
     {
         await Given(
                 OrganisationCreated)
@@ -73,7 +73,7 @@ public class WhenRemovingAnOrganistaionFunction
         await Given(
                 OrganisationCreated)
             .When(RemoveOrganisationFunctionCommand, TestUser.AlgemeenBeheerder)
-            .ThenThrows<OrganisationFunctionNotFound>();
+            .ThenItPublishesTheCorrectNumberOfEvents(0);
     }
 
     [Fact]

@@ -830,6 +830,25 @@ public class Body : AggregateRoot
                 delegationAssignmentId));
     }
 
+    public void RemoveBodyMandate(BodySeatId bodySeatId, BodyMandateId bodyMandateId)
+    {
+        var bodySeat = _bodySeats.SingleOrDefault(seat => seat.BodySeatId == bodySeatId);
+        var bodyMandate = bodySeat?.BodyMandates
+            .SingleOrDefault(mandate => mandate.BodyMandateId == bodyMandateId);
+
+        if (bodySeat == null || bodyMandate == null)
+            return;
+
+        ApplyChange(new BodyMandateRemoved(Id, bodySeatId, bodyMandateId));
+    }
+
+    private void Apply(BodyMandateRemoved @event)
+    {
+        var bodySeat = _bodySeats.Single(seat => seat.BodySeatId == @event.BodySeatId);
+        var mandate = bodySeat.BodyMandates.Single(m => m.BodyMandateId == @event.BodyMandateId);
+        bodySeat.UnassignMandate(mandate);
+    }
+
     public void AddContact(
         Guid bodyContactId,
         ContactType contactType,

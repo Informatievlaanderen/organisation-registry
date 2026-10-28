@@ -3095,7 +3095,7 @@ public partial class Organisation : AggregateRoot
     public void RemoveFunction(Guid organisationFunctionId)
     {
         if (!State.OrganisationFunctionTypes.Exists(organisationFunctionId))
-            throw new OrganisationFunctionNotFound();
+            return;
 
         var function = State.OrganisationFunctionTypes[organisationFunctionId];
         if (State.OrganisationCapacities.Any(oc => oc.FunctionTypeId == function.FunctionId))
