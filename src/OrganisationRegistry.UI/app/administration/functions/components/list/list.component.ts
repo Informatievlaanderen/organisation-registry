@@ -12,4 +12,11 @@ import { Function } from 'services/functions';
   outputs: ['changePage']
 })
 export class FunctionListComponent extends BaseListComponent<Function> {
+
+  @Output()
+  removeFunctionClicked: EventEmitter<Function> = new EventEmitter<Function>();
+
+  remove(item: Function) {
+    this.removeFunctionClicked.emit(item);
+  }
 }

@@ -113,4 +113,15 @@ export class FunctionService implements ICrudService<Function> {
   private toFunctions(res: Response): PagedResult<FunctionListItem> {
     return new PagedResultFactory<FunctionListItem>().create(res.headers, res.json());
   }
+
+  public delete(aFunction: Function): Observable<Response> {
+    const url = `${this.functionsUrl}/${aFunction.id}`;
+
+    let headers = new HeadersBuilder()
+      .json()
+      .build();
+
+    return this.http
+      .delete(url, { headers: headers });
+  }
 }

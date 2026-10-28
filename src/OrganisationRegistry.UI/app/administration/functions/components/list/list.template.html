@@ -40,8 +40,17 @@
           <tr *ngIf="!hasData(data)">
             <td colspan="1">Geen data beschikbaar...</td>
           </tr>
-          <tr *ngFor="let function of data">
-            <td class="data-table__body-title"><a [routerLink]="['./', function.id]" title="{{function.name}}">{{function.name}}</a></td>
+          <tr *ngFor="let function of data" [ngClass]="{'data-table__body-history':function.isRemoved}">
+            <td class="data-table__body-title">
+              <a [routerLink]="['./', function.id]" title="{{function.name}}">{{function.name}}</a>
+            </td>
+            <td class="data-table__body-title">
+              <a *ngIf="!function.isRemoved"
+                 aria-label="Verwijderen"
+                 class="vi vi-u-badge vi-u-badge--grey vi-u-badge--small vi-trash"
+                 title="Verwijderen"
+                 (click)="remove(function)"></a>
+            </td>
           </tr>
         </template>
       </tbody>

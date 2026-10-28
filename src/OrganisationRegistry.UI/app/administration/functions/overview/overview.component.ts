@@ -50,6 +50,8 @@ export class FunctionOverviewComponent implements OnInit, OnDestroy {
 
   private loadFunctions(event?: PagedEvent) {
     this.isLoading = true;
+    this.filter.showAll = true;
+
     let functions = (event === undefined)
       ? this.functionService.getFunctions(this.filter, this.currentSortBy, this.currentSortOrder)
       : this.functionService.getFunctions(this.filter, event.sortBy, event.sortOrder, event.page, event.pageSize);
@@ -63,5 +65,31 @@ export class FunctionOverviewComponent implements OnInit, OnDestroy {
             AlertType.Error,
             'Functies kunnen niet geladen worden!',
             'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.'))));
+  }
+
+  removeFunction(functionItem: Function) {
+    if (!confirm("Bent u zeker? Deze actie kan niet ongedaan gemaakt worden."))
+      return;
+
+    this.isLoading = true;
+
+    this.subscriptions.push(
+      this.functionService.delete(functionItem).subscribe(() => {
+        this.alertService.setAlert(
+          new Alert(
+            AlertType.Success,
+            'Functietype verwijderd!',
+            'Functietype werd succesvol verwijderd.'
+          ));
+        this.loadFunctions()
+      }, error => {
+        this.alertService.setAlert(
+          new Alert(
+            AlertType.Error,
+            'Functietype kon niet verwijderd worden!',
+            'Er is een fout opgetreden bij het verwijderen van de gegevens. Probeer het later opnieuw.'
+          ));
+        this.isLoading = false;
+      }));
   }
 }
