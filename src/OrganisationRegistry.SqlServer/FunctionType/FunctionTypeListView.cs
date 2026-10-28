@@ -16,6 +16,8 @@ public class FunctionTypeListItem
     public Guid Id { get; set; }
 
     public string Name { get; set; } = null!;
+
+    public bool IsRemoved { get; set; }
 }
 
 public class FunctionTypeListConfiguration : EntityMappingConfiguration<FunctionTypeListItem>
@@ -39,7 +41,8 @@ public class FunctionTypeListConfiguration : EntityMappingConfiguration<Function
 public class FunctionTypeListView :
     Projection<FunctionTypeListView>,
     IEventHandler<FunctionCreated>,
-    IEventHandler<FunctionUpdated>
+    IEventHandler<FunctionUpdated>,
+    IEventHandler<FunctionTypeRemoved>
 {
     protected override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
     public override string Schema => WellknownSchemas.BackofficeSchema;
@@ -90,5 +93,18 @@ public class FunctionTypeListView :
     public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
     {
         await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+    }
+
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FunctionTypeRemoved> message)
+    {
+        using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
+        {
+            var functionType = await context.FunctionTypeList.SingleOrDefaultAsync(x => x.Id == message.Body.FunctionTypeId);
+            if (functionType == null)
+                return;
+
+            functionType.IsRemoved = true;
+            await context.SaveChangesAsync();
+        }
     }
 }
