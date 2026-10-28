@@ -1,3 +1,10 @@
+## [1.342.3](https://github.com/informatievlaanderen/organisation-registry/compare/v1.342.2...v1.342.3) (2026-10-28)
+
+
+### Bug Fixes
+
+* patch ([6cf4085](https://github.com/informatievlaanderen/organisation-registry/commit/6cf4085a29f28caa5078ae657e394e8e598b0775))
+
 ## [1.342.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.342.1...v1.342.2) (2026-10-27)
 
 
