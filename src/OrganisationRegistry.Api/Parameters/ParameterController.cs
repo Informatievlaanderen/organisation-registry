@@ -447,11 +447,11 @@ public class ParameterController : OrganisationRegistryController
     /// </remarks>
     /// <response code="200">Een lijst van functie types.</response>
     [HttpGet("functiontypes")]
-    [ProducesResponseType(typeof(List<FunctionTypeListItem>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<FunctionTypeListItemResult>), StatusCodes.Status200OK)]
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(FunctionTypeListExamples))]
     public async Task<IActionResult> GetFunctionTypes([FromServices] OrganisationRegistryContext context)
     {
-        var filtering = Request.ExtractFilteringRequest<FunctionTypeListItem>();
+        var filtering = Request.ExtractFilteringRequest<FunctionTypeListQuery.FunctionTypeListFilter>();
         var sorting = Request.ExtractSortingRequest();
         var pagination = Request.ExtractPaginationRequest();
 

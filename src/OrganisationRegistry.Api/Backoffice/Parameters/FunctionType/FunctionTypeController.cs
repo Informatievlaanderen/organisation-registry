@@ -32,11 +32,11 @@ public class FunctionTypeController : OrganisationRegistryController
     /// <response code="200">Een lijst van functietypes.</response>
     [HttpGet]
     [SwaggerResponseExample(StatusCodes.Status200OK, typeof(FunctionTypeListExamples))]
-    [ProducesResponseType(typeof(List<FunctionTypeListItem>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<FunctionTypeListItemResult>), StatusCodes.Status200OK)]
     [ActionName("List")]
     public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
     {
-        var filtering = Request.ExtractFilteringRequest<FunctionTypeListItem>();
+        var filtering = Request.ExtractFilteringRequest<FunctionTypeListQuery.FunctionTypeListFilter>();
         var sorting = Request.ExtractSortingRequest();
         var pagination = Request.ExtractPaginationRequest();
 
@@ -61,6 +61,6 @@ public class FunctionTypeController : OrganisationRegistryController
         if (functionTypeListItem == null)
             return NotFound();
 
-        return Ok(functionTypeListItem);
+        return Ok(new FunctionTypeListItemResult(functionTypeListItem.Id, functionTypeListItem.Name, functionTypeListItem.IsRemoved));
     }
 }
