@@ -49,6 +49,7 @@ public class RolePermissionsTests
             "parameters.capacities:write",
             "parameters.capacities:delete",
             "parameters.function-types:write",
+            "parameters.function-types:delete",
             "parameters.contact-types:write",
             "parameters.label-types:write",
             "parameters.purposes:write",

@@ -56,4 +56,18 @@ public class FunctionTypeCommandController : OrganisationRegistryCommandControll
 
         return OkWithLocationHeader(nameof(FunctionTypeController), "Get", new { id = internalMessage.FunctionId });
     }
+
+    /// <summary>Verwijder een functietype.</summary>
+    /// <response code="204">Als het functietype succesvol verwijderd is.</response>
+    /// <response code="400">Als de validatie voor het functietype mislukt is.</response>
+    [HttpDelete("{id}")]
+    [OrganisationRegistryAuthorize(RequiredPermissions = [Permission.ParametersFunctionTypesDelete])]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Delete([FromRoute] Guid id)
+    {
+        var internalMessage = new RemoveFunctionTypeRequest(id);
+        await CommandSender.Send(RemoveFunctionTypeRequestMapping.Map(internalMessage));
+        return NoContent();
+    }
 }

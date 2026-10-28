@@ -107,6 +107,7 @@ public class VoMedewerkerRoleTests
     [InlineData(Permission.ParametersCapacitiesWrite)]
     [InlineData(Permission.ParametersCapacitiesDelete)]
     [InlineData(Permission.ParametersFunctionTypesWrite)]
+    [InlineData(Permission.ParametersFunctionTypesDelete)]
     [InlineData(Permission.ParametersContactTypesWrite)]
     [InlineData(Permission.ParametersLabelTypesWrite)]
     [InlineData(Permission.ParametersPurposesWrite)]

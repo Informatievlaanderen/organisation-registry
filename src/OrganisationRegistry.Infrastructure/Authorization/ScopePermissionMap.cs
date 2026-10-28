@@ -89,6 +89,7 @@ public static class ScopePermissionMap
                 Permission.ParametersCapacitiesWrite,
                 Permission.ParametersCapacitiesDelete,
                 Permission.ParametersFunctionTypesWrite,
+                Permission.ParametersFunctionTypesDelete,
                 Permission.ParametersContactTypesWrite,
                 Permission.ParametersLabelTypesWrite,
                 Permission.ParametersPurposesWrite,
