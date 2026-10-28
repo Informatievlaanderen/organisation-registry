@@ -6,6 +6,7 @@ using Infrastructure.Domain;
 public class FunctionType : AggregateRoot
 {
     public string Name { get; private set; }
+    public bool IsRemoved { get; private set; }
 
     private FunctionType()
     {
@@ -25,6 +26,12 @@ public class FunctionType : AggregateRoot
         ApplyChange(@event);
     }
 
+    public void Remove()
+    {
+        if (IsRemoved) return;
+        ApplyChange(new FunctionTypeRemoved(Id));
+    }
+
     private void Apply(FunctionCreated @event)
     {
         Id = @event.FunctionId;
@@ -34,5 +41,10 @@ public class FunctionType : AggregateRoot
     private void Apply(FunctionUpdated @event)
     {
         Name = @event.Name;
+    }
+
+    private void Apply(FunctionTypeRemoved @event)
+    {
+        IsRemoved = true;
     }
 }

@@ -12,7 +12,8 @@ using Microsoft.Extensions.Logging;
 public class FunctionTypeCommandHandlers :
     BaseCommandHandler<FunctionTypeCommandHandlers>,
     ICommandEnvelopeHandler<CreateFunctionType>,
-    ICommandEnvelopeHandler<UpdateFunctionType>
+    ICommandEnvelopeHandler<UpdateFunctionType>,
+    ICommandEnvelopeHandler<RemoveFunctionType>
 {
     private readonly IUniqueNameValidator<FunctionType> _uniqueNameValidator;
 
@@ -50,5 +51,15 @@ public class FunctionTypeCommandHandlers :
                     var functionType = session.Get<FunctionType>(envelope.Command.FunctionTypeId);
 
                     functionType.Update(envelope.Command.Name);
+                });
+
+    public async Task Handle(ICommandEnvelope<RemoveFunctionType> envelope)
+        => await UpdateHandler<FunctionType>.For(envelope.Command, envelope.User, Session)
+            .RequiresPermission(Permission.ParametersFunctionTypesDelete)
+            .Handle(
+                session =>
+                {
+                    var functionType = session.Get<FunctionType>(envelope.Command.FunctionTypeId);
+                    functionType.Remove();
                 });
 }

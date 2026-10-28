@@ -247,6 +247,7 @@ public enum Permission
     ParametersCapacitiesWrite,
     ParametersCapacitiesDelete,
     ParametersFunctionTypesWrite,
+    ParametersFunctionTypesDelete,
     ParametersContactTypesWrite,
     ParametersLabelTypesWrite,
     ParametersPurposesWrite,
