@@ -22,7 +22,7 @@ using OrganisationRegistry.Organisation.Events;
 using OrganisationRegistry.Person.Events;
 using OrganisationRegistry.SeatType.Events;
 
-public class BodyMandateListItem
+public class BodyMandateListItem : IRemovable
 {
     public Guid BodyMandateId { get; set; }
     public BodyMandateType BodyMandateType { get; set; }
@@ -49,6 +49,7 @@ public class BodyMandateListItem
 
     public DateTime? ValidFrom { get; set; }
     public DateTime? ValidTo { get; set; }
+    public bool ScheduledForRemoval { get; set; }
 }
 
 public class BodySeatCacheItemForBodyMandateList
@@ -112,6 +113,7 @@ public class BodyMandateListConfiguration : EntityMappingConfiguration<BodyManda
 
         b.Property(p => p.ValidFrom);
         b.Property(p => p.ValidTo);
+        b.Property(p => p.ScheduledForRemoval);
 
         b.HasIndex(x => x.DelegatorName).IsClustered();
         b.HasIndex(x => x.ValidFrom);
@@ -158,7 +160,9 @@ public class BodyMandateListView :
     IEventHandler<SeatTypeUpdated>,
     IEventHandler<BodySeatNumberAssigned>,
     IEventHandler<AssignedPersonAssignedToBodyMandate>,
-    IEventHandler<AssignedPersonClearedFromBodyMandate>
+    IEventHandler<AssignedPersonClearedFromBodyMandate>,
+    IEventHandler<BodyMandateRemoved>,
+    IEventHandler<FunctionTypeRemoved>
 {
     protected override string[] ProjectionTableNames
         => Enum.GetNames(typeof(ProjectionTables));
@@ -619,6 +623,41 @@ public class BodyMandateListView :
 
         foreach (var bodyMandateListItem in bodyMandates)
             bodyMandateListItem.BodySeatNumber = message.Body.BodySeatNumber;
+
+        await context.SaveChangesAsync();
+    }
+
+    public async Task Handle(
+        DbConnection dbConnection,
+        DbTransaction dbTransaction,
+        IEnvelope<BodyMandateRemoved> message)
+    {
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+        var bodyMandateListItem =
+            context.BodyMandateList.SingleOrDefault(item => item.BodyMandateId == message.Body.BodyMandateId);
+
+        if (bodyMandateListItem == null)
+            return;
+
+        context.BodyMandateList.Remove(bodyMandateListItem);
+
+        await context.SaveChangesAsync();
+    }
+
+    public async Task Handle(
+        DbConnection dbConnection,
+        DbTransaction dbTransaction,
+        IEnvelope<FunctionTypeRemoved> message)
+    {
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+        var bodyMandates = context
+            .BodyMandateList
+            .Where(
+                item => item.BodyMandateType == BodyMandateType.FunctionType &&
+                        item.DelegatedId == message.Body.FunctionTypeId);
+
+        foreach (var bodyMandateListItem in bodyMandates)
+            bodyMandateListItem.ScheduledForRemoval = true;
 
         await context.SaveChangesAsync();
     }

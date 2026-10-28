@@ -19,7 +19,9 @@ public class WellknownUsers
         "SyncRemovedItemsService",
         Permission.CanRunScheduledJobs,
         Permission.CanManageKeys,
-        Permission.CanManageCapacities);
+        Permission.CanManageCapacities,
+        Permission.CanManageFunctions,
+        Permission.BodiesCanManageMandates);
     public static User KboSyncService => Create("KboSyncService", Permission.CanManageKbo);
     // Permissions for client-credential users (TestClient/Orafin) are
     // derived from the token's scopes via ScopePermissionMap (the single
