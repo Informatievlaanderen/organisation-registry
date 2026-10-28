@@ -162,6 +162,7 @@ public class Startup
 
             _logger.LogWarning("Magda clientcertificate not configured");
         }
+        const string BearerOrIntrospection = "BearerOrIntrospection";
 
         services
             .AddHostedService<ScheduledCommandsService>()
@@ -172,10 +173,29 @@ public class Startup
                 .AddAuthentication(
                     options =>
                     {
-                        options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                        options.DefaultScheme = BearerOrIntrospection;
+                        options.DefaultAuthenticateScheme = BearerOrIntrospection;
                         options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                     })
+
+            .AddPolicyScheme(BearerOrIntrospection, "JWT or opaque token", options =>
+            {
+                options.ForwardDefaultSelector = context =>
+                {
+                    if (!tokenExchangeEnabled)
+                        return JwtBearerDefaults.AuthenticationScheme;
+
+                    var header = context.Request.Headers.Authorization.ToString();
+                    if (!header.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+                        return JwtBearerDefaults.AuthenticationScheme;
+
+                    var token = header["Bearer ".Length..].Trim();
+                    // A JWT has 3 dot-separated segments; anything else is treated as opaque
+                    return token.Count(c => c == '.') == 2
+                        ? JwtBearerDefaults.AuthenticationScheme
+                        : AuthenticationSchemes.TokenExchange;
+                };
+            })
             .AddJwtBearer(
                 JwtBearerDefaults.AuthenticationScheme,
                 options =>
