@@ -401,6 +401,9 @@ namespace OrganisationRegistry.SqlServer.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
+                    b.Property<bool>("ScheduledForRemoval")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime?>("ValidFrom")
                         .HasColumnType("datetime2");
 
@@ -1281,6 +1284,9 @@ namespace OrganisationRegistry.SqlServer.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsRemoved")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -2177,6 +2183,9 @@ namespace OrganisationRegistry.SqlServer.Migrations
                         .IsRequired()
                         .HasMaxLength(401)
                         .HasColumnType("nvarchar(401)");
+
+                    b.Property<bool>("ScheduledForRemoval")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("ValidFrom")
                         .HasColumnType("datetime2");

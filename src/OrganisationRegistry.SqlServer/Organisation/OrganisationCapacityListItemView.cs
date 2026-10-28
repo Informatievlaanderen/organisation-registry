@@ -92,6 +92,7 @@ public class OrganisationCapacityListView :
     IEventHandler<CapacityUpdated>,
     IEventHandler<CapacityRemoved>,
     IEventHandler<FunctionUpdated>,
+    IEventHandler<FunctionTypeRemoved>,
     IEventHandler<PersonUpdated>,
     IEventHandler<LocationUpdated>,
     IEventHandler<OrganisationTerminated>,
@@ -277,6 +278,18 @@ public class OrganisationCapacityListView :
         await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
         var capacity = await context.OrganisationCapacityList.SingleAsync(item => item.OrganisationCapacityId == message.Body.OrganisationCapacityId);
         capacity.IsActive = true;
+
+        await context.SaveChangesAsync();
+    }
+
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FunctionTypeRemoved> message)
+    {
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+        var organisationCapacities =
+            context.OrganisationCapacityList.Where(item => item.FunctionId == message.Body.FunctionTypeId);
+
+        foreach (var organisationCapacity in organisationCapacities)
+            organisationCapacity.ScheduledForRemoval = true;
 
         await context.SaveChangesAsync();
     }

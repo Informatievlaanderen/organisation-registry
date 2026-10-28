@@ -16,9 +16,11 @@ using Newtonsoft.Json;
 using Person;
 using Function.Events;
 using OrganisationRegistry.Infrastructure;
+using OrganisationRegistry.Infrastructure.Events;
 using OrganisationRegistry.Person.Events;
+using RebuildProjection = OrganisationRegistry.Infrastructure.Events.RebuildProjection;
 
-public class OrganisationFunctionListItem
+public class OrganisationFunctionListItem : IRemovable
 {
     public Guid OrganisationFunctionId { get; set; }
     public Guid OrganisationId { get; set; }
@@ -33,6 +35,7 @@ public class OrganisationFunctionListItem
 
     public DateTime? ValidFrom { get; set; }
     public DateTime? ValidTo { get; set; }
+    public bool ScheduledForRemoval { get; set; }
 }
 
 public class OrganisationFunctionListConfiguration : EntityMappingConfiguration<OrganisationFunctionListItem>
@@ -55,6 +58,7 @@ public class OrganisationFunctionListConfiguration : EntityMappingConfiguration<
 
         b.Property(p => p.ValidFrom);
         b.Property(p => p.ValidTo);
+        b.Property(p => p.ScheduledForRemoval);
 
         b.HasIndex(x => x.PersonName).IsClustered();
         b.HasIndex(x => x.FunctionName);
@@ -71,7 +75,8 @@ public class OrganisationFunctionListView :
     IEventHandler<FunctionUpdated>,
     IEventHandler<PersonUpdated>,
     IEventHandler<OrganisationTerminated>,
-    IEventHandler<OrganisationTerminatedV2>
+    IEventHandler<OrganisationTerminatedV2>,
+    IEventHandler<FunctionTypeRemoved>
 {
     protected override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
     public override string Schema => WellknownSchemas.BackofficeSchema;
@@ -184,6 +189,18 @@ public class OrganisationFunctionListView :
 
         foreach (var function in functions)
             function.ValidTo = message.Body.FieldsToTerminate.Functions[function.OrganisationFunctionId];
+
+        await context.SaveChangesAsync();
+    }
+
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FunctionTypeRemoved> message)
+    {
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+        var organisationFunctions =
+            context.OrganisationFunctionList.Where(item => item.FunctionId == message.Body.FunctionTypeId);
+
+        foreach (var organisationFunction in organisationFunctions)
+            organisationFunction.ScheduledForRemoval = true;
 
         await context.SaveChangesAsync();
     }

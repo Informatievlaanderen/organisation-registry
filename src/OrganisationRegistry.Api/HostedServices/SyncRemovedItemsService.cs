@@ -7,11 +7,13 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Organisation;
 using Organisation.Commands;
+using OrganisationRegistry.Body;
 using OrganisationRegistry.Infrastructure;
 using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Commands;
 using OrganisationRegistry.Infrastructure.Configuration;
 using SqlServer;
+using SqlServer.Body;
 using SqlServer.Organisation;
 
 public class SyncRemovedItemsService : BackgroundService
@@ -67,6 +69,21 @@ public class SyncRemovedItemsService : BackgroundService
             item => new RemoveOrganisationCapacity(
                 new OrganisationId(item.OrganisationId),
                 new OrganisationCapacityId(item.OrganisationCapacityId)
+            ));
+        await RemoveOrganisationItems(
+            commandSender.Send,
+            context.OrganisationFunctionList,
+            item => new RemoveOrganisationFunction(
+                new OrganisationId(item.OrganisationId),
+                item.OrganisationFunctionId
+            ));
+        await RemoveOrganisationItems(
+            commandSender.Send,
+            context.BodyMandateList,
+            item => new RemoveBodyMandate(
+                new BodyId(item.BodyId),
+                new BodySeatId(item.BodySeatId),
+                new BodyMandateId(item.BodyMandateId)
             ));
     }
 
