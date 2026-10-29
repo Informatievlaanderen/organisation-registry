@@ -78,4 +78,15 @@ public class Given_Roles_Without_Parameter_Permissions
 
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
+
+    [Theory]
+    [MemberData(nameof(ParameterEndpoints.NonPrivilegedRoleData), MemberType = typeof(ParameterEndpoints))]
+    public async Task Then_Deleting_FunctionType_Returns_Forbidden(string role)
+    {
+        using var client = await _apiFixture.CreateDynamicClient(role);
+
+        using var response = await ApiFixture.Delete(client, $"/v1/functiontypes/{Guid.NewGuid()}");
+
+        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+    }
 }

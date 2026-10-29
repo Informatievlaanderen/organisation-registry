@@ -66,7 +66,8 @@ public class DelegationAssignmentListView :
     Projection<DelegationAssignmentListView>,
     IEventHandler<PersonAssignedToDelegation>,
     IEventHandler<PersonAssignedToDelegationUpdated>,
-    IEventHandler<PersonAssignedToDelegationRemoved>
+    IEventHandler<PersonAssignedToDelegationRemoved>,
+    IEventHandler<BodyMandateRemoved>
 {
     protected override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
     public override string Schema => WellknownSchemas.BackofficeSchema;
@@ -138,6 +139,18 @@ public class DelegationAssignmentListView :
                 context.DelegationAssignmentList.Single(item => item.Id == message.Body.DelegationAssignmentId);
 
             context.Remove(delegationAssignment);
+            await context.SaveChangesAsync();
+        }
+    }
+
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyMandateRemoved> message)
+    {
+        using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
+        {
+            var delegationAssignments =
+                context.DelegationAssignmentList.Where(item => item.BodyMandateId == message.Body.BodyMandateId);
+
+            context.DelegationAssignmentList.RemoveRange(delegationAssignments);
             await context.SaveChangesAsync();
         }
     }

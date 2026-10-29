@@ -60,6 +60,8 @@ public class BodySeatGenderRatioProjection :
     IEventHandler<PersonAssignedToDelegationUpdated>,
     IEventHandler<PersonAssignedToDelegationRemoved>,
 
+    IEventHandler<BodyMandateRemoved>,
+
     IEventHandler<BodyAssignedToOrganisation>,
     IEventHandler<BodyClearedFromOrganisation>,
 
@@ -812,6 +814,25 @@ public class BodySeatGenderRatioProjection :
 
         item.Assignments.Remove(assignment);
 
+        await context.SaveChangesAsync();
+    }
+
+    /// <summary>
+    /// Remove the mandate and its assignments from the gender ratio projection.
+    /// The post counts remain unchanged because the body seat itself still exists.
+    /// </summary>
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyMandateRemoved> message)
+    {
+        await using var context = ContextFactory.Create();
+        var item = await context
+            .BodySeatGenderRatioBodyMandateList
+            .Include(mandate => mandate.Assignments)
+            .SingleOrDefaultAsync(x => x.BodyMandateId == message.Body.BodyMandateId);
+
+        if (item == null)
+            return;
+
+        context.BodySeatGenderRatioBodyMandateList.Remove(item);
         await context.SaveChangesAsync();
     }
 

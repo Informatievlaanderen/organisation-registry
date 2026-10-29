@@ -23,7 +23,8 @@ export class FunctionFilterComponent implements OnInit {
 
   constructor(formBuilder: FormBuilder) {
     this.form = formBuilder.group({
-      name: ['', Validators.nullValidator]
+      name: ['', Validators.nullValidator],
+      showAll: [true],
     });
     this.form.setValidators(
       atLeastOne(

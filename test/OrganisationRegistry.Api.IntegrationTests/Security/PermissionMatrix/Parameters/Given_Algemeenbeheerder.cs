@@ -56,4 +56,16 @@ public class Given_Algemeenbeheerder
         response.StatusCode.Should().NotBe(HttpStatusCode.Forbidden);
         response.StatusCode.Should().NotBe(HttpStatusCode.Unauthorized);
     }
+
+    [Fact]
+    public async Task Then_Deleting_A_FunctionType_Is_Authorized()
+    {
+        using var client = await _apiFixture.CreateAlgemeenbeheerderClient();
+        var functionTypeId = await _apiFixture.Create.Function();
+
+        using var response = await ApiFixture.Delete(client, $"/v1/functiontypes/{functionTypeId}");
+
+        response.StatusCode.Should().NotBe(HttpStatusCode.Forbidden);
+        response.StatusCode.Should().NotBe(HttpStatusCode.Unauthorized);
+    }
 }

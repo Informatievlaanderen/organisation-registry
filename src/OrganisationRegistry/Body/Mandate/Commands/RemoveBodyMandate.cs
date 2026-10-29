@@ -1,15 +1,15 @@
 namespace OrganisationRegistry.Body;
 
-public class RemoveBodyMandate : BaseCommand<BodyMandateId>
+public class RemoveBodyMandate : BaseCommand<BodyId>
 {
-    public BodyId BodyId { get; }
+    public BodyId BodyId => Id;
     public BodySeatId BodySeatId { get; }
-    public BodyMandateId BodyMandateId => Id;
+    public BodyMandateId BodyMandateId { get; }
 
     public RemoveBodyMandate(BodyId bodyId, BodySeatId bodySeatId, BodyMandateId bodyMandateId)
     {
-        BodyId = bodyId;
+        Id = bodyId;
         BodySeatId = bodySeatId;
-        Id = bodyMandateId;
+        BodyMandateId = bodyMandateId;
     }
 }

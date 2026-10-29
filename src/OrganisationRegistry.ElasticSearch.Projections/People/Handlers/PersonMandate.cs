@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Cache;
 using Common;
+using ElasticSearch.Client;
 using ElasticSearch.People;
 using Infrastructure;
 using Infrastructure.Change;
@@ -15,6 +16,7 @@ using Microsoft.Extensions.Logging;
 using Organisation.Events;
 using OrganisationRegistry.Body.Events;
 using OrganisationRegistry.Infrastructure.Events;
+using Osc;
 using SqlServer;
 
 public class PersonMandate :
@@ -31,6 +33,7 @@ public class PersonMandate :
     IElasticEventHandler<PersonAssignedToDelegation>,
     IElasticEventHandler<PersonAssignedToDelegationUpdated>,
     IElasticEventHandler<PersonAssignedToDelegationRemoved>,
+    IElasticEventHandler<BodyMandateRemoved>,
     IElasticEventHandler<BodyAssignedToOrganisation>,
     IElasticEventHandler<BodyClearedFromOrganisation>
 {
@@ -359,6 +362,37 @@ public class PersonMandate :
                     x =>
                         x.BodyMandateId == message.Body.BodyMandateId &&
                         x.DelegationAssignmentId == message.Body.DelegationAssignmentId);
+            }
+        ).ToAsyncResult();
+
+    public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyMandateRemoved> message)
+        => await new ElasticMassChange(
+            async elastic =>
+            {
+                await elastic.TryGetAsync(async () =>
+                    (await elastic.WriteClient.Indices.RefreshAsync(Indices.Index<PersonDocument>())).ThrowOnFailure());
+
+                (await elastic.WriteClient
+                        .UpdateByQueryAsync<PersonDocument>(x => x
+                            .Query(q => q
+                                .Term(t => t
+                                    .Field(f => f.Mandates.First().BodyMandateId)
+                                    .Value(message.Body.BodyMandateId)))
+                            .ScrollSize(100)
+                            .Script(s => s
+                                .Source(@"for (int i = ctx._source.mandates.size() - 1; i >= 0; i--) {
+                                            if (ctx._source.mandates[i].bodyMandateId == params.bodyMandateId) {
+                                                ctx._source.mandates.remove(i);
+                                            }
+                                          }
+                                          ctx._source.changeId = params.newChangeId;
+                                          ctx._source.changeTime = params.newChangeTime;")
+                                .Lang("painless")
+                                .Params(p => p
+                                    .Add("bodyMandateId", message.Body.BodyMandateId)
+                                    .Add("newChangeId", message.Number)
+                                    .Add("newChangeTime", message.Timestamp)))))
+                    .ThrowOnFailure();
             }
         ).ToAsyncResult();
 

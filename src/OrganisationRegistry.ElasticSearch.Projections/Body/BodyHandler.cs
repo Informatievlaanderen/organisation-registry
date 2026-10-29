@@ -47,6 +47,7 @@ public class BodyHandler :
     IElasticEventHandler<ReassignedOrganisationToBodySeat>,
     IElasticEventHandler<AssignedFunctionTypeToBodySeat>,
     IElasticEventHandler<ReassignedFunctionTypeToBodySeat>,
+    IElasticEventHandler<BodyMandateRemoved>,
     IElasticEventHandler<PersonAssignedToDelegation>,
     IElasticEventHandler<PersonAssignedToDelegationUpdated>,
     IElasticEventHandler<PersonAssignedToDelegationRemoved>,
@@ -660,6 +661,25 @@ public class BodyHandler :
 
                 bodyMandate.Delegations.RemoveExistingListItems(
                     x => x.DelegationAssignmentId == message.Body.DelegationAssignmentId);
+            }
+        ).ToAsyncResult();
+    }
+
+    public async Task<IElasticChange> Handle(
+        DbConnection dbConnection,
+        DbTransaction dbTransaction,
+        IEnvelope<BodyMandateRemoved> message)
+    {
+        return await new ElasticPerDocumentChange<BodyDocument>(
+            message.Body.BodyId,
+            document =>
+            {
+                document.ChangeId = message.Number;
+                document.ChangeTime = message.Timestamp;
+
+                foreach (var seat in document.Seats)
+                    seat.Mandates.RemoveExistingListItems(
+                        mandate => mandate.BodyMandateId == message.Body.BodyMandateId);
             }
         ).ToAsyncResult();
     }

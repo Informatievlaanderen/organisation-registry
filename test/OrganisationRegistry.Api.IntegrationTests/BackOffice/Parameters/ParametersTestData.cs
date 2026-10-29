@@ -62,7 +62,7 @@ public class ParametersTestData
         { BodyclassificationtypesRoute, new ParameterTestParameters(typeof(CreateBodyClassificationTypeRequest), false, ImmutableList<string>.Empty) },
         { CapacitiesRoute, new ParameterTestParameters(typeof(CreateCapacityRequest), true, ImmutableList<string>.Empty) },
         { FormalframeworkcategoriesRoute, new ParameterTestParameters(typeof(CreateFormalFrameworkCategoryRequest), false, ImmutableList<string>.Empty) },
-        { FunctiontypesRoute, new ParameterTestParameters(typeof(CreateFunctionTypeRequest), false, ImmutableList<string>.Empty) },
+        { FunctiontypesRoute, new ParameterTestParameters(typeof(CreateFunctionTypeRequest), true, ImmutableList<string>.Empty) },
         { LocationtypesRoute, new ParameterTestParameters(typeof(CreateLocationTypeRequest), false, ImmutableList<string>.Empty) },
         { MandateroletypesRoute, new ParameterTestParameters(typeof(CreateMandateRoleTypeRequest), false, ImmutableList<string>.Empty) },
         { PurposesRoute, new ParameterTestParameters(typeof(CreatePurposeRequest), false, ImmutableList<string>.Empty) },
