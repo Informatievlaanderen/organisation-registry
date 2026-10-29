@@ -58,7 +58,8 @@ public class ActivePeopleAssignedToBodyMandatesListView :
     Projection<ActivePeopleAssignedToBodyMandatesListView>,
     IEventHandler<PersonAssignedToDelegationUpdated>,
     IEventHandler<AssignedPersonAssignedToBodyMandate>,
-    IEventHandler<AssignedPersonClearedFromBodyMandate>
+    IEventHandler<AssignedPersonClearedFromBodyMandate>,
+    IEventHandler<BodyMandateRemoved>
 {
     private readonly IEventStore _eventStore;
     private readonly IDateTimeProvider _dateTimeProvider;
@@ -145,6 +146,18 @@ public class ActivePeopleAssignedToBodyMandatesListView :
             return;
 
         context.ActivePeopleAssignedToBodyMandatesList.Remove(activePersonListItem);
+
+        await context.SaveChangesAsync();
+    }
+
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyMandateRemoved> message)
+    {
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+
+        var activePeople = context.ActivePeopleAssignedToBodyMandatesList
+            .Where(item => item.BodyMandateId == message.Body.BodyMandateId);
+
+        context.ActivePeopleAssignedToBodyMandatesList.RemoveRange(activePeople);
 
         await context.SaveChangesAsync();
     }

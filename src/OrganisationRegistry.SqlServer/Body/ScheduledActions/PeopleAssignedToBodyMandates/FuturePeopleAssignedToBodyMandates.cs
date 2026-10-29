@@ -59,7 +59,8 @@ public class FuturePeopleAssignedToBodyMandatesListView :
     IEventHandler<PersonAssignedToDelegation>,
     IEventHandler<PersonAssignedToDelegationUpdated>,
     IEventHandler<PersonAssignedToDelegationRemoved>,
-    IEventHandler<AssignedPersonAssignedToBodyMandate>
+    IEventHandler<AssignedPersonAssignedToBodyMandate>,
+    IEventHandler<BodyMandateRemoved>
 {
     private readonly IEventStore _eventStore;
     private readonly IDateTimeProvider _dateTimeProvider;
@@ -119,6 +120,17 @@ public class FuturePeopleAssignedToBodyMandatesListView :
     {
         await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
         DeleteFutureActivePerson(context, message.Body.DelegationAssignmentId);
+    }
+
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyMandateRemoved> message)
+    {
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+
+        var futurePeople = context.FuturePeopleAssignedToBodyMandatesList
+            .Where(item => item.BodyMandateId == message.Body.BodyMandateId);
+
+        context.FuturePeopleAssignedToBodyMandatesList.RemoveRange(futurePeople);
+        await context.SaveChangesAsync();
     }
 
     public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)

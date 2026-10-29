@@ -27,7 +27,8 @@ public class PersonMandateListProjection :
     IEventHandler<OrganisationCouplingWithKboCancelled>,
     IEventHandler<PersonAssignedToDelegation>,
     IEventHandler<PersonAssignedToDelegationUpdated>,
-    IEventHandler<PersonAssignedToDelegationRemoved>
+    IEventHandler<PersonAssignedToDelegationRemoved>,
+    IEventHandler<BodyMandateRemoved>
 {
     private readonly Func<Owned<OrganisationRegistryContext>> _contextFactory;
 
@@ -285,6 +286,15 @@ public class PersonMandateListProjection :
             item.DelegationAssignmentId == message.Body.DelegationAssignmentId);
 
         context.PersonMandateList.Remove(personMandateListItem);
+        await context.SaveChangesAsync();
+    }
+
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyMandateRemoved> message)
+    {
+        await using var context = _contextFactory().Value;
+        var personMandateListItems = context.PersonMandateList.Where(item => item.BodyMandateId == message.Body.BodyMandateId);
+
+        context.PersonMandateList.RemoveRange(personMandateListItems);
         await context.SaveChangesAsync();
     }
 

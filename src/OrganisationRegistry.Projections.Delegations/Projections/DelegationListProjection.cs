@@ -26,6 +26,7 @@ public class DelegationListProjection :
     IEventHandler<ReassignedOrganisationToBodySeat>,
     IEventHandler<PersonAssignedToDelegation>,
     IEventHandler<PersonAssignedToDelegationRemoved>,
+    IEventHandler<BodyMandateRemoved>,
     IEventHandler<OrganisationInfoUpdated>,
     IEventHandler<OrganisationNameUpdated>,
     IEventHandler<OrganisationInfoUpdatedFromKbo>,
@@ -219,6 +220,18 @@ public class DelegationListProjection :
         delegationListItem.NumberOfDelegationAssignments--;
         delegationListItem.IsDelegated = delegationListItem.NumberOfDelegationAssignments > 0;
 
+        await context.SaveChangesAsync();
+    }
+
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyMandateRemoved> message)
+    {
+        await using var context = ContextFactory.Create();
+        var delegationListItem = await context.DelegationList.SingleOrDefaultAsync(item => item.Id == message.Body.BodyMandateId);
+
+        if (delegationListItem == null)
+            return;
+
+        context.DelegationList.Remove(delegationListItem);
         await context.SaveChangesAsync();
     }
 
