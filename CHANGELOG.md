@@ -1,3 +1,25 @@
+# [1.343.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.342.3...v1.343.0) (2026-10-29)
+
+
+### Bug Fixes
+
+* or-3412 fix failing api integration tests in ci ([5ed00c8](https://github.com/informatievlaanderen/organisation-registry/commit/5ed00c89452dc0365dfc1b4e096c6afad205a77c))
+* or-3412 make function type integration tests projection-aware ([cafd795](https://github.com/informatievlaanderen/organisation-registry/commit/cafd7950156b9acb87ce98b0e34e76a95aeb6dfe))
+* or-3412 prevent sync service from dying on single item failure ([3bf1547](https://github.com/informatievlaanderen/organisation-registry/commit/3bf1547048503e64586fdbd6ede0dc55ee41b541))
+* or-3412 recompute capacity removal flag and add tests ([a6e8fbf](https://github.com/informatievlaanderen/organisation-registry/commit/a6e8fbf1d6881f5d9337060dca2b6e645eef857d))
+* or-3412 recompute removal flag when a link is repointed to another function type ([42a3dd2](https://github.com/informatievlaanderen/organisation-registry/commit/42a3dd2b8d8e3239151551b225a16c8a535dbe20))
+* or-3412 revert capacity flagging on add/update ([e3fa7fc](https://github.com/informatievlaanderen/organisation-registry/commit/e3fa7fc8e231f5fea224cf378a28a6bd4b7e8f2e))
+
+
+### Features
+
+* or-3412 add body mandate removal to the body aggregate ([c3f9d0b](https://github.com/informatievlaanderen/organisation-registry/commit/c3f9d0b5fc1c26df1d619e71af6c1dc31e3a69f3))
+* or-3412 add delete action to the function type overview ([f5293f7](https://github.com/informatievlaanderen/organisation-registry/commit/f5293f79d4b5f5c0ed0690b4d25ce1c5c6907c49))
+* or-3412 add delete endpoint for function types ([f30dc17](https://github.com/informatievlaanderen/organisation-registry/commit/f30dc1775d49a3626d81e0968bea90c98809d69c))
+* or-3412 add remaining projections tests and ui fixes for function type removal ([c3c70d9](https://github.com/informatievlaanderen/organisation-registry/commit/c3c70d945d627131e2e74a751e66f91f6588e1b9))
+* or-3412 hide deleted function types from function type lists ([3ba69c7](https://github.com/informatievlaanderen/organisation-registry/commit/3ba69c74d1e76ef0c30f535347298f9028534a5d))
+* or-3412 schedule cleanup of links to removed function types ([79c6f4f](https://github.com/informatievlaanderen/organisation-registry/commit/79c6f4f093e04b47495edb9ce6687e3ae7b456b4))
+
 ## [1.342.3](https://github.com/informatievlaanderen/organisation-registry/compare/v1.342.2...v1.342.3) (2026-10-28)
 
 
