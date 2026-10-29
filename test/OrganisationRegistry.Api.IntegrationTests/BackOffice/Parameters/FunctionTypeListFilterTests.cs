@@ -24,16 +24,15 @@ public class FunctionTypeListFilterTests
     public async Task Given_A_Removed_FunctionType_List_Returns_It_Only_With_ShowAll()
     {
         var name = $"FT-REMOVED-{Guid.NewGuid():N}";
+        var functionTypeId = Guid.NewGuid();
 
         using var client = await _apiFixture.CreateAlgemeenbeheerderClient();
 
         var createResponse = await ApiFixture.Post(
             client,
             "/v1/functiontypes",
-            new { name });
+            new { id = functionTypeId, name });
         await ApiFixture.VerifyStatusCode(createResponse, HttpStatusCode.Created);
-
-        var functionTypeId = ApiFixture.GetIdFrom(createResponse.Headers);
 
         var deleteResponse = await ApiFixture.Delete(client, $"/v1/functiontypes/{functionTypeId}");
         await ApiFixture.VerifyStatusCode(deleteResponse, HttpStatusCode.NoContent);

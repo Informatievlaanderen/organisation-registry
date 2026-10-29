@@ -39,6 +39,18 @@ KUBECONFIG="${KUBECONFIG_FILE}" tilt ci --timeout="${TILT_CI_TIMEOUT}" 2>&1 | te
 
 TIMEOUT_SECONDS="${TIMEOUT_SECONDS}" ./scripts/wait-for-tilt-api-integration-tests.sh
 
+# Tilt port-forwards stop when `tilt ci` returns, but the integration tests read the
+# read-model database directly on localhost:21433. Forward mssql for the test run.
+KUBECONFIG="${KUBECONFIG_FILE}" kubectl -n wegwijs-demo port-forward svc/mssql 21433:1433 &
+MSSQL_PORT_FORWARD_PID=$!
+trap 'kill ${MSSQL_PORT_FORWARD_PID} 2>/dev/null || true' EXIT
+for _ in {1..30}; do
+  if (echo > /dev/tcp/localhost/21433) 2>/dev/null; then
+    break
+  fi
+  sleep 1
+done
+
 export ElasticSearch__ReadConnectionString="${ElasticSearch__ReadConnectionString:-http://opensearch.localhost:9080/}"
 export ElasticSearch__WriteConnectionString="${ElasticSearch__WriteConnectionString:-http://opensearch.localhost:9080/}"
 
