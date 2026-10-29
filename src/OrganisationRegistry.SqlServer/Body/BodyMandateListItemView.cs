@@ -358,6 +358,10 @@ public class BodyMandateListView :
 
         bodyMandateListItem.ValidFrom = message.Body.ValidFrom;
         bodyMandateListItem.ValidTo = message.Body.ValidTo;
+        bodyMandateListItem.ScheduledForRemoval = await context.FunctionTypeList
+            .Where(ft => ft.Id == message.Body.FunctionTypeId)
+            .Select(ft => ft.IsRemoved)
+            .SingleOrDefaultAsync();
 
         await context.SaveChangesAsync();
     }

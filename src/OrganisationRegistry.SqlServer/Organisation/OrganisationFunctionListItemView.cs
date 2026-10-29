@@ -155,6 +155,10 @@ public class OrganisationFunctionListView :
         function.ContactsJson = JsonConvert.SerializeObject(message.Body.Contacts);
         function.ValidFrom = message.Body.ValidFrom;
         function.ValidTo = message.Body.ValidTo;
+        function.ScheduledForRemoval = await context.FunctionTypeList
+            .Where(ft => ft.Id == message.Body.FunctionId)
+            .Select(ft => ft.IsRemoved)
+            .SingleOrDefaultAsync();
 
         await context.SaveChangesAsync();
     }
