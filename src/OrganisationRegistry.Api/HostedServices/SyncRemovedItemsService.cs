@@ -46,18 +46,19 @@ public class SyncRemovedItemsService : BackgroundService
 
         while (!cancellationToken.IsCancellationRequested)
         {
-            await RemoveOrganisationItems(_commandSender, _contextFactory);
+            await RemoveOrganisationItems(_commandSender, _contextFactory, _logger);
 
             await _configuration.Delay(cancellationToken);
         }
     }
 
-    private static async Task RemoveOrganisationItems(ICommandSender commandSender, IContextFactory contextFactory)
+    private static async Task RemoveOrganisationItems(ICommandSender commandSender, IContextFactory contextFactory, ILogger logger)
     {
         await using var context = contextFactory.Create();
 
         await RemoveOrganisationItems(
             commandSender.Send,
+            logger,
             context.OrganisationKeyList,
             item => new RemoveOrganisationKey(
                 new OrganisationId(item.OrganisationId),
@@ -65,6 +66,7 @@ public class SyncRemovedItemsService : BackgroundService
             ));
         await RemoveOrganisationItems(
             commandSender.Send,
+            logger,
             context.OrganisationCapacityList,
             item => new RemoveOrganisationCapacity(
                 new OrganisationId(item.OrganisationId),
@@ -72,6 +74,7 @@ public class SyncRemovedItemsService : BackgroundService
             ));
         await RemoveOrganisationItems(
             commandSender.Send,
+            logger,
             context.OrganisationFunctionList,
             item => new RemoveOrganisationFunction(
                 new OrganisationId(item.OrganisationId),
@@ -79,6 +82,7 @@ public class SyncRemovedItemsService : BackgroundService
             ));
         await RemoveOrganisationItems(
             commandSender.Send,
+            logger,
             context.BodyMandateList,
             item => new RemoveBodyMandate(
                 new BodyId(item.BodyId),
@@ -89,6 +93,7 @@ public class SyncRemovedItemsService : BackgroundService
 
     private static async Task RemoveOrganisationItems<TItem, TCommand>(
         Func<TCommand, IUser?, Task> sendCommand,
+        ILogger logger,
         IQueryable<TItem> list,
         Func<TItem, TCommand> createCommand)
         where TItem : IRemovable
@@ -99,7 +104,17 @@ public class SyncRemovedItemsService : BackgroundService
         {
             var removeOrganisationItem = createCommand(organisationItem);
 
-            await sendCommand(removeOrganisationItem, WellknownUsers.SyncRemovedItemsService);
+            try
+            {
+                await sendCommand(removeOrganisationItem, WellknownUsers.SyncRemovedItemsService);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(
+                    ex,
+                    "Failed to remove scheduled {ItemType} item, will retry on next pass",
+                    typeof(TItem).Name);
+            }
         }
     }
 }
