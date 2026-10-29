@@ -136,16 +136,23 @@ public class FunctionTypeRemovedScheduledForRemovalTests
         await ApiFixture.VerifyStatusCode(deleteResponse, HttpStatusCode.NoContent);
 
         await WaitUntilAsync(
-            () =>
+            async () =>
             {
-                var organisationFunction = _context.OrganisationFunctionList.Find(organisationFunctionId);
-                var organisationCapacity = _context.OrganisationCapacityList.Find(organisationCapacityId);
-                var bodyMandate = _context.BodyMandateList.Find(bodyMandateId);
+                // fresh, untracked reads on every poll: Find() would serve the tracked
+                // (stale) entities loaded by the previous poll.
+                var organisationFunction = await _context.OrganisationFunctionList
+                    .AsNoTracking()
+                    .SingleOrDefaultAsync(x => x.OrganisationFunctionId == organisationFunctionId);
+                var organisationCapacity = await _context.OrganisationCapacityList
+                    .AsNoTracking()
+                    .SingleOrDefaultAsync(x => x.OrganisationCapacityId == organisationCapacityId);
+                var bodyMandate = await _context.BodyMandateList
+                    .AsNoTracking()
+                    .SingleOrDefaultAsync(x => x.BodyMandateId == bodyMandateId);
 
-                return Task.FromResult(
-                    organisationFunction is { ScheduledForRemoval: true } &&
-                    organisationCapacity is { ScheduledForRemoval: true } &&
-                    bodyMandate is { ScheduledForRemoval: true });
+                return organisationFunction is { ScheduledForRemoval: true } &&
+                       organisationCapacity is { ScheduledForRemoval: true } &&
+                       bodyMandate is { ScheduledForRemoval: true };
             },
             TimeSpan.FromSeconds(30),
             "Niet alle gekoppelde items zijn gemarkeerd als ScheduledForRemoval.");

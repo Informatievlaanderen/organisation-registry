@@ -37,24 +37,43 @@ public class FunctionTypeListFilterTests
         var deleteResponse = await ApiFixture.Delete(client, $"/v1/functiontypes/{functionTypeId}");
         await ApiFixture.VerifyStatusCode(deleteResponse, HttpStatusCode.NoContent);
 
-        await Task.Delay(TimeSpan.FromSeconds(1));
-
+        // The FunctionTypeRemoved projection is asynchronous: poll until it has
+        // processed the event instead of relying on a fixed delay.
+        var removedItem = await WaitForRemovedItem(client, functionTypeId, TimeSpan.FromSeconds(30));
+        removedItem.Should().NotBeNull("the removed function type should appear in the list when showAll is true");
+        removedItem.Should().ContainKey("isRemoved");
+        removedItem!["isRemoved"].Should().Be(true);
         using var defaultListResponse = await ApiFixture.Get(client, "/v1/functiontypes");
         defaultListResponse.StatusCode.Should().Be(HttpStatusCode.OK);
         var defaultList = await ApiFixture.DeserializeAsList(defaultListResponse);
         var defaultIds = defaultList.Select(ParseId).ToList();
         defaultIds.Should().NotContain(functionTypeId);
+    }
 
-        using var request = new HttpRequestMessage(HttpMethod.Get, "/v1/functiontypes");
-        request.Headers.Add("x-filtering", JsonConvert.SerializeObject(new { showAll = true }));
-        using var showAllListResponse = await client.SendAsync(request);
-        showAllListResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-        var showAllList = await ApiFixture.DeserializeAsList(showAllListResponse);
+    private static async Task<Dictionary<string, object>?> WaitForRemovedItem(
+        HttpClient client,
+        Guid functionTypeId,
+        TimeSpan timeout)
+    {
+        var deadline = DateTime.UtcNow.Add(timeout);
+        while (DateTime.UtcNow < deadline)
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Get, "/v1/functiontypes");
+            request.Headers.Add("x-filtering", JsonConvert.SerializeObject(new { showAll = true }));
+            request.Headers.Add("x-pagination", "none");
+            using var response = await client.SendAsync(request);
+            if (response.IsSuccessStatusCode)
+            {
+                var list = await ApiFixture.DeserializeAsList(response);
+                var item = list.SingleOrDefault(entry => ParseId(entry) == functionTypeId);
+                if (item is not null && item.TryGetValue("isRemoved", out var isRemoved) && isRemoved?.ToString() == "True")
+                    return item;
+            }
 
-        var removedItem = showAllList.SingleOrDefault(item => ParseId(item) == functionTypeId);
-        removedItem.Should().NotBeNull();
-        removedItem.Should().ContainKey("isRemoved");
-        removedItem!["isRemoved"].Should().Be(true);
+            await Task.Delay(TimeSpan.FromMilliseconds(500));
+        }
+
+        return null;
     }
 
     private static Guid ParseId(Dictionary<string, object> item)
