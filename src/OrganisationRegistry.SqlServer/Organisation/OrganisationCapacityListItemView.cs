@@ -187,9 +187,6 @@ public class OrganisationCapacityListView :
 
     public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCapacityAdded> message)
     {
-        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-        var scheduledForRemoval = await ComputeScheduledForRemoval(context, message.Body.CapacityId, message.Body.FunctionId);
-
         var organisationCapacityListItem = new OrganisationCapacityListItem
         {
             OrganisationCapacityId = message.Body.OrganisationCapacityId,
@@ -205,9 +202,9 @@ public class OrganisationCapacityListView :
             ContactsJson = JsonConvert.SerializeObject(message.Body.Contacts),
             ValidFrom = message.Body.ValidFrom,
             ValidTo = message.Body.ValidTo,
-            ScheduledForRemoval = scheduledForRemoval,
         };
 
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
         await context.OrganisationCapacityList.AddAsync(organisationCapacityListItem);
         await context.SaveChangesAsync();
     }
@@ -216,8 +213,6 @@ public class OrganisationCapacityListView :
     {
         await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
         var capacity = await context.OrganisationCapacityList.SingleAsync(item => item.OrganisationCapacityId == message.Body.OrganisationCapacityId);
-
-        var scheduledForRemoval = await ComputeScheduledForRemoval(context, message.Body.CapacityId, message.Body.FunctionId);
 
         capacity.OrganisationCapacityId = message.Body.OrganisationCapacityId;
         capacity.OrganisationId = message.Body.OrganisationId;
@@ -232,7 +227,6 @@ public class OrganisationCapacityListView :
         capacity.ContactsJson = JsonConvert.SerializeObject(message.Body.Contacts);
         capacity.ValidFrom = message.Body.ValidFrom;
         capacity.ValidTo = message.Body.ValidTo;
-        capacity.ScheduledForRemoval = scheduledForRemoval;
 
         await context.SaveChangesAsync();
     }
@@ -312,24 +306,5 @@ public class OrganisationCapacityListView :
     public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
     {
         await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
-    }
-
-    private static async Task<bool> ComputeScheduledForRemoval(
-        OrganisationRegistryContext context,
-        Guid capacityId,
-        Guid? functionId)
-    {
-        var capacityRemoved = await context.CapacityList
-            .Where(c => c.Id == capacityId)
-            .Select(c => c.IsRemoved)
-            .SingleOrDefaultAsync();
-
-        var functionTypeRemoved = functionId.HasValue
-            && await context.FunctionTypeList
-                .Where(ft => ft.Id == functionId.Value)
-                .Select(ft => ft.IsRemoved)
-                .SingleOrDefaultAsync();
-
-        return capacityRemoved || functionTypeRemoved;
     }
 }
