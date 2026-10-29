@@ -112,8 +112,9 @@ public class SyncRemovedItemsService : BackgroundService
             {
                 logger.LogError(
                     ex,
-                    "Failed to remove scheduled {ItemType} item, will retry on next pass",
-                    typeof(TItem).Name);
+                    "Failed to remove scheduled {ItemType} with command {@Command}, will retry on next pass",
+                    typeof(TItem).Name,
+                    removeOrganisationItem);
             }
         }
     }
