@@ -1,3 +1,10 @@
+# [1.344.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.343.0...v1.344.0) (2026-11-09)
+
+
+### Features
+
+* log authentication failure/success for edit api ([92c264d](https://github.com/informatievlaanderen/organisation-registry/commit/92c264da45316c9ffa3214a66164f099e2b6a5a6))
+
 # [1.343.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.342.3...v1.343.0) (2026-10-29)
 
 
