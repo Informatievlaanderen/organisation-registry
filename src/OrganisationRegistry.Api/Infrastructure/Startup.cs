@@ -226,6 +226,21 @@ public class Startup
                     options.ClientSecret = editApiConfiguration.ClientSecret;
                     options.Authority = editApiConfiguration.Authority;
                     options.IntrospectionEndpoint = editApiConfiguration.IntrospectionEndpoint;
+
+                    options.Events = new OAuth2IntrospectionEvents()
+                    {
+                        OnAuthenticationFailed = context =>
+                        {
+                            Log.Logger.Information("Edit Api Authentication failed: {@Error}", context.Error);
+
+                            return Task.CompletedTask;
+                        },
+                        OnTokenValidated = context =>
+                        {
+                            Log.Logger.Information("Edit Api Authentication validated for '{@Name}': {@Claims}", context.Principal.Identity.Name, context.Principal.Claims);
+                            return Task.CompletedTask;
+                        },
+                    };
                 })
             .AddOAuth2Introspection(
                 AuthenticationSchemes.TokenExchange,
