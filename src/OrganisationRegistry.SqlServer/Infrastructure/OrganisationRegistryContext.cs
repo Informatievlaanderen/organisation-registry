@@ -98,6 +98,9 @@ public class OrganisationRegistryContext : DbContext
     public DbSet<OrganisationDetailItem> OrganisationDetail { get; set; } = null!;
     public DbSet<OrganisationListItem> OrganisationList { get; set; } = null!;
     public DbSet<OrganisationClassificationValidity> OrganisationClassificationValidities { get; set; } = null!;
+    public DbSet<OrganisationSearchListItem> OrganisationSearchList { get; set; } = null!;
+    public DbSet<OrganisationSearchClassificationValidity> OrganisationSearchClassificationValidities { get; set; } = null!;
+    public DbSet<OrganisationSearchCodeListItem> OrganisationSearchCodeList { get; set; } = null!;
     public DbSet<OrganisationBodyListItem> OrganisationBodyList { get; set; } = null!;
     public DbSet<OrganisationBuildingListItem> OrganisationBuildingList { get; set; } = null!;
     public DbSet<OrganisationCapacityListItem> OrganisationCapacityList { get; set; } = null!;
