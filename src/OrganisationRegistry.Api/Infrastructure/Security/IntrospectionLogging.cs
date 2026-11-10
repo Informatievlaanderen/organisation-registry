@@ -24,7 +24,7 @@ public static class IntrospectionLogging
         OnSendingRequest = ctx =>
         {
             ctx.HttpContext.Items[Key(scheme)] = Stopwatch.StartNew();
-            Logger.Information(
+            Logger.Debug(
                 "[{Scheme}] SendingRequest: calling ACM introspection. {Method} {Path} token={Token} trace={Trace}",
                 scheme, ctx.HttpContext.Request.Method, ctx.HttpContext.Request.Path, Fingerprint(ctx.HttpContext), Trace(ctx.HttpContext));
             return Task.CompletedTask;
@@ -33,7 +33,7 @@ public static class IntrospectionLogging
         // 2. Only fires when the client authenticates with a client_assertion (JWT), not with a secret
         OnUpdateClientAssertion = ctx =>
         {
-            Logger.Information("[{Scheme}] UpdateClientAssertion: client assertion is being refreshed", scheme);
+            Logger.Debug("[{Scheme}] UpdateClientAssertion: client assertion is being refreshed", scheme);
             return Task.CompletedTask;
         },
 
@@ -42,7 +42,7 @@ public static class IntrospectionLogging
         {
             var introspected = TryElapsed(ctx.HttpContext, scheme, out var ms);
             var principal = ctx.Principal;
-            Logger.Information(
+            Logger.Debug(
                 "{Label}: scheme={Scheme} introspected={Introspected} acmMs={AcmMs} token={Token} subject={Subject} client={Client} scopes=[{Scopes}] claimTypes=[{ClaimTypes}] path={Path} trace={Trace}",
                 validatedLabel, scheme, introspected, ms, Fingerprint(ctx.HttpContext),
                 principal?.FindFirst("sub")?.Value, principal?.FindFirst("client_id")?.Value,
@@ -59,7 +59,7 @@ public static class IntrospectionLogging
         OnAuthenticationFailed = ctx =>
         {
             var introspected = TryElapsed(ctx.HttpContext, scheme, out var ms);
-            Logger.Warning(
+            Logger.Debug(
                 "{Label}: scheme={Scheme} error={Error} introspected={Introspected} acmMs={AcmMs} token={Token} path={Path} trace={Trace}",
                 failedLabel, scheme, ctx.Error, introspected, ms, Fingerprint(ctx.HttpContext),
                 ctx.HttpContext.Request.Path, Trace(ctx.HttpContext));
