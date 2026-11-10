@@ -214,20 +214,7 @@ public class Startup
                     options.Authority = editApiConfiguration.Authority;
                     options.IntrospectionEndpoint = editApiConfiguration.IntrospectionEndpoint;
 
-                    options.Events = new OAuth2IntrospectionEvents()
-                    {
-                        OnAuthenticationFailed = context =>
-                        {
-                            Log.Logger.Information("Edit Api Authentication failed: {@Error}", context.Error);
-
-                            return Task.CompletedTask;
-                        },
-                        OnTokenValidated = context =>
-                        {
-                            Log.Logger.Information("Edit Api Authentication validated for '{@Name}': {@Claims}", context.Principal.Identity.Name, context.Principal.Claims);
-                            return Task.CompletedTask;
-                        },
-                    };
+                    options.Events = IntrospectionLogging.Create(AuthenticationSchemes.EditApi, "Edit Api Authentication failed", "Edit Api Authentication validated");
                     IntrospectionCaching.Apply(options, "or:editapi:", TimeSpan.FromMinutes(2));
                 })
             .AddOAuth2Introspection(
@@ -243,20 +230,7 @@ public class Startup
                             tokenExchangeConfiguration.IntrospectionEndpoint,
                             nameof(tokenExchangeConfiguration.IntrospectionEndpoint));
 
-                        options.Events = new OAuth2IntrospectionEvents()
-                        {
-                            OnAuthenticationFailed = context =>
-                            {
-                                Log.Logger.Information("Token Exchange failed: {@Error}", context.Error);
-
-                                return Task.CompletedTask;
-                            },
-                            OnTokenValidated = context =>
-                            {
-                                Log.Logger.Information("Token Exchange validated for '{@Name}': {@Claims}", context.Principal.Identity.Name, context.Principal.Claims);
-                                return Task.CompletedTask;
-                            },
-                        };
+                        options.Events = IntrospectionLogging.Create(AuthenticationSchemes.TokenExchange, "Token Exchange failed", "Token Exchange validated");
                         IntrospectionCaching.Apply(options, "or:tokenexchange:", tokenExchangeConfiguration.CacheTtl);
                     }
                 })
@@ -563,7 +537,7 @@ public static class IntrospectionCaching
 {
     public static void Apply(OAuth2IntrospectionOptions o, string keyPrefix, TimeSpan ttl)
     {
-        o.EnableCaching = true;         // off by default in 6.x (unverified)
+        o.EnableCaching = false;         // off by default in 6.x (unverified)
         o.CacheDuration = ttl;
         o.CacheKeyPrefix = keyPrefix;   // the two schemes share one IDistributedCache
         o.SkipTokensWithDots = true;    // a JWT is never sent to ACM
