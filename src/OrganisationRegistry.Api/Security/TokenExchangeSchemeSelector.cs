@@ -1,6 +1,9 @@
 namespace OrganisationRegistry.Api.Security;
 
+using System;
+using System.Linq;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
 using OrganisationRegistry.Api.Infrastructure.Security;
 
 /// <summary>
@@ -31,4 +34,33 @@ public static class TokenExchangeSchemeSelector
         schemes[^1] = AuthenticationSchemes.TokenExchange;
         return schemes;
     }
+
+    /// <summary>
+    /// ForwardDefaultSelector of the "BearerOrIntrospection" policy scheme: a JWT (3 dot-separated segments)
+    /// goes to JwtBearer; an opaque token goes to EditApi on Edit API routes and to TokenExchange elsewhere.
+    /// </summary>
+    public static string SelectDefaultScheme(HttpContext context, bool tokenExchangeEnabled)
+    {
+        if (!tokenExchangeEnabled)
+            return JwtBearerDefaults.AuthenticationScheme;
+
+        var header = context.Request.Headers.Authorization.ToString();
+        if (!header.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+            return JwtBearerDefaults.AuthenticationScheme;
+
+        var token = header["Bearer ".Length..].Trim();
+        if (token.Count(c => c == '.') == 2)
+            return JwtBearerDefaults.AuthenticationScheme;
+
+        // Opaque token on an Edit API route is an M2M token: introspect once, with the EditApi client
+        return IsEditApiRoute(context.Request.Path)
+            ? AuthenticationSchemes.EditApi
+            : AuthenticationSchemes.TokenExchange;
+    }
+
+    /// <summary>True for /v{version}/edit/... routes.</summary>
+    public static bool IsEditApiRoute(PathString path)
+        => path.Value is { } p
+           && p.Split('/', StringSplitOptions.RemoveEmptyEntries) is [_, var area, ..]
+           && area.Equals("edit", StringComparison.OrdinalIgnoreCase);
 }

@@ -196,20 +196,7 @@ public class Startup
             .AddPolicyScheme(BearerOrIntrospection, "JWT or opaque token", options =>
             {
                 options.ForwardDefaultSelector = context =>
-                {
-                    if (!tokenExchangeEnabled)
-                        return JwtBearerDefaults.AuthenticationScheme;
-
-                    var header = context.Request.Headers.Authorization.ToString();
-                    if (!header.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
-                        return JwtBearerDefaults.AuthenticationScheme;
-
-                    var token = header["Bearer ".Length..].Trim();
-                    // A JWT has 3 dot-separated segments; anything else is treated as opaque
-                    return token.Count(c => c == '.') == 2
-                        ? JwtBearerDefaults.AuthenticationScheme
-                        : AuthenticationSchemes.TokenExchange;
-                };
+                    TokenExchangeSchemeSelector.SelectDefaultScheme(context, tokenExchangeEnabled);
             })
             .AddJwtBearer(
                 JwtBearerDefaults.AuthenticationScheme,

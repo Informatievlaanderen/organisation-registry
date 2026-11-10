@@ -3,7 +3,10 @@ namespace OrganisationRegistry.Infrastructure.Authorization;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.Logging;
+using OrganisationRegistry.Infrastructure.Authorization.Restrictions;
+using OrganisationRegistry.Infrastructure.Configuration;
 
 /// <summary>
 /// Static translation from ACM/IDM Client-Credentials <c>scope</c> claim values
@@ -153,6 +156,22 @@ public static class ScopePermissionMap
         }
 
         return union;
+    }
+
+    public static PermissionSet For(
+        IEnumerable<string>? scopes,
+        IOrganisationRegistryConfiguration configuration,
+        ILogger? logger = null)
+    {
+        var list = scopes?.ToList() ?? [];
+        var union = For(list, logger);
+
+        var orafinKeyTypes = configuration?.Authorization?.KeyIdsAllowedOnlyForOrafin;
+        if (!list.Contains(AcmIdmConstants.Scopes.OrafinBeheerder) || orafinKeyTypes is not { Length: > 0 })
+            return union;   // fail closed: no configured Orafin key types means no key right (the gate answers 403)
+
+        return union.Union(PermissionSet.Of(
+            Permission.CanManageKeys.RestrictedTo(KeyRestrictions.AllowList(orafinKeyTypes))));
     }
 
     /// <summary>Test-only: clears the unknown-scope throttle memory.</summary>

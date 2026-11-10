@@ -13,6 +13,8 @@ using OrganisationRegistry.Infrastructure.Authorization;
 
 public class OrganisationRegistryAuthorizeAttribute : AuthorizeAttribute, IAsyncAuthorizationFilter
 {
+    private ForbidResult Forbid() => new((AuthenticationSchemes ?? string.Empty).Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
+
     [Obsolete("Role-based authorization is being replaced by permission-based authorization. Use RequiredPermissions instead. See feature 009-permission-based-authz.")]
     public OrganisationRegistryAuthorizeAttribute(params Role[] roles) : this()
     {
@@ -39,7 +41,7 @@ public class OrganisationRegistryAuthorizeAttribute : AuthorizeAttribute, IAsync
         var securityService = context.HttpContext.RequestServices.GetService<ISecurityService>();
         if (securityService is null)
         {
-            context.Result = new ForbidResult();
+            context.Result = Forbid();
             return;
         }
 
@@ -48,7 +50,7 @@ public class OrganisationRegistryAuthorizeAttribute : AuthorizeAttribute, IAsync
         if (user.HasAnyPermission(RequiredPermissions))
             return;
 
-        context.Result = new ForbidResult();
+        context.Result = Forbid();
     }
 }
 
@@ -57,7 +59,7 @@ public class OrProtectedAttribute : AuthorizeAttribute
 {
     public OrProtectedAttribute()
     {
-        List<Role> roles = [Role.AlgemeenBeheerder, Role.VlimpersBeheerder, Role.DecentraalBeheerder, Role.OrgaanBeheerder, Role.RegelgevingBeheerder, Role.Orafin, Role.Developer, Role.AutomatedTask, Role.VoMedewerker, Role.VoDecentraalBeheerder];
+        List<Role> roles = [Role.AlgemeenBeheerder, Role.VlimpersBeheerder, Role.DecentraalBeheerder, Role.OrgaanBeheerder, Role.RegelgevingBeheerder, Role.Developer, Role.AutomatedTask, Role.VoMedewerker, Role.VoDecentraalBeheerder];
         Roles = string.Join(",", roles.Select(RoleMapping.Map));
         Policy = PolicyNames.BackofficeUser;
     }
