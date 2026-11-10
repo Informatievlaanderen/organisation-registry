@@ -2667,6 +2667,204 @@ namespace OrganisationRegistry.SqlServer.Migrations
                     b.ToTable("OrganisationRelationList", "Backoffice");
                 });
 
+            modelBuilder.Entity("OrganisationRegistry.SqlServer.Organisation.OrganisationSearchClassificationValidity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<Guid>("OrganisationClassificationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("OrganisationClassificationTypeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("OrganisationOrganisationClassificationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("OrganisationSearchListItemId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ValidFrom")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ValidTo")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("Id"), false);
+
+                    b.HasIndex("OrganisationClassificationTypeId");
+
+                    b.HasIndex("OrganisationSearchListItemId");
+
+                    b.HasIndex("ValidFrom");
+
+                    b.HasIndex("ValidTo");
+
+                    b.ToTable("OrganisationSearchClassificationValidity", "Backoffice");
+                });
+
+            modelBuilder.Entity("OrganisationRegistry.SqlServer.Organisation.OrganisationSearchCodeListItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<Guid?>("KeyTypeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("NormalizedValue")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<Guid>("OrganisationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("OrganisationKeyId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Source")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<DateTime?>("ValidFrom")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ValidTo")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.HasKey("Id");
+
+                    SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("Id"), false);
+
+                    b.HasIndex("OrganisationId");
+
+                    b.HasIndex("OrganisationKeyId");
+
+                    b.HasIndex("NormalizedValue", "KeyTypeId");
+
+                    b.ToTable("OrganisationSearchCodeList", "Backoffice");
+                });
+
+            modelBuilder.Entity("OrganisationRegistry.SqlServer.Organisation.OrganisationSearchFormalFrameworkValidity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<Guid>("OrganisationFormalFrameworkId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("OrganisationSearchListItemId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ValidFrom")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ValidTo")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("Id"));
+
+                    b.HasIndex("OrganisationSearchListItemId");
+
+                    b.HasIndex("ValidFrom");
+
+                    b.HasIndex("ValidTo");
+
+                    b.ToTable("OrganisationSearchFormalFrameworkValidity", "Backoffice");
+                });
+
+            modelBuilder.Entity("OrganisationRegistry.SqlServer.Organisation.OrganisationSearchListItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<Guid?>("FormalFrameworkId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<Guid>("OrganisationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("OvoNumber")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("ParentOrganisation")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<Guid?>("ParentOrganisationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ParentOrganisationOvoNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("ParentOrganisationsRelationshipId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ShortName")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("ValidFrom")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ValidTo")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("Id"), false);
+
+                    b.HasIndex("FormalFrameworkId");
+
+                    b.HasIndex("Name");
+
+                    SqlServerIndexBuilderExtensions.IsClustered(b.HasIndex("Name"));
+
+                    b.HasIndex("OvoNumber");
+
+                    b.HasIndex("ParentOrganisation");
+
+                    b.HasIndex("ShortName");
+
+                    b.HasIndex("ValidFrom");
+
+                    b.HasIndex("ValidTo");
+
+                    b.HasIndex("OrganisationId", "FormalFrameworkId")
+                        .IsUnique()
+                        .HasFilter("[FormalFrameworkId] IS NOT NULL");
+
+                    b.ToTable("OrganisationSearchList", "Backoffice");
+                });
+
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Organisation.OrganisationTerminationListItem", b =>
                 {
                     b.Property<Guid>("Id")
@@ -3569,6 +3767,22 @@ namespace OrganisationRegistry.SqlServer.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("OrganisationRegistry.SqlServer.Organisation.OrganisationSearchClassificationValidity", b =>
+                {
+                    b.HasOne("OrganisationRegistry.SqlServer.Organisation.OrganisationSearchListItem", null)
+                        .WithMany("OrganisationSearchClassificationValidities")
+                        .HasForeignKey("OrganisationSearchListItemId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("OrganisationRegistry.SqlServer.Organisation.OrganisationSearchFormalFrameworkValidity", b =>
+                {
+                    b.HasOne("OrganisationRegistry.SqlServer.Organisation.OrganisationSearchListItem", null)
+                        .WithMany("FormalFrameworkValidities")
+                        .HasForeignKey("OrganisationSearchListItemId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Reporting.BodySeatGenderRatioAssignmentItem", b =>
                 {
                     b.HasOne("OrganisationRegistry.SqlServer.Reporting.BodySeatGenderRatioBodyMandateItem", "BodyMandate")
@@ -3612,6 +3826,13 @@ namespace OrganisationRegistry.SqlServer.Migrations
                     b.Navigation("FormalFrameworkValidities");
 
                     b.Navigation("OrganisationClassificationValidities");
+                });
+
+            modelBuilder.Entity("OrganisationRegistry.SqlServer.Organisation.OrganisationSearchListItem", b =>
+                {
+                    b.Navigation("FormalFrameworkValidities");
+
+                    b.Navigation("OrganisationSearchClassificationValidities");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Reporting.BodySeatGenderRatioBodyItem", b =>
