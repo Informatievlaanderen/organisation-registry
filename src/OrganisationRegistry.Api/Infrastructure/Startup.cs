@@ -228,6 +228,7 @@ public class Startup
                             return Task.CompletedTask;
                         },
                     };
+                    IntrospectionCaching.Apply(options, "or:editapi:", TimeSpan.FromMinutes(2));
                 })
             .AddOAuth2Introspection(
                 AuthenticationSchemes.TokenExchange,
@@ -256,6 +257,7 @@ public class Startup
                                 return Task.CompletedTask;
                             },
                         };
+                        IntrospectionCaching.Apply(options, "or:tokenexchange:", tokenExchangeConfiguration.CacheTtl);
                     }
                 })
             .Services
@@ -555,4 +557,15 @@ public class Startup
             : throw new InvalidOperationException(
                 $"{TokenExchangeConfiguration.Section}:{key} is not configured. " +
                 $"Set the {TokenExchangeConfiguration.Section}__{key} environment variable.");
+}
+
+public static class IntrospectionCaching
+{
+    public static void Apply(OAuth2IntrospectionOptions o, string keyPrefix, TimeSpan ttl)
+    {
+        o.EnableCaching = true;         // off by default in 6.x (unverified)
+        o.CacheDuration = ttl;
+        o.CacheKeyPrefix = keyPrefix;   // the two schemes share one IDistributedCache
+        o.SkipTokensWithDots = true;    // a JWT is never sent to ACM
+    }
 }
