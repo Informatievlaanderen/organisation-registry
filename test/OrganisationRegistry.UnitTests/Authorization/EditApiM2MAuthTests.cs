@@ -160,6 +160,42 @@ public class EditApiM2MAuthTests
     ];
 
     [Fact]
+    public async Task Introspection_is_cached_across_requests()
+    {
+        var stub = new AcmStub(editApiScope: Orafin);
+        await using var sp = BuildAuth(stub);
+        for (var i = 0; i < 3; i++)
+        {
+            using var scope = sp.CreateScope();
+            await NewRequest(scope.ServiceProvider, EditPath).AuthenticateAsync(AuthenticationSchemes.EditApi);
+        }
+        stub.CallsByClient.Should().Equal(AcmStub.EditApiClient);
+    }
+
+    [Fact]
+    public async Task Legacy_jwt_is_never_sent_to_acm()
+    {
+        var stub = new AcmStub(editApiScope: Orafin);
+        await using var sp = BuildAuth(stub);
+        var http = NewRequest(sp, "/v1/organisations/x", "a.b.c");
+        await http.AuthenticateAsync(AuthenticationSchemes.TokenExchange);
+        await http.AuthenticateAsync(AuthenticationSchemes.EditApi);
+        stub.CallsByClient.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task A_token_cached_by_EditApi_is_not_accepted_by_TokenExchange()
+    {
+        var stub = new AcmStub(editApiScope: Orafin);   // active for the EditApi client only
+        await using var sp = BuildAuth(stub);
+        (await NewRequest(sp, EditPath).AuthenticateAsync(AuthenticationSchemes.EditApi)).Succeeded.Should().BeTrue();
+        using var scope = sp.CreateScope();
+        (await NewRequest(scope.ServiceProvider, EditPath).AuthenticateAsync(AuthenticationSchemes.TokenExchange))
+            .Succeeded.Should().BeFalse();
+        stub.CallsByClient.Should().Equal(AcmStub.EditApiClient, AcmStub.TokenExchangeClient);
+    }
+
+    [Fact]
     public async Task Token_type_matrix()
     {
         var rows = new List<string>
@@ -275,6 +311,7 @@ public class EditApiM2MAuthTests
                 o.ClientSecret = "x";
                 o.Authority = "https://acm.test";
                 o.IntrospectionEndpoint = "https://acm.test/op/v1/introspect";
+                IntrospectionCaching.Apply(o, "or:editapi:", TimeSpan.FromMinutes(2));
             })
             .AddOAuth2Introspection(AuthenticationSchemes.TokenExchange, o =>
             {
@@ -282,8 +319,9 @@ public class EditApiM2MAuthTests
                 o.ClientSecret = "x";
                 o.Authority = "https://acm.test";
                 o.IntrospectionEndpoint = "https://acm.test/op/v1/introspect";
+                IntrospectionCaching.Apply(o, "or:tokenexchange:", TimeSpan.FromMinutes(2));
             });
-
+        services.AddDistributedMemoryCache();
         // The library builds its HttpClient via IHttpClientFactory under this name
         // (PostConfigureOAuth2IntrospectionOptions.cs), so the stub is plugged in here.
         services
@@ -330,6 +368,7 @@ public class EditApiM2MAuthTests
 
         public static string Active(string? scope, string extraJsonFields = "")
             => "{\"active\":true,\"client_id\":\"m2m-client\",\"sub\":\"m2m-client\""
+               + ",\"exp\":" + DateTimeOffset.UtcNow.AddHours(1).ToUnixTimeSeconds()
                + (scope is null ? "" : ",\"scope\":\"" + scope + "\"")
                + extraJsonFields + "}";
 
