@@ -34,6 +34,7 @@ spec:
           failureThreshold: 10
         env:
           - { name: ASPNETCORE_ENVIRONMENT, value: Development }
+          - { name: Authentication__SkipTokensWithDots, value: "false" }
           # Database (MSSQL_SA_PASSWORD must stay above the connection strings: $(VAR) only expands earlier vars)
           - { name: MSSQL_SA_PASSWORD, valueFrom: { secretKeyRef: { name: demo-secrets, key: mssql-sa-password } } }
           - { name: Configuration__ConnectionString, value: &mssql "Server=mssql,1433;Database=OrganisationRegistry;User Id=sa;Password=$(MSSQL_SA_PASSWORD);TrustServerCertificate=True;MultipleActiveResultSets=True" }
