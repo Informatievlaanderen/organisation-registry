@@ -134,6 +134,7 @@ public class Startup
             .Get<EditApiConfigurationSection>();
         var tokenExchangeConfiguration = _configuration.GetSection("TokenExchange").Get<TokenExchangeConfiguration>();
         var tokenExchangeEnabled = TokenExchangeSchemeSelector.IsEnabled(tokenExchangeConfiguration);
+        var skipTokensWithDots = _configuration.GetValue("Authentication:SkipTokensWithDots", true);
 
         if (apiConfiguration.KboCertificate is { } kboCertificate && kboCertificate.IsNotEmptyOrWhiteSpace())
         {
@@ -215,7 +216,7 @@ public class Startup
                     options.IntrospectionEndpoint = editApiConfiguration.IntrospectionEndpoint;
 
                     options.Events = IntrospectionLogging.Create(AuthenticationSchemes.EditApi, "Edit Api Authentication failed", "Edit Api Authentication validated");
-                    IntrospectionCaching.Apply(options, "or:editapi:", TimeSpan.FromMinutes(2));
+                    IntrospectionCaching.Apply(options, "or:editapi:", TimeSpan.FromMinutes(2), skipTokensWithDots);
                 })
             .AddOAuth2Introspection(
                 AuthenticationSchemes.TokenExchange,
@@ -231,7 +232,7 @@ public class Startup
                             nameof(tokenExchangeConfiguration.IntrospectionEndpoint));
 
                         options.Events = IntrospectionLogging.Create(AuthenticationSchemes.TokenExchange, "Token Exchange failed", "Token Exchange validated");
-                        IntrospectionCaching.Apply(options, "or:tokenexchange:", tokenExchangeConfiguration.CacheTtl);
+                        IntrospectionCaching.Apply(options, "or:tokenexchange:", tokenExchangeConfiguration.CacheTtl, skipTokensWithDots);
                     }
                 })
             .Services

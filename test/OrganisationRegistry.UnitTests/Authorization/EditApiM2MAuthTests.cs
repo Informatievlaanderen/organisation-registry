@@ -195,6 +195,20 @@ public class EditApiM2MAuthTests
         stub.CallsByClient.Should().Equal(AcmStub.EditApiClient, AcmStub.TokenExchangeClient);
     }
 
+    [Theory]
+    [InlineData(true, false, 0)]    // ACM setting: a dotted token never reaches introspection
+    [InlineData(false, true, 1)]    // Keycloak setting: a dotted token is introspected
+    public async Task Dotted_token_is_introspected_only_when_skipping_is_off(bool skip, bool succeeds, int calls)
+    {
+        var stub = new AcmStub(new Dictionary<string, string> { ["a.b.c"] = AcmStub.Active(Testclient) });
+        await using var sp = BuildAuth(stub, skip);
+
+        var result = await NewRequest(sp, EditPath, "a.b.c").AuthenticateAsync(AuthenticationSchemes.EditApi);
+
+        result.Succeeded.Should().Be(succeeds);
+        stub.CallsByClient.Should().HaveCount(calls);
+    }
+
     [Fact]
     public async Task Token_type_matrix()
     {
@@ -293,7 +307,7 @@ public class EditApiM2MAuthTests
         return http;
     }
 
-    private static ServiceProvider BuildAuth(AcmStub stub)
+    private static ServiceProvider BuildAuth(AcmStub stub, bool skipTokensWithDots = true)
     {
         var services = new ServiceCollection();
         services.AddLogging();
@@ -311,7 +325,7 @@ public class EditApiM2MAuthTests
                 o.ClientSecret = "x";
                 o.Authority = "https://acm.test";
                 o.IntrospectionEndpoint = "https://acm.test/op/v1/introspect";
-                IntrospectionCaching.Apply(o, "or:editapi:", TimeSpan.FromMinutes(2));
+                IntrospectionCaching.Apply(o, "or:editapi:", TimeSpan.FromMinutes(2), skipTokensWithDots);
             })
             .AddOAuth2Introspection(AuthenticationSchemes.TokenExchange, o =>
             {
@@ -319,7 +333,7 @@ public class EditApiM2MAuthTests
                 o.ClientSecret = "x";
                 o.Authority = "https://acm.test";
                 o.IntrospectionEndpoint = "https://acm.test/op/v1/introspect";
-                IntrospectionCaching.Apply(o, "or:tokenexchange:", TimeSpan.FromMinutes(2));
+                IntrospectionCaching.Apply(o, "or:tokenexchange:", TimeSpan.FromMinutes(2), skipTokensWithDots);
             });
         services.AddDistributedMemoryCache();
         // The library builds its HttpClient via IHttpClientFactory under this name
