@@ -1,3 +1,18 @@
+## [1.344.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.344.0...v1.344.1) (2026-11-13)
+
+
+### Bug Fixes
+
+* add distributed cache for tokenexchange acm ([0e13035](https://github.com/informatievlaanderen/organisation-registry/commit/0e1303582b28737347d54a02994bfb1ed7561218))
+* add logging ([9b1e959](https://github.com/informatievlaanderen/organisation-registry/commit/9b1e95956cb4ff3e33663e878126230179f83aea))
+* enable cache ([5cadfaf](https://github.com/informatievlaanderen/organisation-registry/commit/5cadfafe2d487476882bfa4a8758f71700ec3260))
+* integration tests ([0c74afe](https://github.com/informatievlaanderen/organisation-registry/commit/0c74afece57d9b6aee889de35ab6aeca15822aed))
+* keycloack exception ([4bc6006](https://github.com/informatievlaanderen/organisation-registry/commit/4bc60060a9a078c1fb9fde0fea4681f797c5bf98))
+* restore orafin permissions to before rework. prevent dubble introspection for m2m ([9a504b2](https://github.com/informatievlaanderen/organisation-registry/commit/9a504b2ae9905e9f9757e3bf57f25b670d4c5587))
+* set logger to debug ([4a71f8d](https://github.com/informatievlaanderen/organisation-registry/commit/4a71f8decb89dd9c9d9d3aaf7555808b99dc897d))
+* units tests ([b098a69](https://github.com/informatievlaanderen/organisation-registry/commit/b098a69c35a58ecda6c21b0f347ec9477dff117d))
+* units tests ([7e1b0f3](https://github.com/informatievlaanderen/organisation-registry/commit/7e1b0f3e8fb342c8362dc8671a68a45718d63d10))
+
 # [1.344.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.343.0...v1.344.0) (2026-11-09)
 
 
