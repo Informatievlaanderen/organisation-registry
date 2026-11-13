@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Edit.Organisation.Key;
+using FluentAssertions;
 using Tests.Shared;
 using Xunit;
 
@@ -38,16 +39,34 @@ public class CreateOrUpdateOrganisationKeyTests
 
     [EnvVarIgnoreTheory]
     [InlineData(ApiFixture.Orafin.Client, ApiFixture.Orafin.Scope)]
-    public async Task CannotCreateAndUpdateAs(string client, string scope)
+    public async Task CanCreateAndUpdateAs(string client, string scope)
     {
         var organisationId = Guid.NewGuid();
         await _apiFixture.Create.Organisation(organisationId, TestOrganisationName);
 
         var httpClient = await _apiFixture.CreateMachine2MachineClientFor(client, scope);
 
-        var response = await CreateKey(organisationId, httpClient, _orafinKeyType);
+        var createResponse = await CreateKey(organisationId, httpClient, _orafinKeyType);
+        await ApiFixture.VerifyStatusCode(createResponse, HttpStatusCode.Created);
+        var organisationKeyId = ApiFixture.GetIdFrom(createResponse.Headers);
 
-        await ApiFixture.VerifyStatusCode(response, HttpStatusCode.Forbidden);
+        var updateResponse = await UpdateKey(organisationId, organisationKeyId, httpClient, _orafinKeyType);
+        await ApiFixture.VerifyStatusCode(updateResponse, HttpStatusCode.OK);
+    }
+
+    [EnvVarIgnoreTheory]
+    [InlineData(ApiFixture.Orafin.Client, ApiFixture.Orafin.Scope)]
+    public async Task CannotCreateKeyOfAnotherKeyTypeAs(string client, string scope)
+    {
+        var organisationId = Guid.NewGuid();
+        await _apiFixture.Create.Organisation(organisationId, TestOrganisationName);
+
+        var otherKeyType = await _apiFixture.Create.KeyType();
+        var httpClient = await _apiFixture.CreateMachine2MachineClientFor(client, scope);
+
+        var response = await CreateKey(organisationId, httpClient, otherKeyType);
+
+        response.StatusCode.Should().NotBe(HttpStatusCode.Created);   // refused by KeyPolicy in the command handler
     }
 
     [EnvVarIgnoreFact]
