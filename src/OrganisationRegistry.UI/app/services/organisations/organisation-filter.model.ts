@@ -2,6 +2,7 @@ export class OrganisationFilter {
   constructor(
     public name: string = '',
     public ovoNumber: string = '',
+    public code: string = '',
     public activeOnly: boolean = true,
     public formalFrameworkId: string = '',
     public organisationClassificationTypeId: string = '',
@@ -21,6 +22,12 @@ export class OrganisationFilter {
     return copy;
   }
 
+  withCode(code: string) {
+    let copy = this.copy();
+    copy.code = code;
+    return copy;
+  }
+
   withActiveOnly(activeOnly: boolean) {
     let copy = this.copy();
     copy.activeOnly = activeOnly;
@@ -37,6 +44,7 @@ export class OrganisationFilter {
     return new OrganisationFilter(
       this.name,
       this.ovoNumber,
+      this.code,
       this.activeOnly,
       this.formalFrameworkId,
       this.organisationClassificationTypeId,

@@ -18,6 +18,14 @@
           [name]="'OVO-nummer'">
         </ww-form-group-textbox>
 
+        <ww-form-group-textbox
+          [id]="'code'"
+          [label]="'Code'"
+          [control]="organisationForm.get('code')"
+          [placeholder]="'OVO-nummer, KBO-nummer of Orafin-code'"
+          [name]="'Code'">
+        </ww-form-group-textbox>
+
         <ww-form-group-toggle
           [id]="'activeOnly'"
           [label]="'Enkel actieve organisaties'"
