@@ -21,6 +21,9 @@ import {catchError, map} from "rxjs/operators";
 @Injectable()
 export class OrganisationService implements ICrudService<Organisation> {
   private organisationsUrl = `${this.configurationService.apiUrl}/v1/organisations`;
+  // Het overzicht op de hoofdpagina heeft een eigen endpoint en read model, met het extra
+  // filterveld 'code' (OVO-nummer, KBO-nummer, Orafin-code).
+  private overviewUrl = `${this.configurationService.apiUrl}/v1/organisations/overview`;
   private kboUrl = `${this.configurationService.apiUrl}/v1/kbo`;
 
   constructor(
@@ -44,7 +47,7 @@ export class OrganisationService implements ICrudService<Organisation> {
       .build();
 
     return this.http
-      .get(this.organisationsUrl, {headers: headers})
+      .get(this.overviewUrl, {headers: headers})
       .map(this.toOrganisations);
   }
 
@@ -61,7 +64,7 @@ export class OrganisationService implements ICrudService<Organisation> {
       .build();
 
     return this.http
-      .get(this.organisationsUrl, {headers: headers})
+      .get(this.overviewUrl, {headers: headers})
       .map((r) => r.text());
   }
 

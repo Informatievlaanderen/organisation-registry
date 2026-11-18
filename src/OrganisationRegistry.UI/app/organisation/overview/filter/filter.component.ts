@@ -79,6 +79,7 @@ export class OrganisationFilterComponent implements OnInit, OnDestroy {
     this.organisationForm = formBuilder.group({
       name: ['', Validators.nullValidator],
       ovoNumber: ['', Validators.nullValidator],
+      code: ['', Validators.nullValidator],
       activeOnly: [true, Validators.nullValidator],
       formalFrameworkId: ['', Validators.nullValidator],
       organisationClassificationTypeId: ['', Validators.nullValidator],
@@ -177,6 +178,7 @@ export class OrganisationFilterComponent implements OnInit, OnDestroy {
     this.organisationForm.reset({
       name: '',
       ovoNumber: '',
+      code: '',
       activeOnly: true,
       formalFrameworkId: '',
       organisationClassificationTypeId: '',
