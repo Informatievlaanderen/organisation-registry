@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using OrganisationRegistry.Infrastructure;
 using OrganisationRegistry.Infrastructure.Events;
 using OrganisationRegistry.Organisation.Events;
+using OrganisationRegistry.KeyTypes.Events;
 using OrganisationRegistry.OrganisationClassification.Events;
 using RebuildProjection = OrganisationRegistry.Infrastructure.Events.RebuildProjection;
 
@@ -176,8 +177,13 @@ public class OrganisationSearchListItemView :
     IEventHandler<OrganisationOrganisationClassificationAdded>,
     IEventHandler<KboLegalFormOrganisationOrganisationClassificationAdded>,
     IEventHandler<KboLegalFormOrganisationOrganisationClassificationRemoved>,
+    IEventHandler<OrganisationCoupledWithKbo>,
     IEventHandler<OrganisationCouplingWithKboCancelled>,
     IEventHandler<OrganisationTerminationSyncedWithKbo>,
+    IEventHandler<OrganisationKeyAdded>,
+    IEventHandler<OrganisationKeyUpdated>,
+    IEventHandler<OrganisationKeyRemoved>,
+    IEventHandler<KeyTypeRemoved>,
     IEventHandler<OrganisationOrganisationClassificationUpdated>,
     IEventHandler<OrganisationClassificationUpdated>,
     IEventHandler<OrganisationTerminated>,
@@ -212,6 +218,82 @@ public class OrganisationSearchListItemView :
         return context.OrganisationSearchList.Single(item => item.OrganisationId == parentOrganisationId && item.FormalFrameworkId == null);
     }
 
+    /// <summary>
+    /// Een doorzoekbare code. Codes waarvan de genormaliseerde waarde leeg is, kunnen nooit
+    /// gematcht worden en worden niet bewaard.
+    /// </summary>
+    private static OrganisationSearchCodeListItem? CodeRow(
+        Guid organisationId,
+        string source,
+        string? value,
+        Guid? keyTypeId = null,
+        Guid? organisationKeyId = null,
+        DateTime? validFrom = null,
+        DateTime? validTo = null)
+    {
+        var normalizedValue = OrganisationCodeNormalizer.Normalize(value);
+        if (normalizedValue.Length == 0)
+            return null;
+
+        return new OrganisationSearchCodeListItem
+        {
+            OrganisationId = organisationId,
+            Source = source,
+            KeyTypeId = keyTypeId,
+            OrganisationKeyId = organisationKeyId,
+            Value = value!,
+            NormalizedValue = normalizedValue,
+            ValidFrom = validFrom,
+            ValidTo = validTo,
+        };
+    }
+
+    private static async Task AddCode(OrganisationRegistryContext context, OrganisationSearchCodeListItem? code)
+    {
+        if (code is null)
+            return;
+
+        await context.OrganisationSearchCodeList.AddAsync(code);
+    }
+
+    /// <summary>
+    /// Werkt de (informatieve) geldigheid van sleutelcodes bij. Dit sluit een code niet uit van
+    /// het zoeken: ook vervallen sleutels blijven vindbaar.
+    /// </summary>
+    private static void UpdateKeyCodeValidities(
+        OrganisationRegistryContext context,
+        Guid organisationId,
+        IReadOnlyDictionary<Guid, DateTime>? validTosPerOrganisationKeyId)
+    {
+        if (validTosPerOrganisationKeyId is null || validTosPerOrganisationKeyId.Count == 0)
+            return;
+
+        var codes = context.OrganisationSearchCodeList
+            .Where(code => code.OrganisationId == organisationId && code.OrganisationKeyId != null)
+            .ToList();
+
+        foreach (var code in codes)
+        {
+            if (validTosPerOrganisationKeyId.TryGetValue(code.OrganisationKeyId!.Value, out var validTo))
+                code.ValidTo = validTo;
+        }
+    }
+
+    /// <summary>
+    /// Zet het KBO-nummer van een organisatie. Een organisatie heeft maximaal één KBO-code, dus
+    /// een bestaande rij wordt bijgewerkt in plaats van aangevuld.
+    /// </summary>
+    private static async Task SetKboCode(OrganisationRegistryContext context, Guid organisationId, string? kboNumber)
+    {
+        var existing = context.OrganisationSearchCodeList
+            .Where(code => code.OrganisationId == organisationId && code.Source == OrganisationSearchCodeSource.Kbo)
+            .ToList();
+
+        context.OrganisationSearchCodeList.RemoveRange(existing);
+
+        await AddCode(context, CodeRow(organisationId, OrganisationSearchCodeSource.Kbo, kboNumber));
+    }
+
     public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCreated> message)
     {
         var organisationListItem = new OrganisationSearchListItem
@@ -226,6 +308,7 @@ public class OrganisationSearchListItemView :
 
         await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
         await context.OrganisationSearchList.AddAsync(organisationListItem);
+        await AddCode(context, CodeRow(message.Body.OrganisationId, OrganisationSearchCodeSource.Ovo, message.Body.OvoNumber));
         await context.SaveChangesAsync();
     }
 
@@ -243,6 +326,8 @@ public class OrganisationSearchListItemView :
 
         await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
         await context.OrganisationSearchList.AddAsync(organisationListItem);
+        await AddCode(context, CodeRow(message.Body.OrganisationId, OrganisationSearchCodeSource.Ovo, message.Body.OvoNumber));
+        await AddCode(context, CodeRow(message.Body.OrganisationId, OrganisationSearchCodeSource.Kbo, message.Body.KboNumber));
         await context.SaveChangesAsync();
     }
 
@@ -759,6 +844,10 @@ public class OrganisationSearchListItemView :
     public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
     {
         await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+
+        // Zelfde semantiek als OrganisationDetail: het KBO-nummer verdwijnt van de organisatie.
+        await SetKboCode(context, message.Body.OrganisationId, null);
+
         foreach (var organisationListItem in context.OrganisationSearchList.Where(item => item.OrganisationId == message.Body.OrganisationId))
         {
             organisationListItem.Name = message.Body.NameBeforeKboCoupling;
@@ -791,6 +880,9 @@ public class OrganisationSearchListItemView :
     public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminationSyncedWithKbo> message)
     {
         await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+
+        await SetKboCode(context, message.Body.OrganisationId, null);
+
         context.OrganisationSearchList
             .Include(item => item.OrganisationSearchClassificationValidities)
             .Where(item => item.OrganisationId == message.Body.OrganisationId)
@@ -896,24 +988,111 @@ public class OrganisationSearchListItemView :
 
     public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
     {
-        if (!message.Body.FieldsToTerminate.OrganisationValidity.HasValue)
-            return;
-
         await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-        foreach (var organisationListItem in context.OrganisationSearchList.Where(item => item.OrganisationId == message.Body.OrganisationId))
-            organisationListItem.ValidTo = message.Body.FieldsToTerminate.OrganisationValidity;
+
+        if (message.Body.ForcedKboTermination)
+            await SetKboCode(context, message.Body.OrganisationId, null);
+
+        if (message.Body.FieldsToTerminate.OrganisationValidity.HasValue)
+        {
+            foreach (var organisationListItem in context.OrganisationSearchList.Where(item => item.OrganisationId == message.Body.OrganisationId))
+                organisationListItem.ValidTo = message.Body.FieldsToTerminate.OrganisationValidity;
+        }
 
         await context.SaveChangesAsync();
     }
 
     public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminatedV2> message)
     {
-        if (!message.Body.FieldsToTerminate.OrganisationValidity.HasValue)
-            return;
-
         await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-        foreach (var organisationListItem in context.OrganisationSearchList.Where(item => item.OrganisationId == message.Body.OrganisationId))
-            organisationListItem.ValidTo = message.Body.FieldsToTerminate.OrganisationValidity;
+
+        if (message.Body.ForcedKboTermination)
+            await SetKboCode(context, message.Body.OrganisationId, null);
+
+        UpdateKeyCodeValidities(context, message.Body.OrganisationId, message.Body.FieldsToTerminate.Keys);
+
+        if (message.Body.FieldsToTerminate.OrganisationValidity.HasValue)
+        {
+            foreach (var organisationListItem in context.OrganisationSearchList.Where(item => item.OrganisationId == message.Body.OrganisationId))
+                organisationListItem.ValidTo = message.Body.FieldsToTerminate.OrganisationValidity;
+        }
+
+        await context.SaveChangesAsync();
+    }
+
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCoupledWithKbo> message)
+    {
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+        await SetKboCode(context, message.Body.OrganisationId, message.Body.KboNumber);
+        await context.SaveChangesAsync();
+    }
+
+    /// <summary>
+    /// Elke organisatiesleutel wordt bewaard, niet enkel de Orafin-sleutel: zo blijft dit read
+    /// model onafhankelijk van de instelling die bepaalt welk sleuteltype Orafin is.
+    /// </summary>
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationKeyAdded> message)
+    {
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+        await AddCode(
+            context,
+            CodeRow(
+                message.Body.OrganisationId,
+                OrganisationSearchCodeSource.Key,
+                message.Body.Value,
+                message.Body.KeyTypeId,
+                message.Body.OrganisationKeyId,
+                message.Body.ValidFrom,
+                message.Body.ValidTo));
+        await context.SaveChangesAsync();
+    }
+
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationKeyUpdated> message)
+    {
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+
+        var existing = context.OrganisationSearchCodeList
+            .Where(code => code.OrganisationKeyId == message.Body.OrganisationKeyId)
+            .ToList();
+
+        context.OrganisationSearchCodeList.RemoveRange(existing);
+
+        await AddCode(
+            context,
+            CodeRow(
+                message.Body.OrganisationId,
+                OrganisationSearchCodeSource.Key,
+                message.Body.Value,
+                message.Body.KeyTypeId,
+                message.Body.OrganisationKeyId,
+                message.Body.ValidFrom,
+                message.Body.ValidTo));
+
+        await context.SaveChangesAsync();
+    }
+
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationKeyRemoved> message)
+    {
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+
+        var existing = context.OrganisationSearchCodeList
+            .Where(code => code.OrganisationKeyId == message.Body.OrganisationKeyId)
+            .ToList();
+
+        context.OrganisationSearchCodeList.RemoveRange(existing);
+
+        await context.SaveChangesAsync();
+    }
+
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KeyTypeRemoved> message)
+    {
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+
+        var existing = context.OrganisationSearchCodeList
+            .Where(code => code.KeyTypeId == message.Body.KeyTypeId)
+            .ToList();
+
+        context.OrganisationSearchCodeList.RemoveRange(existing);
 
         await context.SaveChangesAsync();
     }
