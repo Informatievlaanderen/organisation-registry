@@ -1,3 +1,10 @@
+## [1.344.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.344.1...v1.344.2) (2026-11-18)
+
+
+### Bug Fixes
+
+* show login hint instead of 'no data' on capacities and functions ([cbb09aa](https://github.com/informatievlaanderen/organisation-registry/commit/cbb09aabee9c82c1cefd75330d9804afb09220da))
+
 ## [1.344.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.344.0...v1.344.1) (2026-11-13)
 
 
