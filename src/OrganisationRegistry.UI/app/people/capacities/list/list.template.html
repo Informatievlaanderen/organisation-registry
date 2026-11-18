@@ -57,7 +57,7 @@
 
         <template [ngIf]="!isBusy">
           <tr *ngIf="!hasData(data)">
-            <td colspan="5">Geen data beschikbaar...</td>
+            <td colspan="5">{{ (isLoggedIn | async) ? 'Geen data beschikbaar...' : 'U dient zich aan te melden om deze gegevens te bekijken.' }}</td>
           </tr>
           <tr *ngFor="let capacity of data">
             <td class="data-table__body-title"><a [routerLink]="['/organisations', capacity.organisationId]" title="{{capacity.organisationName}}">{{capacity.organisationName}}</a></td>

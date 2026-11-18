@@ -49,7 +49,7 @@
 
         <template [ngIf]="!isBusy">
           <tr *ngIf="!hasData(data)">
-            <td colspan="5">Geen data beschikbaar...</td>
+            <td colspan="5">{{ (isLoggedIn | async) ? 'Geen data beschikbaar...' : 'U dient zich aan te melden om deze gegevens te bekijken.' }}</td>
           </tr>
           <tr *ngFor="let function of data" [ngClass]="{'data-table__body-history': !function.isActive}">
             <td class="data-table__body-title"><a [routerLink]="['/people', function.personId, 'functions']" title="{{function.personName}}">{{function.personName}}</a></td>
