@@ -10,6 +10,7 @@ using AutoFixture;
 using Backoffice.Organisation.Key;
 using FluentAssertions;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Xunit;
 
 /// <summary>
@@ -33,6 +34,10 @@ public class OrganisationOverviewTests
     [Fact]
     public async Task ReturnsTheSameShapeAsTheOrganisationList()
     {
+        // Het eigen read model kan in een verse omgeving nog leeg zijn (geen rebuild gedaan);
+        // zorg dat er minstens één organisatie in staat.
+        await GivenAnOrganisation();
+
         var overview = await GetFiltered(OverviewRoute, new { });
         var list = await GetFiltered(ListRoute, new { });
 
@@ -159,7 +164,7 @@ public class OrganisationOverviewTests
         DateTime? validFrom = null,
         DateTime? validTo = null)
     {
-        var orafinKeyTypeId = _apiFixture.Configuration.OrafinKeyTypeId;
+        var orafinKeyTypeId = await GetOrafinKeyTypeIdOfTheRunningApi();
         await _apiFixture.Create.KeyType(orafinKeyTypeId);
 
         using var response = await ApiFixture.Post(
@@ -175,6 +180,31 @@ public class OrganisationOverviewTests
             });
 
         response.StatusCode.Should().Be(HttpStatusCode.Created);
+    }
+
+    /// <summary>
+    /// Het Orafin-sleuteltype zoals de draaiende API het gebruikt. De API leest
+    /// <c>Api:Orafin_KeyTypeId</c> bij het opstarten (o.a. uit de configuratietabel); de
+    /// appsettings van deze testen bevatten die waarde niet en mogen er dus niet van uitgaan.
+    /// </summary>
+    private async Task<Guid> GetOrafinKeyTypeIdOfTheRunningApi()
+    {
+        using var response = await ApiFixture.Get(_apiFixture.DeveloperHttpClient, "/v1/status/configuration");
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var configuration = JObject.Parse(await response.Content.ReadAsStringAsync());
+        var value = configuration
+            .GetValue("api", StringComparison.OrdinalIgnoreCase)?
+            .Value<JObject>()?
+            .GetValue("orafin_KeyTypeId", StringComparison.OrdinalIgnoreCase)?
+            .Value<string>();
+
+        if (!Guid.TryParse(value, out var orafinKeyTypeId) || orafinKeyTypeId == Guid.Empty)
+            throw new InvalidOperationException(
+                "Api:Orafin_KeyTypeId is niet geconfigureerd in de draaiende API. " +
+                "Zet de waarde (bv. via PUT /v1/configuration/Api:Orafin_KeyTypeId) en herstart de API.");
+
+        return orafinKeyTypeId;
     }
 
     private async Task<Dictionary<string, object>[]> GetFiltered(string route, object filter)
