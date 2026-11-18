@@ -45,6 +45,11 @@ USING (VALUES
     N'a7e93f02-0002-0000-0000-000000000004'
   ),
   (
+    N'Api:Orafin_KeyTypeId',
+    N'KeyType GUID voor ''Orafin''',
+    N'1e3611a7-7914-411a-a0c9-84fcd6218e67'
+  ),
+  (
     N'Api:KboMagdaEndpoint',
     N'KBO: endpoint voor MAGDA',
     N'http://wiremock:8080'
@@ -78,6 +83,7 @@ WHERE [Key] IN (
   N'Api:KboV2RegisteredOfficeLocationTypeId',
   N'Api:KboV2LegalFormOrganisationClassificationTypeId',
   N'Api:KboV2FormalNameLabelTypeId',
+  N'Api:Orafin_KeyTypeId',
   N'Api:KboMagdaEndpoint',
   N'Api:RepertoriumMagdaEndpoint',
   N'Api:KboCertificate'
