@@ -52,6 +52,8 @@ spec:
           - { name: Api__KboV2RegisteredOfficeLocationTypeId,            value: "a7e93f04-0004-0000-0000-000000000001" }
           - { name: Api__KboV2LegalFormOrganisationClassificationTypeId, value: "a7e93f06-0006-0000-0000-000000000001" }
           - { name: Api__KboV2FormalNameLabelTypeId,                     value: "a7e93f02-0002-0000-0000-000000000004" }
+          # Orafin key type
+          - { name: Api__Orafin_KeyTypeId,                               value: "1e3611a7-7914-411a-a0c9-84fcd6218e67" }
           # Certificates
           - { name: Api__KboCertificate,          valueFrom: { secretKeyRef: { name: demo-secrets, key: kbo-certificate } } }
           - { name: Api__RijksRegisterCertificatePwd, valueFrom: { secretKeyRef: { name: demo-secrets, key: rijksregister-certificate-password } } }
