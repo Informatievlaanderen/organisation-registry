@@ -1,6 +1,8 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Observable } from 'rxjs/Observable';
 
 import { BaseListComponent } from 'shared/components/list';
+import { OidcService } from 'core/auth';
 
 import { PersonFunctionListItem } from 'services/peoplefunctions';
 
@@ -12,4 +14,10 @@ import { PersonFunctionListItem } from 'services/peoplefunctions';
   outputs: ['changePage']
 })
 export class PeopleFunctionsListComponent extends BaseListComponent<PersonFunctionListItem> {
+  isLoggedIn: Observable<boolean>;
+
+  constructor(oidcService: OidcService) {
+    super();
+    this.isLoggedIn = oidcService.isLoggedIn;
+  }
 }
