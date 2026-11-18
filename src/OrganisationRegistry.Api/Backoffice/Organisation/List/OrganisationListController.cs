@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Configuration;
 using SqlServer.Infrastructure;
 using SqlServer.Organisation;
 using Swashbuckle.AspNetCore.Filters;
@@ -39,6 +40,36 @@ public class OrganisationListController : OrganisationRegistryController
 
         var pagedOrganisations =
             new OrganisationListQuery(context, user)
+                .Fetch(filtering, sorting, pagination);
+
+        Response.AddPaginationResponse(pagedOrganisations.PaginationInfo);
+        Response.AddSortingResponse(sorting.SortBy, sorting.SortOrder);
+
+        return Ok(await pagedOrganisations.Items.ToListAsync());
+    }
+
+    /// <summary>Vraag een lijst van organisaties op voor het overzicht op de hoofdpagina.</summary>
+    /// <remarks>Gelijk aan <c>GET /v1/organisations</c>, met één bijkomend filterveld:
+    /// <c>code</c> zoekt in het OVO-nummer, het KBO-nummer en de Orafin-sleutelwaarde van een
+    /// organisatie. Leest uit een eigen read model, zodat de hoofdpagina losstaat van de
+    /// generieke organisatielijst.</remarks>
+    /// <response code="200">Een lijst van organisaties.</response>
+    [HttpGet("overview")]
+    [ProducesResponseType(typeof(List<OrganisationSearchListQueryResult>), StatusCodes.Status200OK)]
+    [SwaggerResponseExample(StatusCodes.Status200OK, typeof(OrganisationListExamples))]
+    public async Task<IActionResult> GetOverview(
+        [FromServices] OrganisationRegistryContext context,
+        [FromServices] ISecurityService securityService,
+        [FromServices] IOrganisationRegistryConfiguration configuration)
+    {
+        var filtering = Request.ExtractFilteringRequest<OrganisationSearchListItemFilter>();
+        var sorting = Request.ExtractSortingRequest();
+        var pagination = Request.ExtractPaginationRequest();
+
+        var user = await securityService.GetUser(User);
+
+        var pagedOrganisations =
+            new OrganisationSearchListQuery(context, user, configuration)
                 .Fetch(filtering, sorting, pagination);
 
         Response.AddPaginationResponse(pagedOrganisations.PaginationInfo);
