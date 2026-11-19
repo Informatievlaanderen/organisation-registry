@@ -467,6 +467,7 @@ public class Startup
                             .InitialiseAndUpdateDatabase()
                             .UseOrganisationRegistryExceptionHandler(loggerFactory)
                             .UseOrganisationRegistryEventSourcing()
+                            .InitialiseEmptyProjections()
                             //.UseOrganisationRegistryCookieAuthentication(tokenValidationParameters)
                             //.UseOrganisationRegistryJwtBearerAuthentication(tokenValidationParameters)
                             .UseAuthentication(),

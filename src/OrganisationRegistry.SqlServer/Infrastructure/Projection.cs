@@ -2,6 +2,7 @@ namespace OrganisationRegistry.SqlServer.Infrastructure;
 
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
 using System.Reflection;
@@ -23,12 +24,17 @@ public abstract class BaseProjection<T>
     }
 }
 
-public interface IProjectionMarker { }
+public interface IProjectionMarker
+{
+    string Schema { get; }
+    IReadOnlyCollection<string> TableNames { get; }
+}
 
 public abstract class Projection<T> : BaseProjection<T>, IProjectionMarker, IEventHandler<RebuildProjection>
 {
     protected readonly IContextFactory ContextFactory;
     protected abstract string[] ProjectionTableNames { get; }
+    IReadOnlyCollection<string> IProjectionMarker.TableNames => ProjectionTableNames;
     public abstract string Schema { get; }
 
     protected Projection(ILogger logger, IContextFactory contextFactory) : base(logger)
