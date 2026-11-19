@@ -5,6 +5,18 @@
             <a *ngIf="(canCreateOrganisation | async)" class="button cta-title__cta" [routerLink]="['./create']">Voeg organisatie toe</a>
         </div>
 
+        <div class="alert alert--warning">
+            <div class="alert__icon"></div>
+
+            <div class="alert__content">
+                <div class="alert__title">Wegwijs wordt vernieuwd</div>
+                <div class="alert__message">
+                    <p>Op 8 december lanceren we de vernieuwde Wegwijs. In aanloop daarnaartoe voeren we een technologische update uit.</p>
+                    <p>Hierdoor kunnen bepaalde gegevens tijdelijk anders of niet zichtbaar zijn, zoals hoedanigheden en functies. Meld je aan om deze informatie te bekijken.</p>
+                </div>
+            </div>
+        </div>
+
         <ww-organisation-filter
           [isBusy]="isLoading"
           (filter)="search($event)">
