@@ -5,7 +5,7 @@
 **Created**: 2026-11-10
 **Status**: Approved
 **Jira**: OR-3785
-**Input**: User description: "wegwijs search api moet nieuw gedrag vertonen bij search op hoofdpagina van wegwijs. naast de huidige velden, moet er een veld 'code' komen, die zoekt in ovonumber, kbo nummer en orafin sleutel-value/code. ik wil hiervoor een kopie van de huidige organisationlist projectie, speciaal hiervoor. vervelend is dat orafin sleutel 1 dynamisch sleuteltype is."
+**Input**: OR-3785 — de zoekfunctie op de hoofdpagina van Wegwijs krijgt naast de huidige velden een veld **Code** dat zoekt op OVO-nummer, KBO-nummer en Orafin-sleutelwaarde. Hiervoor komt er een eigen kopie van de `OrganisationList`-projectie. Aandachtspunt: het Orafin-sleuteltype is configureerbaar en dus niet vast.
 
 ## Context
 
@@ -119,7 +119,7 @@ verwijder de sleutel, zoek opnieuw (niet meer gevonden).
 - **FR-011**: Het nieuwe read model MOET volledig herbouwbaar zijn uit de eventstroom, met de bestaande herbouw-mogelijkheid voor projecties.
 - **FR-012**: De zoekfilter-UI op de hoofdpagina MOET een invoerveld **Code** aanbieden en dat veld als geldig zoekcriterium beschouwen (zoeken met enkel Code ingevuld is toegelaten).
 
-### Constraints *(door de opdrachtgever vastgelegd)*
+### Constraints *(vastgelegd in OR-3785)*
 
 - **C-001**: Deze functionaliteit krijgt een **eigen read model**: een kopie van de huidige
   `OrganisationList`-projectie, specifiek voor het zoeken op de hoofdpagina. De bestaande
@@ -149,7 +149,7 @@ verwijder de sleutel, zoek opnieuw (niet meer gevonden).
 - **SC-001**: Voor elk van de drie codetypes (OVO-nummer, KBO-nummer, Orafin-code) vindt een gebruiker de juiste organisatie met één zoekopdracht in één veld, zonder voorkennis van het codetype.
 - **SC-002**: 100% van de organisaties met een KBO-nummer is vindbaar op dat KBO-nummer, en 100% van de organisaties met een in aanmerking komende Orafin-sleutel is vindbaar op die waarde (meetbaar door steekproef na herbouw van het read model).
 - **SC-003**: Een wijziging aan een KBO-koppeling of een Orafin-sleutel is binnen de gebruikelijke projectie-achterstand (zelfde orde als de bestaande overzichtslijst) weerspiegeld in de zoekresultaten.
-- **SC-004**: Een wijziging van de instelling `Api:Orafin_KeyTypeId` is onmiddellijk zichtbaar in de zoekresultaten, zonder herbouw van een projectie en zonder release.
+- **SC-004**: Een wijziging van de instelling `Api:Orafin_KeyTypeId` is zichtbaar in de zoekresultaten na een herstart van de API (die de configuratie bij het opstarten inleest), zonder herbouw van een projectie en zonder release.
 - **SC-005**: Zoekopdrachten op de hoofdpagina zijn met het nieuwe veld niet merkbaar langzamer dan vandaag (geen regressie in de responstijd van het overzicht bij vergelijkbare filters).
 - **SC-006**: De bestaande zoek- en overzichtsfunctionaliteit vertoont geen regressie: alle bestaande geautomatiseerde tests voor het organisatie-overzicht blijven slagen.
 
