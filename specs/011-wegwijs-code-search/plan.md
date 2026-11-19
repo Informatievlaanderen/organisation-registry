@@ -16,7 +16,7 @@ uitgebreid met een zustertabel die alle doorzoekbare codes van een organisatie b
 De technische kern van de aanpak: **de codes worden met hun sleuteltype geprojecteerd, maar de
 beoordeling "welk sleuteltype is Orafin" gebeurt op zoekmoment.** Daardoor vervalt het probleem
 van het dynamische Orafin-sleuteltype: wijzigt de instelling `Api:Orafin_KeyTypeId`, dan volgen de
-resultaten onmiddellijk, zonder rebuild.
+resultaten na een herstart van de API, zonder rebuild.
 
 De geldigheidsperiode van een sleutel speelt geen rol (FR-005b): alle Orafin-sleutels van een
 organisatie zijn doorzoekbaar, ook vervallen. Daardoor is het zoekresultaat datum-onafhankelijk en
@@ -25,7 +25,7 @@ verstrijkende datum.
 
 ## Technical Context
 
-**Language/Version**: C# / .NET 8 (nullable reference types enabled)
+**Language/Version**: C# / .NET 10 (nullable reference types enabled)
 **Primary Dependencies**: Entity Framework Core, FluentValidation, Serilog, Autofac; Angular (UI)
 **Storage**: SQL Server — eventstore + read models in schema `OrganisationRegistry` (backoffice)
 **Testing**: xUnit; `ListViewTestBase` (in-memory EF) voor projectietests, `OrganisationRegistry.Api.IntegrationTests` voor endpoint-tests, `OrganisationRegistry.ArchitectureTests` (ArchUnitNET) voor conventies
@@ -197,7 +197,7 @@ x-filtering: {"name":"", "ovoNumber":"", "code":"0123.456.789",
 
 | Wat | Waar |
 |---|---|
-| Te kopiëren projectie (916 regels, 3 tabellen) | `src/OrganisationRegistry.SqlServer/Organisation/OrganisationListItemView.cs` |
+| Te kopiëren projectie (3 tabellen) | `src/OrganisationRegistry.SqlServer/Organisation/OrganisationListItemView.cs` |
 | Patroon sleutel-events + `KeyTypeUpdated`/`KeyTypeRemoved`/`ScheduledForRemoval` | `src/OrganisationRegistry.SqlServer/Organisation/OrganisationKeyListItemView.cs` |
 | Patroon KBO-nummer uit events | `src/OrganisationRegistry.SqlServer/Organisation/OrganisationDetailItemView.cs:195` |
 | Bestaand filter (naam, OVO, activeOnly, toepassingsgebied, classificatie) | `src/OrganisationRegistry.Api/Backoffice/Organisation/List/OrganisationListQuery.cs:105` |
@@ -228,16 +228,21 @@ configuratie, geen geldigheidstoets), nieuwe controller-actie, integratietests.
 Dekt US1 en US2 aan de API-kant.
 
 **Phase 4 — UI**
-Filterveld **Code** op de hoofdpagina, meegenomen in de `atLeastOne`-validatie en in het
-filtermodel; overzicht leest van het nieuwe endpoint.
+Filterveld **Code** op de hoofdpagina en in het filtermodel; overzicht leest van het nieuwe
+endpoint. De `atLeastOne`-validatie wordt op deze filter niet gebruikt, dus zoeken met enkel Code
+werkt zonder aanpassing (T022).
 
 **Phase 5 — Oplevering**
-Drift-guard-architectuurtest, rebuild van de nieuwe projectie in elke omgeving, regressiecheck op
-het bestaande overzicht, documentatie van het nieuwe endpoint in Swagger.
+Drift-guard-architectuurtest, regressiecheck op het bestaande overzicht, documentatie van het
+nieuwe endpoint in Swagger. De API herbouwt bij het opstarten de projecties uit de whitelist
+`Projections:InitialiseWhenEmpty` wanneer al hun tabellen leeg zijn en de event store niet
+(`InitialiseEmptyProjectionsExtension`); de nieuwe projectie staat in die whitelist, zodat er per
+omgeving geen manuele rebuild nodig is. In de Tilt-omgeving is `Api:Orafin_KeyTypeId` ingesteld
+(`demo/k8s/apps/api.yaml`, `scripts/seed-tilt-api-configuration.sh`).
 
 ## Complexity Tracking
 
 | Violation | Why Needed | Simpler Alternative Rejected Because |
 |-----------|------------|-------------------------------------|
-| Duplicatie van ±900 regels projectielogica (`OrganisationSearchListItemView` naast `OrganisationListItemView`) | Expliciete eis van de opdrachtgever (C-001): de hoofdpagina-zoekfunctie krijgt een eigen read model, zodat de bestaande lijst en haar consumenten niet raken aan deze wijziging | De codetabel toevoegen aan het bestaande `OrganisationList` zou minder code zijn, maar wijzigt een read model met meerdere bestaande consumenten. Een gedeelde generieke basisklasse koppelt beide read models opnieuw en bemoeilijkt de rebuild-semantiek. Drift wordt opgevangen met de architectuurtest uit D-005 |
-| Alle sleuteltypes in het read model terwijl enkel Orafin doorzoekbaar is | Maakt het read model onafhankelijk van de instelling `Api:Orafin_KeyTypeId` en vervult daarmee FR-007 zonder rebuild | Enkel de Orafin-sleutel projecteren vereist een projectie-rebuild bij elke wijziging van de instelling — precies het probleem dat de opdrachtgever aankaartte |
+| Duplicatie van de projectielogica (`OrganisationSearchListItemView` naast `OrganisationListItemView`) | Eis uit OR-3785 (C-001): de hoofdpagina-zoekfunctie krijgt een eigen read model, zodat de bestaande lijst en haar consumenten niet raken aan deze wijziging | De codetabel toevoegen aan het bestaande `OrganisationList` zou minder code zijn, maar wijzigt een read model met meerdere bestaande consumenten. Een gedeelde generieke basisklasse koppelt beide read models opnieuw en bemoeilijkt de rebuild-semantiek. Drift wordt opgevangen met de architectuurtest uit D-005 |
+| Alle sleuteltypes in het read model terwijl enkel Orafin doorzoekbaar is | Maakt het read model onafhankelijk van de instelling `Api:Orafin_KeyTypeId` en vervult daarmee FR-007 zonder rebuild | Enkel de Orafin-sleutel projecteren vereist een projectie-rebuild bij elke wijziging van de instelling — wat FR-007 uitsluit |

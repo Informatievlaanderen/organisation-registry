@@ -56,7 +56,7 @@ elke keer verschijnt exact de verwachte organisatie.
 - [x] T014 [US1] Test eerst: querytests op het `code`-filter — match op OVO, op KBO (alle drie de schrijfwijzen), op een Orafin-sleutel, **ook match op een vervallen en op een toekomstige Orafin-sleutel** (FR-005b), géén match op een sleutel van een ander sleuteltype, leeg resultaat bij onbekende code
 - [x] T015 [US1] Maak `OrganisationSearchListQuery` in `src/OrganisationRegistry.Api/Backoffice/Organisation/List/OrganisationSearchListQuery.cs`: kopie van `OrganisationListQuery` met `Code` in de filterklasse en het code-filter uit data-model.md §5 (zonder datumvergelijking); injecteer `IOrganisationRegistryConfiguration` (patroon `LocationTypeListQuery.cs:22`) voor `OrafinKeyTypeId`
 - [x] T016 [US1] Voeg de actie `GET /v1/organisations/overview` toe aan `src/OrganisationRegistry.Api/Backoffice/Organisation/List/OrganisationListController.cs`, met dezelfde filtering-/sorting-/pagineringheaders en dezelfde autorisatie als de bestaande actie (plan: API-contract). Laat `GET /v1/organisations` ongemoeid (FR-009)
-- [x] T017 [US1] *(geschreven, lokaal niet uitvoerbaar: vereist de api/keycloak-omgeving)* Integratietest op het endpoint: zoeken op elk van de drie codetypes levert de juiste organisatie, en de responsvorm is identiek aan `GET /v1/organisations` (FR-006) — `test/OrganisationRegistry.Api.IntegrationTests/BackOffice/Organisation/`
+- [x] T017 [US1] *(gedraaid tegen de Tilt-omgeving: geslaagd)* Integratietest op het endpoint: zoeken op elk van de drie codetypes levert de juiste organisatie, en de responsvorm is identiek aan `GET /v1/organisations` (FR-006) — `test/OrganisationRegistry.Api.IntegrationTests/BackOffice/Organisation/`
 
 ### UI
 
@@ -76,7 +76,7 @@ actieve organisaties".
 
 - [x] T021 [US2] Test eerst: querytests voor de combinaties — code + naam (AND), code + `activeOnly`, code + toepassingsgebied, code + classificatie(type), en één rij per organisatie bij meerdere matchende codes (FR-003, FR-005)
 - [x] T022 [US2] *(vastgesteld: geen validatie toegevoegd, enkel getest)* Nagaan en vastleggen: de organisatie-overzichtsfilter gebruikt `atLeastOne` vandaag **niet** (de import in `filter.component.ts` is ongebruikt), dus zoeken met enkel Code werkt al. Bevestigen met een test i.p.v. validatie toe te voegen (FR-012, US2-scenario 3)
-- [x] T023 [US2] *(geschreven, lokaal niet uitvoerbaar: vereist de api/keycloak-omgeving)* Integratietest: enkel `code` ingevuld levert een geldige respons; `code` leeg laat het gedrag van de overige filters onveranderd (US2-scenario 4)
+- [x] T023 [US2] *(gedraaid tegen de Tilt-omgeving: geslaagd)* Integratietest: enkel `code` ingevuld levert een geldige respons; `code` leeg laat het gedrag van de overige filters onveranderd (US2-scenario 4)
 
 **Checkpoint**: Code is een volwaardig onderdeel van het filter.
 
@@ -105,7 +105,7 @@ het zoekgedrag.
 - [x] T031 [P] Drift-guard: architectuurtest in `test/OrganisationRegistry.ArchitectureTests/` die vaststelt dat `OrganisationSearchListItemView` minstens de `IEventHandler<>`-verzameling van `OrganisationListItemView` afhandelt (plan D-005)
 - [x] T032 [P] Swagger-documentatie van `GET /v1/organisations/overview` nakijken (groep "Scherm APIs: Organisaties", voorbeeldrespons gelijk aan de bestaande lijst)
 - [x] T033 [P] Regressiecheck: solution-build groen; SqlServer-integratie 76/76, unit 1180/1180, architectuur 14/14, KboMutations 27/27. `ElasticSearch.Tests` en `Api.IntegrationTests` vereisen de opensearch/api-omgeving en zijn hier niet gelopen (FR-009, SC-006)
-- [ ] T034 Draaiboek oplevering, twee losse stappen per omgeving: (1) migratie uitrollen — die maakt enkel de vier lege tabellen aan; (2) de rebuild manueel starten via `POST /v1/tasks` met `{"type":"RebuildProjection","params":["OrganisationRegistry.SqlServer.Organisation.OrganisationSearchListItemView"]}`. Zonder stap 2 blijven de tabellen leeg en geeft het nieuwe endpoint geen resultaten
+- [x] T034 Oplevering: de migratie maakt de vier lege tabellen aan; de API herbouwt de projectie daarna zelf bij het opstarten, omdat ze in de whitelist `Projections:InitialiseWhenEmpty` staat en haar tabellen leeg zijn (`InitialiseEmptyProjectionsExtension`). Een manuele rebuild via `POST /v1/tasks` blijft mogelijk. Aandachtspunt: de opstart wacht op de rebuild, dus de startup-/liveness-probes van de API moeten daar ruimte voor laten
 - [ ] T035 Performantiecheck op een realistische dataset (vereist een omgeving met echte data; niet lokaal te doen): bevestig met een uitvoeringsplan dat het code-filter de index `IX_OrganisationSearchCodeList_NormalizedValue_KeyTypeId` gebruikt en dat de overzichtslijst niet merkbaar langzamer is (SC-005)
 
 ---
