@@ -126,6 +126,7 @@ public class Startup
             () => JsonSerializerSettingsProvider.CreateSerializerSettings().ConfigureForOrganisationRegistry();
 
         Migrations.Run(_configuration.GetSection(SqlServerConfiguration.Section).Get<SqlServerConfiguration>());
+        InitialiseOrafinKeyTypeConfiguration.Run(_configuration, _loggerFactory.CreateLogger<Startup>());
         var openIdConfiguration = _configuration.GetSection(OpenIdConnectConfigurationSection.Name)
             .Get<OpenIdConnectConfigurationSection>();
         var apiConfiguration =
