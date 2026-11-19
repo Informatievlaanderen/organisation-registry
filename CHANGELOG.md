@@ -1,3 +1,10 @@
+# [1.345.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.344.2...v1.345.0) (2026-11-19)
+
+
+### Features
+
+* show wegwijs renewal disclaimer on the home page ([0ed0893](https://github.com/informatievlaanderen/organisation-registry/commit/0ed089315524256471025ce81638e2ad566e91c3))
+
 ## [1.344.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.344.1...v1.344.2) (2026-11-18)
 
 
