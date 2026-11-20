@@ -363,6 +363,14 @@ public static class RolePermissionMap
     /// </summary>
     private static PermissionSet DecentraalRestrictedGrants(
         IOrganisationRegistryConfiguration configuration)
+        => VoDecentraalRestrictedGrants(configuration)
+            .Union(
+                PermissionSet.Of(
+                    Permission.CanManageContacts.RestrictedTo(DecentraalOrganisationRestriction.Instance),
+                    Permission.BodiesCanManageContacts.RestrictedTo(DecentraalBodyRestriction.Instance)));
+
+    private static PermissionSet VoDecentraalRestrictedGrants(
+        IOrganisationRegistryConfiguration configuration)
         => PermissionSet.Of(
             // DecentraalBeheerder may edit every organisation-info field
             // except the four Vlimpers-reserved ones (gated by the
@@ -413,8 +421,6 @@ public static class RolePermissionMap
             // the user's own organisation or a child organisation in scope.
             Permission.CanManageBodies.RestrictedTo(
                 DecentraalOrganisationRestriction.Instance),
-            Permission.BodiesCanManageContacts.RestrictedTo(
-                DecentraalBodyRestriction.Instance),
             Permission.BodiesCanManageSeats.RestrictedTo(
                 DecentraalBodyRestriction.Instance),
             Permission.BodiesCanManageMandates.RestrictedTo(
@@ -467,10 +473,7 @@ public static class RolePermissionMap
             // Organisation contacts on their own organisation (regardless of
             // Vlimpers-management status) are a DecentraalBeheerder-only
             // grant: VoDecentraalBeheerder never gets CanManageContacts.
-            Role.DecentraalBeheerder => DecentraalRestrictedGrants(configuration).Union(
-                PermissionSet.Of(
-                    Permission.CanManageContacts.RestrictedTo(
-                        DecentraalOrganisationRestriction.Instance))),
+            Role.DecentraalBeheerder => DecentraalRestrictedGrants(configuration),
             Role.RegelgevingBeheerder => PermissionSet.Of(
                 Permission.CanManageFormalFrameworks.RestrictedTo(
                     FormalFrameworkRestrictions.OwnedByRegelgevingDb(
@@ -481,7 +484,7 @@ public static class RolePermissionMap
                 Permission.CanManageOrganisationClassifications.RestrictedTo(
                     ClassificationTypeRestrictions.OwnedByRegelgevingDb(
                         configuration.Authorization.OrganisationClassificationTypeIdsOwnedByRegelgevingDbBeheerder))),
-            Role.VoDecentraalBeheerder => DecentraalRestrictedGrants(configuration),
+            Role.VoDecentraalBeheerder => VoDecentraalRestrictedGrants(configuration),
             _ => PermissionSet.Empty,
         };
 
