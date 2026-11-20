@@ -1,3 +1,11 @@
+## [1.345.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.345.0...v1.345.1) (2026-11-20)
+
+
+### Bug Fixes
+
+* or-3780 canManageContacts false for vo decentraal beheerder ([36d64d7](https://github.com/informatievlaanderen/organisation-registry/commit/36d64d78a1d61a73be2ae142c66202c9bb6f9295))
+* support single organisation multi-roles ([f02f1f8](https://github.com/informatievlaanderen/organisation-registry/commit/f02f1f8f770c164339a4b77541fe6f6cdd05a5c7))
+
 # [1.345.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.344.2...v1.345.0) (2026-11-19)
 
 
