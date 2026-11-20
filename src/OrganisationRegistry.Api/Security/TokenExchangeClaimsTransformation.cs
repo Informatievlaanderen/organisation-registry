@@ -36,6 +36,7 @@ public class TokenExchangeClaimsTransformation : IClaimsTransformation
             .Select(c => c.Value.ToLowerInvariant())
             .Where(v => v.StartsWith(AcmIdmConstants.RolePrefix))
             .Select(v => v.Replace(AcmIdmConstants.RolePrefix, ""))
+            .SelectMany(i => i.Split(','))
             .ToList();
 
         if (!roles.Any())

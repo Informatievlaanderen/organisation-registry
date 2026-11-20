@@ -71,6 +71,7 @@ public class OrganisationRegistryTokenBuilder : IOrganisationRegistryTokenBuilde
             .Select(x => x.ToLowerInvariant())
             .Where(x => x.StartsWith(AcmIdmConstants.RolePrefix))
             .Select(x => x.Replace(AcmIdmConstants.RolePrefix, ""))
+            .SelectMany(i => i.Split(','))
             .ToList();
 
         var developers = (_configuration.Developers ?? string.Empty)
