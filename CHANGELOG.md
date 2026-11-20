@@ -1,3 +1,16 @@
+# [1.346.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.345.1...v1.346.0) (2026-11-20)
+
+
+### Features
+
+* or-3785 add code field to organisation overview filter ([81ac435](https://github.com/informatievlaanderen/organisation-registry/commit/81ac43575acead2185772a17dadd55cb08094fd7))
+* or-3785 add code normalizer for overview search ([c7caaba](https://github.com/informatievlaanderen/organisation-registry/commit/c7caabaad86ba2d56f0a7bc835a08cf696fc6dba))
+* or-3785 add dedicated read model for the organisation overview ([eec34f7](https://github.com/informatievlaanderen/organisation-registry/commit/eec34f7edf5ef3dc5664ba47bd190c663418f3b8))
+* or-3785 add overview endpoint with code filter ([25fc0fe](https://github.com/informatievlaanderen/organisation-registry/commit/25fc0fed3ede1b00a7839af377e795c528de72c6))
+* or-3785 project ovo, kbo and key codes into overview read model ([3444129](https://github.com/informatievlaanderen/organisation-registry/commit/3444129b2e8cd7825c1fe2eed3915c70f9edd4d0))
+* or-3785 rebuild whitelisted empty projections on api startup ([e2af5be](https://github.com/informatievlaanderen/organisation-registry/commit/e2af5bee46f4d5ff203ffa6f767356c39d4d301d))
+* or-3785 set orafin key type from key type list when not configured ([62a4bf6](https://github.com/informatievlaanderen/organisation-registry/commit/62a4bf6d94bb9991e897852132181b69d877d692))
+
 ## [1.345.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.345.0...v1.345.1) (2026-11-20)
 
 
