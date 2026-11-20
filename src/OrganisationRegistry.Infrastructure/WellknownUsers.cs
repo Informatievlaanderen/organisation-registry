@@ -22,7 +22,7 @@ public class WellknownUsers
         Permission.CanManageCapacities,
         Permission.CanManageFunctions,
         Permission.BodiesCanManageMandates);
-    // Bouwt bij het opstarten lege projecties uit de whitelist op (InitialiseEmptyProjections).
+    // Bouwt bij het opstarten lege projecties uit de whitelist op (InitialiseEmptyProjectionsService).
     public static User ProjectionInitialiser => Create("ProjectionInitialiser");
     public static User KboSyncService => Create("KboSyncService", Permission.CanManageKbo);
     // Permissions for client-credential users (TestClient/Orafin) are

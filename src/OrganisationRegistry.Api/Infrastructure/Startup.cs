@@ -187,6 +187,7 @@ public class Startup
             .AddHostedService<SyncRemovedItemsService>()
             .AddHostedService<ProcessImportedFilesService>()
             .AddHostedService<MEPCalculatorService>()
+            .AddHostedService<InitialiseEmptyProjectionsService>()
                 .AddAuthentication(
                     options =>
                     {
@@ -468,7 +469,6 @@ public class Startup
                             .InitialiseAndUpdateDatabase()
                             .UseOrganisationRegistryExceptionHandler(loggerFactory)
                             .UseOrganisationRegistryEventSourcing()
-                            .InitialiseEmptyProjections()
                             //.UseOrganisationRegistryCookieAuthentication(tokenValidationParameters)
                             //.UseOrganisationRegistryJwtBearerAuthentication(tokenValidationParameters)
                             .UseAuthentication(),
