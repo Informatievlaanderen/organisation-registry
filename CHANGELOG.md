@@ -1,3 +1,10 @@
+## [1.346.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.346.0...v1.346.1) (2026-11-20)
+
+
+### Bug Fixes
+
+* or-3785 rebuild empty projections in a hosted service instead of during startup ([6c9eb76](https://github.com/informatievlaanderen/organisation-registry/commit/6c9eb7622d10646fa69a85905f405c2e7e30838a))
+
 # [1.346.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.345.1...v1.346.0) (2026-11-20)
 
 
