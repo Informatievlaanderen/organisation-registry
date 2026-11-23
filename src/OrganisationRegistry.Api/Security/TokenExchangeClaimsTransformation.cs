@@ -1,6 +1,5 @@
 namespace OrganisationRegistry.Api.Security;
 
-using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -31,63 +30,42 @@ public class TokenExchangeClaimsTransformation : IClaimsTransformation
         MapNameClaim(identity, JwtClaimTypes.GivenName, ClaimTypes.GivenName);
         MapNameClaim(identity, JwtClaimTypes.FamilyName, ClaimTypes.Surname);
 
-        var roles = identity.Claims
-            .Where(c => c.Type == AcmIdmConstants.Claims.Role)
-            .Select(c => c.Value.ToLowerInvariant())
-            .Where(v => v.StartsWith(AcmIdmConstants.RolePrefix))
-            .Select(v => v.Replace(AcmIdmConstants.RolePrefix, ""))
-            .SelectMany(i => i.Split(','))
-            .ToList();
-
-        if (!roles.Any())
-            return Task.FromResult(cloned);
-
-        if (roles.Any(r => r.Contains(AcmIdmConstants.Roles.AlgemeenBeheerder)))
+        // `cloned` wraps `identity` (not a copy) and holds only that identity,
+        // so the iv_wegwijs_rol_3D claims are read from exactly the same claims as before.
+        if (cloned.HasRole(AcmIdmConstants.Roles.AlgemeenBeheerder))
         {
             AddRoleClaim(identity, Role.AlgemeenBeheerder);
+            return Task.FromResult(cloned);
         }
-        else
-        {
-            if (roles.Any(r => r.Contains(AcmIdmConstants.Roles.VlimpersBeheerder)))
-                AddRoleClaim(identity, Role.VlimpersBeheerder);
 
-            if (roles.Any(r => r.Contains(AcmIdmConstants.Roles.OrgaanBeheerder)))
-                AddRoleClaim(identity, Role.OrgaanBeheerder);
+        if (cloned.HasRole(AcmIdmConstants.Roles.VlimpersBeheerder))
+            AddRoleClaim(identity, Role.VlimpersBeheerder);
 
-            if (roles.Any(r => r.Contains(AcmIdmConstants.Roles.RegelgevingBeheerder)))
-                AddRoleClaim(identity, Role.RegelgevingBeheerder);
+        if (cloned.HasRole(AcmIdmConstants.Roles.OrgaanBeheerder))
+            AddRoleClaim(identity, Role.OrgaanBeheerder);
 
-            if (roles.Any(r => r.Contains(AcmIdmConstants.Roles.VoMedewerker)))
-                AddRoleClaim(identity, Role.VoMedewerker);
+        if (cloned.HasRole(AcmIdmConstants.Roles.RegelgevingBeheerder))
+            AddRoleClaim(identity, Role.RegelgevingBeheerder);
 
-            var voDecentraalRoles = roles.Where(r => r.StartsWith(AcmIdmConstants.Roles.VoDecentraalBeheerder)).ToList();
-            if (voDecentraalRoles.Any())
-            {
-                AddRoleClaim(identity, Role.VoDecentraalBeheerder);
+        if (cloned.HasAnyRole(AcmIdmConstants.Roles.VoMedewerkerLegacy, AcmIdmConstants.Roles.VoMedewerker))
+            AddRoleClaim(identity, Role.VoMedewerker);
 
-                foreach (var role in voDecentraalRoles)
-                {
-                    var parts = role.Split(':');
-                    if (parts.Length > 1)
-                        AddOrganisationClaim(identity, parts[1]);
-                }
-            }
+        AddRoleWithOrganisationClaims(cloned, identity, AcmIdmConstants.Roles.VoDecentraalBeheerder, Role.VoDecentraalBeheerder);
+        AddRoleWithOrganisationClaims(cloned, identity, AcmIdmConstants.Roles.DecentraalBeheerder, Role.DecentraalBeheerder);
 
-            var decentraalRoles = roles.Where(r => r.StartsWith(AcmIdmConstants.Roles.DecentraalBeheerder)).ToList();
-            if (decentraalRoles.Any())
-            {
-                AddRoleClaim(identity, Role.DecentraalBeheerder);
-
-                foreach (var role in decentraalRoles)
-                {
-                    var parts = role.Split(':');
-                    if (parts.Length > 1)
-                        AddOrganisationClaim(identity, parts[1]);
-                }
-            }
-        }
         return Task.FromResult(cloned);
+    }
 
+    private static void AddRoleWithOrganisationClaims(ClaimsPrincipal user, ClaimsIdentity identity, string acmRole, Role role)
+    {
+        var ovoCodes = user.GetOvoCodes(acmRole);
+        if (ovoCodes.Count == 0)
+            return;
+
+        AddRoleClaim(identity, role);
+
+        foreach (var ovoCode in ovoCodes)
+            AddOrganisationClaim(identity, ovoCode);
     }
 
     private static void MapNameClaim(ClaimsIdentity identity, string sourceType, string targetType)

@@ -1,7 +1,6 @@
 namespace OrganisationRegistry.Api.Security;
 
 using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -52,30 +51,17 @@ public class OrganisationRegistryTokenBuilder : IOrganisationRegistryTokenBuilde
                 identity.GetOptionalClaim(JwtClaimTypes.Subject) ?? string.Empty,
                 ClaimValueTypes.String));
 
-            // Map user name claims from JWT to ACM-IDM format
-            var familyName = identity.GetOptionalClaim(JwtClaimTypes.FamilyName);
-            if (!string.IsNullOrEmpty(familyName))
-            {
-                identity.AddClaim(
-                    new Claim(AcmIdmConstants.Claims.FamilyName, familyName, ClaimValueTypes.String));
-            }
+        // Map user name claims from JWT to ACM-IDM format
+        var familyName = identity.GetOptionalClaim(JwtClaimTypes.FamilyName);
+        if (!string.IsNullOrEmpty(familyName))
+            identity.AddClaim(new Claim(AcmIdmConstants.Claims.FamilyName, familyName, ClaimValueTypes.String));
 
-            var givenName = identity.GetOptionalClaim(JwtClaimTypes.GivenName);
-            if (!string.IsNullOrEmpty(givenName))
-            {
-                identity.AddClaim(
-                    new Claim(AcmIdmConstants.Claims.Firstname, givenName, ClaimValueTypes.String));
-            }
-
-        var roles = identity.GetClaims(AcmIdmConstants.Claims.Role)
-            .Select(x => x.ToLowerInvariant())
-            .Where(x => x.StartsWith(AcmIdmConstants.RolePrefix))
-            .Select(x => x.Replace(AcmIdmConstants.RolePrefix, ""))
-            .SelectMany(i => i.Split(','))
-            .ToList();
+        var givenName = identity.GetOptionalClaim(JwtClaimTypes.GivenName);
+        if (!string.IsNullOrEmpty(givenName))
+            identity.AddClaim(new Claim(AcmIdmConstants.Claims.Firstname, givenName, ClaimValueTypes.String));
 
         var developers = (_configuration.Developers ?? string.Empty)
-            .Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
+            .Split([';'], StringSplitOptions.RemoveEmptyEntries)
             .Select(x => x.ToLowerInvariant());
 
         var acmIdClaim = identity.GetOptionalClaim(AcmIdmConstants.Claims.AcmId);
@@ -84,108 +70,45 @@ public class OrganisationRegistryTokenBuilder : IOrganisationRegistryTokenBuilde
             developers.Contains(acmIdClaim.ToLowerInvariant()))
             AddRoleClaim(identity, Role.Developer);
 
-        if (!roles.Any())
-            return identity;
+        // Wraps (does not copy) the identity: the iv_wegwijs_rol_3D claims are parsed on each lookup.
+        var user = new ClaimsPrincipal(identity);
 
-        if (roles.Any(x => x.Contains(AcmIdmConstants.Roles.AlgemeenBeheerder)))
+        if (user.HasRole(AcmIdmConstants.Roles.AlgemeenBeheerder))
         {
-            AddOrganisationRegistryBeheerderClaim(identity);
+            AddRoleClaim(identity, Role.AlgemeenBeheerder);
+            return identity;
         }
-        else
-        {
-            AddVlimpersBeheerderClaim(roles, identity);
-            AddOrgaanBeheerderClaim(roles, identity);
-            AddDecentraalBeheerderClaim(roles, identity);
-            AddRegelgevingBeheerderClaim(roles, identity);
-            AddVoMedewerkerClaim(roles, identity);
-            AddVoDecentraalBeheerderClaim(roles, identity);
-        }
+
+        if (user.HasRole(AcmIdmConstants.Roles.VlimpersBeheerder))
+            AddRoleClaim(identity, Role.VlimpersBeheerder);
+
+        // If any of the roles is wegwijs body admin, you are one, regardless on which OVO you got it
+        if (user.HasRole(AcmIdmConstants.Roles.OrgaanBeheerder))
+            AddRoleClaim(identity, Role.OrgaanBeheerder);
+
+        AddRoleWithOrganisationClaims(user, identity, AcmIdmConstants.Roles.DecentraalBeheerder, Role.DecentraalBeheerder);
+
+        if (user.HasRole(AcmIdmConstants.Roles.RegelgevingBeheerder))
+            AddRoleClaim(identity, Role.RegelgevingBeheerder);
+
+        if (user.HasAnyRole(AcmIdmConstants.Roles.VoMedewerkerLegacy, AcmIdmConstants.Roles.VoMedewerker))
+            AddRoleClaim(identity, Role.VoMedewerker);
+
+        AddRoleWithOrganisationClaims(user, identity, AcmIdmConstants.Roles.VoDecentraalBeheerder, Role.VoDecentraalBeheerder);
 
         return identity;
     }
 
-    private static void AddVoMedewerkerClaim(IEnumerable<string> roles, ClaimsIdentity identity)
+    private static void AddRoleWithOrganisationClaims(ClaimsPrincipal user, ClaimsIdentity identity, string acmRole, Role role)
     {
-        if (!roles.Any(x => x.Contains(AcmIdmConstants.Roles.VoMedewerker)))
+        var ovoCodes = user.GetOvoCodes(acmRole);
+        if (ovoCodes.Count == 0)
             return;
 
-        AddRoleClaim(identity, Role.VoMedewerker);
-    }
+        AddRoleClaim(identity, role);
 
-    private static void AddVoDecentraalBeheerderClaim(IReadOnlyCollection<string> roles, ClaimsIdentity identity)
-    {
-        if (!roles.Any(IsVoDecentraalBeheerder))
-            return;
-
-        AddRoleClaim(identity, Role.VoDecentraalBeheerder);
-
-        var voDecentraalRoles = roles.Where(IsVoDecentraalBeheerder);
-        foreach (var role in voDecentraalRoles)
-        {
-            var organisation = role.Replace(
-                AcmIdmConstants.RolePrefix,
-                string.Empty).Split(':')[1];
-            AddOrganisationClaim(identity, organisation);
-        }
-    }
-
-    private static bool IsVoDecentraalBeheerder(string role)
-        => role.StartsWith(AcmIdmConstants.Roles.VoDecentraalBeheerder);
-
-    private static void AddRegelgevingBeheerderClaim(IEnumerable<string> roles, ClaimsIdentity identity)
-    {
-        if (!roles.Any(x => x.Contains(AcmIdmConstants.Roles.RegelgevingBeheerder)))
-            return;
-
-        AddRoleClaim(identity, Role.RegelgevingBeheerder);
-    }
-
-    private static void AddVlimpersBeheerderClaim(IEnumerable<string> roles, ClaimsIdentity identity)
-    {
-        if (!roles.Any(x => x.Contains(AcmIdmConstants.Roles.VlimpersBeheerder)))
-            return;
-
-        AddRoleClaim(identity, Role.VlimpersBeheerder);
-    }
-
-    private static void AddOrgaanBeheerderClaim(IList<string> roles, ClaimsIdentity identity)
-    {
-        // If any of the roles is wegwijs body admin, you are one, regardless on which OVO you got it
-
-        if (!roles.Any(x => x.Contains(AcmIdmConstants.Roles.OrgaanBeheerder)))
-            return;
-
-        AddRoleClaim(identity, Role.OrgaanBeheerder);
-
-        for (var i = 0; i < roles.Count; i++)
-            roles[i] = roles[i].Replace(
-                AcmIdmConstants.Roles.OrgaanBeheerder,
-                string.Empty);
-    }
-
-    private static void AddDecentraalBeheerderClaim(IReadOnlyCollection<string> roles, ClaimsIdentity identity)
-    {
-        if (!roles.Any(IsDecentraalBeheerder))
-            return;
-
-        AddRoleClaim(identity, Role.DecentraalBeheerder);
-
-        var decentraalBeheerderRoles = roles.Where(IsDecentraalBeheerder);
-        foreach (var role in decentraalBeheerderRoles)
-        {
-            var organisation = role.Replace(
-                AcmIdmConstants.RolePrefix,
-                string.Empty).Split(':')[1];
-            AddOrganisationClaim(identity, organisation);
-        }
-    }
-
-    private static bool IsDecentraalBeheerder(string role)
-        => role.StartsWith(AcmIdmConstants.Roles.DecentraalBeheerder);
-
-    private static void AddOrganisationRegistryBeheerderClaim(ClaimsIdentity identity)
-    {
-        AddRoleClaim(identity, Role.AlgemeenBeheerder);
+        foreach (var ovoCode in ovoCodes)
+            AddOrganisationClaim(identity, ovoCode);
     }
 
     private static void AddRoleClaim(ClaimsIdentity identity, Role value)
@@ -200,7 +123,7 @@ public class OrganisationRegistryTokenBuilder : IOrganisationRegistryTokenBuilde
     private static void AddOrganisationClaim(ClaimsIdentity identity, string value)
     {
         var claim = new Claim(AcmIdmConstants.Claims.Organisation, value, ClaimValueTypes.String);
-        if (!identity.HasClaim(ClaimTypes.Role, value))
+        if (!identity.HasClaim(AcmIdmConstants.Claims.Organisation, value))
             identity.AddClaim(claim);
     }
 }
