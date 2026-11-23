@@ -7,6 +7,8 @@ export enum Role {
   OrgaanBeheerder,
   Developer,
   AutomatedTask,
+  VoDecentraalBeheerder,
+  VoMedewerker,
 }
 
 export class RoleMapping {
@@ -22,6 +24,10 @@ export class RoleMapping {
         return Role.DecentraalBeheerder;
       case "regelgevingBeheerder":
         return Role.RegelgevingBeheerder;
+      case "voDecentraalBeheerder":
+        return Role.VoDecentraalBeheerder;
+      case "medewerker":
+        return Role.VoMedewerker;
       case "developer":
         return Role.Developer;
       default:

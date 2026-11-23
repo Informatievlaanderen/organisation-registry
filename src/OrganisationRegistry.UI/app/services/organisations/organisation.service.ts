@@ -82,8 +82,9 @@ export class OrganisationService implements ICrudService<Organisation> {
       .map(this.toOrganisations);
   }
 
-  public get(idOrOvoNumber: string): Observable<Organisation> {
-    const url = `${this.organisationsUrl}/${idOrOvoNumber}`;
+  public get(idOrOvoNumber: string, noRedirect: boolean = false): Observable<Organisation> {
+    // noRedirect=1 stops the HTTP interceptor from navigating to the 404 page.
+    const url = `${this.organisationsUrl}/${idOrOvoNumber}${noRedirect ? '?noRedirect=1' : ''}`;
 
     let headers = new HeadersBuilder().json().build();
 
