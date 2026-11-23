@@ -103,7 +103,6 @@ public class RolePermissionMapTests
         => RolePermissionMap.For(role).Should().Contain(Permission.CanTerminateOrganisation);
 
     [Theory]
-    [InlineData(Role.VlimpersBeheerder)]
     [InlineData(Role.DecentraalBeheerder)]
     [InlineData(Role.VoDecentraalBeheerder)]
     [InlineData(Role.OrgaanBeheerder)]
@@ -112,11 +111,47 @@ public class RolePermissionMapTests
     [InlineData(Role.AutomatedTask)]
     public void Does_not_grant_CanTerminateOrganisation(Role role)
     {
-        // CanTerminateOrganisation is unrestricted-only: it cannot be modeled as a
-        // restriction on CanManageOrganisation because VlimpersBeheerder/DecentraalBeheerder
-        // must be excluded even for organisations they can otherwise edit.
+        // The static map only holds the unrestricted grant (AlgemeenBeheerder/Developer).
+        // VlimpersBeheerder gets a restricted grant from the config-aware overload only
+        // (see the tests below); DecentraalBeheerder never gets one.
         RolePermissionMap.For(role).Should().NotContain(Permission.CanTerminateOrganisation);
     }
+
+    [Fact]
+    public void Static_For_VlimpersBeheerder_does_not_grant_CanTerminateOrganisation()
+    {
+        // Regression guard: the static map must not grant unrestricted
+        // CanTerminateOrganisation to VlimpersBeheerder — that grant is only added by the
+        // config-aware overload, restricted to organisations under Vlimpers management.
+        RolePermissionMap.For(Role.VlimpersBeheerder)
+            .Should().NotContain(Permission.CanTerminateOrganisation);
+    }
+
+    [Fact]
+    public void For_config_VlimpersBeheerder_grants_CanTerminateOrganisation_only_for_vlimpers_managed_organisations()
+    {
+        var config = new OrganisationRegistryConfigurationStub();
+
+        var set = RolePermissionMap.For(new[] { Role.VlimpersBeheerder }, config);
+
+        set.IsSatisfiedFor(
+                Permission.CanTerminateOrganisation,
+                new VlimpersManagementContext(IsUnderVlimpersManagement: true))
+            .Should().BeTrue();
+
+        set.IsSatisfiedFor(
+                Permission.CanTerminateOrganisation,
+                new VlimpersManagementContext(IsUnderVlimpersManagement: false))
+            .Should().BeFalse();
+    }
+
+    [Theory]
+    [InlineData(Role.DecentraalBeheerder)]
+    [InlineData(Role.VoDecentraalBeheerder)]
+    public void For_config_does_not_grant_CanTerminateOrganisation(Role role)
+        => RolePermissionMap.For(new[] { role }, new OrganisationRegistryConfigurationStub())
+            .Contains(Permission.CanTerminateOrganisation)
+            .Should().BeFalse();
 
     [Theory]
     [InlineData(Role.AlgemeenBeheerder)]

@@ -2,6 +2,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.TerminateOrganisation.NotC
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
@@ -10,6 +11,7 @@ using Infrastructure.Tests.Extensions.TestHelpers;
 using Microsoft.Extensions.Logging;
 using Moq;
 using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Authorization.Restrictions;
 using OrganisationRegistry.Infrastructure.Domain;
 using OrganisationRegistry.Infrastructure.Events;
 using OrganisationRegistry.Organisation;
@@ -135,18 +137,45 @@ public class
     }
 
     [Theory]
-    [InlineData(Role.VlimpersBeheerder)]
     [InlineData(Role.DecentraalBeheerder)]
     [InlineData(Role.OrgaanBeheerder)]
     [InlineData(Role.RegelgevingBeheerder)]
     public async Task DoesNotTerminateTheOrganisation(Role role)
     {
-        // Permission.CanTerminateOrganisation is unrestricted-only (AlgemeenBeheerder
-        // and Developer): VlimpersBeheerder/DecentraalBeheerder never hold it, even
-        // though they may hold a restricted CanManageOrganisationInfoLimitedToVlimpers
-        // / CanManageOrganisationInfoNotLimitedToVlimpers (edit) grant for their
-        // own/Vlimpers-managed organisations.
+        // Permission.CanTerminateOrganisation is held unrestricted by AlgemeenBeheerder
+        // and Developer, and restricted to Vlimpers-managed organisations by
+        // VlimpersBeheerder (see the tests below). DecentraalBeheerder and the other
+        // roles never hold it, even though DecentraalBeheerder may hold a restricted
+        // CanManageOrganisationInfoNotLimitedToVlimpers (edit) grant.
         await Given(Events).When(TerminateOrganisationCommand, new UserBuilder().AddRoles(role).Build())
-            .ThenThrows<InsufficientRights<RequiresPermissionPolicy>>();
+            .ThenThrows<InsufficientRights<OrganisationPolicy>>();
+    }
+
+    private static IUser VlimpersUser
+        => new UserBuilder()
+            .AddRoles(Role.VlimpersBeheerder)
+            .WithPermissions(
+                PermissionSet.Of(
+                    Permission.CanTerminateOrganisation.RestrictedTo(
+                        ChildRestrictions.UnderVlimpersManagement)))
+            .Build();
+
+    [Fact]
+    public async Task VlimpersBeheerderTerminatesAnOrganisationUnderVlimpersManagement()
+    {
+        await Given(Events.Append(new OrganisationPlacedUnderVlimpersManagement(_organisationId)).ToArray())
+            .When(TerminateOrganisationCommand, VlimpersUser)
+            .Then();
+
+        var organisationTerminated = PublishedEvents[0].UnwrapBody<OrganisationTerminatedV2>();
+        organisationTerminated.Should().NotBeNull();
+        organisationTerminated.OrganisationId.Should().Be(_organisationId);
+    }
+
+    [Fact]
+    public async Task VlimpersBeheerderCannotTerminateAnOrganisationNotUnderVlimpersManagement()
+    {
+        await Given(Events).When(TerminateOrganisationCommand, VlimpersUser)
+            .ThenThrows<InsufficientRights<OrganisationPolicy>>();
     }
 }
