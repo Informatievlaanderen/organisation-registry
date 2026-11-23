@@ -34,9 +34,10 @@ public class OrganisationPermissions
 
     /// <summary>
     /// Whether the caller may terminate this organisation (PUT .../terminate).
-    /// Unrestricted-only (<see cref="Permission.CanTerminateOrganisation"/>): unlike
-    /// <see cref="CanEdit"/>, VlimpersBeheerder and DecentraalBeheerder never hold
-    /// this permission, even for their own/Vlimpers-managed organisations.
+    /// True for an unrestricted <see cref="Permission.CanTerminateOrganisation"/> holder
+    /// (AlgemeenBeheerder/Developer), or for a VlimpersBeheerder when this
+    /// organisation is under Vlimpers management. DecentraalBeheerder never holds
+    /// this permission.
     /// </summary>
     public bool CanDelete { get; }
     public bool CanManageChildren { get; }
@@ -168,7 +169,7 @@ public class OrganisationPermissions
 
         return new OrganisationPermissions(
             canEdit: canEditOrganisation,
-            canDelete: user.HasPermission(Permission.CanTerminateOrganisation),
+            canDelete: new OrganisationPolicy(Permission.CanTerminateOrganisation, ovoNumber, isUnderVlimpersManagement).Check(user).IsSuccessful,
             canManageChildren: Satisfies(
                 Permission.CanManageChildren,
                 userContext,

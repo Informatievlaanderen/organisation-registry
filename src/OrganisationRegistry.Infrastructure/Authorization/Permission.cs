@@ -62,16 +62,15 @@ public enum Permission
     /// </summary>
     CanManageOrganisationInfoNotLimitedToVlimpers,
 
-    /// <summary>
-    /// Terminate ("beëindig") an organisation (<c>OrganisationDetailCommandController.Terminate</c>).
-    /// Unrestricted-only: unlike <see cref="CanManageOrganisationInfoLimitedToVlimpers"/>
-    /// and <see cref="CanManageOrganisationInfoNotLimitedToVlimpers"/> (which
-    /// VlimpersBeheerder/DecentraalBeheerder hold as restricted grants for
-    /// editing their own/managed organisations), termination is a distinct,
-    /// higher-impact capability that must never be reachable via those
-    /// restricted edit grants. Granted only to AlgemeenBeheerder (and
-    /// Developer); VlimpersBeheerder and DecentraalBeheerder have no
-    /// termination rights at all, regardless of Vlimpers-management status.
+    /// A distinct, higher-impact capability: it is never reachable via the
+    /// <see cref="CanManageOrganisationInfoLimitedToVlimpers"/> /
+    /// <see cref="CanManageOrganisationInfoNotLimitedToVlimpers"/> edit grants,
+    /// it has its own grant. AlgemeenBeheerder (and Developer) hold it
+    /// unrestricted. VlimpersBeheerder holds it as a restricted grant, limited
+    /// to organisations under Vlimpers management (enforced by
+    /// <c>OrganisationPolicy</c> in the terminate handler, not by a plain
+    /// presence check). DecentraalBeheerder and VoDecentraalBeheerder have no
+    /// termination rights at all.
     /// </summary>
     CanTerminateOrganisation,
 

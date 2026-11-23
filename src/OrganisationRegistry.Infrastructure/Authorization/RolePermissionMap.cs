@@ -445,45 +445,31 @@ public static class RolePermissionMap
                 // dedicated permission, not CanManageOrganisation (which
                 // VlimpersBeheerder no longer holds at all), so that
                 // DecentraalBeheerder can never reach them.
-                Permission.CanManageOrganisationInfoLimitedToVlimpers.RestrictedTo(
-                    ChildRestrictions.UnderVlimpersManagement),
-                Permission.CanManageChildren.RestrictedTo(
-                    ChildRestrictions.UnderVlimpersManagement),
-                Permission.CanManageParent.RestrictedTo(
-                    ChildRestrictions.UnderVlimpersManagement),
-                Permission.CanImport.RestrictedTo(
-                    ChildRestrictions.UnderVlimpersManagement),
-                Permission.CanManageKeys.RestrictedTo(
-                    KeyRestrictions.VlimpersManaged(
-                        configuration.Authorization.KeyIdsAllowedForVlimpers)),
-                Permission.CanManageFormalFrameworks.RestrictedTo(
-                    FormalFrameworkRestrictions.VlimpersManaged(
-                        configuration.Authorization.FormalFrameworkIdsOwnedByVlimpers)),
-                Permission.CanManageLabels.RestrictedTo(
-                    LabelRestrictions.VlimpersManaged(
-                        configuration.Authorization.LabelIdsAllowedForVlimpers)),
-            // VlimpersBeheerder may manage capacities limited to LA
-            // (Leidinggevend topkader) and HRBP, on organisations under
-            // Vlimpers management — every other capacity remains
-            // read-only (CanViewOrganisationCapacities, granted
-            // unconditionally above).
-            Permission.CanManageCapacities.RestrictedTo(
-                CapacityRestrictions.VlimpersManaged(
-                configuration.Authorization.CapacityIdsAllowedForVlimpers))),
+                Permission.CanManageOrganisationInfoLimitedToVlimpers.RestrictedTo(ChildRestrictions.UnderVlimpersManagement),
+                Permission.CanManageChildren.RestrictedTo(ChildRestrictions.UnderVlimpersManagement),
+                Permission.CanManageParent.RestrictedTo(ChildRestrictions.UnderVlimpersManagement),
+                Permission.CanImport.RestrictedTo(ChildRestrictions.UnderVlimpersManagement),
+                // Terminating an organisation: only when it is under Vlimpers
+                // management. Enforced by OrganisationPolicy in the terminate
+                // handler (a plain presence check would allow every organisation).
+                Permission.CanTerminateOrganisation.RestrictedTo(ChildRestrictions.UnderVlimpersManagement),
+                Permission.CanManageKeys.RestrictedTo(KeyRestrictions.VlimpersManaged(configuration.Authorization.KeyIdsAllowedForVlimpers)),
+                Permission.CanManageFormalFrameworks.RestrictedTo(FormalFrameworkRestrictions.VlimpersManaged(configuration.Authorization.FormalFrameworkIdsOwnedByVlimpers)),
+                Permission.CanManageLabels.RestrictedTo(LabelRestrictions.VlimpersManaged(configuration.Authorization.LabelIdsAllowedForVlimpers)),
+                // VlimpersBeheerder may manage capacities limited to LA
+                // (Leidinggevend topkader) and HRBP, on organisations under
+                // Vlimpers management — every other capacity remains
+                // read-only (CanViewOrganisationCapacities, granted
+                // unconditionally above).
+                Permission.CanManageCapacities.RestrictedTo(CapacityRestrictions.VlimpersManaged(configuration.Authorization.CapacityIdsAllowedForVlimpers))),
             // Organisation contacts on their own organisation (regardless of
             // Vlimpers-management status) are a DecentraalBeheerder-only
             // grant: VoDecentraalBeheerder never gets CanManageContacts.
             Role.DecentraalBeheerder => DecentraalRestrictedGrants(configuration),
             Role.RegelgevingBeheerder => PermissionSet.Of(
-                Permission.CanManageFormalFrameworks.RestrictedTo(
-                    FormalFrameworkRestrictions.OwnedByRegelgevingDb(
-                        configuration.Authorization.FormalFrameworkIdsOwnedByRegelgevingDbBeheerder)),
-                Permission.CanManageCapacities.RestrictedTo(
-                    CapacityRestrictions.OwnedByRegelgevingDb(
-                        configuration.Authorization.CapacityIdsOwnedByRegelgevingDbBeheerder)),
-                Permission.CanManageOrganisationClassifications.RestrictedTo(
-                    ClassificationTypeRestrictions.OwnedByRegelgevingDb(
-                        configuration.Authorization.OrganisationClassificationTypeIdsOwnedByRegelgevingDbBeheerder))),
+                Permission.CanManageFormalFrameworks.RestrictedTo(FormalFrameworkRestrictions.OwnedByRegelgevingDb(configuration.Authorization.FormalFrameworkIdsOwnedByRegelgevingDbBeheerder)),
+                Permission.CanManageCapacities.RestrictedTo(CapacityRestrictions.OwnedByRegelgevingDb(configuration.Authorization.CapacityIdsOwnedByRegelgevingDbBeheerder)),
+                Permission.CanManageOrganisationClassifications.RestrictedTo(ClassificationTypeRestrictions.OwnedByRegelgevingDb(configuration.Authorization.OrganisationClassificationTypeIdsOwnedByRegelgevingDbBeheerder))),
             Role.VoDecentraalBeheerder => VoDecentraalRestrictedGrants(configuration),
             _ => PermissionSet.Empty,
         };

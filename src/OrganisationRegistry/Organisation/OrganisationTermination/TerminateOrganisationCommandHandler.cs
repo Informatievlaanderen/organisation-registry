@@ -2,7 +2,6 @@
 
 using System.Threading.Tasks;
 using Handling;
-using Infrastructure.Authorization;
 using Infrastructure.Commands;
 using Infrastructure.Configuration;
 using Infrastructure.Domain;
@@ -27,7 +26,7 @@ public class TerminateOrganisationCommandHandler
 
     public Task Handle(ICommandEnvelope<TerminateOrganisation> envelope)
         => UpdateHandler<Organisation>.For(envelope.Command, envelope.User, Session)
-            .RequiresPermission(Permission.CanTerminateOrganisation)
+            .RequiresBeheerderForTerminatingOrganisation()
             .Handle(
                 session =>
                 {

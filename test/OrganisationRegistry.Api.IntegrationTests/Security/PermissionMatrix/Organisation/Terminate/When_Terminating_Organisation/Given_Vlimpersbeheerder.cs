@@ -13,11 +13,10 @@ using Xunit;
 
 /// <summary>
 /// Matrixrij <b>Organisatie</b> — organisatie beëindigen — voor de
-/// <see cref="Role.VlimpersBeheerder" />. In tegenstelling tot bewerken
-/// (<see cref="Permission.CanManageOrganisation" />, restricted tot
-/// Vlimpersbeheerde organisaties) is <see cref="Permission.CanTerminateOrganisation" />
-/// nooit toegekend aan VlimpersBeheerder — ook niet voor een organisatie die
-/// wél onder Vlimpersbeheer valt.
+/// <see cref="Role.VlimpersBeheerder" />. <see cref="Permission.CanTerminateOrganisation" />
+/// is voor VlimpersBeheerder een restricted grant: beëindigen mag enkel voor een
+/// organisatie die onder Vlimpersbeheer valt, voor alle andere organisaties
+/// volgt een 403.
 /// </summary>
 [Collection(ApiTestsCollection.Name)]
 public class Given_Vlimpersbeheerder
@@ -30,7 +29,7 @@ public class Given_Vlimpersbeheerder
     }
 
     [Fact]
-    public async Task For_Vlimpersbeheerder_WithVlimpersManagedOrganisation_Then_Returns_Forbidden()
+    public async Task For_Vlimpersbeheerder_WithVlimpersManagedOrganisation_Then_Returns_OK()
     {
         var organisationId = await CreateVlimpersManagedOrganisation();
 
@@ -38,7 +37,7 @@ public class Given_Vlimpersbeheerder
 
         var response = await TerminateOrganisation(client, organisationId);
 
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
     [Fact]

@@ -206,6 +206,20 @@ public static class UpdateHandlerExtensionMethods
                 organisation.State.OvoNumber,
                 organisation.State.UnderVlimpersManagement));
 
+    /// <summary>
+    /// Authorization for terminating an organisation
+    /// (<see cref="Permission.CanTerminateOrganisation"/>): AlgemeenBeheerder/
+    /// Developer unrestricted, VlimpersBeheerder only for organisations
+    /// currently under Vlimpers management. DecentraalBeheerder never passes.
+    /// </summary>
+    public static UpdateHandler<Organisation> RequiresBeheerderForTerminatingOrganisation(
+        this UpdateHandler<Organisation> source)
+        => source.WithPolicy(
+            organisation => new OrganisationPolicy(
+                Permission.CanTerminateOrganisation,
+                organisation.State.OvoNumber,
+                organisation.State.UnderVlimpersManagement));
+
     public static UpdateHandler<TAggregate> RequiresPermission<TAggregate>(
         this UpdateHandler<TAggregate> source,
         Permission permission)

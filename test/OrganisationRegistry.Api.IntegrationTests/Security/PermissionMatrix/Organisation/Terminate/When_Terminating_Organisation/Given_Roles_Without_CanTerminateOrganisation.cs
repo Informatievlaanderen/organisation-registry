@@ -9,9 +9,10 @@ using OrganisationRegistry.Api.Backoffice.Organisation.Detail;
 using Xunit;
 
 /// <summary>
-/// Enkel AlgemeenBeheerder en Developer bezitten <c>CanTerminateOrganisation</c>.
-/// Alle andere rollen — inclusief VlimpersBeheerder en
-/// DecentraalBeheerder, die elders wel organisatiegebonden rechten hebben —
+/// Enkel AlgemeenBeheerder en Developer bezitten <c>CanTerminateOrganisation</c>
+/// ongerestricteerd; VlimpersBeheerder enkel voor Vlimpersbeheerde organisaties
+/// (zie <c>Given_Vlimpersbeheerder</c>). Alle andere rollen — inclusief
+/// DecentraalBeheerder, die elders wel organisatiegebonden rechten heeft —
 /// krijgen 403 terug bij het beëindigen van een organisatie.
 /// </summary>
 [Collection(ApiTestsCollection.Name)]
@@ -25,7 +26,6 @@ public class Given_Roles_Without_CanTerminateOrganisation
     }
 
     [Theory]
-    [InlineData(ApiFixture.Backoffice.Vlimpersbeheerder)]
     [InlineData(ApiFixture.Backoffice.Decentraalbeheerder)]
     [InlineData(ApiFixture.Backoffice.Regelgevingbeheerder)]
     [InlineData(ApiFixture.Backoffice.Orgaanbeheerder)]

@@ -15,11 +15,10 @@ using Xunit;
 /// (<c>PUT /v1/organisations/{id}/terminate</c>) wordt gedreven door
 /// <see cref="Permission.CanTerminateOrganisation" />.
 ///
-/// Deze permissie is uitsluitend ongerestricteerd toegekend, en enkel aan
-/// AlgemeenBeheerder (en Developer): VlimpersBeheerder/DecentraalBeheerder
-/// — die hun <see cref="Permission.CanManageOrganisation" /> enkel als
-/// restricted grant bezitten — komen hier nooit voor in aanmerking, zelfs
-/// niet voor een organisatie die ze wel mogen bewerken.
+/// Deze permissie is ongerestricteerd toegekend aan AlgemeenBeheerder (en
+/// Developer). VlimpersBeheerder bezit ze enkel als restricted grant (enkel
+/// Vlimpersbeheerde organisaties, zie <c>Given_Vlimpersbeheerder</c>);
+/// DecentraalBeheerder komt nooit in aanmerking.
 /// </summary>
 [Collection(ApiTestsCollection.Name)]
 public class Given_Roles_With_CanTerminateOrganisation
