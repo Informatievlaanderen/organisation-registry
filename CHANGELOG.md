@@ -1,3 +1,10 @@
+## [1.346.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.346.1...v1.346.2) (2026-11-23)
+
+
+### Bug Fixes
+
+*  or-3836 new rol "medewerker" ([9ef9793](https://github.com/informatievlaanderen/organisation-registry/commit/9ef9793d3b81b615ac66738df720d1bbbbbb0c6b))
+
 ## [1.346.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.346.0...v1.346.1) (2026-11-20)
 
 
