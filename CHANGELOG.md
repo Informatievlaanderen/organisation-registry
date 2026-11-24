@@ -1,3 +1,12 @@
+## [1.346.3](https://github.com/informatievlaanderen/organisation-registry/compare/v1.346.2...v1.346.3) (2026-11-24)
+
+
+### Bug Fixes
+
+* or-3834 allow vlimpersbeheerder to terminate organisations under vlimpers management ([7a60197](https://github.com/informatievlaanderen/organisation-registry/commit/7a601971feee017970fb4f099b7396a5b46bbb89))
+* or-3836 legay UI support multi organisation ([4898bb7](https://github.com/informatievlaanderen/organisation-registry/commit/4898bb73572fc469b62224064ff8d7b24c90f389))
+* or-3836 legay UI support multi organisation ([e06d54b](https://github.com/informatievlaanderen/organisation-registry/commit/e06d54bf8c1785706058655df26fe7983d9e0e12))
+
 ## [1.346.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.346.1...v1.346.2) (2026-11-23)
 
 
