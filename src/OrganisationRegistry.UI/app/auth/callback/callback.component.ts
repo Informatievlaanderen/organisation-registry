@@ -60,7 +60,7 @@ export class CallbackComponent implements OnDestroy {
 
               // Landing page is best effort: try the organisations one by one, first one that loads wins.
               return from(ovoNumbers).pipe(
-                concatMap((ovoNumber) =>
+                concatMap((ovoNumber: string) =>
                   this.organisationService
                     .get(ovoNumber, true) // noRedirect: a 404 must not send the user to the 404 page
                     .pipe(catchError(() => empty<Organisation>()))
