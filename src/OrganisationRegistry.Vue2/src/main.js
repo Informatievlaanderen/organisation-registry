@@ -5,7 +5,7 @@ import router from "./router";
 import "./components";
 
 import { createPinia, PiniaVuePlugin } from "pinia";
-import { markRaw } from "@vue/composition-api/dist/vue-composition-api";
+import { markRaw } from "vue";
 import { useUserStore } from "@/stores/user";
 
 import moment from "moment";

@@ -12,7 +12,7 @@ export class UserTokenResult {
         roles: decodedJwtToken.role,
         translatedRoles: []
           .concat(decodedJwtToken.role)
-          .map((x) => UserTokenResult.#translateRole(x)),
+          .map((x) => UserTokenResult.translateRole(x)),
       };
     }
   }
@@ -25,7 +25,7 @@ export class UserTokenResult {
     return Date.now() >= this.expiration * 1000;
   }
 
-  static #translateRole(role) {
+  static translateRole(role) {
     switch (role) {
       case "algemeenBeheerder":
         return Roles.AlgemeenBeheerder;
