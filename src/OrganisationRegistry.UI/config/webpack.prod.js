@@ -61,7 +61,7 @@ module.exports = function(env) {
        *
        * See: http://webpack.github.io/docs/configuration.html#output-path
        */
-      path: helpers.root('src/OrganisationRegistry.UI/wwwroot'),
+      path: helpers.root('wwwroot'),
 
       /**
        * Specifies the name of each output file on disk.
@@ -209,7 +209,7 @@ module.exports = function(env) {
     tslint: {
       emitErrors: true,
       failOnHint: true,
-      resourcePath: 'src/OrganisationRegistry.UI'
+      resourcePath: '.'
     },
 
     /**

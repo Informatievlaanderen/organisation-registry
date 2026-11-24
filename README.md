@@ -29,9 +29,10 @@ Make sure you have the following lines in your `hosts` file
 
 Run the following commands:
 ```bash
+cd src/OrganisationRegistry.UI
 nvm use
 sudo setcap 'cap_net_bind_service=+ep' `which node` #only if experiencing permissions issues with port
-npm install
+npm install --legacy-peer-deps
 npm run start:hmr
 # browse to https://organisatie.dev-vlaanderen.local
 ```

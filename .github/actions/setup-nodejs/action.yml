@@ -1,5 +1,16 @@
 name: setup-node
-description: Setup nodejs
+description: Setup nodejs (root = release tooling by default; pass a folder + version file for an app)
+
+inputs:
+  node-version-file:
+    description: File holding the node version (.nvmrc)
+    default: .nvmrc
+  working-directory:
+    description: Folder whose dependencies are installed
+    default: .
+  install:
+    description: Run npm install in working-directory
+    default: 'true'
 
 runs:
   using: 'composite'
@@ -10,11 +21,15 @@ runs:
 
   - name: Setup Node.js
     uses: actions/setup-node@v3
+    with:
+      node-version-file: ${{ inputs.node-version-file }}
 
   - name: Node version
     shell: bash
     run: node --version
 
   - name: Install NPM dependencies
+    if: inputs.install == 'true'
     shell: bash
-    run: npm install --legacy-peer-deps
+    working-directory: ${{ inputs.working-directory }}
+    run: npm install

@@ -7,21 +7,20 @@ FROM node:16.15.0-alpine as builder
 # Install OS dependencies for native modules
 RUN apk add --no-cache python3 make g++
 
-WORKDIR /app
+# The Angular app is self-contained in src/OrganisationRegistry.UI (own package.json + lockfile)
+WORKDIR /app/src/OrganisationRegistry.UI
 
 # Copy package files for dependency caching
-COPY package*.json ./
+COPY src/OrganisationRegistry.UI/package*.json ./
+COPY src/OrganisationRegistry.UI/patches/ ./patches/
 
 # Use npm install with legacy peer deps (exactly like CI)
 RUN --mount=type=cache,target=/root/.npm \
     npm install --legacy-peer-deps
 
-# Copy build configuration and scripts
-COPY tsconfig*.json ./
-COPY config/ ./config/
-COPY scripts/ ./scripts/
-COPY organisationregistry-ui.pfx ./
-COPY src/OrganisationRegistry.UI/ ./src/OrganisationRegistry.UI/
+# webpack.dev.js reads the https dev certificate from the repo root (../../ relative to the UI folder)
+COPY organisationregistry-ui.pfx /app/organisationregistry-ui.pfx
+COPY src/OrganisationRegistry.UI/ ./
 
 # Clean and build exactly like CI: npm run build (which uses dev webpack config)
 RUN npm run clean:dist

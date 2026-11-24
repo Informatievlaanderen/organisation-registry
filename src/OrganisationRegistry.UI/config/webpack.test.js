@@ -48,7 +48,7 @@ module.exports = function(options) {
       /**
        * Make sure root is src
        */
-      root: helpers.root('src/OrganisationRegistry.UI'),
+      root: helpers.root(),
 
     },
 
@@ -132,7 +132,7 @@ module.exports = function(options) {
          *
          * See: https://github.com/webpack/json-loader
          */
-        { test: /\.json$/, loader: 'json-loader', exclude: [helpers.root('src/OrganisationRegistry.UI/index.html')] },
+        { test: /\.json$/, loader: 'json-loader', exclude: [helpers.root('index.html')] },
 
         /**
          * Raw loader support for *.css files
@@ -140,7 +140,7 @@ module.exports = function(options) {
          *
          * See: https://github.com/webpack/raw-loader
          */
-        { test: /\.css$/, loaders: ['to-string-loader', 'css-loader'], exclude: [helpers.root('srcOrganisationRegistry.UI/index.html')] },
+        { test: /\.css$/, loaders: ['to-string-loader', 'css-loader'], exclude: [helpers.root('index.html')] },
 
         /**
          * Raw loader support for *.html
@@ -148,7 +148,7 @@ module.exports = function(options) {
          *
          * See: https://github.com/webpack/raw-loader
          */
-        { test: /\.html$/, loader: 'raw-loader', exclude: [helpers.root('src/OrganisationRegistry.UI/index.html')] }
+        { test: /\.html$/, loader: 'raw-loader', exclude: [helpers.root('index.html')] }
 
       ],
 
@@ -167,7 +167,7 @@ module.exports = function(options) {
          */
         {
           test: /\.(js|ts)$/, loader: 'istanbul-instrumenter-loader',
-          include: helpers.root('src/OrganisationRegistry.UI'),
+          include: helpers.root(),
           exclude: [
             /\.(e2e|spec)\.ts$/,
             /node_modules/
@@ -216,7 +216,7 @@ module.exports = function(options) {
     tslint: {
       emitErrors: false,
       failOnHint: false,
-      resourcePath: 'src/OrganisationRegistry.UI'
+      resourcePath: '.'
     },
 
     /**

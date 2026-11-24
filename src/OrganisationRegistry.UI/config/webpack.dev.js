@@ -8,7 +8,7 @@ const commonConfig = require('./webpack.common.js'); // the settings that are co
 const path = require('path');
 const fs = require('fs');
 
-const projectRoot = path.resolve(__dirname, '../src/OrganisationRegistry.UI');
+const projectRoot = path.resolve(__dirname, '..');
 
 /**
  * Webpack Plugins
@@ -72,7 +72,7 @@ module.exports = function(options) {
        *
        * See: http://webpack.github.io/docs/configuration.html#output-path
        */
-      path: helpers.root('src/OrganisationRegistry.UI/wwwroot'),
+      path: helpers.root('wwwroot'),
 
       /**
        * Specifies the name of each output file on disk.
@@ -142,7 +142,7 @@ module.exports = function(options) {
     tslint: {
       emitErrors: false,
       failOnHint: false,
-      resourcePath: 'src/OrganisationRegistry.UI'
+      resourcePath: '.'
     },
 
     /**
@@ -157,7 +157,7 @@ module.exports = function(options) {
       port: METADATA.port,
       host: METADATA.host,
       https: {
-        pfx: fs.readFileSync(helpers.root('organisationregistry-ui.pfx')),
+        pfx: fs.readFileSync(helpers.root('../../organisationregistry-ui.pfx')),
         passphrase: 'organisationregistry'
       },
       historyApiFallback: true,
@@ -165,7 +165,7 @@ module.exports = function(options) {
         aggregateTimeout: 300,
         poll: 1000
       },
-      outputPath: helpers.root('src/OrganisationRegistry.UI/wwwroot')
+      outputPath: helpers.root('wwwroot')
     },
 
     /*

@@ -41,6 +41,10 @@ jobs:
 
       - name: Setup nodejs
         uses: ./.github/actions/setup-nodejs
+        with:
+          # build.sh installs and builds Angular + Vue2 itself; both still build on the Angular node version
+          node-version-file: src/OrganisationRegistry.UI/.nvmrc
+          install: 'false'
 
       - name: Containerize
         shell: bash

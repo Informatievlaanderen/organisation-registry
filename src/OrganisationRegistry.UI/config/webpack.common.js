@@ -60,11 +60,11 @@ module.exports = function(options) {
      */
     entry: {
 
-      'polyfills': './src/OrganisationRegistry.UI/polyfills.browser.ts',
-      'vendor': './src/OrganisationRegistry.UI/vendor.browser.ts',
-      'main': isProd ? './src/OrganisationRegistry.UI/main.aot.ts' : './src/OrganisationRegistry.UI/main.browser.ts'
-      // 'main': './src/OrganisationRegistry.UI/main.browser.ts'
-      // 'main': './src/OrganisationRegistry.UI/main.aot.ts'
+      'polyfills': './polyfills.browser.ts',
+      'vendor': './vendor.browser.ts',
+      'main': isProd ? './main.aot.ts' : './main.browser.ts'
+      // 'main': './main.browser.ts'
+      // 'main': './main.aot.ts'
     },
 
     /*
@@ -82,19 +82,19 @@ module.exports = function(options) {
       extensions: ['', '.ts', '.js', '.json'],
 
       // An array of directory names to be resolved to the current directory
-      modules: [helpers.root('src/OrganisationRegistry.UI'), 'node_modules'],
+      modules: [helpers.root(), 'node_modules'],
 
       root: [
-        helpers.root('src/OrganisationRegistry.UI/app')
+        helpers.root('app')
       ],
 
       alias: {
-        core: helpers.root('src/OrganisationRegistry.UI/app/core'),
-        shared: helpers.root('src/OrganisationRegistry.UI/app/shared'),
-        services: helpers.root('src/OrganisationRegistry.UI/app/services'),
-        organisation: helpers.root('src/OrganisationRegistry.UI/app/organisation'),
-        body: helpers.root('src/OrganisationRegistry.UI/app/body'),
-        people: helpers.root('src/OrganisationRegistry.UI/app/people'),
+        core: helpers.root('app/core'),
+        shared: helpers.root('app/shared'),
+        services: helpers.root('app/services'),
+        organisation: helpers.root('app/organisation'),
+        body: helpers.root('app/body'),
+        people: helpers.root('app/people'),
       }
 
     },
@@ -120,7 +120,7 @@ module.exports = function(options) {
       //       replace: '$1.import($3).then(mod => (mod.__esModule && mod.default) ? mod.default : mod)',
       //       flags: 'g'
       //     },
-      //     include: [helpers.root('src/OrganisationRegistry.UI')]
+      //     include: [helpers.root()]
       //   },
       // ],
 
@@ -172,12 +172,12 @@ module.exports = function(options) {
         {
           test: /\.css$/,
           loader: ExtractTextPlugin.extract({ fallbackLoader: 'to-string-loader', loader: 'css-loader' }),
-          exclude: [helpers.root('src/OrganisationRegistry.UI/app')]
+          exclude: [helpers.root('app')]
         },
         {
           test: /\.css$/,
           loaders: ['to-string-loader', 'css-loader'],
-          include: [helpers.root('src/OrganisationRegistry.UI/app')]
+          include: [helpers.root('app')]
         },
 
         /* Raw loader support for *.html
@@ -188,7 +188,7 @@ module.exports = function(options) {
         {
           test: /\.html$/,
           loader: 'raw-loader',
-          exclude: [helpers.root('src/OrganisationRegistry.UI/index.html')]
+          exclude: [helpers.root('index.html')]
         },
 
         /* File loader for supporting images, for example, in CSS files.
@@ -233,11 +233,11 @@ module.exports = function(options) {
     plugins: [
       // new AotPlugin({
       //     tsConfigPath: './tsconfig.json',
-      //     entryModule: './src/OrganisationRegistry.UI/app/app.module#AppModule'
+      //     entryModule: './app/app.module#AppModule'
       // }),
 
       new AssetsPlugin({
-        path: helpers.root('src/OrganisationRegistry.UI/wwwroot'),
+        path: helpers.root('wwwroot'),
         filename: 'webpack-assets.json',
         prettyPrint: true
       }),
@@ -266,7 +266,7 @@ module.exports = function(options) {
       new ContextReplacementPlugin(
         // The (\\|\/) piece accounts for path separators in *nix and Windows
         /angular(\\|\/)core(\\|\/)(esm(\\|\/)src|src)(\\|\/)linker/,
-        helpers.root('src/OrganisationRegistry.UI') // location of your src
+        helpers.root() // location of your src
       ),
 
       /*
@@ -278,7 +278,7 @@ module.exports = function(options) {
        * See: https://www.npmjs.com/package/copy-webpack-plugin
        */
       new CopyWebpackPlugin([{
-        from: 'src/OrganisationRegistry.UI/assets',
+        from: 'assets',
         to: 'assets'
       }]),
 
@@ -291,7 +291,7 @@ module.exports = function(options) {
        * See: https://github.com/ampedandwired/html-webpack-plugin
        */
       new HtmlWebpackPlugin({
-        template: 'src/OrganisationRegistry.UI/index.html',
+        template: 'index.html',
         chunksSortMode: 'dependency'
       }),
 

@@ -53,13 +53,17 @@ jobs:
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
+        with:
+          node-version-file: src/OrganisationRegistry.UI/.nvmrc
 
       - name: Install NPM dependencies
         shell: bash
+        working-directory: src/OrganisationRegistry.UI
         run: npm install --legacy-peer-deps
 
       - name: Build Angular site
         shell: bash
+        working-directory: src/OrganisationRegistry.UI
         run: npm run build
 
       - name: Install Vue NPM dependencies

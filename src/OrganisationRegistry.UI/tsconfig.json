@@ -1,21 +1,15 @@
 {
-  "angularCompilerOptions": {
-    "genDir": "aot",
-    "skipMetadataEmit" : true
-  },
   "compilerOptions": {
     "target": "es5",
-    "module": "es2015",
+    "module": "commonjs",
     "moduleResolution": "node",
-    "declaration": false,
-    "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
     "noEmitHelpers": true,
     "strictNullChecks": false,
-    "baseUrl": "./src/OrganisationRegistry.UI/app/",
+    "baseUrl": "./app/",
     "paths": [],
     "lib": [
       "dom",

@@ -18,9 +18,9 @@ remove_build_directory_safely() {
     fi
 }
 
-remove_build_directory_safely "src/OrganisationRegistry.UI/dist"
-remove_build_directory_safely "src/OrganisationRegistry.UI/wwwroot"
+remove_build_directory_safely "dist"
+remove_build_directory_safely "wwwroot"
 
-mkdir -p src/OrganisationRegistry.UI/wwwroot
+mkdir -p wwwroot
 
 echo "Clean completed successfully"

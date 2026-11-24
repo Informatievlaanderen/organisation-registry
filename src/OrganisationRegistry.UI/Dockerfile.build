@@ -2,18 +2,17 @@
 # Stage 1: Build Angular application
 FROM node:16.15.0-alpine as builder
 
-WORKDIR /app
+WORKDIR /app/src/OrganisationRegistry.UI
 
 # Copy only package files first for better caching
-COPY package*.json ./
+COPY src/OrganisationRegistry.UI/package*.json ./
+COPY src/OrganisationRegistry.UI/patches/ ./patches/
 
 # Install dependencies with legacy peer deps (matching CI)
 RUN npm install --legacy-peer-deps
 
 # Copy only necessary files for UI build
-COPY tsconfig*.json ./
-COPY config/ ./config/
-COPY src/OrganisationRegistry.UI/ ./src/OrganisationRegistry.UI/
+COPY src/OrganisationRegistry.UI/ ./
 
 # Build for production without problematic setheap
 # Run ngc and webpack directly instead of using setheap script

@@ -3,6 +3,8 @@
     <OutputType>Exe</OutputType>
     <PublishReadyToRun>true</PublishReadyToRun>
     <IsTestProject>false</IsTestProject>
+    <!-- node_modules lives in this folder now; selenium-webdriver ships *.aspx.cs files that the **/*.cs glob would compile -->
+    <DefaultItemExcludes>$(DefaultItemExcludes);node_modules/**</DefaultItemExcludes>
   </PropertyGroup>
 
 

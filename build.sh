@@ -51,10 +51,11 @@ test_solution() {
 }
 
 site_build() {
-  npm run build
-
   local dist="${build_dir}/OrganisationRegistry.UI/linux"
   local source="src/OrganisationRegistry.UI"
+
+  npm install --legacy-peer-deps --prefix "${source}"
+  npm run build --prefix "${source}"
 
   mkdir -p "${dist}/wwwroot"
   cp -R "${source}/wwwroot/." "${dist}/wwwroot/"
