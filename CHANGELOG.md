@@ -1,3 +1,10 @@
+## [1.346.4](https://github.com/informatievlaanderen/organisation-registry/compare/v1.346.3...v1.346.4) (2026-11-25)
+
+
+### Bug Fixes
+
+* rename acm VoMedewerker role ([13b65fd](https://github.com/informatievlaanderen/organisation-registry/commit/13b65fddd8d9bc1852c255f3286c08b186794d20))
+
 ## [1.346.3](https://github.com/informatievlaanderen/organisation-registry/compare/v1.346.2...v1.346.3) (2026-11-24)
 
 
