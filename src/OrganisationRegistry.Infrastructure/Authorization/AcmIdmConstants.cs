@@ -28,7 +28,7 @@ public static class AcmIdmConstants
         public const string OrgaanBeheerder = "orgaanbeheerder";
 
         public const string VoMedewerkerLegacy = "vomedewerker";
-        public const string VoMedewerker  = "medewerker";
+        public const string VoMedewerker  = "medewerker-fixed";
         public const string VoDecentraalBeheerder = "vodecentraalbeheerder";
     }
 
