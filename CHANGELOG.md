@@ -1,3 +1,20 @@
+# [1.347.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.346.4...v1.347.0) (2026-11-26)
+
+
+### Bug Fixes
+
+* **search:** partial code now matches in overview API test ([b0e7250](https://github.com/informatievlaanderen/organisation-registry/commit/b0e7250e5a3d6ef90212bd2f69e89084583ad44c))
+
+
+### Features
+
+* **OR-3785:** partial match on code search + covering index ([ac105d2](https://github.com/informatievlaanderen/organisation-registry/commit/ac105d273794c13a1b456e9d5ef01ce88827da40))
+
+
+### Performance Improvements
+
+* **search:** parameterize code search term to avoid per-term EF query cache entries ([0fd64a8](https://github.com/informatievlaanderen/organisation-registry/commit/0fd64a88d8fc4816bfe1c87492cc7b30256e8719))
+
 ## [1.346.4](https://github.com/informatievlaanderen/organisation-registry/compare/v1.346.3...v1.346.4) (2026-11-25)
 
 
