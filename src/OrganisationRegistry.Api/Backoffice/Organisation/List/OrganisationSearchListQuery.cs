@@ -200,11 +200,19 @@ public class OrganisationSearchListQuery : Query<OrganisationSearchListItem, Org
         var contains = typeof(string).GetMethod(nameof(string.Contains), new[] { typeof(string) })!;
 
         var body = candidates
-            .Select(candidate => (Expression)Expression.Call(value, contains, Expression.Constant(candidate)))
+            .Select(candidate => (Expression)Expression.Call(value, contains, AsParameter(candidate)))
             .Aggregate(Expression.OrElse);
 
         return Expression.Lambda<Func<OrganisationSearchCodeListItem, bool>>(body, item);
     }
+
+    // Een member-access op een constante wordt door EF als SQL-parameter behandeld; een kale
+    // Expression.Constant zou als literal in de SQL (en in de query-cache-sleutel) terechtkomen,
+    // waardoor elke nieuwe zoekterm een nieuwe query compileert.
+    private static Expression AsParameter(string candidate)
+        => Expression.Property(Expression.Constant(new SearchTerm(candidate)), nameof(SearchTerm.Value));
+
+    private sealed record SearchTerm(string Value);
 
     private class OrganisationSearchListSorting : ISorting
     {
