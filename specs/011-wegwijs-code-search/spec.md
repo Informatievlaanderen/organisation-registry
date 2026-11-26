@@ -92,6 +92,7 @@ verwijder de sleutel, zoek opnieuw (niet meer gevonden).
 
 - **Codetype-verwarring**: eenzelfde ingegeven waarde komt voor als OVO-nummer bij organisatie A en als Orafin-code bij organisatie B → beide organisaties verschijnen in het resultaat (geen prioritering, geen stille onderdrukking).
 - **Schrijfwijze van KBO-nummers**: KBO-nummers circuleren als `0123456789`, `0123.456.789` en `BE0123456789`; alle drie leiden tot dezelfde match (FR-004).
+- **Deelcodes**: `00` vindt `OVO000001`; `4` vindt elke organisatie met een 4 in een van haar codes. Een korte term geeft dus veel resultaten; dat is gewenst.
 - **Hoofdletters**: `ovo001234` versus `OVO001234`; Orafin-codes met letters.
 - **Witruimte**: codes die met kopieer-plakken voorafgaande of volgende spaties meekrijgen, worden getrimd.
 - **Meerdere Orafin-sleutels**: een organisatie heeft (historisch) meerdere Orafin-sleutels, al dan niet vervallen; elk van die waarden leidt tot een match op die organisatie.
@@ -107,7 +108,7 @@ verwijder de sleutel, zoek opnieuw (niet meer gevonden).
 - **FR-001**: De scherm-API voor het organisatie-overzicht MOET een bijkomend filterveld `code` aanvaarden, naast de bestaande velden (naam, OVO-nummer, enkel actieve organisaties, toepassingsgebied, classificatietype, classificatie).
 - **FR-002**: Bij een ingevuld `code`-filter MOET het systeem organisaties teruggeven waarvan het OVO-nummer, het KBO-nummer of een Orafin-sleutelwaarde overeenkomt met de ingegeven waarde (OR-logica over de drie bronnen).
 - **FR-003**: Het `code`-filter MOET combineerbaar zijn met elk bestaand filterveld; de resultaten zijn de doorsnede (AND) van alle ingevulde criteria.
-- **FR-004**: Het `code`-filter MOET een **exacte match op genormaliseerde waarde** zijn — geen deel-, prefix- of fuzzy match. Normalisatie betekent: witruimte vooraan en achteraan weg, hoofdletteronafhankelijk, en voor numerieke codes de scheidingstekens en landcode genegeerd (`0123.456.789`, `0123456789` en `BE0123456789` zijn dezelfde code). Dezelfde normalisatie geldt voor de opgeslagen code én voor de ingegeven zoekterm.
+- **FR-004**: Het `code`-filter MOET een **deelmatch (substring) op genormaliseerde waarde** zijn: een organisatie matcht wanneer de genormaliseerde zoekterm *ergens* in een van haar genormaliseerde codes voorkomt (`4` vindt elke organisatie met een 4 in haar OVO-nummer, KBO-nummer of Orafin-code). Er is **geen fuzzy match** (geen typo-tolerantie). Normalisatie betekent: witruimte vooraan en achteraan weg, hoofdletteronafhankelijk, en scheidingstekens genegeerd (`0123.456.789` en `0123456789` zijn dezelfde code). Een zoekterm met Belgische landcode (`BE0123456789`) vindt daarnaast ook het KBO-nummer zonder landcode. Dezelfde normalisatie geldt voor de opgeslagen code én voor de ingegeven zoekterm.
 - **FR-005**: Een organisatie MOET maximaal één keer in het resultaat verschijnen, ook wanneer meerdere van haar codes op de zoekterm matchen of wanneer ze meerdere toepassingsgebied-rijen heeft.
 - **FR-005b**: **Alle** Orafin-sleutels van een organisatie MOETEN tot een match kunnen leiden, ongeacht hun geldigheidsperiode: ook vervallen en nog niet aangevangen sleutels tellen mee. Het `code`-filter toetst de geldigheidsperiode van een sleutel dus niet.
 - **FR-005c**: Het zoekresultaat van het `code`-filter MOET datum-onafhankelijk zijn: dezelfde gegevens geven op elke dag hetzelfde resultaat. De bestaande filter "enkel actieve organisaties" blijft het enige tijdsgebonden criterium, en werkt zoals vandaag op de geldigheid van de **organisatie**, niet op die van een sleutel.
@@ -155,8 +156,10 @@ verwijder de sleutel, zoek opnieuw (niet meer gevonden).
 
 ## Resolved Clarifications
 
-1. **Match-gedrag van het `code`-veld** (FR-004): exacte match op genormaliseerde waarde.
-   Geen fuzzy match, geen deel- of prefixmatch. *(beslist 2026-11-10)*
+1. **Match-gedrag van het `code`-veld** (FR-004): deelmatch (substring) op genormaliseerde waarde,
+   zoals gevraagd in OR-3785 ("als ik 4 ingeef, krijg ik alle organisaties met een 4 in de OVO-code,
+   het KBO-nummer of het Orafin-nummer"). Geen fuzzy match. *(oorspronkelijk beslist als exacte match
+   op 2026-11-10; herzien 2026-11-26 na vaststelling dat dit het ticket niet dekte)*
 2. **Vervallen sleutelwaarden** (FR-005b, FR-005c): alle Orafin-sleutels tellen mee, ook
    vervallen en toekomstige; de geldigheidsperiode van een sleutel wordt niet getoetst, en het
    zoekresultaat is datum-onafhankelijk. Het Orafin-sleuteltype zelf blijft bepaald door de

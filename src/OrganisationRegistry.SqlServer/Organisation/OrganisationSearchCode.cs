@@ -82,8 +82,10 @@ public class OrganisationSearchCodeListConfiguration : EntityMappingConfiguratio
         b.Property(p => p.ValidFrom);
         b.Property(p => p.ValidTo);
 
-        // Bedient het code-filter: gelijkheid op de genormaliseerde waarde, daarna het sleuteltype.
-        b.HasIndex(x => new { x.NormalizedValue, x.KeyTypeId });
+        // Bedient het code-filter. Het filter is een deelmatch (LIKE '%x%'), dus een scan van deze index.
+        // OrganisationId zit erbij ingesloten zodat die scan de tabel niet hoeft te raadplegen (de tabel is een heap).
+        b.HasIndex(x => new { x.NormalizedValue, x.KeyTypeId })
+            .IncludeProperties(x => x.OrganisationId);
 
         b.HasIndex(x => x.OrganisationId);
         b.HasIndex(x => x.OrganisationKeyId);

@@ -7,7 +7,7 @@
 ## Summary
 
 De hoofdpagina van Wegwijs krijgt een filterveld **Code** dat in één invoerveld zoekt op
-OVO-nummer, KBO-nummer en Orafin-sleutelwaarde (exacte match op genormaliseerde waarde),
+OVO-nummer, KBO-nummer en Orafin-sleutelwaarde (deelmatch op genormaliseerde waarde),
 waarbij **alle** Orafin-sleutels meetellen, ook vervallen.
 Daarvoor komt er een **eigen read model**: een kopie van de `OrganisationList`-projectie,
 uitgebreid met een zustertabel die alle doorzoekbare codes van een organisatie bevat
@@ -118,7 +118,7 @@ waarde en `ValidFrom`/`ValidTo`.
 
 *Waarom*: één uniforme index en één OR-term in de query, en het model is uitbreidbaar als er later
 nog een codetype bij moet. Een gematerialiseerde `Code`-kolom per organisatie zou een
-samengestelde waarde moeten bevatten en dwingt tot deel-matching — precies wat FR-004 uitsluit.
+samengestelde waarde moeten bevatten en zou voor elke organisatie één lange samengestelde string vergen waarin je niet per bron kunt filteren (Orafin-sleuteltype, FR-007).
 
 **Alle sleuteltypes worden geprojecteerd, niet enkel Orafin.** Dat is wat C-002 en FR-007 samen
 mogelijk maakt: de projectie blijft config-onafhankelijk, de query filtert op het geconfigureerde
@@ -146,12 +146,18 @@ Opgeslagen kant: `NormalizedValue = Normalize(value)` met `Normalize` = trimmen,
 `0123456789` en `ovo001234` → `OVO001234`.
 
 Zoekkant: uit de ingegeven term wordt een kleine verzameling kandidaten gemaakt
-(`Normalize(term)`, plus de variant zonder `BE`-landcode als de term daarop lijkt, plus de met een
-nul voorloop aangevulde variant bij een 9-cijferige term). De query doet
-`candidates.Contains(c.NormalizedValue)` → `IN (…)`.
+(`Normalize(term)`, plus de variant zonder `BE`-landcode als de term daarop lijkt). De query doet
+voor elke kandidaat `c.NormalizedValue.Contains(kandidaat)` → `LIKE '%kandidaat%'`, met een OR
+tussen de kandidaten (hoogstens twee).
 
-*Waarom*: geen functie op de kolom, dus de index blijft bruikbaar; en de KBO-schrijfwijzen worden
-opgevangen zonder dat Orafin-codes door een landcode-regel geraakt worden.
+*Waarom*: het ticket vraagt deelmatch tijdens het typen. De zoekterm wordt genormaliseerd, niet de
+kolom, dus er staat geen functie op de kolom. De voorloopnul-variant voor 9-cijferige termen is
+overbodig geworden: `123456789` zit al in `0123456789`. De `BE`-variant blijft nodig, want
+`BE0123456789` zit niet in `0123456789`.
+
+*Afweging*: een leidende wildcard kan de index niet gebruiken voor een seek; SQL Server scant de
+(smalle) index op `NormalizedValue`. Dat is aanvaardbaar zolang de codetabel klein blijft, maar
+moet bevestigd worden met T035 (SC-005).
 
 ### D-004 — Eigen endpoint voor de hoofdpagina *(beslist: `overview`)*
 

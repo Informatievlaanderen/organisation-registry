@@ -5,8 +5,8 @@ using SqlServer.Organisation;
 using Xunit;
 
 /// <summary>
-/// Normalisatie van codes voor het zoeken op de hoofdpagina (OR-3785). Zoeken is een exacte
-/// match op de genormaliseerde waarde; de normalisatie moet dus de schrijfwijzen opvangen
+/// Normalisatie van codes voor het zoeken op de hoofdpagina (OR-3785). Zoeken is een deelmatch
+/// op de genormaliseerde waarde; de normalisatie moet dus de schrijfwijzen opvangen
 /// waarin gebruikers een OVO-nummer, KBO-nummer of Orafin-code aanleveren.
 /// </summary>
 public class OrganisationCodeNormalizerTests
@@ -39,14 +39,9 @@ public class OrganisationCodeNormalizerTests
             .Should().BeEquivalentTo("BE0123456789", "0123456789");
 
     [Fact]
-    public void PadsNineDigitNumbersWithALeadingZero()
+    public void DoesNotPadNineDigitNumbers()
         => OrganisationCodeNormalizer.Candidates("123456789")
-            .Should().BeEquivalentTo("123456789", "0123456789");
-
-    [Fact]
-    public void PadsNineDigitNumbersBehindACountryPrefix()
-        => OrganisationCodeNormalizer.Candidates("BE123456789")
-            .Should().BeEquivalentTo("BE123456789", "123456789", "0123456789");
+            .Should().BeEquivalentTo("123456789");
 
     [Theory]
     [InlineData("BEHEER")]

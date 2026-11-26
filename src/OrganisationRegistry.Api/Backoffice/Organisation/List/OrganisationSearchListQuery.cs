@@ -182,11 +182,28 @@ public class OrganisationSearchListQuery : Query<OrganisationSearchListItem, Org
         var orafinKeyTypeId = _configuration.OrafinKeyTypeId;
 
         var matchingOrganisationIds = _context.OrganisationSearchCodeList
-            .Where(x => candidates.Contains(x.NormalizedValue))
+            .Where(ContainsAnyCandidate(candidates))
             .Where(x => x.KeyTypeId == null || x.KeyTypeId == orafinKeyTypeId)
             .Select(x => x.OrganisationId);
 
         return organisations.Where(x => matchingOrganisationIds.Contains(x.OrganisationId));
+    }
+
+    // Deelmatch: LIKE '%kandidaat%', met een OR per kandidaat (er zijn er hoogstens twee).
+    // EF kan `candidates.Any(c => waarde.Contains(c))` niet vertalen, dus de OR-keten wordt hier opgebouwd.
+    // ponytail: geen index-seek mogelijk bij een leidende wildcard; zie T035 voor de performantiecheck.
+    private static Expression<Func<OrganisationSearchCodeListItem, bool>> ContainsAnyCandidate(
+        IEnumerable<string> candidates)
+    {
+        var item = Expression.Parameter(typeof(OrganisationSearchCodeListItem), "x");
+        var value = Expression.Property(item, nameof(OrganisationSearchCodeListItem.NormalizedValue));
+        var contains = typeof(string).GetMethod(nameof(string.Contains), new[] { typeof(string) })!;
+
+        var body = candidates
+            .Select(candidate => (Expression)Expression.Call(value, contains, Expression.Constant(candidate)))
+            .Aggregate(Expression.OrElse);
+
+        return Expression.Lambda<Func<OrganisationSearchCodeListItem, bool>>(body, item);
     }
 
     private class OrganisationSearchListSorting : ISorting
@@ -207,7 +224,7 @@ public class OrganisationSearchListItemFilter
     public string? Name { get; set; }
     public string? OvoNumber { get; set; }
 
-    /// <summary>OVO-nummer, KBO-nummer of Orafin-code; exacte match op de genormaliseerde waarde.</summary>
+    /// <summary>OVO-nummer, KBO-nummer of Orafin-code; deelmatch (substring) op de genormaliseerde waarde.</summary>
     public string? Code { get; set; }
 
     public Guid? FormalFrameworkId { get; set; }

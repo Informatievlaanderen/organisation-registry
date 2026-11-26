@@ -7,8 +7,8 @@ using System.Text;
 
 /// <summary>
 /// Normaliseert codes voor het zoeken op de hoofdpagina (OR-3785): OVO-nummers, KBO-nummers en
-/// Orafin-sleutelwaarden. Zoeken is een exacte match op de genormaliseerde waarde, zodat de
-/// index op <c>NormalizedValue</c> bruikbaar blijft.
+/// Orafin-sleutelwaarden. Zoeken is een deelmatch (substring) op de genormaliseerde waarde: een
+/// gebruiker die <c>4</c> intikt, krijgt alle organisaties met een 4 in een van haar codes.
 /// <br />
 /// Dezelfde normalisatie wordt toegepast bij het projecteren (<see cref="Normalize" />) en bij
 /// het zoeken (<see cref="Candidates" />).
@@ -37,9 +37,10 @@ public static class OrganisationCodeNormalizer
     }
 
     /// <summary>
-    /// De waarden waarop een zoekterm mag matchen. Naast de genormaliseerde zoekterm zijn dat de
-    /// gangbare schrijfwijzen van een KBO-nummer: met Belgische landcode ervoor, en als negen
-    /// cijfers zonder voorloopnul.
+    /// De deelwaarden waarvan een opgeslagen code er minstens één moet bevatten. Naast de
+    /// genormaliseerde zoekterm is dat het KBO-nummer zonder Belgische landcode, want
+    /// <c>BE0123456789</c> moet ook <c>0123456789</c> vinden. (Een voorloopnul bijvoegen bij negen
+    /// cijfers is niet meer nodig: <c>123456789</c> zit al in <c>0123456789</c>.)
     /// <br />
     /// Een lege of louter uit scheidingstekens bestaande zoekterm levert geen kandidaten op; de
     /// query behandelt dat als "niet ingevuld".
@@ -55,14 +56,7 @@ public static class OrganisationCodeNormalizer
         if (TryRemoveBelgianCountryPrefix(normalized, out var withoutCountryPrefix))
             candidates.Add(withoutCountryPrefix);
 
-        // Oudere ondernemingsnummers circuleren als negen cijfers, zonder voorloopnul.
-        candidates.AddRange(
-            candidates
-                .Where(IsNineDigits)
-                .Select(candidate => "0" + candidate)
-                .ToList());
-
-        return candidates.Distinct().ToList();
+        return candidates;
     }
 
     private const string BelgianCountryPrefix = "BE";
@@ -81,9 +75,6 @@ public static class OrganisationCodeNormalizer
         withoutCountryPrefix = remainder;
         return true;
     }
-
-    private static bool IsNineDigits(string value)
-        => value.Length == 9 && value.All(char.IsDigit);
 
     /// <summary>Of een waarde na normalisatie een doorzoekbare code oplevert.</summary>
     public static bool HasSearchableValue(string? searchValue)
