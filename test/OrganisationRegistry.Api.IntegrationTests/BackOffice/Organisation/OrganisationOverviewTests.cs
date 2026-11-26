@@ -102,13 +102,13 @@ public class OrganisationOverviewTests
     }
 
     [Fact]
-    public async Task DoesNotMatchAPartialCode()
+    public async Task FindsAnOrganisationByAPartOfItsOvoNumber()
     {
         var (_, ovoNumber) = await GivenAnOrganisation();
 
-        var results = await GetFiltered(OverviewRoute, new { code = ovoNumber[..6] });
+        var results = await GetFiltered(OverviewRoute, new { code = ovoNumber[3..] });
 
-        results.Should().BeEmpty();
+        results.Select(x => x["ovoNumber"].ToString()).Should().Contain(ovoNumber);
     }
 
     [Fact]
