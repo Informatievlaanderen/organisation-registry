@@ -2756,6 +2756,8 @@ namespace OrganisationRegistry.SqlServer.Migrations
 
                     b.HasIndex("NormalizedValue", "KeyTypeId");
 
+                    SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("NormalizedValue", "KeyTypeId"), new[] { "OrganisationId" });
+
                     b.ToTable("OrganisationSearchCodeList", "Backoffice");
                 });
 

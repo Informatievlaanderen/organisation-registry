@@ -128,12 +128,38 @@ public class OrganisationSearchListQueryTests : ListViewTestBase
         results.Should().BeEmpty();
     }
 
-    [Fact]
-    public async Task DoesNotMatchPartialCodes()
+    [Theory]
+    [InlineData("OVO0000")] // begin van een OVO-nummer
+    [InlineData("0000")]    // midden van een OVO-nummer
+    public async Task FindsEveryOrganisationWhoseCodeContainsThePartialValue(string code)
     {
         await GivenAnOrganisationWithAllCodes();
 
-        var results = await Search("OVO0000");
+        var results = await Search(code);
+
+        results.Select(x => x.OvoNumber).Should().BeEquivalentTo(OvoNumber, "OVO000022");
+    }
+
+    [Theory]
+    [InlineData("21", OvoNumber)]       // einde van het OVO-nummer
+    [InlineData("4", OvoNumber)]        // enkel in het KBO-nummer (0123456789)
+    [InlineData("456.78", OvoNumber)]   // KBO-nummer met scheidingstekens
+    [InlineData("RAFIN", OvoNumber)]    // midden van de (vervallen) Orafin-sleutel
+    public async Task FindsAnOrganisationByAPartOfAnyOfItsCodes(string code, string expectedOvoNumber)
+    {
+        await GivenAnOrganisationWithAllCodes();
+
+        var results = await Search(code);
+
+        results.Should().ContainSingle().Which.OvoNumber.Should().Be(expectedOvoNumber);
+    }
+
+    [Fact]
+    public async Task DoesNotMatchPartOfAKeyOfAnotherKeyType()
+    {
+        await GivenAnOrganisationWithAllCodes();
+
+        var results = await Search("INR");
 
         results.Should().BeEmpty();
     }

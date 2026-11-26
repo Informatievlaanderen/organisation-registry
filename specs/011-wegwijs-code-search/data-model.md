@@ -52,7 +52,7 @@ Entiteit `OrganisationSearchCodeListItem`. Één rij per doorzoekbare code per o
 
 **Indexen**
 
-- `(NormalizedValue, KeyTypeId)` — bedient het code-filter
+- `(NormalizedValue, KeyTypeId)` `INCLUDE (OrganisationId)` — bedient het code-filter. Het filter is een deelmatch (`LIKE '%x%'`) en dus een scan van deze index; door `OrganisationId` in te sluiten is de index covering en hoeft de heap niet geraadpleegd te worden. Ingevoerd via migratie `IncludeOrganisationIdInSearchCodeIndex` (enkel een index-herbouw, geen projectie-rebuild)
 - `(OrganisationId)` — bedient herprojectie en opruiming
 - `(OrganisationKeyId)` — bedient wijzigen/verwijderen van een sleutel
 
@@ -125,11 +125,13 @@ Voorbeelden: `" 0123.456.789 "` → `0123456789`; `ovo001234` → `OVO001234`;
 Candidates(t):
   c0 = Normalize(t)
   c1 = c0 zonder "BE"-prefix        enkel als c0 matcht op ^BE\d{9,10}$
-  c2 = "0" + c0                     enkel als c0 matcht op ^\d{9}$
 ```
 
-De query vergelijkt met `candidates.Contains(NormalizedValue)` → `IN (…)`, zodat de index
-op `NormalizedValue` bruikbaar blijft (geen functie op de kolom).
+Een voorloopnul bijvoegen bij 9 cijfers is niet nodig: de query zoekt een deelmatch, en
+`123456789` zit al in `0123456789`.
+
+De query vergelijkt met `NormalizedValue.Contains(kandidaat)` → `LIKE '%kandidaat%'` (OR over de
+kandidaten). Er staat geen functie op de kolom, maar de leidende wildcard laat geen index-seek toe.
 
 ## 5. Queryvorm van het code-filter
 
@@ -140,7 +142,7 @@ if (filter.Code is { } code && code.IsNotEmptyOrWhiteSpace())
     var orafinKeyTypeId = _configuration.OrafinKeyTypeId;
 
     var matching = _context.OrganisationSearchCodeList
-        .Where(c => candidates.Contains(c.NormalizedValue))
+        .Where(ContainsAnyCandidate(candidates)) // NormalizedValue.Contains(k1) || NormalizedValue.Contains(k2)
         .Where(c => c.KeyTypeId == null || c.KeyTypeId == orafinKeyTypeId)
         .Select(c => c.OrganisationId);
 
