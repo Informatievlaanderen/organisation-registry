@@ -1,3 +1,10 @@
+## [1.347.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.347.0...v1.347.1) (2026-11-27)
+
+
+### Bug Fixes
+
+* or-3785 speed up code search for exact OVO/KBO/Orafin codes ([94c1bf1](https://github.com/informatievlaanderen/organisation-registry/commit/94c1bf1ca16ed3a0c711c4321059e1e649bd88ba))
+
 # [1.347.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.346.4...v1.347.0) (2026-11-26)
 
 
