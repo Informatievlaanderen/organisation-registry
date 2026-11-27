@@ -46,15 +46,19 @@ Entiteit `OrganisationSearchCodeListItem`. Één rij per doorzoekbare code per o
 | `KeyTypeId` | uniqueidentifier | ✖ | gevuld voor `Source = Key`, null voor `Ovo` en `Kbo` |
 | `OrganisationKeyId` | uniqueidentifier | ✖ | identificeert de sleutelrij bij wijzigen/verwijderen |
 | `Value` | nvarchar(500) | ✔ | waarde zoals opgeslagen (voor debugging/traceerbaarheid) |
-| `NormalizedValue` | nvarchar(500) | ✔ | zoekwaarde, zie §4 |
+| `NormalizedValue` | nvarchar(500) `COLLATE Latin1_General_100_BIN2` | ✔ | zoekwaarde, zie §4; binaire collatie, zie onder |
 | `ValidFrom` | datetime | ✖ | **informatief**, niet gebruikt in het filter; null voor OVO en KBO |
 | `ValidTo` | datetime | ✖ | **informatief**, niet gebruikt in het filter; null voor OVO en KBO |
 
 **Indexen**
 
-- `(NormalizedValue, KeyTypeId)` `INCLUDE (OrganisationId)` — bedient het code-filter. Het filter is een deelmatch (`LIKE '%x%'`) en dus een scan van deze index; door `OrganisationId` in te sluiten is de index covering en hoeft de heap niet geraadpleegd te worden. Ingevoerd via migratie `IncludeOrganisationIdInSearchCodeIndex` (enkel een index-herbouw, geen projectie-rebuild)
+- `(KeyTypeId, NormalizedValue)` `INCLUDE (OrganisationId)` — bedient het code-filter. Met `KeyTypeId` vooraan leest SQL Server enkel de bereiken `KeyTypeId IS NULL` (OVO, KBO) en `KeyTypeId = <Orafin>`, niet de sleutels van de andere sleuteltypes; binnen die bereiken is de deelmatch (`LIKE '%x%'`) een scan. Door `OrganisationId` in te sluiten is de index covering en hoeft de heap niet geraadpleegd te worden. Vervangt `(NormalizedValue, KeyTypeId)` via migratie `SearchCodeBinaryCollationAndKeyTypeIndex` (enkel collatie en index, geen projectie-rebuild)
 - `(OrganisationId)` — bedient herprojectie en opruiming
 - `(OrganisationKeyId)` — bedient wijzigen/verwijderen van een sleutel
+
+**Collatie**: `NormalizedValue` heeft de binaire collatie `Latin1_General_100_BIN2`. De opgeslagen waarde en de
+zoekterm worden identiek genormaliseerd (§4), dus een hoofdletterongevoelige collatie voegt niets toe, terwijl
+ze een `LIKE '%x%'` een veelvoud duurder maakt (Unicode-regels per vergelijking).
 
 **Invarianten**
 
@@ -131,7 +135,8 @@ Een voorloopnul bijvoegen bij 9 cijfers is niet nodig: de query zoekt een deelma
 `123456789` zit al in `0123456789`.
 
 De query vergelijkt met `NormalizedValue.Contains(kandidaat)` → `LIKE '%kandidaat%'` (OR over de
-kandidaten). Er staat geen functie op de kolom, maar de leidende wildcard laat geen index-seek toe.
+kandidaten). Er staat geen functie op de kolom, maar de leidende wildcard laat geen index-seek toe; de
+index `(KeyTypeId, NormalizedValue)` en de binaire collatie houden de scan klein en goedkoop (§2).
 
 ## 5. Queryvorm van het code-filter
 
@@ -154,6 +159,8 @@ if (filter.Code is { } code && code.IsNotEmptyOrWhiteSpace())
   Orafin-sleuteltype (FR-002, C-002, FR-007).
 - **Geen geldigheidstest**: alle Orafin-sleutels tellen mee, ook vervallen (FR-005b, D-002).
   Daardoor bevat de query geen datumvergelijking en is het resultaat datum-onafhankelijk (FR-005c).
+- Met een code-filter sorteert de query bijkomend op `Id` (tiebreaker na de gevraagde sortering).
+  Dat is een performantiemaatregel: zie plan D-006.
 - Omdat er op `OrganisationId` vergeleken wordt en het basisfilter al één rij per organisatie
   oplevert (`FormalFrameworkId == null`, of één specifiek toepassingsgebied), blijft het
   resultaat vrij van duplicaten (FR-005).

@@ -119,8 +119,8 @@ public class OrganisationSearchListQuery : Query<OrganisationSearchListItem, Org
         if (filter.OvoNumber is { } ovoNumber && ovoNumber.IsNotEmptyOrWhiteSpace())
             organisations = organisations.Where(x => x.OvoNumber.Contains(ovoNumber));
 
-        if (filter.Code is { } code && OrganisationCodeNormalizer.HasSearchableValue(code))
-            organisations = FilterOnCode(organisations, code);
+        if (HasCodeFilter(filter))
+            organisations = FilterOnCode(organisations, filter.Code!);
 
         if (filter.ActiveOnly)
             organisations = organisations.Where(x =>
@@ -165,6 +165,39 @@ public class OrganisationSearchListQuery : Query<OrganisationSearchListItem, Org
     }
 
     /// <summary>
+    /// Met een code-filter komt er een unieke tiebreaker (<c>Id</c>) achter de gevraagde sortering. Dat is een
+    /// performantiemaatregel, geen functionele eis.
+    /// <br />
+    /// Zonder tiebreaker leest SQL Server de sortering rechtstreeks uit een index (de geclusterde index op
+    /// <c>Name</c>) en mikt het op "slechts één pagina nodig" (row goal): het loopt de organisaties in die volgorde
+    /// af en zoekt per organisatie haar codes op, tot de pagina vol is. Het rekent daarbij op een groot aandeel
+    /// treffers, want een deelmatch (<c>LIKE '%x%'</c>) valt niet te schatten. Bij een gerichte zoekterm — een
+    /// volledig OVO-, KBO- of Orafin-nummer, de gangbare zoekopdracht — komt die pagina nooit vol en worden álle
+    /// organisaties afgelopen, met een opzoeking per code: een veelvoud van één doorloop van de codes.
+    /// <br />
+    /// Geen enkele index levert de volgorde (sorteerkolom, <c>Id</c>), dus moet SQL Server sorteren, en een
+    /// sortering verbruikt eerst al haar invoer. Daarmee vervalt de row goal: de codes worden in één doorloop
+    /// gematcht, en enkel de treffers worden gesorteerd. Een index die deze volgorde wel levert, maakt deze
+    /// maatregel ongedaan.
+    /// <br />
+    /// Zonder code-filter blijft de sortering ongewijzigd: daar is rechtstreeks lezen uit de index net het snelst.
+    /// </summary>
+    protected override IOrderedQueryable<OrganisationSearchListItem> Sort(
+        IQueryable<OrganisationSearchListItem> items,
+        FilteringHeader<OrganisationSearchListItemFilter> filtering,
+        SortingHeader sorting)
+    {
+        var sorted = base.Sort(items, filtering, sorting);
+
+        return HasCodeFilter(filtering.Filter)
+            ? sorted.ThenBy(x => x.Id)
+            : sorted;
+    }
+
+    private static bool HasCodeFilter(OrganisationSearchListItemFilter? filter)
+        => filter?.Code is { } code && OrganisationCodeNormalizer.HasSearchableValue(code);
+
+    /// <summary>
     /// Zoekt op OVO-nummer, KBO-nummer en Orafin-sleutelwaarde in één veld.
     /// <br />
     /// Het sleuteltype dat als Orafin geldt, komt uit de configuratie en wordt hier — en niet in
@@ -191,7 +224,9 @@ public class OrganisationSearchListQuery : Query<OrganisationSearchListItem, Org
 
     // Deelmatch: LIKE '%kandidaat%', met een OR per kandidaat (er zijn er hoogstens twee).
     // EF kan `candidates.Any(c => waarde.Contains(c))` niet vertalen, dus de OR-keten wordt hier opgebouwd.
-    // ponytail: geen index-seek mogelijk bij een leidende wildcard; zie T035 voor de performantiecheck.
+    // Een leidende wildcard laat geen index-seek toe; de scan blijft goedkoop doordat de index met KeyTypeId vooraan
+    // enkel de OVO-, KBO- en Orafin-codes leest, en de binaire collatie elke vergelijking per teken laat verlopen
+    // (zie OrganisationSearchCodeListConfiguration). De queryvorm zelf wordt bewaakt in Sort.
     private static Expression<Func<OrganisationSearchCodeListItem, bool>> ContainsAnyCandidate(
         IEnumerable<string> candidates)
     {

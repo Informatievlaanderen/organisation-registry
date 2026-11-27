@@ -61,6 +61,16 @@ public class OrganisationSearchCodeListConfiguration : EntityMappingConfiguratio
 {
     public const int ValueLength = OrganisationKeyListConfiguration.KeyValueLength;
 
+    /// <summary>
+    /// Binaire collatie voor <see cref="OrganisationSearchCodeListItem.NormalizedValue" />. De waarde is al
+    /// genormaliseerd (hoofdletters, enkel letters en cijfers, zie <see cref="OrganisationCodeNormalizer" />), dus
+    /// een hoofdletterongevoelige collatie voegt niets toe, terwijl ze een deelmatch (<c>LIKE '%x%'</c>) een
+    /// veelvoud duurder maakt: elke vergelijking volgt dan de Unicode-regels in plaats van een vergelijking per
+    /// teken. Wie deze kolom ooit vergelijkt met een kolom in een andere collatie, moet die collatie expliciet
+    /// maken.
+    /// </summary>
+    public const string NormalizedValueCollation = "Latin1_General_100_BIN2";
+
     public override void Map(EntityTypeBuilder<OrganisationSearchCodeListItem> b)
     {
         b.ToTable(nameof(OrganisationSearchListItemView.ProjectionTables.OrganisationSearchCodeList), WellknownSchemas.BackofficeSchema)
@@ -77,14 +87,17 @@ public class OrganisationSearchCodeListConfiguration : EntityMappingConfiguratio
         b.Property(p => p.OrganisationKeyId);
 
         b.Property(p => p.Value).HasMaxLength(ValueLength).IsRequired();
-        b.Property(p => p.NormalizedValue).HasMaxLength(ValueLength).IsRequired();
+        b.Property(p => p.NormalizedValue).HasMaxLength(ValueLength).IsRequired()
+            .UseCollation(NormalizedValueCollation);
 
         b.Property(p => p.ValidFrom);
         b.Property(p => p.ValidTo);
 
-        // Bedient het code-filter. Het filter is een deelmatch (LIKE '%x%'), dus een scan van deze index.
-        // OrganisationId zit erbij ingesloten zodat die scan de tabel niet hoeft te raadplegen (de tabel is een heap).
-        b.HasIndex(x => new { x.NormalizedValue, x.KeyTypeId })
+        // Bedient het code-filter. Dat zoekt enkel in OVO- en KBO-codes (KeyTypeId null) en in het Orafin-sleuteltype;
+        // met KeyTypeId vooraan leest SQL Server enkel die twee bereiken, in plaats van de sleutels van alle
+        // sleuteltypes. Binnen die bereiken blijft de deelmatch (LIKE '%x%') een scan: een leidende wildcard laat geen
+        // seek toe. OrganisationId zit erbij ingesloten zodat de tabel (een heap) niet geraadpleegd hoeft te worden.
+        b.HasIndex(x => new { x.KeyTypeId, x.NormalizedValue })
             .IncludeProperties(x => x.OrganisationId);
 
         b.HasIndex(x => x.OrganisationId);

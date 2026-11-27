@@ -6,7 +6,7 @@ using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
 
 public static class WithSortingExtension
 {
-    public static IQueryable<T> WithSorting<T>(this IQueryable<T> source, SortingHeader sortingHeader, ISorting sorting)
+    public static IOrderedQueryable<T> WithSorting<T>(this IQueryable<T> source, SortingHeader sortingHeader, ISorting sorting)
     {
         sortingHeader = sortingHeader.ShouldSort
                         && sorting.SortableFields.Contains(sortingHeader.SortBy, StringComparer.OrdinalIgnoreCase)

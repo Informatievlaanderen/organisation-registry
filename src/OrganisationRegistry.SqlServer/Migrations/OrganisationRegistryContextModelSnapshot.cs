@@ -2722,7 +2722,8 @@ namespace OrganisationRegistry.SqlServer.Migrations
                     b.Property<string>("NormalizedValue")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("nvarchar(500)")
+                        .UseCollation("Latin1_General_100_BIN2");
 
                     b.Property<Guid>("OrganisationId")
                         .HasColumnType("uniqueidentifier");
@@ -2754,9 +2755,9 @@ namespace OrganisationRegistry.SqlServer.Migrations
 
                     b.HasIndex("OrganisationKeyId");
 
-                    b.HasIndex("NormalizedValue", "KeyTypeId");
+                    b.HasIndex("KeyTypeId", "NormalizedValue");
 
-                    SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("NormalizedValue", "KeyTypeId"), new[] { "OrganisationId" });
+                    SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("KeyTypeId", "NormalizedValue"), new[] { "OrganisationId" });
 
                     b.ToTable("OrganisationSearchCodeList", "Backoffice");
                 });

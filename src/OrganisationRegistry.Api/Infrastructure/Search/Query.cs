@@ -40,9 +40,15 @@ public abstract class Query<T, TFilter, TResult>
 
         var items = Filter(filtering);
 
-        return items
-            .WithSorting(sorting, Sorting)
+        return Sort(items, filtering, sorting)
             .WithPagination(paginationRequest)
             .WithTransformation(Transformation);
     }
+
+    /// <summary>
+    /// Orders the filtered items by the requested sorting (or <see cref="Sorting"/>'s default).
+    /// Override to refine the ordering, e.g. with a tiebreaker that depends on the active filter.
+    /// </summary>
+    protected virtual IOrderedQueryable<T> Sort(IQueryable<T> items, FilteringHeader<TFilter> filtering, SortingHeader sorting)
+        => items.WithSorting(sorting, Sorting);
 }

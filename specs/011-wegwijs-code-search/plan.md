@@ -155,9 +155,10 @@ kolom, dus er staat geen functie op de kolom. De voorloopnul-variant voor 9-cijf
 overbodig geworden: `123456789` zit al in `0123456789`. De `BE`-variant blijft nodig, want
 `BE0123456789` zit niet in `0123456789`.
 
-*Afweging*: een leidende wildcard kan de index niet gebruiken voor een seek; SQL Server scant de
-(smalle) index op `NormalizedValue`. Dat is aanvaardbaar zolang de codetabel klein blijft, maar
-moet bevestigd worden met T035 (SC-005).
+*Afweging*: een leidende wildcard kan de index niet gebruiken voor een seek. De scan blijft klein en
+goedkoop doordat de index `KeyTypeId` vooraan heeft (enkel OVO-, KBO- en Orafin-rijen worden gelezen) en
+`NormalizedValue` een binaire collatie heeft (zie data-model.md §2). Dat de query die scan ook
+effectief kiest, regelt D-006.
 
 ### D-004 — Eigen endpoint voor de hoofdpagina *(beslist: `overview`)*
 
@@ -180,6 +181,30 @@ eventverzameling van `OrganisationListItemView` afhandelt.
 
 *Waarom*: een gedeelde generieke basisklasse zou de twee read models opnieuw koppelen en de
 rebuild-semantiek (`Projection<T>` matcht op `typeof(T).FullName`) ingewikkelder maken.
+
+### D-006 — Tiebreaker op `Id` bij een code-filter (queryvorm)
+
+Met een ingevuld code-filter sorteert de paginaquery na de gevraagde sortering ook op `Id`
+(`OrganisationSearchListQuery.Sort`). Zonder code-filter blijft de sortering ongewijzigd.
+
+*Waarom*: de gevraagde sortering (standaard `Name`) komt rechtstreeks uit een index, en met
+`OFFSET … FETCH` mikt SQL Server dan op "slechts één pagina nodig" (row goal): het loopt de
+organisaties in naamvolgorde af en zoekt per organisatie haar codes op tot de pagina vol is. Omdat een
+`LIKE '%x%'` niet te schatten valt, rekent het op een groot aandeel treffers. Bij een gerichte zoekterm
+(een volledig OVO-, KBO- of Orafin-nummer, de gangbare zoekopdracht) komt de pagina nooit vol en worden
+álle organisaties afgelopen, met een opzoeking en *RID Lookup* per code — gemeten 0,7–1 s CPU tegenover
+±25 ms voor één doorloop van de codes (T036). Geen enkele index levert de volgorde (sorteerkolom, `Id`),
+dus moet SQL Server sorteren; een sortering verbruikt eerst al haar invoer, waardoor de row goal vervalt
+en de codes in één doorloop gematcht worden (*Hash Match*), waarna enkel de treffers gesorteerd worden.
+
+*Verworpen*: een query-hint (`USE HINT('DISABLE_OPTIMIZER_ROWGOAL')`) — EF Core kent geen query-hints,
+dus dat vraagt een command-interceptor, en de hint bestaat pas vanaf SQL Server 2016 SP1. Een covering
+index op `(OrganisationId) INCLUDE (KeyTypeId, NormalizedValue)` — schrapt de *RID Lookup*s maar laat het
+aflopen van alle organisaties bestaan (gemeten ±200 ms). De tiebreaker altijd toepassen — kost het
+overzicht zonder code-filter een volledige sortering (gemeten 3 ms → ±140 ms).
+
+*Bewaking*: `OrganisationSearchListQuerySqlTests` controleert de gegenereerde `ORDER BY`. Een index die
+de volgorde (sorteerkolom, `Id`) wél levert, maakt deze maatregel ongedaan.
 
 ## API-contract
 
